@@ -27,14 +27,100 @@
     </dependency>
   </dependencies>
   <build>
-      <plugins>
-          <plugin>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <configuration>
-                  <source>1.6</source>
-                  <target>1.6</target>
-              </configuration>
-          </plugin>
-      </plugins>
+    <plugins>
+      <plugin>
+        <artifactId>maven-license-plugin</artifactId>
+        <groupId>org.nuiton</groupId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
+  <developers>
+    <developer>
+      <name>Mikis Seth Sørensen</name>
+      <email>mss@statsbiblioteket.dk</email>
+      <roles>
+        <role>Project Manager</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Kåre Fiedler Christiansen</name>
+      <email>kfc@statsbiblioteket.dk</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Bolette Ammitzbøll Jurik</name>
+      <email>bam@statsbiblioteket.dk</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Eld Zierau</name>
+      <email>elzi@kb.dk</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Jonas Lindberg Frellesen</name>
+      <email>jolf@statsbiblioteket.dk</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Christian Vandel</name>
+      <email>csv@kb.dk</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Jun Petersen Yoneyama</name>
+      <email>jpy@ra.sa.dk</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Thomas Andersen</name>
+      <email>tha@ra.sa.dk</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+  </developers>
+  <inceptionYear>2010</inceptionYear>
+  <licenses>
+    <license>
+      <name>LGPL v2.1</name>
+      <distribution>repo</distribution>
+      <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
+    </license>
+  </licenses>
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://sbforge.statsbiblioteket.dk/jira/browse/BITMAG</url>
+  </issueManagement>
+  <ciManagement>
+    <system>Hudson</system>
+    <url>http://sbforge.statsbiblioteket.dk/hudson/job/Bitmagasinet-compile/</url>
+  </ciManagement>
+  <url>http://sbforge.statsbiblioteket.dk/display/BITMAG</url>
+  <organization>
+    <name>The State and University Library, The Royal Library and The State Archives, Denmark</name>
+  </organization>
+  <scm>
+    <url>http://sbforge.statsbiblioteket.dk/fisheye</url>
+    <connection>scm:svn:https://gforge.statsbiblioteket.dk/svn/bitmagasin</connection>
+  </scm>
 </project>

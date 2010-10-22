@@ -98,4 +98,12 @@
     <module>ingestaccessclient</module>
     <module>integritytest</module>
   </modules>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-license-plugin</artifactId>
+        <groupId>org.nuiton</groupId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
