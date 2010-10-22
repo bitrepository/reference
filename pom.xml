@@ -103,6 +103,11 @@
       <plugin>
         <artifactId>maven-license-plugin</artifactId>
         <groupId>org.nuiton</groupId>
+        <version>2.4.1</version>
+        <configuration>
+          <addSvnKeyWords>true</addSvnKeyWords>
+          <licenseName>lgpl_v2_1</licenseName>
+        </configuration>
       </plugin>
     </plugins>
   </build>

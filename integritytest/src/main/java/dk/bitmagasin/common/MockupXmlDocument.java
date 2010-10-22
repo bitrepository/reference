@@ -1,3 +1,27 @@
+/*
+ * #%L
+ * Bitmagasin integritetstest
+ * 
+ * $Id$
+ * $HeadURL$
+ * %%
+ * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 /** Bit Repository Standard Header Open Source License */
 package dk.bitmagasin.common;
 
@@ -129,7 +153,7 @@ public class MockupXmlDocument {
 	 * Removes the path to the root node (if any), and then start the iteration
 	 * along the path for retrieval of all the leaf values.
 	 * 
-	 * @param path The path where the values should exist.
+	 * @param initPath The path where the values should exist.
 	 * @return The list of values at the leaf node of all possible leafs for 
 	 * the given path.
 	 */

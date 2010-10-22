@@ -18,7 +18,12 @@
     <plugins>
       <plugin>
         <artifactId>maven-license-plugin</artifactId>
+        <version>2.4.1</version>
         <groupId>org.nuiton</groupId>
+        <configuration>
+          <addSvnKeyWords>true</addSvnKeyWords>
+          <licenseName>lgpl_v2_1</licenseName>
+        </configuration>
       </plugin>
     </plugins>
   </build>
