@@ -9,7 +9,6 @@
   <version>0.0.1-SNAPSHOT</version>
   <artifactId>bitmagasin</artifactId>
   <name>Bitmagasin</name>
-  <packaging>pom</packaging>
   <developers>
     <developer>
       <name>Mikis Seth Sørensen</name>
@@ -92,11 +91,12 @@
     <url>http://sbforge.statsbiblioteket.dk/fisheye</url>
     <connection>scm:svn:https://gforge.statsbiblioteket.dk/svn/bitmagasin</connection>
   </scm>
+  <packaging>pom</packaging>
   <modules>
     <module>protocol</module>
     <module>integrityclient</module>
     <module>ingestaccessclient</module>
-    <module>integritytest</module>
+    <module>integrationtests</module>
   </modules>
   <build>
     <plugins>
@@ -105,8 +105,18 @@
         <groupId>org.nuiton</groupId>
         <version>2.4.1</version>
         <configuration>
+          <generateBundle>true</generateBundle>
           <addSvnKeyWords>true</addSvnKeyWords>
           <licenseName>lgpl_v2_1</licenseName>
+          <failIfWarning>true</failIfWarning>
+          <useMissingFile>true</useMissingFile>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
         </configuration>
       </plugin>
     </plugins>
