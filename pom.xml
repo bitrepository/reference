@@ -1,14 +1,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+  
   <modelVersion>4.0.0</modelVersion>
   <groupId>dk.bitmagasin</groupId>
   <version>0.0.1-SNAPSHOT</version>
   <artifactId>bitmagasin</artifactId>
+  
+  <parent>
+    <groupId>org.sbforge</groupId>
+    <artifactId>SBForge-parent</artifactId>
+    <version>RELEASE</version>
+  </parent>
+
   <name>Bitmagasin</name>
+  
+  <packaging>pom</packaging>
+  
+  <modules>
+    <module>protocol</module>
+    <module>integrityclient</module>
+    <module>ingestaccessclient</module>
+    <module>integrationtests</module>
+  </modules>
+  
   <developers>
     <developer>
       <name>Mikis Seth Sørensen</name>
@@ -67,7 +82,9 @@
       </roles>
     </developer>
   </developers>
+  
   <inceptionYear>2010</inceptionYear>
+  
   <licenses>
     <license>
       <name>LGPL v2.1</name>
@@ -75,29 +92,28 @@
       <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
     </license>
   </licenses>
+  
   <issueManagement>
     <system>JIRA</system>
     <url>http://sbforge.statsbiblioteket.dk/jira/browse/BITMAG</url>
   </issueManagement>
+  
   <ciManagement>
     <system>Hudson</system>
     <url>http://sbforge.statsbiblioteket.dk/hudson/job/Bitmagasinet-compile/</url>
   </ciManagement>
+  
   <url>http://sbforge.statsbiblioteket.dk/display/BITMAG</url>
+  
   <organization>
     <name>The State and University Library, The Royal Library and The State Archives, Denmark</name>
   </organization>
+  
   <scm>
     <url>http://sbforge.statsbiblioteket.dk/fisheye</url>
     <connection>scm:svn:https://gforge.statsbiblioteket.dk/svn/bitmagasin</connection>
   </scm>
-  <packaging>pom</packaging>
-  <modules>
-    <module>protocol</module>
-    <module>integrityclient</module>
-    <module>ingestaccessclient</module>
-    <module>integrationtests</module>
-  </modules>
+  
   <build>
     <plugins>
       <plugin>
@@ -121,4 +137,9 @@
       </plugin>
     </plugins>
   </build>
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
 </project>
