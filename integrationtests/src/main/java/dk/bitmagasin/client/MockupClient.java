@@ -24,6 +24,13 @@
  */
 package dk.bitmagasin.client;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
@@ -38,16 +45,20 @@ import javax.jms.TextMessage;
 import javax.jms.Topic;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import dk.bitmagasin.common.MockupConf;
 import dk.bitmagasin.common.MockupGetTimeMessage;
 import dk.bitmagasin.common.MockupGetTimeReplyMessage;
+import dk.bitmagasin.common.TimeUnits;
 
 /**
  * AccessClient MockUp
  * @author bam
  * @since 2010-10-01 */
 public class MockupClient implements MessageListener, ExceptionListener {
+	private final Log log = LogFactory.getLog(this.getClass());
 
     private boolean running;
     private String clientId = MockupConf.accessClientId; //TODO rename?
@@ -55,7 +66,6 @@ public class MockupClient implements MessageListener, ExceptionListener {
     private Session session;
     private MessageProducer messageProducer;
 
-    private boolean verbose = false;
     private boolean transacted;//TODO QUESTION transacted?
 
     private boolean durable = true;
@@ -63,22 +73,41 @@ public class MockupClient implements MessageListener, ExceptionListener {
     private Queue queue;
     
     private static String myQueue = "CLIENT";
+    private static String dataId = "1615";
+    private static List<String> actions = new ArrayList<String>();
+    
+    private Map<String, List<String>> missingGetTime 
+            = Collections.synchronizedMap(new HashMap<String, List<String>>());
+    private Map<String, DataRequestTime> getTimes = Collections.synchronizedMap(
+    		new HashMap<String, DataRequestTime>());
 
     public static void main(String... args) {
-    	System.out.println("Arguments (default): clientQueue (CLIENT)");
+    	System.out.println("Arguments (default): clientQueue (CLIENT) "
+    			+ "action (getTime->KB,SB)");
+    	
     	for(String arg : args) {
     		if(arg.startsWith("clientQueue=")) {
     			myQueue = arg.replaceFirst("clientQueue=", "");
+    		} if(arg.startsWith("dataId=")) {
+    			dataId = arg.replaceFirst("dataId=", "");
+    		} if(arg.startsWith("action=")) {
+    			actions.add(arg.replaceFirst("action=", ""));
     		} else {
     			System.err.println("Bad argument: " + arg);
     		}
     	}
     	
+    	if(actions.isEmpty()) {
+    		actions.add("getTime->KB,SB");
+    	}
+    	
         MockupClient mockupClient = new MockupClient();
         mockupClient.run();
     }
-
-    public void run() {
+    
+    protected MockupClient() {
+    	log.info("Starting MockupClient: " + clientId + ", with queue: " 
+    			+ myQueue);
         Connection connection = null;
         try {
             // Create connection
@@ -110,109 +139,205 @@ public class MockupClient implements MessageListener, ExceptionListener {
             MessageProducer queueProducer = session.createProducer(queue);
             queueProducer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
-            // Send get message
-            sendGet(session, messageProducer);
-
-//        	TextMessage msg1 = session.createTextMessage("TESTING1");
-//        	TextMessage msg2 = session.createTextMessage("TESTING2");
-//
-//        	messageProducer.send(bus, msg1);
-//        	queueProducer.send(queue, msg2);
-//        	
-        	// Use the ActiveMQConnection interface to dump the connection
-            // stats.
-            // ActiveMQConnection c = (ActiveMQConnection)connection;
-            // c.getConnectionStats().dump(new IndentPrinter());
-
         } catch (Exception e) {
-            System.out.println("Caught: " + e);
-            e.printStackTrace();
+            log.error("Caught exception during initialization.", e);
         } 
     }
 
-    protected void sendGet(Session session, MessageProducer producer) 
-            throws Exception {
+    public void run() {
+    	nextAction();
+    }
+    
+    protected void nextAction() {
+    	// only perform more actions, if more actions exists.
+    	if(actions.size() <= 0) {
+    		log.info("No more actions to perform.");
+    		return;
+    	}
+    	
+		// retrieve next command and remove it from the list.
+		String action = actions.remove(0);
+		log.info("Handling action: " + action + ", with the following "
+				+ "remaining:" + actions);
+		
+		// handle the action
+    	try {
+    		handleAction(action);
+        } catch (Exception e) {
+            log.error("Caught exception during run.", e);
+        } 
+    }
+    
+    protected void handleAction(String action) throws Exception {
+    	// ensure that the action has the right format.
+		String[] split = action.split("->");
+		if(split.length != 2) {
+			log.warn("Action is not parsable. Needs "
+					+ "'command'->'arguments', but was:" + action);
+			nextAction();
+		}
+
+		// retrieve the command and the arguments.
+		String command = split[0];
+		String[] args = split[1].split("[,]");
+		
+		if(command.equalsIgnoreCase("getTime")) {
+			sendGetTime(session, messageProducer, args);
+		} if(command.equalsIgnoreCase("getFile")) {
+			sendGetFile(session, messageProducer, args);
+		} else {
+			log.error("Does not know command: " + command);
+		}
+    }
+
+    protected void sendGetTime(Session session, MessageProducer producer, 
+    		String... pillarIds) throws Exception {
         //TODO multiple gets
         String commId = "CommId28";//TODO communication ID generation
-        String dataId = "1615";
         String token = "https://example.dk/token#1";
+
+        List<String> pillars = new ArrayList<String>(2);
+        for(String pillarId : pillarIds) {
+        	pillars.add(pillarId);
+        }
+        // set the retrieval of time for 'dataId' to outstanding for 'pillars'.
+        missingGetTime.put(dataId, pillars);
 
         MockupGetTimeMessage msg = new MockupGetTimeMessage();
         msg.addConversationId(commId);
         msg.addDataId(dataId);
-//        msg.addPillars(MockupConf.pillarId);
-        msg.addPillars(MockupConf.pillarId, "KB", "SB", "THIS_IS_NOT_A_PILLAR");
+        msg.addPillars(pillars.toArray(new String[pillars.size()]));
         msg.addToken(token);
         
         TextMessage message = session.createTextMessage(msg.asXML());
         message.setJMSType("GetTime");
         message.setJMSReplyTo(queue);
-
-        if (verbose) {
-            System.out.println("Sending message to bus: " + message.getText());
-        }
+        
+        log.info("Sending message to bus: " + message.getText());
         producer.send(bus, message);
+
+        if (transacted) {
+            session.commit();
+        }
+    }
+    
+    public void sendGetFile(Session session, MessageProducer producer, 
+    		String... pillarIds) throws Exception {
+        //TODO multiple gets
+        String commId = "CommId28";//TODO communication ID generation
+        String token = "https://example.dk/token#1";
+
+        List<String> pillars = new ArrayList<String>(2);
+        for(String pillarId : pillarIds) {
+        	pillars.add(pillarId);
+        }
+        // set the retrieval of time for 'dataId' to outstanding for 'pillars'.
+        missingGetTime.put(dataId, pillars);
+
+        MockupGetTimeMessage msg = new MockupGetTimeMessage();
+        msg.addConversationId(commId);
+        msg.addDataId(dataId);
+        msg.addPillars(pillars.toArray(new String[pillars.size()]));
+        msg.addToken(token);
         
-//        if (verbose) {
-//            System.out.println("Sending message to queue: " + message.getText());
-//        }
-//        MessageProducer mp = session.createProducer(queue);
-//        mp.setDeliveryMode(DeliveryMode.PERSISTENT);
-//        mp.send(queue, message);
+        TextMessage message = session.createTextMessage(msg.asXML());
+        message.setJMSType("GetTime");
+        message.setJMSReplyTo(queue);
         
+        log.info("Sending message to bus: " + message.getText());
+        producer.send(bus, message);
+
         if (transacted) {
             session.commit();
         }
     }
 
     public void onMessage(Message msg) { 
-//    	if(true) {
-//    		System.out.println("Received a message: " + msg);
-//    		return;
-//    	}
     	try {
     		// report on which message is received
-        	System.out.print("Message: " + msg.getJMSType() + ", on " 
-        			+ msg.getJMSDestination() + "  \t ");
+        	log.debug("Received message: " + msg.getJMSType() + ", on " 
+        			+ msg.getJMSDestination());
         	
     		if(!(msg instanceof TextMessage)) {
-            	// Cannot handled non-TextMessage!
-            	System.out.println("ERROR: Not in the format of a "
+            	// TODO throw exception?
+            	log.error("ERROR: Not in the format of a "
             			+ "TextMessage: \n" + msg);
         		return;	
     		}
     		
         	TextMessage txtMsg = (TextMessage) msg;
+        	log.debug(txtMsg.getText());
 
         	// verify getType
         	if(txtMsg.getJMSType() == null || txtMsg.getJMSType().isEmpty()) {
-        		// TODO log error!
-        		System.out.println("ERROR: Unhandled message jms type: " 
+        		// TODO throw exception?
+        		log.error("ERROR: Unhandled message jms type: " 
         				+ txtMsg.getJMSType());
         		return;
         	}
         	
-    		// TODO make more of these cases.
+    		// TODO make more of these cases. E.g. handle more message-types.
         	if(txtMsg.getJMSType().equals("GetTimeReply")) {
-        		System.out.println("handled!");
         		visit(new MockupGetTimeReplyMessage(txtMsg.getText()), 
         				txtMsg.getJMSReplyTo());
         	} else {
-        		System.out.println("ignored!");
+        		log.debug("Cannot handle jms type: " + txtMsg.getJMSType() 
+        				+ ", message ignored!");
         	}
     	} catch (Exception e) {
-    		System.err.println(e);
-    		e.printStackTrace();
+    		log.error("Caught exception during handling of message: " + msg, e);
     	}
     }
     
-    public void visit(MockupGetTimeReplyMessage msg, Destination replyTo) {
-//    	System.out.println("Handling MockupGetTimeReplyMessage: " 
-//    			+ msg.asXML());
-    	System.out.println("Pillar '" + msg.getPillarId() 
-    			+ "' can deliver in: " + msg.getTimeMeasure() + " " 
-    			+ msg.getTimeUnit());
-    	// TODO ??
+    public synchronized void visit(MockupGetTimeReplyMessage msg, 
+    		Destination replyTo) {
+    	String dataId = msg.getDataId();
+    	String pillarId = msg.getPillarId();
+    	
+    	// check if we are awaiting the message.
+    	List<String> pillars = missingGetTime.get(dataId);
+    	if(pillars == null) {
+    		// do not handle message, when we are not awaiting dataId.
+    		log.debug("The message was not intended for me. Unknown dataId \n" 
+    				+ msg.asXML());
+    		return;
+    	}
+    	if(!pillars.contains(pillarId)) {
+    		// do not handle message, when we are not awaiting pillarId
+    		log.debug("The message was not intended for me. Unknown pillarId "
+    				+ "\n" + msg.asXML());
+    		return;
+    	}
+
+    	pillars.remove(pillarId);
+    	
+    	log.debug("Pillar '" + pillarId + "' can deliver in: " 
+    			+ msg.getTimeMeasure() + " " + msg.getTimeUnit());
+
+    	// retrieve the 'DataRequestTime' entry for this data.
+    	DataRequestTime drt = getTimes.get(dataId);
+    	if(drt == null) {
+    		drt = new DataRequestTime(dataId);
+    	}
+    	
+    	drt.addEntry(pillarId, msg.getTimeMeasure(), 
+    			TimeUnits.valueOf(msg.getTimeUnit()));
+    	
+    	// no more missing pillars, then remove entry from 'missingGetTime',
+    	// and continue with next action! Otherwise: await the remaining 
+    	// pillars.
+    	if(pillars.isEmpty()) {
+    		log.info("Retrieved time for data '" + dataId + "' from pillar '"
+    				+ pillarId + "'. No more outstanding pillars.");
+    		missingGetTime.remove(dataId);
+    		
+    		// go to next action
+    		nextAction();
+    	} else {
+    		log.info("Retrieved time for data '" + dataId + "' from pillar '" 
+    				+ pillarId + "', outstanding pillars: " + pillars);
+    		missingGetTime.put(dataId, pillars);
+    	}
     }
     
     public void onException(JMSException e) {
@@ -228,11 +353,54 @@ public class MockupClient implements MessageListener, ExceptionListener {
         this.transacted = transacted;
     }
 
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
-    }
-
     public void setDurable(boolean durable) {
         this.durable = durable;
     }
+    
+    /**
+     * Helper class for keeping track of the answers when requesting the time
+     * for some data.
+     * @author jolf
+     */
+    protected class DataRequestTime {
+    	/** The id for the data which has been requested. */
+    	String dataId;
+    	/** The date for the time of the creation of this instance. */
+    	Date date;
+    	/** The time it takes a pillar to put the data to the location.*/
+    	Map<String, Long> pillarTime;
+    	
+    	/**
+    	 * The Constructor.
+    	 * @param dataId The id for the data requested. 
+    	 */
+    	public DataRequestTime(String dataId) {
+    		this.dataId = dataId;
+    		pillarTime = Collections.synchronizedMap(
+    				new HashMap<String, Long>());
+    		this.date = new Date();
+    	}
+    	
+    	/**
+    	 * Adds the time for the pillar to map. 
+    	 * 
+    	 * @param pillarId The ID for the pillar.
+    	 * @param timeMeasure The amount of time it takes.
+    	 * @param timeUnit The unit for the measure of time.
+    	 */
+    	public void addEntry(String pillarId, long timeMeasure, 
+    			TimeUnits timeUnit) {
+    		// calculate time
+    		pillarTime.put(pillarId, timeMeasure 
+    				* TimeUnits.getTimeInSeconds(timeUnit));
+    	}
+    	
+    	/**
+    	 * Retrieves the date for the creation of this instance.
+    	 * @return The date for the creation of this instance.
+    	 */
+    	public Date getDate() {
+    		return date;
+    	}
+    };
 }

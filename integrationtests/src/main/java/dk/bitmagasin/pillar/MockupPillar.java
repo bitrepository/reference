@@ -34,12 +34,13 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
-import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import dk.bitmagasin.common.MockupConf;
 import dk.bitmagasin.common.MockupGetTimeMessage;
@@ -50,7 +51,9 @@ import dk.bitmagasin.common.MockupGetTimeReplyMessage;
  * @author bam
  * @since 2010-10-01 */
 public class MockupPillar implements MessageListener, ExceptionListener {
-
+	/** The log for this instance.*/
+	private final Log log = LogFactory.getLog(this.getClass());
+	
 	/**
 	 * The measure for the timeout for this pillar.
 	 */
@@ -68,7 +71,6 @@ public class MockupPillar implements MessageListener, ExceptionListener {
      */
     private static String pillarId = MockupConf.pillarId;
 
-    private boolean running;
     private Session session;
     
     /**
@@ -79,15 +81,6 @@ public class MockupPillar implements MessageListener, ExceptionListener {
      * The producer to the bus.
      */
     private MessageProducer busProducer;
-    /**
-     * The specific queue for messages sent only to this client.
-     */
-    private Queue queue;
-    /**
-     * The producer for sending message to this client only.
-     * TODO this should be removed!
-     */
-    private MessageProducer queueProducer;
 
     private boolean verbose = true;
     private boolean transacted;
@@ -114,11 +107,13 @@ public class MockupPillar implements MessageListener, ExceptionListener {
         MockupPillar mockupPillar = new MockupPillar();
         mockupPillar.run();
     }
+    
+    protected MockupPillar() {
+    	log.info("Starting Pillar: " + pillarId);
+    }
 
     public void run() {
         try {
-            running = true;
-
             // Create connection
             ActiveMQConnectionFactory connectionFactory =
                     new ActiveMQConnectionFactory(MockupConf.user,
@@ -139,48 +134,41 @@ public class MockupPillar implements MessageListener, ExceptionListener {
             session.createConsumer(bus).setMessageListener(this);
             busProducer = session.createProducer(bus);
             busProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-            
-            queue = session.createQueue(pillarId);
-            //consumer = session.createDurableSubscriber(topic, MockupConf.pillarId);
-            session.createConsumer(queue).setMessageListener(this);
-            queueProducer = session.createProducer(queue);
-            queueProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
         } catch (Exception e) {
-            System.out.println("Caught: " + e);
-            e.printStackTrace();
+        	log.error("Caught exception during run!", e);
         }
     }
     
     public void onMessage(Message msg) {
         try {
     		// report on which message is received
-        	System.out.print("Message: " + msg.getJMSType() + ", on " 
-        			+ msg.getJMSDestination() + "  \t ");
+        	log.info("Message: " + msg.getJMSMessageID() + " wit type: "
+        			+ msg.getJMSType() + ", on " + msg.getJMSDestination());
         	
     		if(!(msg instanceof TextMessage)) {
             	// Cannot handled non-TextMessage!
-            	System.out.println("ERROR: Not in the format of a "
+            	log.error("ERROR: Not in the format of a "
             			+ "TextMessage: \n" + msg);
         		return;	
     		}
     		
         	TextMessage txtMsg = (TextMessage) msg;
-
+        	log.debug("Received text message: " + txtMsg.getText());
+        	
         	// verify getType
         	if(txtMsg.getJMSType() == null || txtMsg.getJMSType().isEmpty()) {
-        		// TODO log error!
-        		System.err.println("ERROR: Unhandled message jms type: " 
+        		// TODO handle better
+        		log.error("ERROR: Unhandled message jms type: " 
         				+ txtMsg.getJMSType());
         		return;
         	}
         	
     		// TODO make more of these cases.
         	if(txtMsg.getJMSType().equals("GetTime")) {
-        		System.out.println("handled!");
         		visit(new MockupGetTimeMessage(txtMsg.getText()), 
         				txtMsg.getJMSReplyTo());
         	} else {
-        		System.out.println("ignored!");
+        		log.debug("Message " + msg.getJMSMessageID() + "ignored!");
         	}
         } catch (Exception e) {
             System.out.println("Caught: " + e);
@@ -190,15 +178,13 @@ public class MockupPillar implements MessageListener, ExceptionListener {
 
     public void visit(MockupGetTimeMessage msg, Destination replyTo) 
             throws JMSException {
-    	if(verbose) {
-    		System.out.println("Received MockupGetTimeMessage, with reply: " 
-    				+ replyTo);
-    	}
+    	log.info("Received MockupGetTimeMessage, with id: " 
+    			+ msg.getConversationId() + ", and reply to: "+ replyTo);
     	
     	// validate pillarId
     	List<String> pillarIds = msg.getPillarIds();
     	if(!pillarIds.contains(pillarId)) {
-    		System.out.println("Ignored!");
+    		log.info("Is not meant for my ID!");
     		// Do not handle message, which are not meant for us!
     		return;
     	}
@@ -215,10 +201,9 @@ public class MockupPillar implements MessageListener, ExceptionListener {
     	
         TextMessage sendMsg = session.createTextMessage(replyMsg.asXML());
         sendMsg.setJMSType("GetTimeReply");
-        sendMsg.setJMSReplyTo(queue);
 
         if(verbose) {
-        	System.out.println("Sending: MockupGetTimeReplyMessage to: " 
+        	log.info("Sending: MockupGetTimeReplyMessage to: " 
         			+ replyTo);
         }
         
@@ -230,12 +215,7 @@ public class MockupPillar implements MessageListener, ExceptionListener {
     }
 
     public synchronized void onException(JMSException ex) {
-        System.out.println("JMS Exception occured.  Shutting down client.");
-        running = false;
-    }
-
-    synchronized boolean isRunning() {
-        return running;
+        log.error("JMS Exception occured.  Shutting down client.", ex);
     }
 
     public void setDurable(boolean durable) {
