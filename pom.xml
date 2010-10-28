@@ -20,7 +20,8 @@
   <modules>
     <module>protocol</module>
     <module>integrityclient</module>
-    <module>ingestaccessclient</module>
+    <module>ingestclient</module>
+    <module>accessclient</module>
     <module>integrationtests</module>
   </modules>
   
