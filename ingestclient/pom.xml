@@ -7,6 +7,6 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>bitmagasin-ingestaccessclient</artifactId>
-  <name>Bitmagasin Ingest/Access-klient</name>
+  <artifactId>bitmagasin-ingestclient</artifactId>
+  <name>Bitmagasin Ingest-klient</name>
 </project>

@@ -7,8 +7,8 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>bitmagasin-integritytest</artifactId>
-  <name>Bitmagasin integritetstest</name>
+  <artifactId>bitmagasin-integrationtest</artifactId>
+  <name>Bitmagasin integrationstest</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.activemq</groupId>
