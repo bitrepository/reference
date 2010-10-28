@@ -115,6 +115,15 @@
     <connection>scm:svn:https://gforge.statsbiblioteket.dk/svn/bitmagasin</connection>
   </scm>
   
+  <dependencies>  
+  	<dependency>
+  		<groupId>org.testng</groupId>
+  		<artifactId>testng</artifactId>
+  		<version>5.14.2</version>
+  		<scope>test</scope>
+  	</dependency>
+  </dependencies>
+  
   <build>
     <plugins>
       <plugin>
