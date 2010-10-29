@@ -26,9 +26,14 @@ package dk.bitmagasin.common;
 
 public class MockupGetTimeReplyMessage extends MockupMessage {
 
-	public MockupGetTimeReplyMessage() {
+	public MockupGetTimeReplyMessage(String conversationId, Long timeMeasure, 
+			TimeUnits timeUnit, String pillarId) {
 		super();
 		xmlDoc.setLeafValue("message.operationId", "GetTimeReply");
+		addConversationId(conversationId);
+		setTimeMeasure(timeMeasure);
+		setTimeUnit(timeUnit);
+		setPillarId(pillarId);
 	}
 	
 	public MockupGetTimeReplyMessage(String xml) throws Exception {
@@ -51,12 +56,12 @@ public class MockupGetTimeReplyMessage extends MockupMessage {
 		return Long.parseLong(xmlDoc.getLeafValue("message.time.measure"));
 	}
 
-	public void addTimeUnit(String unit) {
-		xmlDoc.setLeafValue("message.time.unit", unit);
+	public void setTimeUnit(TimeUnits unit) {
+		xmlDoc.setLeafValue("message.time.unit", unit.toString());
 	}
 	
-	public String getTimeUnit() {
-		return xmlDoc.getLeafValue("message.time.unit");
+	public TimeUnits getTimeUnit() {
+		return TimeUnits.valueOf(xmlDoc.getLeafValue("message.time.unit"));
 	}
 
 	public void setPillarId(String pillarId) {
@@ -66,5 +71,4 @@ public class MockupGetTimeReplyMessage extends MockupMessage {
 	public String getPillarId() {
 		return xmlDoc.getLeafValue("message.pillarId");
 	}
-
 }

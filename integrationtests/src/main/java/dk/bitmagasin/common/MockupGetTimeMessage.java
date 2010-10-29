@@ -28,9 +28,11 @@ import java.util.List;
 
 public class MockupGetTimeMessage extends MockupMessage {
 	
-	public MockupGetTimeMessage() {
+	public MockupGetTimeMessage(String dataId, String... pillars) {
 		super();
-		xmlDoc.setLeafValue("message.operationId", "GetTime");
+		setOperationId("GetTime");
+		addDataId(dataId);
+		addPillars(pillars);
 	}
 	
 	public MockupGetTimeMessage(String xml) throws Exception {
@@ -47,11 +49,13 @@ public class MockupGetTimeMessage extends MockupMessage {
 		return xmlDoc.getLeafValues("message.pillarIds.pillarId");
 	}
 	
-	public void addDataId(String dataId) {
-		xmlDoc.setLeafValue("message.dataId", dataId);
+	public void addDataId(String... dataId) {
+		for(String dId : dataId) {
+			xmlDoc.addNewBranchValue("message.dataIds", "dataId", dId);
+		}
 	}
 	
-	public String getDataId() {
-		return xmlDoc.getLeafValue("message.dataId");
+	public List<String> getDataId() {
+		return xmlDoc.getLeafValues("message.dataIds.dataId");
 	}
 }

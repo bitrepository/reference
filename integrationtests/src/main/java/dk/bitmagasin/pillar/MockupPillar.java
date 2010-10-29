@@ -43,8 +43,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import dk.bitmagasin.common.MockupConf;
+import dk.bitmagasin.common.MockupGetDataMessage;
 import dk.bitmagasin.common.MockupGetTimeMessage;
 import dk.bitmagasin.common.MockupGetTimeReplyMessage;
+import dk.bitmagasin.common.MockupMessage;
+import dk.bitmagasin.common.TimeUnits;
 
 /**
  * Pillar MockUp
@@ -61,7 +64,7 @@ public class MockupPillar implements MessageListener, ExceptionListener {
     /**
      * The unit for the timeout for this pillar.
      */
-    private static String timeoutUnit = "sec";
+    private static TimeUnits timeoutUnit = TimeUnits.SECONDS;
     /**
      * The error code for retrieval of data from this pillar.
      */
@@ -89,12 +92,13 @@ public class MockupPillar implements MessageListener, ExceptionListener {
     
     public static void main(String[] args) {
     	System.out.println("Arguments (default): timeoutMeasure (1), "
-    			+ "timeoutUnit (sec), errorCode (null), pillarId (?)");
+    			+ "timeoutUnit (SECONDS), errorCode (null), pillarId (?)");
     	for(String arg : args) {
     		if(arg.startsWith("timeoutMeasure=")) {
     			timeoutMeasure = Long.parseLong(arg.replaceFirst("timeoutMeasure=", ""));
     		} else if(arg.startsWith("timeoutUnit=")) {
-    			timeoutUnit = arg.replace("timeoutUnit=", "");
+    			timeoutUnit = TimeUnits.valueOf(arg.replace("timeoutUnit=", 
+    					""));
     		} else if(arg.startsWith("errorCode=")) {
     			errorCode = arg.replace("errorCode=", "");
     		} else if(arg.startsWith("pillarId=")) {
@@ -167,8 +171,12 @@ public class MockupPillar implements MessageListener, ExceptionListener {
         	if(txtMsg.getJMSType().equals("GetTime")) {
         		visit(new MockupGetTimeMessage(txtMsg.getText()), 
         				txtMsg.getJMSReplyTo());
+        	} else if(txtMsg.getJMSType().equals("GetData")) {
+        		visit(new MockupGetDataMessage(txtMsg.getText()), 
+        				txtMsg.getJMSReplyTo());
         	} else {
-        		log.debug("Message " + msg.getJMSMessageID() + "ignored!");
+        		log.info("Message " + msg.getJMSMessageID() + " of type '" 
+        				+txtMsg.getJMSType() + "' ignored!");
         	}
         } catch (Exception e) {
             System.out.println("Caught: " + e);
@@ -188,30 +196,56 @@ public class MockupPillar implements MessageListener, ExceptionListener {
     		// Do not handle message, which are not meant for us!
     		return;
     	}
+    	
+    	// Send a message for each dataId requested!
+    	for(String dataId : msg.getDataId()) {
+    		log.debug("Sending reply for data instance: " + dataId);
+    		// TODO retrieve the specific times for each dataId. 
+    		// workaround: use default values!
+    		MockupGetTimeReplyMessage replyMsg = new MockupGetTimeReplyMessage(
+    				msg.getConversationId(), timeoutMeasure, timeoutUnit, 
+    				pillarId);
+    		replyMsg.setDataId(dataId);
+    		if(errorCode != null) {
+    			replyMsg.addError(errorCode);
+    		}
 
-    	MockupGetTimeReplyMessage replyMsg = new MockupGetTimeReplyMessage();
-    	replyMsg.setDataId(msg.getDataId());
-    	replyMsg.addConversationId(msg.getConversationId());
-    	replyMsg.addTimeUnit(timeoutUnit);
-    	replyMsg.setTimeMeasure(timeoutMeasure);
-    	replyMsg.setPillarId(pillarId);
-    	if(errorCode != null) {
-    		replyMsg.addError(errorCode);
+    		TextMessage sendMsg = session.createTextMessage(replyMsg.asXML());
+    		sendMsg.setJMSType("GetTimeReply");
+
+    		if(verbose) {
+    			log.info("Sending: MockupGetTimeReplyMessage to: " 
+    					+ replyTo);
+    		}
+
+    		MessageProducer mp = session.createProducer(replyTo);
+    		mp.send(replyTo, sendMsg);
+    		if(transacted) {
+    			session.commit();
+    		}
+    	}
+    }
+    
+    public void visit(MockupGetDataMessage msg, Destination replyTo) {
+    	// Check whether it is for me!
+    	log.info("Received MockupGetDataMessage, with id: " 
+    			+ msg.getConversationId() + ", and reply to: "+ replyTo);
+    	
+    	// validate pillarId
+    	if(!msg.getPillarId().equals(pillarId)) {
+    		log.info("Is not meant for my ID!");
+    		// Do not handle message, which are not meant for us!
+    		return;
     	}
     	
-        TextMessage sendMsg = session.createTextMessage(replyMsg.asXML());
-        sendMsg.setJMSType("GetTimeReply");
-
-        if(verbose) {
-        	log.info("Sending: MockupGetTimeReplyMessage to: " 
-        			+ replyTo);
-        }
-        
-        MessageProducer mp = session.createProducer(replyTo);
-        mp.send(replyTo, sendMsg);
-        if(transacted) {
-        	session.commit();
-        }
+    	// ??
+    	log.info("Should send data '" + msg.getDataId() + "' to token '" 
+    			+ msg.getToken() + "'");
+    }
+    
+    public void visit(MockupMessage msg, Destination replyTo) {
+    	// TODO ??
+    	log.warn("Cannot not handle MockupMessage: " + msg.asXML());
     }
 
     public synchronized void onException(JMSException ex) {
