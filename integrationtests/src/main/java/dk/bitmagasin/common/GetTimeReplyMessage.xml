@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message>
+    <conversationId>abc</conversationId>
+    <operationId>GetTimeReply</operationId>
+    <pillarId>PillarId1</pillarId>
+    <dataTimes>
+        <data>
+            <dataId>DataId1</dataId>
+            <timemeasure>1</timemeasure>
+            <timeunit>SECOND</timeunit>
+        </data>
+        <data>
+            <dataId>DataId2</dataId>
+            <timeMeasure>5</timeMeasure>
+            <timeUnit>MINUTE</timeUnit>
+        </data>
+    </dataTimes>
+    <error>
+        <errorCode>#</errorCode>
+        <errorMessage>Error description</errorMessage>
+    </error>
+</message>

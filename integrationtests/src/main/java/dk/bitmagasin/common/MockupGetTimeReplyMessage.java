@@ -24,15 +24,16 @@
  */
 package dk.bitmagasin.common;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class MockupGetTimeReplyMessage extends MockupMessage {
 
-	public MockupGetTimeReplyMessage(String conversationId, Long timeMeasure, 
-			TimeUnits timeUnit, String pillarId) {
+	public MockupGetTimeReplyMessage(String conversationId, String pillarId) {
 		super();
 		xmlDoc.setLeafValue("message.operationId", "GetTimeReply");
 		addConversationId(conversationId);
-		setTimeMeasure(timeMeasure);
-		setTimeUnit(timeUnit);
 		setPillarId(pillarId);
 	}
 	
@@ -40,35 +41,49 @@ public class MockupGetTimeReplyMessage extends MockupMessage {
 		super(xml);
 	}
 	
-	public void setDataId(String dataId) {
-		xmlDoc.setLeafValue("message.dataId", dataId);
+	public void addTimeForDataId(String dataId, Long timeMeasure, 
+			TimeUnits timeUnit) {
+		xmlDoc.addNewBranch("message.dataTimes", "data", 
+				new DataTime(dataId, timeMeasure, timeUnit).getAsMap());
 	}
 	
-	public String getDataId() {
-		return xmlDoc.getLeafValue("message.dataId");
-	}
-
-	public void setTimeMeasure(Long time) {
-		xmlDoc.setLeafValue("message.time.measure", time.toString());
+	public void addTimeForDataId(DataTime dt) {
+		xmlDoc.addNewBranch("message.dataTimes", "data", dt.getAsMap());
 	}
 	
-	public Long getTimeMeasure() {
-		return Long.parseLong(xmlDoc.getLeafValue("message.time.measure"));
-	}
-
-	public void setTimeUnit(TimeUnits unit) {
-		xmlDoc.setLeafValue("message.time.unit", unit.toString());
+	public List<DataTime> getDataTimes() {
+		List<Map<String, String>> content = 
+			xmlDoc.retrieveBranches("message.dataTimes", "data");
+		List<DataTime> res = new ArrayList<DataTime>(content.size());
+		for(Map<String, String> dataTimeMap : content) {
+			res.add(new DataTime(dataTimeMap));
+		}
+		return res;
 	}
 	
-	public TimeUnits getTimeUnit() {
-		return TimeUnits.valueOf(xmlDoc.getLeafValue("message.time.unit"));
-	}
-
 	public void setPillarId(String pillarId) {
 		xmlDoc.setLeafValue("message.pillarId", pillarId);
 	}
 	
 	public String getPillarId() {
 		return xmlDoc.getLeafValue("message.pillarId");
+	}
+	
+	public void addError(Integer code, String message) {
+		xmlDoc.setLeafValue("message.error.errorCode", code.toString());
+		xmlDoc.setLeafValue("message.error.errorMessage", message);
+	}
+	
+	public Integer getErrorCode() {
+		String res = xmlDoc.getLeafValue("message.error.errorCode");
+		if(res == null) {
+			return 0;
+		} else {
+			return Integer.parseInt(res);
+		}
+	}
+	
+	public String getErrorMessage() {
+		return xmlDoc.getLeafValue("message.error.errorMessage");
 	}
 }

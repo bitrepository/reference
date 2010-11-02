@@ -48,6 +48,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import dk.bitmagasin.common.DataTime;
 import dk.bitmagasin.common.MockupConf;
 import dk.bitmagasin.common.MockupGetDataMessage;
 import dk.bitmagasin.common.MockupGetTimeMessage;
@@ -280,7 +281,6 @@ public class MockupClient implements MessageListener, ExceptionListener {
     
     public synchronized void visit(MockupGetTimeReplyMessage msg, 
     		Destination replyTo) {
-    	String dataId = msg.getDataId();
     	String pillarId = msg.getPillarId();
     	
     	// check if we are awaiting the message.
@@ -298,18 +298,28 @@ public class MockupClient implements MessageListener, ExceptionListener {
     		return;
     	}
 
+    	// check for errors
+    	if(msg.getErrorCode() != 0) {
+    		log.warn("Received error message from '" + pillarId + "': '"
+    				+ msg.getErrorCode() + " : " + msg.getErrorMessage() 
+    				+ "'. Trying to proceed anyway!");
+    	}
+
     	pillars.remove(pillarId);
     	
-    	log.debug("Pillar '" + pillarId + "' can deliver in: " 
-    			+ msg.getTimeMeasure() + " " + msg.getTimeUnit());
+    	// handle replies for retrieval time for dataIds.
+    	List<DataTime> replies = msg.getDataTimes();
+    	for(DataTime dataTime : replies) {
+        	log.debug("Pillar '" + pillarId + "' can deliver in: " 
+        			+ dataTime.timeMeasure + " " + dataTime.timeUnit);
 
-    	// retrieve the 'DataRequestTime' entry for this data.
-    	DataRequestTime drt = getTimes.get(dataId);
-    	if(drt == null) {
-    		drt = new DataRequestTime(dataId);
+        	// retrieve the 'DataRequestTime' entry for this data.
+        	DataRequestTime drt = getTimes.get(dataTime.dataId);
+        	if(drt == null) {
+        		drt = new DataRequestTime(dataTime.dataId);
+        	}
+        	drt.addEntry(pillarId, dataTime.timeMeasure, dataTime.timeUnit);
     	}
-    	
-    	drt.addEntry(pillarId, msg.getTimeMeasure(), msg.getTimeUnit());
     	
     	// no more missing pillars, then remove entry from 'missingGetTime',
     	// and continue with next action! Otherwise: await the remaining 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message>
+    <conversationId>abc</conversationId>
+    <operationId>GetTime</operationId>
+    <dataIds>
+        <dataId>DataId1</dataId>
+        <dataId>DataId2</dataId>
+    </dataIds>
+    <pillars>
+        <pillarId>Pillar1</pillarId>
+        <pillarId>Pillar2</pillarId>
+    </pillars>
+</message>

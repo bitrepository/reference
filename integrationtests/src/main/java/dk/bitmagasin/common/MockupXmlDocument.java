@@ -27,7 +27,9 @@ package dk.bitmagasin.common;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -86,18 +88,41 @@ public class MockupXmlDocument {
 //			System.out.println(xmlDoc4.asXML());
 //			System.out.println();
 			
-			MockupXmlDocument doc1 = new MockupXmlDocument(
-					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "\n"
-					+ "<message>"
-					+ "<operationId>GetTimeReply</operationId><conversationId>"
-					+ "abc</conversationId><time><measure>2</measure><unit>sec"
-					+ "</unit></time></message>");
-			System.out.println(doc1.asXML());
-			
-			System.out.println();
-			System.out.println(doc1.getLeafValue("message.operationId"));
-			System.out.println(xmlDoc1.getLeafValues("message.pillarIds.pillarId"));
+//			MockupXmlDocument doc1 = new MockupXmlDocument(
+//					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "\n"
+//					+ "<message>"
+//					+ "<operationId>GetTimeReply</operationId><conversationId>"
+//					+ "abc</conversationId><time><measure>2</measure><unit>sec"
+//					+ "</unit></time></message>");
+//			System.out.println(doc1.asXML());
+//			
+//			System.out.println();
+//			System.out.println(doc1.getLeafValue("message.operationId"));
+//			System.out.println(xmlDoc1.getLeafValues("message.pillarIds.pillarId"));
 
+			MockupXmlDocument xmlDoc = new MockupXmlDocument();
+			xmlDoc.setLeafValue("message.operationId", "GetTimeReply");
+			xmlDoc.setLeafValue("message.conversationId", "abc");
+			xmlDoc.setLeafValue("message.error", "47");
+			
+			Map<String, String> content = new HashMap<String, String>();
+			content.put("dataId", "Data1");
+			content.put("timeMeasure", "1");
+			content.put("timeUnit", "sec");
+			xmlDoc.addNewBranch("message.dataEntries", "data", content);
+			
+			content.clear();
+			content.put("dataId", "Data2");
+			content.put("timeMeasure", "5");
+			content.put("timeUnit", "min");
+			xmlDoc.addNewBranch("message.dataEntries", "data", content);
+			
+			
+            System.out.println(xmlDoc.asXML());
+			
+			
+//			System.out.println(xmlDoc.retrieveBranches("message.dataEntries", "data"));
+			
 		} catch (Exception e) {
 			System.err.println(e);
 			e.printStackTrace();
@@ -260,12 +285,42 @@ public class MockupXmlDocument {
 		e.addText(value);
 	}
 	
+	public void addNewBranch(String pathToBranch, String branchName, 
+			Map<String, String> content) {
+		Element e = makePath(pathToBranch);
+		
+		e = e.addElement(branchName);
+		
+		for(Map.Entry<String, String> entry : content.entrySet()) {
+			Element subElm = e.addElement(entry.getKey());
+			subElm.addText(entry.getValue());
+		}
+	}
+	
+	public List<Map<String, String>> retrieveBranches(String pathToBranch, 
+			String branchName) {
+		List<Map<String, String>> res = new ArrayList<Map<String, String>>();
+		Element e = makePath(pathToBranch);
+		
+		for(Element subE : (List<Element>) e.elements(branchName)) {
+			Map<String, String> branchEntry = new HashMap<String, String>();
+			
+			for(Element subsubE : (List<Element>) subE.elements()) {
+				branchEntry.put(subsubE.getName(), subsubE.getText());
+			}
+			
+			res.add(branchEntry);
+		}
+		return res;
+	}
+	
 	/**
 	 * Returns the entire structure as XML.
 	 * 
 	 * @return The document as XML.
 	 */
 	public String asXML() {
-		return doc.asXML();
+		String res = doc.asXML();
+		return res.replaceAll("><", ">\n<");
 	}
 }

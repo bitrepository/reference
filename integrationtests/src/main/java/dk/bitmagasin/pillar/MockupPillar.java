@@ -68,12 +68,18 @@ public class MockupPillar implements MessageListener, ExceptionListener {
     /**
      * The error code for retrieval of data from this pillar.
      */
-    private static String errorCode = null;
+    private static Integer errorCode = 0;
+    /**
+     * The error message connected to the error code.
+     */
+    private static String errorMessage = "error?";
     /**
      * The id for this pillar.
      */
     private static String pillarId = MockupConf.pillarId;
-
+    /**
+     * The communication session.
+     */
     private Session session;
     
     /**
@@ -92,7 +98,8 @@ public class MockupPillar implements MessageListener, ExceptionListener {
     
     public static void main(String[] args) {
     	System.out.println("Arguments (default): timeoutMeasure (1), "
-    			+ "timeoutUnit (SECONDS), errorCode (null), pillarId (?)");
+    			+ "timeoutUnit (SECONDS), errorCode (0), errorMessage (?), "
+    			+ "pillarId (?)");
     	for(String arg : args) {
     		if(arg.startsWith("timeoutMeasure=")) {
     			timeoutMeasure = Long.parseLong(arg.replaceFirst("timeoutMeasure=", ""));
@@ -100,7 +107,12 @@ public class MockupPillar implements MessageListener, ExceptionListener {
     			timeoutUnit = TimeUnits.valueOf(arg.replace("timeoutUnit=", 
     					""));
     		} else if(arg.startsWith("errorCode=")) {
-    			errorCode = arg.replace("errorCode=", "");
+    			errorCode = Integer.valueOf(arg.replace("errorCode=", ""));
+    		} else if(arg.startsWith("errorMessage=")) {
+    			errorMessage = arg.replace("errorMessage=", "");
+    			if(errorCode == 0) {
+    				errorCode = -1;
+    			}
     		} else if(arg.startsWith("pillarId=")) {
     			pillarId = arg.replace("pillarId=", "");
     		} else {
@@ -196,34 +208,37 @@ public class MockupPillar implements MessageListener, ExceptionListener {
     		// Do not handle message, which are not meant for us!
     		return;
     	}
-    	
-    	// Send a message for each dataId requested!
+
+		MockupGetTimeReplyMessage replyMsg = new MockupGetTimeReplyMessage(
+				msg.getConversationId(), pillarId);
+
+    	// Insert the times for each dataId requested into the reply.
     	for(String dataId : msg.getDataId()) {
     		log.debug("Sending reply for data instance: " + dataId);
     		// TODO retrieve the specific times for each dataId. 
     		// workaround: use default values!
-    		MockupGetTimeReplyMessage replyMsg = new MockupGetTimeReplyMessage(
-    				msg.getConversationId(), timeoutMeasure, timeoutUnit, 
-    				pillarId);
-    		replyMsg.setDataId(dataId);
-    		if(errorCode != null) {
-    			replyMsg.addError(errorCode);
-    		}
-
-    		TextMessage sendMsg = session.createTextMessage(replyMsg.asXML());
-    		sendMsg.setJMSType("GetTimeReply");
-
-    		if(verbose) {
-    			log.info("Sending: MockupGetTimeReplyMessage to: " 
-    					+ replyTo);
-    		}
-
-    		MessageProducer mp = session.createProducer(replyTo);
-    		mp.send(replyTo, sendMsg);
-    		if(transacted) {
-    			session.commit();
-    		}
+    		replyMsg.addTimeForDataId(dataId, timeoutMeasure, timeoutUnit);
     	}
+    	
+		if(errorCode != 0) {
+			log.info("Inserting error into reply message: '" + errorCode 
+					+ " : " + errorMessage + "'");
+			replyMsg.addError(errorCode, errorMessage);
+		}
+
+		TextMessage sendMsg = session.createTextMessage(replyMsg.asXML());
+		sendMsg.setJMSType("GetTimeReply");
+
+		if(verbose) {
+			log.info("Sending: MockupGetTimeReplyMessage to: " 
+					+ replyTo);
+		}
+
+		MessageProducer mp = session.createProducer(replyTo);
+		mp.send(replyTo, sendMsg);
+		if(transacted) {
+			session.commit();
+		}
     }
     
     public void visit(MockupGetDataMessage msg, Destination replyTo) {
@@ -238,9 +253,11 @@ public class MockupPillar implements MessageListener, ExceptionListener {
     		return;
     	}
     	
-    	// ??
-    	log.info("Should send data '" + msg.getDataId() + "' to token '" 
+    	log.info("Sending data '" + msg.getDataId() + "' to token '" 
     			+ msg.getToken() + "'");
+    	
+    	// TODO upload to 'token'.
+    	// BUT HOW!!!
     }
     
     public void visit(MockupMessage msg, Destination replyTo) {

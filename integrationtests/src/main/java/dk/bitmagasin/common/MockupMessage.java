@@ -61,14 +61,6 @@ public class MockupMessage {
 		return xmlDoc.getLeafValue("message.replyQueueName");
 	}
 	
-	public void addError(String err) {
-		xmlDoc.setLeafValue("message.error", err);
-	}
-	
-	public String errMessage() {
-		return xmlDoc.getLeafValue("message.error");
-	}
-	
 	public String asXML() {
 		return xmlDoc.asXML();
 	}
