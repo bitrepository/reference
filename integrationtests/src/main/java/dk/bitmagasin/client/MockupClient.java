@@ -53,6 +53,7 @@ import dk.bitmagasin.common.MockupConf;
 import dk.bitmagasin.common.MockupGetDataMessage;
 import dk.bitmagasin.common.MockupGetTimeMessage;
 import dk.bitmagasin.common.MockupGetTimeReplyMessage;
+import dk.bitmagasin.common.MockupSettings;
 import dk.bitmagasin.common.TimeUnits;
 
 /**
@@ -62,41 +63,31 @@ import dk.bitmagasin.common.TimeUnits;
 public class MockupClient implements MessageListener, ExceptionListener {
 	private final Log log = LogFactory.getLog(this.getClass());
 
-    private boolean running;
-    private String clientId = MockupConf.accessClientId; //TODO rename?
-    String token = "https://example.dk/token#1";
-
     private Session session;
     private MessageProducer messageProducer;
 
-    private boolean transacted;//TODO QUESTION transacted?
-
-    private boolean durable = true;
     private Topic bus;
     private Queue queue;
     
-    private static String myQueue = "CLIENT";
-    private static String dataId = "1615";
     private static List<String> actions = new ArrayList<String>();
+    private static MockupSettings settings;
     
     private Map<String, List<String>> missingGetTime 
             = Collections.synchronizedMap(new HashMap<String, List<String>>());
     private Map<String, DataRequestTime> getTimes = Collections.synchronizedMap(
     		new HashMap<String, DataRequestTime>());
 
+    /**
+     * The settings are defined in the arguments.
+     * @param args
+     */
     public static void main(String... args) {
-    	System.out.println("Arguments (default): clientQueue (CLIENT) "
-    			+ "action (getTime->KB,SB)");
-    	
+    	settings = MockupSettings.getInstance(args);
+
+    	// retrieve actions
     	for(String arg : args) {
-    		if(arg.startsWith("clientQueue=")) {
-    			myQueue = arg.replaceFirst("clientQueue=", "");
-    		} else if(arg.startsWith("dataId=")) {
-    			dataId = arg.replaceFirst("dataId=", "");
-    		} else if(arg.startsWith("action=")) {
-    			actions.add(arg.replaceFirst("action=", ""));
-    		} else {
-    			System.err.println("Bad argument: " + arg);
+    		if(arg.startsWith("action=")) {
+    			actions.add(arg.replace("action=", ""));
     		}
     	}
     	
@@ -109,31 +100,38 @@ public class MockupClient implements MessageListener, ExceptionListener {
     }
     
     protected MockupClient() {
-    	log.info("Starting MockupClient: " + clientId + ", with queue: " 
-    			+ myQueue);
+    	log.info("Starting MockupClient: " + settings.getClientId() + ", with queue: " 
+    			+ settings.getQueue());
+    }
+
+    public void run() {
         Connection connection = null;
         try {
             // Create connection
             ActiveMQConnectionFactory connectionFactory =
                     new ActiveMQConnectionFactory(MockupConf.user,
-                            MockupConf.password, MockupConf.url);
+                            MockupConf.password, settings.getConnectionUrl());
             connection = connectionFactory.createConnection();
-            if (durable && clientId != null && clientId.length() > 0 && !"null".equals(clientId)) {
-                connection.setClientID(clientId);
+            if (settings.getClientId() != null 
+            		&& settings.getClientId().length() > 0 
+            		&& !"null".equals(settings.getClientId())) {
+                connection.setClientID(settings.getEnvironmentName() + "_" 
+                		+ settings.getClientId());
             }
             connection.setExceptionListener(this);
             connection.start();
 
             // Create session
-            session = connection.createSession(transacted, Session.AUTO_ACKNOWLEDGE);
+            session = connection.createSession(MockupConf.TRANSACTED, 
+            		MockupConf.ACKNOWLEDGE_MODE);
 
             //create messagelistener on SLA topic
-            bus = session.createTopic(MockupConf.SLAID);
+            bus = session.createTopic(settings.getSlaTopicId());
             //messageConsumer = session.createDurableSubscriber(topic, clientId);
             session.createConsumer(bus).setMessageListener(this);
             
             // create messagelistener on the unique client queue.
-            queue = session.createQueue(myQueue);
+            queue = session.createQueue(settings.getQueue());
             session.createConsumer(queue).setMessageListener(this);
             
             // Create producer with PillarMockUp Queue destination
@@ -145,9 +143,6 @@ public class MockupClient implements MessageListener, ExceptionListener {
         } catch (Exception e) {
             log.error("Caught exception during initialization.", e);
         } 
-    }
-
-    public void run() {
     	nextAction();
     }
     
@@ -203,9 +198,9 @@ public class MockupClient implements MessageListener, ExceptionListener {
         	pillars.add(pillarId);
         }
         // set the retrieval of time for 'dataId' to outstanding for 'pillars'.
-        missingGetTime.put(dataId, pillars);
+        missingGetTime.put(settings.getDataId(), pillars);
 
-        MockupGetTimeMessage msg = new MockupGetTimeMessage(dataId, 
+        MockupGetTimeMessage msg = new MockupGetTimeMessage(settings.getDataId(), 
         		pillars.toArray(new String[pillars.size()]));
         msg.addConversationId(commId);
         
@@ -216,7 +211,7 @@ public class MockupClient implements MessageListener, ExceptionListener {
         log.info("Sending message to bus: " + message.getText());
         producer.send(bus, message);
 
-        if (transacted) {
+        if (MockupConf.TRANSACTED) {
             session.commit();
         }
     }
@@ -226,8 +221,8 @@ public class MockupClient implements MessageListener, ExceptionListener {
         //TODO multiple gets
         String commId = "CommId29";//TODO communication ID generation
 
-        MockupGetDataMessage msg = new MockupGetDataMessage(dataId, pillarId, 
-        		token);
+        MockupGetDataMessage msg = new MockupGetDataMessage(settings.getDataId(), pillarId, 
+        		settings.getToken());
         msg.addConversationId(commId);
         
         TextMessage message = session.createTextMessage(msg.asXML());
@@ -237,7 +232,7 @@ public class MockupClient implements MessageListener, ExceptionListener {
         log.info("Sending message to bus: " + message.getText());
         producer.send(bus, message);
 
-        if (transacted) {
+        if (MockupConf.TRANSACTED) {
             session.commit();
         }
     }
@@ -284,7 +279,7 @@ public class MockupClient implements MessageListener, ExceptionListener {
     	String pillarId = msg.getPillarId();
     	
     	// check if we are awaiting the message.
-    	List<String> pillars = missingGetTime.get(dataId);
+    	List<String> pillars = missingGetTime.get(settings.getDataId());
     	if(pillars == null) {
     		// do not handle message, when we are not awaiting dataId.
     		log.debug("The message was not intended for me. Unknown dataId \n" 
@@ -325,36 +320,23 @@ public class MockupClient implements MessageListener, ExceptionListener {
     	// and continue with next action! Otherwise: await the remaining 
     	// pillars.
     	if(pillars.isEmpty()) {
-    		log.info("Retrieved time for data '" + dataId + "' from pillar '"
+    		log.info("Retrieved time for data '" + settings.getDataId() + "' from pillar '"
     				+ pillarId + "'. No more outstanding pillars.");
-    		missingGetTime.remove(dataId);
+    		missingGetTime.remove(settings.getDataId());
     		
     		// go to next action
     		nextAction();
     	} else {
-    		log.info("Retrieved time for data '" + dataId + "' from pillar '" 
+    		log.info("Retrieved time for data '" + settings.getDataId() + "' from pillar '" 
     				+ pillarId + "', outstanding pillars: " + pillars);
-    		missingGetTime.put(dataId, pillars);
+    		missingGetTime.put(settings.getDataId(), pillars);
     	}
     }
     
     public void onException(JMSException e) {
         System.out.println("JMS Exception occured.  Shutting down client.");
-        running = false;
     }
 
-    synchronized boolean isRunning() {
-        return running;
-    }
-
-    public void setTransacted(boolean transacted) {
-        this.transacted = transacted;
-    }
-
-    public void setDurable(boolean durable) {
-        this.durable = durable;
-    }
-    
     /**
      * Helper class for keeping track of the answers when requesting the time
      * for some data.

@@ -47,7 +47,7 @@ import dk.bitmagasin.common.MockupGetDataMessage;
 import dk.bitmagasin.common.MockupGetTimeMessage;
 import dk.bitmagasin.common.MockupGetTimeReplyMessage;
 import dk.bitmagasin.common.MockupMessage;
-import dk.bitmagasin.common.TimeUnits;
+import dk.bitmagasin.common.MockupSettings;
 
 /**
  * Pillar MockUp
@@ -56,27 +56,8 @@ import dk.bitmagasin.common.TimeUnits;
 public class MockupPillar implements MessageListener, ExceptionListener {
 	/** The log for this instance.*/
 	private final Log log = LogFactory.getLog(this.getClass());
-	
-	/**
-	 * The measure for the timeout for this pillar.
-	 */
-    private static long timeoutMeasure = 1;
-    /**
-     * The unit for the timeout for this pillar.
-     */
-    private static TimeUnits timeoutUnit = TimeUnits.SECONDS;
-    /**
-     * The error code for retrieval of data from this pillar.
-     */
-    private static Integer errorCode = 0;
-    /**
-     * The error message connected to the error code.
-     */
-    private static String errorMessage = "error?";
-    /**
-     * The id for this pillar.
-     */
-    private static String pillarId = MockupConf.pillarId;
+
+	private static MockupSettings settings;
     /**
      * The communication session.
      */
@@ -91,41 +72,15 @@ public class MockupPillar implements MessageListener, ExceptionListener {
      */
     private MessageProducer busProducer;
 
-    private boolean verbose = true;
-    private boolean transacted;
-    private boolean durable = true;
-    private int ackMode = Session.AUTO_ACKNOWLEDGE; //TODO probably not a good idea
-    
     public static void main(String[] args) {
-    	System.out.println("Arguments (default): timeoutMeasure (1), "
-    			+ "timeoutUnit (SECONDS), errorCode (0), errorMessage (?), "
-    			+ "pillarId (?)");
-    	for(String arg : args) {
-    		if(arg.startsWith("timeoutMeasure=")) {
-    			timeoutMeasure = Long.parseLong(arg.replaceFirst("timeoutMeasure=", ""));
-    		} else if(arg.startsWith("timeoutUnit=")) {
-    			timeoutUnit = TimeUnits.valueOf(arg.replace("timeoutUnit=", 
-    					""));
-    		} else if(arg.startsWith("errorCode=")) {
-    			errorCode = Integer.valueOf(arg.replace("errorCode=", ""));
-    		} else if(arg.startsWith("errorMessage=")) {
-    			errorMessage = arg.replace("errorMessage=", "");
-    			if(errorCode == 0) {
-    				errorCode = -1;
-    			}
-    		} else if(arg.startsWith("pillarId=")) {
-    			pillarId = arg.replace("pillarId=", "");
-    		} else {
-    			System.err.println("Bad argument: " + arg);
-    		}
-    	}
+    	settings = MockupSettings.getInstance(args);
 
         MockupPillar mockupPillar = new MockupPillar();
         mockupPillar.run();
     }
     
     protected MockupPillar() {
-    	log.info("Starting Pillar: " + pillarId);
+    	log.info("Starting Pillar: " + settings.getPillarId());
     }
 
     public void run() {
@@ -133,19 +88,20 @@ public class MockupPillar implements MessageListener, ExceptionListener {
             // Create connection
             ActiveMQConnectionFactory connectionFactory =
                     new ActiveMQConnectionFactory(MockupConf.user,
-                            MockupConf.password, MockupConf.url);
+                            MockupConf.password, settings.getConnectionUrl());
             Connection connection = connectionFactory.createConnection();
-            if (durable && pillarId != null && pillarId.length() > 0 
-            		&& !"null".equals(pillarId)) {
-                connection.setClientID(pillarId);
+            if (settings.getPillarId() != null && settings.getPillarId().length() > 0 
+            		&& !"null".equals(settings.getPillarId())) {
+                connection.setClientID(settings.getEnvironmentName() + "_" 
+                		+ settings.getPillarId());
             }
             connection.setExceptionListener(this);
             connection.start();
 
-            session = connection.createSession(transacted, ackMode);
+            session = connection.createSession(MockupConf.TRANSACTED, MockupConf.ACKNOWLEDGE_MODE);
 
             //create messagelistener on SLA topic
-            bus = session.createTopic(MockupConf.SLAID);
+            bus = session.createTopic(settings.getSlaTopicId());
             //consumer = session.createDurableSubscriber(topic, MockupConf.pillarId);
             session.createConsumer(bus).setMessageListener(this);
             busProducer = session.createProducer(bus);
@@ -203,40 +159,41 @@ public class MockupPillar implements MessageListener, ExceptionListener {
     	
     	// validate pillarId
     	List<String> pillarIds = msg.getPillarIds();
-    	if(!pillarIds.contains(pillarId)) {
+    	if(!pillarIds.contains(settings.getPillarId())) {
     		log.info("Is not meant for my ID!");
     		// Do not handle message, which are not meant for us!
     		return;
     	}
 
 		MockupGetTimeReplyMessage replyMsg = new MockupGetTimeReplyMessage(
-				msg.getConversationId(), pillarId);
+				msg.getConversationId(), settings.getPillarId());
 
     	// Insert the times for each dataId requested into the reply.
     	for(String dataId : msg.getDataId()) {
     		log.debug("Sending reply for data instance: " + dataId);
     		// TODO retrieve the specific times for each dataId. 
     		// workaround: use default values!
-    		replyMsg.addTimeForDataId(dataId, timeoutMeasure, timeoutUnit);
+    		replyMsg.addTimeForDataId(dataId, settings.getTimeoutMeasure(), 
+    				settings.getTimeoutUnit());
     	}
     	
-		if(errorCode != 0) {
-			log.info("Inserting error into reply message: '" + errorCode 
-					+ " : " + errorMessage + "'");
-			replyMsg.addError(errorCode, errorMessage);
+		if(settings.getErrorCode() != 0) {
+			log.info("Inserting error into reply message: '" 
+					+ settings.getErrorCode() + " : " 
+					+ settings.getErrorMessage() + "'");
+			replyMsg.addError(settings.getErrorCode(), 
+					settings.getErrorMessage());
 		}
 
 		TextMessage sendMsg = session.createTextMessage(replyMsg.asXML());
 		sendMsg.setJMSType("GetTimeReply");
 
-		if(verbose) {
-			log.info("Sending: MockupGetTimeReplyMessage to: " 
-					+ replyTo);
-		}
+		log.debug("Sending: MockupGetTimeReplyMessage to: " 
+				+ replyTo);
 
 		MessageProducer mp = session.createProducer(replyTo);
 		mp.send(replyTo, sendMsg);
-		if(transacted) {
+		if(MockupConf.TRANSACTED) {
 			session.commit();
 		}
     }
@@ -247,7 +204,7 @@ public class MockupPillar implements MessageListener, ExceptionListener {
     			+ msg.getConversationId() + ", and reply to: "+ replyTo);
     	
     	// validate pillarId
-    	if(!msg.getPillarId().equals(pillarId)) {
+    	if(!msg.getPillarId().equals(settings.getPillarId())) {
     		log.info("Is not meant for my ID!");
     		// Do not handle message, which are not meant for us!
     		return;
@@ -267,17 +224,5 @@ public class MockupPillar implements MessageListener, ExceptionListener {
 
     public synchronized void onException(JMSException ex) {
         log.error("JMS Exception occured.  Shutting down client.", ex);
-    }
-
-    public void setDurable(boolean durable) {
-        this.durable = durable;
-    }
-
-    public void setTransacted(boolean transacted) {
-        this.transacted = transacted;
-    }
-
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
     }
 }

@@ -25,15 +25,29 @@
 /** Bit Repository Standard Header Open Source License */
 package dk.bitmagasin.common;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.SchemaFactory;
+
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXParseException;
 
 /**
  * Class in the mockup for handling the XML.
@@ -90,37 +104,52 @@ public class MockupXmlDocument {
 			
 //			MockupXmlDocument doc1 = new MockupXmlDocument(
 //					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "\n"
-//					+ "<message>"
+//					+ "<message xsi:noNamespaceSchemaLocation="
+//					+ "\"src/main/resources/ClientToPillarMessages.xsd\" "
+//					+ "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >"
 //					+ "<operationId>GetTimeReply</operationId><conversationId>"
 //					+ "abc</conversationId><time><measure>2</measure><unit>sec"
 //					+ "</unit></time></message>");
-//			System.out.println(doc1.asXML());
+			MockupXmlDocument doc1 = new MockupXmlDocument(
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "\n"
+					+ "<message>"
+					+ "<operationId>GetTimeReply</operationId><conversationId>"
+					+ "abc</conversationId><time><measure>2</measure><unit>sec"
+					+ "</unit></time></message>");
+//			MockupXmlDocument doc1 = new MockupXmlDocument(
+//					"<!DOCTYPE contacts SYSTEM \"contacts.dtd\">"
+//					"<contacts xsi:noNamespaceSchemaLocation=\"src/main/resources/TestSchema.xsd\" "
+//					+ "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >"
+//					+ "\n<contact title=\"citizen\">"
+//					+ "\n<firstname>Edwin</firstname>"
+//					+ "\n<lastname>Dankert</lastname>"
+//					+ "\n</contact>"
+//					+ "\n</contacts>");
+			System.out.println(doc1.asXML());
 //			
 //			System.out.println();
 //			System.out.println(doc1.getLeafValue("message.operationId"));
 //			System.out.println(xmlDoc1.getLeafValues("message.pillarIds.pillarId"));
-
-			MockupXmlDocument xmlDoc = new MockupXmlDocument();
-			xmlDoc.setLeafValue("message.operationId", "GetTimeReply");
-			xmlDoc.setLeafValue("message.conversationId", "abc");
-			xmlDoc.setLeafValue("message.error", "47");
-			
-			Map<String, String> content = new HashMap<String, String>();
-			content.put("dataId", "Data1");
-			content.put("timeMeasure", "1");
-			content.put("timeUnit", "sec");
-			xmlDoc.addNewBranch("message.dataEntries", "data", content);
-			
-			content.clear();
-			content.put("dataId", "Data2");
-			content.put("timeMeasure", "5");
-			content.put("timeUnit", "min");
-			xmlDoc.addNewBranch("message.dataEntries", "data", content);
-			
-			
-            System.out.println(xmlDoc.asXML());
-			
-			
+//
+//			MockupXmlDocument xmlDoc = new MockupXmlDocument();
+//			xmlDoc.setLeafValue("message.operationId", "GetTimeReply");
+//			xmlDoc.setLeafValue("message.conversationId", "abc");
+//			xmlDoc.setLeafValue("message.error", "47");
+//			
+//			Map<String, String> content = new HashMap<String, String>();
+//			content.put("dataId", "Data1");
+//			content.put("timeMeasure", "1");
+//			content.put("timeUnit", "sec");
+//			xmlDoc.addNewBranch("message.dataEntries", "data", content);
+//			
+//			content.clear();
+//			content.put("dataId", "Data2");
+//			content.put("timeMeasure", "5");
+//			content.put("timeUnit", "min");
+//			xmlDoc.addNewBranch("message.dataEntries", "data", content);
+//			
+//			
+//            System.out.println(xmlDoc.asXML());
 //			System.out.println(xmlDoc.retrieveBranches("message.dataEntries", "data"));
 			
 		} catch (Exception e) {
@@ -145,6 +174,7 @@ public class MockupXmlDocument {
 	 */
 	public MockupXmlDocument(String content) throws Exception {
 		doc = DocumentHelper.parseText(content);
+		//doc = retrieveValidatedDocument(content);
 		root = doc.getRootElement();
 	}
 	
@@ -322,5 +352,34 @@ public class MockupXmlDocument {
 	public String asXML() {
 		String res = doc.asXML();
 		return res.replaceAll("><", ">\n<");
+	}
+	
+	public static Document retrieveValidatedDocument(String content) 
+	        throws Exception {
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+		factory.setSchema(schemaFactory.newSchema(
+			    new Source[] {new StreamSource("src/main/resources/ClientToPillarMessages.xsd")}));
+
+		SAXReader reader = new SAXReader(factory.newSAXParser().getXMLReader());
+		reader.setErrorHandler(new SimpleErrorHandler());
+		
+		InputStream is = new ByteArrayInputStream(content.getBytes());
+		return reader.read(is);
+	}
+	
+	protected static class SimpleErrorHandler implements ErrorHandler {
+	    public void warning(SAXParseException e) {
+	        System.err.println("WARNING: " + e.getMessage());
+	    }
+
+	    public void error(SAXParseException e) {
+	        System.err.println("ERROR: " + e.getMessage());
+	    }
+
+	    public void fatalError(SAXParseException e) {
+	        System.err.println("FATAL: " + e.getMessage());
+	        e.printStackTrace();
+	    }
 	}
 }

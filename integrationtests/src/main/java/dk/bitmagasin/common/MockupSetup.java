@@ -47,10 +47,10 @@ public class MockupSetup {
 
     private void run() throws Exception {
         // Create connection
-        ActiveMQConnectionFactory connectionFactory =
-                new ActiveMQConnectionFactory(MockupConf.user,
-                        MockupConf.password, MockupConf.url);
-        connection = connectionFactory.createConnection();
+//        ActiveMQConnectionFactory connectionFactory =
+//                new ActiveMQConnectionFactory(MockupConf.user,
+//                        MockupConf.password, MockupConf.url);
+//        connection = connectionFactory.createConnection();
 
         /* Create Session
         * boolean transacted false (indicates whether the session is transacted)
@@ -59,14 +59,14 @@ public class MockupSetup {
         * a client's receipt of a message either when the session has successfully
         * returned from a call to receive or when the message listener the session
         * has called to process the message successfully returns */
-        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+//        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
         // Create Topic. Note that this method is not for creating the physical
         // topic. The physical creation of topics is an administrative task and
         // is not to be initiated by the JMS API.
-        topic = session.createTopic(MockupConf.SLAID);
+//        topic = session.createTopic(MockupConf.SLAID);
 
-        connection.start();
+//        connection.start();
 
         //Thread.sleep(delay * 1000);
         //connection.stop();
