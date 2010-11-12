@@ -24,6 +24,9 @@
  */
 package dk.bitmagasin.client;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -50,9 +53,12 @@ import org.apache.commons.logging.LogFactory;
 
 import dk.bitmagasin.common.DataTime;
 import dk.bitmagasin.common.MockupConf;
+import dk.bitmagasin.common.MockupGetDataCompleteMessage;
 import dk.bitmagasin.common.MockupGetDataMessage;
+import dk.bitmagasin.common.MockupGetDataReplyMessage;
 import dk.bitmagasin.common.MockupGetTimeMessage;
 import dk.bitmagasin.common.MockupGetTimeReplyMessage;
+import dk.bitmagasin.common.MockupHTTPClient;
 import dk.bitmagasin.common.MockupSettings;
 import dk.bitmagasin.common.TimeUnits;
 
@@ -221,8 +227,9 @@ public class MockupClient implements MessageListener, ExceptionListener {
         //TODO multiple gets
         String commId = "CommId29";//TODO communication ID generation
 
-        MockupGetDataMessage msg = new MockupGetDataMessage(settings.getDataId(), pillarId, 
-        		settings.getToken());
+        MockupGetDataMessage msg = new MockupGetDataMessage(
+        		settings.getDataId(), pillarId, 
+        		MockupHTTPClient.getURL(settings.getDataId()).toString());
         msg.addConversationId(commId);
         
         TextMessage message = session.createTextMessage(msg.asXML());
@@ -265,6 +272,12 @@ public class MockupClient implements MessageListener, ExceptionListener {
         	if(txtMsg.getJMSType().equals("GetTimeReply")) {
         		visit(new MockupGetTimeReplyMessage(txtMsg.getText()), 
         				txtMsg.getJMSReplyTo());
+        	} else if(txtMsg.getJMSType().equals("GetDataReply")) {
+        		visit(new MockupGetDataReplyMessage(txtMsg.getText()),
+        				txtMsg.getJMSReplyTo());
+        	} else if(txtMsg.getJMSType().equals("GetDataComplete")) {
+        		visit(new MockupGetDataCompleteMessage(txtMsg.getText()),
+        				txtMsg.getJMSReplyTo());
         	} else {
         		log.debug("Cannot handle jms type: " + txtMsg.getJMSType() 
         				+ ", message ignored!");
@@ -272,6 +285,38 @@ public class MockupClient implements MessageListener, ExceptionListener {
     	} catch (Exception e) {
     		log.error("Caught exception during handling of message: " + msg, e);
     	}
+    }
+    
+    public synchronized void visit(MockupGetDataCompleteMessage msg, 
+    		Destination replyTo) throws Exception {
+    	log.info("Received GetDataCompleteMessage: '" + msg.asXML());
+    	
+    	File outputFile = new File(settings.getDataDir(), msg.getDataId());
+    	if(outputFile.exists()) {
+    		log.error("Cannot make output file '" + outputFile 
+    				+ "'. It already exists.");
+//    		return;
+    	}
+    	outputFile.createNewFile();
+    	
+    	OutputStream out = null;
+    	try {
+    		out = new FileOutputStream(outputFile);
+    		MockupHTTPClient.getData(out, msg.getToken());
+    	} finally {
+    		if(out != null) {
+    			out.flush();
+    			out.close();
+    		}
+    	}
+
+    	log.info("Data retrieved to: '" + outputFile.getAbsolutePath() + "'");
+    }
+    
+    public synchronized void visit(MockupGetDataReplyMessage msg, 
+    		Destination replyTo) {
+    	log.info("Received GetDataReplyMessage: '" + msg.asXML());
+    	// TODO
     }
     
     public synchronized void visit(MockupGetTimeReplyMessage msg, 
