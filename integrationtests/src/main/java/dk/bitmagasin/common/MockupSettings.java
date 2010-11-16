@@ -32,45 +32,47 @@ public class MockupSettings {
     private String errorMessage = "error?";
     private String pillarId = "MockUpClientA";
     private File dataDir = new File(".");
+    
+    public static boolean verbose = false;
 
 	public static MockupSettings instance;
 	
 	public static MockupSettings getInstance(String... args) {
 		if(instance == null) {
 			instance = new MockupSettings(args);
-		} else {
-			System.out.println("Settings has already been initialized! \n"
-					+ "args ignored!");
+		} else if(args.length > 0){
+			log.warn("Settings has already been initialized! \t"
+					+ args.length + " arguments ignored!");
 		}
 		return instance;
 	}
 	
 	protected MockupSettings(String... args) {
-		System.out.println("Arguments as settings (with default):");
-//		System.out.println("environmentName=(" + environmentName + ")");
-//		System.out.println("connectionUrl=(" + connectionUrl + ")");
-//		System.out.println("httpUrl=(" + httpUrl + ")");
-//		System.out.println("httpPort=(" + httpPort + ")");
-//		System.out.println("httpPath=(" + httpPath + ")");
-//		System.out.println("slaId=(" + slaId + ")");
-//		System.out.println("dataId=(" + dataId + ")");
-//		System.out.println("queueName=(" + queueName + ")");
-//		System.out.println("token=(" + token + ")");
-//		System.out.println("clientId=(" + clientId + ")");
-//		System.out.println("pillarId=(" + pillarId + ")");
-//		System.out.println("errorMessage=(" + errorMessage + ")");
-//		System.out.println("errorCode=(" + errorCode + ")");
-//		System.out.println("timeoutUnit=(" + timeoutUnit + ")");
-//		System.out.println("timeoutMeasure=(" + timeoutMeasure + ")");
-//		System.out.println("dataDir=(" + dataDir.getAbsolutePath() + ")");
-		
 		for(String arg : args) {
 			addSetting(arg);
 		}
 	}
 	
 	public void addSetting(String arg) {
-		if(arg.startsWith("environmentName=")) {
+		if(arg.equalsIgnoreCase("verbose")) {
+			System.out.println("Arguments as settings (with default):");
+			System.out.println("environmentName=(" + environmentName + ")");
+			System.out.println("connectionUrl=(" + connectionUrl + ")");
+			System.out.println("httpUrl=(" + httpUrl + ")");
+			System.out.println("httpPort=(" + httpPort + ")");
+			System.out.println("httpPath=(" + httpPath + ")");
+			System.out.println("slaId=(" + slaId + ")");
+			System.out.println("dataId=(" + dataId + ")");
+			System.out.println("queueName=(" + queueName + ")");
+			System.out.println("token=(" + token + ")");
+			System.out.println("clientId=(" + clientId + ")");
+			System.out.println("pillarId=(" + pillarId + ")");
+			System.out.println("errorMessage=(" + errorMessage + ")");
+			System.out.println("errorCode=(" + errorCode + ")");
+			System.out.println("timeoutUnit=(" + timeoutUnit + ")");
+			System.out.println("timeoutMeasure=(" + timeoutMeasure + ")");
+			System.out.println("dataDir=(" + dataDir.getAbsolutePath() + ")");
+		} else if(arg.startsWith("environmentName=")) {
 			environmentName = arg.replace("environmentName=", "");
 		} else if(arg.startsWith("connectionUrl=")) {
 			connectionUrl = arg.replace("connectionUrl=", "");

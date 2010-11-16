@@ -26,6 +26,7 @@ package dk.bitmagasin.pillar;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.List;
 
@@ -53,6 +54,8 @@ import dk.bitmagasin.common.MockupGetTimeMessage;
 import dk.bitmagasin.common.MockupGetTimeReplyMessage;
 import dk.bitmagasin.common.MockupHTTPClient;
 import dk.bitmagasin.common.MockupMessage;
+import dk.bitmagasin.common.MockupPutDataMessage;
+import dk.bitmagasin.common.MockupPutDataReplyMessage;
 import dk.bitmagasin.common.MockupSettings;
 
 /**
@@ -150,6 +153,9 @@ public class MockupPillar implements MessageListener, ExceptionListener {
         	} else if(txtMsg.getJMSType().equals("GetData")) {
         		visit(new MockupGetDataMessage(txtMsg.getText()), 
         				txtMsg.getJMSReplyTo());
+        	} else if(txtMsg.getJMSType().equals("PutData")) {
+        		visit(new MockupPutDataMessage(txtMsg.getText()),
+        				txtMsg.getJMSReplyTo());
         	} else {
         		log.info("Message " + msg.getJMSMessageID() + " of type '" 
         				+txtMsg.getJMSType() + "' ignored!");
@@ -158,6 +164,30 @@ public class MockupPillar implements MessageListener, ExceptionListener {
             System.out.println("Caught: " + e);
             e.printStackTrace();
         }
+    }
+    
+    public void visit(MockupPutDataMessage msg, Destination replyTo) 
+            throws Exception {
+    	log.info("Received MockupPutDataMessage , with id: "
+    			+ msg.getConversationId() + ", and reply to: " + replyTo);
+    	
+    	File outputFile = new File(settings.getDataDir(), msg.getFileName());
+    	if(outputFile.exists()) {
+    		// TODO ?
+    		log.error("The file already exists! Retrieves new file anyway");
+    	}
+    	
+    	MockupHTTPClient.getData(new FileOutputStream(outputFile), 
+    			msg.getToken());
+    	log.info("File '" + msg.getFileName() + "' retrieved from token: " 
+    			+ msg.getToken());
+    	
+    	// REPLY
+    	MockupPutDataReplyMessage replyMsg = new MockupPutDataReplyMessage(
+    			msg.getConversationId(), msg.getFileName(), 
+    			settings.getPillarId());
+    	
+    	sendMessage(replyMsg, replyTo);	
     }
 
     public void visit(MockupGetTimeMessage msg, Destination replyTo) 
@@ -193,17 +223,7 @@ public class MockupPillar implements MessageListener, ExceptionListener {
 					settings.getErrorMessage());
 		}
 
-		TextMessage sendMsg = session.createTextMessage(replyMsg.asXML());
-		sendMsg.setJMSType("GetTimeReply");
-
-		log.debug("Sending: MockupGetTimeReplyMessage to: " 
-				+ replyTo);
-
-		MessageProducer mp = session.createProducer(replyTo);
-		mp.send(replyTo, sendMsg);
-		if(MockupConf.TRANSACTED) {
-			session.commit();
-		}
+		sendMessage(replyMsg, replyTo);
     }
     
     public void visit(MockupGetDataMessage msg, Destination replyTo) 
@@ -227,22 +247,17 @@ public class MockupPillar implements MessageListener, ExceptionListener {
     	        = new MockupGetDataReplyMessage(msg.getConversationId(), 
     	        		msg.getDataId());
     	
-		TextMessage sendMsg = session.createTextMessage(replyMsg.asXML());
-		sendMsg.setJMSType("GetDataReply");
-
-		log.info("Sending: MockupGetDataReplyMessage to: " 
-				+ replyTo);
-		MessageProducer mp = session.createProducer(replyTo);
-		mp.send(replyTo, sendMsg);
-		if(MockupConf.TRANSACTED) {
-			session.commit();
-		}
+    	sendMessage(replyMsg, replyTo);
     	
     	// start uploading data
     	try {
+			File fil = getFile(msg.getDataId());
+			if(fil == null) {
+				throw new NullPointerException("No file for '" 
+						+ msg.getDataId() + "' found.");
+			}
     		// handle http!
     		if(msg.getToken().startsWith("http://")) {
-    			File fil = getFile(msg.getDataId());
     			MockupHTTPClient.putData(new FileInputStream(fil), 
     					new URL(msg.getToken()));
     		} else {
@@ -260,21 +275,26 @@ public class MockupPillar implements MessageListener, ExceptionListener {
     	        = new MockupGetDataCompleteMessage(msg.getConversationId(),
     	        		msg.getDataId(), msg.getToken());
 
-    	sendMsg = session.createTextMessage(completeMsg.asXML());
-    	sendMsg.setJMSType("GetDataComplete");
-
-    	log.info("Sending: MockupGetDataCompleteMessage to: " 
-    			+ replyTo);
-    	mp = session.createProducer(replyTo);
-    	mp.send(replyTo, sendMsg);
-    	if(MockupConf.TRANSACTED) {
-    		session.commit();
-    	}
+    	sendMessage(completeMsg, replyTo);
     }
     
     public void visit(MockupMessage msg, Destination replyTo) {
     	// TODO ??
     	log.warn("Cannot not handle MockupMessage: " + msg.asXML());
+    }
+    
+    private void sendMessage(MockupMessage msg, Destination replyTo) 
+            throws JMSException {
+    	TextMessage sendMsg = session.createTextMessage(msg.asXML());
+    	sendMsg.setJMSType(msg.getOperationId());
+
+    	log.info("Sending: MockupGetDataCompleteMessage to: " 
+    			+ replyTo);
+    	MessageProducer mp = session.createProducer(replyTo);
+    	mp.send(replyTo, sendMsg);
+    	if(MockupConf.TRANSACTED) {
+    		session.commit();
+    	}
     }
     
     protected File getFile(String dataId) {
@@ -284,14 +304,14 @@ public class MockupPillar implements MessageListener, ExceptionListener {
 			return res;
 		}
     	
-		log.warn("Could not find data '" + dataId + "' in directory.");
-    	if(dataId.equals(settings.getDataId())) {
-    		// TODO return other than random file!
-    		res = new File("pom.xml");
-    		if(res.isFile() && res.canRead()) {
-    			return res;
-    		}
-    	} 
+//		log.warn("Could not find data '" + dataId + "' in directory.");
+//    	if(dataId.equals(settings.getDataId())) {
+//    		// TODO return other than random file!
+//    		res = new File("pom.xml");
+//    		if(res.isFile() && res.canRead()) {
+//    			return res;
+//    		}
+//    	} 
     	// data not found. 
     	log.error("Could not find data with id '" + dataId 
     			+ "'. A null is being returned.");
