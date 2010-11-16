@@ -104,6 +104,13 @@ public class MockupClient implements MessageListener, ExceptionListener {
     		if(arg.startsWith("action=")) {
     			actions.add(arg.replace("action=", ""));
     		}
+    		if(arg.equalsIgnoreCase("verbose")) {
+    			System.out.println("Available Actions: (optional arguments)");
+    			System.out.println("action=GetTime->Pillar1,Pillar2(->dataId)");
+    			System.out.println("action=GetData->pillarId(,dataId)");
+    			System.out.println("action=GetFastest->dataId");
+    			System.out.println("action=PutData->Pillar1,Pillar2->filepath");
+    		}
     	}
     	
     	if(actions.isEmpty()) {
