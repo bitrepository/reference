@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<bso:GetAcknowledge version="1" minVersion="1"  xmlns:bso='http://tempuri.org/BitStorageMessages.xsd' xmlns="http://tempuri.org/BitStorageElements.xsd">
+  <CorrelationID>12345</CorrelationID>
+  <ReplyTo>Mig</ReplyTo>
+  <FileName>Minfil</FileName>
+  <DataURL>http://minserver/Mitsted/Minfil</DataURL>
+</bso:GetAcknowledge>
