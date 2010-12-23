@@ -2,8 +2,8 @@
  * #%L
  * Bitmagasin integritetstest
  * 
- * $Id: MockupClient.java 37 2010-11-05 13:08:43Z jolf $
- * $HeadURL: https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/integrationtests/src/main/java/dk/bitmagasin/client/MockupClient.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
