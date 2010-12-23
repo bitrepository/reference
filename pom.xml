@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   
   <modelVersion>4.0.0</modelVersion>
-  <groupId>dk.bitmagasin</groupId>
+  <groupId>org.bitrepository</groupId>
   <version>0.0.1-SNAPSHOT</version>
-  <artifactId>bitmagasin</artifactId>
+  <artifactId>bitrepository</artifactId>
   
   <parent>
     <groupId>org.sbforge</groupId>
@@ -13,16 +13,20 @@
     <version>RELEASE</version>
   </parent>
 
-  <name>Bitmagasin</name>
+  <name>Bitrepository</name>
   
   <packaging>pom</packaging>
   
   <modules>
-    <module>protocol</module>
-    <module>integrityclient</module>
-    <module>ingestclient</module>
-    <module>accessclient</module>
-    <module>integrationtests</module>
+    <module>bitrepository-message-xml</module>
+    <module>bitrepository-protocol</module>
+    <module>bitrepository-access-client</module>
+    <module>bitrepository-modifying-client</module>
+    <module>bitrepository-alarm-client</module>
+    <module>bitrepository-integrity-client</module>  
+    <module>bitrepository-audit-client</module>	
+    <module>bitrepository-monitoring-service</module>	
+    <module>bitrepository-integration</module>
   </modules>
   
   <developers>
