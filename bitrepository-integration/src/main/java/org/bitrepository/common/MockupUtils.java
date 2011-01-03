@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package dk.bitmagasin.common;
+package org.bitrepository.common;
 
 import java.io.FileInputStream;
 import java.io.InputStream;

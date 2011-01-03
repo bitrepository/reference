@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package dk.bitmagasin.common;
+package org.bitrepository.common;
 
 /**
  * The message for telling when a piece of data has completely been put onto

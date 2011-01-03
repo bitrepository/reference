@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package dk.bitmagasin.client;
+package org.bitrepository.client;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,19 +53,19 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import dk.bitmagasin.common.DataTime;
-import dk.bitmagasin.common.MockupConf;
-import dk.bitmagasin.common.MockupGetDataCompleteMessage;
-import dk.bitmagasin.common.MockupGetDataMessage;
-import dk.bitmagasin.common.MockupGetDataReplyMessage;
-import dk.bitmagasin.common.MockupGetTimeMessage;
-import dk.bitmagasin.common.MockupGetTimeReplyMessage;
-import dk.bitmagasin.common.MockupHTTPClient;
-import dk.bitmagasin.common.MockupMessage;
-import dk.bitmagasin.common.MockupPutDataMessage;
-import dk.bitmagasin.common.MockupPutDataReplyMessage;
-import dk.bitmagasin.common.MockupSettings;
-import dk.bitmagasin.common.TimeUnits;
+import org.bitrepository.common.DataTime;
+import org.bitrepository.common.MockupConf;
+import org.bitrepository.common.MockupGetDataCompleteMessage;
+import org.bitrepository.common.MockupGetDataMessage;
+import org.bitrepository.common.MockupGetDataReplyMessage;
+import org.bitrepository.common.MockupGetTimeMessage;
+import org.bitrepository.common.MockupGetTimeReplyMessage;
+import org.bitrepository.common.MockupHTTPClient;
+import org.bitrepository.common.MockupMessage;
+import org.bitrepository.common.MockupPutDataMessage;
+import org.bitrepository.common.MockupPutDataReplyMessage;
+import org.bitrepository.common.MockupSettings;
+import org.bitrepository.common.TimeUnits;
 
 /**
  * AccessClient MockUp

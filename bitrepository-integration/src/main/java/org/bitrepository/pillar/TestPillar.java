@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package dk.bitmagasin.pillar;
+package org.bitrepository.pillar;
 
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -44,12 +44,12 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import dk.bitmagasin.common.MockupConf;
-import dk.bitmagasin.common.MockupGetDataMessage;
-import dk.bitmagasin.common.MockupGetTimeMessage;
-import dk.bitmagasin.common.MockupGetTimeReplyMessage;
-import dk.bitmagasin.common.MockupMessage;
-import dk.bitmagasin.common.MockupSettings;
+import org.bitrepository.common.MockupConf;
+import org.bitrepository.common.MockupGetDataMessage;
+import org.bitrepository.common.MockupGetTimeMessage;
+import org.bitrepository.common.MockupGetTimeReplyMessage;
+import org.bitrepository.common.MockupMessage;
+import org.bitrepository.common.MockupSettings;
 
 public class TestPillar implements MessageListener, ExceptionListener {
 	private Log log = LogFactory.getLog(this.getClass());

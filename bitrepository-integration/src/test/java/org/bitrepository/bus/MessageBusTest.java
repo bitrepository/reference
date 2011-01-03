@@ -22,14 +22,14 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package dk.bitmagasin.bus;
+package org.bitrepository.bus;
 
 import javax.jms.JMSException;
 
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
 
-import dk.bitmagasin.messagebus.MessageBusConnection;
+import org.bitrepository.messagebus.MessageBusConnection;
 
 public class MessageBusTest extends ExtendedTestCase {
 	

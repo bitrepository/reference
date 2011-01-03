@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package dk.bitmagasin.messagebus;
+package org.bitrepository.messagebus;
 
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;

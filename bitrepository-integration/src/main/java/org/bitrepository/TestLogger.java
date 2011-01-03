@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package dk.bitmagasin;
+package org.bitrepository;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +36,7 @@ public class TestLogger extends Logger {
 	}
 
 	public static TestLogger getLog(String entity) {
-		return new TestLogger("dk.bitmagasin.test." + entity, null);
+		return new TestLogger("org.bitrepository.test." + entity, null);
 	}
 	
 	public void error(String msg) {

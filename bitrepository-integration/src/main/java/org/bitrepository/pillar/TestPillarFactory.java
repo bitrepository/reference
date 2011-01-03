@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package dk.bitmagasin.pillar;
+package org.bitrepository.pillar;
 
 import javax.jms.JMSException;
 

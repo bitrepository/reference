@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package messaging;
+package org.bitrepository.messaging;
 
 public class Operation {
 

@@ -23,7 +23,7 @@
     <dependency>
     	<groupId>org.jaccept</groupId>
     	<artifactId>jaccept-core</artifactId>
-    	<version>0.3-SNAPSHOT</version>
+    	<version>0.2</version>
     </dependency>
   </dependencies>
   <build>

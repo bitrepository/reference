@@ -23,7 +23,7 @@
  * #L%
  */
 /** Bit Repository Standard Header Open Source License */
-package dk.bitmagasin.common;
+package org.bitrepository.common;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;

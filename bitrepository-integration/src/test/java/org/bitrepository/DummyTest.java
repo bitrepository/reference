@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package dk.bitmagasin;
+package org.bitrepository;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;

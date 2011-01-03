@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package dk.bitmagasin.client;
+package org.bitrepository.client;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,13 +48,13 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import dk.bitmagasin.common.DataTime;
-import dk.bitmagasin.common.MockupConf;
-import dk.bitmagasin.common.MockupGetDataMessage;
-import dk.bitmagasin.common.MockupGetTimeMessage;
-import dk.bitmagasin.common.MockupGetTimeReplyMessage;
-import dk.bitmagasin.common.MockupSettings;
-import dk.bitmagasin.common.TimeUnits;
+import org.bitrepository.common.DataTime;
+import org.bitrepository.common.MockupConf;
+import org.bitrepository.common.MockupGetDataMessage;
+import org.bitrepository.common.MockupGetTimeMessage;
+import org.bitrepository.common.MockupGetTimeReplyMessage;
+import org.bitrepository.common.MockupSettings;
+import org.bitrepository.common.TimeUnits;
 
 public class ClientStub implements MessageListener, ExceptionListener {
 	private final Log log = LogFactory.getLog(this.getClass());

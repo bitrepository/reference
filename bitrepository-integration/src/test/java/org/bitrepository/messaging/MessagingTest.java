@@ -22,15 +22,15 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package messaging;
+package org.bitrepository.messaging;
 
 import javax.jms.JMSException;
 
 import org.testng.annotations.Test;
 import static org.testng.AssertJUnit.*;
 
-import dk.bitmagasin.client.ClientStub;
-import dk.bitmagasin.pillar.TestPillar;
+import org.bitrepository.client.ClientStub;
+import org.bitrepository.pillar.TestPillar;
 
 public class MessagingTest {	
 
