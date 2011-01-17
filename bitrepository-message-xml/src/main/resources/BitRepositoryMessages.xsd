@@ -1,0 +1,711 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!-- URLs in schema targetNamespace must be updated later -->
+<xs:schema targetNamespace="http://tempuri.org/BitRepositoryMessages.xsd" 
+     attributeFormDefault="unqualified" 
+     elementFormDefault="qualified" 
+     xmlns:xs="http://www.w3.org/2001/XMLSchema"
+     xmlns:bre="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd"
+>
+
+     
+  <!-- URL in import targetNamespace must be updated later -->
+  <xs:import namespace="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd" />
+
+  <!-- ************************************************************** -->
+  <!-- * Operation messages for Get                                 * -->
+  <!-- ************************************************************** -->
+
+  <!-- **************                                                 -->
+  <!-- *** Primitive messages for IdentifyPillarsForGet...            -->
+
+  <!-- ** IdentifyPillarsForGet Request -->
+  <xs:element name="IdentifyPillarsForGetRequest">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+
+        <!-- Unique identifier for requested data in given SLA -->
+        <xs:element ref="bre:DataID" /> 
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ** IdentifyPillarsForGet Reply -->
+  <xs:element name="IdentifyPillarsForGetReply">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+
+        <!-- Unique identifier for requested data in given SLA -->
+        <xs:element ref="bre:DataID" /> 
+        
+        <!-- Unique identifier for pillar replying -->
+        <xs:element ref="bre:PillarID" />
+        
+        <!-- Checksums type in case it is a checksum pillar replying -->
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+        
+        <!-- Estimated time before delivery of data requested -->
+        <xs:element ref="bre:TimeToDeliver" /> 
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- **************                                                 -->
+  <!-- *** Primitive messages for Get...                              -->
+  
+  <!-- *** The Get... messages is only sent to one specific pillar which corresponds to ReplyTo from IdentifyPillarsForGetReply -->
+  
+  <!-- ** Get Request -->
+  <xs:element name="GetRequest">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+      
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+      
+        <!-- Unique identifier for requested data in given SLA -->
+        <xs:element ref="bre:DataID" /> 
+
+        <!-- Address (e.g. in form of an URL) for where data must be delivered -->
+        <xs:element ref="bre:DataAddress" /> 
+
+        <!-- Identifier of receiving pillar, which can be used for possible checks (ReplyID should ensure that right pillar is reached)  -->
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        
+        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+  
+  <!-- ** Get Response -->
+  <xs:element name="GetResponse">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+        
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+        
+        <!-- Unique identifier for requested data in given SLA -->
+        <xs:element ref="bre:DataID" />
+        
+        <!-- Address (e.g. in form of an URL) for where data will be delivered -->
+        <xs:element ref="bre:DataAddress" />
+
+        <!-- Identifier of receiving pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        
+        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+
+        <!-- Response code telling whether GetRequest has been received and is expected to be completed -->
+        <xs:element ref="bre:ResponseCode" />  
+        
+        <!-- Response text containing additional information for logging only -->
+        <xs:element ref="bre:ResponseText" minOccurs="0" maxOccurs="1" />  
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ** Get Complete -->
+  <xs:element name="GetComplete">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+        
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+        
+        <!-- Unique identifier for requested data in given SLA -->
+        <xs:element ref="bre:DataID" /> 
+        
+        <!-- Address (e.g. in form of an URL) for where data has been delivered (if completed) -->
+        <xs:element ref="bre:DataAddress" />
+        
+        <!-- Identifier of receiving pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        
+        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+
+        <!-- Complete code telling how Get has been completed -->
+        <xs:element ref="bre:CompleteCode" />  
+        
+        <!-- Complete text containing additional information for logging only -->
+        <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" />  
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ************************************************************** -->
+  <!-- * Operation messages for Put                                 * -->
+  <!-- ************************************************************** -->
+
+  <!-- **************                                                 -->
+  <!-- *** Primitive messages for IdentifyPillarsForPut...            -->
+
+  <!-- ** IdentifyPillarsForPut Request -->
+  <xs:element name="IdentifyPillarsForPutRequest">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+        
+        <!-- Unique identifier for data to be put for given SLA -->
+        <xs:element ref="bre:DataID" /> 
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ** IdentifyPillarsForPut Reply -->
+  <xs:element name="IdentifyPillarsForPutReply">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+        
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+        
+        <!-- Unique identifier for data to be put for given SLA -->
+        <xs:element ref="bre:DataID" /> 
+
+        <!-- Unique identifier for pillar replying -->
+        <xs:element ref="bre:PillarID" />
+        
+        <!-- Checksums type in case it is a checksum pillar replying -->
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+        
+        <!-- Estimated time before data is downloaded -->
+        <xs:element ref="bre:TimeToDeliver" /> 
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- **************                                                 -->
+  <!-- *** Primitive messages for Put...                              -->
+
+  <!-- *** The Put... messages is only sent to one specific pillar which corresponds to ReplyTo from IdentifyPillarsForGetReply -->
+  
+  <!-- ** Put Request -->
+  <xs:element name="PutRequest">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+        
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+        
+        <!-- Unique identifier for data to be put for given SLA -->
+        <xs:element ref="bre:DataID" /> 
+        
+        <!-- Address (e.g. in form of an URL) for where data must be downloaded from -->
+        <xs:element ref="bre:DataAddress" /> 
+
+        <!-- Identifier of receiving pillar, which can be used for possible checks (ReplyID should ensure that right pillar is reached)  -->
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        
+        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ** Put Response -->
+  <xs:element name="PutResponse">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+        
+        <!-- Unique identifier for data to be put for given SLA -->
+        <xs:element ref="bre:DataID" /> 
+
+        <!-- Address (e.g. in form of an URL) for where data is to be downloaded from -->
+        <xs:element ref="bre:DataAddress" />
+
+        <!-- Identifier of receiving pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        
+        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+
+        <!-- Response code telling whether PutRequest has been received and is expected to be completed -->
+        <xs:element ref="bre:ResponseCode" />  
+        
+        <!-- Response text containing additional information for logging only -->
+        <xs:element ref="bre:ResponseText" minOccurs="0" maxOccurs="1" />  
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ** Put Complete -->
+  <xs:element name="PutComplete">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+        
+        <!-- Unique identifier for data to be put for given SLA -->
+        <xs:element ref="bre:DataID" /> 
+
+        <!-- Address (e.g. in form of an URL) for where data has been downloaded from (if completed) -->
+        <xs:element ref="bre:DataAddress" />
+        
+        <!-- Identifier of receiving pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        
+        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+
+        <!-- Complete code telling how Put has been completed -->
+        <xs:element ref="bre:CompleteCode" />  
+        
+        <!-- Complete text containing additional information for logging only -->
+        <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" />  
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ************************************************************** -->
+  <!-- * Get checksums operation messages                           * -->
+  <!-- ************************************************************** -->
+
+  <!-- **************                                                 -->
+  <!-- *** Primitive messages for IdentifyPillarsForGetChecksums...   -->
+
+  <!-- ** IdentifyPillarsForGetChecksums Request -->
+  <xs:element name="IdentifyPillarsForGetChecksumsRequest">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+        
+        <!-- DataIDs uniquely identifies the data in given SLA which the checksums are requested for -->
+        <xs:element name="DataIDs">
+          <xs:complexType>
+            <xs:choice>
+              <!-- list of unique identifiers for data in given SLA -->
+              <xs:element ref="DataID" minOccurs="1" maxOccurs="unbounded"/>
+  
+              <!-- Specification that all data identifiers in SLA is requested -->
+              <xs:element name="AllDataIDs" />
+            </xs:choice>        
+          
+            <!-- To be enhanced with other ways to address chunks of identifiers, e.g. for mass processing -->
+          </xs:complexType>
+        </xs:element>
+
+        <!-- Checksums type requested -->
+        <xs:element ref="bre:DataChecksumType" /> 
+        
+        <!-- SaltParameter is salt to be included in calculation of checksums requested -->
+        <xs:element ref="bre:SaltParameter" minOccurs="1" maxOccurs="unbounded" /> 
+      </xs:sequence>
+      
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+  
+  <!-- ** IdentifyPillarsForGetChecksums Reply -->
+  <xs:element name="IdentifyPillarsForGetChecksumsReply">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/>
+
+        <!-- DataIDs uniquely identifies the data in given SLA which the checksums are requested for -->
+        <xs:element name="DataIDs">
+          <xs:complexType>
+            <xs:choice>
+              <!-- list of unique identifiers for data in given SLA -->
+              <xs:element ref="DataID" minOccurs="1" maxOccurs="unbounded"/>
+            
+              <!-- Specification that all data identifiers in SLA is requested -->
+              <xs:element name="AllDataIDs" />
+                  
+              <!-- To be enhanced with other ways to address chunks of identifiers, e.g. for mass processing -->
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- Checksums type requested -->
+        <xs:element ref="bre:DataChecksumType" /> 
+        
+        <!-- SaltParameter is salt to be included in calculation of checksums requested -->
+        <xs:element ref="bre:SaltParameter" minOccurs="1" maxOccurs="unbounded" /> 
+
+        <!-- Unique identifier for pillar replying -->
+        <xs:element ref="bre:PillarID" />
+        
+        <!-- Checksums type in case it is a checksum pillar replying -->
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+        
+        <!-- Estimated time before delivery of checksums requested -->
+        <xs:element ref="bre:TimeToDeliver" /> 
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- **************                                   -->
+  <!-- *** Primitive messages for GetChecksums     TBD      -->
+  
+  <!-- ** GetChecksums Request -->
+  <xs:element name="GetChecksumsRequest">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/>
+
+        <!-- DataIDs uniquely identifies the data in given SLA which the checksums are requested for -->
+        <xs:element name="DataIDs">
+          <xs:complexType>
+            <xs:choice>
+              <!-- list of unique identifiers for data in given SLA -->
+              <xs:element ref="DataID" minOccurs="1" maxOccurs="unbounded"/>
+            
+              <!-- Specification that all data identifiers in SLA is requested -->
+              <xs:element name="AllDataIDs" />
+                  
+            <!-- To be enhanced with other ways to address chunks of identifiers, e.g. for mass processing -->
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+        
+        <!-- Checksums type requested -->
+        <xs:element ref="bre:DataChecksumType" /> 
+        
+        <!-- SaltParameter is salt to be included in calculation of checksums requested -->
+        <xs:element ref="bre:SaltParameter" minOccurs="1" maxOccurs="unbounded" /> 
+
+        <!-- Address (e.g. in form of an URL) for where checksums must be delivered -->
+        <xs:element ref="bre:DataAddress" /> 
+
+        <!-- Identifier of receiving pillar, which can be used for possible checks (ReplyID should ensure that right pillar is reached)  -->
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        
+        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ** GetChecksums Response -->
+  <xs:element name="GetChecksumsResponse">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/>
+
+        <!-- DataIDs uniquely identifies the data in given SLA which the checksums are requested for -->
+        <xs:element name="DataIDs">
+          <xs:complexType>
+            <xs:choice>
+              <!-- list of unique identifiers for data in given SLA -->
+              <xs:element ref="DataID" minOccurs="1" maxOccurs="unbounded" />
+            
+              <!-- Specification that all data identifiers in SLA is requested -->
+              <xs:element name="AllDataIDs" />
+                  
+              <!-- To be enhanced with other ways to address chunks of identifiers, e.g. for mass processing -->
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- DataChecksumType is the checksums type requested -->
+        <xs:element ref="bre:DataChecksumType" /> 
+
+        <!-- SaltParameter is salt to be included in calculation of checksums requested -->
+        <xs:element ref="bre:SaltParameter" minOccurs="1" maxOccurs="unbounded" /> 
+
+        <!-- Address (e.g. in form of an URL) for where checksums will be delivered -->
+        <xs:element ref="bre:DataAddress" />
+
+        <!-- Identifier of receiving pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        
+        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+
+        <!-- Response code telling whether GetChecksumsRequest has been received and is expected to be completed -->
+        <xs:element ref="bre:ResponseCode" />  
+        
+        <!-- Response text containing additional information for logging only -->
+        <xs:element ref="bre:ResponseText" minOccurs="0" maxOccurs="1" />  
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ** GetChecksums Complete -->
+  <xs:element name="GetChecksumsComplete">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/>
+
+        <!-- DataIDs uniquely identifies the data in given SLA which the checksums are requested for -->
+        <xs:element name="DataIDs">
+          <xs:complexType>
+            <xs:choice>
+              <!-- list of unique identifiers for data in given SLA -->
+              <xs:element ref="DataID" minOccurs="1" maxOccurs="unbounded"/>
+            
+              <!-- Specification that all data identifiers in SLA is requested -->
+              <xs:element name="AllDataIDs" />
+                  
+              <!-- To be enhanced with other ways to address chunks of identifiers, e.g. for mass processing -->
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- Checksums type requested -->
+        <xs:element ref="bre:DataChecksumType" /> 
+        
+        <!-- SaltParameter is salt to be included in calculation of checksums requested -->
+        <xs:element ref="bre:SaltParameter" minOccurs="1" maxOccurs="unbounded" /> 
+
+        <!-- Address (e.g. in form of an URL) for where checksums has been delivered (if completed) -->
+        <xs:element ref="bre:DataAddress" />
+        
+        <!-- Identifier of receiving pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        
+        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+
+        <!-- Complete code telling how GetChecksums has been completed -->
+        <xs:element ref="bre:CompleteCode" />  
+        
+        <!-- Complete text containing additional information for logging only -->
+        <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" />  
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ************************************************************** -->
+  <!-- * Operation messages for Get                                 * -->
+  <!-- ************************************************************** -->
+
+  <!-- **************                                                 -->
+  <!-- *** Primitive messages for IdentifyPillarsForGetDataIDs...            -->
+
+  <!-- ** IdentifyPillarsForGetDataIDs Request -->
+  <xs:element name="IdentifyPillarsForGetDataIDsRequest">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ** IdentifyPillarsForGetDataIDs Reply -->
+  <xs:element name="IdentifyPillarsForGetDataIDsReply">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+
+        <!-- Unique identifier for pillar replying -->
+        <xs:element ref="bre:PillarID" />
+        
+        <!-- Estimated time before delivery of data requested -->
+        <xs:element ref="bre:TimeToDeliver" /> 
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- **************                                                 -->
+  <!-- *** Primitive messages for Get...                              -->
+  
+  <!-- *** The GetDataIDs... messages is only sent to one specific pillar which corresponds to ReplyTo from IdentifyPillarsForGetReply -->
+  
+  <!-- ** GetDataIDs Request -->
+  <xs:element name="GetDataIDsRequest">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+      
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+      
+        <!-- Address (e.g. in form of an URL) for where data must be delivered -->
+        <xs:element ref="bre:DataAddress" /> 
+
+        <!-- Identifier of receiving pillar, which can be used for possible checks (ReplyID should ensure that right pillar is reached)  -->
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+  
+  <!-- ** GetDataIDs Response -->
+  <xs:element name="GetDataIDsResponse">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+        
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+        
+        <!-- Address (e.g. in form of an URL) for where data will be delivered -->
+        <xs:element ref="bre:DataAddress" />
+
+        <!-- Identifier of receiving pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        
+        <!-- Response code telling whether GetRequest has been received and is expected to be completed -->
+        <xs:element ref="bre:ResponseCode" />  
+        
+        <!-- Response text containing additional information for logging only -->
+        <xs:element ref="bre:ResponseText" minOccurs="0" maxOccurs="1" />  
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ** GetDataIDs Complete -->
+  <xs:element name="GetDataIDsComplete">
+    <xs:complexType>
+
+      <!-- Contents -->
+      <xs:sequence>
+        
+        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
+        <xs:group ref="bre:Core"/> 
+        
+        <!-- Address (e.g. in form of an URL) for where data has been delivered (if completed) -->
+        <xs:element ref="bre:DataAddress" />
+        
+        <!-- Identifier of receiving pillar, which can be used for possible checks -->
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        
+        <!-- Complete code telling how Get has been completed -->
+        <xs:element ref="bre:CompleteCode" />  
+        
+        <!-- Complete text containing additional information for logging only -->
+        <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" />  
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

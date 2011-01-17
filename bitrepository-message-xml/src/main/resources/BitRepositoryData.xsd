@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!-- URLs in schema targetNamespace must be updated later -->
+<xs:schema targetNamespace="http://tempuri.org/BitRepositoryMessages.xsd" 
+     attributeFormDefault="unqualified" 
+     elementFormDefault="qualified" 
+     xmlns:xs="http://www.w3.org/2001/XMLSchema"
+     xmlns:bre="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd"
+>
+
+     
+  <!-- URL in import targetNamespace must be updated later -->
+  <xs:import namespace="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd" />
+
+  <!-- ******************************************************************* -->
+  <!-- * Data format for delivery of checksums as result of GetChecksums * -->
+  <!-- ******************************************************************* -->
+
+  <xs:element name="GetChecksumsData">
+    <xs:complexType>
+      <xs:sequence>
+        <!-- SlaID is a unique identifier for SLA which data belongs to. -->
+        <xs:element ref="bre:SlaID" /> 
+
+        <!-- Identifier of pillar, that created the result -->
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+
+        <!-- The type of checksums included -->
+        <xs:element ref="bre:DataChecksumType" /> 
+
+        <!-- SaltParameter included in calculation of checksums -->
+        <xs:element ref="bre:SaltParameter" minOccurs="1" maxOccurs="unbounded" /> 
+
+        <!-- The number of checksums included -->
+        <xs:element ref="bre:NoOfChecksums" /> 
+
+        <!-- List of data for checksums in result -->
+        <xs:element name="ChecksumsData" minOccurs="1" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+            
+              <!-- Identifier of data the checksum is for  -->
+              <xs:element ref="bre:DataID" />
+            
+              <!-- Checksum of data  -->
+              <!-- The checksum will be based on given algorithm and include salt if specified -->
+              <xs:element ref="bre:Checksum" />
+
+              <!-- The time when the checksum was last calculated  -->
+              <!-- (especially for ordinary checksums on off-line medias, there can be long intervals between  -->
+              <!-- calculations, - in such cases this information is crucial for alarming) -->
+              <xs:element ref="bre:CalcTime" />
+
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ******************************************************************* -->
+  <!-- * Data format for delivery of data ids as result of GetDataIDs    * -->
+  <!-- ******************************************************************* -->
+
+  <xs:element name="GetDataIDsData">
+    <xs:complexType>
+      <xs:sequence>
+
+        <!-- SlaID is a unique identifier for SLA which data belongs to. -->
+        <xs:element ref="bre:SlaID" /> 
+
+        <!-- Identifier of pillar, that created the result -->
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+
+        <!-- The number of checksums included -->
+        <xs:element ref="bre:NoOfDataIDs" /> 
+
+        <!-- List of data on data identifiers in result -->
+        <xs:element name="DataIDsData" minOccurs="1" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+            
+              <!-- Identifier of data the checksum is for  -->
+              <xs:element ref="bre:DataID" />
+            
+              <!-- The time when the data object was last seen -->
+              <!-- (especially on off-line medias, there can be long intervals between  -->
+              <!-- seeing data objects -  in such cases this information is crucial for alarming) -->
+              <xs:element name="LastSeenTime" minOccurs="0" maxOccurs="1" />
+
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

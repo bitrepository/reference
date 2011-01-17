@@ -24,7 +24,7 @@
   #L%
   -->
 
-<bro:GetRequest version="1" minVersion="1" xmlns:bro='http://tempuri.org/BitRepositoryMessages.xsd' xmlns="http://tempuri.org/BitRepositoryElements.xsd">
+<bro:PutRequest version="1" minVersion="1" xmlns:bro='http://tempuri.org/BitRepositoryMessages.xsd' xmlns="http://tempuri.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
@@ -32,4 +32,4 @@
   <DataAddress>http://myServer/myPlace/Myfile</DataAddress>
   <PillarID>MyPillar</PillarID>
   <PillarChecksumType>MD5</PillarChecksumType>
-</bro:GetRequest>
+</bro:PutRequest>

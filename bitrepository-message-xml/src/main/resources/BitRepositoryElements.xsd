@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!-- URLs in schema targetNamespace must be updated later -->
+<xs:schema targetNamespace="http://tempuri.org/BitRepositoryElements.xsd"
+    elementFormDefault="qualified"
+    xmlns="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  <!-- ************************************************************** -->
+  <!-- ****** USED ELEMNETS IN ALPHABETIC ORDER (used now)     ****** -->
+  <!-- ************************************************************** -->
+
+  <!-- CompleteCode is a code for the type of completion given -->
+  <!-- The actual codes are specified later, e.g. IoError, DataNotFound, AccessDenied, OK -->
+  <xs:element name="CompleteCode" />
+
+  <!-- CompleteText is a text for logging in the completion -->
+  <!-- It does not have a semantic meaning, but contributes to a more readable log -->
+  <xs:element name="CompleteText" />
+  
+  <!-- Address (e.g. in form of an URL) for where data can be found -->
+  <!-- In a Get operation this will be the address where data requested must be placed -->
+  <!-- In a Put operation this will be the identifier the data for later request of the data -->
+  <xs:element name="DataAddress" />
+  
+  <!-- DataChecksumType gives information about which type of checksum is used for data -->
+  <!-- This is for instance used for the GetChecksum operation -->
+  <!-- In first version this will be text like MD5, later it will be aligned with a standard  -->
+  <xs:element name="DataChecksumType" />
+
+  <!-- Unique identifiers for data in given service level agreement -->
+  <!-- In a Get operation this will be the identifier for data requested -->
+  <!-- In a Put operation this will be the identifier the data for later request of the data -->
+  <xs:element name="DataID"/>
+  
+  <!-- SaltParameter is  extra salt to be added in the checksum calculation -->
+  <!-- If this parameter is given, it is also specification the checksum calculation must include the salt -->
+  <xs:element name="SaltParameter" />
+
+  <!-- PillarChecksumType gives information about which type of checksum is used for data on checksums pillar -->
+  <!-- In a Get this information will only be relevant for identification of pillars -->
+  <!-- In a Put this will give input to check if the right put is performed on checksums pillar according to SLA -->
+  <!-- In first version this will be text like MD5, later it will be aligned with a standard  -->
+  <xs:element name="PillarChecksumType" />
+
+  <!-- PillarID is a unique identifier for a specific pillar (covered by  the SLA which data belongs to) -->
+  <xs:element name="PillarID" /> 
+
+  <!-- TimeToDeliver gives time before result of request can be delivered -->
+  <!-- In a Get this will be the estimated time before requested data is ready for download -->
+  <!-- In a Put this will be the estimated time before requested data is uploaded -->
+  <!-- In first version this will be in miliseconds, later it will be consisting of time and unit according to a standard  -->
+  <xs:element name="TimeToDeliver" />
+
+  <!-- ResponseCode is a code for the type of response given -->
+  <!-- The actual codes are specified later, e.g. UnknownDataId, OK -->
+  <xs:element name="ResponseCode" />
+
+  <!-- ResponseText is a text for logging in the response -->
+  <!-- It does not have a semantic meaning, but contributes to a more readable log -->
+  <xs:element name="ResponseText" />
+
+  <!-- SlaID is a unique identifier for SLA which data belongs to. -->
+  <xs:element name="SlaID" /> 
+
+  <!-- ************************************************************** -->
+  <!-- ****** GROUPS                                           ****** -->
+  <!-- ************************************************************** -->
+
+  <!-- Core includes elements that all protocol messages must include -->
+  <!-- The core part will NOT be included in specific SLA related encryption -->
+  <xs:group name="Core">
+    <xs:sequence>
+      <!-- CorrelationID is a unique identifier for communication usually on primitive level, -->
+      <!-- e.g the IdentifyPillarsForGet part of a get operation -->
+      <xs:element name="CorrelationID" />
+       
+      <!-- SlaID is a unique identifier for SLA which data belongs to. -->
+      <!-- This is also the identification of decryption and keys for contents of message -->
+      <xs:element name="SlaID" /> 
+      
+      <!-- ReplyTo contains name of queue/topic to reply/respond to --> 
+      <!-- (blank if not relevant, e.g. for alarms) -->  
+      <xs:element name="ReplyTo" />
+    </xs:sequence>
+  </xs:group>
+  
+  <!-- ************************************************************** -->
+  <!-- ****** FUTURE ELEMNETS IN ALPHABETIC ORDER (used later) ****** -->
+  <!-- ************************************************************** -->
+  
+  <!-- Control sizes -->
+  <!-- .... -->
+  <xs:element name="MaxPackageSize" /> <!-- Unit and measure ... -->
+  
+  <!-- For paging -->
+  <!-- .... -->
+  <xs:element name="PageOffSet" /> <!-- Unit and measure ... -->
+  <xs:element name="PageLength" /> <!-- Unit and measure ... -->
+
+  <!-- Address (e.g. in form of an URL) for where parameters can be found -->
+  <!-- .... -->
+  <xs:element name="ParametersAddress" />
+  
+  
+  <!-- ************************************************************** -->
+  <!-- ****** DATA SUPPLEMENTARY ELEMNETS IN ALPHABETIC ORDER  ****** -->
+  <!-- ************************************************************** -->
+  
+  <!-- For checksums results -->
+  <xs:element name="NoOfChecksums" /> 
+  <xs:element name="Checksum" /> 
+  <xs:element name="CalcTime" /> 
+  
+  <!-- For data identifier results -->
+  <xs:element name="NoOfDataIDs" /> 
+  <xs:element name="LastSeenTime" /> 
+  
+</xs:schema>

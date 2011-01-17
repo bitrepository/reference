@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
   Bitmagasin protokol
@@ -24,9 +24,10 @@
   #L%
   -->
 
-<bso:GetAcknowledge version="1" minVersion="1"  xmlns:bso='http://tempuri.org/BitStorageMessages.xsd' xmlns="http://tempuri.org/BitStorageElements.xsd">
+<bro:IdentifyPillarsForGetChecksumsReply version="1" minVersion="1" xmlns:bro='http://tempuri.org/BitRepositoryMessages.xsd' xmlns="http://tempuri.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
-  <ReplyTo>Mig</ReplyTo>
-  <FileName>Minfil</FileName>
-  <DataURL>http://minserver/Mitsted/Minfil</DataURL>
-</bso:GetAcknowledge>
+  <SlaID>MySla</SlaID>
+  <ReplyTo>MyQueueOrTopic</ReplyTo>
+  <PillarID>MyPillar</PillarID>
+  <TimeToDeliver>1000</TimeToDeliver>
+</bro:IdentifyPillarsForGetChecksumsReply>

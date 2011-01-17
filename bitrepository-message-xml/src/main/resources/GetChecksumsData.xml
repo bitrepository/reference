@@ -24,12 +24,15 @@
   #L%
   -->
 
-<bro:GetRequest version="1" minVersion="1" xmlns:bro='http://tempuri.org/BitRepositoryMessages.xsd' xmlns="http://tempuri.org/BitRepositoryElements.xsd">
-  <CorrelationID>12345</CorrelationID>
+<bro:GetChecksumsData version="1" minVersion="1"  xmlns:bro='http://tempuri.org/BitStorageMessages.xsd' xmlns="http://tempuri.org/BitStorageElements.xsd">
   <SlaID>MySla</SlaID>
-  <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <DataID>MyDataID</DataID>
-  <DataAddress>http://myServer/myPlace/Myfile</DataAddress>
   <PillarID>MyPillar</PillarID>
-  <PillarChecksumType>MD5</PillarChecksumType>
-</bro:GetRequest>
+  <DataChecksumType>MD5</DataChecksumType>
+  <SaltParameter>X</SaltParameter>
+  <NoOfChecksums>NoOfCS</NoOfChecksums>
+  <ChecksumsData>
+     <DataID>MyDataId1</DataID>
+     <Checksum>MyChecksum1</Checksum>
+     <CalcTime>MyCalcTime1</CalcTime>
+  </ChecksumsData>
+</bro:GetChecksumsData>
