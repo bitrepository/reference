@@ -34,4 +34,9 @@
   <PillarChecksumType>MD5</PillarChecksumType>
   <CompleteCode>MyCompleteCode</CompleteCode>
   <CompleteText>MyCompleteText</CompleteText>
+  <NoOfResults>NoOfIDs</NoOfResults>
+  <DataIDsData>
+     <DataID>MydataId1</DataID>
+     <CalculationTime>MyLastSeenTime1</CalculationTime>
+  </DataIDsData>
 </bro:GetComplete>

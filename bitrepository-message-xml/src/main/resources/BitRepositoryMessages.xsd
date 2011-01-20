@@ -584,7 +584,7 @@
   </xs:element>
 
   <!-- ************************************************************** -->
-  <!-- * Operation messages for Get                                 * -->
+  <!-- * Operation messages for GetDataIDs                                * -->
   <!-- ************************************************************** -->
 
   <!-- **************                                                 -->
@@ -644,8 +644,9 @@
         <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
         <xs:group ref="bre:Core"/> 
       
-        <!-- Address (e.g. in form of an URL) for where data must be delivered -->
-        <xs:element ref="bre:DataAddress" /> 
+        <!-- Address (e.g. in form of an URL) for where data ids must be delivered via data transmission -->
+        <!-- In cases where the address is not given, the result will be given in the GetDataIdsComplete message -->
+        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1"/> 
 
         <!-- Identifier of receiving pillar, which can be used for possible checks (ReplyID should ensure that right pillar is reached)  -->
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
@@ -708,6 +709,13 @@
         
         <!-- Complete text containing additional information for logging only -->
         <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" />  
+
+        <!-- The number of checksums included, if given in this message instead of via data transfer -->
+        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1"/> 
+
+        <!-- List of data for data ids in result, if given in this message instead of via data transfer-->
+        <xs:group ref="DataIDsData" minOccurs="0" maxOccurs="unbounded" /> 
+
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
