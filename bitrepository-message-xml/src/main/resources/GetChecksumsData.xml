@@ -29,10 +29,10 @@
   <PillarID>MyPillar</PillarID>
   <DataChecksumType>MD5</DataChecksumType>
   <SaltParameter>X</SaltParameter>
-  <NoOfChecksums>NoOfCS</NoOfChecksums>
+  <NoOfResults>NoOfCS</NoOfResults>
   <ChecksumsData>
      <DataID>MyDataId1</DataID>
      <Checksum>MyChecksum1</Checksum>
-     <CalcTime>MyCalcTime1</CalcTime>
+     <CalculationTime>MyCalcTime1</CalculationTime>
   </ChecksumsData>
 </bro:GetChecksumsData>

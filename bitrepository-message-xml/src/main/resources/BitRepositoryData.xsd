@@ -32,28 +32,10 @@
         <xs:element ref="bre:SaltParameter" minOccurs="1" maxOccurs="unbounded" /> 
 
         <!-- The number of checksums included -->
-        <xs:element ref="bre:NoOfChecksums" /> 
+        <xs:element ref="bre:NoOfResults" /> 
 
         <!-- List of data for checksums in result -->
-        <xs:element name="ChecksumsData" minOccurs="1" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:sequence>
-            
-              <!-- Identifier of data the checksum is for  -->
-              <xs:element ref="bre:DataID" />
-            
-              <!-- Checksum of data  -->
-              <!-- The checksum will be based on given algorithm and include salt if specified -->
-              <xs:element ref="bre:Checksum" />
-
-              <!-- The time when the checksum was last calculated  -->
-              <!-- (especially for ordinary checksums on off-line medias, there can be long intervals between  -->
-              <!-- calculations, - in such cases this information is crucial for alarming) -->
-              <xs:element ref="bre:CalcTime" />
-
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
+        <xs:group ref="bre:ChecksumsData" minOccurs="1" maxOccurs="unbounded"/> 
         
       </xs:sequence>
     </xs:complexType>
@@ -74,25 +56,11 @@
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
 
         <!-- The number of checksums included -->
-        <xs:element ref="bre:NoOfDataIDs" /> 
+        <xs:element ref="bre:NoOfResults" /> 
 
         <!-- List of data on data identifiers in result -->
-        <xs:element name="DataIDsData" minOccurs="1" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:sequence>
-            
-              <!-- Identifier of data the checksum is for  -->
-              <xs:element ref="bre:DataID" />
-            
-              <!-- The time when the data object was last seen -->
-              <!-- (especially on off-line medias, there can be long intervals between  -->
-              <!-- seeing data objects -  in such cases this information is crucial for alarming) -->
-              <xs:element name="LastSeenTime" minOccurs="0" maxOccurs="1" />
+        <xs:group ref="bre:DataIDsData" minOccurs="1" maxOccurs="unbounded"/> 
 
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-        
       </xs:sequence>
     </xs:complexType>
   </xs:element>

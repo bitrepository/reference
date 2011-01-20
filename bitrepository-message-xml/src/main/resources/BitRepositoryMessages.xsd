@@ -453,8 +453,9 @@
         <!-- SaltParameter is salt to be included in calculation of checksums requested -->
         <xs:element ref="bre:SaltParameter" minOccurs="1" maxOccurs="unbounded" /> 
 
-        <!-- Address (e.g. in form of an URL) for where checksums must be delivered -->
-        <xs:element ref="bre:DataAddress" /> 
+        <!-- Address (e.g. in form of an URL) for where checksums must be delivered via data transmission -->
+        <!-- In cases where the address is not given, the result will be given in the GetChecksumsComplete message -->
+        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1"/> 
 
         <!-- Identifier of receiving pillar, which can be used for possible checks (ReplyID should ensure that right pillar is reached)  -->
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
@@ -567,6 +568,13 @@
         
         <!-- Complete text containing additional information for logging only -->
         <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" />  
+
+        <!-- The number of checksums included, if given in this message instead of via data transfer -->
+        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1"/> 
+
+        <!-- List of data for checksums in result, if given in this message instead of via data transfer-->
+        <xs:group ref="bre:ChecksumsData" minOccurs="0" maxOccurs="unbounded" /> 
+
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
