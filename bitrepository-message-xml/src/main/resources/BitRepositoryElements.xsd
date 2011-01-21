@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <!-- URLs in schema targetNamespace must be updated later -->
-<xs:schema targetNamespace="http://tempuri.org/BitRepositoryElements.xsd"
+<xs:schema targetNamespace="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd"
     elementFormDefault="qualified"
     xmlns="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"

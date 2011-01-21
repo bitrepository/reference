@@ -349,7 +349,7 @@
           <xs:complexType>
             <xs:choice>
               <!-- list of unique identifiers for data in given SLA -->
-              <xs:element ref="DataID" minOccurs="1" maxOccurs="unbounded"/>
+              <xs:element ref="bre:DataID" minOccurs="1" maxOccurs="unbounded"/>
   
               <!-- Specification that all data identifiers in SLA is requested -->
               <xs:element name="AllDataIDs" />
@@ -387,7 +387,7 @@
           <xs:complexType>
             <xs:choice>
               <!-- list of unique identifiers for data in given SLA -->
-              <xs:element ref="DataID" minOccurs="1" maxOccurs="unbounded"/>
+              <xs:element ref="bre:DataID" minOccurs="1" maxOccurs="unbounded"/>
             
               <!-- Specification that all data identifiers in SLA is requested -->
               <xs:element name="AllDataIDs" />
@@ -437,7 +437,11 @@
           <xs:complexType>
             <xs:choice>
               <!-- list of unique identifiers for data in given SLA -->
-              <xs:element ref="DataID" minOccurs="1" maxOccurs="unbounded"/>
+              <xs:element ref="bre:DataID" minOccurs="1" maxOccurs="unbounded">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">list of unique identifiers for data in given SLA</xs:documentation>
+                </xs:annotation>
+              </xs:element>
             
               <!-- Specification that all data identifiers in SLA is requested -->
               <xs:element name="AllDataIDs" />
@@ -485,7 +489,7 @@
           <xs:complexType>
             <xs:choice>
               <!-- list of unique identifiers for data in given SLA -->
-              <xs:element ref="DataID" minOccurs="1" maxOccurs="unbounded" />
+              <xs:element ref="bre:DataID" minOccurs="1" maxOccurs="unbounded" />
             
               <!-- Specification that all data identifiers in SLA is requested -->
               <xs:element name="AllDataIDs" />
@@ -538,7 +542,7 @@
           <xs:complexType>
             <xs:choice>
               <!-- list of unique identifiers for data in given SLA -->
-              <xs:element ref="DataID" minOccurs="1" maxOccurs="unbounded"/>
+              <xs:element ref="bre:DataID" minOccurs="1" maxOccurs="unbounded"/>
             
               <!-- Specification that all data identifiers in SLA is requested -->
               <xs:element name="AllDataIDs" />
