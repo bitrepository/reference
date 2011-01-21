@@ -5,10 +5,11 @@
      attributeFormDefault="unqualified" 
      elementFormDefault="qualified" 
      xmlns:xs="http://www.w3.org/2001/XMLSchema"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xmlns:bre="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd"
+     xsi:schemaLocation="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd"
 >
 
-     
   <!-- URL in import targetNamespace must be updated later -->
   <xs:import namespace="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd" />
 
@@ -16,7 +17,7 @@
   <!-- * Data format for delivery of checksums as result of GetChecksums * -->
   <!-- ******************************************************************* -->
 
-  <xs:element name="GetChecksumsData">
+  <xs:element name="GetChecksumsResults">
     <xs:complexType>
       <xs:sequence>
         <!-- SlaID is a unique identifier for SLA which data belongs to. -->
@@ -32,10 +33,10 @@
         <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" /> 
 
         <!-- The number of checksums included -->
-        <xs:element ref="bre:NoOfResults" /> 
+        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1" /> 
 
         <!-- List of data for checksums in result -->
-        <xs:group ref="bre:ChecksumsData" minOccurs="1" maxOccurs="unbounded"/> 
+        <xs:group ref="bre:ChecksumsData" minOccurs="1" maxOccurs="unbounded" /> 
         
       </xs:sequence>
     </xs:complexType>
@@ -45,7 +46,7 @@
   <!-- * Data format for delivery of data ids as result of GetDataIDs    * -->
   <!-- ******************************************************************* -->
 
-  <xs:element name="GetDataIDsData">
+  <xs:element name="GetDataIDsResults">
     <xs:complexType>
       <xs:sequence>
 
@@ -56,7 +57,7 @@
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
 
         <!-- The number of checksums included -->
-        <xs:element ref="bre:NoOfResults" /> 
+        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1" /> 
 
         <!-- List of data on data identifiers in result -->
         <xs:group ref="bre:DataIDsData" minOccurs="1" maxOccurs="unbounded"/> 

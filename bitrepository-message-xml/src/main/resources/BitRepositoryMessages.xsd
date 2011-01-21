@@ -5,9 +5,10 @@
      attributeFormDefault="unqualified" 
      elementFormDefault="qualified" 
      xmlns:xs="http://www.w3.org/2001/XMLSchema"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xmlns:bre="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd"
+     xsi:schemaLocation="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd"
 >
-
      
   <!-- URL in import targetNamespace must be updated later -->
   <xs:import namespace="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd" />
@@ -88,7 +89,8 @@
         <!-- Address (e.g. in form of an URL) for where data must be delivered -->
         <xs:element ref="bre:DataAddress" /> 
 
-        <!-- Identifier of receiving pillar, which can be used for possible checks (ReplyID should ensure that right pillar is reached)  -->
+        <!-- Identifier of receiving pillar, which can be used for possible checks -->
+        <!-- (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached)  -->
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
         
         <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
@@ -247,7 +249,8 @@
         <!-- Address (e.g. in form of an URL) for where data must be downloaded from -->
         <xs:element ref="bre:DataAddress" /> 
 
-        <!-- Identifier of receiving pillar, which can be used for possible checks (ReplyID should ensure that right pillar is reached)  -->
+        <!-- Identifier of receiving pillar, which can be used for possible checks  -->
+        <!-- (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached)  -->
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
         
         <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
@@ -363,7 +366,7 @@
         <xs:element ref="bre:DataChecksumType" /> 
         
         <!-- SaltParameter is salt to be included in calculation of checksums requested -->
-        <xs:element ref="bre:SaltParameter" minOccurs="1" maxOccurs="unbounded" /> 
+        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" /> 
       </xs:sequence>
       
       <!-- Attributes with information of message version for version control -->
@@ -401,7 +404,7 @@
         <xs:element ref="bre:DataChecksumType" /> 
         
         <!-- SaltParameter is salt to be included in calculation of checksums requested -->
-        <xs:element ref="bre:SaltParameter" minOccurs="1" maxOccurs="unbounded" /> 
+        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" /> 
 
         <!-- Unique identifier for pillar replying -->
         <xs:element ref="bre:PillarID" />
@@ -455,13 +458,14 @@
         <xs:element ref="bre:DataChecksumType" /> 
         
         <!-- SaltParameter is salt to be included in calculation of checksums requested -->
-        <xs:element ref="bre:SaltParameter" minOccurs="1" maxOccurs="unbounded" /> 
+        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" /> 
 
         <!-- Address (e.g. in form of an URL) for where checksums must be delivered via data transmission -->
         <!-- In cases where the address is not given, the result will be given in the GetChecksumsComplete message -->
         <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1"/> 
 
-        <!-- Identifier of receiving pillar, which can be used for possible checks (ReplyID should ensure that right pillar is reached)  -->
+        <!-- Identifier of receiving pillar, which can be used for possible checks -->
+        <!-- (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached)  -->        
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
         
         <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
@@ -503,7 +507,7 @@
         <xs:element ref="bre:DataChecksumType" /> 
 
         <!-- SaltParameter is salt to be included in calculation of checksums requested -->
-        <xs:element ref="bre:SaltParameter" minOccurs="1" maxOccurs="unbounded" /> 
+        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" /> 
 
         <!-- Address (e.g. in form of an URL) for where checksums will be delivered -->
         <xs:element ref="bre:DataAddress" />
@@ -556,7 +560,7 @@
         <xs:element ref="bre:DataChecksumType" /> 
         
         <!-- SaltParameter is salt to be included in calculation of checksums requested -->
-        <xs:element ref="bre:SaltParameter" minOccurs="1" maxOccurs="unbounded" /> 
+        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" /> 
 
         <!-- Address (e.g. in form of an URL) for where checksums has been delivered (if completed) -->
         <xs:element ref="bre:DataAddress" />
@@ -574,7 +578,7 @@
         <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" />  
 
         <!-- The number of checksums included, if given in this message instead of via data transfer -->
-        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1"/> 
+        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1" /> 
 
         <!-- List of data for checksums in result, if given in this message instead of via data transfer-->
         <xs:group ref="bre:ChecksumsData" minOccurs="0" maxOccurs="unbounded" /> 
@@ -652,7 +656,8 @@
         <!-- In cases where the address is not given, the result will be given in the GetDataIdsComplete message -->
         <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1"/> 
 
-        <!-- Identifier of receiving pillar, which can be used for possible checks (ReplyID should ensure that right pillar is reached)  -->
+        <!-- Identifier of receiving pillar, which can be used for possible checks -->
+        <!-- (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached)  -->
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
 
       </xs:sequence>
@@ -718,7 +723,7 @@
         <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1"/> 
 
         <!-- List of data for data ids in result, if given in this message instead of via data transfer-->
-        <xs:group ref="DataIDsData" minOccurs="0" maxOccurs="unbounded" /> 
+        <xs:group ref="bre:DataIDsData" minOccurs="0" maxOccurs="unbounded" /> 
 
       </xs:sequence>
 
