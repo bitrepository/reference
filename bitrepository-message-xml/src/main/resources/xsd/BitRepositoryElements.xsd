@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- URLs in schema targetNamespace must be updated later -->
-<xs:schema targetNamespace="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/xsd/BitRepositoryElements.xsd"
+<xs:schema 
+	targetNamespace="http://bitrepository.org/BitRepositoryElements.xsd"
     elementFormDefault="qualified"
-    xmlns="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/xsd/BitRepositoryElements.xsd"
+    xmlns="http://bitrepository.org/BitRepositoryElements.xsd"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
 >
   <!-- ************************************************************** -->
@@ -61,6 +62,13 @@
     Gives information about which type of checksum is used for data
     This is for instance used for the GetChecksum operation 
     In first version this will be text like MD5, later it will be aligned with a standard 
+    </xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="NoOfResults" > 
+    <xs:annotation><xs:documentation xml:lang="en">
+    The number of results given in a delivered result
+    e.g. number of checksums in result given in a data transmitted file or in a message
     </xs:documentation></xs:annotation>
   </xs:element>
 

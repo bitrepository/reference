@@ -38,11 +38,10 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- Disabled until the xsd's are consistent
 			<plugin>
 				<groupId>org.jvnet.jaxb2.maven2</groupId>
 				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.7.4</version>x
+				<version>0.7.4</version>
 				<executions>
 					<execution>
 						<goals>
@@ -52,13 +51,12 @@
 					</execution>
 				</executions>
 				<configuration>
-					<schemaDirectory>${project.build.directory}/message-xsd</schemaDirectory>
+					<schemaDirectory>${project.build.directory}/message-xsd/xsd</schemaDirectory>
 					<schemaIncludes>
 						<include>*.xsd</include>
 					</schemaIncludes>
 				</configuration>
 			</plugin>
-			-->
 		</plugins>
 	</build>
 </project>

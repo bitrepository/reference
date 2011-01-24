@@ -11,12 +11,4 @@
 
 	<name>Bitrepository message xml definition</name>
 	<description>Contains the definitions for the Bitrepository message content</description>
-
-	<build>
-		<resources>
-			<resource>
-				<directory>src/ressources/xsd</directory>
-			</resource>
-		</resources>
-	</build>
 </project>

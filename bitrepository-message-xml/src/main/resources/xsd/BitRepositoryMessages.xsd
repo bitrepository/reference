@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <!-- URLs in schema targetNamespace must be updated later -->
-<xs:schema targetNamespace="http://tempuri.org/BitRepositoryMessages.xsd" 
+<xs:schema targetNamespace="http://bitrepository.org/BitRepositoryMessages.xsd" 
      attributeFormDefault="unqualified" 
      elementFormDefault="qualified" 
+
+	 xmlns="http://bitrepository.org//BitRepositoryMessages.xsd"
      xmlns:xs="http://www.w3.org/2001/XMLSchema"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xmlns:bre="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/xsd/BitRepositoryElements.xsd"
-     xsi:schemaLocation="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/xsd/BitRepositoryElements.xsd 
-   	 https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/xsd/BitRepositoryElements.xsd"
+     xmlns:bre="http://bitrepository.org/BitRepositoryElements.xsd"
 >
      
   <!-- URL in import targetNamespace must be updated later -->
-  <xs:import namespace="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/xsd/BitRepositoryElements.xsd" />
-
+  <xs:import schemaLocation="BitRepositoryElements.xsd" namespace="http://bitrepository.org/BitRepositoryElements.xsd" />
+ 
   <!-- ************************************************************** -->
   <!-- * Operation messages for Get                                 * -->
   <!-- ************************************************************** -->
