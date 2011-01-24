@@ -13,54 +13,92 @@
   <!-- URL in import targetNamespace must be updated later -->
   <xs:import namespace="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd" />
 
-  <!-- ******************************************************************* -->
-  <!-- * Data format for delivery of checksums as result of GetChecksums * -->
-  <!-- ******************************************************************* -->
+  <!-- ***************************** -->
+  <!-- * GetChecksumsResults       * -->
+  <!-- ***************************** -->
 
   <xs:element name="GetChecksumsResults">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Data format for delivery of checksums as result of GetChecksums
+    </xs:documentation></xs:annotation>
+  
     <xs:complexType>
       <xs:sequence>
-        <!-- SlaID is a unique identifier for SLA which data belongs to. -->
-        <xs:element ref="bre:SlaID" /> 
+        <xs:element ref="bre:SlaID" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          SlaID is a unique identifier for SLA which data belongs to.
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Identifier of pillar, that created the result -->
-        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of pillar, that created the result
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- The type of checksums included -->
-        <xs:element ref="bre:DataChecksumType" /> 
+        <xs:element ref="bre:DataChecksumType" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The type of checksums included
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- SaltParameter included in calculation of checksums -->
-        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          SaltParameter included in calculation of checksums 
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- The number of checksums included -->
-        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of checksums included
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- List of data for checksums in result -->
-        <xs:group ref="bre:ChecksumsData" minOccurs="1" maxOccurs="unbounded" /> 
+        <xs:group ref="bre:ChecksumsData" minOccurs="1" maxOccurs="unbounded" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of data for checksums in result
+          </xs:documentation></xs:annotation>
+        </xs:group>
         
       </xs:sequence>
     </xs:complexType>
   </xs:element>
 
-  <!-- ******************************************************************* -->
-  <!-- * Data format for delivery of data ids as result of GetDataIDs    * -->
-  <!-- ******************************************************************* -->
+  <!-- ***************************** -->
+  <!-- * GetDataIDsResults         * -->
+  <!-- ***************************** -->
 
   <xs:element name="GetDataIDsResults">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Data format for delivery of data IDs as result of GetDataIDs
+    </xs:documentation></xs:annotation>
+
     <xs:complexType>
       <xs:sequence>
 
-        <!-- SlaID is a unique identifier for SLA which data belongs to. -->
-        <xs:element ref="bre:SlaID" /> 
+        <xs:element ref="bre:SlaID" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          SlaID is a unique identifier for SLA which data belongs to.
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Identifier of pillar, that created the result -->
-        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of pillar, that created the result
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- The number of checksums included -->
-        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of checksums included
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- List of data on data identifiers in result -->
-        <xs:group ref="bre:DataIDsData" minOccurs="1" maxOccurs="unbounded"/> 
+        <xs:group ref="bre:DataIDsData" minOccurs="1" maxOccurs="unbounded" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of data on data identifiers in result
+          </xs:documentation></xs:annotation>
+        </xs:group>
 
       </xs:sequence>
     </xs:complexType>

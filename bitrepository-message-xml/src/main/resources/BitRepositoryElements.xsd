@@ -10,123 +10,241 @@
   <!-- ****** USED ELEMNETS IN ALPHABETIC ORDER (used now)     ****** -->
   <!-- ************************************************************** -->
 
-  <!-- CalculationTime is the time when a given result was last calculated -->
-  <!-- e.g. when a checksum was calculated or when a data object was last seen -->
-  <xs:element name="CalculationTime" /> 
+  <xs:element name="CalculationTime" > 
+    <xs:annotation><xs:documentation xml:lang="en">
+    The time when a given result was last calculated
+    e.g. when a checksum was calculated or when a data object was last seen
+    </xs:documentation></xs:annotation>
+  </xs:element>
   
-  <!-- Checksum measure for specific data object -->
-  <!-- e.g. used in delivery of GetChecksums result -->
-  <xs:element name="Checksum"/>
+  <xs:element name="Checksum">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Checksum measure for specific data object
+    e.g. used in delivery of GetChecksums result
+    </xs:documentation></xs:annotation>
+  </xs:element>
 
-  <!-- CompleteCode is a code for the type of completion given -->
-  <!-- The actual codes are specified later, e.g. IoError, DataNotFound, AccessDenied, OK -->
-  <xs:element name="CompleteCode" />
+  <xs:element name="CompleteCode" >
+    <xs:annotation><xs:documentation xml:lang="en">
+    CompleteCode is a code for the type of completion given
+    The actual codes are specified later, e.g. IoError, DataNotFound, AccessDenied, OK
+    </xs:documentation></xs:annotation>
+  </xs:element>
 
-  <!-- CompleteText is a text for logging in the completion -->
-  <!-- It does not have a semantic meaning, but contributes to a more readable log -->
-  <xs:element name="CompleteText" />
+  <xs:element name="CompleteText" >
+    <xs:annotation><xs:documentation xml:lang="en">
+    CompleteText is a text for logging in the completion
+    It does not have a semantic meaning, but contributes to a more readable log
+    </xs:documentation></xs:annotation>
+  </xs:element>
   
-  <!-- Address (e.g. in form of an URL) for where data can be found -->
-  <!-- In a Get operation this will be the address where data requested must be placed -->
-  <!-- In a Put operation this will be the identifier the data for later request of the data -->
-  <xs:element name="DataAddress" />
+  <xs:element name="DataAddress" >
+    <xs:annotation><xs:documentation xml:lang="en">
+    Address (e.g. in form of an URL) for where data can be found
+    In a Get operation this will be the address where data requested must be placed
+    In a Put operation this will be the identifier the data for later request of the data
+    </xs:documentation></xs:annotation>
+  </xs:element>
   
-  <!-- DataChecksumType gives information about which type of checksum is used for data -->
-  <!-- This is for instance used for the GetChecksum operation -->
-  <!-- In first version this will be text like MD5, later it will be aligned with a standard  -->
-  <xs:element name="DataChecksumType" />
+  <xs:element name="DataChecksumType" >
+    <xs:annotation><xs:documentation xml:lang="en">
+    Gives information about which type of checksum is used for data
+    This is for instance used for the GetChecksum operation 
+    In first version this will be text like MD5, later it will be aligned with a standard 
+    </xs:documentation></xs:annotation>
+  </xs:element>
 
-  <!-- Unique identifiers for data in given service level agreement -->
-  <!-- In a Get operation this will be the identifier for data requested -->
-  <!-- In a Put operation this will be the identifier the data for later request of the data -->
-  <xs:element name="DataID"/>
+  <xs:element name="DataID">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Unique identifiers for data in given service level agreement
+    In a Get operation this will be the identifier for data requested
+    In a Put operation this will be the identifier the data for later request of the data
+    </xs:documentation></xs:annotation>
+  </xs:element>
   
-  <!-- NoOfResults is the the number of results given in a delivered result -->
-  <!-- e.g. number of checksums in result given in a data transmitted file or in a message -->
-  <xs:element name="NoOfResults" /> 
+  <xs:element name="NoOfResults" > 
+    <xs:annotation><xs:documentation xml:lang="en">
+    The number of results given in a delivered result
+    e.g. number of checksums in result given in a data transmitted file or in a message
+    </xs:documentation></xs:annotation>
+  </xs:element>
   
-  <!-- PillarChecksumType gives information about which type of checksum is used for data on checksums pillar -->
-  <!-- In a Get this information will only be relevant for identification of pillars -->
-  <!-- In a Put this will give input to check if the right put is performed on checksums pillar according to SLA -->
-  <!-- In first version this will be text like MD5, later it will be aligned with a standard  -->
-  <xs:element name="PillarChecksumType" />
+  <xs:element name="ParameterAddress" >
+    <xs:annotation><xs:documentation xml:lang="en">
+    Address where parameter can be found 
+    </xs:documentation></xs:annotation>
+  </xs:element>
 
-  <!-- PillarID is a unique identifier for a specific pillar (covered by  the SLA which data belongs to) -->
-  <xs:element name="PillarID" /> 
+  <xs:element name="PillarChecksumType" >
+    <xs:annotation><xs:documentation xml:lang="en">
+    Information about which type of checksum is used for data on checksums pillar
+    In a Get this information will only be relevant for identification of pillars
+    In a Put this will give input to check if the right put is performed on checksums pillar according to SLA
+    In first version this will be text like MD5, later it will be aligned with a standard 
+    </xs:documentation></xs:annotation>
+  </xs:element>
 
-  <!-- ResponseCode is a code for the type of response given -->
-  <!-- The actual codes are specified later, e.g. UnknownDataId, OK -->
-  <xs:element name="ResponseCode" />
+  <xs:element name="PillarCredentials" >
+    <xs:annotation><xs:documentation xml:lang="en">
+    Credentials for performing operations on a specific pillar
+    </xs:documentation></xs:annotation>
+  </xs:element>
 
-  <!-- ResponseText is a text for logging in the response -->
-  <!-- It does not have a semantic meaning, but contributes to a more readable log -->
-  <xs:element name="ResponseText" />
+  <xs:element name="PillarID" > 
+    <xs:annotation><xs:documentation xml:lang="en">
+    A unique identifier for a specific pillar (covered by  the SLA which data belongs to)
+    </xs:documentation></xs:annotation>
+  </xs:element>
 
-  <!-- SaltParameter is  extra salt to be added in the checksum calculation -->
-  <!-- If this parameter is given, it is also specification the checksum calculation must include the salt -->
-  <xs:element name="SaltParameter" />
+  <xs:element name="ResponseCode" >
+    <xs:annotation><xs:documentation xml:lang="en">
+    A code for the type of response given
+    The actual codes are specified later, e.g. UnknownDataId, OK
+    </xs:documentation></xs:annotation>
+  </xs:element>
 
-  <!-- SlaID is a unique identifier for SLA which data belongs to. -->
-  <xs:element name="SlaID" /> 
+  <xs:element name="ResponseText" >
+    <xs:annotation><xs:documentation xml:lang="en">
+    A text for logging in the response. 
+    It does not have a semantic meaning, but contributes to a more readable log
+    </xs:documentation></xs:annotation>
+  </xs:element>
 
-  <!-- TimeToDeliver gives time before result of request can be delivered -->
-  <!-- In a Get this will be the estimated time before requested data is ready for download -->
-  <!-- In a Put this will be the estimated time before requested data is uploaded -->
-  <!-- In first version this will be in miliseconds, later it will be consisting of time and unit according to a standard  -->
-  <xs:element name="TimeToDeliver" />
+  <xs:element name="SaltParameter" >
+    <xs:annotation><xs:documentation xml:lang="en">
+    An extra salt to be added in the checksum calculation
+    If this parameter is given, it is also specification the checksum calculation must include the salt
+    </xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="SlaID" > 
+    <xs:annotation><xs:documentation xml:lang="en">
+    A unique identifier for SLA which data belongs to.
+    </xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="TimeToDeliver" >
+    <xs:annotation><xs:documentation xml:lang="en">
+    The estimated time before result of request can be delivered
+    In a Get this will be the estimated time before requested data is ready for download 
+    In a Put this will be the estimated time before requested data is uploaded 
+    In first version this will be in miliseconds, later it will be consisting of time and unit according to a standard 
+    </xs:documentation></xs:annotation>
+  </xs:element>
 
   <!-- ************************************************************** -->
-  <!-- ****** GROUPS                                           ****** -->
+  <!-- ****** GROUPS AND CHOICES                               ****** -->
   <!-- ************************************************************** -->
 
-  <!-- ChecksumsData includes relevant information for a checksum in a result -->
   <xs:group name="ChecksumsData">
-    <xs:sequence>
-             
-      <!-- Identifier of data the checksum is for  -->
-      <xs:element ref="DataID" />
-         
-      <!-- Checksum of data  -->
-      <!-- The checksum will be based on given algorithm and include salt if specified -->
-      <xs:element ref="Checksum" />
+    <xs:annotation><xs:documentation xml:lang="en">
+    Includes relevant information for a checksum in a result
+    </xs:documentation></xs:annotation>
 
-      <!-- The time when the checksum was last calculated  -->
-      <!-- (especially for ordinary checksums on off-line medias, there can be long intervals between  -->
-      <!-- calculations, - in such cases this information is crucial for alarming) -->
-      <xs:element ref="CalculationTime" />
+    <xs:sequence>
+      <xs:element ref="DataID" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Identifier of data the checksum is for
+        </xs:documentation></xs:annotation>
+      </xs:element>
+         
+      <xs:element ref="Checksum" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Checksum of data which will be based on given algorithm and include salt if specified 
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element ref="CalculationTime" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        The time when the checksum was last calculated
+        (especially for ordinary checksums on off-line medias, there can be long intervals between
+        calculations, - in such cases this information is crucial for alarming)
+        </xs:documentation></xs:annotation>
+      </xs:element>
 
     </xs:sequence>
   </xs:group>
 
-  <!-- Core includes elements that all protocol messages must include -->
-  <!-- The core part will NOT be included in specific SLA related encryption -->
   <xs:group name="Core">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Includes elements that all protocol messages must include.
+    The core part will NOT be included in specific SLA related encryption
+    </xs:documentation></xs:annotation>
+
     <xs:sequence>
-      <!-- CorrelationID is a unique identifier for communication usually on primitive level, -->
-      <!-- e.g the IdentifyPillarsForGet part of a get operation -->
-      <xs:element name="CorrelationID" />
+      <xs:element name="CorrelationID" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        CorrelationID is a unique identifier for communication usually on primitive level, 
+        e.g the IdentifyPillarsForGet part of a get operation
+        </xs:documentation></xs:annotation>
+      </xs:element>
        
-      <!-- SlaID is a unique identifier for SLA which data belongs to. -->
-      <!-- This is also the identification of decryption and keys for contents of message -->
-      <xs:element ref="SlaID" /> 
+      <xs:element ref="SlaID" > 
+        <xs:annotation><xs:documentation xml:lang="en">
+        SlaID is a unique identifier for SLA which data belongs to.
+        This is also the identification of decryption and keys for contents of message
+        </xs:documentation></xs:annotation>
+      </xs:element>
       
-      <!-- ReplyTo contains name of queue/topic to reply/respond to --> 
-      <!-- (blank if not relevant, e.g. for alarms) -->  
-      <xs:element name="ReplyTo" />
+      <xs:element name="ReplyTo" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Contains name of queue/topic to reply/respond to 
+        (blank if not relevant, e.g. for alarms)
+        </xs:documentation></xs:annotation>
+      </xs:element>
     </xs:sequence>
   </xs:group>
   
-  <!-- DataIDsData includes relevant information on data ids in a result -->
+  <xs:element name="DataIDs">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Identifiers that uniquely identifies the data in given SLA which are requested for
+    These can be specified in different ways, e.g. a list, an all constant or via an address
+    </xs:documentation></xs:annotation>
+
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="DataID" minOccurs="1" maxOccurs="unbounded">
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of unique identifiers for data in given SLA
+          </xs:documentation></xs:annotation>
+        </xs:element>
+            
+        <xs:element name="AllDataIDs" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Specification that all data identifiers in SLA is requested
+          </xs:documentation></xs:annotation>
+        </xs:element>
+                  
+        <xs:element ref="ParameterAddress" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address where Data ID list can be found on form DataIDsParameter
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <!-- To be enhanced with other ways to address chunks of identifiers, e.g. for mass processing -->
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
   <xs:group name="DataIDsData">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Includes relevant information on data IDs in a result
+    </xs:documentation></xs:annotation>
     <xs:sequence>
              
-      <!-- Identifier of data -->
-      <xs:element ref="DataID" />
+      <xs:element ref="DataID" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Identifier of data
+        </xs:documentation></xs:annotation>
+      </xs:element>
          
-      <!-- The time when the data  was last seen  -->
-      <!-- (especially for off-line medias, there can be long intervals between  -->
-      <!-- actually seeing the file with the data, - in such cases this information is crucial for alarming) -->
-      <xs:element ref="CalculationTime" />
+      <xs:element ref="CalculationTime" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        The time when the data  was last seen
+        (especially for off-line medias, there can be long intervals between
+        actually seeing the file with the data, - in such cases this information is crucial for alarming)
+        </xs:documentation></xs:annotation>
+      </xs:element>
 
     </xs:sequence>
   </xs:group>
@@ -144,8 +262,4 @@
   <!-- .... -->
   <xs:element name="PageOffSet" /> <!-- Unit and measure ... -->
   <xs:element name="PageLength" /> <!-- Unit and measure ... -->
-
-  <!-- Address (e.g. in form of an URL) for where parameters can be found -->
-  <!-- .... -->
-  <xs:element name="ParametersAddress" />
 </xs:schema>

@@ -18,19 +18,27 @@
   <!-- ************************************************************** -->
 
   <!-- **************                                                 -->
-  <!-- *** Primitive messages for IdentifyPillarsForGet...            -->
+  <!-- *** Messages for IdentifyPillarsForGet Primitive               -->
 
-  <!-- ** IdentifyPillarsForGet Request -->
   <xs:element name="IdentifyPillarsForGetRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in IdentifyPillarsForGet primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
 
-        <!-- Unique identifier for requested data in given SLA -->
-        <xs:element ref="bre:DataID" /> 
+        <xs:element ref="bre:DataID" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for requested data in given SLA 
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -39,27 +47,43 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- ** IdentifyPillarsForGet Reply -->
   <xs:element name="IdentifyPillarsForGetReply">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REPLY in IdentifyPillarsForGet primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
 
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
-
-        <!-- Unique identifier for requested data in given SLA -->
-        <xs:element ref="bre:DataID" /> 
+        <xs:element ref="bre:DataID" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for requested data in given SLA
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Unique identifier for pillar replying -->
-        <xs:element ref="bre:PillarID" />
+        <xs:element ref="bre:PillarID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for pillar replying
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Checksums type in case it is a checksum pillar replying -->
-        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type in case it is a checksum pillar replying 
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Estimated time before delivery of data requested -->
-        <xs:element ref="bre:TimeToDeliver" /> 
+        <xs:element ref="bre:TimeToDeliver" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Estimated time before delivery of data requested
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -68,21 +92,30 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- **************                                                 -->
-  <!-- *** Primitive messages for Get...                              -->
+  <!-- **************                                                        -->
+  <!-- *** Messages for Get Primitive                                        -->
   
-  <!-- *** The Get... messages is only sent to one specific pillar which corresponds to ReplyTo from IdentifyPillarsForGetReply -->
+  <!-- ***  Messages for Get Primitive are only sent to one specific pillar  -->
+  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForGetReply     -->
   
-  <!-- ** Get Request -->
   <xs:element name="GetRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in Get primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
       
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
       
+        <!-- Credentials for the Get operation on the specific pillar/SLA -->
+        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" /> 
+
         <!-- Unique identifier for requested data in given SLA -->
         <xs:element ref="bre:DataID" /> 
 
@@ -103,15 +136,20 @@
     </xs:complexType>
   </xs:element>
   
-  <!-- ** Get Response -->
   <xs:element name="GetResponse">
+    <xs:annotation><xs:documentation xml:lang="en">
+    RESPONSE in Get primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
         
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
         
         <!-- Unique identifier for requested data in given SLA -->
         <xs:element ref="bre:DataID" />
@@ -138,15 +176,20 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- ** Get Complete -->
   <xs:element name="GetComplete">
+    <xs:annotation><xs:documentation xml:lang="en">
+    COMPLETE in Get primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
         
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
         
         <!-- Unique identifier for requested data in given SLA -->
         <xs:element ref="bre:DataID" /> 
@@ -178,16 +221,21 @@
   <!-- ************************************************************** -->
 
   <!-- **************                                                 -->
-  <!-- *** Primitive messages for IdentifyPillarsForPut...            -->
+  <!-- *** Messages for IdentifyPillarsForPut Primitive               -->
 
-  <!-- ** IdentifyPillarsForPut Request -->
   <xs:element name="IdentifyPillarsForPutRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in IdentifyPillarsForPut primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
         
         <!-- Unique identifier for data to be put for given SLA -->
         <xs:element ref="bre:DataID" /> 
@@ -199,15 +247,20 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- ** IdentifyPillarsForPut Reply -->
   <xs:element name="IdentifyPillarsForPutReply">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REPLY in IdentifyPillarsForPut primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
         
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
         
         <!-- Unique identifier for data to be put for given SLA -->
         <xs:element ref="bre:DataID" /> 
@@ -228,21 +281,30 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- **************                                                 -->
-  <!-- *** Primitive messages for Put...                              -->
+  <!-- **************                                                       -->
+  <!-- *** Messages for Put Primitive                                       -->
 
-  <!-- *** The Put... messages is only sent to one specific pillar which corresponds to ReplyTo from IdentifyPillarsForGetReply -->
+  <!-- ***  Messages for Put Primitive are only sent to one specific pillar  -->
+  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForPutReply     -->
   
-  <!-- ** Put Request -->
   <xs:element name="PutRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in Put primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
         
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
         
+        <!-- Credentials for the Put operation on the specific pillar/SLA -->
+        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" /> 
+
         <!-- Unique identifier for data to be put for given SLA -->
         <xs:element ref="bre:DataID" /> 
         
@@ -263,14 +325,19 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- ** Put Response -->
   <xs:element name="PutResponse">
+    <xs:annotation><xs:documentation xml:lang="en">
+    RESPONSE in Put primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
         
         <!-- Unique identifier for data to be put for given SLA -->
         <xs:element ref="bre:DataID" /> 
@@ -297,14 +364,19 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- ** Put Complete -->
   <xs:element name="PutComplete">
+    <xs:annotation><xs:documentation xml:lang="en">
+    COMPLETE in IdentifyPillarsForPut primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
         
         <!-- Unique identifier for data to be put for given SLA -->
         <xs:element ref="bre:DataID" /> 
@@ -336,31 +408,24 @@
   <!-- ************************************************************** -->
 
   <!-- **************                                                 -->
-  <!-- *** Primitive messages for IdentifyPillarsForGetChecksums...   -->
+  <!-- *** Messages for IdentifyPillarsForGetChecksums Primitive      -->
 
-  <!-- ** IdentifyPillarsForGetChecksums Request -->
   <xs:element name="IdentifyPillarsForGetChecksumsRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in IdentifyPillarsForGetChecksums primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
         
         <!-- DataIDs uniquely identifies the data in given SLA which the checksums are requested for -->
-        <xs:element name="DataIDs">
-          <xs:complexType>
-            <xs:choice>
-              <!-- list of unique identifiers for data in given SLA -->
-              <xs:element ref="bre:DataID" minOccurs="1" maxOccurs="unbounded"/>
-  
-              <!-- Specification that all data identifiers in SLA is requested -->
-              <xs:element name="AllDataIDs" />
-            </xs:choice>        
-          
-            <!-- To be enhanced with other ways to address chunks of identifiers, e.g. for mass processing -->
-          </xs:complexType>
-        </xs:element>
+        <xs:element ref="bre:DataIDs" />
 
         <!-- Checksums type requested -->
         <xs:element ref="bre:DataChecksumType" /> 
@@ -375,30 +440,23 @@
     </xs:complexType>
   </xs:element>
   
-  <!-- ** IdentifyPillarsForGetChecksums Reply -->
   <xs:element name="IdentifyPillarsForGetChecksumsReply">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REPLY in IdentifyPillarsForGetChecksums primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
 
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/>
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
 
         <!-- DataIDs uniquely identifies the data in given SLA which the checksums are requested for -->
-        <xs:element name="DataIDs">
-          <xs:complexType>
-            <xs:choice>
-              <!-- list of unique identifiers for data in given SLA -->
-              <xs:element ref="bre:DataID" minOccurs="1" maxOccurs="unbounded"/>
-            
-              <!-- Specification that all data identifiers in SLA is requested -->
-              <xs:element name="AllDataIDs" />
-                  
-              <!-- To be enhanced with other ways to address chunks of identifiers, e.g. for mass processing -->
-            </xs:choice>
-          </xs:complexType>
-        </xs:element>
+        <xs:element ref="bre:DataIDs" />
 
         <!-- Checksums type requested -->
         <xs:element ref="bre:DataChecksumType" /> 
@@ -422,37 +480,32 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- **************                                   -->
-  <!-- *** Primitive messages for GetChecksums     TBD      -->
+  <!-- **************                                                 -->
+  <!-- *** Messages for GetChecksums Primitive                        -->
+
+  <!-- ***  Messages for GetChecksums Primitive are only sent to one specific pillar  -->
+  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForGetChecksumsReply     -->
   
-  <!-- ** GetChecksums Request -->
   <xs:element name="GetChecksumsRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in GetChecksums primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
 
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/>
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <!-- Credentials for the Get Checksums operation on the specific pillar/SLA -->
+        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" /> 
 
         <!-- DataIDs uniquely identifies the data in given SLA which the checksums are requested for -->
-        <xs:element name="DataIDs">
-          <xs:complexType>
-            <xs:choice>
-              <!-- list of unique identifiers for data in given SLA -->
-              <xs:element ref="bre:DataID" minOccurs="1" maxOccurs="unbounded">
-                <xs:annotation>
-                  <xs:documentation xml:lang="en">list of unique identifiers for data in given SLA</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-            
-              <!-- Specification that all data identifiers in SLA is requested -->
-              <xs:element name="AllDataIDs" />
-                  
-            <!-- To be enhanced with other ways to address chunks of identifiers, e.g. for mass processing -->
-            </xs:choice>
-          </xs:complexType>
-        </xs:element>
+        <xs:element ref="bre:DataIDs" />
         
         <!-- Checksums type requested -->
         <xs:element ref="bre:DataChecksumType" /> 
@@ -478,30 +531,23 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- ** GetChecksums Response -->
   <xs:element name="GetChecksumsResponse">
+    <xs:annotation><xs:documentation xml:lang="en">
+    RESPONSE in GetChecksums primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
 
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/>
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
 
         <!-- DataIDs uniquely identifies the data in given SLA which the checksums are requested for -->
-        <xs:element name="DataIDs">
-          <xs:complexType>
-            <xs:choice>
-              <!-- list of unique identifiers for data in given SLA -->
-              <xs:element ref="bre:DataID" minOccurs="1" maxOccurs="unbounded" />
-            
-              <!-- Specification that all data identifiers in SLA is requested -->
-              <xs:element name="AllDataIDs" />
-                  
-              <!-- To be enhanced with other ways to address chunks of identifiers, e.g. for mass processing -->
-            </xs:choice>
-          </xs:complexType>
-        </xs:element>
+        <xs:element ref="bre:DataIDs" />
 
         <!-- DataChecksumType is the checksums type requested -->
         <xs:element ref="bre:DataChecksumType" /> 
@@ -531,30 +577,23 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- ** GetChecksums Complete -->
   <xs:element name="GetChecksumsComplete">
+    <xs:annotation><xs:documentation xml:lang="en">
+    COMPLETE in GetChecksums primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
 
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/>
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
 
         <!-- DataIDs uniquely identifies the data in given SLA which the checksums are requested for -->
-        <xs:element name="DataIDs">
-          <xs:complexType>
-            <xs:choice>
-              <!-- list of unique identifiers for data in given SLA -->
-              <xs:element ref="bre:DataID" minOccurs="1" maxOccurs="unbounded"/>
-            
-              <!-- Specification that all data identifiers in SLA is requested -->
-              <xs:element name="AllDataIDs" />
-                  
-              <!-- To be enhanced with other ways to address chunks of identifiers, e.g. for mass processing -->
-            </xs:choice>
-          </xs:complexType>
-        </xs:element>
+        <xs:element ref="bre:DataIDs" />
 
         <!-- Checksums type requested -->
         <xs:element ref="bre:DataChecksumType" /> 
@@ -592,20 +631,25 @@
   </xs:element>
 
   <!-- ************************************************************** -->
-  <!-- * Operation messages for GetDataIDs                                * -->
+  <!-- * Operation messages for GetDataIDs                          * -->
   <!-- ************************************************************** -->
 
   <!-- **************                                                 -->
-  <!-- *** Primitive messages for IdentifyPillarsForGetDataIDs...            -->
+  <!-- *** Messages for IdentifyPillarsForGetDataIDs Primitive        -->
 
-  <!-- ** IdentifyPillarsForGetDataIDs Request -->
   <xs:element name="IdentifyPillarsForGetDataIDsRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in IdentifyPillarsForGetDataIDs primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -614,15 +658,20 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- ** IdentifyPillarsForGetDataIDs Reply -->
   <xs:element name="IdentifyPillarsForGetDataIDsReply">
+    <xs:annotation><xs:documentation xml:lang="en">
+    RESPLY in IdentifyPillarsForGetDataIDs primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
 
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
 
         <!-- Unique identifier for pillar replying -->
         <xs:element ref="bre:PillarID" />
@@ -638,20 +687,29 @@
   </xs:element>
 
   <!-- **************                                                 -->
-  <!-- *** Primitive messages for Get...                              -->
+  <!-- *** Messages for GetDataIDs Primitive                          -->
   
-  <!-- *** The GetDataIDs... messages is only sent to one specific pillar which corresponds to ReplyTo from IdentifyPillarsForGetReply -->
+  <!-- ***  Messages for GetDataIDs Primitive are only sent to one specific pillar  -->
+  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForGetDataIDsReply     -->
   
-  <!-- ** GetDataIDs Request -->
   <xs:element name="GetDataIDsRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in GetDataIDs primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
       
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
       
+        <!-- Credentials for the Get data IDs operation on the specific pillar/SLA -->
+        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" /> 
+
         <!-- Address (e.g. in form of an URL) for where data ids must be delivered via data transmission -->
         <!-- In cases where the address is not given, the result will be given in the GetDataIdsComplete message -->
         <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1"/> 
@@ -668,15 +726,20 @@
     </xs:complexType>
   </xs:element>
   
-  <!-- ** GetDataIDs Response -->
   <xs:element name="GetDataIDsResponse">
+    <xs:annotation><xs:documentation xml:lang="en">
+    RESPONSE in GetDataIDs primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
         
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
         
         <!-- Address (e.g. in form of an URL) for where data will be delivered -->
         <xs:element ref="bre:DataAddress" />
@@ -697,15 +760,20 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- ** GetDataIDs Complete -->
   <xs:element name="GetDataIDsComplete">
+    <xs:annotation><xs:documentation xml:lang="en">
+    COMPLETE in GetDataIDs primitive
+    </xs:documentation></xs:annotation>
     <xs:complexType>
 
       <!-- Contents -->
       <xs:sequence>
         
-        <!-- Core is the mandatory part with CorrelationID, SlaID and ReplyTo  -->
-        <xs:group ref="bre:Core"/> 
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
         
         <!-- Address (e.g. in form of an URL) for where data has been delivered (if completed) -->
         <xs:element ref="bre:DataAddress" />
