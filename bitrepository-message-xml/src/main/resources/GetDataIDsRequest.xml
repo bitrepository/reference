@@ -28,6 +28,7 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
+  <PillarCredentials>MyPillarCredentials</PillarCredentials>
   <DataAddress>http://myServer/myPlace/Myfile</DataAddress>
   <PillarID>MyPillar</PillarID>
 </bro:GetRequest>

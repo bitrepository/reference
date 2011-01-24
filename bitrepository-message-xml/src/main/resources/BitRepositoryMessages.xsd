@@ -106,28 +106,42 @@
 
       <!-- Contents -->
       <xs:sequence>
-      
         <xs:group ref="bre:Core" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
           </xs:documentation></xs:annotation>
         </xs:group>
       
-        <!-- Credentials for the Get operation on the specific pillar/SLA -->
-        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Credentials for the Get operation on the specific pillar/SLA
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Unique identifier for requested data in given SLA -->
-        <xs:element ref="bre:DataID" /> 
+        <xs:element ref="bre:DataID" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for requested data in given SLA
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Address (e.g. in form of an URL) for where data must be delivered -->
-        <xs:element ref="bre:DataAddress" /> 
+        <xs:element ref="bre:DataAddress" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where data must be delivered
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Identifier of receiving pillar, which can be used for possible checks -->
-        <!-- (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached)  -->
-        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving pillar, which can be used for possible checks
+          (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached) 
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type of receiving checksums pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -144,30 +158,47 @@
 
       <!-- Contents -->
       <xs:sequence>
-        
         <xs:group ref="bre:Core" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <!-- Unique identifier for requested data in given SLA -->
-        <xs:element ref="bre:DataID" />
+        <xs:element ref="bre:DataID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for requested data in given SLA
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Address (e.g. in form of an URL) for where data will be delivered -->
-        <xs:element ref="bre:DataAddress" />
+        <xs:element ref="bre:DataAddress" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where data will be delivered
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Identifier of replying pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of replying pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Checksums type of replying checksums pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type of replying checksums pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Response code telling whether GetRequest has been received and is expected to be completed -->
-        <xs:element ref="bre:ResponseCode" />  
+        <xs:element ref="bre:ResponseCode" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response code telling whether GetRequest has been received and is expected to be completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Response text containing additional information for logging only -->
-        <xs:element ref="bre:ResponseText" minOccurs="0" maxOccurs="1" />  
+        <xs:element ref="bre:ResponseText" minOccurs="0" maxOccurs="1" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response text containing additional information for logging only 
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -184,30 +215,47 @@
 
       <!-- Contents -->
       <xs:sequence>
-        
         <xs:group ref="bre:Core" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <!-- Unique identifier for requested data in given SLA -->
-        <xs:element ref="bre:DataID" /> 
+        <xs:element ref="bre:DataID" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for requested data in given SLA
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Address (e.g. in form of an URL) for where data has been delivered (if completed) -->
-        <xs:element ref="bre:DataAddress" />
+        <xs:element ref="bre:DataAddress" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where data has been delivered (if completed)
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Identifier of replying pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+         Identifier of replying pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Checksums type of replying checksums pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type of replying checksums pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Complete code telling how Get has been completed -->
-        <xs:element ref="bre:CompleteCode" />  
+        <xs:element ref="bre:CompleteCode" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Complete code telling how Get has been completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Complete text containing additional information for logging only -->
-        <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" />  
+        <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Complete text containing additional information for logging only
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -237,8 +285,11 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <!-- Unique identifier for data to be put for given SLA -->
-        <xs:element ref="bre:DataID" /> 
+        <xs:element ref="bre:DataID" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for data to be put for given SLA
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -255,24 +306,35 @@
 
       <!-- Contents -->
       <xs:sequence>
-        
         <xs:group ref="bre:Core" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <!-- Unique identifier for data to be put for given SLA -->
-        <xs:element ref="bre:DataID" /> 
+        <xs:element ref="bre:DataID" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for data to be put for given SLA
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Unique identifier for pillar replying -->
-        <xs:element ref="bre:PillarID" />
+        <xs:element ref="bre:PillarID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for pillar replying 
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Checksums type in case it is a checksum pillar replying -->
-        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type in case it is a checksum pillar replying
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Estimated time before data is downloaded -->
-        <xs:element ref="bre:TimeToDeliver" /> 
+        <xs:element ref="bre:TimeToDeliver" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Estimated time before data is downloaded 
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -295,28 +357,42 @@
 
       <!-- Contents -->
       <xs:sequence>
-        
         <xs:group ref="bre:Core" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <!-- Credentials for the Put operation on the specific pillar/SLA -->
-        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Credentials for the Put peration on the specific pillar/SLA
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Unique identifier for data to be put for given SLA -->
-        <xs:element ref="bre:DataID" /> 
+        <xs:element ref="bre:DataID" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for data to be put for given SLA
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Address (e.g. in form of an URL) for where data must be downloaded from -->
-        <xs:element ref="bre:DataAddress" /> 
+        <xs:element ref="bre:DataAddress" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where data must be downloaded from
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Identifier of receiving pillar, which can be used for possible checks  -->
-        <!-- (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached)  -->
-        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving pillar, which can be used for possible checks
+          (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached)
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type of receiving checksums pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -339,23 +415,41 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <!-- Unique identifier for data to be put for given SLA -->
-        <xs:element ref="bre:DataID" /> 
+        <xs:element ref="bre:DataID" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for data to be put for given SLA
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Address (e.g. in form of an URL) for where data is to be downloaded from -->
-        <xs:element ref="bre:DataAddress" />
+        <xs:element ref="bre:DataAddress" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where data is to be downloaded from
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Identifier of receiving pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type of receiving checksums pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Response code telling whether PutRequest has been received and is expected to be completed -->
-        <xs:element ref="bre:ResponseCode" />  
+        <xs:element ref="bre:ResponseCode" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response code telling whether PutRequest has been received and is expected to be completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Response text containing additional information for logging only -->
-        <xs:element ref="bre:ResponseText" minOccurs="0" maxOccurs="1" />  
+        <xs:element ref="bre:ResponseText" minOccurs="0" maxOccurs="1" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response text containing additional information for logging only
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -378,23 +472,41 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <!-- Unique identifier for data to be put for given SLA -->
-        <xs:element ref="bre:DataID" /> 
+        <xs:element ref="bre:DataID" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for data to be put for given SLA
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Address (e.g. in form of an URL) for where data has been downloaded from (if completed) -->
-        <xs:element ref="bre:DataAddress" />
+        <xs:element ref="bre:DataAddress" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where data has been downloaded from (if completed)
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Identifier of receiving pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type of receiving checksums pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Complete code telling how Put has been completed -->
-        <xs:element ref="bre:CompleteCode" />  
+        <xs:element ref="bre:CompleteCode" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Complete code telling how Put has been completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Complete text containing additional information for logging only -->
-        <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" />  
+        <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Complete text containing additional information for logging only
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -424,14 +536,23 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <!-- DataIDs uniquely identifies the data in given SLA which the checksums are requested for -->
-        <xs:element ref="bre:DataIDs" />
+        <xs:element ref="bre:DataIDs" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          DataIDs uniquely identifies the data in given SLA which the checksums are requested for
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Checksums type requested -->
-        <xs:element ref="bre:DataChecksumType" /> 
+        <xs:element ref="bre:DataChecksumType" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type requested
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- SaltParameter is salt to be included in calculation of checksums requested -->
-        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          SaltParameter is salt to be included in calculation of checksums requested
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
       
       <!-- Attributes with information of message version for version control -->
@@ -448,30 +569,47 @@
 
       <!-- Contents -->
       <xs:sequence>
-
         <xs:group ref="bre:Core" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
           </xs:documentation></xs:annotation>
         </xs:group>
 
-        <!-- DataIDs uniquely identifies the data in given SLA which the checksums are requested for -->
-        <xs:element ref="bre:DataIDs" />
+        <xs:element ref="bre:DataIDs" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          DataIDs uniquely identifies the data in given SLA which the checksums are requested for
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Checksums type requested -->
-        <xs:element ref="bre:DataChecksumType" /> 
+        <xs:element ref="bre:DataChecksumType" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type requested 
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- SaltParameter is salt to be included in calculation of checksums requested -->
-        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          SaltParameter is salt to be included in calculation of checksums requested
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Unique identifier for pillar replying -->
-        <xs:element ref="bre:PillarID" />
+        <xs:element ref="bre:PillarID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for pillar replying 
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Checksums type in case it is a checksum pillar replying -->
-        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type in case it is a checksum pillar replying 
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Estimated time before delivery of checksums requested -->
-        <xs:element ref="bre:TimeToDeliver" /> 
+        <xs:element ref="bre:TimeToDeliver" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Estimated time before delivery of checksums requested 
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -494,35 +632,55 @@
 
       <!-- Contents -->
       <xs:sequence>
-
         <xs:group ref="bre:Core" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
           </xs:documentation></xs:annotation>
         </xs:group>
 
-        <!-- Credentials for the Get Checksums operation on the specific pillar/SLA -->
-        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Credentials for the Get Checksums operation on the specific pillar/SLA
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- DataIDs uniquely identifies the data in given SLA which the checksums are requested for -->
-        <xs:element ref="bre:DataIDs" />
+        <xs:element ref="bre:DataIDs" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          DataIDs uniquely identifies the data in given SLA which the checksums are requested for
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Checksums type requested -->
-        <xs:element ref="bre:DataChecksumType" /> 
+        <xs:element ref="bre:DataChecksumType" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type requested 
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- SaltParameter is salt to be included in calculation of checksums requested -->
-        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          SaltParameter is salt to be included in calculation of checksums requested
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Address (e.g. in form of an URL) for where checksums must be delivered via data transmission -->
-        <!-- In cases where the address is not given, the result will be given in the GetChecksumsComplete message -->
-        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1"/> 
+        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where checksums must be delivered via data transmission.
+          In cases where the address is not given, the result will be given in the GetChecksumsComplete message
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Identifier of receiving pillar, which can be used for possible checks -->
-        <!-- (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached)  -->        
-        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving pillar, which can be used for possible checks
+          (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached)         
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type of receiving checksums pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -539,36 +697,59 @@
 
       <!-- Contents -->
       <xs:sequence>
-
         <xs:group ref="bre:Core" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
           </xs:documentation></xs:annotation>
         </xs:group>
 
-        <!-- DataIDs uniquely identifies the data in given SLA which the checksums are requested for -->
-        <xs:element ref="bre:DataIDs" />
+        <xs:element ref="bre:DataIDs" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          DataIDs uniquely identifies the data in given SLA which the checksums are requested for
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- DataChecksumType is the checksums type requested -->
-        <xs:element ref="bre:DataChecksumType" /> 
+        <xs:element ref="bre:DataChecksumType" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          DataChecksumType is the checksums type requested
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- SaltParameter is salt to be included in calculation of checksums requested -->
-        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          SaltParameter is salt to be included in calculation of checksums requested
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Address (e.g. in form of an URL) for where checksums will be delivered -->
-        <xs:element ref="bre:DataAddress" />
+        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where checksums will be delivered
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Identifier of receiving pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type of receiving checksums pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Response code telling whether GetChecksumsRequest has been received and is expected to be completed -->
-        <xs:element ref="bre:ResponseCode" />  
+        <xs:element ref="bre:ResponseCode" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response code telling whether GetChecksumsRequest has been received and is expected to be completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Response text containing additional information for logging only -->
-        <xs:element ref="bre:ResponseText" minOccurs="0" maxOccurs="1" />  
+        <xs:element ref="bre:ResponseText" minOccurs="0" maxOccurs="1" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response text containing additional information for logging only
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -585,42 +766,71 @@
 
       <!-- Contents -->
       <xs:sequence>
-
         <xs:group ref="bre:Core" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
           </xs:documentation></xs:annotation>
         </xs:group>
 
-        <!-- DataIDs uniquely identifies the data in given SLA which the checksums are requested for -->
-        <xs:element ref="bre:DataIDs" />
+        <xs:element ref="bre:DataIDs" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          DataIDs uniquely identifies the data in given SLA which the checksums are requested for
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Checksums type requested -->
-        <xs:element ref="bre:DataChecksumType" /> 
+        <xs:element ref="bre:DataChecksumType" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type requested
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- SaltParameter is salt to be included in calculation of checksums requested -->
-        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          SaltParameter is salt to be included in calculation of checksums requested
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Address (e.g. in form of an URL) for where checksums has been delivered (if completed) -->
-        <xs:element ref="bre:DataAddress" />
+        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where checksums has been delivered (if completed)
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Identifier of receiving pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type of receiving checksums pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Complete code telling how GetChecksums has been completed -->
-        <xs:element ref="bre:CompleteCode" />  
+        <xs:element ref="bre:CompleteCode" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Complete code telling how GetChecksums has been completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Complete text containing additional information for logging only -->
-        <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" />  
+        <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Complete text containing additional information for logging only 
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- The number of checksums included, if given in this message instead of via data transfer -->
-        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of checksums included, if given in this message instead of via data transfer
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- List of data for checksums in result, if given in this message instead of via data transfer-->
-        <xs:group ref="bre:ChecksumsData" minOccurs="0" maxOccurs="unbounded" /> 
+        <xs:group ref="bre:ChecksumsData" minOccurs="0" maxOccurs="unbounded" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of data for checksums in result, if given in this message instead of via data transfer
+          </xs:documentation></xs:annotation>
+        </xs:group>
 
       </xs:sequence>
 
@@ -666,18 +876,23 @@
 
       <!-- Contents -->
       <xs:sequence>
-
         <xs:group ref="bre:Core" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
           </xs:documentation></xs:annotation>
         </xs:group>
 
-        <!-- Unique identifier for pillar replying -->
-        <xs:element ref="bre:PillarID" />
+        <xs:element ref="bre:PillarID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for pillar replying
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Estimated time before delivery of data requested -->
-        <xs:element ref="bre:TimeToDeliver" /> 
+        <xs:element ref="bre:TimeToDeliver" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Estimated time before delivery of data requested
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -700,23 +915,31 @@
 
       <!-- Contents -->
       <xs:sequence>
-      
         <xs:group ref="bre:Core" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
           </xs:documentation></xs:annotation>
         </xs:group>
       
-        <!-- Credentials for the Get data IDs operation on the specific pillar/SLA -->
-        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Credentials for the Get data IDs operation on the specific pillar/SLA 
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Address (e.g. in form of an URL) for where data ids must be delivered via data transmission -->
-        <!-- In cases where the address is not given, the result will be given in the GetDataIdsComplete message -->
-        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1"/> 
+        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where data ids must be delivered via data transmission
+          In cases where the address is not given, the result will be given in the GetDataIdsComplete message
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Identifier of receiving pillar, which can be used for possible checks -->
-        <!-- (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached)  -->
-        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving pillar, which can be used for possible checks
+          (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached) 
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
       </xs:sequence>
 
@@ -734,24 +957,35 @@
 
       <!-- Contents -->
       <xs:sequence>
-        
         <xs:group ref="bre:Core" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <!-- Address (e.g. in form of an URL) for where data will be delivered -->
-        <xs:element ref="bre:DataAddress" />
+        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where data will be delivered
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- Identifier of receiving pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Response code telling whether GetRequest has been received and is expected to be completed -->
-        <xs:element ref="bre:ResponseCode" />  
+        <xs:element ref="bre:ResponseCode" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response code telling whether GetRequest has been received and is expected to be completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Response text containing additional information for logging only -->
-        <xs:element ref="bre:ResponseText" minOccurs="0" maxOccurs="1" />  
+        <xs:element ref="bre:ResponseText" minOccurs="0" maxOccurs="1" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response text containing additional information for logging only
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -768,30 +1002,47 @@
 
       <!-- Contents -->
       <xs:sequence>
-        
         <xs:group ref="bre:Core" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The mandatory part of a operation message with CorrelationID, SlaID and ReplyTo
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <!-- Address (e.g. in form of an URL) for where data has been delivered (if completed) -->
-        <xs:element ref="bre:DataAddress" />
+        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where data has been delivered (if completed)
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Identifier of receiving pillar, which can be used for possible checks -->
-        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Complete code telling how Get has been completed -->
-        <xs:element ref="bre:CompleteCode" />  
+        <xs:element ref="bre:CompleteCode" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Complete code telling how Get has been completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
         
-        <!-- Complete text containing additional information for logging only -->
-        <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" />  
+        <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Complete text containing additional information for logging only
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- The number of checksums included, if given in this message instead of via data transfer -->
-        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1"/> 
+        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of checksums included, if given in this message instead of via data transfer
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-        <!-- List of data for data ids in result, if given in this message instead of via data transfer-->
-        <xs:group ref="bre:DataIDsData" minOccurs="0" maxOccurs="unbounded" /> 
+        <xs:group ref="bre:DataIDsData" minOccurs="0" maxOccurs="unbounded" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of data for data ids in result, if given in this message instead of via data transfer
+          </xs:documentation></xs:annotation>
+        </xs:group>
 
       </xs:sequence>
 

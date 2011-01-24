@@ -38,6 +38,15 @@
     </xs:documentation></xs:annotation>
   </xs:element>
   
+  <xs:element name="CorrelationID" >
+    <xs:annotation><xs:documentation xml:lang="en">
+    A unique identifier for communication usually on primitive level, 
+    e.g the IdentifyPillarsForGet part of a get operation.
+    It can also be used to make relation to a message e.g. for data IDs 
+    delivered via data transmission.
+    </xs:documentation></xs:annotation>
+  </xs:element>
+  
   <xs:element name="DataAddress" >
     <xs:annotation><xs:documentation xml:lang="en">
     Address (e.g. in form of an URL) for where data can be found
@@ -62,7 +71,38 @@
     </xs:documentation></xs:annotation>
   </xs:element>
   
-  <xs:element name="NoOfResults" > 
+  <xs:element name="DataIDs">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Identifiers that uniquely identifies the data in given SLA which are requested for
+    These can be specified in different ways, e.g. a list, an all constant or via an address
+    </xs:documentation></xs:annotation>
+
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="DataID" minOccurs="1" maxOccurs="unbounded" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of identifiers for data in given SLA
+          </xs:documentation></xs:annotation>
+        </xs:element>
+            
+        <xs:element name="AllDataIDs" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Specification that all data identifiers in SLA is requested
+          </xs:documentation></xs:annotation>
+        </xs:element>
+                  
+        <xs:element ref="ParameterAddress" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address where Data ID list can be found on form DataIDsParameters
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <!-- To be enhanced with other ways to address chunks of identifiers, e.g. for mass processing -->
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="NoOfItems" > 
     <xs:annotation><xs:documentation xml:lang="en">
     The number of results given in a delivered result
     e.g. number of checksums in result given in a data transmitted file or in a message
@@ -133,7 +173,7 @@
   </xs:element>
 
   <!-- ************************************************************** -->
-  <!-- ****** GROUPS AND CHOICES                               ****** -->
+  <!-- ****** GROUPS                                           ****** -->
   <!-- ************************************************************** -->
 
   <xs:group name="ChecksumsData">
@@ -172,7 +212,7 @@
     </xs:documentation></xs:annotation>
 
     <xs:sequence>
-      <xs:element name="CorrelationID" >
+      <xs:element ref="CorrelationID" >
         <xs:annotation><xs:documentation xml:lang="en">
         CorrelationID is a unique identifier for communication usually on primitive level, 
         e.g the IdentifyPillarsForGet part of a get operation
@@ -195,37 +235,6 @@
     </xs:sequence>
   </xs:group>
   
-  <xs:element name="DataIDs">
-    <xs:annotation><xs:documentation xml:lang="en">
-    Identifiers that uniquely identifies the data in given SLA which are requested for
-    These can be specified in different ways, e.g. a list, an all constant or via an address
-    </xs:documentation></xs:annotation>
-
-    <xs:complexType>
-      <xs:choice>
-        <xs:element ref="DataID" minOccurs="1" maxOccurs="unbounded">
-          <xs:annotation><xs:documentation xml:lang="en">
-          List of unique identifiers for data in given SLA
-          </xs:documentation></xs:annotation>
-        </xs:element>
-            
-        <xs:element name="AllDataIDs" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          Specification that all data identifiers in SLA is requested
-          </xs:documentation></xs:annotation>
-        </xs:element>
-                  
-        <xs:element ref="ParameterAddress" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          Address where Data ID list can be found on form DataIDsParameter
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <!-- To be enhanced with other ways to address chunks of identifiers, e.g. for mass processing -->
-      </xs:choice>
-    </xs:complexType>
-  </xs:element>
-
   <xs:group name="DataIDsData">
     <xs:annotation><xs:documentation xml:lang="en">
     Includes relevant information on data IDs in a result
@@ -249,7 +258,6 @@
     </xs:sequence>
   </xs:group>
 
-
   <!-- ************************************************************** -->
   <!-- ****** FUTURE ELEMNETS IN ALPHABETIC ORDER (used later) ****** -->
   <!-- ************************************************************** -->
@@ -262,4 +270,5 @@
   <!-- .... -->
   <xs:element name="PageOffSet" /> <!-- Unit and measure ... -->
   <xs:element name="PageLength" /> <!-- Unit and measure ... -->
+  
 </xs:schema>

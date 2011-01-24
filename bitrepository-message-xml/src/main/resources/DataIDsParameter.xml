@@ -24,13 +24,11 @@
   #L%
   -->
 
-<bro:GetRequest version="1" minVersion="1" xmlns:bro='http://tempuri.org/BitRepositoryMessages.xsd' xmlns="http://tempuri.org/BitRepositoryElements.xsd">
-  <CorrelationID>12345</CorrelationID>
+<bro:GetDataIDsData version="1" minVersion="1"  xmlns:bro='http://tempuri.org/BitStorageMessages.xsd' xmlns="http://tempuri.org/BitStorageElements.xsd">
+  <CorrelationID>MyCorrelationID</CorrelationID>
   <SlaID>MySla</SlaID>
-  <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <PillarCredentials>MyPillarCredentials</PillarCredentials>
-  <DataID>MyDataID</DataID>
-  <DataAddress>http://myServer/myPlace/Myfile</DataAddress>
   <PillarID>MyPillar</PillarID>
-  <PillarChecksumType>MD5</PillarChecksumType>
-</bro:GetRequest>
+  <NoOfItems>NoOfIDs</NoOfItems>
+  <DataID>MydataId1</DataID>
+  <DataID>MydataId2</DataID>
+</bro:GetDataIDsData>

@@ -27,7 +27,7 @@
 <bro:GetDataIDsData version="1" minVersion="1"  xmlns:bro='http://tempuri.org/BitStorageMessages.xsd' xmlns="http://tempuri.org/BitStorageElements.xsd">
   <SlaID>MySla</SlaID>
   <PillarID>MyPillar</PillarID>
-  <NoOfResults>NoOfIDs</NoOfResults>
+  <NoOfItems>NoOfIDs</NoOfItems>
   <DataIDsData>
      <DataID>MydataId1</DataID>
      <CalculationTime>MyLastSeenTime1</CalculationTime>
