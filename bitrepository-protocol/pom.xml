@@ -1,11 +1,64 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>bitrepository</artifactId>
-    <groupId>org.bitrepository</groupId>
-    <version>0.0.1-SNAPSHOT</version>
-  </parent>
-  <artifactId>bitrepository-protocol-client</artifactId>
-  <name>Bitrepository Protocol</name>
-  <description>General functionality for working with the Bitrepository protocol. This includes message bus integration and file exchange.</description>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>bitrepository</artifactId>
+		<groupId>org.bitrepository</groupId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>bitrepository-protocol-client</artifactId>
+	<name>Bitrepository Protocol</name>
+	<description>General functionality for working with the Bitrepository protocol. This includes message bus integration and file exchange.</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.bitrepository</groupId>
+			<artifactId>bitrepository-message-xml</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>Extract xsd files</id>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<phase>generate-sources</phase>
+						<configuration>
+							<includeGroupIds>org.bitrepository</includeGroupIds>
+							<includeArtifactIds>bitrepository-message-xml</includeArtifactIds>
+							<includes>**/*.xsd</includes>
+							<outputDirectory>${project.build.directory}/message-xsd</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Disabled until the xsd's are consistent
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>0.7.4</version>x
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>						
+                       <phase>process-sources</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<schemaDirectory>${project.build.directory}/message-xsd</schemaDirectory>
+					<schemaIncludes>
+						<include>*.xsd</include>
+					</schemaIncludes>
+				</configuration>
+			</plugin>
+			-->
+		</plugins>
+	</build>
 </project>
