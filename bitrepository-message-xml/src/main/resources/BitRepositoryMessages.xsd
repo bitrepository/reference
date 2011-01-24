@@ -157,10 +157,10 @@
         <!-- Address (e.g. in form of an URL) for where data will be delivered -->
         <xs:element ref="bre:DataAddress" />
 
-        <!-- Identifier of receiving pillar, which can be used for possible checks -->
+        <!-- Identifier of replying pillar, which can be used for possible checks -->
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
         
-        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
+        <!-- Checksums type of replying checksums pillar, which can be used for possible checks -->
         <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
 
         <!-- Response code telling whether GetRequest has been received and is expected to be completed -->
@@ -197,10 +197,10 @@
         <!-- Address (e.g. in form of an URL) for where data has been delivered (if completed) -->
         <xs:element ref="bre:DataAddress" />
         
-        <!-- Identifier of receiving pillar, which can be used for possible checks -->
+        <!-- Identifier of replying pillar, which can be used for possible checks -->
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" /> 
         
-        <!-- Checksums type of receiving checksums pillar, which can be used for possible checks -->
+        <!-- Checksums type of replying checksums pillar, which can be used for possible checks -->
         <xs:element ref="bre:PillarChecksumType" minOccurs="0" maxOccurs="1" /> 
 
         <!-- Complete code telling how Get has been completed -->
@@ -366,7 +366,7 @@
 
   <xs:element name="PutComplete">
     <xs:annotation><xs:documentation xml:lang="en">
-    COMPLETE in IdentifyPillarsForPut primitive
+    COMPLETE in Put primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
@@ -660,7 +660,7 @@
 
   <xs:element name="IdentifyPillarsForGetDataIDsReply">
     <xs:annotation><xs:documentation xml:lang="en">
-    RESPLY in IdentifyPillarsForGetDataIDs primitive
+    REPLY in IdentifyPillarsForGetDataIDs primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
