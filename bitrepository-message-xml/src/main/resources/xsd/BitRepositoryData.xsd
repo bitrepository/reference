@@ -6,12 +6,13 @@
      elementFormDefault="qualified" 
      xmlns:xs="http://www.w3.org/2001/XMLSchema"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xmlns:bre="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd"
-     xsi:schemaLocation="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd"
+     xmlns:bre="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/xsd/BitRepositoryElements.xsd"
+     xsi:schemaLocatßion="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/xsd/BitRepositoryElements.xsd 
+     https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/xsd/BitRepositoryElements.xsd"
 >
 
   <!-- URL in import targetNamespace must be updated later -->
-  <xs:import namespace="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/BitRepositoryElements.xsd" />
+  <xs:import namespace="https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/xsd/BitRepositoryElements.xsd" />
 
   <!-- ***************************** -->
   <!-- * Results for GetChecksums  * -->
