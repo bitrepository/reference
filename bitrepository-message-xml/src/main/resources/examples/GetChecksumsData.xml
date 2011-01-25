@@ -29,7 +29,7 @@
   <PillarID>MyPillar</PillarID>
   <DataChecksumType>MD5</DataChecksumType>
   <SaltParameter>X</SaltParameter>
-  <NoOfResults>NoOfCS</NoOfResults>
+  <NoOfItems>NoOfCS</NoOfItems>
   <ChecksumsData>
      <DataID>MyDataId1</DataID>
      <Checksum>MyChecksum1</Checksum>

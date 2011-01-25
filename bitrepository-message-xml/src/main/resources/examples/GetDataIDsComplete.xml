@@ -34,7 +34,7 @@
   <PillarChecksumType>MD5</PillarChecksumType>
   <CompleteCode>MyCompleteCode</CompleteCode>
   <CompleteText>MyCompleteText</CompleteText>
-  <NoOfResults>NoOfIDs</NoOfResults>
+  <NoOfItems>NoOfIDs</NoOfItems>
   <DataIDsData>
      <DataID>MydataId1</DataID>
      <CalculationTime>MyLastSeenTime1</CalculationTime>

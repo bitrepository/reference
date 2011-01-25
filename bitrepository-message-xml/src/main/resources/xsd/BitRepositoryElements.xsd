@@ -8,7 +8,7 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
 >
   <!-- ************************************************************** -->
-  <!-- ****** USED ELEMENTS IN ALPHABETIC ORDER (used now)     ****** -->
+  <!-- ****** USED ELEMENTS AND GROUPS IN ALPHABETIC ORDER     ****** -->
   <!-- ************************************************************** -->
 
   <xs:element name="CalculationTime" > 
@@ -25,6 +25,65 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
+  <xs:group name="ChecksumsData">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Includes relevant information for a checksum in a result
+    </xs:documentation></xs:annotation>
+
+    <xs:sequence>
+      <xs:element ref="DataID" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Identifier of data the checksum is for
+        </xs:documentation></xs:annotation>
+      </xs:element>
+         
+      <xs:element ref="Checksum" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Checksum of data which will be based on given algorithm and include salt if specified 
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element ref="CalculationTime" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        The time when the checksum was last calculated
+        (especially for ordinary checksums on off-line medias, there can be long intervals between
+        calculations, - in such cases this information is crucial for alarming)
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+    </xs:sequence>
+  </xs:group>
+
+  <xs:group name="Core">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Includes elements that all protocol messages must include.
+    The core part will NOT be included in specific SLA related encryption
+    </xs:documentation></xs:annotation>
+
+    <xs:sequence>
+      <xs:element ref="CorrelationID" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        CorrelationID is a unique identifier for communication usually on primitive level, 
+        e.g the IdentifyPillarsForGet part of a get operation
+        </xs:documentation></xs:annotation>
+      </xs:element>
+       
+      <xs:element ref="SlaID" > 
+        <xs:annotation><xs:documentation xml:lang="en">
+        SlaID is a unique identifier for SLA which data belongs to.
+        This is also the identification of decryption and keys for contents of message
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      
+      <xs:element name="ReplyTo" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Contains name of queue/topic to reply/respond to 
+        (blank if not relevant, e.g. for alarms)
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+  
   <xs:element name="CompleteCode" >
     <xs:annotation><xs:documentation xml:lang="en">
     CompleteCode is a code for the type of completion given
@@ -40,7 +99,6 @@
   </xs:element>
   
   <xs:element name="CorrelationID" >
-  
     <xs:annotation><xs:documentation xml:lang="en">
     A unique identifier for communication usually on primitive level, 
     e.g the IdentifyPillarsForGet part of a get operation.
@@ -62,13 +120,6 @@
     Gives information about which type of checksum is used for data
     This is for instance used for the GetChecksum operation 
     In first version this will be text like MD5, later it will be aligned with a standard 
-    </xs:documentation></xs:annotation>
-  </xs:element>
-
-  <xs:element name="NoOfResults" > 
-    <xs:annotation><xs:documentation xml:lang="en">
-    The number of results given in a delivered result
-    e.g. number of checksums in result given in a data transmitted file or in a message
     </xs:documentation></xs:annotation>
   </xs:element>
 
@@ -110,6 +161,48 @@
       </xs:choice>
     </xs:complexType>
   </xs:element>
+
+  <xs:group name="DataIDsData">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Includes relevant information on data IDs in a result
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+             
+      <xs:element ref="DataID" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Identifier of data
+        </xs:documentation></xs:annotation>
+      </xs:element>
+         
+      <xs:element ref="CalculationTime" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        The time when the data  was last seen
+        (especially for off-line medias, there can be long intervals between
+        actually seeing the file with the data, - in such cases this information is crucial for alarming)
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+    </xs:sequence>
+  </xs:group>
+
+  <xs:group name="DataPart" > 
+    <xs:annotation><xs:documentation xml:lang="en">
+    Specification of data object part by posion and length after position
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="PartStartPosition" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Start position of the part of the data object
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element name="PartLength" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        length of the part of the data object
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
 
   <xs:element name="NoOfItems" > 
     <xs:annotation><xs:documentation xml:lang="en">
@@ -180,92 +273,6 @@
     In first version this will be in miliseconds, later it will be consisting of time and unit according to a standard 
     </xs:documentation></xs:annotation>
   </xs:element>
-
-  <!-- ************************************************************** -->
-  <!-- ****** GROUPS                                           ****** -->
-  <!-- ************************************************************** -->
-
-  <xs:group name="ChecksumsData">
-    <xs:annotation><xs:documentation xml:lang="en">
-    Includes relevant information for a checksum in a result
-    </xs:documentation></xs:annotation>
-
-    <xs:sequence>
-      <xs:element ref="DataID" >
-        <xs:annotation><xs:documentation xml:lang="en">
-        Identifier of data the checksum is for
-        </xs:documentation></xs:annotation>
-      </xs:element>
-         
-      <xs:element ref="Checksum" >
-        <xs:annotation><xs:documentation xml:lang="en">
-        Checksum of data which will be based on given algorithm and include salt if specified 
-        </xs:documentation></xs:annotation>
-      </xs:element>
-
-      <xs:element ref="CalculationTime" >
-        <xs:annotation><xs:documentation xml:lang="en">
-        The time when the checksum was last calculated
-        (especially for ordinary checksums on off-line medias, there can be long intervals between
-        calculations, - in such cases this information is crucial for alarming)
-        </xs:documentation></xs:annotation>
-      </xs:element>
-
-    </xs:sequence>
-  </xs:group>
-
-  <xs:group name="Core">
-    <xs:annotation><xs:documentation xml:lang="en">
-    Includes elements that all protocol messages must include.
-    The core part will NOT be included in specific SLA related encryption
-    </xs:documentation></xs:annotation>
-
-    <xs:sequence>
-      <xs:element ref="CorrelationID" >
-        <xs:annotation><xs:documentation xml:lang="en">
-        CorrelationID is a unique identifier for communication usually on primitive level, 
-        e.g the IdentifyPillarsForGet part of a get operation
-        </xs:documentation></xs:annotation>
-      </xs:element>
-       
-      <xs:element ref="SlaID" > 
-        <xs:annotation><xs:documentation xml:lang="en">
-        SlaID is a unique identifier for SLA which data belongs to.
-        This is also the identification of decryption and keys for contents of message
-        </xs:documentation></xs:annotation>
-      </xs:element>
-      
-      <xs:element name="ReplyTo" >
-        <xs:annotation><xs:documentation xml:lang="en">
-        Contains name of queue/topic to reply/respond to 
-        (blank if not relevant, e.g. for alarms)
-        </xs:documentation></xs:annotation>
-      </xs:element>
-    </xs:sequence>
-  </xs:group>
-  
-  <xs:group name="DataIDsData">
-    <xs:annotation><xs:documentation xml:lang="en">
-    Includes relevant information on data IDs in a result
-    </xs:documentation></xs:annotation>
-    <xs:sequence>
-             
-      <xs:element ref="DataID" >
-        <xs:annotation><xs:documentation xml:lang="en">
-        Identifier of data
-        </xs:documentation></xs:annotation>
-      </xs:element>
-         
-      <xs:element ref="CalculationTime" >
-        <xs:annotation><xs:documentation xml:lang="en">
-        The time when the data  was last seen
-        (especially for off-line medias, there can be long intervals between
-        actually seeing the file with the data, - in such cases this information is crucial for alarming)
-        </xs:documentation></xs:annotation>
-      </xs:element>
-
-    </xs:sequence>
-  </xs:group>
 
   <!-- ************************************************************** -->
   <!-- ****** FUTURE ELEMNETS IN ALPHABETIC ORDER (used later) ****** -->

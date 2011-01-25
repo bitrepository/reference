@@ -124,7 +124,13 @@
           Unique identifier for requested data in given SLA
           </xs:documentation></xs:annotation>
         </xs:element>
-
+        
+        <xs:group ref="bre:DataPart" minOccurs="0" maxOccurs="1"> 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Specification of part of the data object, in case only a part is wanted
+          </xs:documentation></xs:annotation>
+        </xs:group>
+        
         <xs:element ref="bre:DataAddress" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where data must be delivered
@@ -821,7 +827,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1" > 
+        <xs:element ref="bre:NoOfItems" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The number of checksums included, if given in this message instead of via data transfer
           </xs:documentation></xs:annotation>
@@ -1033,7 +1039,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:NoOfResults" minOccurs="0" maxOccurs="1" > 
+        <xs:element ref="bre:NoOfItems" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The number of checksums included, if given in this message instead of via data transfer
           </xs:documentation></xs:annotation>
