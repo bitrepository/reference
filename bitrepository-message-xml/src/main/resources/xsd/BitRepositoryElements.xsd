@@ -204,6 +204,14 @@
     </xs:sequence>
   </xs:group>
 
+  <xs:element name="ExpectedDataSize" > 
+    <xs:annotation><xs:documentation xml:lang="en">
+    The size of data expressed in number of bytes
+    e.g. size of data to be put
+    The type can later be extended to include measure type and measure
+    </xs:documentation></xs:annotation>
+  </xs:element>
+
   <xs:element name="NoOfItems" > 
     <xs:annotation><xs:documentation xml:lang="en">
     The number of results given in a delivered result

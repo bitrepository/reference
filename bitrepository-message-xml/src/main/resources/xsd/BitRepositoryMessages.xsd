@@ -183,6 +183,13 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
+        <xs:element ref="bre:ExpectedDataSize" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Expected data size of data object to be send, expressed in bytes.
+          This can be used in e.g. capacity checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of replying pillar, which can be used for possible checks
@@ -385,6 +392,13 @@
         <xs:element ref="bre:DataAddress" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where data must be downloaded from
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ExpectedDataSize" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Expected data size of data object to be put, expressed in bytes.
+          This can be used in e.g. capacity checks
           </xs:documentation></xs:annotation>
         </xs:element>
 
