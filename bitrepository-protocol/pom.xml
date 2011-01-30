@@ -6,9 +6,10 @@
 		<groupId>org.bitrepository</groupId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>bitrepository-protocol-client</artifactId>
+	<artifactId>bitrepository-protocol</artifactId>
 	<name>Bitrepository Protocol</name>
-	<description>General functionality for working with the Bitrepository protocol. This includes message bus integration and file exchange.</description>
+	<description>General functionality for working with the Bitrepository protocol. 
+	This includes message bus integration and file exchange.</description>
 
 	<dependencies>
 		<dependency>
@@ -32,8 +33,8 @@
 						<configuration>
 							<includeGroupIds>org.bitrepository</includeGroupIds>
 							<includeArtifactIds>bitrepository-message-xml</includeArtifactIds>
-							<includes>**/*.xsd</includes>
-							<outputDirectory>${project.build.directory}/message-xsd</outputDirectory>
+							<includes>xsd/*.xsd, examples/*.xml</includes>
+							<outputDirectory>${project.build.directory}/message-xml</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
@@ -46,12 +47,12 @@
 					<execution>
 						<goals>
 							<goal>generate</goal>
-						</goals>						
-                       <phase>process-sources</phase>
+						</goals>
+						<phase>process-sources</phase>
 					</execution>
 				</executions>
 				<configuration>
-					<schemaDirectory>${project.build.directory}/message-xsd/xsd</schemaDirectory>
+					<schemaDirectory>${project.build.directory}/message-xml/xsd</schemaDirectory>
 					<schemaIncludes>
 						<include>*.xsd</include>
 					</schemaIncludes>
