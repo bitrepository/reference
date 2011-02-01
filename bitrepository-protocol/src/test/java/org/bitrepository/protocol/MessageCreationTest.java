@@ -1,4 +1,4 @@
-package org.bitrepository.bitrepositorymessages;
+package org.bitrepository.protocol;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,6 +11,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.bitrepository.bitrepositorymessages.GetChecksumsComplete;
 import org.bitrepository.protocol.MessageFactory;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
