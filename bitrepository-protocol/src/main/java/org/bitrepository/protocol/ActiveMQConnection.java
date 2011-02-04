@@ -32,9 +32,10 @@ import javax.jms.Connection;
 import javax.jms.DeliveryMode;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
-import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.Topic;
 
@@ -44,7 +45,10 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Contains the basic functionality for connection and communicating with the 
- * coordination layer
+ * coordination layer.
+ * 
+ * TODO add retries for whenever a JMS exception is thrown. Currently it is 
+ * very unstable to connection issues.
  */
 public class ActiveMQConnection implements MessageBusConnection {
 	/** The connections on ActiveMQ buses.*/
@@ -70,12 +74,19 @@ public class ActiveMQConnection implements MessageBusConnection {
 		return instances.get(property.getId());
 	}
 	
+	/** The variable to separate the parts of the consumer key.*/
+	private static final String CONSUMER_KEY_SEPARATOR = "#";
+	
 	/** The Log.*/
 	private final Log log = LogFactory.getLog(this.getClass());
 	/** The connection.*/
     private Connection connection = null;
     /** The session.*/
     private Session session = null;
+    /** Map of the consumers. */
+    private Map<String, MessageConsumer> consumers 
+            = Collections.synchronizedMap(new HashMap<String, 
+            		MessageConsumer>());
     
     /**
      * Constructor. Creates a connection based on the given properties.
@@ -84,31 +95,89 @@ public class ActiveMQConnection implements MessageBusConnection {
      * @throws JMSException If problems happen during the connection.
      */
     private ActiveMQConnection(ConnectionProperty property) throws JMSException {
+    	log.debug("Initializing ActiveMQConnection to '" + property + "'.");
+    	
+    	// Retrieve factory for connection
     	ActiveMQConnectionFactory connectionFactory =
     		new ActiveMQConnectionFactory(property.getUsername(),
     				property.getPassword(), property.getUrl());	
 
+    	// create and start the connection
     	connection = connectionFactory.createConnection();
+    	
     	connection.setExceptionListener(new MessageBusExceptionListener());        
     	connection.start();
 
-    	session = connection.createSession(TRANSACTED, 
-    			ACKNOWLEDGE_MODE);
+    	session = connection.createSession(TRANSACTED, ACKNOWLEDGE_MODE);
     }
 	
 	@Override
 	public void addListener(String topicId, MessageListener listener) 
 	        throws JMSException {
-		Topic topic = session.createTopic(topicId);
-        session.createConsumer(topic).setMessageListener(listener);
+		MessageConsumer consumer = getMessageConsumer(topicId, listener);
+		consumer.setMessageListener(listener);
 	}
 	
 	@Override
-	public void addQueueMessageProducer(String queueId, MessageProducer producer) 
+	public void removeListener(String topicId, MessageListener listener)
 	        throws JMSException {
-		Queue queue = session.createQueue(queueId);
-		producer = session.createProducer(queue);
+		MessageConsumer consumer = getMessageConsumer(topicId, listener);
+		consumer.close();
+		consumers.remove(getConsumerKey(topicId, listener));
+	}
+	
+	@Override
+	public void sendMessage(String topicId, String content)
+            throws JMSException {
+		MessageProducer producer = addQueueMessageProducer(topicId);
+		producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+		Message msg = session.createTextMessage(content);
+		msg.setJMSType("MyMessage");
+		msg.setJMSReplyTo(session.createQueue(topicId));
+		producer.send(msg);
+		session.commit();
+	}
+	
+	/**
+	 * Retrieves a consumer for the specific topic id and message listener.
+	 * If no such consumer already exists, then it is created.
+	 * @param topicId The id of the topic to consume messages from.
+	 * @param listener The listener to consume the messages.
+	 * @return The instance for consuming the messages.
+	 */
+	private MessageConsumer getMessageConsumer(String topicId, 
+			MessageListener listener) throws JMSException {
+		String key = getConsumerKey(topicId, listener);
+		if(!consumers.containsKey(key)) {
+			Topic topic = session.createTopic(topicId);
+	        MessageConsumer consumer = session.createConsumer(topic);
+	        consumers.put(key, consumer);
+		}
+		return consumers.get(key);
+	}
+	
+	/**
+	 * Creates a unique key for the message listener and the topic id.
+	 * @param topicId The id for the topic.
+	 * @param listener The message listener.
+	 * @return The key for the message listener and the topic id.
+	 */
+	private String getConsumerKey(String topicId, MessageListener listener) {
+		return topicId + CONSUMER_KEY_SEPARATOR + listener.hashCode();
+	}
+	
+	/**
+	 * Method for retrieving the message producer for a specific queue.
+	 * @param queueId The id for the queue.
+	 * @return The message producer for this queue.
+	 * @throws JMSException If the producer for the queue cannot be established.
+	 */
+	private MessageProducer addQueueMessageProducer(String topicId) 
+	        throws JMSException {
+		Topic topic = session.createTopic(topicId);
+		MessageProducer producer = session.createProducer(topic);
 		producer.setDeliveryMode(DeliveryMode.PERSISTENT);
+		return producer;
 	}
 	
 	/**

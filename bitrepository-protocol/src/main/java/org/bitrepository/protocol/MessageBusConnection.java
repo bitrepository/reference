@@ -2,7 +2,6 @@ package org.bitrepository.protocol;
 
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
-import javax.jms.MessageProducer;
 
 public interface MessageBusConnection {
 	/**
@@ -22,14 +21,25 @@ public interface MessageBusConnection {
     void addListener(String topicId, MessageListener listener) 
 	        throws JMSException;
 	
-	/**
-	 * Adds the supplied listener to the indicated queue
-	 * @param queueId The queue to listen to
-	 * @param listener The listener with should handle the messages arriving on 
-	 * the queue
-	 * @throws JMSException Something has gone wrong in the JMS messaging
-	 */
-    void addQueueMessageProducer(String queueId, MessageProducer producer) 
-	        throws JMSException;
-	
+    /**
+     * Removes the supplied listener from the indicated topic.
+     * @param topidId The id for the topic, where the listener should be 
+     * removed.
+     * @param listener The listener to remove from the topic.
+     * @throws JMSException If something goes wrong with the JMS-connection.
+     */
+    void removeListener(String topidId, MessageListener listener) 
+            throws JMSException;
+    
+    /**
+     * Method for sending a message on a specific queue/topic.
+     * 
+     * @param queueId The id for the queue/topic to send message.
+     * @param content The content of the message.
+     * @throws JMSException If a problem with the connection to the Bus occurs 
+     * during the transportation of this message.
+     */
+    void sendMessage(String queueId, String content)
+            throws JMSException;
+    
 }
