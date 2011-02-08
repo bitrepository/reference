@@ -28,6 +28,10 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
+  <DataIDs>
+   <DataID>MyDataIDs</DataID>
+  </DataIDs>
+  <DataChecksumType>MyDataChecksumType</DataChecksumType>
   <PillarID>MyPillar</PillarID>
   <TimeToDeliver>1000</TimeToDeliver>
 </bro:IdentifyPillarsForGetChecksumsReply>

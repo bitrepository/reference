@@ -39,10 +39,8 @@
   <PillarChecksumType>MD5</PillarChecksumType>
   <CompleteCode>MyCompleteCode</CompleteCode>
   <CompleteText>MyCompleteText</CompleteText>
-  <NoOfChecksums>NoOfCS</NoOfChecksums>
-  <ChecksumsData>
-     <DataID>MyDataId1</DataID>
-     <Checksum>MyChecksum1</Checksum>
-     <CalcTime>MyCalcTime1</CalcTime>
-  </ChecksumsData>
+  <NoOfItems>NoOfCS</NoOfItems>
+  <DataID>MyDataId1</DataID>
+  <Checksum>MyChecksum1</Checksum>
+  <CalculationTime>MyCalcTime1</CalculationTime>
 </bro:GetChecksumsComplete>

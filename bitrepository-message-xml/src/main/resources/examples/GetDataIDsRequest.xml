@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   #%L
   Bitmagasin protokol
@@ -29,6 +29,7 @@
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
   <PillarCredentials>MyPillarCredentials</PillarCredentials>
+  <DataID>MyDataID</DataID>
   <DataAddress>http://myServer/myPlace/Myfile</DataAddress>
   <PillarID>MyPillar</PillarID>
 </bro:GetRequest>

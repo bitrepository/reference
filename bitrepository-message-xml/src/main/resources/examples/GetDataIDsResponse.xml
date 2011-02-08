@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   #%L
   Bitmagasin protokol
@@ -28,6 +28,7 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
+  <DataID>MyDataID</DataID>
   <DataAddress>http://myServer/myPlace/Myfile</DataAddress>
   <PillarID>MyPillar</PillarID>
   <ResponseCode>MyResponseCode</ResponseCode>
