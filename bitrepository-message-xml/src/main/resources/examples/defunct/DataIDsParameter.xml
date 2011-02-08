@@ -3,8 +3,8 @@
   #%L
   Bitmagasin protokol
   
-  $Id: GetDataIDsData.xml 51 2011-01-20 15:13:26Z elzi $
-  $HeadURL: https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-message-xml/src/main/resources/GetDataIDsData.xml $
+  $Id$
+  $HeadURL$
   %%
   Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
@@ -24,12 +24,11 @@
   #L%
   -->
 
-<bro:GetDataIDsData version="1" minVersion="1"  xmlns:bro='http://tempuri.org/BitStorageMessages.xsd' xmlns="http://tempuri.org/BitStorageElements.xsd">
+<bro:GetDataIDsData version="1" minVersion="1"  xmlns:bro='http://bitrepository.org/BitStorageMessages.xsd' xmlns="http://bitrepository.org/BitStorageElements.xsd">
+  <CorrelationID>MyCorrelationID</CorrelationID>
   <SlaID>MySla</SlaID>
   <PillarID>MyPillar</PillarID>
   <NoOfItems>NoOfIDs</NoOfItems>
-  <DataIDsData>
-     <DataID>MydataId1</DataID>
-     <CalculationTime>MyLastSeenTime1</CalculationTime>
-  </DataIDsData>
+  <DataID>MydataId1</DataID>
+  <DataID>MydataId2</DataID>
 </bro:GetDataIDsData>

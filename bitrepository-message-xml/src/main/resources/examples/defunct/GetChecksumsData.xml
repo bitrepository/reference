@@ -24,7 +24,7 @@
   #L%
   -->
 
-<bro:GetChecksumsData version="1" minVersion="1"  xmlns:bro='http://tempuri.org/BitStorageMessages.xsd' xmlns="http://tempuri.org/BitStorageElements.xsd">
+<bro:GetChecksumsData version="1" minVersion="1"  xmlns:bro='http://bitrepository.org/BitStorageMessages.xsd' xmlns="http://bitrepository.org/BitStorageElements.xsd">
   <SlaID>MySla</SlaID>
   <PillarID>MyPillar</PillarID>
   <DataChecksumType>MD5</DataChecksumType>
