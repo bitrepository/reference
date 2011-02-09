@@ -19,15 +19,11 @@ public class MessageFactory {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T createMessage(Class<T> messageClass, String xmlMessage) throws JAXBException {
-		JAXBElement<T> obj = null;
 		try {
 			JAXBContext context = JAXBContext.newInstance(
-			"org.bitrepository.bitrepositorymessages");
+			"org.bitrepository.bitrepositorymessages:org.bitrepository.bitrepositoryelements:org.bitrepository.bitrepositorydata");
 			Unmarshaller unmarshaller = context.createUnmarshaller();
-			obj = (JAXBElement <T>)unmarshaller.unmarshal(new StreamSource(new
-					StringReader(xmlMessage)));
-
-			return obj.getValue();
+			return (T) unmarshaller.unmarshal(new StreamSource(new StringReader(xmlMessage)));
 		} catch(JAXBException jex) {
 			log.error("Failed to create message object from string: {}", xmlMessage);
 			throw jex;
