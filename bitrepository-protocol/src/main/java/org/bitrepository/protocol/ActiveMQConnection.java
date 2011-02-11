@@ -89,6 +89,8 @@ public class ActiveMQConnection implements MessageBusConnection {
     private Map<String, MessageConsumer> consumers 
     = Collections.synchronizedMap(new HashMap<String, 
             MessageConsumer>());
+    /** The configuration for the connection to the activeMQ.*/
+    private ConnectionConfiguration configuration;
 
     /**
      * Constructor. Creates a connection based on the given properties.
@@ -96,13 +98,15 @@ public class ActiveMQConnection implements MessageBusConnection {
      * @param property The properties for the connection.
      * @throws JMSException If problems happen during the connection.
      */
-    private ActiveMQConnection(ConnectionConfiguration property) throws JMSException {
-        log.debug("Initializing ActiveMQConnection to '" + property + "'.");
+    private ActiveMQConnection(ConnectionConfiguration con) 
+            throws JMSException {
+        log.debug("Initializing ActiveMQConnection to '" + con + "'.");
+        this.configuration = con;
 
         // Retrieve factory for connection
         ActiveMQConnectionFactory connectionFactory =
-            new ActiveMQConnectionFactory(property.getUsername(),
-                    property.getPassword(), property.getUrl());	
+            new ActiveMQConnectionFactory(configuration.getUsername(),
+                    configuration.getPassword(), configuration.getUrl());	
 
         // create and start the connection
         connection = connectionFactory.createConnection();
@@ -111,23 +115,25 @@ public class ActiveMQConnection implements MessageBusConnection {
         connection.start();
 
         session = connection.createSession(TRANSACTED, ACKNOWLEDGE_MODE);
-        log.debug("ActiveMQConnection initialized for '" + property + "'.");
+        log.debug("ActiveMQConnection initialized for '" + configuration + "'.");
     }
 
     @Override
-    public synchronized void addListener(String topicId, MessageListener listener) 
-    throws JMSException {
+    public synchronized void addListener(String topicId, 
+            MessageListener listener)  throws JMSException {
         log.debug("Adding listener '" + listener + "' to topic: '" 
-                + topicId + "'.");
+                + topicId + "' on message-bus '" + configuration.getId() 
+                + "'.");
         MessageConsumer consumer = getMessageConsumer(topicId, listener);
         consumer.setMessageListener(listener);
     }
 
     @Override
-    public synchronized void removeListener(String topicId, MessageListener listener)
-    throws JMSException {
+    public synchronized void removeListener(String topicId, 
+            MessageListener listener) throws JMSException {
         log.debug("Removing listener '" + listener + "' from topic: '" 
-                + topicId + "'.");
+                + topicId + "' on message-bus '" + configuration.getId() 
+                + "'.");
         MessageConsumer consumer = getMessageConsumer(topicId, listener);
         consumer.close();
         consumers.remove(getConsumerKey(topicId, listener));
@@ -135,9 +141,10 @@ public class ActiveMQConnection implements MessageBusConnection {
 
     @Override
     public void sendMessage(String topicId, String content)
-    throws JMSException {
+            throws JMSException {
         log.debug("The following message is sent to the topic '" + topicId 
-                + "': \n" + content);
+                + "' on message-bus '" + configuration.getId() + "': \n" 
+                + content);
         MessageProducer producer = addTopicMessageProducer(topicId);
         producer.setDeliveryMode(DeliveryMode.PERSISTENT);
         Message msg = session.createTextMessage(content);

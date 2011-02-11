@@ -24,12 +24,18 @@
  */
 package org.bitrepository.protocol;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.jms.Destination;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import org.apache.activemq.broker.BrokerService;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -102,6 +108,52 @@ public class MessageBusTest extends ExtendedTestCase {
         "bus if the connection is lost");
     }
 
+    @Test(groups = {"functest", "connection"})
+    public void localBrokerTest() throws Exception {
+        addDescription("Tests the possibility for starting the broker locally,"
+                + " and using it for communication by sending a simple message"
+                + " over it and verifying that the corresponding message is "
+                + "received.");
+        String content = "Content of localBrokerTest message";
+        
+        addStep("Starting the local broker.", "A lot of info-level logs should"
+                + " be seen here.");
+        BrokerService broker = new BrokerService();
+        broker.addConnector("tcp://localhost:61616");
+        broker.start();
+
+        try {
+            addStep("Connecting to the bus, and then connect to the local bus.", 
+                    "Info-level logs should be seen here for both connections. "
+                    + "Only the last is used.");
+            MessageBusConnection con = ConnectionFactory.getInstance();
+            con = ConnectionFactory.getNext();
+
+            addStep("Make a listener for the messagebus and make it listen. "
+                    + "Then send a message for the message listener to catch.",
+                    "several DEBUG-level logs");
+            TestMessageListener listener = new TestMessageListener();
+            con.addListener("EmbeddedBrokerTopic", listener);
+            con.sendMessage("EmbeddedBrokerTopic", content);
+
+            synchronized(this) {
+                try {
+                    this.wait(500);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Assert.assertNotNull(listener.getMessage(), "A message should be "
+                    + "received.");
+            Assert.assertEquals(content, listener.getMessage());
+
+            con.removeListener("EmbeddedBrokerTopic", listener);
+        } finally {
+            broker.stop();
+        }
+    }
+
     protected class TestMessageListener implements MessageListener, 
     ExceptionListener {
         private String message = null;
@@ -122,43 +174,4 @@ public class MessageBusTest extends ExtendedTestCase {
             return message;
         }
     }
-
-    protected class TestSingleMessage implements MessageListener, 
-    ExceptionListener {
-        private String message = null;
-        public TestSingleMessage() throws Exception {
-            String messageContent = "Content of test message!";
-            System.out.println("Connecting to bus!");
-            MessageBusConnection con = ConnectionFactory.getInstance();
-
-            con.addListener("SLA-TEST", this);
-
-            con.sendMessage("SLA-TEST", messageContent);
-
-            synchronized(this) {
-                try {
-                    wait(TIME_FOR_MESSAGE_TRANSFER_WAIT);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            // Tests whether the message is successfully received.
-            Assert.assertEquals(message, messageContent);
-        }
-        @Override
-        public void onMessage(Message msg) {
-            Assert.assertTrue(msg instanceof TextMessage);
-            try {
-                message = ((TextMessage) msg).getText();
-            } catch (Exception e) {
-                Assert.fail("Should not throw an exception: ", e);
-            }
-        }
-        @Override
-        public void onException(JMSException e) {
-            e.printStackTrace();
-        }
-    };
-
 }
