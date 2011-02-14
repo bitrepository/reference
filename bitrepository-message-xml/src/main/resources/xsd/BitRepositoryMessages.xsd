@@ -159,7 +159,9 @@
   
   <xs:element name="GetResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    RESPONSE in Get primitive
+    RESPONSE in Get primitive.
+    Note that there can be more responses to the same GetRequest, e.g. if a 
+    DVD pillar gives running status of where it is in the get process. 
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
@@ -187,6 +189,19 @@
           <xs:annotation><xs:documentation xml:lang="en">
           Expected data size of data object to be send, expressed in bytes.
           This can be used in e.g. capacity checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:Checksum" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksum of data object to be send.
+          This can be used in checks of correct receival.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        
+        <xs:element ref="bre:DataChecksumType" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Type of the above checksum of the data object to be send.
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -402,6 +417,19 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
+        <xs:element ref="bre:Checksum" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksum of data object to be put.
+          This can be used in checks of correct receival.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        
+        <xs:element ref="bre:DataChecksumType" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Type of the above checksum of the data object to be put.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of receiving pillar, which can be used for possible checks
@@ -425,6 +453,8 @@
   <xs:element name="PutResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     RESPONSE in Put primitive
+    Note that there can be more responses to the same PutRequest, e.g. if a 
+    DVD pillar gives running status of where it is in the put process. 
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
