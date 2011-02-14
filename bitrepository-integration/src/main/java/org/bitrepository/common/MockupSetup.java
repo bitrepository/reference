@@ -24,22 +24,12 @@
  */
 package org.bitrepository.common;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
-
-import javax.jms.*;
 
 /**
  * Set-up MockUp
  * @author bam
  * @since 2010-10-01 */
 public class MockupSetup {
-
-    private Connection connection;
-    private Session session;
-    private Topic topic;
-
-    private long delay;
-
     public static void main(String[] argv) throws Exception {
         MockupSetup setup = new MockupSetup();
         setup.run();

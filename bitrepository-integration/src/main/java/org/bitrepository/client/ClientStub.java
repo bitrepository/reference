@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.jms.Connection;
-import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
@@ -47,7 +46,6 @@ import javax.jms.Topic;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.bitrepository.common.DataTime;
 import org.bitrepository.common.MockupConf;
 import org.bitrepository.common.MockupGetDataMessage;
@@ -58,7 +56,6 @@ import org.bitrepository.common.TimeUnits;
 
 public class ClientStub implements MessageListener, ExceptionListener {
 	private final Log log = LogFactory.getLog(this.getClass());
-    private MessageProducer messageProducer;
 
     private Topic topic;
     private Queue queue;

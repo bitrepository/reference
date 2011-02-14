@@ -24,15 +24,15 @@
  */
 package org.bitrepository.messagebus;
 
-import java.net.URI;
-
 import org.apache.activemq.ActiveMQConnection;
 
-public class MessageBusSettings {
-     private static final String user = ActiveMQConnection.DEFAULT_USER;
-	 private static final String password = ActiveMQConnection.DEFAULT_PASSWORD;
-	 private static final String url = "failover://tcp://sandkasse-01.kb.dk:61616";
-	    
+public final class MessageBusSettings {
+	private static final String user = ActiveMQConnection.DEFAULT_USER;
+	private static final String password = ActiveMQConnection.DEFAULT_PASSWORD;
+	private static final String url = "failover://tcp://sandkasse-01.kb.dk:61616";
+	
+	private MessageBusSettings() {}
+
 	public static String getUser() {
 		return user;
 	}
@@ -40,7 +40,7 @@ public class MessageBusSettings {
 	public static String getPassword() {
 		return password;
 	}
-	
+
 	public static String getUrl() {
 		return url;
 	}

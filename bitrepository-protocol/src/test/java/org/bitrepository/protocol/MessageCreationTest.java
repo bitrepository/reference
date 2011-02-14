@@ -30,7 +30,7 @@ public class MessageCreationTest {
 		String[] messageNames = getMessageNames();
 		for (String messageName:messageNames) {
 			String xmlMessage = loadXMLExample(messageName);
-			Object message = MessageFactory.createMessage(GetChecksumsComplete.class, xmlMessage);	
+			MessageFactory.createMessage(GetChecksumsComplete.class, xmlMessage);	
 		}
 	}
 

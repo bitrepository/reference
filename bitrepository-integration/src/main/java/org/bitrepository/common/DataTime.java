@@ -26,7 +26,6 @@ package org.bitrepository.common;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class for containing the reply data for the time of a specific dataId.
