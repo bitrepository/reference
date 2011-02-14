@@ -1,159 +1,168 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.bitrepository</groupId>
-  <version>0.0.1-SNAPSHOT</version>
-  <artifactId>bitrepository</artifactId>
-  
-  <parent>
-    <groupId>org.sbforge</groupId>
-    <artifactId>SBForge-parent</artifactId>
-    <version>RELEASE</version>
-  </parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <name>Bitrepository</name>
-  
-  <packaging>pom</packaging>
-  
-  <modules>
-    <module>bitrepository-message-xml</module>
-    <module>bitrepository-protocol</module>
-    <module>bitrepository-access-client</module>
-    <module>bitrepository-modifying-client</module>
-    <module>bitrepository-alarm-client</module>
-    <module>bitrepository-integrity-client</module>  
-    <module>bitrepository-audit-client</module>	
-    <module>bitrepository-monitoring-service</module>	
-    <module>bitrepository-integration</module>
-  </modules>
-  
-  <developers>
-    <developer>
-      <name>Mikis Seth Sørensen</name>
-      <email>mss@statsbiblioteket.dk</email>
-      <roles>
-        <role>Project Manager</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Kåre Fiedler Christiansen</name>
-      <email>kfc@statsbiblioteket.dk</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Bolette Ammitzbøll Jurik</name>
-      <email>bam@statsbiblioteket.dk</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Eld Zierau</name>
-      <email>elzi@kb.dk</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Jonas Lindberg Frellesen</name>
-      <email>jolf@statsbiblioteket.dk</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Christian Vandel</name>
-      <email>csv@kb.dk</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Jun Petersen Yoneyama</name>
-      <email>jpy@ra.sa.dk</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Thomas Andersen</name>
-      <email>tha@ra.sa.dk</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-  </developers>
-  
-  <inceptionYear>2010</inceptionYear>
-  
-  <licenses>
-    <license>
-      <name>LGPL v2.1</name>
-      <distribution>repo</distribution>
-      <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
-    </license>
-  </licenses>
-  
-  <issueManagement>
-    <system>JIRA</system>
-    <url>http://sbforge.statsbiblioteket.dk/jira/browse/BITMAG</url>
-  </issueManagement>
-  
-  <ciManagement>
-    <system>Hudson</system>
-    <url>http://sbforge.statsbiblioteket.dk/hudson/job/Bitmagasinet-compile/</url>
-  </ciManagement>
-  
-  <url>http://sbforge.statsbiblioteket.dk/display/BITMAG</url>
-  
-  <organization>
-    <name>The State and University Library, The Royal Library and The State Archives, Denmark</name>
-  </organization>
-  
-  <scm>
-    <url>http://sbforge.statsbiblioteket.dk/fisheye</url>
-    <connection>scm:svn:https://gforge.statsbiblioteket.dk/svn/bitmagasin</connection>
-  </scm>
-  
-  <dependencies>  
-  	<dependency>
-  		<groupId>org.testng</groupId>
-  		<artifactId>testng</artifactId>
-  		<version>5.14.2</version>
-  		<scope>test</scope>
-  	</dependency>
-  </dependencies>
-  
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-license-plugin</artifactId>
-        <groupId>org.nuiton</groupId>
-        <version>2.4.1</version>
-        <configuration>
-          <generateBundle>true</generateBundle>
-          <addSvnKeyWords>true</addSvnKeyWords>
-          <licenseName>lgpl_v2_1</licenseName>
-          <failIfWarning>true</failIfWarning>
-          <useMissingFile>true</useMissingFile>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.bitrepository</groupId>
+	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>bitrepository</artifactId>
+
+	<parent>
+		<groupId>org.sbforge</groupId>
+		<artifactId>SBForge-parent</artifactId>
+		<version>5</version>
+	</parent>
+
+	<name>Bitrepository</name>
+
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>bitrepository-message-xml</module>
+		<module>bitrepository-protocol</module>
+		<module>bitrepository-access-client</module>
+		<module>bitrepository-modifying-client</module>
+		<module>bitrepository-alarm-client</module>
+		<module>bitrepository-integrity-client</module>
+		<module>bitrepository-audit-client</module>
+		<module>bitrepository-monitoring-service</module>
+		<module>bitrepository-integration</module>
+	</modules>
+
+	<developers>
+		<developer>
+			<name>Mikis Seth Sørensen</name>
+			<email>mss@statsbiblioteket.dk</email>
+			<roles>
+				<role>Project Manager</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Kåre Fiedler Christiansen</name>
+			<email>kfc@statsbiblioteket.dk</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Bolette Ammitzbøll Jurik</name>
+			<email>bam@statsbiblioteket.dk</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Eld Zierau</name>
+			<email>elzi@kb.dk</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Jonas Lindberg Frellesen</name>
+			<email>jolf@statsbiblioteket.dk</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Christian Vandel</name>
+			<email>csv@kb.dk</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Jun Petersen Yoneyama</name>
+			<email>jpy@ra.sa.dk</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Thomas Andersen</name>
+			<email>tha@ra.sa.dk</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<inceptionYear>2010</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>LGPL v2.1</name>
+			<distribution>repo</distribution>
+			<url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
+		</license>
+	</licenses>
+
+	<issueManagement>
+		<system>JIRA</system>
+		<url>https://sbforge.org/jira/browse/BITMAG</url>
+	</issueManagement>
+
+	<ciManagement>
+		<system>Hudson</system>
+		<url>https://sbforge.org/fisheye/hudson/job/Bitmagasinet-compile/</url>
+	</ciManagement>
+
+	<url>https://sbforge.org/display/BITMAG</url>
+
+	<organization>
+		<name>The State and University Library, The Royal Library and The State Archives, Denmark</name>
+	</organization>
+
+	<scm>
+		<url>https://sbforge.org/fisheye</url>
+		<connection>scm:svn:https://gforge.statsbiblioteket.dk/svn/bitmagasin</connection>
+	</scm>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>5.14.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>0.9.27</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-license-plugin</artifactId>
+				<groupId>org.nuiton</groupId>
+				<version>2.4.1</version>
+				<configuration>
+					<generateBundle>true</generateBundle>
+					<addSvnKeyWords>true</addSvnKeyWords>
+					<licenseName>lgpl_v2_1</licenseName>
+					<failIfWarning>true</failIfWarning>
+					<useMissingFile>true</useMissingFile>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
 </project>
