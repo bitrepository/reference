@@ -22,11 +22,14 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol;
+package org.bitrepository.protocol.activemq;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.bitrepository.protocol.ConnectionConfiguration;
+import org.bitrepository.protocol.MessageBusConnection;
+import org.bitrepository.protocol.MessageListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
@@ -34,23 +37,23 @@ import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.Topic;
-
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Contains the basic functionality for connection and communicating with the 
- * coordination layer.
+ * coordination layer over JMS through active MQ.
  * 
  * TODO add retries for whenever a JMS exception is thrown. Currently it is 
  * very unstable to connection issues.
+ *
+ * TODO currently creates only topics.
  */
-public class ActiveMQConnection implements MessageBusConnection {
+public final class ActiveMQConnection implements MessageBusConnection {
     /** The Log.*/
     private static Logger log = LoggerFactory.getLogger(
             ActiveMQConnection.class);
@@ -70,7 +73,7 @@ public class ActiveMQConnection implements MessageBusConnection {
      * @throws JMSException Throw in case of problems with the creation of the 
      * connection to the message bus.
      */
-    public synchronized static ActiveMQConnection getInstance(
+    public static synchronized ActiveMQConnection getInstance(
             ConnectionConfiguration property) throws JMSException {
         if(!instances.containsKey(property.getId())) {
             instances.put(property.getId(), new ActiveMQConnection(property));
@@ -95,7 +98,7 @@ public class ActiveMQConnection implements MessageBusConnection {
     /**
      * Constructor. Creates a connection based on the given properties.
      * 
-     * @param property The properties for the connection.
+     * @param con The properties for the connection.
      * @throws JMSException If problems happen during the connection.
      */
     private ActiveMQConnection(ConnectionConfiguration con) 
@@ -119,39 +122,44 @@ public class ActiveMQConnection implements MessageBusConnection {
     }
 
     @Override
-    public synchronized void addListener(String topicId, 
-            MessageListener listener)  throws JMSException {
+    public synchronized void addListener(String destinationId,
+            final MessageListener listener)  throws JMSException {
         log.debug("Adding listener '" + listener + "' to topic: '" 
-                + topicId + "' on message-bus '" + configuration.getId() 
+                + destinationId + "' on message-bus '" + configuration.getId()
                 + "'.");
-        MessageConsumer consumer = getMessageConsumer(topicId, listener);
-        consumer.setMessageListener(listener);
+        MessageConsumer consumer = getMessageConsumer(destinationId, listener);
+        consumer.setMessageListener(new javax.jms.MessageListener() {
+            @Override
+            public void onMessage(final Message message) {
+                listener.onMessage(new WrappedJMSMessage(message));
+            }
+        });
     }
 
     @Override
-    public synchronized void removeListener(String topicId, 
+    public synchronized void removeListener(String destinationId,
             MessageListener listener) throws JMSException {
         log.debug("Removing listener '" + listener + "' from topic: '" 
-                + topicId + "' on message-bus '" + configuration.getId() 
+                + destinationId + "' on message-bus '" + configuration.getId()
                 + "'.");
-        MessageConsumer consumer = getMessageConsumer(topicId, listener);
+        MessageConsumer consumer = getMessageConsumer(destinationId, listener);
         consumer.close();
-        consumers.remove(getConsumerKey(topicId, listener));
+        consumers.remove(getConsumerKey(destinationId, listener));
     }
 
     @Override
-    public void sendMessage(String topicId, String content)
+    public void sendMessage(String destinationId, String content)
             throws JMSException {
-        log.debug("The following message is sent to the topic '" + topicId 
+        log.debug("The following message is sent to the topic '" + destinationId
                 + "' on message-bus '" + configuration.getId() + "': \n" 
                 + content);
-        MessageProducer producer = addTopicMessageProducer(topicId);
+        MessageProducer producer = addTopicMessageProducer(destinationId);
         producer.setDeliveryMode(DeliveryMode.PERSISTENT);
         Message msg = session.createTextMessage(content);
 
         // TODO use the message-type instead of this!.
         msg.setJMSType("MyMessage");
-        msg.setJMSReplyTo(session.createQueue(topicId));
+        msg.setJMSReplyTo(session.createQueue(destinationId));
         producer.send(msg);
         session.commit();
     }
@@ -189,7 +197,7 @@ public class ActiveMQConnection implements MessageBusConnection {
 
     /**
      * Method for retrieving the message producer for a specific queue.
-     * @param queueId The id for the queue.
+     * @param topicId The id for the queue.
      * @return The message producer for this queue.
      * @throws JMSException If the producer for the queue cannot be established.
      */

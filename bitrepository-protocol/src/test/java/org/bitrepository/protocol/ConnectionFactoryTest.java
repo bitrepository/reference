@@ -24,18 +24,17 @@
  */
 package org.bitrepository.protocol;
 
-import java.util.Collection;
-
+import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.bitrepository.protocol.ConnectionConfiguration;
-import org.jaccept.structure.ExtendedTestCase;
+
+import java.util.Collection;
 
 /**
  * Tests the basic functionality of the connection configuration class.
  * @author jolf
  */
-public class ConnectionConfigurationTest extends ExtendedTestCase {
+public class ConnectionFactoryTest extends ExtendedTestCase {
 
     /**
      * Tests the basic functionality of the ConnecitonConfiguration class:
@@ -48,19 +47,20 @@ public class ConnectionConfigurationTest extends ExtendedTestCase {
     public void initializationTest() {
         addDescription("Tests the initialization of ConnectionConfiguration, "
                 + "and ensures that only one connection is known per default.");
-        Collection<ConnectionConfiguration> connections 
-        = ConnectionConfiguration.getAllConfigurations();
+        Collection<ConnectionConfiguration> connections
+        = ConnectionFactory.getAllConfigurations();
         Assert.assertEquals(connections.size(), 2, "There should be two "
                 + "connection configurations.");
         try {
-            ConnectionConfiguration.getConfiguration("BAD_ID");
+            ConnectionFactory.getConfiguration("BAD_ID");
             Assert.fail("A illegal state exception should have been trown here.");
         } catch (IllegalStateException e) {
             // expected!
         }
 
         ConnectionConfiguration con = connections.iterator().next();
-        ConnectionConfiguration con2 = ConnectionConfiguration.getConfiguration(con.getId());
+        ConnectionConfiguration con2 = ConnectionFactory
+                .getConfiguration(con.getId());
         Assert.assertEquals(con2, con, "It should be the same ConnectionConfiguration");
     }
 }

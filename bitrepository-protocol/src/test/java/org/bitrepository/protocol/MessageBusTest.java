@@ -24,12 +24,6 @@
  */
 package org.bitrepository.protocol;
 
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
-
 import org.apache.activemq.broker.BrokerService;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -45,7 +39,7 @@ public class MessageBusTest extends ExtendedTestCase {
     static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 100;
 
     @Test(groups = { "testfirst" })
-    public void messageBusConnectionTest() throws JMSException {
+    public void messageBusConnectionTest() {
         addDescription("Verifies that we are able to connect to the message bus");
         addStep("Get a connection to the message bus from the "
                 + "<i>MessageBusConnection</i> connection class",
@@ -122,7 +116,7 @@ public class MessageBusTest extends ExtendedTestCase {
                     "Info-level logs should be seen here for both connections. "
                     + "Only the last is used.");
             MessageBusConnection con = ConnectionFactory.getInstance();
-            con = ConnectionFactory.getNext();
+            con = ConnectionFactory.getNextConnection();
 
             addStep("Make a listener for the messagebus and make it listen. "
                     + "Then send a message for the message listener to catch.",
@@ -149,22 +143,17 @@ public class MessageBusTest extends ExtendedTestCase {
         }
     }
 
-    protected class TestMessageListener implements MessageListener, 
-    ExceptionListener {
+    protected class TestMessageListener implements MessageListener {
         private String message = null;
         @Override
         public void onMessage(Message msg) {
-            Assert.assertTrue(msg instanceof TextMessage);
             try {
-                message = ((TextMessage) msg).getText();
+                message = msg.getText();
             } catch (Exception e) {
                 Assert.fail("Should not throw an exception: ", e);
             }
         }
-        @Override
-        public void onException(JMSException e) {
-            e.printStackTrace();
-        }
+
         public String getMessage() {
             return message;
         }
