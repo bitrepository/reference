@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
   Bitmagasin protokol
@@ -24,18 +24,14 @@
   #L%
   -->
 
-<bro:GetChecksumsRequest version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd' xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
+<bro:GetFileIDsComplete version="1" minVersion="1"  xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd' xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <PillarCredentials>MyPillarCredentials</PillarCredentials>
-  <FileIDs>
-    <FileID>MyDataID1</FileID>
-    <FileID>MyDataID2</FileID>
-  </FileIDs>
-  <FileChecksumType>MD5</FileChecksumType>
-  <SaltParameter>X</SaltParameter>
+  <FileID>MyDataID</FileID>
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
   <PillarID>MyPillar</PillarID>
   <PillarChecksumType>MD5</PillarChecksumType>
-</bro:GetChecksumsRequest>
+  <CompleteCode>MyCompleteCode</CompleteCode>
+  <CompleteText>MyCompleteText</CompleteText>
+</bro:GetFileIDsComplete>

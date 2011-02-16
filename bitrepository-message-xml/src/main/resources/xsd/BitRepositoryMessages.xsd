@@ -8,22 +8,24 @@
 	 xmlns="http://bitrepository.org//BitRepositoryMessages.xsd"
      xmlns:xs="http://www.w3.org/2001/XMLSchema"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:ty="http://bitrepository.org/BitRepositoryTypes.xsd"
      xmlns:bre="http://bitrepository.org/BitRepositoryElements.xsd"
 >
      
   <!-- URL in import targetNamespace must be updated later -->
   <xs:import schemaLocation="BitRepositoryElements.xsd" namespace="http://bitrepository.org/BitRepositoryElements.xsd" />
+  <xs:import schemaLocation="BitRepositoryTypes.xsd" namespace="http://bitrepository.org/BitRepositoryTypes.xsd" />
  
   <!-- ************************************************************** -->
-  <!-- * Operation messages for Get                                 * -->
+  <!-- * Operation messages for GetFile                                 * -->
   <!-- ************************************************************** -->
 
   <!-- **************                                                 -->
-  <!-- *** Messages for IdentifyPillarsForGet Primitive               -->
+  <!-- *** Messages for IdentifyPillarsForGetFile Primitive               -->
 
-  <xs:element name="IdentifyPillarsForGetRequest">
+  <xs:element name="IdentifyPillarsForGetFileRequest">
     <xs:annotation><xs:documentation xml:lang="en">
-    REQUEST in IdentifyPillarsForGet primitive
+    REQUEST in IdentifyPillarsForGetFile primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
@@ -35,7 +37,7 @@
           </xs:documentation></xs:annotation>
         </xs:group>
 
-        <xs:element ref="bre:DataID" > 
+        <xs:element ref="bre:FileID" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Unique identifier for requested data in given SLA 
           </xs:documentation></xs:annotation>
@@ -48,9 +50,9 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="IdentifyPillarsForGetReply">
+  <xs:element name="IdentifyPillarsForGetFileReply">
     <xs:annotation><xs:documentation xml:lang="en">
-    REPLY in IdentifyPillarsForGet primitive
+    REPLY in IdentifyPillarsForGetFile primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
@@ -62,7 +64,7 @@
           </xs:documentation></xs:annotation>
         </xs:group>
 
-        <xs:element ref="bre:DataID" > 
+        <xs:element ref="bre:FileID" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Unique identifier for requested data in given SLA
           </xs:documentation></xs:annotation>
@@ -94,14 +96,14 @@
   </xs:element>
 
   <!-- **************                                                        -->
-  <!-- *** Messages for Get Primitive                                        -->
+  <!-- *** Messages for GetFile Primitive                                        -->
   
-  <!-- ***  Messages for Get Primitive are only sent to one specific pillar  -->
-  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForGetReply     -->
+  <!-- ***  Messages for GetFile Primitive are only sent to one specific pillar  -->
+  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForGetFileReply     -->
   
-  <xs:element name="GetRequest">
+  <xs:element name="GetFileRequest">
     <xs:annotation><xs:documentation xml:lang="en">
-    REQUEST in Get primitive
+    REQUEST in GetFile primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
@@ -115,23 +117,23 @@
       
         <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
-          Credentials for the Get operation on the specific pillar/SLA
+          Credentials for the GetFile operation on the specific pillar/SLA
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:DataID" > 
+        <xs:element ref="bre:FileID" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Unique identifier for requested data in given SLA
           </xs:documentation></xs:annotation>
         </xs:element>
         
-        <xs:group ref="bre:DataPart" minOccurs="0" maxOccurs="1"> 
+        <xs:group ref="bre:FilePart" minOccurs="0" maxOccurs="1"> 
           <xs:annotation><xs:documentation xml:lang="en">
           Specification of part of the data object, in case only a part is wanted
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <xs:element ref="bre:DataAddress" > 
+        <xs:element ref="bre:FileAddress" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where data must be delivered
           </xs:documentation></xs:annotation>
@@ -140,7 +142,7 @@
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of receiving pillar, which can be used for possible checks
-          (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached) 
+          (IdentifyPillarsForGetFileReply.ReplyTo should ensure that right pillar is reached) 
           </xs:documentation></xs:annotation>
         </xs:element>
         
@@ -157,10 +159,10 @@
     </xs:complexType>
   </xs:element>
   
-  <xs:element name="GetResponse">
+  <xs:element name="GetFileResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    RESPONSE in Get primitive.
-    Note that there can be more responses to the same GetRequest, e.g. if a 
+    RESPONSE in GetFile primitive.
+    Note that there can be more responses to the same GetFileRequest, e.g. if a 
     DVD pillar gives running status of where it is in the get process. 
     </xs:documentation></xs:annotation>
     <xs:complexType>
@@ -173,19 +175,19 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <xs:element ref="bre:DataID" >
+        <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
           Unique identifier for requested data in given SLA
           </xs:documentation></xs:annotation>
         </xs:element>
         
-        <xs:element ref="bre:DataAddress" >
+        <xs:element ref="bre:FileAddress" >
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where data will be delivered
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ExpectedDataSize" minOccurs="0" maxOccurs="1" > 
+        <xs:element ref="bre:ExpectedFileSize" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Expected data size of data object to be send, expressed in bytes.
           This can be used in e.g. capacity checks
@@ -199,7 +201,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
         
-        <xs:element ref="bre:DataChecksumType" minOccurs="0" maxOccurs="1" > 
+        <xs:element ref="bre:FileChecksumType" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Type of the above checksum of the data object to be send.
           </xs:documentation></xs:annotation>
@@ -219,7 +221,7 @@
 
         <xs:element ref="bre:ResponseCode" >  
           <xs:annotation><xs:documentation xml:lang="en">
-          Response code telling whether GetRequest has been received and is expected to be completed
+          Response code telling whether GetFileRequest has been received and is expected to be completed
           </xs:documentation></xs:annotation>
         </xs:element>
         
@@ -236,9 +238,9 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="GetComplete">
+  <xs:element name="GetFileComplete">
     <xs:annotation><xs:documentation xml:lang="en">
-    COMPLETE in Get primitive
+    COMPLETE in GetFile primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
@@ -250,13 +252,13 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <xs:element ref="bre:DataID" > 
+        <xs:element ref="bre:FileID" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Unique identifier for requested data in given SLA
           </xs:documentation></xs:annotation>
         </xs:element>
         
-        <xs:element ref="bre:DataAddress" >
+        <xs:element ref="bre:FileAddress" >
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where data has been delivered (if completed)
           </xs:documentation></xs:annotation>
@@ -294,15 +296,15 @@
   </xs:element>
 
   <!-- ************************************************************** -->
-  <!-- * Operation messages for Put                                 * -->
+  <!-- * Operation messages for PutFile                                 * -->
   <!-- ************************************************************** -->
 
   <!-- **************                                                 -->
-  <!-- *** Messages for IdentifyPillarsForPut Primitive               -->
+  <!-- *** Messages for IdentifyPillarsForPutFile Primitive               -->
 
-  <xs:element name="IdentifyPillarsForPutRequest">
+  <xs:element name="IdentifyPillarsForPutFileRequest">
     <xs:annotation><xs:documentation xml:lang="en">
-    REQUEST in IdentifyPillarsForPut primitive
+    REQUEST in IdentifyPillarsForPutFile primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
@@ -314,7 +316,7 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <xs:element ref="bre:DataID" > 
+        <xs:element ref="bre:FileID" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Unique identifier for data to be put for given SLA
           </xs:documentation></xs:annotation>
@@ -327,9 +329,9 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="IdentifyPillarsForPutReply">
+  <xs:element name="IdentifyPillarsForPutFileReply">
     <xs:annotation><xs:documentation xml:lang="en">
-    REPLY in IdentifyPillarsForPut primitive
+    REPLY in IdentifyPillarsForPutFile primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
@@ -341,7 +343,7 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <xs:element ref="bre:DataID" > 
+        <xs:element ref="bre:FileID" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Unique identifier for data to be put for given SLA
           </xs:documentation></xs:annotation>
@@ -373,14 +375,14 @@
   </xs:element>
 
   <!-- **************                                                       -->
-  <!-- *** Messages for Put Primitive                                       -->
+  <!-- *** Messages for PutFile Primitive                                       -->
 
-  <!-- ***  Messages for Put Primitive are only sent to one specific pillar  -->
-  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForPutReply     -->
+  <!-- ***  Messages for PutFile Primitive are only sent to one specific pillar  -->
+  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForPutFileReply     -->
   
-  <xs:element name="PutRequest">
+  <xs:element name="PutFileRequest">
     <xs:annotation><xs:documentation xml:lang="en">
-    REQUEST in Put primitive
+    REQUEST in PutFile primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
@@ -398,42 +400,49 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:DataID" > 
-          <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for data to be put for given SLA
-          </xs:documentation></xs:annotation>
-        </xs:element>
-        
-        <xs:element ref="bre:DataAddress" > 
+        <xs:element ref="bre:FileAddress" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where data must be downloaded from
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ExpectedDataSize" minOccurs="0" maxOccurs="1" > 
+        <xs:element ref="bre:ExpectedFileSize" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Expected data size of data object to be put, expressed in bytes.
           This can be used in e.g. capacity checks
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:Checksum" minOccurs="0" maxOccurs="1" > 
+        <xs:element name="ChecksumForCheck" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
-          Checksum of data object to be put.
+          Optionally checksum (and type) of data object to be put.
           This can be used in checks of correct receival.
           </xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="bre:Checksum"/> 
+              <xs:element ref="bre:FileChecksumType"/> 
+            </xs:sequence>
+          </xs:complexType>
         </xs:element>
         
-        <xs:element ref="bre:DataChecksumType" minOccurs="0" maxOccurs="1" > 
+        <xs:element name="SaltForCheck" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
-          Type of the above checksum of the data object to be put.
+          Optionally salt (and type of checksum) for extra checksumscheck of data object at 
+          completion to of put file. The result can be given in PutFileComplete
           </xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="bre:SaltParameter"/> 
+              <xs:element name="SaltChecksumType" type="ty:ChecksumsType_TYPE"/> 
+            </xs:sequence>
+          </xs:complexType>
         </xs:element>
 
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of receiving pillar, which can be used for possible checks
-          (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached)
+          (IdentifyPillarsForPutFileReply.ReplyTo should ensure that right pillar is reached)
           </xs:documentation></xs:annotation>
         </xs:element>
         
@@ -450,10 +459,10 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="PutResponse">
+  <xs:element name="PutFileResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    RESPONSE in Put primitive
-    Note that there can be more responses to the same PutRequest, e.g. if a 
+    RESPONSE in PutFile primitive
+    Note that there can be more responses to the same PutFileRequest, e.g. if a 
     DVD pillar gives running status of where it is in the put process. 
     </xs:documentation></xs:annotation>
     <xs:complexType>
@@ -466,13 +475,13 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <xs:element ref="bre:DataID" > 
+        <xs:element ref="bre:FileID" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Unique identifier for data to be put for given SLA
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:DataAddress" >
+        <xs:element ref="bre:FileAddress" >
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where data is to be downloaded from
           </xs:documentation></xs:annotation>
@@ -509,9 +518,9 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="PutComplete">
+  <xs:element name="PutFileComplete">
     <xs:annotation><xs:documentation xml:lang="en">
-    COMPLETE in Put primitive
+    COMPLETE in PutFile primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
@@ -523,13 +532,13 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <xs:element ref="bre:DataID" > 
+        <xs:element ref="bre:FileID" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Unique identifier for data to be put for given SLA
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:DataAddress" >
+        <xs:element ref="bre:FileAddress" >
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where data has been downloaded from (if completed)
           </xs:documentation></xs:annotation>
@@ -556,6 +565,12 @@
         <xs:element ref="bre:CompleteText" minOccurs="0" maxOccurs="1" >  
           <xs:annotation><xs:documentation xml:lang="en">
           Complete text containing additional information for logging only
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element name="CompleteSaltChecksum" type="ty:Checksum_TYPE" minOccurs="0" maxOccurs="1" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksum calculated as specified in PutFileRequest, if specified
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -587,13 +602,13 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <xs:element ref="bre:DataIDs" >
+        <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          DataIDs uniquely identifies the data in given SLA which the checksums are requested for
+          FileIDs uniquely identifies the data in given SLA which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:DataChecksumType" > 
+        <xs:element ref="bre:FileChecksumType" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Checksums type requested
           </xs:documentation></xs:annotation>
@@ -626,13 +641,13 @@
           </xs:documentation></xs:annotation>
         </xs:group>
 
-        <xs:element ref="bre:DataIDs" >
+        <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          DataIDs uniquely identifies the data in given SLA which the checksums are requested for
+          FileIDs uniquely identifies the data in given SLA which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:DataChecksumType" > 
+        <xs:element ref="bre:FileChecksumType" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Checksums type requested 
           </xs:documentation></xs:annotation>
@@ -695,13 +710,13 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:DataIDs" >
+        <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          DataIDs uniquely identifies the data in given SLA which the checksums are requested for
+          FileIDs uniquely identifies the data in given SLA which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
         
-        <xs:element ref="bre:DataChecksumType" > 
+        <xs:element ref="bre:FileChecksumType" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Checksums type requested 
           </xs:documentation></xs:annotation>
@@ -713,7 +728,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1" > 
+        <xs:element ref="bre:FileAddress" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where checksums must be delivered via data transmission.
           In cases where the address is not given, the result will be given in the GetChecksumsComplete message
@@ -754,15 +769,15 @@
           </xs:documentation></xs:annotation>
         </xs:group>
 
-        <xs:element ref="bre:DataIDs" >
+        <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          DataIDs uniquely identifies the data in given SLA which the checksums are requested for
+          FileIDs uniquely identifies the data in given SLA which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:DataChecksumType" > 
+        <xs:element ref="bre:FileChecksumType" > 
           <xs:annotation><xs:documentation xml:lang="en">
-          DataChecksumType is the checksums type requested
+          FileChecksumType is the checksums type requested
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -772,7 +787,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1" >
+        <xs:element ref="bre:FileAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where checksums will be delivered
           </xs:documentation></xs:annotation>
@@ -823,13 +838,13 @@
           </xs:documentation></xs:annotation>
         </xs:group>
 
-        <xs:element ref="bre:DataIDs" >
+        <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          DataIDs uniquely identifies the data in given SLA which the checksums are requested for
+          FileIDs uniquely identifies the data in given SLA which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:DataChecksumType" > 
+        <xs:element ref="bre:FileChecksumType" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Checksums type requested
           </xs:documentation></xs:annotation>
@@ -841,7 +856,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1" >
+        <xs:element ref="bre:FileAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where checksums has been delivered (if completed)
           </xs:documentation></xs:annotation>
@@ -892,15 +907,15 @@
   </xs:element>
 
   <!-- ************************************************************** -->
-  <!-- * Operation messages for GetDataIDs                          * -->
+  <!-- * Operation messages for GetFileIDs                          * -->
   <!-- ************************************************************** -->
 
   <!-- **************                                                 -->
-  <!-- *** Messages for IdentifyPillarsForGetDataIDs Primitive        -->
+  <!-- *** Messages for IdentifyPillarsForGetFileIDs Primitive        -->
 
-  <xs:element name="IdentifyPillarsForGetDataIDsRequest">
+  <xs:element name="IdentifyPillarsForGetFileIDsRequest">
     <xs:annotation><xs:documentation xml:lang="en">
-    REQUEST in IdentifyPillarsForGetDataIDs primitive
+    REQUEST in IdentifyPillarsForGetFileIDs primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
@@ -919,9 +934,9 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="IdentifyPillarsForGetDataIDsReply">
+  <xs:element name="IdentifyPillarsForGetFileIDsReply">
     <xs:annotation><xs:documentation xml:lang="en">
-    REPLY in IdentifyPillarsForGetDataIDs primitive
+    REPLY in IdentifyPillarsForGetFileIDs primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
@@ -953,14 +968,14 @@
   </xs:element>
 
   <!-- **************                                                 -->
-  <!-- *** Messages for GetDataIDs Primitive                          -->
+  <!-- *** Messages for GetFileIDs Primitive                          -->
   
-  <!-- ***  Messages for GetDataIDs Primitive are only sent to one specific pillar  -->
-  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForGetDataIDsReply     -->
+  <!-- ***  Messages for GetFileIDs Primitive are only sent to one specific pillar  -->
+  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForGetFileIDsReply     -->
   
-  <xs:element name="GetDataIDsRequest">
+  <xs:element name="GetFileIDsRequest">
     <xs:annotation><xs:documentation xml:lang="en">
-    REQUEST in GetDataIDs primitive
+    REQUEST in GetFileIDs primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
@@ -978,17 +993,17 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1" > 
+        <xs:element ref="bre:FileAddress" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where data ids must be delivered via data transmission
-          In cases where the address is not given, the result will be given in the GetDataIdsComplete message
+          In cases where the address is not given, the result will be given in the GetFileIdsComplete message
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of receiving pillar, which can be used for possible checks
-          (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached) 
+          (IdentifyPillarsForGetFileIDsReply.ReplyTo should ensure that right pillar is reached) 
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -1000,9 +1015,9 @@
     </xs:complexType>
   </xs:element>
   
-  <xs:element name="GetDataIDsResponse">
+  <xs:element name="GetFileIDsResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    RESPONSE in GetDataIDs primitive
+    RESPONSE in GetFileIDs primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
@@ -1014,7 +1029,7 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1" >
+        <xs:element ref="bre:FileAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where data will be delivered
           </xs:documentation></xs:annotation>
@@ -1045,9 +1060,9 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="GetDataIDsComplete">
+  <xs:element name="GetFileIDsComplete">
     <xs:annotation><xs:documentation xml:lang="en">
-    COMPLETE in GetDataIDs primitive
+    COMPLETE in GetFileIDs primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
 
@@ -1059,7 +1074,7 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <xs:element ref="bre:DataAddress" minOccurs="0" maxOccurs="1" >
+        <xs:element ref="bre:FileAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where data has been delivered (if completed)
           </xs:documentation></xs:annotation>
@@ -1089,7 +1104,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:group ref="bre:DataIDsData" minOccurs="0" maxOccurs="unbounded" > 
+        <xs:group ref="bre:FileIDsData" minOccurs="0" maxOccurs="unbounded" > 
           <xs:annotation><xs:documentation xml:lang="en">
           List of data for data ids in result, if given in this message instead of via data transfer
           </xs:documentation></xs:annotation>

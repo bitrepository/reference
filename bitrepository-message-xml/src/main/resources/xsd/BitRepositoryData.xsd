@@ -1,13 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
-<xs:schema targetNamespace="http://bitrepository.org/BitRepositoryData.xsd" 
-     attributeFormDefault="unqualified" 
-     elementFormDefault="qualified" 
+<xs:schema 
+  targetNamespace="http://bitrepository.org/BitRepositoryData.xsd" 
+  attributeFormDefault="unqualified" 
+  elementFormDefault="qualified" 
          
-     xmlns="http://bitrepository.org/BitRepositoryData.xsd"   
-     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xmlns:bre="http://bitrepository.org/BitRepositoryElements.xsd"
+  xmlns="http://bitrepository.org/BitRepositoryData.xsd"   
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bre="http://bitrepository.org/BitRepositoryElements.xsd"
 >
 
   <xs:import schemaLocation="BitRepositoryElements.xsd" namespace="http://bitrepository.org/BitRepositoryElements.xsd" />
@@ -35,7 +36,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:DataChecksumType" > 
+        <xs:element ref="bre:FileChecksumType" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The type of checksums included
           </xs:documentation></xs:annotation>
@@ -64,12 +65,12 @@
   </xs:element>
 
   <!-- ***************************** -->
-  <!-- * Results for GetDataIDs    * -->
+  <!-- * Results for GetFileIDs    * -->
   <!-- ***************************** -->
 
-  <xs:element name="GetDataIDsResults">
+  <xs:element name="GetFileIDsResults">
     <xs:annotation><xs:documentation xml:lang="en">
-    Data format for delivery of data IDs as result of GetDataIDs
+    Data format for delivery of data IDs as result of GetFileIDs
     </xs:documentation></xs:annotation>
 
     <xs:complexType>
@@ -93,7 +94,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:group ref="bre:DataIDsData" minOccurs="1" maxOccurs="unbounded" > 
+        <xs:group ref="bre:FileIDsData" minOccurs="1" maxOccurs="unbounded" > 
           <xs:annotation><xs:documentation xml:lang="en">
           List of data on data identifiers in result
           </xs:documentation></xs:annotation>
@@ -107,7 +108,7 @@
   <!-- * Parameter data with data IDs  * -->
   <!-- ********************************* -->
 
-  <xs:element name="DataIDsParameters">
+  <xs:element name="FileIDsParameters">
     <xs:annotation><xs:documentation xml:lang="en">
     Data format for parameters data ID parameters sent via data transmission
     </xs:documentation></xs:annotation>
@@ -139,7 +140,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:DataID" minOccurs="1" maxOccurs="unbounded" >
+        <xs:element ref="bre:FileID" minOccurs="1" maxOccurs="unbounded" >
           <xs:annotation><xs:documentation xml:lang="en">
           List of identifiers for data in given SLA
           </xs:documentation></xs:annotation>

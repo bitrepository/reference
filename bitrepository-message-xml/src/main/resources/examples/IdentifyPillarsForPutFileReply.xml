@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
   Bitmagasin protokol
@@ -24,12 +24,12 @@
   #L%
   -->
 
-<bro:GetDataIDsData version="1" minVersion="1"  xmlns:bro='http://tempuri.org/BitStorageMessages.xsd' xmlns="http://tempuri.org/BitStorageElements.xsd">
+<bro:IdentifyPillarsForPutFileReply version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd' xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
+  <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
+  <ReplyTo>MyQueueOrTopic</ReplyTo>
+  <FileID>MyDataID</FileID>
   <PillarID>MyPillar</PillarID>
-  <NoOfItems>NoOfIDs</NoOfItems>
-  <DataIDsData>
-     <DataID>MydataId1</DataID>
-     <CalculationTime>MyLastSeenTime1</CalculationTime>
-  </DataIDsData>
-</bro:GetDataIDsData>
+  <PillarChecksumType>MD5</PillarChecksumType>
+  <TimeToDeliver>1000</TimeToDeliver>
+</bro:IdentifyPillarsForPutFileReply>

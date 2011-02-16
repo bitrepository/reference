@@ -28,10 +28,10 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <DataIDs>
-    <DataID>MyDataID1</DataID>
-    <DataID>MyDataID2</DataID>
-  </DataIDs>
-  <DataChecksumType>MD5</DataChecksumType>
+  <FileIDs>
+    <FileID>MyDataID1</FileID>
+    <FileID>MyDataID2</FileID>
+  </FileIDs>
+  <FileChecksumType>MD5</FileChecksumType>
   <SaltParameter>X</SaltParameter>
 </bro:IdentifyPillarsForGetChecksumsRequest>

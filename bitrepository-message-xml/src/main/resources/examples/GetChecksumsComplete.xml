@@ -28,19 +28,26 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <DataIDs>
-    <DataID>MyDataID1</DataID>
-    <DataID>MyDataID2</DataID>
-  </DataIDs>
-  <DataChecksumType>MD5</DataChecksumType>
+  <FileIDs>
+    <FileID>MyDataID1</FileID>
+    <FileID>MyDataID2</FileID>
+  </FileIDs>
+  <FileChecksumType>MD5</FileChecksumType>
   <SaltParameter>X</SaltParameter>
-  <DataAddress>http://myServer/myPlace/Myfile</DataAddress>
+  <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
   <PillarID>MyPillar</PillarID>
   <PillarChecksumType>MD5</PillarChecksumType>
   <CompleteCode>MyCompleteCode</CompleteCode>
   <CompleteText>MyCompleteText</CompleteText>
   <NoOfItems>NoOfCS</NoOfItems>
-  <DataID>MyDataId1</DataID>
-  <Checksum>MyChecksum1</Checksum>
-  <CalculationTime>MyCalcTime1</CalculationTime>
+  <ChecksumsData>
+    <FileID>MyDataId1</FileID>
+    <Checksum>MyChecksum1</Checksum>
+    <CalculationTime>MyCalcTime1</CalculationTime>
+  </ChecksumsData>
+  <ChecksumsData>
+    <FileID>MyDataId2</FileID>
+    <Checksum>MyChecksum2</Checksum>
+    <CalculationTime>MyCalcTime2</CalculationTime>
+  </ChecksumsData>
 </bro:GetChecksumsComplete>

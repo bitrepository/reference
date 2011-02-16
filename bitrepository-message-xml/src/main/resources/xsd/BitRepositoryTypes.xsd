@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- URLs in schema targetNamespace must be updated later -->
+<xs:schema 
+  targetNamespace="http://bitrepository.org/BitRepositoryTypes.xsd"
+  elementFormDefault="qualified"
+  
+  xmlns="http://bitrepository.org/BitRepositoryTypes.xsd"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  <!-- ************************************************************** -->
+  <!-- ****** USED ELEMENTS AND GROUPS IN ALPHABETIC ORDER     ****** -->
+  <!-- ************************************************************** -->
+
+  <xs:simpleType name="Address_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Adress for where data files can be found or placed
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:dateTime">
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="CalculationTime_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    The data and time for when a calculation took place
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:dateTime">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ChecksumsType_TYPE">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="MD5"/>
+      <xs:enumeration value="SHA-3"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Checksum_TYPE">
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="FileID_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Unique identifiers for data in given service level agreement
+    In a Get operation this will be the identifier for data requested
+    In a Put operation this will be the identifier the data for later request of the data
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="SlaID_TYPE">
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

@@ -2,11 +2,16 @@
 
 <!-- URLs in schema targetNamespace must be updated later -->
 <xs:schema 
-	targetNamespace="http://bitrepository.org/BitRepositoryElements.xsd"
-    elementFormDefault="qualified"
-    xmlns="http://bitrepository.org/BitRepositoryElements.xsd"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://bitrepository.org/BitRepositoryElements.xsd"
+  elementFormDefault="qualified"
+  
+  xmlns="http://bitrepository.org/BitRepositoryElements.xsd"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:ty="http://bitrepository.org/BitRepositoryTypes.xsd"
 >
+
+  <xs:import schemaLocation="BitRepositoryTypes.xsd" namespace="http://bitrepository.org/BitRepositoryTypes.xsd" />
+
   <!-- ************************************************************** -->
   <!-- ****** USED ELEMENTS AND GROUPS IN ALPHABETIC ORDER     ****** -->
   <!-- ************************************************************** -->
@@ -18,7 +23,7 @@
     </xs:documentation></xs:annotation>
   </xs:element>
   
-  <xs:element name="Checksum">
+  <xs:element name="Checksum" type="ty:Checksum_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Checksum measure for specific data object
     e.g. used in delivery of GetChecksums result
@@ -31,26 +36,25 @@
     </xs:documentation></xs:annotation>
 
     <xs:sequence>
-      <xs:element ref="DataID" >
+      <xs:element name="FileID" type="ty:FileID_TYPE" >
         <xs:annotation><xs:documentation xml:lang="en">
         Identifier of data the checksum is for
         </xs:documentation></xs:annotation>
       </xs:element>
          
-      <xs:element ref="Checksum" >
+      <xs:element name="Checksum" type="ty:Checksum_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         Checksum of data which will be based on given algorithm and include salt if specified 
         </xs:documentation></xs:annotation>
       </xs:element>
 
-      <xs:element ref="CalculationTime" >
+      <xs:element name="CalculationTime" type="ty:CalculationTime_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         The time when the checksum was last calculated
         (especially for ordinary checksums on off-line medias, there can be long intervals between
         calculations, - in such cases this information is crucial for alarming)
         </xs:documentation></xs:annotation>
       </xs:element>
-
     </xs:sequence>
   </xs:group>
 
@@ -68,7 +72,7 @@
         </xs:documentation></xs:annotation>
       </xs:element>
        
-      <xs:element ref="SlaID" > 
+      <xs:element name="SlaID" type="ty:SlaID_TYPE"> 
         <xs:annotation><xs:documentation xml:lang="en">
         SlaID is a unique identifier for SLA which data belongs to.
         This is also the identification of decryption and keys for contents of message
@@ -107,7 +111,15 @@
     </xs:documentation></xs:annotation>
   </xs:element>
   
-  <xs:element name="DataAddress" >
+  <xs:element name="ExpectedFileSize" > 
+    <xs:annotation><xs:documentation xml:lang="en">
+    The size of data expressed in number of bytes
+    e.g. size of data to be put
+    The type can later be extended to include measure type and measure
+    </xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="FileAddress" type="ty:Address_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Address (e.g. in form of an URL) for where data can be found
     In a Get operation this will be the address where data requested must be placed
@@ -115,7 +127,7 @@
     </xs:documentation></xs:annotation>
   </xs:element>
   
-  <xs:element name="DataChecksumType" >
+  <xs:element name="FileChecksumType" type="ty:ChecksumsType_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Gives information about which type of checksum is used for data
     This is for instance used for the GetChecksum operation 
@@ -123,15 +135,15 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="DataID">
+  <xs:element name="FileID" type="ty:FileID_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Unique identifiers for data in given service level agreement
     In a Get operation this will be the identifier for data requested
     In a Put operation this will be the identifier the data for later request of the data
     </xs:documentation></xs:annotation>
   </xs:element>
-  
-  <xs:element name="DataIDs">
+
+  <xs:element name="FileIDs">
     <xs:annotation><xs:documentation xml:lang="en">
     Identifiers that uniquely identifies the data in given SLA which are requested for
     These can be specified in different ways, e.g. a list, an all constant or via an address
@@ -139,21 +151,21 @@
 
     <xs:complexType>
       <xs:choice>
-        <xs:element ref="DataID" minOccurs="1" maxOccurs="unbounded" >
+        <xs:element name="FileID" type="ty:FileID_TYPE" minOccurs="1" maxOccurs="unbounded" >
           <xs:annotation><xs:documentation xml:lang="en">
           List of identifiers for data in given SLA
           </xs:documentation></xs:annotation>
         </xs:element>
             
-        <xs:element name="AllDataIDs" >
+        <xs:element name="AllFileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
           Specification that all data identifiers in SLA is requested
           </xs:documentation></xs:annotation>
         </xs:element>
                   
-        <xs:element ref="ParameterAddress" >
+        <xs:element name="ParameterAddress" type="ty:Address_TYPE">
           <xs:annotation><xs:documentation xml:lang="en">
-          Address where Data ID list can be found on form DataIDsParameters
+          Address where File ID list can be found on form FileIDsParameters
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -162,19 +174,19 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:group name="DataIDsData">
+  <xs:group name="FileIDsData">
     <xs:annotation><xs:documentation xml:lang="en">
     Includes relevant information on data IDs in a result
     </xs:documentation></xs:annotation>
     <xs:sequence>
              
-      <xs:element ref="DataID" >
+      <xs:element name="FileID" type="ty:FileID_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         Identifier of data
         </xs:documentation></xs:annotation>
       </xs:element>
          
-      <xs:element ref="CalculationTime" >
+      <xs:element name="CalculationTime" type="ty:CalculationTime_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         The time when the data  was last seen
         (especially for off-line medias, there can be long intervals between
@@ -185,18 +197,18 @@
     </xs:sequence>
   </xs:group>
 
-  <xs:group name="DataPart" > 
+  <xs:group name="FilePart" > 
     <xs:annotation><xs:documentation xml:lang="en">
     Specification of data object part by posion and length after position
     </xs:documentation></xs:annotation>
     <xs:sequence>
-      <xs:element name="PartStartPosition" >
+      <xs:element name="PartStartPosition" type="xs:nonNegativeInteger">
         <xs:annotation><xs:documentation xml:lang="en">
         Start position of the part of the data object
         </xs:documentation></xs:annotation>
       </xs:element>
 
-      <xs:element name="PartLength" >
+      <xs:element name="PartLength" type="xs:nonNegativeInteger">
         <xs:annotation><xs:documentation xml:lang="en">
         length of the part of the data object
         </xs:documentation></xs:annotation>
@@ -204,28 +216,20 @@
     </xs:sequence>
   </xs:group>
 
-  <xs:element name="ExpectedDataSize" > 
-    <xs:annotation><xs:documentation xml:lang="en">
-    The size of data expressed in number of bytes
-    e.g. size of data to be put
-    The type can later be extended to include measure type and measure
-    </xs:documentation></xs:annotation>
-  </xs:element>
-
-  <xs:element name="NoOfItems" > 
+  <xs:element name="NoOfItems" type="xs:integer"> 
     <xs:annotation><xs:documentation xml:lang="en">
     The number of results given in a delivered result
     e.g. number of checksums in result given in a data transmitted file or in a message
     </xs:documentation></xs:annotation>
   </xs:element>
   
-  <xs:element name="ParameterAddress" >
+  <xs:element name="ParameterAddress" type="ty:Address_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Address where parameter can be found 
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="PillarChecksumType" >
+  <xs:element name="PillarChecksumType" type="ty:ChecksumsType_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Information about which type of checksum is used for data on checksums pillar
     In a Get this information will only be relevant for identification of pillars
@@ -249,7 +253,7 @@
   <xs:element name="ResponseCode" >
     <xs:annotation><xs:documentation xml:lang="en">
     A code for the type of response given
-    The actual codes are specified later, e.g. UnknownDataId, OK
+    The actual codes are specified later, e.g. UnknownFileId, OK
     </xs:documentation></xs:annotation>
   </xs:element>
 
@@ -267,7 +271,7 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="SlaID" > 
+  <xs:element name="SlaID" type="ty:SlaID_TYPE"> 
     <xs:annotation><xs:documentation xml:lang="en">
     A unique identifier for SLA which data belongs to.
     </xs:documentation></xs:annotation>
