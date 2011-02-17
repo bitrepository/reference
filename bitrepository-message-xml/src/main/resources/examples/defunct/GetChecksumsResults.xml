@@ -27,12 +27,12 @@
 <bro:GetChecksumsResults version="1" minVersion="1"  xmlns:bro='http://tempuri.org/BitStorageMessages.xsd' xmlns="http://tempuri.org/BitStorageElements.xsd">
   <SlaID>MySla</SlaID>
   <PillarID>MyPillar</PillarID>
-  <DataChecksumType>MD5</DataChecksumType>
+  <FileChecksumType>MD5</FileChecksumType>
   <SaltParameter>X</SaltParameter>
   <NoOfItems>1</NoOfItems>
   <ChecksumsData>
      <FileID>MyDataId1</FileID>
      <Checksum>MyChecksum1</Checksum>
-     <CalculationTime>MyCalcTime1</CalculationTime>
+     <CalculationTime>2011-02-17T09:47:00</CalculationTime>
   </ChecksumsData>
 </bro:GetChecksumsResults>

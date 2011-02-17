@@ -37,6 +37,6 @@
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
   <PillarID>MyPillar</PillarID>
   <PillarChecksumType>MD5</PillarChecksumType>
-  <ResponseCode>MyResponseCode</ResponseCode>
-  <ResponseText>MyResponseText</ResponseText>
+  <ResponseCode>MR</ResponseCode>
+  <ResponseText>Message request has been received and is expected to be met successfully</ResponseText>
 </bro:GetChecksumsResponse>

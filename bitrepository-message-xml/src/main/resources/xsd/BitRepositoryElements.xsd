@@ -16,13 +16,6 @@
   <!-- ****** USED ELEMENTS AND GROUPS IN ALPHABETIC ORDER     ****** -->
   <!-- ************************************************************** -->
 
-  <xs:element name="CalculationTime" > 
-    <xs:annotation><xs:documentation xml:lang="en">
-    The time when a given result was last calculated
-    e.g. when a checksum was calculated or when a data object was last seen
-    </xs:documentation></xs:annotation>
-  </xs:element>
-  
   <xs:element name="Checksum" type="ty:Checksum_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Checksum measure for specific data object
@@ -111,7 +104,7 @@
     </xs:documentation></xs:annotation>
   </xs:element>
   
-  <xs:element name="ExpectedFileSize" > 
+  <xs:element name="ExpectedFileSize" type="xs:nonNegativeInteger"> 
     <xs:annotation><xs:documentation xml:lang="en">
     The size of data expressed in number of bytes
     e.g. size of data to be put
@@ -202,7 +195,7 @@
     Specification of data object part by posion and length after position
     </xs:documentation></xs:annotation>
     <xs:sequence>
-      <xs:element name="PartStartPosition" type="xs:nonNegativeInteger">
+      <xs:element name="PartOffSet" type="xs:nonNegativeInteger">
         <xs:annotation><xs:documentation xml:lang="en">
         Start position of the part of the data object
         </xs:documentation></xs:annotation>
@@ -216,7 +209,7 @@
     </xs:sequence>
   </xs:group>
 
-  <xs:element name="NoOfItems" type="xs:integer"> 
+  <xs:element name="NoOfItems" type="xs:nonNegativeInteger"> 
     <xs:annotation><xs:documentation xml:lang="en">
     The number of results given in a delivered result
     e.g. number of checksums in result given in a data transmitted file or in a message
@@ -238,26 +231,20 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="PillarCredentials" >
-    <xs:annotation><xs:documentation xml:lang="en">
-    Credentials for performing operations on a specific pillar
-    </xs:documentation></xs:annotation>
-  </xs:element>
-
-  <xs:element name="PillarID" > 
+  <xs:element name="PillarID" type="ty:PillarID_TYPE"> 
     <xs:annotation><xs:documentation xml:lang="en">
     A unique identifier for a specific pillar (covered by  the SLA which data belongs to)
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="ResponseCode" >
+  <xs:element name="ResponseCode" type="ty:ResponseCode_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     A code for the type of response given
     The actual codes are specified later, e.g. UnknownFileId, OK
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="ResponseText" >
+  <xs:element name="ResponseText" type="xs:string">
     <xs:annotation><xs:documentation xml:lang="en">
     A text for logging in the response. 
     It does not have a semantic meaning, but contributes to a more readable log
@@ -293,10 +280,5 @@
   <!-- Control sizes -->
   <!-- .... -->
   <xs:element name="MaxPackageSize" /> <!-- Unit and measure ... -->
-  
-  <!-- For paging -->
-  <!-- .... -->
-  <xs:element name="PageOffSet" /> <!-- Unit and measure ... -->
-  <xs:element name="PageLength" /> <!-- Unit and measure ... -->
-  
+ 
 </xs:schema>

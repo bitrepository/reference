@@ -30,6 +30,6 @@
   <ReplyTo>MyQueueOrTopic</ReplyTo>
   <DataAddress>http://myServer/myPlace/Myfile</DataAddress>
   <PillarID>MyPillar</PillarID>
-  <ResponseCode>MyResponseCode</ResponseCode>
-  <ResponseText>MyResponseText</ResponseText>
+  <ResponseCode>MR</ResponseCode>
+  <ResponseText>Message request has been received and is expected to be met successfully</ResponseText>
 </bro:GetFileIDsResponse>

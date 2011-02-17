@@ -115,12 +115,6 @@
           </xs:documentation></xs:annotation>
         </xs:group>
       
-        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" > 
-          <xs:annotation><xs:documentation xml:lang="en">
-          Credentials for the GetFile operation on the specific pillar/SLA
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
         <xs:element ref="bre:FileID" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Unique identifier for requested data in given SLA
@@ -180,6 +174,12 @@
           Unique identifier for requested data in given SLA
           </xs:documentation></xs:annotation>
         </xs:element>
+        
+        <xs:group ref="bre:FilePart" minOccurs="0" maxOccurs="1"> 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Specification of part of the data object, in case only a part is wanted
+          </xs:documentation></xs:annotation>
+        </xs:group>
         
         <xs:element ref="bre:FileAddress" >
           <xs:annotation><xs:documentation xml:lang="en">
@@ -257,6 +257,12 @@
           Unique identifier for requested data in given SLA
           </xs:documentation></xs:annotation>
         </xs:element>
+        
+        <xs:group ref="bre:FilePart" minOccurs="0" maxOccurs="1"> 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Specification of part of the data object, in case only a part is wanted
+          </xs:documentation></xs:annotation>
+        </xs:group>
         
         <xs:element ref="bre:FileAddress" >
           <xs:annotation><xs:documentation xml:lang="en">
@@ -394,9 +400,9 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" > 
+        <xs:element ref="bre:FileID" > 
           <xs:annotation><xs:documentation xml:lang="en">
-          Credentials for the Put peration on the specific pillar/SLA
+          Unique identifier for data to be put for given SLA
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -704,12 +710,6 @@
           </xs:documentation></xs:annotation>
         </xs:group>
 
-        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" > 
-          <xs:annotation><xs:documentation xml:lang="en">
-          Credentials for the Get Checksums operation on the specific pillar/SLA
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
           FileIDs uniquely identifies the data in given SLA which the checksums are requested for
@@ -987,12 +987,6 @@
           </xs:documentation></xs:annotation>
         </xs:group>
       
-        <xs:element ref="bre:PillarCredentials" minOccurs="0" maxOccurs="1" > 
-          <xs:annotation><xs:documentation xml:lang="en">
-          Credentials for the Get data IDs operation on the specific pillar/SLA 
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
         <xs:element ref="bre:FileAddress" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where data ids must be delivered via data transmission

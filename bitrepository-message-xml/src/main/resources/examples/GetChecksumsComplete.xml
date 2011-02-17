@@ -39,15 +39,15 @@
   <PillarChecksumType>MD5</PillarChecksumType>
   <CompleteCode>MyCompleteCode</CompleteCode>
   <CompleteText>MyCompleteText</CompleteText>
-  <NoOfItems>NoOfCS</NoOfItems>
+  <NoOfItems>2</NoOfItems>
   <ChecksumsData>
     <FileID>MyDataId1</FileID>
-    <Checksum>MyChecksum1</Checksum>
-    <CalculationTime>MyCalcTime1</CalculationTime>
+    <Checksum>ABCD1234</Checksum>
+    <CalculationTime>2011-02-17T09:46:00</CalculationTime>
   </ChecksumsData>
   <ChecksumsData>
     <FileID>MyDataId2</FileID>
-    <Checksum>MyChecksum2</Checksum>
-    <CalculationTime>MyCalcTime2</CalculationTime>
+    <Checksum>ABCD1234</Checksum>
+    <CalculationTime>2011-02-17T09:47:00</CalculationTime>
   </ChecksumsData>
 </bro:GetChecksumsComplete>

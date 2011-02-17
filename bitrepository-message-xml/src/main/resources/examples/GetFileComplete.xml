@@ -29,6 +29,8 @@
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
   <FileID>MyDataID</FileID>
+  <PartOffSet>10</PartOffSet> 
+  <PartLength>100</PartLength> 
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
   <PillarID>MyPillar</PillarID>
   <PillarChecksumType>MD5</PillarChecksumType>

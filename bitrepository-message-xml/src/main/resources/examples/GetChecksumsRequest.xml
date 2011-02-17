@@ -28,7 +28,6 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <PillarCredentials>MyPillarCredentials</PillarCredentials>
   <FileIDs>
     <FileID>MyDataID1</FileID>
     <FileID>MyDataID2</FileID>

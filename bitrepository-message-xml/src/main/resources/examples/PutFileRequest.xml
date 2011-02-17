@@ -28,9 +28,9 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <PillarCredentials>MyPillarCredentials</PillarCredentials>
   <FileID>MyDataID</FileID>
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
+  <ExpectedFileSize>10000</ExpectedFileSize>
   <ChecksumForCheck>
     <Checksum>135F21564</Checksum>
     <FileChecksumType>MD5</FileChecksumType>

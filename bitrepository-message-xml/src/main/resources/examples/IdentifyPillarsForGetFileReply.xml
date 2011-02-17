@@ -28,8 +28,6 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <FileID>MyDataID</FileID>
   <PillarID>MyPillar</PillarID>
-  <PillarChecksumType>MD5</PillarChecksumType>
   <TimeToDeliver>1000</TimeToDeliver>
 </bro:IdentifyPillarsForGetFileReply>
