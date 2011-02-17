@@ -43,7 +43,7 @@ public class ConnectionFactoryTest extends ExtendedTestCase {
      * Also that it is possible to retrieve a given connection based on the Id 
      * for that connection, and that if a wrong Id is given a null is returned.
      */
-    @Test(groups = { "testfirst", "functest" })
+    @Test(groups = { "regressiontest" })
     public void initializationTest() {
         addDescription("Tests the initialization of ConnectionConfiguration, "
                 + "and ensures that only one connection is known per default.");

@@ -38,7 +38,7 @@ public class MessageBusTest extends ExtendedTestCase {
      * have been consumed by a listener.*/
     static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 100;
 
-    @Test(groups = { "testfirst" })
+    @Test(groups = { "regressiontest" })
     public void messageBusConnectionTest() {
         addDescription("Verifies that we are able to connect to the message bus");
         addStep("Get a connection to the message bus from the "
@@ -47,7 +47,7 @@ public class MessageBusTest extends ExtendedTestCase {
         Assert.assertNotNull(ConnectionFactory.getInstance());
     }
 
-    @Test(groups = { "functest" })
+    @Test(groups = { "regressiontest" })
     public void busActivityTest() throws Exception {
         addDescription("Tests whether it is possible to create a message listener," +
                 "and then set it to listen to the topic. Then puts a message" +
@@ -97,7 +97,7 @@ public class MessageBusTest extends ExtendedTestCase {
         "bus if the connection is lost");
     }
 
-    @Test(groups = {"functest", "connection"})
+    @Test(groups = {"regressiontest", "connection"})
     public void localBrokerTest() throws Exception {
         addDescription("Tests the possibility for starting the broker locally,"
                 + " and using it for communication by sending a simple message"

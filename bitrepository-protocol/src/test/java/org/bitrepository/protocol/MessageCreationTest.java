@@ -47,7 +47,7 @@ public class MessageCreationTest {
 
     private static final String XML_MESSAGE_DIR = "target/message-xml/";
 
-    @Test(groups = {"testfirst"})
+    @Test(groups = {"regressiontest"})
     public void messageCreationTest() throws Exception {
         String[] messageNames = getMessageNames();
         for (String messageName : messageNames) {
@@ -73,7 +73,6 @@ public class MessageCreationTest {
         XPathExpression expr = xpath.compile("/xs:schema/xs:element");
         Object result = expr.evaluate(doc, XPathConstants.NODESET);
         NodeList nodes = (NodeList) result;
-        System.out.println("Number of nodes = " + nodes.getLength());
 
         String[] messageNames = new String[nodes.getLength()];
         for (int i = 0; i < nodes.getLength(); i++) {
