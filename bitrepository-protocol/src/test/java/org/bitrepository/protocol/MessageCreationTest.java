@@ -25,6 +25,7 @@
 package org.bitrepository.protocol;
 
 import org.bitrepository.bitrepositorymessages.GetChecksumsComplete;
+import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -43,14 +44,18 @@ import java.util.Iterator;
  * Test whether we are able to create message objects from xml. The input XML is the example code defined in the
  * message-xml, thereby also testing whether this is valid. *
  */
-public class MessageCreationTest {
+public class MessageCreationTest extends ExtendedTestCase {
 
     private static final String XML_MESSAGE_DIR = "target/message-xml/";
 
     @Test(groups = {"regressiontest"})
     public void messageCreationTest() throws Exception {
+    	addDescription("Tests if we are able to create message objects from xml. The input XML is the example code " +
+    			"defined in the message-xml, thereby also testing whether this is valid.");
         String[] messageNames = getMessageNames();
         for (String messageName : messageNames) {
+        	addStep("Creating " + messageName + " message" , 
+        			"The test is able to instantiate message based on the example in the message-xml module§");
             String xmlMessage = loadXMLExample(messageName);
 			MessageFactory.createMessage(GetChecksumsComplete.class, xmlMessage);
         }
