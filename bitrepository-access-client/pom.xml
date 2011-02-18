@@ -9,4 +9,16 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>bitrepository-access-client</artifactId>
   <name>Bitrepository Access Client</name>
-</project>
+    <dependencies>
+        <dependency>
+            <groupId>org.bitrepository</groupId>
+            <artifactId>bitrepository-protocol</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bitrepository</groupId>
+            <artifactId>bitrepository-message-xml</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>                                                                      
