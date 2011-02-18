@@ -44,16 +44,34 @@ import org.slf4j.LoggerFactory;
  * 
  * @author jolf
  */
-public class HTTPConnection {
+public final class HTTPFileExchange {
     /** The log. */
-    private static Logger log = LoggerFactory.getLogger(HTTPConnection.class);
+    private static Logger log = LoggerFactory.getLogger(HTTPFileExchange.class);
 
     /** The size of the IO buffer.*/
     private static final int IO_BUFFER_SIZE = 1024;
 
     /** Protocol for URLs. */
     private static final String PROTOCOL = "http";
+    
+    /** The default port for the HTTP communication.*/
+    private static final int PORT_NUMBER = 80;
+    
+    /** The default name of the HTTP server. TODO retrieve from settings.*/
+    private static final String HTTP_SERVER_NAME = "sandkasse-01.kb.dk";
+    
+    /** The path on the HTTP server to the location, where the data can be 
+     * uploaded.*/
+    private static final String HTTP_SERVER_PATH = "/dav";
+    
+    /** The lower boundary for the error codes of the HTTP codes.*/
+    private static final int HTTP_ERROR_CODE_BARRIER = 300;
 
+    /**
+     * Private constructor to prevent use of this utility method.
+     */
+    private HTTPFileExchange() { }
+    
     /**
      * Put a piece of data onto a http-server and returns the url for the 
      * location of this data.
@@ -64,18 +82,15 @@ public class HTTPConnection {
      * @return The url of the location for the data on the http-server.
      * @throws IOException If any problems occurs during the transportation of
      * the data.
-     * @throws IllegalArgumentException If any arguments are null, or if the
-     * filename is empty.
-     * @throws MalformedURLException If the url cannot be created.
      */
-    public static URL put(InputStream in, String filename) 
+    public static URL uploadToServer(InputStream in, String filename) 
             throws IOException {
         if(in == null || filename == null || filename.isEmpty()) {
             throw new IllegalArgumentException("InputStream in: " + in 
                     + ", String filename: " + filename);
         }
         URL url = getURL(filename);
-        putData(in, url);
+        performUpload(in, url);
         return url;
     }
     
@@ -87,11 +102,8 @@ public class HTTPConnection {
      * http-server.
      * @throws IOException If a problem occurs with the connection to the 
      * http-server or during accessing the file.
-     * @throws IllegalArgumentException If the file is null or not a real file.
-     * @throws MalformedURLException If the url for the file cannot be created.
      */
-    public static URL put(File dataFile) throws IOException, 
-            IllegalArgumentException, MalformedURLException {
+    public static URL uploadToServer(File dataFile) throws IOException {
         if(dataFile == null) {
             throw new IllegalArgumentException("The datafile may not be null.");
         }
@@ -105,36 +117,13 @@ public class HTTPConnection {
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(dataFile);
-            putData(fis, url);
+            performUpload(fis, url);
         } finally {
             if(fis != null) {
                 fis.close();
             }
         }
         return url;
-    }
-
-    /**
-     * Retrieves data from a given path and puts it into the output stream.
-     * 
-     * @param out The stream where the data is retrieve to.
-     * @param httpPath The path to the data on a http-server.
-     * @throws IOException If problems with the connection for retrieving the 
-     * data occurs.
-     * @throws IllegalArgumentException If any argument is null, or if the 
-     * httppath is empty or does not start with 'http'.
-     * @throws MalformedURLException If the path refers to an invalid url.
-     */
-    public static void get(OutputStream out, String httpPath) 
-            throws IOException, IllegalArgumentException, 
-            MalformedURLException {
-        if(out == null || httpPath == null || httpPath.isEmpty() 
-                || !httpPath.startsWith(PROTOCOL)) {
-            throw new IllegalArgumentException("OutputStream out: '" + out
-                    + "', httpPath: '" + httpPath + "'");
-        }
-        URL url = new URL(httpPath);
-        getData(out, url);
     }
     
     /**
@@ -147,7 +136,12 @@ public class HTTPConnection {
      * @throws IOException If any problems occurs during the retrieval of the 
      * data.
      */
-    private static void getData(OutputStream out, URL url) throws IOException {
+    public static void downloadFromServer(OutputStream out, URL url) 
+            throws IOException {
+        if(out == null || url == null) {
+            throw new IllegalArgumentException("OutputStream out: '" + out
+                    + "', URL: '" + url + "'");
+        }
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setDoInput(true);
         conn.setRequestMethod("GET");
@@ -167,7 +161,7 @@ public class HTTPConnection {
      * transaction. Also if the response code is 300 or above, which indicates
      * that the transaction has not been successful.
      */
-    private static void putData(InputStream in, URL url) throws IOException {
+    private static void performUpload(InputStream in, URL url) throws IOException {
         HttpURLConnection conn = null;
         OutputStream out = null;
         try {
@@ -179,7 +173,7 @@ public class HTTPConnection {
             out.flush();
 
             // HTTP code >= 300 means error!
-            if(conn.getResponseCode() >= 300) {
+            if(conn.getResponseCode() >= HTTP_ERROR_CODE_BARRIER) {
                 throw new IOException("Could not upload file, got "
                         + "responsecode '" + conn.getResponseCode() 
                         + "' with message: '" + conn.getResponseMessage() 
@@ -207,12 +201,13 @@ public class HTTPConnection {
      * @param filename The name of the piece of data to transfer (in the form
      * of a file).
      * @return The URL containing the filename.
-     * @throws MalformedURLException If the generated URL is invalid.
+     * @throws MalformedURLException If the filename prevents the creation of
+     * a valid URL.
      */
     private static URL getURL(String filename) throws MalformedURLException {
         // create the URL based on hardcoded values (change to using settings!)
-        URL res = new URL(PROTOCOL, "sandkasse-01.kb.dk", 80, 
-                "/dav" + "/" + filename);
+        URL res = new URL(PROTOCOL, HTTP_SERVER_NAME, PORT_NUMBER, 
+                HTTP_SERVER_PATH + "/" + filename);
         return res;
     }
 
@@ -222,7 +217,6 @@ public class HTTPConnection {
      * 
      * @param in The input stream to copy to the output stream.
      * @param out The output stream where the input stream should be copied.
-     * @throws IllegalArgumentException If one of the streams are null.
      * @throws IOException If anything problems occur with transferring the 
      * data between the streams.
      */

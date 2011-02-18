@@ -34,6 +34,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
@@ -41,13 +43,18 @@ import java.net.URL;
  * @author jolf
  */
 public class HTTPTest extends ExtendedTestCase {
+    
+    /** The path to the 'test.txt' test for the httpBasicTest.*/
+    public static final String PATH_TO_TEST_TXT = "src/test/resources/test.txt";
+    /** The size of the IO buffer.*/
+    private static final int IO_BUFFER_SIZE = 1024;
 
     /**
      * Tests the basic functionality: put and get!
      * @throws Exception
      */
-    @Test(groups = { "testfirst" })
-    public void httpBasicTest() throws Exception {
+    @Test(groups = { "regressiontest" })
+    public final void httpBasicTest() throws Exception {
         addDescription("Tests whether it is possible to upload a file to the "
                 + "default http-server, and then download the file again. "
                 + "Also checks whether the content of the downloaded file is "
@@ -55,32 +62,51 @@ public class HTTPTest extends ExtendedTestCase {
                 + "the same if it is uploaded to a different location.");
         
         // choose file and load as inputstream.
-        File fil = new File("src/test/resources/test.txt");
-        Assert.assertTrue(fil.isFile());
-        FileInputStream is = new FileInputStream(fil);
+        File fil = new File(PATH_TO_TEST_TXT);
+        FileInputStream fis = new FileInputStream(fil);
         
         // upload file to http-server.
         addStep("Uploading file '" + fil.getName() + "'", "The file should now"
                 + " be placed on the http-server.");
-        URL url = HTTPConnection.put(is, fil.getName() + "-test");
+        URL url = HTTPFileExchange.uploadToServer(fis, fil.getName() + "-test");
+        
+        addStep("Download the file manually.", "Should be the same file.");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setDoInput(true);
+        conn.setRequestMethod("GET");
+        InputStream in = conn.getInputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            byte[] buf = new byte[IO_BUFFER_SIZE];
+            int bytesRead;
+            while ((bytesRead = in.read(buf)) != -1) {
+                out.write(buf, 0, bytesRead);
+            }
+            out.flush();
+        } finally {
+            in.close();
+        }
         
         // read the content of the file.
         String fileContent = readFile(fil);
+        Assert.assertEquals(out.toString(), fileContent, "The content of the "
+                + "file should be the same on the server as the local file.");
+        
         
         // download the file again.
         addStep("Downloading the fil again from url '" + url.toString() + "'", 
                 "Should have identical content as original file.");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        HTTPConnection.get(baos, url.toString());
+        HTTPFileExchange.downloadFromServer(baos, url);
         
         // check whether the downloaded content is identical to the uploaded file.
         Assert.assertEquals(fileContent, baos.toString());
         
         addStep("Again uploading the file to the http-server, though on a "
                 + "different location.", "Should be the same file.");
-        URL url2 = HTTPConnection.put(fil);
+        URL url2 = HTTPFileExchange.uploadToServer(fil);
         ByteArrayOutputStream file2 = new ByteArrayOutputStream();
-        HTTPConnection.get(file2, url2.toString());
+        HTTPFileExchange.downloadFromServer(file2, url2);
         
         Assert.assertEquals(baos.toString(), file2.toString());
     }
@@ -91,7 +117,7 @@ public class HTTPTest extends ExtendedTestCase {
      * @return The content of the file as a string.
      * @throws IOException If there is a problem reading the file.
      */
-    public String readFile(File fil) throws IOException {
+    public final String readFile(File fil) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(fil));
         StringBuffer res = new StringBuffer();
         
