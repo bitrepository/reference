@@ -55,7 +55,7 @@ public class MessageCreationTest extends ExtendedTestCase {
         String[] messageNames = getMessageNames();
         for (String messageName : messageNames) {
         	addStep("Creating " + messageName + " message" , 
-        			"The test is able to instantiate message based on the example in the message-xml module§");
+        			"The test is able to instantiate message based on the example in the message-xml modules");
             String xmlMessage = loadXMLExample(messageName);
 			MessageFactory.createMessage(GetChecksumsComplete.class, xmlMessage);
         }
