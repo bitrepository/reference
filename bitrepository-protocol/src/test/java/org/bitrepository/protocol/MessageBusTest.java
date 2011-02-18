@@ -36,10 +36,10 @@ import org.testng.annotations.Test;
 public class MessageBusTest extends ExtendedTestCase {
     /** The time to wait when sending a message before it definitely should 
      * have been consumed by a listener.*/
-    static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 100;
+    static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
 
     @Test(groups = { "regressiontest" })
-    public void messageBusConnectionTest() {
+    public final void messageBusConnectionTest() {
         addDescription("Verifies that we are able to connect to the message bus");
         addStep("Get a connection to the message bus from the "
                 + "<i>MessageBusConnection</i> connection class",
@@ -48,7 +48,7 @@ public class MessageBusTest extends ExtendedTestCase {
     }
 
     @Test(groups = { "regressiontest" })
-    public void busActivityTest() throws Exception {
+    public final void busActivityTest() throws Exception {
         addDescription("Tests whether it is possible to create a message listener," +
                 "and then set it to listen to the topic. Then puts a message" +
                 "on the topic for the message listener to find, and" +
@@ -74,7 +74,7 @@ public class MessageBusTest extends ExtendedTestCase {
     }
 
     //	@Test(groups = { "specificationonly" })
-    public void twoMessageBusConnectionTest() {
+    public final void twoMessageBusConnectionTest() {
         addDescription("Verifies that we are switch to a second message bus");
 
         ConnectionFactory.getInstance();
@@ -84,7 +84,7 @@ public class MessageBusTest extends ExtendedTestCase {
     }
 
     //	@Test(groups = { "specificationonly" })
-    public void messageBusFailoverTest() {
+    public final void messageBusFailoverTest() {
         addDescription("Verifies that we can switch to at second message bus " +
                 "in the middle of a conversation, if the connection is lost. " +
                 "We should also be able to resume the conversation on the new " +
@@ -92,13 +92,13 @@ public class MessageBusTest extends ExtendedTestCase {
     }
 
     //	@Test(groups = { "specificationonly" })
-    public void messageBusReconnectTest() {
+    public final void messageBusReconnectTest() {
         addDescription("Test whether we are able to reconnect to the message " +
         "bus if the connection is lost");
     }
 
-    @Test(groups = {"regressiontest", "connection"})
-    public void localBrokerTest() throws Exception {
+    @Test(groups = {"regressiontest", "connectiontest"})
+    public final void localBrokerTest() throws Exception {
         addDescription("Tests the possibility for starting the broker locally,"
                 + " and using it for communication by sending a simple message"
                 + " over it and verifying that the corresponding message is "
@@ -127,7 +127,7 @@ public class MessageBusTest extends ExtendedTestCase {
 
             synchronized(this) {
                 try {
-                    this.wait(500);
+                    this.wait(TIME_FOR_MESSAGE_TRANSFER_WAIT);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -144,9 +144,10 @@ public class MessageBusTest extends ExtendedTestCase {
     }
 
     protected class TestMessageListener implements MessageListener {
+        /** Container for a message, when it is received.*/
         private String message = null;
         @Override
-        public void onMessage(Message msg) {
+        public final void onMessage(Message msg) {
             try {
                 message = msg.getText();
             } catch (Exception e) {
@@ -154,7 +155,11 @@ public class MessageBusTest extends ExtendedTestCase {
             }
         }
 
-        public String getMessage() {
+        /**
+         * Retrieving the last message caught by this listener.
+         * @return The last received message.
+         */
+        public final String getMessage() {
             return message;
         }
     }
