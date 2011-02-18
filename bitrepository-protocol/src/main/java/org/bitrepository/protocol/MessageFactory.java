@@ -24,14 +24,17 @@
  */
 package org.bitrepository.protocol;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
-import java.io.StringReader;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class MessageFactory {
     private static final Logger LOG = LoggerFactory.getLogger(MessageFactory.class);
@@ -53,5 +56,18 @@ public final class MessageFactory {
             LOG.error("Failed to create message object from string: {}", xmlMessage);
             throw jex;
         }
+    }
+    
+    /**
+     * Method for retrieving the content of a message class as a string.
+     * @param message The message object which should be made into XML.
+     * @return The XML representation of the message object.
+     * @throws JAXBException If the object could not be parsed as a JAXB object.
+     */
+    public static String retrieveMessage(Object message) throws JAXBException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        Marshaller m = JAXBContext.newInstance(message.getClass()).createMarshaller();
+        m.marshal(message, bos);
+        return bos.toString();
     }
 }
