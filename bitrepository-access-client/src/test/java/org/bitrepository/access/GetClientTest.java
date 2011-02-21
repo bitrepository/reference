@@ -28,10 +28,10 @@ import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.protocol.ConnectionFactory;
 import org.bitrepository.protocol.Message;
 import org.bitrepository.protocol.MessageFactory;
 import org.bitrepository.protocol.MessageListener;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -48,7 +48,7 @@ public class GetClientTest extends ExtendedTestCase {
         String dataId = "dataId1";
         GetClient gc = new GetClient();
         TestMessageListener listener = new TestMessageListener();
-        ConnectionFactory.getInstance().addListener(gc.queue, listener);
+        ProtocolComponentFactory.getInstance().getMessageBus().addListener(gc.queue, listener);
         gc.getData(dataId);
 
         synchronized(this) {

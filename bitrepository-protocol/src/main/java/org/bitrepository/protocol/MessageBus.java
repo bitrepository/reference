@@ -2,8 +2,8 @@
  * #%L
  * Bitmagasin integrationstest
  * 
- * $Id: MessageBusConnection.java 49 2011-01-03 08:48:13Z mikis $
- * $HeadURL: https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-integration/src/main/java/org/bitrepository/messagebus/MessageBusConnection.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -32,7 +32,7 @@ package org.bitrepository.protocol;
  *
  * @author jolf
  */
-public interface MessageBusConnection {
+public interface MessageBus {
     /**
      * Adds the supplied listener to the indicated destination
      *

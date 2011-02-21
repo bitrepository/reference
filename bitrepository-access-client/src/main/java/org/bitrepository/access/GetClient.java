@@ -24,17 +24,12 @@
  */
 package org.bitrepository.access;
 
-import java.io.ByteArrayOutputStream;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.protocol.ConnectionFactory;
-import org.bitrepository.protocol.MessageBusConnection;
+import org.bitrepository.protocol.Message;
+import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.MessageFactory;
 import org.bitrepository.protocol.MessageListener;
-import org.bitrepository.protocol.Message;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 
 /**
  * The client for sending and handling 'Get' messages.
@@ -42,7 +37,7 @@ import org.bitrepository.protocol.Message;
  * @author jolf
  */
 public class GetClient implements MessageListener {
-    private MessageBusConnection con;
+    private MessageBus messageBus;
     String queue;
     
     /**
@@ -56,7 +51,7 @@ public class GetClient implements MessageListener {
         // Establish connection to bus!
         
         queue = "DefaultTopic";
-        con = ConnectionFactory.getInstance();
+        messageBus = ProtocolComponentFactory.getInstance().getMessageBus();
         //con.addListener(queue, this);
     }
     
@@ -70,7 +65,7 @@ public class GetClient implements MessageListener {
         msg.setReplyTo(queue);
         
 
-        con.sendMessage(queue, MessageFactory.retrieveMessage(msg));
+        messageBus.sendMessage(queue, MessageFactory.retrieveMessage(msg));
         
 //        GetRequest msg = new GetRequest();
 //        msg.setVersion((short) 1);

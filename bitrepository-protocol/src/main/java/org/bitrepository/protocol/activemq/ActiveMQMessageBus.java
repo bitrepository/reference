@@ -2,8 +2,8 @@
  * #%L
  * Bitmagasin integrationstest
  * 
- * $Id: MessageBusConnection.java 49 2011-01-03 08:48:13Z mikis $
- * $HeadURL: https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-integration/src/main/java/org/bitrepository/messagebus/MessageBusConnection.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -24,12 +24,9 @@
  */
 package org.bitrepository.protocol.activemq;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.bitrepository.protocol.ConnectionConfiguration;
-import org.bitrepository.protocol.MessageBusConnection;
-import org.bitrepository.protocol.MessageListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
@@ -40,9 +37,14 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.Topic;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.bitrepository.protocol.MessageBus;
+import org.bitrepository.protocol.MessageListener;
+import org.bitrepository.protocol.configuration.protocolconfiguration.MessageBusConfiguration;
+import org.bitrepository.protocol.configuration.protocolconfiguration.MessageBusConfigurations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contains the basic functionality for connection and communicating with the 
@@ -53,33 +55,19 @@ import java.util.Map;
  *
  * TODO currently creates only topics.
  */
-public final class ActiveMQConnection implements MessageBusConnection {
+public final class ActiveMQMessageBus implements MessageBus {
     /** The Log.*/
     private static Logger log = LoggerFactory.getLogger(
-            ActiveMQConnection.class);
-
+            ActiveMQMessageBus.class);
+    
     /** The connections on ActiveMQ buses.*/
-    private static Map<String, ActiveMQConnection> instances = 
-        Collections.synchronizedMap(new HashMap<String, ActiveMQConnection>());
+    private Map<String, ActiveMQMessageBus> instances = 
+        Collections.synchronizedMap(new HashMap<String, ActiveMQMessageBus>());
 
     /** The default acknowledge mode.*/
     public static final int ACKNOWLEDGE_MODE = Session.AUTO_ACKNOWLEDGE;
     /** Default transacted.*/
     public static final boolean TRANSACTED = true;
-
-    /**
-     * Returns a <code>MessageBusConnection</code> instance. 
-     * @param property The connection property for this connection.
-     * @throws JMSException Throw in case of problems with the creation of the 
-     * connection to the message bus.
-     */
-    public static synchronized ActiveMQConnection getInstance(
-            ConnectionConfiguration property) throws JMSException {
-        if(!instances.containsKey(property.getId())) {
-            instances.put(property.getId(), new ActiveMQConnection(property));
-        }
-        return instances.get(property.getId());
-    }
 
     /** The variable to separate the parts of the consumer key.*/
     private static final String CONSUMER_KEY_SEPARATOR = "#";
@@ -93,23 +81,26 @@ public final class ActiveMQConnection implements MessageBusConnection {
     = Collections.synchronizedMap(new HashMap<String, 
             MessageConsumer>());
     /** The configuration for the connection to the activeMQ.*/
-    private ConnectionConfiguration configuration;
+    private MessageBusConfiguration configuration;
 
     /**
-     * Constructor. Creates a connection based on the given properties.
+     * Use the {@link ProtocolComponentFactory} to get a handle on a instance of MessageBusConnections. This constructor
+     *  is for the <code>ProtocolComponentFactory</code> eyes only.
      * 
-     * @param con The properties for the connection.
+     * @param messageBusConfigurations The properties for the connection.
      * @throws JMSException If problems happen during the connection.
      */
-    private ActiveMQConnection(ConnectionConfiguration con) 
+    public ActiveMQMessageBus(MessageBusConfigurations messageBusConfigurations) 
             throws JMSException {
-        log.debug("Initializing ActiveMQConnection to '" + con + "'.");
-        this.configuration = con;
+        log.debug("Initializing ActiveMQConnection to '" + messageBusConfigurations + "'.");
+        this.configuration = messageBusConfigurations.getPrimaryMessageBusConfiguration();
 
         // Retrieve factory for connection
         ActiveMQConnectionFactory connectionFactory =
-            new ActiveMQConnectionFactory(configuration.getUsername(),
-                    configuration.getPassword(), configuration.getUrl());	
+            new ActiveMQConnectionFactory(
+            		configuration.getUsername(),
+            		configuration.getPassword(), 
+            		configuration.getUrl());	
 
         // create and start the connection
         connection = connectionFactory.createConnection();

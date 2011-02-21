@@ -22,17 +22,26 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-/**
- * This package provides concrete implementation of the bitrepository
- * asynchronous protocol in activemq.
- * <p/>
- *
- * <h3>Exceptions</h3>
- * All methods may throw {@link IllegalArgumentException} if parameters are null
- * or empty strings, and the documentation does not explicitly allow for this.
- * Also, parameter prerequisites described in documentation may result in an
- * {@link IllegalArgumentException} without this being declared.
- *
- * @see org.repository.protocol
- */
-package org.bitrepository.protocol.activemq;
+package org.bitrepository.protocol.configuration.protocolconfiguration;
+
+import java.io.File;
+
+import org.bitrepository.common.ConfigurationFactory;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+public class ProtocolConfigurationTest {
+
+	@Test(groups = { "regressiontest" })
+    
+	/**
+	 * Validates that the default configuration is loaded correctly. This includes testing that:
+	 * 
+	 */
+    public void defaultConfigurationTest() throws Exception {
+		ProtocolConfiguration pc =
+		ConfigurationFactory.createConfiguration("org.bitrepository.protocol.configuration.protocolconfiguration",
+				ProtocolConfiguration.class, new File("src/main/resources/configurations/xml/protocol-configuration.xml"));
+		Assert.assertNotNull(pc);
+    }
+}

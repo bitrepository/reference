@@ -2,8 +2,8 @@
  * #%L
  * Bitmagasin integrationstest
  * 
- * $Id: MessageBusTest.java 49 2011-01-03 08:48:13Z mikis $
- * $HeadURL: https://gforge.statsbiblioteket.dk/svn/bitmagasin/trunk/bitrepository-integration/src/test/java/org/bitrepository/bus/MessageBusTest.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -44,7 +44,7 @@ public class MessageBusTest extends ExtendedTestCase {
         addStep("Get a connection to the message bus from the "
                 + "<i>MessageBusConnection</i> connection class",
         "No exceptions should be thrown");
-        Assert.assertNotNull(ConnectionFactory.getInstance());
+        Assert.assertNotNull(ProtocolComponentFactory.getInstance().getMessageBus());
     }
 
     @Test(groups = { "regressiontest" })
@@ -56,7 +56,7 @@ public class MessageBusTest extends ExtendedTestCase {
 
         String content = "Content of message for busActivityTest";
         TestMessageListener listener = new TestMessageListener();
-        MessageBusConnection con = ConnectionFactory.getInstance();
+        MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus();
         Assert.assertNotNull(con);
         con.addListener("BusActivityTest", listener);
         con.sendMessage("BusActivityTest", content);
@@ -73,14 +73,9 @@ public class MessageBusTest extends ExtendedTestCase {
         Assert.assertEquals(listener.getMessage(), content);
     }
 
-    //	@Test(groups = { "specificationonly" })
+    @Test(groups = { "specificationonly" })
     public final void twoMessageBusConnectionTest() {
-        addDescription("Verifies that we are switch to a second message bus");
-
-        ConnectionFactory.getInstance();
-        Assert.assertTrue(ConnectionFactory.hasNextConnection(), 
-        "Should have the properties for another connection.");
-        // TODO make the other connection.
+        addDescription("Verifies that we are switch to a second message bus. Awaiting introduction of robustness issue");
     }
 
     //	@Test(groups = { "specificationonly" })
@@ -97,7 +92,11 @@ public class MessageBusTest extends ExtendedTestCase {
         "bus if the connection is lost");
     }
 
-    @Test(groups = {"regressiontest", "connectiontest"})
+    /**
+     * Temporary reverting to test-first, because of difficulty in changing messagebus at run time. This perhaps reflects that  
+     * @throws Exception
+     */
+    @Test(groups = {"test-first", "connectiontest"})
     public final void localBrokerTest() throws Exception {
         addDescription("Tests the possibility for starting the broker locally,"
                 + " and using it for communication by sending a simple message"
@@ -115,8 +114,8 @@ public class MessageBusTest extends ExtendedTestCase {
             addStep("Connecting to the bus, and then connect to the local bus.", 
                     "Info-level logs should be seen here for both connections. "
                     + "Only the last is used.");
-            MessageBusConnection con = ConnectionFactory.getInstance();
-            con = ConnectionFactory.getNextConnection();
+            MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus();
+            //con = ConnectionFactory.getNextConnection();
 
             addStep("Make a listener for the messagebus and make it listen. "
                     + "Then send a message for the message listener to catch.",

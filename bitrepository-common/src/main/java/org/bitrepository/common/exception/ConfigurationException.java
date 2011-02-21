@@ -1,11 +1,11 @@
 /*
  * #%L
- * Bitmagasin integrationstest
+ * bitrepository-common
  * 
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as 
@@ -22,13 +22,26 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.messaging;
+package org.bitrepository.common.exception;
 
-public class MessageFactory {
+/**
+ * Thrown when problems are encountered with accessing a Bitrepository configuration
+ */
+@SuppressWarnings("serial")
+public class ConfigurationException extends RuntimeException {
 
-	public static String createMessage(String string) {
-		// TODO Auto-generated method stub
-		return null;
+	public ConfigurationException(String message, Throwable cause) {
+		super(message, cause);
+		// TODO Auto-generated constructor stub
 	}
 
+	public ConfigurationException(String message) {
+		super(message);
+		// TODO Auto-generated constructor stub
+	}
+
+	public ConfigurationException(Throwable cause) {
+		super(cause);
+		// TODO Auto-generated constructor stub
+	}
 }

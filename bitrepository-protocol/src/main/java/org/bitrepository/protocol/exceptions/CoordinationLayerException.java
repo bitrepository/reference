@@ -22,17 +22,23 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+package org.bitrepository.protocol.exceptions;
+
 /**
- * This package provides concrete implementation of the bitrepository
- * asynchronous protocol in activemq.
- * <p/>
- *
- * <h3>Exceptions</h3>
- * All methods may throw {@link IllegalArgumentException} if parameters are null
- * or empty strings, and the documentation does not explicitly allow for this.
- * Also, parameter prerequisites described in documentation may result in an
- * {@link IllegalArgumentException} without this being declared.
- *
- * @see org.repository.protocol
+ * Throw if something as gone wrong in a attempt to interact with the coorination layer
  */
-package org.bitrepository.protocol.activemq;
+public class CoordinationLayerException extends RuntimeException {
+
+	public CoordinationLayerException(String arg0, Throwable arg1) {
+		super(arg0, arg1);
+	}
+
+	public CoordinationLayerException(String arg0) {
+		super(arg0);
+	}
+
+	public CoordinationLayerException(Throwable arg0) {
+		super(arg0);
+	}
+	
+}
