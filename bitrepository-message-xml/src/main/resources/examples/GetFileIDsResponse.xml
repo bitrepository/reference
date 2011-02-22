@@ -28,7 +28,7 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <DataAddress>http://myServer/myPlace/Myfile</DataAddress>
+  <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
   <PillarID>MyPillar</PillarID>
   <ResponseCode>MR</ResponseCode>
   <ResponseText>Message request has been received and is expected to be met successfully</ResponseText>

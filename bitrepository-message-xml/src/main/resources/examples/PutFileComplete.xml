@@ -34,5 +34,5 @@
   <PillarChecksumType>MD5</PillarChecksumType>
   <CompleteCode>MyCompleteCode</CompleteCode>
   <CompleteText>MyCompleteText</CompleteText>
-  <CompleteSaltChecksum>135F21564</CompleteSaltChecksum>
+  <bro:CompleteSaltChecksum>135F21564</bro:CompleteSaltChecksum>
 </bro:PutFileComplete>

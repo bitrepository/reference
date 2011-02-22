@@ -42,14 +42,10 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CompleteCode>MyCompleteCode</CompleteCode>
   <CompleteText>MyCompleteText</CompleteText>
   <NoOfItems>2</NoOfItems>
-  <ChecksumsData>
     <FileID>MyDataId1</FileID>
     <Checksum>ABCD1234</Checksum>
     <CalculationTime>2011-02-17T09:46:00</CalculationTime>
-  </ChecksumsData>
-  <ChecksumsData>
     <FileID>MyDataId2</FileID>
     <Checksum>ABCD1234</Checksum>
     <CalculationTime>2011-02-17T09:47:00</CalculationTime>
-  </ChecksumsData>
 </bro:GetChecksumsComplete>

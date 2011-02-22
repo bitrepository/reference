@@ -31,14 +31,14 @@
   <FileID>MyDataID</FileID>
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
   <ExpectedFileSize>10000</ExpectedFileSize>
-  <ChecksumForCheck>
+  <bro:ChecksumForCheck>
     <Checksum>135F21564</Checksum>
     <FileChecksumType>MD5</FileChecksumType>
-  </ChecksumForCheck>
-  <SaltForCheck>
+  </bro:ChecksumForCheck>
+  <bro:SaltForCheck>
     <SaltParameter>A</SaltParameter>
-    <SaltChecksumType>MD5</SaltChecksumType>
-  </SaltForCheck>
+    <bro:SaltChecksumType>MD5</bro:SaltChecksumType>
+  </bro:SaltForCheck>
   <PillarID>MyPillar</PillarID>
   <PillarChecksumType>MD5</PillarChecksumType>
 </bro:PutFileRequest>
