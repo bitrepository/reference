@@ -7,7 +7,6 @@
          
   xmlns="http://bitrepository.org/BitRepositoryData.xsd"   
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:bre="http://bitrepository.org/BitRepositoryElements.xsd"
 >
 
@@ -59,8 +58,11 @@
           List of data for checksums in result
           </xs:documentation></xs:annotation>
         </xs:group>
-        
       </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
     </xs:complexType>
   </xs:element>
 
@@ -101,6 +103,10 @@
         </xs:group>
 
       </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
     </xs:complexType>
   </xs:element>
 
@@ -145,8 +151,11 @@
           List of identifiers for data in given SLA
           </xs:documentation></xs:annotation>
         </xs:element>
-
       </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
     </xs:complexType>
   </xs:element>
 

@@ -24,15 +24,17 @@
   #L%
   -->
 
-<bro:GetChecksumsResults version="1" minVersion="1"  xmlns:bro='http://tempuri.org/BitStorageMessages.xsd' xmlns="http://tempuri.org/BitStorageElements.xsd">
+<bro:GetChecksumsResults version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryData.xsd' 
+xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <SlaID>MySla</SlaID>
   <PillarID>MyPillar</PillarID>
   <FileChecksumType>MD5</FileChecksumType>
   <SaltParameter>X</SaltParameter>
-  <NoOfItems>1</NoOfItems>
-  <ChecksumsData>
-     <FileID>MyDataId1</FileID>
-     <Checksum>MyChecksum1</Checksum>
-     <CalculationTime>2011-02-17T09:47:00</CalculationTime>
-  </ChecksumsData>
+  <NoOfItems>2</NoOfItems>
+  <FileID>MyDataId1</FileID>
+  <Checksum>MyChecksum1</Checksum>
+  <CalculationTime>2011-02-17T09:47:00</CalculationTime>
+  <FileID>MyDataId2</FileID>
+  <Checksum>MyChecksum2</Checksum>
+  <CalculationTime>2011-02-17T09:47:00</CalculationTime>
 </bro:GetChecksumsResults>

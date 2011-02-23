@@ -24,12 +24,12 @@
   #L%
   -->
 
-<bro:GetFileIDsData version="1" minVersion="1"  xmlns:bro='http://tempuri.org/BitStorageMessages.xsd' xmlns="http://tempuri.org/BitStorageElements.xsd">
+<bro:FileIDsParameters version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryData.xsd' 
+xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
+  <CorrelationID>MyCorrelationID</CorrelationID>
   <SlaID>MySla</SlaID>
   <PillarID>MyPillar</PillarID>
-  <NoOfItems>1</NoOfItems>
-  <FileIDsData>
-     <FileID>MydataId1</FileID>
-     <CalculationTime>2011-02-17T09:47:00</CalculationTime>
-  </FileIDsData>
-</bro:GetFileIDsData>
+  <NoOfItems>2</NoOfItems>
+  <FileID>MydataId1</FileID>
+  <FileID>MydataId2</FileID>
+</bro:FileIDsParameters>

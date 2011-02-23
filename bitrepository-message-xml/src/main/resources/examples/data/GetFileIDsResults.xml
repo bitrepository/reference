@@ -24,11 +24,13 @@
   #L%
   -->
 
-<bro:FileIDsParameters version="1" minVersion="1"  xmlns:bro='http://bitrepository.org/BitStorageMessages.xsd' xmlns="http://bitrepository.org/BitStorageElements.xsd">
-  <CorrelationID>MyCorrelationID</CorrelationID>
+<bro:GetFileIDsResults version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryData.xsd' 
+xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <SlaID>MySla</SlaID>
   <PillarID>MyPillar</PillarID>
-  <NoOfItems>2</NoOfItems>
+  <NoOfItems>1</NoOfItems>
   <FileID>MydataId1</FileID>
-  <FileID>MydataId2</FileID>
-</bro:FileIDsParameters>
+  <CalculationTime>2011-02-17T09:47:00</CalculationTime>
+  <FileID>MydataId1</FileID>
+  <CalculationTime>2011-02-17T09:47:00</CalculationTime>
+</bro:GetFileIDsResults>

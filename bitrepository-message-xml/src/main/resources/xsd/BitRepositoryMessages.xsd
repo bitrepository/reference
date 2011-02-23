@@ -5,7 +5,7 @@
      attributeFormDefault="unqualified" 
      elementFormDefault="qualified" 
 
-	 xmlns="http://bitrepository.org//BitRepositoryMessages.xsd"
+	 xmlns="http://bitrepository.org/BitRepositoryMessages.xsd"
      xmlns:xs="http://www.w3.org/2001/XMLSchema"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xmlns:ty="http://bitrepository.org/BitRepositoryTypes.xsd"
