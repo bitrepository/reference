@@ -27,7 +27,7 @@ public class ConfigurationFactoryTest extends ExtendedTestCase {
 	private static final File fileInDefaultConfigurationDir = 
 		new File(defaultConfigurationDir, "common-configuration.xml");
 
-	@BeforeMethod
+	@BeforeMethod (alwaysRun=true)
 	public void setUp() {
 		//The configuration file out of the way, so it isn't loaded by default.
 		testConfigLocation.delete();
@@ -45,7 +45,7 @@ public class ConfigurationFactoryTest extends ExtendedTestCase {
 	 * Attempts to cleanup the files from the test cases. May not work and in this case we may leave some configuration
 	 * files laying around in inappropriate places. 
 	 */
-	@AfterMethod
+	@AfterMethod  (alwaysRun=true)
 	public void tearDown() {
 		testConfigLocation.renameTo(originalConfigLocation);
 		
