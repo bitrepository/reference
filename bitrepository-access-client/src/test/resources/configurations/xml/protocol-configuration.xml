@@ -25,9 +25,9 @@
   -->
 
 
-<ProtocolConfiguration xmlns="http://bitrepository.org/protocol/configuration/ProtocolConfiguration.xsd" 
+<ProtocolConfiguration xmlns="http://bitrepository.org/protocol/Configuration.xsd" 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xsi:schemaLocation="http://bitrepository.org/protocol/configuration/ProtocolConfiguration.xsd ../schema/ProtocolConfiguration.xsd ">
+xsi:schemaLocation="http://bitrepository.org/protocol/Configuration.xsd ../schema/Configuration.xsd ">
   <messageBusConfigurations>
     <primaryMessageBusConfiguration>
       <id>kb-test-messagebus</id>

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<!-- URLs in schema targetNamespace must be updated later -->
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:tns="http://bitrepository.org/protocol/configuration/CommonConfiguration.xsd"
-	targetNamespace="http://bitrepository.org/protocol/configuration/CommonConfiguration.xsd"
-	elementFormDefault="qualified">
-</schema>

@@ -2,8 +2,8 @@
 
 <!-- URLs in schema targetNamespace must be updated later -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:tns="http://bitrepository.org/protocol/configuration/ProtocolConfiguration.xsd"
-	targetNamespace="http://bitrepository.org/protocol/configuration/ProtocolConfiguration.xsd"
+	xmlns:tns="http://bitrepository.org/protocol/Configuration.xsd"
+	targetNamespace="http://bitrepository.org/protocol/Configuration.xsd"
 	elementFormDefault="qualified">
 	
 	
@@ -16,8 +16,7 @@
 		</annotation>
 		<complexType>
 			<sequence>
-				<element name="messageBusConfigurations" type="tns:MessageBusConfigurations"
-					minOccurs="0">
+				<element name="messageBusConfigurations" type="tns:MessageBusConfigurations">
 					<annotation>
 						<documentation xml:lang="en">
 							The configurations for the

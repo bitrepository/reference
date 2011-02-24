@@ -27,6 +27,7 @@ package org.bitrepository.protocol.exceptions;
 /**
  * Throw if something as gone wrong in a attempt to interact with the coorination layer
  */
+@SuppressWarnings("serial")
 public class CoordinationLayerException extends RuntimeException {
 
 	public CoordinationLayerException(String arg0, Throwable arg1) {

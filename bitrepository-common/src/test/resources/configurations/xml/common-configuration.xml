@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  Bitrepository Protocol
+  Bitrepository Common
   
   $Id$
   $HeadURL$
@@ -25,15 +25,7 @@
   -->
 
 
-<ProtocolConfiguration xmlns="http://bitrepository.org/protocol/configuration/ProtocolConfiguration.xsd" 
+<CommonConfiguration xmlns="http://bitrepository.org/common/Configuration.xsd" 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xsi:schemaLocation="http://bitrepository.org/protocol/configuration/ProtocolConfiguration.xsd ../schema/ProtocolConfiguration.xsd ">
-  <messageBusConfigurations>
-    <primaryMessageBusConfiguration>
-      <id>kb-test-messagebus</id>
-      <url>failover://tcp://sandkasse-01.kb.dk:61616</url>
-      <username></username>
-      <password></password>
-    </primaryMessageBusConfiguration>
-  </messageBusConfigurations>
-</ProtocolConfiguration>
+xsi:schemaLocation="http://bitrepository.org/common/Configuration.xsd ../schema/Configuration.xsd ">
+</CommonConfiguration>

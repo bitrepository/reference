@@ -22,11 +22,10 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.configuration.protocolconfiguration;
-
-import java.io.File;
+package org.bitrepository.protocol.configuration;
 
 import org.bitrepository.common.ConfigurationFactory;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,8 +39,9 @@ public class ProtocolConfigurationTest {
 	 */
     public void defaultConfigurationTest() throws Exception {
 		ProtocolConfiguration pc =
-		ConfigurationFactory.createConfiguration("org.bitrepository.protocol.configuration.protocolconfiguration",
-				ProtocolConfiguration.class, new File("src/main/resources/configurations/xml/protocol-configuration.xml"));
+		ConfigurationFactory.loadConfiguration(
+				ProtocolComponentFactory.getInstance().getModuleCharacteristics(),
+				ProtocolConfiguration.class);
 		Assert.assertNotNull(pc);
     }
 }

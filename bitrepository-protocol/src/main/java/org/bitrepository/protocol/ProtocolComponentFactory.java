@@ -24,34 +24,41 @@
  */
 package org.bitrepository.protocol;
 
-import java.io.File;
-import java.io.StringReader;
-
 import javax.jms.JMSException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
 
 import org.bitrepository.common.ConfigurationFactory;
+import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
-import org.bitrepository.protocol.configuration.protocolconfiguration.ProtocolConfiguration;
+import org.bitrepository.protocol.configuration.ProtocolConfiguration;
 import org.bitrepository.protocol.exceptions.CoordinationLayerException;
 
 /**
  * Provides access to the different component in the protocol module (Spring wannabe)
  */
-public class ProtocolComponentFactory {
-	private static final ProtocolComponentFactory instance = new ProtocolComponentFactory();	
-	private ProtocolComponentFactory() {}
-	/** What we have here is a singleton */
-	public static ProtocolComponentFactory getInstance() {
+public final class ProtocolComponentFactory {
+	
+	//---------------------Singleton-------------------------
+	private static ProtocolComponentFactory instance;	
+	public synchronized static ProtocolComponentFactory getInstance() {
+		if (instance == null) {
+			instance = new ProtocolComponentFactory();
+		}
 		return instance;
 	}
-	
+
+	private ProtocolComponentFactory() {
+		moduleCharacteristics = new ModuleCharacteristics("protocol");
+	}
+
+	// --------------------- Components-----------------------
+	private final ModuleCharacteristics moduleCharacteristics;
 	private ProtocolConfiguration protocolConfiguration;
 	private MessageBus messagebus;
-
+	
+	public ModuleCharacteristics getModuleCharacteristics() {
+		return moduleCharacteristics;
+	}
+	
 	/**
 	 * Gets you a object for accessing the Bitrepositories message bus
 	 */
@@ -70,10 +77,9 @@ public class ProtocolComponentFactory {
 	 * Gets you the configuration for this module
 	 */
 	private ProtocolConfiguration getProtocolConfiguration() {
-		if (protocolConfiguration == null) {			
+		if (protocolConfiguration == null) {
 			protocolConfiguration = 
-				ConfigurationFactory.createConfiguration("org.bitrepository.protocol.configuration.protocolconfiguration",
-					ProtocolConfiguration.class, new File("src/main/resources/configurations/xml/protocol-configuration.xml"));
+				ConfigurationFactory.loadConfiguration(getModuleCharacteristics(), ProtocolConfiguration.class);
 		}
 		return protocolConfiguration;
 	}

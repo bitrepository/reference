@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- URLs in schema targetNamespace must be updated later -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://bitrepository.org/common/Configuration.xsd"
+	targetNamespace="http://bitrepository.org/common/Configuration.xsd"
+	elementFormDefault="qualified">
+
+	<element name="CommonConfiguration">
+		<annotation>
+			<documentation xml:lang="en">
+				The full configuration for the common module
+	        </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="environmentName" type="string">
+					<annotation>
+						<documentation xml:lang="en">
+							The name of this system
+        			</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+</schema>
