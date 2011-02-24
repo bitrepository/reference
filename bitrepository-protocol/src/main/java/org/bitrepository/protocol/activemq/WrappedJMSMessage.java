@@ -46,4 +46,20 @@ public class WrappedJMSMessage implements Message {
     public final String getText() throws Exception {
         return ((TextMessage) message).getText();
     }
+
+    @Override
+    public Class getMessageType() {
+        try {
+            String type = message.getJMSType();
+            if(type == null || type.isEmpty()) {
+                return null;
+            }
+            return Class.forName("org.bitrepository.bitrepositorymessages." 
+                    + type);
+        } catch (Exception e) {
+            // TODO log this scenario.
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

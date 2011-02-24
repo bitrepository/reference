@@ -204,7 +204,7 @@ public final class HTTPFileExchange {
      * @throws MalformedURLException If the filename prevents the creation of
      * a valid URL.
      */
-    private static URL getURL(String filename) throws MalformedURLException {
+    public static URL getURL(String filename) throws MalformedURLException {
         // create the URL based on hardcoded values (change to using settings!)
         URL res = new URL(PROTOCOL, HTTP_SERVER_NAME, PORT_NUMBER, 
                 HTTP_SERVER_PATH + "/" + filename);

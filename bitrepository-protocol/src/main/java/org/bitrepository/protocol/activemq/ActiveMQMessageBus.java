@@ -40,9 +40,11 @@ import javax.jms.Topic;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.bitrepository.protocol.MessageBus;
+import org.bitrepository.protocol.MessageFactory;
 import org.bitrepository.protocol.MessageListener;
 import org.bitrepository.protocol.configuration.protocolconfiguration.MessageBusConfiguration;
 import org.bitrepository.protocol.configuration.protocolconfiguration.MessageBusConfigurations;
+import org.bitrepository.protocol.exceptions.CoordinationLayerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,10 +62,6 @@ public final class ActiveMQMessageBus implements MessageBus {
     private static Logger log = LoggerFactory.getLogger(
             ActiveMQMessageBus.class);
     
-    /** The connections on ActiveMQ buses.*/
-    private Map<String, ActiveMQMessageBus> instances = 
-        Collections.synchronizedMap(new HashMap<String, ActiveMQMessageBus>());
-
     /** The default acknowledge mode.*/
     public static final int ACKNOWLEDGE_MODE = Session.AUTO_ACKNOWLEDGE;
     /** Default transacted.*/
@@ -139,20 +137,36 @@ public final class ActiveMQMessageBus implements MessageBus {
     }
 
     @Override
-    public void sendMessage(String destinationId, String content)
-            throws JMSException {
-        log.debug("The following message is sent to the topic '" + destinationId
-                + "' on message-bus '" + configuration.getId() + "': \n" 
-                + content);
-        MessageProducer producer = addTopicMessageProducer(destinationId);
-        producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-        Message msg = session.createTextMessage(content);
+    public void sendMessage(String destinationId, Object content) {
+        try {
+            String xml = MessageFactory.extractMessage(content);
+            log.debug("The following message is sent to the topic '" + destinationId
+                    + "' on message-bus '" + configuration.getId() + "': \n" 
+                    + xml);
+            MessageProducer producer = addTopicMessageProducer(destinationId);
+            producer.setDeliveryMode(DeliveryMode.PERSISTENT);
+            Message msg = session.createTextMessage(xml);
 
-        // TODO use the message-type instead of this!.
-        msg.setJMSType("MyMessage");
-        msg.setJMSReplyTo(session.createQueue(destinationId));
-        producer.send(msg);
-        session.commit();
+            // TODO use the StringProperty instead of this?
+            msg.setJMSType(getMessageName(content.getClass().getName()));
+            msg.setJMSReplyTo(session.createQueue(destinationId));
+            producer.send(msg);
+            session.commit();
+        } catch (Exception e) {
+            throw new CoordinationLayerException("Could not send message", e);
+        }
+    }
+    
+    /**
+     * Extracts the classname from the classpath of a message class.
+     * Work for all classes, but is intended for the message classes.
+     * 
+     * @param classpath The class path of the message.
+     * @return The classname.
+     */
+    private String getMessageName(String classpath) {
+        String[] split = classpath.split("[.]");
+        return split[split.length -1];
     }
 
     /**

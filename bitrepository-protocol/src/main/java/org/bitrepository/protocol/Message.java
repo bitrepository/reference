@@ -32,4 +32,11 @@ public interface Message {
      * @throws Exception on any trouble extracting the textual contents.
      */
     String getText() throws Exception;
+    
+    /**
+     * Retrieval of the message type of this message.
+     * @return The class for the message type, or null if the message type 
+     * cannot be found.
+     */
+    Class getMessageType();
 }

@@ -63,6 +63,6 @@ public interface MessageBus {
      * @throws Exception If a problem with the connection to the Bus occurs
      *                   during the transportation of this message.
      */
-    void sendMessage(String destinationId, String content) throws Exception;
+    void sendMessage(String destinationId, Object content) throws Exception;
 
 }

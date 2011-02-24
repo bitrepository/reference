@@ -64,7 +64,7 @@ public final class MessageFactory {
      * @return The XML representation of the message object.
      * @throws JAXBException If the object could not be parsed as a JAXB object.
      */
-    public static String retrieveMessage(Object message) throws JAXBException {
+    public static String extractMessage(Object message) throws JAXBException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         Marshaller m = JAXBContext.newInstance(message.getClass()).createMarshaller();
         m.marshal(message, bos);
