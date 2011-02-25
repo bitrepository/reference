@@ -158,6 +158,26 @@ public final class ActiveMQMessageBus implements MessageBus {
         }
     }
     
+    @Override
+    public void sendTextMessage(String destinationId, String content) {
+        try {
+            log.debug("The following message is sent to the topic '" + destinationId
+                    + "' on message-bus '" + configuration.getId() + "': \n" 
+                    + content);
+            MessageProducer producer = addTopicMessageProducer(destinationId);
+            producer.setDeliveryMode(DeliveryMode.PERSISTENT);
+            Message msg = session.createTextMessage(content);
+
+            // TODO use the StringProperty instead of this?
+            msg.setJMSType(getMessageName(content.getClass().getName()));
+            msg.setJMSReplyTo(session.createQueue(destinationId));
+            producer.send(msg);
+            session.commit();
+        } catch (Exception e) {
+            throw new CoordinationLayerException("Could not send message", e);
+        }
+    }
+    
     /**
      * Extracts the classname from the classpath of a message class.
      * Work for all classes, but is intended for the message classes.

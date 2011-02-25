@@ -56,7 +56,9 @@ public interface MessageBus {
             throws Exception;
 
     /**
-     * Method for sending a message on a specific destination.
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the 
+     * bitrepository-message-xml module.
      *
      * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
@@ -65,4 +67,14 @@ public interface MessageBus {
      */
     void sendMessage(String destinationId, Object content) throws Exception;
 
+    /**
+     * Method for sending a text message on a specific destination.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendTextMessage(String destinationId, String content) throws Exception;
+    
 }

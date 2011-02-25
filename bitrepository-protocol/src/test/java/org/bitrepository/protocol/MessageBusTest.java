@@ -59,7 +59,7 @@ public class MessageBusTest extends ExtendedTestCase {
         MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus();
         Assert.assertNotNull(con);
         con.addListener("BusActivityTest", listener);
-        con.sendMessage("BusActivityTest", content);
+        con.sendTextMessage("BusActivityTest", content);
 
         synchronized(this) {
             try {
@@ -122,7 +122,7 @@ public class MessageBusTest extends ExtendedTestCase {
                     "several DEBUG-level logs");
             TestMessageListener listener = new TestMessageListener();
             con.addListener("EmbeddedBrokerTopic", listener);
-            con.sendMessage("EmbeddedBrokerTopic", content);
+            con.sendTextMessage("EmbeddedBrokerTopic", content);
 
             synchronized(this) {
                 try {
