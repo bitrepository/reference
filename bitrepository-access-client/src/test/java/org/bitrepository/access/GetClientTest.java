@@ -24,16 +24,22 @@
  */
 package org.bitrepository.access;
 
+import java.io.File;
+import java.net.URL;
+
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 
+import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.protocol.Message;
 import org.bitrepository.protocol.MessageFactory;
 import org.bitrepository.protocol.MessageListener;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.http.HTTPFileExchange;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -55,6 +61,12 @@ public class GetClientTest extends ExtendedTestCase {
         GetClient gc = new GetClient();
         TestMessageListener listener = new TestMessageListener();
         ProtocolComponentFactory.getInstance().getMessageBus().addListener(gc.queue, listener);
+        
+        File oldFile = new File(gc.fileDir, dataId);
+        if(oldFile.exists()) {
+            Assert.assertTrue(oldFile.delete(), "The previously downloaded "
+                    + "file should be deleted.");
+        }
         
         addStep("Request the fastest delivery of file " + dataId, 
                 "The GetClient should send a IdentifyPillarsForGetFileRequest "
@@ -116,27 +128,144 @@ public class GetClientTest extends ExtendedTestCase {
         
         addStep("Upload a file to the given destination, send a complete to "
                 + "the GetClient.", "The GetClient should download the file."); 
-//        GetFileResponse getReply = new GetFileResponse();
-//        getReply.setMinVersion((short) 1);
-//        getReply.setVersion((short) 1);
-//        getReply.setPillarID(pillarId);
-//        getReply.setFileID(dataId);
-//
-//        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(
-//                gc.queue, getReply);
-//        
-//        synchronized(this) {
-//            try {
-//                wait(WAITING_TIME_FOR_MESSAGE);
-//            } catch (Exception e) {
-//                // print, but ignore!
-//                e.printStackTrace();
-//            }
-//        }
-//        
-//        
-//        System.out.println("Received message: " + listener.getMessageClass() 
-//                + " , " + listener.getMessage());
+        GetFileResponse getReply = new GetFileResponse();
+        getReply.setMinVersion((short) 1);
+        getReply.setVersion((short) 1);
+        getReply.setPillarID(pillarId);
+        getReply.setFileID(dataId);
+
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(
+                gc.queue, getReply);
+        
+        synchronized(this) {
+            try {
+                wait(WAITING_TIME_FOR_MESSAGE);
+            } catch (Exception e) {
+                // print, but ignore!
+                e.printStackTrace();
+            }
+        }
+        
+        // TODO read from log, that it has been caught by the GetClientServer.
+        Assert.assertEquals(listener.getMessageClass().getName(), 
+                getReply.getClass().getName());
+
+        addStep("Uploading the file to the default HTTPServer.", 
+                "Should be allowed.");
+        File uploadFile = new File("src/test/resources/test.txt");
+        URL url = HTTPFileExchange.uploadToServer(uploadFile);
+        
+        addStep("Send a complete upload message with the URL", "Should be "
+                + "caugth by the GetClient.");
+        GetFileComplete completeMsg = new GetFileComplete();
+//        completeMsg.setCompleteCode(value);
+//        completeMsg.setCompleteText(value);
+        completeMsg.setCorrelationID(identifyMessage.getCorrelationID());
+        completeMsg.setFileAddress(url.toExternalForm());
+        completeMsg.setFileID(dataId);
+        completeMsg.setMinVersion((short) 1);
+        completeMsg.setVersion((short) 1);
+        completeMsg.setPillarID(pillarId);
+
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(
+                gc.queue, completeMsg);
+        
+        synchronized(this) {
+            try {
+                wait(WAITING_TIME_FOR_MESSAGE);
+            } catch (Exception e) {
+                // print, but ignore!
+                e.printStackTrace();
+            }
+        }
+        
+        addStep("Verify that the file is downloaded in by the GetClient and "
+                + "placed within the GetClient's fileDir.", "Should be fine!");
+        File outputFile = new File(gc.fileDir, dataId);
+        Assert.assertTrue(outputFile.isFile());
+    }
+    
+    @Test(groups = {"regressiontest"})
+    public void chooseFastestPillar() throws Exception {
+        addDescription("Set the GetClient to retrieve a file as fast as "
+                + "possible, where it has to choose between to pillars with "
+                + "different times. The messages should be delivered at the "
+                + "same time.");
+        String dataId = "dataId2";
+        String slaId = "THE-SLA";
+        String fastPillar = "THE-FAST-PILLAR";
+        String slowPillar = "THE-SLOW-PILLAR";
+        GetClient gc = new GetClient();
+        TestMessageListener listener = new TestMessageListener();
+        ProtocolComponentFactory.getInstance().getMessageBus().addListener(gc.queue, listener);
+        
+        addStep("Make the GetClient ask for fastest pillar.", "");
+        gc.getFileFastest(dataId, slaId, fastPillar, slowPillar);
+        
+        synchronized(this) {
+            try {
+                wait(WAITING_TIME_FOR_MESSAGE);
+            } catch (Exception e) {
+                // print, but ignore!
+                e.printStackTrace();
+            }
+        }
+        
+        Assert.assertNotNull(listener.messageClass);
+        Assert.assertEquals(listener.getMessageClass().getName(), 
+                IdentifyPillarsForGetFileRequest.class.getName());
+        IdentifyPillarsForGetFileRequest request = MessageFactory.createMessage(
+                IdentifyPillarsForGetFileRequest.class, listener.message);
+        Assert.assertEquals(request.getFileID(), dataId);
+        Assert.assertEquals(request.getSlaID(), slaId);
+        
+        IdentifyPillarsForGetFileReply fastReply = new IdentifyPillarsForGetFileReply();
+        fastReply.setCorrelationID(request.getCorrelationID());
+        fastReply.setFileID(dataId);
+        fastReply.setMinVersion((short) 1);
+        fastReply.setVersion((short) 1);
+        fastReply.setSlaID(request.getSlaID());
+        fastReply.setTimeToDeliver("10");
+        fastReply.setPillarID(fastPillar);
+        IdentifyPillarsForGetFileReply slowReply = new IdentifyPillarsForGetFileReply();
+        slowReply.setCorrelationID(request.getCorrelationID());
+        slowReply.setFileID(dataId);
+        slowReply.setMinVersion((short) 1);
+        slowReply.setVersion((short) 1);
+        slowReply.setSlaID(request.getSlaID());
+        slowReply.setTimeToDeliver("1000000");
+        slowReply.setPillarID(slowPillar);
+        
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(
+                gc.queue, fastReply);
+        
+        synchronized(this) {
+            try {
+                wait(WAITING_TIME_FOR_MESSAGE);
+            } catch (Exception e) {
+                // print, but ignore!
+                e.printStackTrace();
+            }
+        }
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(
+                gc.queue, slowReply);
+        synchronized(this) {
+            try {
+                wait(WAITING_TIME_FOR_MESSAGE);
+            } catch (Exception e) {
+                // print, but ignore!
+                e.printStackTrace();
+            }
+        }
+        
+        addStep("Verify that it has chosen the fast pillar.", "");
+        Assert.assertEquals(listener.getMessageClass().getName(), 
+                GetFileRequest.class.getName());
+        GetFileRequest getRequest = MessageFactory.createMessage(
+                GetFileRequest.class, listener.getMessage());
+        Assert.assertEquals(getRequest.getFileID(), dataId);
+        Assert.assertEquals(getRequest.getPillarID(), fastPillar);
+        
     }
     
     /**

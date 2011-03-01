@@ -24,14 +24,18 @@
  */
 package org.bitrepository.access;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.bitrepository.access.exception.AccessException;
+import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
@@ -57,6 +61,8 @@ public class GetClient {
     String queue;
     /** The GetClientServer, which receives the messages.*/
     private GetClientServer server;
+    /** The directory where the retrieved files should be placed.*/
+    File fileDir;
     
     /** Container for the missing replies for fastest content.
      * Maps between file and the a list of missing pillars.*/
@@ -65,6 +71,9 @@ public class GetClient {
     /** Container for the time to deliver files for the pillars.*/
     private Map<String, Map<String, Long>> timeForFastest =
         Collections.synchronizedMap(new HashMap<String, Map<String, Long>>());
+    /** The list of fileids awaiting to be retrieved.*/
+    private List<String> awatingFileIds = Collections.synchronizedList(
+            new ArrayList<String>());
     
     /**
      * Constructor.
@@ -78,8 +87,23 @@ public class GetClient {
         // Establish connection to bus!
         
         server = new GetClientServer(this);
+        fileDir = new File("fileDir");
+        if(fileDir.isFile()) {
+            throw new AccessException("The file directory '" 
+                    + fileDir.getAbsolutePath() + "' already exists as a file, "
+                    + "and not as a directory, which is required.");
+        }
+        if(!fileDir.exists() || !fileDir.isDirectory()) {
+            fileDir.mkdirs();
+            if(!fileDir.isDirectory()) {
+                throw new AccessException("The file directory '" 
+                        + fileDir.getAbsolutePath() + "' is cannot be "
+                        + "instantiated as a directory.");
+            }
+        }
         
-        queue = "DefaultTopic";
+        // TODO use a settings. Temporarily use the current time.
+        queue = "" + (new Date().getTime());
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus();
         messageBus.addListener(queue, server);
     }
@@ -159,6 +183,9 @@ public class GetClient {
             msg.setMinVersion((short) 1);
             msg.setVersion((short) 1);
             messageBus.sendMessage(queue, msg);
+            
+            // set the file to be awaiting retrieval.
+            awatingFileIds.add(fileId);
         } catch (Exception e) {
             throw new AccessException("Problems sending a request for "
                     + "retrieving a specific file.", e);
@@ -218,6 +245,55 @@ public class GetClient {
                     + "requested.");
             outstandingReplyForFastest.put(fileId, missingRepliers);
         }
+    }
+    
+    /**
+     * Method for completing the get.
+     * 
+     * @param msg The GetFileCompleteMessage.
+     */
+    public void completeGet(GetFileComplete msg) {
+        if(msg == null) {
+            throw new IllegalArgumentException("Cannot handle a null as "
+                    +"GetFileComplete.");
+        }
+        
+        String fileId = msg.getFileID();
+        if(!awatingFileIds.contains(fileId)) {
+            // not for me.
+            log.debug("GetFileComplete for '" + fileId + "', but it is not "
+                    + "awaited by me. Ignoring message.");
+            return;
+        }
+        
+        try {
+            log.info("Downloading the file '" + fileId + "' from '" 
+                    + msg.getFileAddress() + "'.");
+            
+            URL url = new URL(msg.getFileAddress());
+            
+            // TODO verify that this file is unique and does not exist yet.
+            // Else handle the scenario.
+            File outputFile = new File(fileDir, fileId);
+            
+            FileOutputStream outStream = null;
+            try {
+                // download the file.
+                outStream = new FileOutputStream(outputFile);
+                HTTPFileExchange.downloadFromServer(outStream, url);
+                outStream.flush();
+            } finally {
+                if(outStream != null) {
+                    outStream.close();
+                }
+            }
+        } catch (Exception e) {
+            throw new AccessException("Problems with retrieving the file '" 
+                    + fileId + "'.", e);
+        }
+        
+        // remove from list when download is completed.
+        awatingFileIds.remove(fileId);
     }
     
     /**
