@@ -24,8 +24,29 @@
  */
 package org.bitrepository.protocol;
 
+import org.bitrepository.bitrepositorymessages.GetChecksumsComplete;
+import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.GetChecksumsResponse;
+import org.bitrepository.bitrepositorymessages.GetFileComplete;
+import org.bitrepository.bitrepositorymessages.GetFileIDsComplete;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.GetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.PutFileComplete;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.PutFileResponse;
+
 /**
- * The communication interface for the message bus in the bitrepositry protocol.
+ * The communication interface for the message bus in the bitrepository protocol.
  *
  * TODO define a function for reconnecting to the message bus. Part of the
  * issue BITMAG-166
@@ -57,7 +78,7 @@ public interface MessageBus {
 
     /**
      * Method for sending a XML message on a specific destination.
-     * The content must be a class derived from the XSDs in the 
+     * The content must be a class derived from the XSDs in the
      * bitrepository-message-xml module.
      *
      * @param destinationId The id for the destination to send message.
@@ -65,16 +86,255 @@ public interface MessageBus {
      * @throws Exception If a problem with the connection to the Bus occurs
      *                   during the transportation of this message.
      */
-    void sendMessage(String destinationId, Object content) throws Exception;
+    void sendMessage(String destinationId, GetChecksumsComplete content)
+            throws Exception;
 
     /**
-     * Method for sending a text message on a specific destination.
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
      *
      * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      * @throws Exception If a problem with the connection to the Bus occurs
      *                   during the transportation of this message.
      */
-    void sendTextMessage(String destinationId, String content) throws Exception;
-    
+    void sendMessage(String destinationId, GetChecksumsRequest content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, GetChecksumsResponse content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, GetFileComplete content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, GetFileIDsComplete content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, GetFileIDsRequest content)
+            throws Exception;
+
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, GetFileIDsResponse content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, GetFileRequest content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, GetFileResponse content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsReply content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsRequest content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsRequest content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsReply content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, IdentifyPillarsForGetFileRequest content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, IdentifyPillarsForGetFileReply content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, IdentifyPillarsForPutFileReply content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, IdentifyPillarsForPutFileRequest content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, PutFileComplete content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, PutFileRequest content)
+            throws Exception;
+
+    /**
+     * Method for sending a XML message on a specific destination.
+     * The content must be a class derived from the XSDs in the
+     * bitrepository-message-xml module.
+     *
+     * @param destinationId The id for the destination to send message.
+     * @param content       The content of the message.
+     * @throws Exception If a problem with the connection to the Bus occurs
+     *                   during the transportation of this message.
+     */
+    void sendMessage(String destinationId, PutFileResponse content)
+            throws Exception;
+
 }

@@ -26,12 +26,13 @@
  * This package provides functionality for communicating with the protocol
  * of the bit repository.
  * <p/>
- * The classes {@link org.bitrepository.protocol.Message},
- * {@link org.bitrepository.protocol.MessageListener}
- * and {@link org.bitrepository.protocol.MessageBus} provide the
+ * The classes {@link org.bitrepository.protocol.MessageBus}
+ * and {@link org.bitrepository.protocol.MessageListener} provide the
  * primary interface for sending asynchronous messages in the protocol.
+ * {@link org.bitrepository.protocol.AbstractMessageListener} provides a
+ * default implementation that throws exceptions in all instances.
  * <p/>
- * The classes {@link org.bitrepository.protocol.ConnectionFactory} and
+ * The classes {@link org.bitrepository.protocol.ProtocolComponentFactory} and
  * {@link org.bitrepository.protocol.ConnectionConfiguration} provide the
  * interface for initiating concrete asynchronous communication in the protocol.
  * <p/>
@@ -50,5 +51,10 @@
  * or empty strings, and the documentation does not explicitly allow for this.
  * Also, parameter prerequisites described in documentation may result in an
  * {@link IllegalArgumentException} without this being declared.
+ *
+ *  *
+ * All methods may throw
+ * {@link org.bitrepository.protocol.exceptions.CoordinationLayerException}
+ * in case of faults.
  */
 package org.bitrepository.protocol;

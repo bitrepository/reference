@@ -25,6 +25,8 @@
 package org.bitrepository.protocol;
 
 import org.apache.activemq.broker.BrokerService;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.custommonkey.xmlunit.XMLAssert;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -54,12 +56,12 @@ public class MessageBusTest extends ExtendedTestCase {
                 "on the topic for the message listener to find, and" +
         "tests whether it finds the correct message.");
 
-        String content = "Content of message for busActivityTest";
+        IdentifyPillarsForGetFileRequest content = TestMessageFactory.getTestMessage();
         TestMessageListener listener = new TestMessageListener();
         MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus();
         Assert.assertNotNull(con);
         con.addListener("BusActivityTest", listener);
-        con.sendTextMessage("BusActivityTest", content);
+        con.sendMessage("BusActivityTest", content);
 
         synchronized(this) {
             try {
@@ -70,7 +72,52 @@ public class MessageBusTest extends ExtendedTestCase {
         }
 
         Assert.assertNotNull(listener.getMessage());
-        Assert.assertEquals(listener.getMessage(), content);
+        XMLAssert.assertXMLEqual(MessageFactory.extractMessage(content),
+                                 MessageFactory
+                                         .extractMessage(listener.getMessage()));
+    }
+
+    @Test(groups = { "test-first" })
+    public final void twoListenersForTopic() throws Exception {
+        addDescription("Verifies that two listeners on the same topic both receive the message");
+
+        //Test data
+        String TopicName = "BusActivityTest";
+        IdentifyPillarsForGetFileRequest content = TestMessageFactory.getTestMessage();
+
+        addStep("Make a connection to the message bus and add two listeners",
+                "No exceptions should be thrown");
+        MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus();
+        Assert.assertNotNull(con);
+
+        TestMessageListener listener1 = new TestMessageListener();
+        TestMessageListener listener2 = new TestMessageListener();
+        con.addListener(TopicName, listener1);
+        con.addListener(TopicName, listener2);
+
+        addStep("Send a message to the topic",
+                "No exceptions should be thrown");
+        con.sendMessage(TopicName, content);
+        synchronized(this) {
+            try {
+                wait(TIME_FOR_MESSAGE_TRANSFER_WAIT);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        addStep("Make sure both listeners received the message",
+                "Both listeners received the message, and it is identical");
+
+        Assert.assertNotNull(listener1.getMessage());
+        XMLAssert.assertXMLEqual(MessageFactory.extractMessage(content),
+                                 MessageFactory
+                                         .extractMessage(listener1.getMessage()));
+        Assert.assertNotNull(listener2.getMessage());
+        XMLAssert.assertXMLEqual(MessageFactory.extractMessage(content),
+                                 MessageFactory
+                                         .extractMessage(listener2.getMessage()));
+
     }
 
     @Test(groups = { "specificationonly" })
@@ -78,7 +125,7 @@ public class MessageBusTest extends ExtendedTestCase {
         addDescription("Verifies that we are switch to a second message bus. Awaiting introduction of robustness issue");
     }
 
-    //	@Test(groups = { "specificationonly" })
+    @Test(groups = { "specificationonly" })
     public final void messageBusFailoverTest() {
         addDescription("Verifies that we can switch to at second message bus " +
                 "in the middle of a conversation, if the connection is lost. " +
@@ -86,7 +133,7 @@ public class MessageBusTest extends ExtendedTestCase {
         "message bus");
     }
 
-    //	@Test(groups = { "specificationonly" })
+    @Test(groups = { "specificationonly" })
     public final void messageBusReconnectTest() {
         addDescription("Test whether we are able to reconnect to the message " +
         "bus if the connection is lost");
@@ -102,8 +149,8 @@ public class MessageBusTest extends ExtendedTestCase {
                 + " and using it for communication by sending a simple message"
                 + " over it and verifying that the corresponding message is "
                 + "received.");
-        String content = "Content of localBrokerTest message";
-        
+        IdentifyPillarsForGetFileRequest content = TestMessageFactory.getTestMessage();
+
         addStep("Starting the local broker.", "A lot of info-level logs should"
                 + " be seen here.");
         BrokerService broker = new BrokerService();
@@ -122,7 +169,7 @@ public class MessageBusTest extends ExtendedTestCase {
                     "several DEBUG-level logs");
             TestMessageListener listener = new TestMessageListener();
             con.addListener("EmbeddedBrokerTopic", listener);
-            con.sendTextMessage("EmbeddedBrokerTopic", content);
+            con.sendMessage("EmbeddedBrokerTopic", content);
 
             synchronized(this) {
                 try {
@@ -134,7 +181,8 @@ public class MessageBusTest extends ExtendedTestCase {
 
             Assert.assertNotNull(listener.getMessage(), "A message should be "
                     + "received.");
-            Assert.assertEquals(content, listener.getMessage());
+            XMLAssert.assertEquals(MessageFactory.extractMessage(content),
+                                   MessageFactory.extractMessage(listener.getMessage()));
 
             con.removeListener("EmbeddedBrokerTopic", listener);
         } finally {
@@ -142,13 +190,13 @@ public class MessageBusTest extends ExtendedTestCase {
         }
     }
 
-    protected class TestMessageListener implements MessageListener {
+    protected class TestMessageListener extends AbstractMessageListener {
         /** Container for a message, when it is received.*/
-        private String message = null;
+        private Object message = null;
         @Override
-        public final void onMessage(Message msg) {
+        public final void onMessage(IdentifyPillarsForGetFileRequest message) {
             try {
-                message = msg.getText();
+                this.message = message;
             } catch (Exception e) {
                 Assert.fail("Should not throw an exception: ", e);
             }
@@ -158,7 +206,7 @@ public class MessageBusTest extends ExtendedTestCase {
          * Retrieving the last message caught by this listener.
          * @return The last received message.
          */
-        public final String getMessage() {
+        public final Object getMessage() {
             return message;
         }
     }

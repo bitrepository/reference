@@ -27,18 +27,16 @@ package org.bitrepository.access;
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
-import org.bitrepository.protocol.Message;
-import org.bitrepository.protocol.MessageFactory;
-import org.bitrepository.protocol.MessageListener;
+import org.bitrepository.protocol.AbstractMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Handler of the messages. Just takes the message and sends it to the 
  * corresponding method in the actual GetClient.
- * TODO this should probably be renamed, or made obsolete by refacturing.
+ * TODO this should probably be renamed, or made obsolete by refactoring.
  */
-public class GetClientServer implements MessageListener {
+public class GetClientServer extends AbstractMessageListener {
     /** The log for this class.*/
     private Logger log = LoggerFactory.getLogger(GetClientServer.class);
     /** The GetClient which should handle the messages.*/
@@ -51,42 +49,14 @@ public class GetClientServer implements MessageListener {
     public GetClientServer(GetClient gc) {
         this.client = gc;
     }
-    
-    @Override
-    public void onMessage(Message message) {
-        try {
-            Class msgClass = message.getMessageType();
-            // test which kind of message, and handle the corresponding.
-            if(msgClass == null) {
-                return;
-            }
-            
-            if(msgClass == IdentifyPillarsForGetFileReply.class) {
-                visit((IdentifyPillarsForGetFileReply) MessageFactory.createMessage(
-                        msgClass, message.getText()));
-            } if(msgClass == GetFileResponse.class) {
-                visit((GetFileResponse) MessageFactory.createMessage(msgClass, 
-                        message.getText()));
-            } if(msgClass == GetFileComplete.class) {
-                visit((GetFileComplete) MessageFactory.createMessage(msgClass, 
-                        message.getText()));
-            } else {
-                log.debug("Unhandled message received '" + msgClass + "'");
-            }
-        } catch (Exception e) {
-            // TODO handle this!
-            log.error("Unexpected exception during handling of message '" 
-                    + message + "'", e);
-            e.printStackTrace();
-        }
-    }
-    
+
     /**
      * Method for handling the IdentifyPillarsForGetFileReply messages.
      * 
      * @param msg The IdentyfyPillarsForGetFileReply message.
      */
-    public void visit(IdentifyPillarsForGetFileReply msg) {
+    @Override
+    public void onMessage(IdentifyPillarsForGetFileReply msg) {
         log.info("Received IdentifyPillarsForGetFileReply '" + msg + "'.");
         client.handleReplyForFastest(msg);
     }
@@ -96,7 +66,8 @@ public class GetClientServer implements MessageListener {
      * 
      * @param msg The GetFileResponse message.
      */
-    public void visit(GetFileResponse msg) {
+    @Override
+    public void onMessage(GetFileResponse msg) {
         log.info("Received GetFileResponse message '" + msg + "'.");
         // TODO handle this!
     }
@@ -106,19 +77,9 @@ public class GetClientServer implements MessageListener {
      * 
      * @param msg The GetFileComplete message.
      */
-    public void visit(GetFileComplete msg) {
+    @Override
+    public void onMessage(GetFileComplete msg) {
         log.info("Reieved GetFileComplete message '" + msg + "'.");
         client.completeGet(msg);
     }
-    
-    /**
-     * Method for handling default messages.
-     * 
-     * @param msg The object instantiation of a message.
-     */
-    public void visit(Object msg) {
-        log.info("Received unexpected message object '" + msg + "'");
-        return;
-    }
-
 }

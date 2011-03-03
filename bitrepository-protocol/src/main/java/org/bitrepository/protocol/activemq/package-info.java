@@ -33,6 +33,10 @@
  * Also, parameter prerequisites described in documentation may result in an
  * {@link IllegalArgumentException} without this being declared.
  *
+ * All methods may throw
+ * {@link org.bitrepository.protocol.exceptions.CoordinationLayerException}
+ * in case of faults.
+ *
  * @see org.repository.protocol
  */
 package org.bitrepository.protocol.activemq;

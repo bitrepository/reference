@@ -24,25 +24,23 @@
  */
 package org.bitrepository.access;
 
-import java.io.File;
-import java.net.URL;
-
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.protocol.Message;
+import org.bitrepository.protocol.AbstractMessageListener;
 import org.bitrepository.protocol.MessageFactory;
-import org.bitrepository.protocol.MessageListener;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.http.HTTPFileExchange;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
+import java.io.File;
+import java.net.URL;
 
 /**
  * Test class for the 'GetClient'.
@@ -273,19 +271,35 @@ public class GetClientTest extends ExtendedTestCase {
      * @author jolf
      */
     @SuppressWarnings("rawtypes")
-    protected class TestMessageListener implements MessageListener, 
-            ExceptionListener {
+    protected class TestMessageListener extends AbstractMessageListener
+            implements ExceptionListener {
         private String message = null;
         private Class messageClass = null;
+
         @Override
-        public void onMessage(Message msg) {
+        public void onMessage(GetFileRequest message) {
+            onMessage((Object) message);
+        }
+
+        @Override
+        public void onMessage(GetFileResponse message) {
+            onMessage((Object) message);
+        }
+
+        @Override
+        public void onMessage(IdentifyPillarsForGetFileRequest message) {
+            onMessage((Object) message);
+        }
+
+        public void onMessage(Object msg) {
             try {
-                message = msg.getText();
-                messageClass = msg.getMessageType();
+                message = MessageFactory.extractMessage(msg);
+                messageClass = msg.getClass();
             } catch (Exception e) {
                 Assert.fail("Should not throw an exception: ", e);
             }
         }
+
         @Override
         public void onException(JMSException e) {
             e.printStackTrace();

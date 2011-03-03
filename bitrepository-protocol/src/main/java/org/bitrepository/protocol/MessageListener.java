@@ -24,6 +24,27 @@
  */
 package org.bitrepository.protocol;
 
+import org.bitrepository.bitrepositorymessages.GetChecksumsComplete;
+import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.GetChecksumsResponse;
+import org.bitrepository.bitrepositorymessages.GetFileComplete;
+import org.bitrepository.bitrepositorymessages.GetFileIDsComplete;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.GetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.PutFileComplete;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.PutFileResponse;
+
 /** This interface defines a consumer of messages in the bitrepository
  * protocol. */
 public interface MessageListener {
@@ -32,5 +53,138 @@ public interface MessageListener {
      *
      * @param message The message received.
      */
-    void onMessage(Message message);
+    void onMessage(GetChecksumsComplete message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(GetChecksumsRequest message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(GetChecksumsResponse message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(GetFileComplete message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(GetFileIDsComplete message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(GetFileIDsRequest message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(GetFileIDsResponse message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(GetFileRequest message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(GetFileResponse message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyPillarsForGetChecksumsReply message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyPillarsForGetChecksumsRequest message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyPillarsForGetFileIDsReply message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyPillarsForGetFileIDsRequest message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyPillarsForGetFileReply message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyPillarsForGetFileRequest message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyPillarsForPutFileReply message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyPillarsForPutFileRequest message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(PutFileComplete message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(PutFileRequest message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(PutFileResponse message);
 }
