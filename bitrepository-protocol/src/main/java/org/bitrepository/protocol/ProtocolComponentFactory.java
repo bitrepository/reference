@@ -24,63 +24,56 @@
  */
 package org.bitrepository.protocol;
 
-import javax.jms.JMSException;
-
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.configuration.ProtocolConfiguration;
-import org.bitrepository.protocol.exceptions.CoordinationLayerException;
 
 /**
  * Provides access to the different component in the protocol module (Spring wannabe)
  */
 public final class ProtocolComponentFactory {
-	
-	//---------------------Singleton-------------------------
-	private static ProtocolComponentFactory instance;	
-	public synchronized static ProtocolComponentFactory getInstance() {
-		if (instance == null) {
-			instance = new ProtocolComponentFactory();
-		}
-		return instance;
-	}
 
-	private ProtocolComponentFactory() {
-		moduleCharacteristics = new ModuleCharacteristics("protocol");
-	}
+    //---------------------Singleton-------------------------
+    private static ProtocolComponentFactory instance;
+    public synchronized static ProtocolComponentFactory getInstance() {
+        if (instance == null) {
+            instance = new ProtocolComponentFactory();
+        }
+        return instance;
+    }
 
-	// --------------------- Components-----------------------
-	private final ModuleCharacteristics moduleCharacteristics;
-	private ProtocolConfiguration protocolConfiguration;
-	private MessageBus messagebus;
-	
-	public ModuleCharacteristics getModuleCharacteristics() {
-		return moduleCharacteristics;
-	}
-	
-	/**
-	 * Gets you a object for accessing the Bitrepositories message bus
-	 */
-	public MessageBus getMessageBus() {
-		if (messagebus == null) {
-			try {
-				messagebus = new ActiveMQMessageBus(getProtocolConfiguration().getMessageBusConfigurations());
-			} catch (JMSException e) {
-				throw new CoordinationLayerException("Failed to get a handle on the message bus", e);
-			}
-		}
-		return messagebus;
-	}
-	
-	/**
-	 * Gets you the configuration for this module
-	 */
-	private ProtocolConfiguration getProtocolConfiguration() {
-		if (protocolConfiguration == null) {
-			protocolConfiguration = 
-				ConfigurationFactory.loadConfiguration(getModuleCharacteristics(), ProtocolConfiguration.class);
-		}
-		return protocolConfiguration;
-	}
+    private ProtocolComponentFactory() {
+        moduleCharacteristics = new ModuleCharacteristics("protocol");
+    }
+
+    // --------------------- Components-----------------------
+    private final ModuleCharacteristics moduleCharacteristics;
+    private ProtocolConfiguration protocolConfiguration;
+    private MessageBus messagebus;
+
+    public ModuleCharacteristics getModuleCharacteristics() {
+        return moduleCharacteristics;
+    }
+
+    /**
+     * Gets you a object for accessing the Bitrepositories message bus
+     */
+    public MessageBus getMessageBus() {
+        if (messagebus == null) {
+            messagebus = new ActiveMQMessageBus(getProtocolConfiguration().getMessageBusConfigurations());
+        }
+        return messagebus;
+    }
+
+    /**
+     * Gets you the configuration for this module
+     */
+    private ProtocolConfiguration getProtocolConfiguration() {
+        if (protocolConfiguration == null) {
+            protocolConfiguration =
+                    ConfigurationFactory.loadConfiguration(getModuleCharacteristics(), ProtocolConfiguration.class);
+        }
+        return protocolConfiguration;
+    }
 }
