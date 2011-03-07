@@ -24,6 +24,7 @@
  */
 package org.bitrepository.access;
 
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
@@ -40,6 +41,7 @@ import org.testng.annotations.Test;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import java.io.File;
+import java.math.BigInteger;
 import java.net.URL;
 
 /**
@@ -93,6 +95,9 @@ public class GetClientTest extends ExtendedTestCase {
         
         addStep("Sending a reply for the message.", "Should be handled by the "
                 + "GetClient.");
+        TimeMeasureTYPE time = new TimeMeasureTYPE();
+        time.setMiliSec(BigInteger.valueOf(1000));
+
         IdentifyPillarsForGetFileReply reply = new IdentifyPillarsForGetFileReply();
         reply.setCorrelationID(identifyMessage.getCorrelationID());
         reply.setFileID(identifyMessage.getFileID());
@@ -100,7 +105,7 @@ public class GetClientTest extends ExtendedTestCase {
         reply.setPillarID(pillarId);
         // reply.setReplyTo(value)
         reply.setSlaID(identifyMessage.getSlaID());
-        reply.setTimeToDeliver("1000");
+        reply.setTimeToDeliver(time);
         reply.setVersion((short) 1);
 
         ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(
@@ -216,6 +221,10 @@ public class GetClientTest extends ExtendedTestCase {
                 IdentifyPillarsForGetFileRequest.class, listener.message);
         Assert.assertEquals(request.getFileID(), dataId);
         Assert.assertEquals(request.getSlaID(), slaId);
+        TimeMeasureTYPE fastTime = new TimeMeasureTYPE();
+        fastTime.setMiliSec(BigInteger.valueOf(10));
+        TimeMeasureTYPE slowTime = new TimeMeasureTYPE();
+        slowTime.setMiliSec(BigInteger.valueOf(10000));
         
         IdentifyPillarsForGetFileReply fastReply = new IdentifyPillarsForGetFileReply();
         fastReply.setCorrelationID(request.getCorrelationID());
@@ -223,7 +232,7 @@ public class GetClientTest extends ExtendedTestCase {
         fastReply.setMinVersion((short) 1);
         fastReply.setVersion((short) 1);
         fastReply.setSlaID(request.getSlaID());
-        fastReply.setTimeToDeliver("10");
+        fastReply.setTimeToDeliver(fastTime);
         fastReply.setPillarID(fastPillar);
         IdentifyPillarsForGetFileReply slowReply = new IdentifyPillarsForGetFileReply();
         slowReply.setCorrelationID(request.getCorrelationID());
@@ -231,7 +240,7 @@ public class GetClientTest extends ExtendedTestCase {
         slowReply.setMinVersion((short) 1);
         slowReply.setVersion((short) 1);
         slowReply.setSlaID(request.getSlaID());
-        slowReply.setTimeToDeliver("1000000");
+        slowReply.setTimeToDeliver(slowTime);
         slowReply.setPillarID(slowPillar);
         
         ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(

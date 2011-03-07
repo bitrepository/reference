@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bitrepository.access.exception.AccessException;
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
@@ -228,9 +229,10 @@ public class GetClient {
                     + "outstanding. Handling anyway.");
         }
         
-        // save the time entry.
+        // extract and save the time entry.
+        TimeMeasureTYPE time = reply.getTimeToDeliver();
         saveTimeForFileDelivery(pillarId, fileId, 
-                Long.parseLong((String) reply.getTimeToDeliver()));
+                time.getMiliSec().longValue());
         
         // remove pillar from outstanding.
         missingRepliers.remove(pillarId);
