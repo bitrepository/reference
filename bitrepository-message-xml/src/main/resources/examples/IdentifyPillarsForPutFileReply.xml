@@ -31,5 +31,5 @@
   <FileID>MyDataID</FileID>
   <PillarID>MyPillar</PillarID>
   <PillarChecksumType>MD5</PillarChecksumType>
-  <TimeToDeliver>1000</TimeToDeliver>
+  <TimeToDeliver><MiliSec>1000</MiliSec></TimeToDeliver>
 </bro:IdentifyPillarsForPutFileReply>

@@ -32,7 +32,7 @@
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
   <PillarID>MyPillar</PillarID>
   <PillarChecksumType>MD5</PillarChecksumType>
-  <CompleteCode>MyCompleteCode</CompleteCode>
-  <CompleteText>MyCompleteText</CompleteText>
+  <CompleteCode>ERR_NOCOM</CompleteCode>
+  <CompleteText>Not completed for unknown reasons</CompleteText>
   <bro:CompleteSaltChecksum>135F21564</bro:CompleteSaltChecksum>
 </bro:PutFileComplete>

@@ -39,8 +39,8 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
   <PillarID>MyPillar</PillarID>
   <PillarChecksumType>MD5</PillarChecksumType>
-  <CompleteCode>MyCompleteCode</CompleteCode>
-  <CompleteText>MyCompleteText</CompleteText>
+  <CompleteCode>OK</CompleteCode>
+  <CompleteText>successfull completion</CompleteText>
   <NoOfItems>2</NoOfItems>
     <FileID>MyDataId1</FileID>
     <Checksum>ABCD1234</Checksum>

@@ -7,16 +7,13 @@
   
   xmlns="http://bitrepository.org/BitRepositoryElements.xsd"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:ty="http://bitrepository.org/BitRepositoryTypes.xsd"
 >
 
-  <xs:import schemaLocation="BitRepositoryTypes.xsd" namespace="http://bitrepository.org/BitRepositoryTypes.xsd" />
+<!-- ************************************************************** -->
+<!-- ****** USED ELEMENTS AND GROUPS IN ALPHABETIC ORDER     ****** -->
+<!-- ************************************************************** -->
 
-  <!-- ************************************************************** -->
-  <!-- ****** USED ELEMENTS AND GROUPS IN ALPHABETIC ORDER     ****** -->
-  <!-- ************************************************************** -->
-
-  <xs:element name="Checksum" type="ty:Checksum_TYPE">
+  <xs:element name="Checksum" type="Checksum_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Checksum measure for specific data object
     e.g. used in delivery of GetChecksums result
@@ -29,19 +26,19 @@
     </xs:documentation></xs:annotation>
 
     <xs:sequence>
-      <xs:element name="FileID" type="ty:FileID_TYPE" >
+      <xs:element name="FileID" type="FileID_TYPE" >
         <xs:annotation><xs:documentation xml:lang="en">
         Identifier of data the checksum is for
         </xs:documentation></xs:annotation>
       </xs:element>
          
-      <xs:element name="Checksum" type="ty:Checksum_TYPE">
+      <xs:element name="Checksum" type="Checksum_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         Checksum of data which will be based on given algorithm and include salt if specified 
         </xs:documentation></xs:annotation>
       </xs:element>
 
-      <xs:element name="CalculationTime" type="ty:CalculationTime_TYPE">
+      <xs:element name="CalculationTime" type="CalculationTime_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         The time when the checksum was last calculated
         (especially for ordinary checksums on off-line medias, there can be long intervals between
@@ -58,21 +55,21 @@
     </xs:documentation></xs:annotation>
 
     <xs:sequence>
-      <xs:element ref="CorrelationID" >
+      <xs:element ref="CorrelationID">
         <xs:annotation><xs:documentation xml:lang="en">
         CorrelationID is a unique identifier for communication usually on primitive level, 
         e.g the IdentifyPillarsForGet part of a get operation
         </xs:documentation></xs:annotation>
       </xs:element>
        
-      <xs:element name="SlaID" type="ty:SlaID_TYPE"> 
+      <xs:element name="SlaID" type="SlaID_TYPE"> 
         <xs:annotation><xs:documentation xml:lang="en">
         SlaID is a unique identifier for SLA which data belongs to.
         This is also the identification of decryption and keys for contents of message
         </xs:documentation></xs:annotation>
       </xs:element>
       
-      <xs:element name="ReplyTo" >
+      <xs:element name="ReplyTo" type="ReplyTo_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         Contains name of queue/topic to reply/respond to 
         (blank if not relevant, e.g. for alarms)
@@ -81,21 +78,22 @@
     </xs:sequence>
   </xs:group>
   
-  <xs:element name="CompleteCode" >
+  
+  <xs:element name="CompleteCode" type="CompleteCode_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     CompleteCode is a code for the type of completion given
     The actual codes are specified later, e.g. IoError, DataNotFound, AccessDenied, OK
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="CompleteText" >
+  <xs:element name="CompleteText" type="xs:string">
     <xs:annotation><xs:documentation xml:lang="en">
     CompleteText is a text for logging in the completion
     It does not have a semantic meaning, but contributes to a more readable log
     </xs:documentation></xs:annotation>
   </xs:element>
   
-  <xs:element name="CorrelationID" >
+  <xs:element name="CorrelationID" type="CorrelationID_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     A unique identifier for communication usually on primitive level, 
     e.g the IdentifyPillarsForGet part of a get operation.
@@ -112,7 +110,7 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="FileAddress" type="ty:Address_TYPE">
+  <xs:element name="FileAddress" type="Address_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Address (e.g. in form of an URL) for where data can be found
     In a Get operation this will be the address where data requested must be placed
@@ -120,7 +118,7 @@
     </xs:documentation></xs:annotation>
   </xs:element>
   
-  <xs:element name="FileChecksumType" type="ty:ChecksumsType_TYPE">
+  <xs:element name="FileChecksumType" type="ChecksumsType_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Gives information about which type of checksum is used for data
     This is for instance used for the GetChecksum operation 
@@ -128,7 +126,7 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="FileID" type="ty:FileID_TYPE">
+  <xs:element name="FileID" type="FileID_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Unique identifiers for data in given service level agreement
     In a Get operation this will be the identifier for data requested
@@ -144,19 +142,19 @@
 
     <xs:complexType>
       <xs:choice>
-        <xs:element name="FileID" type="ty:FileID_TYPE" minOccurs="1" maxOccurs="unbounded" >
+        <xs:element name="FileID" type="FileID_TYPE" minOccurs="1" maxOccurs="unbounded" >
           <xs:annotation><xs:documentation xml:lang="en">
           List of identifiers for data in given SLA
           </xs:documentation></xs:annotation>
         </xs:element>
             
-        <xs:element name="AllFileIDs" >
+        <xs:element name="AllFileIDs" type="xs:string">
           <xs:annotation><xs:documentation xml:lang="en">
           Specification that all data identifiers in SLA is requested
           </xs:documentation></xs:annotation>
         </xs:element>
                   
-        <xs:element name="ParameterAddress" type="ty:Address_TYPE">
+        <xs:element name="ParameterAddress" type="Address_TYPE">
           <xs:annotation><xs:documentation xml:lang="en">
           Address where File ID list can be found on form FileIDsParameters
           </xs:documentation></xs:annotation>
@@ -173,13 +171,13 @@
     </xs:documentation></xs:annotation>
     <xs:sequence>
              
-      <xs:element name="FileID" type="ty:FileID_TYPE">
+      <xs:element name="FileID" type="FileID_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         Identifier of data
         </xs:documentation></xs:annotation>
       </xs:element>
          
-      <xs:element name="CalculationTime" type="ty:CalculationTime_TYPE">
+      <xs:element name="CalculationTime" type="CalculationTime_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         The time when the data  was last seen
         (especially for off-line medias, there can be long intervals between
@@ -216,13 +214,13 @@
     </xs:documentation></xs:annotation>
   </xs:element>
   
-  <xs:element name="ParameterAddress" type="ty:Address_TYPE">
+  <xs:element name="ParameterAddress" type="Address_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Address where parameter can be found 
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="PillarChecksumType" type="ty:ChecksumsType_TYPE">
+  <xs:element name="PillarChecksumType" type="ChecksumsType_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Information about which type of checksum is used for data on checksums pillar
     In a Get this information will only be relevant for identification of pillars
@@ -231,13 +229,13 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="PillarID" type="ty:PillarID_TYPE"> 
+  <xs:element name="PillarID" type="PillarID_TYPE"> 
     <xs:annotation><xs:documentation xml:lang="en">
     A unique identifier for a specific pillar (covered by  the SLA which data belongs to)
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="ResponseCode" type="ty:ResponseCode_TYPE">
+  <xs:element name="ResponseCode" type="ResponseCode_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     A code for the type of response given
     The actual codes are specified later, e.g. UnknownFileId, OK
@@ -251,34 +249,230 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="SaltParameter" >
+  <xs:element name="SaltParameter" type="SaltParameter_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     An extra salt to be added in the checksum calculation
     If this parameter is given, it is also specification the checksum calculation must include the salt
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="SlaID" type="ty:SlaID_TYPE"> 
+  <xs:element name="SlaID" type="SlaID_TYPE"> 
     <xs:annotation><xs:documentation xml:lang="en">
     A unique identifier for SLA which data belongs to.
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="TimeToDeliver" >
+  <xs:element name="TimeToDeliver" type="TimeMeasure_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     The estimated time before result of request can be delivered
     In a Get this will be the estimated time before requested data is ready for download 
     In a Put this will be the estimated time before requested data is uploaded 
-    In first version this will be in miliseconds, later it will be consisting of time and unit according to a standard 
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <!-- ************************************************************** -->
-  <!-- ****** FUTURE ELEMNETS IN ALPHABETIC ORDER (used later) ****** -->
-  <!-- ************************************************************** -->
+<!-- ************************************************************** -->
+<!-- ****** FUTURE ELEMNETS IN ALPHABETIC ORDER (used later) ****** -->
+<!-- ************************************************************** -->
   
   <!-- Control sizes -->
   <!-- .... -->
   <xs:element name="MaxPackageSize" /> <!-- Unit and measure ... -->
- 
+  
+<!-- ************************************************************** -->
+<!-- ****** USED TYPES IN ALPHABETIC ORDER                   ****** -->
+<!-- ************************************************************** -->
+
+  <xs:simpleType name="Address_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Address for where data files can be found or placed
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="CalculationTime_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    The data and time for when a calculation took place
+    At some stage this must include more precis definition including timezones.
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:dateTime">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ChecksumsType_TYPE">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="MD5"/>
+      <xs:enumeration value="SHA-3"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Checksum_TYPE">
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="CompleteCode_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Type with all complete codes for complete message in the bit repository protocol
+    </xs:documentation></xs:annotation>
+    <xs:union memberTypes="CompleteCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_COMPLETE_TYPE"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="CompleteCodePositive_TYPE">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="OK">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Code telling that message request has been completed successfully
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="CorrelationID_TYPE">
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ERRORCODE_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Type with all sorts of error codes in the bit repository protocol
+    </xs:documentation></xs:annotation>
+    <xs:union memberTypes="ERRORCODE_GENERAL_TYPE ERRORCODE_ALARM_TYPE ERRORCODE_COMPLETE_TYPE ERRORCODE_RESPONSE_TYPE"/>
+  </xs:simpleType>
+  
+  <xs:simpleType name="ERRORCODE_COMPLETE_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Error codes that are specific for Complete messages
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ERR_NOCOM">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Code telling that operation was not completed for unknown reason
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ERRORCODE_ALARM_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Error codes that are specific for Alarm messages
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="UNKNOWNUSER"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ERRORCODE_GENERAL_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    General error codes
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ERR_NFID">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Code telling that data for a FileID has been NOT been found for som sort of Get request
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="ERR_DID">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Code telling that there are dublicate FileID 
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="ERR_OTHER">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Code telling that there are other reasons for failure
+        text following error code must explain reason.
+        This code should rarely be used, and use indicates that this type should be updated 
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="ERRORCODE_RESPONSE_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Error codes that are specific for Response messages
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ERR_NOUND">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Code telling that request was not understood
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="FileID_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Unique identifiers for data in given service level agreement
+    In a Get operation this will be the identifier for data requested
+    In a Put operation this will be the identifier the data for later request of the data
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="PillarID_TYPE">
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ReplyTo_TYPE">
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ResponseCode_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Type with all response codes for response message in the bit repository protocol
+    </xs:documentation></xs:annotation>
+    <xs:union memberTypes="ResponseCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_RESPONSE_TYPE"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="ResponseCodePositive_TYPE">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="OK">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Code telling that message request has been received and is expected to be met successfully
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="OK_BF">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Code telling that data from a PutFile request has been buffered successfully
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="OK_DF">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Code telling that data for a FileID has been found for some sort of Get request
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SaltParameter_TYPE">
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SlaID_TYPE">
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="TimeMeasure_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Indicates time measure from a point in time to another.
+    In first version this will be in miliseconds, later it will be consisting of time and unit according to a standard 
+    </xs:documentation></xs:annotation>
+    <xs:choice>
+      <xs:element name="MiliSec" type="xs:positiveInteger" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        number of miliseconds
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="Hours" type="xs:positiveInteger" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        number of hours
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
 </xs:schema>

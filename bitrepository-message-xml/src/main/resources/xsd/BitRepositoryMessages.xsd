@@ -8,13 +8,11 @@
 	 xmlns="http://bitrepository.org/BitRepositoryMessages.xsd"
      xmlns:xs="http://www.w3.org/2001/XMLSchema"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xmlns:ty="http://bitrepository.org/BitRepositoryTypes.xsd"
      xmlns:bre="http://bitrepository.org/BitRepositoryElements.xsd"
 >
      
   <!-- URL in import targetNamespace must be updated later -->
   <xs:import schemaLocation="BitRepositoryElements.xsd" namespace="http://bitrepository.org/BitRepositoryElements.xsd" />
-  <xs:import schemaLocation="BitRepositoryTypes.xsd" namespace="http://bitrepository.org/BitRepositoryTypes.xsd" />
  
   <!-- ************************************************************** -->
   <!-- * Operation messages for GetFile                                 * -->
@@ -440,7 +438,7 @@
           <xs:complexType>
             <xs:sequence>
               <xs:element ref="bre:SaltParameter"/> 
-              <xs:element name="SaltChecksumType" type="ty:ChecksumsType_TYPE"/> 
+              <xs:element name="SaltChecksumType" type="bre:ChecksumsType_TYPE"/> 
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -574,7 +572,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element name="CompleteSaltChecksum" type="ty:Checksum_TYPE" minOccurs="0" maxOccurs="1" >  
+        <xs:element name="CompleteSaltChecksum" type="bre:Checksum_TYPE" minOccurs="0" maxOccurs="1" >  
           <xs:annotation><xs:documentation xml:lang="en">
           Checksum calculated as specified in PutFileRequest, if specified
           </xs:documentation></xs:annotation>

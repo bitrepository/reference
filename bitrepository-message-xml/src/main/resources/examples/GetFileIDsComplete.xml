@@ -30,8 +30,8 @@
   <ReplyTo>MyQueueOrTopic</ReplyTo>
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
   <PillarID>MyPillar</PillarID>
-  <CompleteCode>MyCompleteCode</CompleteCode>
-  <CompleteText>MyCompleteText</CompleteText>
+  <CompleteCode>OK</CompleteCode>
+  <CompleteText>successfull completion</CompleteText>
   <NoOfItems>1</NoOfItems>
      <FileID>MydataId1</FileID>
      <CalculationTime>2011-02-17T09:47:00</CalculationTime>

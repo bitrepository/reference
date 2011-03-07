@@ -34,6 +34,6 @@
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
   <PillarID>MyPillar</PillarID>
   <PillarChecksumType>MD5</PillarChecksumType>
-  <CompleteCode>MyCompleteCode</CompleteCode>
-  <CompleteText>MyCompleteText</CompleteText>
+  <CompleteCode>ERR_NFID</CompleteCode>
+  <CompleteText>File not found</CompleteText>
 </bro:GetFileComplete>

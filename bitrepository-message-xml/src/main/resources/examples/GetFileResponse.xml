@@ -37,6 +37,6 @@
   <FileChecksumType>MD5</FileChecksumType>
   <PillarID>MyPillar</PillarID>
   <PillarChecksumType>MD5</PillarChecksumType>
-  <ResponseCode>MR</ResponseCode>
-  <ResponseText>Message request has been received and is expected to be met successfully</ResponseText>
+  <ResponseCode>ERR_NFID</ResponseCode>
+  <ResponseText>FileID has been NOT been found</ResponseText>
 </bro:GetFileResponse>
