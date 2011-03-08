@@ -1,0 +1,204 @@
+/*
+ * #%L
+ * Bitmagasin integrationstest
+ * 
+ * $Id$
+ * $HeadURL$
+ * %%
+ * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+package org.bitrepository.modify;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.math.BigInteger;
+import java.net.URL;
+
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
+
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.PutFileResponse;
+import org.bitrepository.protocol.AbstractMessageListener;
+import org.bitrepository.protocol.MessageFactory;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.http.HTTPFileExchange;
+import org.jaccept.structure.ExtendedTestCase;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+public class PutClientTester extends ExtendedTestCase {
+
+    private static final int WAITING_TIME_FOR_MESSAGE = 1000;
+
+//    @Test(groups={"regressionstest"})
+    @Test(groups={"test-when-configuration-done"})
+    public void findPillarsToPutTester() throws Exception {
+        addDescription("Tests whether a specific message is sent by the GetClient");
+        String dataId = "dataId1";
+        String slaId = "THE-SLA";
+        String pillarId = "The-Test-Pillar";
+        SimplePutClient pc = new SimplePutClient();
+        TestMessageListener listener = new TestMessageListener();
+        ProtocolComponentFactory.getInstance().getMessageBus().addListener(pc.queue, listener);
+        
+        File testFile = new File("src/test/resources/test.txt");
+
+        pc.putFileWithId(testFile, dataId, slaId);
+        
+        synchronized(this) {
+            try {
+                wait(WAITING_TIME_FOR_MESSAGE);
+            } catch (Exception e) {
+                // print, but ignore!
+                e.printStackTrace();
+            }
+        }
+        
+        addStep("Verify that the PutClient has sent a message for identifying "
+                + "the pillars for put.", "Should be OK.");
+        
+        Assert.assertEquals(listener.getMessageClass().getName(),
+                IdentifyPillarsForPutFileRequest.class.getName());
+        IdentifyPillarsForPutFileRequest identify 
+                = MessageFactory.createMessage(
+                        IdentifyPillarsForPutFileRequest.class, 
+                        listener.getMessage());
+        Assert.assertEquals(identify.getFileID(), dataId);
+        Assert.assertEquals(identify.getSlaID(), slaId);
+        
+        addStep("Reply identify request.", "No problems.");
+        
+        IdentifyPillarsForPutFileReply identifyReply 
+                = new IdentifyPillarsForPutFileReply();
+        identifyReply.setCorrelationID(identify.getCorrelationID());
+        identifyReply.setFileID(dataId);
+        identifyReply.setPillarID(pillarId);
+        identifyReply.setSlaID(slaId);
+        identifyReply.setMinVersion((short) 1);
+        identifyReply.setVersion((short) 1);
+        // TODO identifyReply.setTimeToDeliver(value) ???
+        
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(pc.queue, 
+                identifyReply);
+        
+        synchronized(this) {
+            try {
+                wait(WAITING_TIME_FOR_MESSAGE);
+            } catch (Exception e) {
+                // print, but ignore!
+                e.printStackTrace();
+            }
+        }
+        
+        addStep("Verifying that a 'PutFileRequest' has been sent for the file.", 
+                "A PutFileRequest for the specific file.");
+        Assert.assertEquals(listener.getMessageClass().getName(),
+                PutFileRequest.class.getName());
+        PutFileRequest put = MessageFactory.createMessage(PutFileRequest.class, 
+                listener.getMessage());
+        Assert.assertEquals(put.getFileID(), dataId);
+        Assert.assertEquals(put.getSlaID(), slaId);
+        Assert.assertEquals(put.getPillarID(), pillarId);
+        
+        addStep("Verify that the expected file can be downloaded.", 
+                "Should be OK.");
+        URL url = new URL(put.getFileAddress());
+        File outputFile = new File(put.getFileID());
+        FileOutputStream outStream = null;
+        try {
+            outStream = new FileOutputStream(outputFile);
+            HTTPFileExchange.downloadFromServer(outStream, url);
+        } finally {
+            if(outStream != null) {
+                outStream.close();
+            }
+        }
+        
+        Assert.assertTrue(outputFile.isFile());
+        Assert.assertEquals(BigInteger.valueOf(outputFile.length()), 
+                put.getExpectedFileSize(), "Different size than expected!");
+        
+        addStep("Send PutFileResponse for the request.", "Should be handled.");
+        PutFileResponse response = new PutFileResponse();
+        response.setCorrelationID(put.getCorrelationID());
+        response.setFileAddress(put.getFileAddress());
+        response.setFileID(put.getFileID());
+        response.setPillarID(pillarId);
+        response.setSlaID(slaId);
+        response.setMinVersion((short) 1);
+        response.setVersion((short) 1);
+        
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(
+                pc.queue, response);
+        
+        synchronized(this) {
+            try {
+                wait(WAITING_TIME_FOR_MESSAGE);
+            } catch (Exception e) {
+                // print, but ignore!
+                e.printStackTrace();
+            }
+        }
+        
+    }
+
+    @SuppressWarnings("rawtypes")
+    protected class TestMessageListener extends AbstractMessageListener
+            implements ExceptionListener {
+        private String message = null;
+        private Class messageClass = null;
+
+        @Override
+        public void onMessage(PutFileRequest message) {
+            onMessage((Object) message);
+        }
+
+        @Override
+        public void onMessage(PutFileResponse message) {
+            onMessage((Object) message);
+        }
+
+        @Override
+        public void onMessage(IdentifyPillarsForPutFileRequest message) {
+            onMessage((Object) message);
+        }
+
+        public void onMessage(Object msg) {
+            try {
+                message = MessageFactory.extractMessage(msg);
+                messageClass = msg.getClass();
+            } catch (Exception e) {
+                Assert.fail("Should not throw an exception: ", e);
+            }
+        }
+
+        @Override
+        public void onException(JMSException e) {
+            e.printStackTrace();
+        }
+        public String getMessage() {
+            return message;
+        }
+        public Class getMessageClass() {
+            return messageClass;
+        }
+    }
+}
