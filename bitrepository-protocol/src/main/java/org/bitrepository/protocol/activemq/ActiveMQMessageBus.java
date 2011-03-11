@@ -45,13 +45,13 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileResponse;
+import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.MessageFactory;
 import org.bitrepository.protocol.MessageListener;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.configuration.MessageBusConfiguration;
 import org.bitrepository.protocol.configuration.MessageBusConfigurations;
-import org.bitrepository.protocol.exceptions.CoordinationLayerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

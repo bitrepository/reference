@@ -30,12 +30,17 @@ import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.configuration.ProtocolConfiguration;
 
 /**
- * Provides access to the different component in the protocol module (Spring wannabe)
+ * Provides access to the different component in the protocol module (Spring/IOC wannabe)
  */
 public final class ProtocolComponentFactory {
 
     //---------------------Singleton-------------------------
     private static ProtocolComponentFactory instance;
+    
+    /**
+     * The singletonic access to the instance of this class
+     * @return The one and onl instance
+     */
     public synchronized static ProtocolComponentFactory getInstance() {
         if (instance == null) {
             instance = new ProtocolComponentFactory();
@@ -43,6 +48,9 @@ public final class ProtocolComponentFactory {
         return instance;
     }
 
+    /**
+     * The singleton constructor
+     */
     private ProtocolComponentFactory() {
         moduleCharacteristics = new ModuleCharacteristics("protocol");
     }
@@ -52,12 +60,16 @@ public final class ProtocolComponentFactory {
     private ProtocolConfiguration protocolConfiguration;
     private MessageBus messagebus;
 
+    /**
+     * Gets you a <code>ModuleCharacteristics</code> object defining the generic characteristics of this module
+     * @return A <code>ModuleCharacteristics</code> object defining the generic characteristics of this module 
+     */
     public ModuleCharacteristics getModuleCharacteristics() {
         return moduleCharacteristics;
     }
 
     /**
-     * Gets you a object for accessing the Bitrepositories message bus
+     * Gets you an <code>MessageBus</code> instance for accessing to the Bitrepositorys message bus
      */
     public MessageBus getMessageBus() {
         if (messagebus == null) {
@@ -67,12 +79,15 @@ public final class ProtocolComponentFactory {
     }
 
     /**
-     * Gets you the configuration for this module
+     * Gets you the configuration for this module. The configuration object is loaded from file the first time this
+     * method is called, and cannot be reloaded.
+     * @return Gets you the configuration for this module
      */
     private ProtocolConfiguration getProtocolConfiguration() {
         if (protocolConfiguration == null) {
+            ConfigurationFactory configurationFactory = new ConfigurationFactory();
             protocolConfiguration =
-                    ConfigurationFactory.loadConfiguration(getModuleCharacteristics(), ProtocolConfiguration.class);
+                configurationFactory.loadConfiguration(getModuleCharacteristics(), ProtocolConfiguration.class);
         }
         return protocolConfiguration;
     }

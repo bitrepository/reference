@@ -20,5 +20,12 @@
             <artifactId>bitrepository-message-xml</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.bitrepository</groupId>
+            <artifactId>bitrepository-protocol</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>                                                                      

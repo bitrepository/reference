@@ -38,8 +38,9 @@ public class ProtocolConfigurationTest {
 	 * 
 	 */
     public void defaultConfigurationTest() throws Exception {
+        ConfigurationFactory configurationFactory = new ConfigurationFactory();
 		ProtocolConfiguration pc =
-		ConfigurationFactory.loadConfiguration(
+		    configurationFactory.loadConfiguration(
 				ProtocolComponentFactory.getInstance().getModuleCharacteristics(),
 				ProtocolConfiguration.class);
 		Assert.assertNotNull(pc);

@@ -28,4 +28,5 @@
 <CommonConfiguration xmlns="http://bitrepository.org/common/Configuration.xsd" 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xsi:schemaLocation="http://bitrepository.org/common/Configuration.xsd ../schema/Configuration.xsd ">
+    <environmentName>TEST</environmentName>
 </CommonConfiguration>

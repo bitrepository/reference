@@ -27,9 +27,7 @@ package org.bitrepository.common;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
 import org.bitrepository.common.configuration.CommonConfiguration;
-import org.bitrepository.common.exception.ConfigurationException;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -40,162 +38,85 @@ import org.testng.annotations.Test;
  * Tests the <code>ConfigurationFactory</code> by running the functionality on the common modules own configuration
  */
 public class ConfigurationFactoryTest extends ExtendedTestCase {
+    private ConfigurationFactory configurationFactory = new ConfigurationFactory();
 	private static final ModuleCharacteristics moduleCharacteristics = new ModuleCharacteristics("common");
-	private boolean didConfigurationDirExistBefore;
 
-	private static final File originalConfigLocation = 
-		new File(ConfigurationFactory.TEST_CONFIGURATION_PATH + "/common-configuration.xml");
-	private static final File testConfigLocation = 
-		new File("target/test-classes/common-configuration.xml");
-	private static final File defaultConfigurationDir = new File("configuration");
-	private static final File fileInDefaultConfigurationDir = 
-		new File(defaultConfigurationDir, "common-configuration.xml");
-
+	private static final File ORIGINAL_TEST_CONFIG_LOCATION = 
+	    new File("target/test-classes/configuration/xml/common-test-configuration.xml");
+	private static final File RENAMED_TEST_CONFIG_LOCATION = 
+	    new File("target/test-classes/configuration/xml/common-test-configuration.xml.orig");
+	private static final File ORIGINAL_CONFIG_LOCATION = 
+        new File("target/classes/configuration/xml/common-configuration.xml");
+	
+	
+	private static final CommonConfiguration referenceConfig = createDefaultConfiguration();
+	
+	/** 
+	 * Set working dir to the target folder to avoid. The ConfigurationFactory will look for configuration 
+	 * files relatively to the current working dir, and we need to manipulate these files to validate the 
+	 * functionality. Because all code changed in the tests should be located in the target folder we therefore need 
+	 * to run the test with working dir set to the target folder
+	 */
 	@BeforeMethod (alwaysRun=true)
-	public void setUp() {
-		//The configuration file out of the way, so it isn't loaded by default.
-		testConfigLocation.delete();
-		
-		originalConfigLocation.renameTo(testConfigLocation);
-		
-		if (defaultConfigurationDir.exists()) {
-			didConfigurationDirExistBefore = true;
-			if (fileInDefaultConfigurationDir.exists()) fileInDefaultConfigurationDir.delete();
-		}
-		else didConfigurationDirExistBefore = false;
+	public final void setUp() {     
+	    ORIGINAL_TEST_CONFIG_LOCATION.renameTo(RENAMED_TEST_CONFIG_LOCATION);
+	    File originalConfigDir = new File("target/classes/configuration/xml");
+	    originalConfigDir.mkdirs();
 	}
 
 	/**
-	 * Attempts to cleanup the files from the test cases. May not work and in this case we may leave some configuration
-	 * files laying around in inappropriate places. 
+	 * Attempt to reset working dir after each test. 
 	 */
 	@AfterMethod  (alwaysRun=true)
-	public void tearDown() {
-		testConfigLocation.renameTo(originalConfigLocation);
-		
-		// We should only clean the defaultConfigurationDir if we created it in the first place
-		if (didConfigurationDirExistBefore && defaultConfigurationDir.exists()) {
-			try {
-				FileUtils.deleteDirectory(defaultConfigurationDir);
-			} catch (IOException e) {
-				System.out.println("Failed to remove defaultConfigurationDir");
-			}
-		}
+	public final void tearDown() {		
+        RENAMED_TEST_CONFIG_LOCATION.renameTo(ORIGINAL_TEST_CONFIG_LOCATION);
+        ORIGINAL_CONFIG_LOCATION.renameTo(ORIGINAL_TEST_CONFIG_LOCATION);
 	}
 
-	@Test(groups = { "regressiontest" })
-	public void loadConfigurationByModuleFilePropertyTest() {
-		addDescription("Validates that configurations can be loaded by using the 'common.configuration.file' " +
-		"system property");
-		ModuleCharacteristics moduleCharacteristics = new ModuleCharacteristics("common");
-		addStep("Attempt to load the configuration without setting the 'common.configuration.file' property",
-		"The attempt should fail with a ConfigurationException");
-		System.clearProperty("common.configuration.file");
-		try {
-			ConfigurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class);
-			Assert.fail("Expected a ConfigurationException with a undefined 'common.configuration.file' property");
-		} catch (ConfigurationException ce) {
-			// That apparently worked
-		}
-
-		addStep("Set the 'common.configuration.file' so it points to a valid configuration file, " +
-				"and attempt to load the configuration",
-		"A Configuration object should be returned");		
-		System.setProperty("common.configuration.file", testConfigLocation.getAbsolutePath());
-		Assert.assertNotNull(
-				ConfigurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class));
-
-		addStep("Set the 'common.configuration.file' so it points to a non-existing configuration file, " +
-				"and attempt to load the configuration",
-		"The attempt should fail with a ConfigurationException");
-		try {			
-			System.setProperty("common.configuration.file", originalConfigLocation.getAbsolutePath());
-			ConfigurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class);
-			Assert.fail("Expected a ConfigurationException on a setting a invalid 'common.configuration.file' property");
-		} catch (ConfigurationException ce) {
-			// That apparently worked
-		}
+	private static CommonConfiguration createDefaultConfiguration() {
+	    CommonConfiguration config = new CommonConfiguration();
+	    config.setEnvironmentName("TEST");
+	    return config;
 	}
-
+	
 	@Test(groups = { "regressiontest" })
-	public void loadConfigurationByConfigurationDirPropertyTest() {
-		addDescription("Validates that configurations can be loaded by using the 'configuration.dir' " +
-		"system property");
+	public void loadTestConfiguration() throws IOException {
+        addDescription("Validates that the test configuration file is correctly loaded from the class path");
+        
+        addStep("Attempt to load a test configuration with no configuration file with the correct name", 
+                "A Configuration exception should be thrown");
+	    try {
+	        configurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class);
+	        Assert.fail("Expected a ConfigurationException with a non-existing test configuration");
+	    } catch (ConfigurationException ce) {
+	        // That apparently worked
+	    }
 
-		addStep("Attempt to load the configuration without setting the 'configuration.dir' property",
-		"The attempt should fail with a ConfigurationException");
-
-		System.clearProperty("configuration.dir");
-		try {
-			ConfigurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class);
-			Assert.fail("Expected a ConfigurationException with a undefined 'configuration.dir' property");
-		} catch (ConfigurationException ce) {
-			// That apparently worked
-		}
-
-		addStep("Set the 'configuration.dir' so it points to a valid configuration dir, " +
-				"and attempt to load the configuration",
-		"A Configuration object should be returned");		
-		System.setProperty("configuration.dir", testConfigLocation.getParent());
-		Assert.assertNotNull(
-				ConfigurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class));
-
-		addStep("Set the 'configuration.dir' so it points to a configuration dir with out the relevant " +
-				"configuration file, and attempt to load the configuration",
-		"The attempt should fail with a ConfigurationException");
-		try {			
-			System.setProperty("configuration.dir", "./");
-			ConfigurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class);
-			Assert.fail("Expected a ConfigurationException on a setting a invalid 'configuration.dir' property");
-		} catch (ConfigurationException ce) {
-			// That apparently worked
-		}
+        addStep("Attempt to load the test configuration after it has been rename to the correct name for a test " +
+        		"configuration", 
+        "The configuration should be loaded sucessfully");
+	    RENAMED_TEST_CONFIG_LOCATION.renameTo(ORIGINAL_TEST_CONFIG_LOCATION);
+	    Assert.assertEquals(configurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class), 
+	            referenceConfig);
 	}
-
+	
 	@Test(groups = { "regressiontest" })
-	public void loadConfigurationByConfigurationDirTest() throws IOException {
-		addDescription("Validates that configurations can be loaded by placing it in the configuration dir");
-
-		addStep("Attempt to load the configuration from a configuration dir without the relevant configuration file",
-		"The attempt should fail with a ConfigurationException");
-		
-		if (!defaultConfigurationDir.exists()) defaultConfigurationDir.mkdir();
-		File configurationFile = new File(defaultConfigurationDir, "common-configuration.xml");
-		if (configurationFile.exists()) configurationFile.delete();
-		
-		try {
-			ConfigurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class);
-			Assert.fail("Expected a ConfigurationException with a defaultConfigurationDir without a property file");
-		} catch (ConfigurationException ce) {
-			// That apparently worked
-		}
-
-		addStep("Copy a working configuration file to the configuration dir",
-		"A Configuration object should be returned");		
-		FileUtils.copyFile(testConfigLocation, configurationFile);
-		Assert.assertNotNull(
-				ConfigurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class));
-	}
-
-	@Test(groups = { "regressiontest" })
-	public void loadConfigurationBySrcConfigurationDirTest() throws IOException {
-		addDescription("Validates that configurations can be loaded by placing it in the test configuration dir");
-
-		addStep("Attempt to load the configuration from a test configuration dir without the relevant configuration " +
-				"file",
-				"The attempt should fail with a ConfigurationException");
-		
-		try {
-			ConfigurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class);
-			Assert.fail("Expected a ConfigurationException with a test configuration dir without a property file");
-		} catch (ConfigurationException ce) {
-			// That apparently worked
-		}
-
-		addStep("Copy a working configuration file to the test configuration dir",
-		"A Configuration object should be returned");		
-		testConfigLocation.renameTo(originalConfigLocation);
-		Assert.assertNotNull(
-				ConfigurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class));
+	public void loadConfiguration() throws IOException {
+	    addDescription("Validates that the configuration file is correctly loaded from the class path");
+	    
+	    addStep("Attempt to load a configuration with no configuration file with the correct name", 
+	            "A Configuration exception should be thrown");
+	    try {
+            configurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class);
+            Assert.fail("Expected a ConfigurationException with a non-existing configuration");
+        } catch (ConfigurationException ce) {
+            // That apparently worked
+        }
+        
+        addStep("Attempt to load the configuration after it has been rename to the correct name", 
+        "The configuration should be loaded sucessfully");
+        RENAMED_TEST_CONFIG_LOCATION.renameTo(ORIGINAL_CONFIG_LOCATION);
+        Assert.assertEquals(configurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class), 
+                referenceConfig);
 	}
 }

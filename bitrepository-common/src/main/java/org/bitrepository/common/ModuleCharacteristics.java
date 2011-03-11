@@ -32,7 +32,7 @@ import org.apache.commons.lang.WordUtils;
  * Contains a general representation of a Bitrepository module. 
  * 
  */
-public class ModuleCharacteristics {
+public final class ModuleCharacteristics {
 	private String upperCamelCaseName;
 	private String lowerCamelCaseName;
 	private String lowerCaseNameWithHyphen;
@@ -54,6 +54,7 @@ public class ModuleCharacteristics {
 	 * Return the Module name in upper camel casing, see http://en.wikipedia.org/wiki/CamelCase for details
 	 * 
 	 * Example: 'AlarmClient'
+	 * @return the upper camel casing representation of the module name
 	 */
 	public String getUpperCamelCaseName() {
 		return upperCamelCaseName;
@@ -63,6 +64,7 @@ public class ModuleCharacteristics {
 	 * Return the Module name in lower camel casing, see http://en.wikipedia.org/wiki/CamelCase for details.
 	 * 
 	 * Example: 'alarmClient'
+     * @return the lower camel casing representation of the module name
 	 */
     public String getLowerCamelCaseName() {
     	return lowerCamelCaseName;
@@ -72,6 +74,7 @@ public class ModuleCharacteristics {
 	 * Return the Module name in all lower case.
 	 * 
 	 * Example: 'alarmclient'
+     * @return the lower case representation of the module name
 	 */
     public String getLowerCaseName() {
     	return lowerCaseName;
@@ -81,6 +84,7 @@ public class ModuleCharacteristics {
 	 * Return the Module name in all lower case, with words separated by the '-' char.
 	 * 
 	 * Example: 'alarm-client'
+     * @return the lower case representation of the module name with '-' as word separator.
 	 */
     public String getLowerCaseNameWithHyphen() {
     	return lowerCaseNameWithHyphen;
@@ -95,8 +99,8 @@ public class ModuleCharacteristics {
     }
     
     private void constructCamelCaseStrings() {
-    	StringBuffer upperCamelCaseSB = new StringBuffer();
-    	StringBuffer lowerCamelCaseSB = new StringBuffer();
+    	StringBuilder upperCamelCaseSB = new StringBuilder();
+    	StringBuilder lowerCamelCaseSB = new StringBuilder();
     	StringTokenizer st = new StringTokenizer(lowerCaseNameWithHyphen, "-");
     	boolean firstWord = true;
     	while (st.hasMoreElements()) {

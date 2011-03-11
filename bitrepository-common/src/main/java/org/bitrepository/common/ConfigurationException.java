@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitrepository Protocol
+ * bitrepository-common
  * 
  * $Id$
  * $HeadURL$
@@ -22,24 +22,25 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.exceptions;
+package org.bitrepository.common;
 
 /**
- * Throw if something as gone wrong in a attempt to interact with the coorination layer
+ * Thrown when problems are encountered with accessing a Bitrepository configuration
  */
 @SuppressWarnings("serial")
-public class CoordinationLayerException extends RuntimeException {
-
-	public CoordinationLayerException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
-	}
-
-	public CoordinationLayerException(String arg0) {
-		super(arg0);
-	}
-
-	public CoordinationLayerException(Throwable arg0) {
-		super(arg0);
-	}
-	
+public class ConfigurationException extends RuntimeException {
+    /**
+     * Constructor for this exception based on a causing exception and described by a message.
+     * @param message The message for the exception.
+     */
+    public ConfigurationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+    /**
+     * Constructor for this exception based on a text message.
+     * @param message The message for the exception.
+     */
+    public ConfigurationException(String message) {
+        super(message);
+    }
 }

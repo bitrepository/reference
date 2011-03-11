@@ -354,8 +354,8 @@ public class MockupXmlDocument {
 	        throws Exception {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-		factory.setSchema(schemaFactory.newSchema(
-			    new Source[] {new StreamSource("src/main/resources/ClientToPillarMessages.xsd")}));
+//		factory.setSchema(schemaFactory.newSchema(
+//			    new Source[] {new StreamSource("src/main/resources/ClientToPillarMessages.xsd")}));
 
 		SAXReader reader = new SAXReader(factory.newSAXParser().getXMLReader());
 		reader.setErrorHandler(new SimpleErrorHandler());

@@ -54,7 +54,7 @@
  *
  *  *
  * All methods may throw
- * {@link org.bitrepository.protocol.exceptions.CoordinationLayerException}
+ * {@link org.bitrepository.protocol.CoordinationLayerException}
  * in case of faults.
  */
 package org.bitrepository.protocol;
