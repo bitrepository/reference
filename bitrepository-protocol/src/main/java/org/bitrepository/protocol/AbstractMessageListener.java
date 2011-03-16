@@ -61,8 +61,8 @@ public abstract class AbstractMessageListener implements MessageListener {
     private void reportUnsupported(Object message) {
 
         try {
-            log.warn("Received unsupported message '{}'", MessageFactory
-                    .extractMessage(message));
+            log.warn("Received unsupported message '{}'", message.getClass() +
+                    MessageFactory.extractMessage(message));
         } catch (JAXBException e) {
             log.warn("Received unsupported message of type '{}', "
                              + "which could not be serialized as XML.\n{}",

@@ -112,7 +112,10 @@ public class GetClient {
     /**
      * Retrieve a given file as fast as possible.
      * Starts by requesting the time for delivery of the file to the relevant
-     * pillars. When these pillars have answered, the fastest (lowest 
+     * pillars.
+     *
+     * TODO Move explanation (not this method)
+     * When these pillars have answered, the fastest (lowest
      * delivery time) is chosen and a request for delivery is sent.
      * 
      * TODO handle the case when a given pillar does not answer within a 
@@ -152,6 +155,7 @@ public class GetClient {
         
         // send the message.
         messageBus.sendMessage(queue, msg);
+        // TODO send request to general topic
         
         // make a list with all the pillars to request for fastest delivery 
         // of this file. Set them to outstanding.
