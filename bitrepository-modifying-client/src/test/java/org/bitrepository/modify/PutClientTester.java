@@ -34,6 +34,7 @@ import javax.jms.JMSException;
 
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileResponse;
 import org.bitrepository.protocol.AbstractMessageListener;
@@ -44,12 +45,17 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+/**
+ * Tester class for testing the PutClient functionality. 
+ * Is currently set up to use the SimplePutClient, but whichever implementation
+ * of the PutClient should pass the same tests.
+ *
+ */
 public class PutClientTester extends ExtendedTestCase {
+    /** The time for waiting */
+    private static final int WAITING_TIME_FOR_MESSAGE = 3000;
 
-    private static final int WAITING_TIME_FOR_MESSAGE = 1000;
-
-//    @Test(groups={"regressionstest"})
-    @Test(groups={"test-when-configuration-done"})
+    @Test(groups={"regressionstest"})
     public void findPillarsToPutTester() throws Exception {
         addDescription("Tests whether a specific message is sent by the GetClient");
         String dataId = "dataId1";
@@ -75,6 +81,7 @@ public class PutClientTester extends ExtendedTestCase {
         addStep("Verify that the PutClient has sent a message for identifying "
                 + "the pillars for put.", "Should be OK.");
         
+        Assert.assertNotNull(listener.getMessage());
         Assert.assertEquals(listener.getMessageClass().getName(),
                 IdentifyPillarsForPutFileRequest.class.getName());
         IdentifyPillarsForPutFileRequest identify 
@@ -135,7 +142,14 @@ public class PutClientTester extends ExtendedTestCase {
         Assert.assertTrue(outputFile.isFile());
         Assert.assertEquals(BigInteger.valueOf(outputFile.length()), 
                 put.getExpectedFileSize(), "Different size than expected!");
-        
+
+        addStep("Check whether the file is missing for this pillar.",
+                "Should be part of the outstanding.");
+        Assert.assertTrue(pc.outstandings.isOutstanding(dataId), 
+                "The dataId should be marked as outstanding.");
+        Assert.assertTrue(pc.outstandings.isOutstandingAtPillar(dataId, pillarId),
+                "The dataId should be marked as outstanding for the pillar.");
+
         addStep("Send PutFileResponse for the request.", "Should be handled.");
         PutFileResponse response = new PutFileResponse();
         response.setCorrelationID(put.getCorrelationID());
@@ -158,6 +172,46 @@ public class PutClientTester extends ExtendedTestCase {
             }
         }
         
+        addStep("Check whether the file is still missing for this pillar.",
+                "Should be part of the outstanding.");
+        Assert.assertTrue(pc.outstandings.isOutstanding(dataId), 
+                "The dataId should be marked as outstanding.");
+        Assert.assertTrue(pc.outstandings.isOutstandingAtPillar(dataId, pillarId),
+                "The dataId should be marked as outstanding for the pillar.");
+
+        addStep("Send PutFileComplete for the request.", "Should be handled.");
+        PutFileComplete complete = new PutFileComplete();
+        complete.setCorrelationID(put.getCorrelationID());
+        complete.setFileAddress(put.getFileAddress());
+        complete.setFileID(put.getFileID());
+        complete.setPillarID(pillarId);
+        complete.setSlaID(slaId);
+        complete.setMinVersion((short) 1);
+        complete.setVersion((short) 1);
+        complete.setCompleteCode("1");
+        complete.setCompleteText("I'm finished 'just putting'. "
+                + "When do we come to the action?");
+        // Ignore the salt!
+        
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(
+                pc.queue, complete);
+        
+        synchronized(this) {
+            try {
+                wait(WAITING_TIME_FOR_MESSAGE);
+            } catch (Exception e) {
+                // print, but ignore!
+                e.printStackTrace();
+            }
+        }
+        
+        // verify that it is marked as complete
+        addStep("Check whether the file is still missing for this pillar.",
+                "Should be part of the outstanding.");
+        Assert.assertFalse(pc.outstandings.isOutstandingAtPillar(dataId, pillarId),
+                "The dataId should be marked as outstanding for the pillar.");
+        Assert.assertFalse(pc.outstandings.isOutstanding(dataId), 
+                "The dataId should be marked as outstanding.");
     }
 
     @SuppressWarnings("rawtypes")
@@ -188,6 +242,8 @@ public class PutClientTester extends ExtendedTestCase {
             } catch (Exception e) {
                 Assert.fail("Should not throw an exception: ", e);
             }
+            // awaken the tester
+            Thread.currentThread().notifyAll();
         }
 
         @Override

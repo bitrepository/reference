@@ -27,6 +27,8 @@ package org.bitrepository.modify;
 import java.io.File;
 
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
+import org.bitrepository.bitrepositorymessages.PutFileComplete;
+import org.bitrepository.bitrepositorymessages.PutFileResponse;
 
 public abstract class PutClientAPI {
 
@@ -38,7 +40,26 @@ public abstract class PutClientAPI {
      * the SLA).
      * @param slaId The ID for the SLA which the file belongs to.
      */
-    public abstract void putFileWithId(File file, String fileId, String slaId);
+    abstract void putFileWithId(File file, String fileId, String slaId);
+    
+    /**
+     * Method for handling a PutFileResponse. This message tells how far in the
+     * storage process the given pillar is. 
+     * It is possible for the pillars have a storage procedure which involves
+     * several steps before the file is properly stored. After each step one of
+     * these PutFileResponse messages should be sent, and only when the storage
+     * process is finished should the final PutFileComplete message be sent.
+     * 
+     * @param msg The PutFileResponse to be handled.
+     */
+    abstract void handlePutResponse(PutFileResponse msg);
+    
+    /**
+     * Method for handling a PutFileComplete message.
+     * 
+     * @param msg The PutFileComplete message to be handled.
+     */
+    abstract void handlePutComplete(PutFileComplete msg);
     
     /**
      * Method for handling the IdentifyPillarsForPutFileReply messages.

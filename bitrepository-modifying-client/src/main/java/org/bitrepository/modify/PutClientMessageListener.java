@@ -25,6 +25,7 @@
 package org.bitrepository.modify;
 
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
+import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileResponse;
 import org.bitrepository.protocol.AbstractMessageListener;
 import org.slf4j.Logger;
@@ -58,6 +59,12 @@ public class PutClientMessageListener extends AbstractMessageListener {
     @Override
     public void onMessage(PutFileResponse msg) {
         log.debug("Received PutFileResponse message.");
-        
+        client.handlePutResponse(msg);
     }
+    
+    @Override
+    public void onMessage(PutFileComplete msg) {
+        log.debug("Received PutFileComplete message.");
+        client.handlePutComplete(msg);
+    }    
 }
