@@ -25,6 +25,16 @@
     	<artifactId>jaccept-core</artifactId>
     	<version>0.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-protocol</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-message-xml</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <build>
     <resources>
