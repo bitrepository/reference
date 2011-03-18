@@ -24,7 +24,6 @@
     <module>bitrepository-modifying-client</module>
     <module>bitrepository-alarm-client</module>
     <module>bitrepository-integrity-client</module>
-    <module>bitrepository-audit-client</module>
     <module>bitrepository-monitoring-service</module>
     <module>bitrepository-integration</module>
   </modules>
