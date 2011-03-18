@@ -26,6 +26,7 @@ package org.bitrepository.protocol.http;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,6 +34,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.bitrepository.protocol.CoordinationLayerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,10 +102,8 @@ public final class HTTPFileExchange {
      * @param dataFile The file to be put into the http-server.
      * @return The url for the file, when it has been placed onto the 
      * http-server.
-     * @throws IOException If a problem occurs with the connection to the 
-     * http-server or during accessing the file.
      */
-    public static URL uploadToServer(File dataFile) throws IOException {
+    public static URL uploadToServer(File dataFile) {
         if(dataFile == null) {
             throw new IllegalArgumentException("The datafile may not be null.");
         }
@@ -111,19 +111,25 @@ public final class HTTPFileExchange {
             throw new IllegalArgumentException("The datafile '" 
                     + dataFile.getPath() + "' is not a proper file.");
         }
-        // generate the URL for the file.
-        URL url = getURL(dataFile.getName());
         
-        FileInputStream fis = null;
         try {
-            fis = new FileInputStream(dataFile);
-            performUpload(fis, url);
-        } finally {
-            if(fis != null) {
-                fis.close();
+            // generate the URL for the file.
+            URL url = getURL(dataFile.getName());
+
+            FileInputStream fis = null;
+            try {
+                fis = new FileInputStream(dataFile);
+                performUpload(fis, url);
+            } finally {
+                if(fis != null) {
+                    fis.close();
+                }
             }
+            return url;
+        } catch (IOException e) {
+            throw new CoordinationLayerException("Could not upload the file '"
+                    + dataFile.getAbsolutePath() + "' to the server." , e);
         }
-        return url;
     }
     
     /**
@@ -137,6 +143,43 @@ public final class HTTPFileExchange {
      * data.
      */
     public static void downloadFromServer(OutputStream out, URL url) 
+            throws IOException {
+        performDownload(out, url);
+    }
+    
+    /**
+     * Method for downloading a file at a given adress.
+     *  
+     * @param outputFile The file where the data at the address should be 
+     * placed.
+     * @param fileAddress The address where the data should be downloaded from.
+     */
+    public static void downloadFromServer(File outputFile, String fileAddress) {
+        try {
+            // retrieve the url and the outputstream for the file.
+            URL url = new URL(fileAddress);
+            FileOutputStream fos = new FileOutputStream(outputFile);
+            
+            // download the file.
+            performDownload(fos, url);
+        } catch (IOException e) {
+            throw new CoordinationLayerException("Could not download data "
+                    + "from '" + fileAddress + "' to the file '" 
+                    + outputFile.getAbsolutePath() + "'.", e);
+        }
+    }
+    
+    /**
+     * Retrieves the data from a given url and puts it onto a given 
+     * outputstream. It has to be a 'HTTP' url, since the data is retrieved 
+     * through a HTTP-request.
+     * 
+     * @param out The output stream to put the data.
+     * @param url The url for where the data should be retrieved.
+     * @throws IOException If any problems occurs during the retrieval of the 
+     * data.
+     */
+    private static void performDownload(OutputStream out, URL url) 
             throws IOException {
         if(out == null || url == null) {
             throw new IllegalArgumentException("OutputStream out: '" + out
