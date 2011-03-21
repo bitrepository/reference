@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   #%L
   Bitmagasin protokol
@@ -24,15 +24,10 @@
   #L%
   -->
 
-<bro:GetFileIDsComplete version="1" minVersion="1"  xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd' xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
+<bro:GetFileIDsRequest version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd' xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
+  <ResultAddress>http://myServer/myPlace/Myfile</ResultAddress>
   <PillarID>MyPillar</PillarID>
-  <CompleteCode>OK</CompleteCode>
-  <CompleteText>successfull completion</CompleteText>
-  <NoOfItems>1</NoOfItems>
-     <FileID>MydataId1</FileID>
-     <CalculationTime>2011-02-17T09:47:00</CalculationTime>
-</bro:GetFileIDsComplete>
+</bro:GetFileIDsRequest>

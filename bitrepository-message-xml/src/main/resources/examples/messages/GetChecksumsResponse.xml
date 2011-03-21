@@ -24,7 +24,7 @@
   #L%
   -->
 
-<bro:GetChecksumsRequest version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd' xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
+<bro:GetChecksumsResponse version="1" minVersion="1"  xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd' xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
@@ -34,7 +34,9 @@
   </FileIDs>
   <FileChecksumType>MD5</FileChecksumType>
   <SaltParameter>X</SaltParameter>
-  <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
+  <ResultAddress>http://myServer/myPlace/Myfile</ResultAddress>
   <PillarID>MyPillar</PillarID>
   <PillarChecksumType>MD5</PillarChecksumType>
-</bro:GetChecksumsRequest>
+  <ResponseCode>OK</ResponseCode>
+  <ResponseText>Message request has been received and is expected to be met successfully</ResponseText>
+</bro:GetChecksumsResponse>

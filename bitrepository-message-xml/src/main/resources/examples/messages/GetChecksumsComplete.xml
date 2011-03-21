@@ -36,7 +36,7 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   </FileIDs>
   <FileChecksumType>MD5</FileChecksumType>
   <SaltParameter>X</SaltParameter>
-  <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
+  <ResultAddress>http://myServer/myPlace/Myfile</ResultAddress>
   <PillarID>MyPillar</PillarID>
   <PillarChecksumType>MD5</PillarChecksumType>
   <CompleteCode>OK</CompleteCode>

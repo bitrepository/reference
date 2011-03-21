@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
   Bitmagasin protokol
@@ -24,19 +24,15 @@
   #L%
   -->
 
-<bro:GetChecksumsResponse version="1" minVersion="1"  xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd' xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
+<bro:GetFileIDsComplete version="1" minVersion="1"  xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd' xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <FileIDs>
-    <FileID>MyDataID1</FileID>
-    <FileID>MyDataID2</FileID>
-  </FileIDs>
-  <FileChecksumType>MD5</FileChecksumType>
-  <SaltParameter>X</SaltParameter>
-  <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
+  <ResultAddress>http://myServer/myPlace/Myfile</ResultAddress>
   <PillarID>MyPillar</PillarID>
-  <PillarChecksumType>MD5</PillarChecksumType>
-  <ResponseCode>OK</ResponseCode>
-  <ResponseText>Message request has been received and is expected to be met successfully</ResponseText>
-</bro:GetChecksumsResponse>
+  <CompleteCode>OK</CompleteCode>
+  <CompleteText>successfull completion</CompleteText>
+  <NoOfItems>1</NoOfItems>
+     <FileID>MydataId1</FileID>
+     <CalculationTime>2011-02-17T09:47:00</CalculationTime>
+</bro:GetFileIDsComplete>

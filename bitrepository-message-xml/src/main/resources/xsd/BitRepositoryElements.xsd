@@ -249,6 +249,12 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
+  <xs:element name="ResultAddress" type="Address_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Address (e.g. in form of an URL) for where result data can be found
+    </xs:documentation></xs:annotation>
+  </xs:element>
+  
   <xs:element name="SaltParameter" type="SaltParameter_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     An extra salt to be added in the checksum calculation

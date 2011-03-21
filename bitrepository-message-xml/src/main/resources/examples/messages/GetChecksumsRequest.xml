@@ -24,12 +24,17 @@
   #L%
   -->
 
-<bro:GetFileIDsResponse version="1" minVersion="1"  xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd' xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
+<bro:GetChecksumsRequest version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd' xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
+  <FileIDs>
+    <FileID>MyDataID1</FileID>
+    <FileID>MyDataID2</FileID>
+  </FileIDs>
+  <FileChecksumType>MD5</FileChecksumType>
+  <SaltParameter>X</SaltParameter>
+  <ResultAddress>http://myServer/myPlace/Myfile</ResultAddress>
   <PillarID>MyPillar</PillarID>
-  <ResponseCode>ERR_NOUND</ResponseCode>
-  <ResponseText>Message request not understood</ResponseText>
-</bro:GetFileIDsResponse>
+  <PillarChecksumType>MD5</PillarChecksumType>
+</bro:GetChecksumsRequest>

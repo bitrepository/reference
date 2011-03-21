@@ -726,7 +726,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:FileAddress" minOccurs="0" maxOccurs="1" > 
+        <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where checksums must be delivered via data transmission.
           In cases where the address is not given, the result will be given in the GetChecksumsComplete message
@@ -785,7 +785,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:FileAddress" minOccurs="0" maxOccurs="1" >
+        <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where checksums will be delivered
           </xs:documentation></xs:annotation>
@@ -854,9 +854,12 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:FileAddress" minOccurs="0" maxOccurs="1" >
+        <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Address (e.g. in form of an URL) for where checksums has been delivered (if completed)
+          Address (e.g. in form of an URL) for where result data has been delivered (if completed)
+          Note that this field will NOT be specified if the result is included in the
+          ChecksumsData below. This rule is not directly enforced by the xsd definition 
+          because it would add complexity and since violation to rule while not do any harm.
           </xs:documentation></xs:annotation>
         </xs:element>
         
@@ -886,16 +889,22 @@
 
         <xs:element ref="bre:NoOfItems" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
-          The number of checksums included, if given in this message instead of via data transfer
+          The number of checksums included (as part of result), 
+          if given in this message instead of via data transfer
+          Note that this field will NOT be specified if ResultAddress is included. 
+          This rule is not directly enforced by the xsd definition 
+          because it would add complexity and since violation to rule while not do any harm.
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:group ref="bre:ChecksumsData" minOccurs="0" maxOccurs="unbounded" > 
           <xs:annotation><xs:documentation xml:lang="en">
           List of data for checksums in result, if given in this message instead of via data transfer
+          Note that this field will NOT be specified if ResultAddress is included. 
+          This rule is not directly enforced by the xsd definition 
+          because it would add complexity and since violation to rule while not do any harm.
           </xs:documentation></xs:annotation>
         </xs:group>
-
       </xs:sequence>
 
       <!-- Attributes with information of message version for version control -->
@@ -985,7 +994,7 @@
           </xs:documentation></xs:annotation>
         </xs:group>
       
-        <xs:element ref="bre:FileAddress" minOccurs="0" maxOccurs="1" > 
+        <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where data ids must be delivered via data transmission
           In cases where the address is not given, the result will be given in the GetFileIdsComplete message
@@ -1021,7 +1030,7 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <xs:element ref="bre:FileAddress" minOccurs="0" maxOccurs="1" >
+        <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where data will be delivered
           </xs:documentation></xs:annotation>
@@ -1066,9 +1075,12 @@
           </xs:documentation></xs:annotation>
         </xs:group>
         
-        <xs:element ref="bre:FileAddress" minOccurs="0" maxOccurs="1" >
+        <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Address (e.g. in form of an URL) for where data has been delivered (if completed)
+          Address (e.g. in form of an URL) for where result data has been delivered (if completed)
+          Note that this field will NOT be specified if the result is included in the
+          FileIDsData below. This rule is not directly enforced by the xsd definition 
+          because it would add complexity and since violation to rule while not do any harm.
           </xs:documentation></xs:annotation>
         </xs:element>
         
@@ -1093,12 +1105,18 @@
         <xs:element ref="bre:NoOfItems" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           The number of checksums included, if given in this message instead of via data transfer
+          Note that this field will NOT be specified if ResultAddress is included. 
+          This rule is not directly enforced by the xsd definition 
+          because it would add complexity and since violation to rule while not do any harm.
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:group ref="bre:FileIDsData" minOccurs="0" maxOccurs="unbounded" > 
           <xs:annotation><xs:documentation xml:lang="en">
           List of data for data ids in result, if given in this message instead of via data transfer
+          Note that this field will NOT be specified if ResultAddress is included. 
+          This rule is not directly enforced by the xsd definition 
+          because it would add complexity and since violation to rule while not do any harm.
           </xs:documentation></xs:annotation>
         </xs:group>
 
