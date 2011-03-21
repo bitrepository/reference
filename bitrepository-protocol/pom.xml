@@ -54,7 +54,7 @@
 						<configuration>
 							<includeGroupIds>org.bitrepository</includeGroupIds>
 							<includeArtifactIds>bitrepository-message-xml</includeArtifactIds>
-							<includes>xsd/*.xsd, examples/*.xml</includes>
+							<includes>examples/messages/*.xml,xsd/*.xsd</includes>
 							<outputDirectory>${project.build.directory}/message-xml</outputDirectory>
 						</configuration>
 					</execution>

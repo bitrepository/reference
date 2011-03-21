@@ -126,7 +126,7 @@ public class MessageCreationTest extends ExtendedTestCase {
      * @return
      */
     private String loadXMLExample(String messageName) throws Exception {
-        String filePath = XML_MESSAGE_DIR + "examples/" + messageName + ".xml";
+        String filePath = XML_MESSAGE_DIR + "examples/messages/" + messageName + ".xml";
         byte[] buffer = new byte[(int) new File(filePath).length()];
         FileInputStream f = new FileInputStream(filePath);
         f.read(buffer);
