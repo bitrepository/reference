@@ -35,18 +35,16 @@ public interface GetFileIDsClient {
      * Identify potential pillars for retrieving File IDs from pillar.
      *
      * @param slaID The ID of a collection.
-     * @param fileIDs A pattern for file IDs in that collection.
      * @return A list of IDs of pillars that could respond to this request.
      */
-    List<String> identifyPillarsForGetFileIDs(String slaID, String fileIDs);
+    List<String> identifyPillarsForGetFileIDs(String slaID);
 
     /**
      * Retrieve a set of File IDs from pillar.
      *
      * @param slaID The ID of a collection.
-     * @param fileIDs A pattern for file IDs in that collection.
-     * @param fileIDs A pattern for file IDs
+     * @param pillarID The ID of the pillar
      * @return A file containing a set of File IDs. The file is in XML format.
      */
-    File getFileIDs(String slaID, String fileIDs, String pillarID);
+    File getFileIDs(String slaID, String pillarID);
 }
