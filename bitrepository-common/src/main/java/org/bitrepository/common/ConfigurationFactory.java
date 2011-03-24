@@ -32,36 +32,19 @@ import javax.xml.bind.JAXBException;
  * General class for instantiating configurations based on xml files
  */
 public final class ConfigurationFactory {
-    /** The <code>ConfigurationFactory</code> this suffix to construct the '${module} + 
-     * CONFIGURATION_FILE_SUFFIX_PROPERTY' property used when trying to find a configuration file.
-     */
-    public static final String CONFIGURATION_FILE_PROPERTY_SUFFIX = ".configuration.file";
-    /**
-     * The <code>ConfigurationFactory</code> looks for configuration files here.
-     */
-    public static final String CONFIGURATION_DIR_PROPERTY = "configuration.dir";
-    /**
-     * The 'unofficial' last place to look for a configuration file, which is used during development. The test 
-     * configuration can be found here after a <code>mvn compile</code> has been run.
-     */
-    public static final String TEST_CONFIGURATION_PATH = "target/test-classes/configuration/xml";
-    
-    /**
-     * This is where the <code>\ConfigurationFaction</code> will look for the configuration file, unless another 
-     * location has been indicated.
-     */
-    public static final String DEFAULT_CONFIGURATION_DIR = "configuration/";
 
     /**
      * This is configuration file the <code>\ConfigurationFactory</code> will look , unless another name has been 
      * specified.
      */
-    public static final String DEFAULT_CONFIGURATION_FILENAME = "configuration/xml/%s-configuration.xml";
+    public static final String DEFAULT_CONFIGURATION_CLASSPATH_LOCATION = 
+        "configuration/xml/%s-configuration.xml";
     
     /**
      * This is test configuration file the <code>ConfigurationFactory</code> will look for
      */
-    public static final String DEFAULT_TEST_CONFIGURATION_FILENAME = "configuration/xml/%s-test-configuration.xml";
+    public static final String DEFAULT_TEST_CONFIGURATION_CLASSPATH_LOCATION = 
+        "configuration/xml/%s-test-configuration.xml";
     
     /**
      * Loads the configuration for a module. 
@@ -83,13 +66,12 @@ public final class ConfigurationFactory {
      */
     public <T> T loadConfiguration(ModuleCharacteristics moduleCharacteristics, Class<T> configurationClass) {
 
-        String defaultFileName = String.format(DEFAULT_CONFIGURATION_FILENAME, 
+        String defaultFileName = String.format(DEFAULT_CONFIGURATION_CLASSPATH_LOCATION, 
                 moduleCharacteristics.getLowerCaseName());
-        String defaultTestFileName = String.format(DEFAULT_TEST_CONFIGURATION_FILENAME, 
+        String defaultTestFileName = String.format(DEFAULT_TEST_CONFIGURATION_CLASSPATH_LOCATION, 
                         moduleCharacteristics.getLowerCaseName());
 
-        InputStream configStream = null;
-        configStream = ClassLoader.getSystemResourceAsStream(defaultTestFileName);
+        InputStream configStream = ClassLoader.getSystemResourceAsStream(defaultTestFileName);
         if (configStream == null) {
             configStream = ClassLoader.getSystemResourceAsStream(defaultFileName);
         }

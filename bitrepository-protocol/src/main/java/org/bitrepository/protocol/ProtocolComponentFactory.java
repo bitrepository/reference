@@ -52,11 +52,10 @@ public final class ProtocolComponentFactory {
      * The singleton constructor
      */
     private ProtocolComponentFactory() {
-        moduleCharacteristics = new ModuleCharacteristics("protocol");
     }
 
     // --------------------- Components-----------------------
-    private final ModuleCharacteristics moduleCharacteristics;
+    private static final ModuleCharacteristics MODULE_CHARACTERISTICS = new ModuleCharacteristics("protocol");
     private ProtocolConfiguration protocolConfiguration;
     private MessageBus messagebus;
 
@@ -65,11 +64,11 @@ public final class ProtocolComponentFactory {
      * @return A <code>ModuleCharacteristics</code> object defining the generic characteristics of this module 
      */
     public ModuleCharacteristics getModuleCharacteristics() {
-        return moduleCharacteristics;
+        return MODULE_CHARACTERISTICS;
     }
 
     /**
-     * Gets you an <code>MessageBus</code> instance for accessing to the Bitrepositorys message bus
+     * Gets you an <code>MessageBus</code> instance for accessing the Bitrepositorys message bus
      */
     public MessageBus getMessageBus() {
         if (messagebus == null) {

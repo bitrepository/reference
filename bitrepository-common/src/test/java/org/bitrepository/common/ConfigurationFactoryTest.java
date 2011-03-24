@@ -39,15 +39,19 @@ import org.testng.annotations.Test;
  */
 public class ConfigurationFactoryTest extends ExtendedTestCase {
     private ConfigurationFactory configurationFactory = new ConfigurationFactory();
+    private static final String FS = File.separator;
 	private static final ModuleCharacteristics moduleCharacteristics = new ModuleCharacteristics("common");
 
 	private static final File ORIGINAL_TEST_CONFIG_LOCATION = 
-	    new File("target/test-classes/configuration/xml/common-test-configuration.xml");
+	    new File("target" + FS + "test-classes" + FS + "configuration" + 
+	            FS + "xml" + FS + "common-test-configuration.xml");
 	private static final File RENAMED_TEST_CONFIG_LOCATION = 
-	    new File("target/test-classes/configuration/xml/common-test-configuration.xml.orig");
+	    new File("target" + FS + "test-classes" + FS + "configuration" + 
+	            FS + "xml" + FS + "common-test-configuration.xml.orig");
 	private static final File ORIGINAL_CONFIG_LOCATION = 
-        new File("target/classes/configuration/xml/common-configuration.xml");
-	
+        new File("target" + FS + "classes/configuration" + FS + "xml" + FS + "common-configuration.xml");
+	private static final File ORIGINAL_CONFIG_DIR = 
+	    new File("target" + FS + "classes" + FS + "configuration" + FS + "xml");
 	
 	private static final CommonConfiguration referenceConfig = createDefaultConfiguration();
 	
@@ -60,8 +64,7 @@ public class ConfigurationFactoryTest extends ExtendedTestCase {
 	@BeforeMethod (alwaysRun=true)
 	public final void setUp() {     
 	    ORIGINAL_TEST_CONFIG_LOCATION.renameTo(RENAMED_TEST_CONFIG_LOCATION);
-	    File originalConfigDir = new File("target/classes/configuration/xml");
-	    originalConfigDir.mkdirs();
+	    ORIGINAL_CONFIG_DIR.mkdirs();
 	}
 
 	/**
@@ -92,7 +95,7 @@ public class ConfigurationFactoryTest extends ExtendedTestCase {
 	        // That apparently worked
 	    }
 
-        addStep("Attempt to load the test configuration after it has been rename to the correct name for a test " +
+        addStep("Attempt to load the test configuration after it has been renamed to the correct name for a test " +
         		"configuration", 
         "The configuration should be loaded sucessfully");
 	    RENAMED_TEST_CONFIG_LOCATION.renameTo(ORIGINAL_TEST_CONFIG_LOCATION);

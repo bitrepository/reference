@@ -34,10 +34,10 @@ import javax.xml.bind.Unmarshaller;
  * Provides extra JAXB related utilities
  */
 public final class JaxbHelper {
-    
+
     /** Hides constructor for this utility class to prevent instantiation */
     private JaxbHelper() {}
-    
+
     /**
      * Uses JAXB to create a object representation of an xml file. The class used to load the XML has been generated
      * based on the xsd for the xml.
@@ -47,12 +47,8 @@ public final class JaxbHelper {
      * @throws JAXBException The attempt to load the xml into a new object representation failed
      */
     public static <T> T loadXml(Class<T> xmlroot, InputStream inputStream) throws JAXBException {
-        try {
-            JAXBContext context = JAXBContext.newInstance(xmlroot);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-            return xmlroot.cast(unmarshaller.unmarshal(inputStream));
-        } catch(JAXBException jex) {
-            throw new JAXBException("Unable to load xml from " + inputStream, jex);
-        } 
+        JAXBContext context = JAXBContext.newInstance(xmlroot);
+        Unmarshaller unmarshaller = context.createUnmarshaller();
+        return xmlroot.cast(unmarshaller.unmarshal(inputStream));
     }
 }
