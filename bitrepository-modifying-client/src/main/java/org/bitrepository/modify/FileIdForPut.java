@@ -24,10 +24,10 @@
  */
 package org.bitrepository.modify;
 
+import org.bitrepository.protocol.ProtocolComponentFactory;
+
 import java.io.File;
 import java.net.URL;
-
-import org.bitrepository.protocol.http.HTTPFileExchange;
 
 /**
  * Class for keeping track of the data involved in putting a specific file.
@@ -92,7 +92,7 @@ public class FileIdForPut {
         if(url == null) {
             try {
                 // upload the file and store the URL.
-                url = HTTPFileExchange.uploadToServer(file);
+                url = ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(file);
             } catch (Exception e) {
                 throw new ModifyException("Could not upload the file '"
                         + fileId + "'.", e);

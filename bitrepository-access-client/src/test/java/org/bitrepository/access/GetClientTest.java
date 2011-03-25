@@ -24,16 +24,16 @@
  */
 package org.bitrepository.access;
 
+import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.AbstractMessageListener;
-import org.bitrepository.protocol.MessageFactory;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.http.HTTPFileExchange;
 import org.jaccept.structure.ExtendedTestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public class GetClientTest extends ExtendedTestCase {
     
     private Logger log = LoggerFactory.getLogger(GetClientTest.class);
 
-    private static int WAITING_TIME_FOR_MESSAGE = 1000;
+    private static final int WAITING_TIME_FOR_MESSAGE = 1000;
 
     @Test(groups = {"test first"})
     public void retrieveFileFastestTest() throws Exception {
@@ -93,8 +93,9 @@ public class GetClientTest extends ExtendedTestCase {
                 IdentifyPillarsForGetFileRequest.class.getName(), 
                 "The message should be of the type '" 
                 + IdentifyPillarsForGetFileRequest.class.getName() + "'");
-        IdentifyPillarsForGetFileRequest identifyMessage = MessageFactory.createMessage(
-                IdentifyPillarsForGetFileRequest.class, listener.getMessage());
+        IdentifyPillarsForGetFileRequest identifyMessage = org.bitrepository.common.JaxbHelper
+                .loadXml(IdentifyPillarsForGetFileRequest.class,
+                         new ByteArrayInputStream(listener.getMessage().getBytes()));
         Assert.assertEquals(identifyMessage.getFileID(), dataId);
 
         addStep("Sending a reply for the message.", "Should be handled by the "
@@ -131,8 +132,8 @@ public class GetClientTest extends ExtendedTestCase {
         // The test fails here (2011-03-16). The TestMessageListener does not
         // receive the message...
 
-        GetFileRequest getMessage = MessageFactory.createMessage(
-                GetFileRequest.class, listener.getMessage());
+        GetFileRequest getMessage = org.bitrepository.common.JaxbHelper
+                .loadXml(GetFileRequest.class, new ByteArrayInputStream(listener.getMessage().getBytes()));
         Assert.assertEquals(getMessage.getFileID(), dataId);
         Assert.assertEquals(getMessage.getPillarID(), pillarId);
         
@@ -163,7 +164,7 @@ public class GetClientTest extends ExtendedTestCase {
         addStep("Uploading the file to the default HTTPServer.", 
                 "Should be allowed.");
         File uploadFile = new File("src/test/resources/test.txt");
-        URL url = HTTPFileExchange.uploadToServer(uploadFile);
+        URL url = ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(uploadFile);
         
         addStep("Send a complete upload message with the URL", "Should be "
                 + "caugth by the GetClient.");
@@ -224,8 +225,8 @@ public class GetClientTest extends ExtendedTestCase {
         Assert.assertNotNull(listener.messageClass);
         Assert.assertEquals(listener.getMessageClass().getName(), 
                 IdentifyPillarsForGetFileRequest.class.getName());
-        IdentifyPillarsForGetFileRequest request = MessageFactory.createMessage(
-                IdentifyPillarsForGetFileRequest.class, listener.message);
+        IdentifyPillarsForGetFileRequest request = org.bitrepository.common.JaxbHelper
+                .loadXml(IdentifyPillarsForGetFileRequest.class, new ByteArrayInputStream(listener.message.getBytes()));
         Assert.assertEquals(request.getFileID(), dataId);
         Assert.assertEquals(request.getSlaID(), slaId);
         TimeMeasureTYPE fastTime = new TimeMeasureTYPE();
@@ -275,8 +276,8 @@ public class GetClientTest extends ExtendedTestCase {
         addStep("Verify that it has chosen the fast pillar.", "");
         Assert.assertEquals(listener.getMessageClass().getName(), 
                 GetFileRequest.class.getName());
-        GetFileRequest getRequest = MessageFactory.createMessage(
-                GetFileRequest.class, listener.getMessage());
+        GetFileRequest getRequest = org.bitrepository.common.JaxbHelper
+                .loadXml(GetFileRequest.class, new ByteArrayInputStream(listener.getMessage().getBytes()));
         Assert.assertEquals(getRequest.getFileID(), dataId);
         Assert.assertEquals(getRequest.getPillarID(), fastPillar);
         
@@ -309,7 +310,7 @@ public class GetClientTest extends ExtendedTestCase {
 
         public void onMessage(Object msg) {
             try {
-                message = MessageFactory.extractMessage(msg);
+                message = JaxbHelper.serializeToXml(msg);
                 messageClass = msg.getClass();
                 log.debug("TestMessageListener onMessage: " + messageClass);
             } catch (Exception e) {

@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol;
 
+import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.GetChecksumsComplete;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
@@ -57,7 +58,9 @@ public class MessageCreationTest extends ExtendedTestCase {
         	addStep("Creating " + messageName + " message" , 
         			"The test is able to instantiate message based on the example in the message-xml modules");
             String xmlMessage = loadXMLExample(messageName);
-			MessageFactory.createMessage(GetChecksumsComplete.class, xmlMessage);
+            org.bitrepository.common.JaxbHelper.loadXml(
+                    Class.forName(GetChecksumsComplete.class.getPackage().getName() + "." + messageName),
+                    new ByteArrayInputStream(xmlMessage.getBytes()));
         }
     }
 

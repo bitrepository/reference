@@ -24,6 +24,12 @@
  */
 package org.bitrepository.protocol.http;
 
+import org.bitrepository.protocol.CoordinationLayerException;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.configuration.FileExchangeConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -34,21 +40,17 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.bitrepository.protocol.CoordinationLayerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Simple interface for data transfer between an application and a HTTP server.
- * 
- * TODO read the configurations for the server where the data should be 
+ *
+ * TODO read the configurations for the server where the data should be
  * uploaded from settings.
  * 
  * @author jolf
  */
-public final class HTTPFileExchange {
+public final class HTTPFileExchange implements FileExchange {
     /** The log. */
-    private static Logger log = LoggerFactory.getLogger(HTTPFileExchange.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     /** The size of the IO buffer.*/
     private static final int IO_BUFFER_SIZE = 1024;
@@ -70,22 +72,15 @@ public final class HTTPFileExchange {
     private static final int HTTP_ERROR_CODE_BARRIER = 300;
 
     /**
-     * Private constructor to prevent use of this utility method.
+     * Initialise HTTP file exchange.
+     *
+     * @param configuration The configuration for file exchange.
      */
-    private HTTPFileExchange() { }
+    public HTTPFileExchange(FileExchangeConfiguration configuration) {
+    }
     
-    /**
-     * Put a piece of data onto a http-server and returns the url for the 
-     * location of this data.
-     * 
-     * @param in The inputstream to the data to be put onti the http-server.
-     * @param filename The name of the piece of data to be put onto the 
-     * http-server.
-     * @return The url of the location for the data on the http-server.
-     * @throws IOException If any problems occurs during the transportation of
-     * the data.
-     */
-    public static URL uploadToServer(InputStream in, String filename) 
+    @Override
+    public URL uploadToServer(InputStream in, String filename)
             throws IOException {
         if(in == null || filename == null || filename.isEmpty()) {
             throw new IllegalArgumentException("InputStream in: " + in 
@@ -96,14 +91,8 @@ public final class HTTPFileExchange {
         return url;
     }
     
-    /**
-     * Puts a given file onto a http-server.
-     * 
-     * @param dataFile The file to be put into the http-server.
-     * @return The url for the file, when it has been placed onto the 
-     * http-server.
-     */
-    public static URL uploadToServer(File dataFile) {
+    @Override
+    public URL uploadToServer(File dataFile) {
         if(dataFile == null) {
             throw new IllegalArgumentException("The datafile may not be null.");
         }
@@ -132,29 +121,14 @@ public final class HTTPFileExchange {
         }
     }
     
-    /**
-     * Retrieves the data from a given url and puts it onto a given 
-     * outputstream. It has to be a 'HTTP' url, since the data is retrieved 
-     * through a HTTP-request.
-     * 
-     * @param out The output stream to put the data.
-     * @param url The url for where the data should be retrieved.
-     * @throws IOException If any problems occurs during the retrieval of the 
-     * data.
-     */
-    public static void downloadFromServer(OutputStream out, URL url) 
+    @Override
+    public void downloadFromServer(OutputStream out, URL url)
             throws IOException {
         performDownload(out, url);
     }
     
-    /**
-     * Method for downloading a file at a given adress.
-     *  
-     * @param outputFile The file where the data at the address should be 
-     * placed.
-     * @param fileAddress The address where the data should be downloaded from.
-     */
-    public static void downloadFromServer(File outputFile, String fileAddress) {
+    @Override
+    public void downloadFromServer(File outputFile, String fileAddress) {
         try {
             // retrieve the url and the outputstream for the file.
             URL url = new URL(fileAddress);
@@ -179,7 +153,7 @@ public final class HTTPFileExchange {
      * @throws IOException If any problems occurs during the retrieval of the 
      * data.
      */
-    private static void performDownload(OutputStream out, URL url) 
+    private void performDownload(OutputStream out, URL url)
             throws IOException {
         if(out == null || url == null) {
             throw new IllegalArgumentException("OutputStream out: '" + out
@@ -204,7 +178,7 @@ public final class HTTPFileExchange {
      * transaction. Also if the response code is 300 or above, which indicates
      * that the transaction has not been successful.
      */
-    private static void performUpload(InputStream in, URL url) throws IOException {
+    private void performUpload(InputStream in, URL url) throws IOException {
         HttpURLConnection conn = null;
         OutputStream out = null;
         try {
@@ -236,18 +210,8 @@ public final class HTTPFileExchange {
         }
     }
 
-    /**
-     * Creates the URL based on a filename.
-     * 
-     * TODO the real thing! Load from settings.
-     * 
-     * @param filename The name of the piece of data to transfer (in the form
-     * of a file).
-     * @return The URL containing the filename.
-     * @throws MalformedURLException If the filename prevents the creation of
-     * a valid URL.
-     */
-    public static URL getURL(String filename) throws MalformedURLException {
+    @Override
+    public URL getURL(String filename) throws MalformedURLException {
         // create the URL based on hardcoded values (change to using settings!)
         URL res = new URL(PROTOCOL, HTTP_SERVER_NAME, PORT_NUMBER, 
                 HTTP_SERVER_PATH + "/" + filename);
@@ -263,7 +227,7 @@ public final class HTTPFileExchange {
      * @throws IOException If anything problems occur with transferring the 
      * data between the streams.
      */
-    private static void copyInputStreamToOutputStream(InputStream in, 
+    private void copyInputStreamToOutputStream(InputStream in,
             OutputStream out) throws IOException {
         if(in == null || out == null) {
             throw new IllegalArgumentException("InputStream: " + in 

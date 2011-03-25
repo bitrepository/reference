@@ -28,6 +28,7 @@ import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.configuration.ProtocolConfiguration;
+import org.bitrepository.protocol.http.HTTPFileExchange;
 
 /**
  * Provides access to the different component in the protocol module (Spring/IOC wannabe)
@@ -36,12 +37,12 @@ public final class ProtocolComponentFactory {
 
     //---------------------Singleton-------------------------
     private static ProtocolComponentFactory instance;
-    
+
     /**
      * The singletonic access to the instance of this class
      * @return The one and onl instance
      */
-    public synchronized static ProtocolComponentFactory getInstance() {
+    public static synchronized ProtocolComponentFactory getInstance() {
         if (instance == null) {
             instance = new ProtocolComponentFactory();
         }
@@ -58,6 +59,7 @@ public final class ProtocolComponentFactory {
     private static final ModuleCharacteristics MODULE_CHARACTERISTICS = new ModuleCharacteristics("protocol");
     private ProtocolConfiguration protocolConfiguration;
     private MessageBus messagebus;
+    private FileExchange fileexchange;
 
     /**
      * Gets you a <code>ModuleCharacteristics</code> object defining the generic characteristics of this module
@@ -75,6 +77,16 @@ public final class ProtocolComponentFactory {
             messagebus = new ActiveMQMessageBus(getProtocolConfiguration().getMessageBusConfigurations());
         }
         return messagebus;
+    }
+
+    /**
+     * Gets you an <code>MessageBus</code> instance for accessing to the Bitrepositorys message bus
+     */
+    public FileExchange getFileExchange() {
+        if (fileexchange == null) {
+            fileexchange = new HTTPFileExchange(getProtocolConfiguration().getFileExchangeConfigurations());
+        }
+        return fileexchange;
     }
 
     /**

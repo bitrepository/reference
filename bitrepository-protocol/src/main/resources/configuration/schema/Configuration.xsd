@@ -10,8 +10,7 @@
 	<element name="ProtocolConfiguration">
 		<annotation>
 			<documentation xml:lang="en">
-				The full configuration for the
-				protocol module
+				The full configuration for the protocol module
 	    		</documentation>
 		</annotation>
 		<complexType>
@@ -19,11 +18,17 @@
 				<element name="messageBusConfigurations" type="tns:MessageBusConfigurations">
 					<annotation>
 						<documentation xml:lang="en">
-							The configurations for the
-							message busses
+							The configurations for the message buses
 	          			</documentation>
 					</annotation>
 				</element>
+                <element name="fileExchangeConfigurations" type="tns:FileExchangeConfiguration">
+                    <annotation>
+                        <documentation xml:lang="en">
+                            The configurations for the file exchange
+                          </documentation>
+                    </annotation>
+                </element>
 			</sequence>
 		</complexType>
 	</element>
@@ -31,8 +36,7 @@
 	<complexType name="MessageBusConfigurations">
 		<annotation>
 			<documentation xml:lang="en">
-				The configurations for the
-				message busses
+				The configurations for the message busses
           	</documentation>
 		</annotation>
 		<sequence>
@@ -87,7 +91,7 @@
 	<complexType name="FileExchangeConfiguration">
 		<annotation>
 			<documentation xml:lang="en">
-				The configuration for a single message bus instance (may be a cluster)
+				The configuration for file exchange
 			</documentation>
 		</annotation>
 

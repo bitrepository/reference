@@ -24,14 +24,6 @@
  */
 package org.bitrepository.protocol;
 
-/**
- * Created by IntelliJ IDEA.
- * User: kfc
- * Date: 3/3/11
- * Time: 8:46 AM
- * To change this template use File | Settings | File Templates.
- */
-
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 
 /**
@@ -39,6 +31,16 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
  */
 public class TestMessageFactory {
 
+    /**
+     * Prevent initialisation - currently a utility class.
+     */
+    private TestMessageFactory() {}
+
+    /**
+     * Generate a test message with dummy values.
+     *
+     * @return A valid but arbitrary message.
+     */
     public static IdentifyPillarsForGetFileRequest getTestMessage() {
         IdentifyPillarsForGetFileRequest identifyPillarsForGetFileRequest
                 = new IdentifyPillarsForGetFileRequest();

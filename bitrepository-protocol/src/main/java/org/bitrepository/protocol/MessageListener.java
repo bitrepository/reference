@@ -46,7 +46,10 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileResponse;
 
 /** This interface defines a consumer of messages in the bitrepository
- * protocol. */
+ * protocol.
+ *
+ * If an implementation does not support a method, it may throw {@link UnsupportedOperationException}
+ */
 public interface MessageListener {
     /**
      * Action to perform upon receiving a message.

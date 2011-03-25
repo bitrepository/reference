@@ -24,11 +24,11 @@
  */
 package org.bitrepository.common;
 
-import java.io.InputStream;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 
 /**
  * Provides extra JAXB related utilities
@@ -41,8 +41,8 @@ public final class JaxbHelper {
     /**
      * Uses JAXB to create a object representation of an xml file. The class used to load the XML has been generated
      * based on the xsd for the xml.
-     * @param namespace The name space for the xsd defining the xml should adhere to.
-     * @param file The file containing the xml data.
+     * @param xmlroot The root class to deserialize to.
+     * @param inputStream The input stream containing the xml data.
      * @return Returns a new object representation of the xml data. 
      * @throws JAXBException The attempt to load the xml into a new object representation failed
      */
@@ -50,5 +50,17 @@ public final class JaxbHelper {
         JAXBContext context = JAXBContext.newInstance(xmlroot);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         return xmlroot.cast(unmarshaller.unmarshal(inputStream));
+    }
+
+    /**
+     * Method for retrieving the content of a JAXB object as a string.
+     * @param object The xml-serializable object which should be made into XML.
+     * @return The XML representation of the message object.
+     * @throws JAXBException If the object could not be serialized as a JAXB object.
+     */
+    public static String serializeToXml(Object object) throws JAXBException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JAXBContext.newInstance(object.getClass()).createMarshaller().marshal(object, baos);
+        return baos.toString();
     }
 }

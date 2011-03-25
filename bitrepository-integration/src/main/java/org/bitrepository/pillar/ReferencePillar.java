@@ -24,12 +24,6 @@
  */
 package org.bitrepository.pillar;
 
-import java.io.File;
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.NotImplementedException;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -46,12 +40,16 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileResponse;
-import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.http.HTTPFileExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Reference pillar.
@@ -276,7 +274,7 @@ public class ReferencePillar extends PillarAPI {
         }
         
         // upload the file.
-        URL url = HTTPFileExchange.uploadToServer(targetFile);
+        URL url = ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(targetFile);
         // TODO handle the case, when the upload fails!
         
         // create the complete message 
@@ -364,7 +362,7 @@ public class ReferencePillar extends PillarAPI {
         
         // Download the file. 
         // TODO send a erroneous PutFileResponse if the download fails.
-        HTTPFileExchange.downloadFromServer(fileToDownload, 
+        ProtocolComponentFactory.getInstance().getFileExchange().downloadFromServer(fileToDownload,
                 msg.getFileAddress());
         
         archive.archiveFile(msg.getFileID(), msg.getSlaID());

@@ -24,6 +24,17 @@
  */
 package org.bitrepository.access;
 
+import org.bitrepository.access.exception.AccessException;
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
+import org.bitrepository.bitrepositorymessages.GetFileComplete;
+import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.protocol.MessageBus;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
@@ -33,18 +44,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.bitrepository.access.exception.AccessException;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositorymessages.GetFileComplete;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.protocol.MessageBus;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.http.HTTPFileExchange;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The client for sending and handling 'Get' messages.
@@ -178,7 +177,7 @@ public class GetClient {
         log.info("Requesting the file '" + fileId + "' from pillar '"
                 + pillarId + "'.");
         try {
-            URL url = HTTPFileExchange.getURL(fileId);
+            URL url = ProtocolComponentFactory.getInstance().getFileExchange().getURL(fileId);
             GetFileRequest msg = new GetFileRequest();
 //            msg.setSlaID("??");
             msg.setFileAddress(url.toExternalForm());
@@ -286,7 +285,7 @@ public class GetClient {
             try {
                 // download the file.
                 outStream = new FileOutputStream(outputFile);
-                HTTPFileExchange.downloadFromServer(outStream, url);
+                ProtocolComponentFactory.getInstance().getFileExchange().downloadFromServer(outStream, url);
                 outStream.flush();
             } finally {
                 if(outStream != null) {

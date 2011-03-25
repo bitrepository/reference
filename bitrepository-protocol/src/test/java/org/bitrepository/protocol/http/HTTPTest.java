@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol.http;
 
+import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -68,7 +69,7 @@ public class HTTPTest extends ExtendedTestCase {
         // upload file to http-server.
         addStep("Uploading file '" + fil.getName() + "'", "The file should now"
                 + " be placed on the http-server.");
-        URL url = HTTPFileExchange.uploadToServer(fis, fil.getName() + "-test");
+        URL url = ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(fis, fil.getName() + "-test");
         
         addStep("Download the file manually.", "Should be the same file.");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -97,16 +98,16 @@ public class HTTPTest extends ExtendedTestCase {
         addStep("Downloading the fil again from url '" + url.toString() + "'", 
                 "Should have identical content as original file.");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        HTTPFileExchange.downloadFromServer(baos, url);
+        ProtocolComponentFactory.getInstance().getFileExchange().downloadFromServer(baos, url);
         
         // check whether the downloaded content is identical to the uploaded file.
         Assert.assertEquals(fileContent, baos.toString());
         
         addStep("Again uploading the file to the http-server, though on a "
                 + "different location.", "Should be the same file.");
-        URL url2 = HTTPFileExchange.uploadToServer(fil);
+        URL url2 = ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(fil);
         ByteArrayOutputStream file2 = new ByteArrayOutputStream();
-        HTTPFileExchange.downloadFromServer(file2, url2);
+        ProtocolComponentFactory.getInstance().getFileExchange().downloadFromServer(file2, url2);
         
         Assert.assertEquals(baos.toString(), file2.toString());
     }

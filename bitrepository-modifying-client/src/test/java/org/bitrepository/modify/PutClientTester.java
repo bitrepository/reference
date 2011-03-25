@@ -24,26 +24,25 @@
  */
 package org.bitrepository.modify;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.math.BigInteger;
-import java.net.URL;
-
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-
+import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileResponse;
+import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.AbstractMessageListener;
-import org.bitrepository.protocol.MessageFactory;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.http.HTTPFileExchange;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.math.BigInteger;
+import java.net.URL;
 
 /**
  * Tester class for testing the PutClient functionality. 
@@ -84,10 +83,10 @@ public class PutClientTester extends ExtendedTestCase {
         Assert.assertNotNull(listener.getMessage());
         Assert.assertEquals(listener.getMessageClass().getName(),
                 IdentifyPillarsForPutFileRequest.class.getName());
-        IdentifyPillarsForPutFileRequest identify 
-                = MessageFactory.createMessage(
-                        IdentifyPillarsForPutFileRequest.class, 
-                        listener.getMessage());
+        IdentifyPillarsForPutFileRequest identify
+                = org.bitrepository.common.JaxbHelper.loadXml(IdentifyPillarsForPutFileRequest.class,
+                                                              new ByteArrayInputStream(
+                                                                      listener.getMessage().getBytes()));
         Assert.assertEquals(identify.getFileID(), dataId);
         Assert.assertEquals(identify.getSlaID(), slaId);
         
@@ -119,8 +118,8 @@ public class PutClientTester extends ExtendedTestCase {
                 "A PutFileRequest for the specific file.");
         Assert.assertEquals(listener.getMessageClass().getName(),
                 PutFileRequest.class.getName());
-        PutFileRequest put = MessageFactory.createMessage(PutFileRequest.class, 
-                listener.getMessage());
+        PutFileRequest put = org.bitrepository.common.JaxbHelper
+                .loadXml(PutFileRequest.class, new ByteArrayInputStream(listener.getMessage().getBytes()));
         Assert.assertEquals(put.getFileID(), dataId);
         Assert.assertEquals(put.getSlaID(), slaId);
         Assert.assertEquals(put.getPillarID(), pillarId);
@@ -132,7 +131,7 @@ public class PutClientTester extends ExtendedTestCase {
         FileOutputStream outStream = null;
         try {
             outStream = new FileOutputStream(outputFile);
-            HTTPFileExchange.downloadFromServer(outStream, url);
+            ProtocolComponentFactory.getInstance().getFileExchange().downloadFromServer(outStream, url);
         } finally {
             if(outStream != null) {
                 outStream.close();
@@ -237,7 +236,7 @@ public class PutClientTester extends ExtendedTestCase {
 
         public void onMessage(Object msg) {
             try {
-                message = MessageFactory.extractMessage(msg);
+                message = JaxbHelper.serializeToXml(msg);
                 messageClass = msg.getClass();
             } catch (Exception e) {
                 Assert.fail("Should not throw an exception: ", e);

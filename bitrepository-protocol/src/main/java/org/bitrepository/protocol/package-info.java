@@ -32,19 +32,17 @@
  * {@link org.bitrepository.protocol.AbstractMessageListener} provides a
  * default implementation that throws exceptions in all instances.
  * <p/>
- * The classes {@link org.bitrepository.protocol.ProtocolComponentFactory} and
- * {@link org.bitrepository.protocol.ConnectionConfiguration} provide the
- * interface for initiating concrete asynchronous communication in the protocol.
+ * The {@link org.bitrepository.protocol.FileExchange} interface defines the interface for transporting binary blobs of
+ * data.
  * <p/>
- * The {@link org.bitrepository.protocol.MessageFactory} provides utility
- * methods for serializing and deserializing XML representations of messages in
- * the protocol.
+ * The class {@link org.bitrepository.protocol.ProtocolComponentFactory} provides the
+ * interface for initiating concrete asynchronous communication in the protocol.
  * <p/>
  * The subpackage {@link org.repository.protocol.activemq} contains an
  * implementation of a message connection in ActiveMQ.
  * <p/>
  * The subpackage {@link org.repository.protocol.http} contains the protocol
- * for synchronous communication of blobs of binary data.
+ * for synchronous communication of blobs of binary data implemented in HTTP.
  *
  * <h3>Exceptions</h3>
  * All methods may throw {@link IllegalArgumentException} if parameters are null
@@ -52,9 +50,11 @@
  * Also, parameter prerequisites described in documentation may result in an
  * {@link IllegalArgumentException} without this being declared.
  *
- *  *
  * All methods may throw
  * {@link org.bitrepository.protocol.CoordinationLayerException}
  * in case of faults.
+ *
+ * Implementations of the interfaces may throw {@link UnsupportedOperationException} in case they do not implement a
+ * non-required method.
  */
 package org.bitrepository.protocol;

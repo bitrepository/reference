@@ -26,6 +26,7 @@ package org.bitrepository.protocol;
 
 import org.apache.activemq.broker.BrokerService;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.common.JaxbHelper;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -72,35 +73,33 @@ public class MessageBusTest extends ExtendedTestCase {
         }
 
         Assert.assertNotNull(listener.getMessage());
-        XMLAssert.assertXMLEqual(MessageFactory.extractMessage(content),
-                                 MessageFactory
-                                         .extractMessage(listener.getMessage()));
+        XMLAssert.assertXMLEqual(JaxbHelper.serializeToXml(content),
+                                 JaxbHelper
+                                         .serializeToXml(listener.getMessage()));
     }
 
-    @Test(groups = { "test-first" })
+    @Test(groups = {"test-first"})
     public final void twoListenersForTopic() throws Exception {
         addDescription("Verifies that two listeners on the same topic both receive the message");
 
         //Test data
-        String TopicName = "BusActivityTest";
+        String topicname = "BusActivityTest";
         IdentifyPillarsForGetFileRequest content = TestMessageFactory.getTestMessage();
 
-        addStep("Make a connection to the message bus and add two listeners",
-                "No exceptions should be thrown");
+        addStep("Make a connection to the message bus and add two listeners", "No exceptions should be thrown");
         MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus();
         Assert.assertNotNull(con);
 
         TestMessageListener listener1 = new TestMessageListener();
         TestMessageListener listener2 = new TestMessageListener();
-        con.addListener(TopicName, listener1);
-        con.addListener(TopicName, listener2);
+        con.addListener(topicname, listener1);
+        con.addListener(topicname, listener2);
 
-        addStep("Send a message to the topic",
-                "No exceptions should be thrown");
-        con.sendMessage(TopicName, content);
-        synchronized(this) {
+        addStep("Send a message to the topic", "No exceptions should be thrown");
+        con.sendMessage(topicname, content);
+        synchronized (this) {
             try {
-                wait(5*TIME_FOR_MESSAGE_TRANSFER_WAIT);
+                wait(5 * TIME_FOR_MESSAGE_TRANSFER_WAIT);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -110,19 +109,16 @@ public class MessageBusTest extends ExtendedTestCase {
                 "Both listeners received the message, and it is identical");
 
         Assert.assertNotNull(listener1.getMessage());
-        XMLAssert.assertXMLEqual(MessageFactory.extractMessage(content),
-                                 MessageFactory
-                                         .extractMessage(listener1.getMessage()));
+        XMLAssert.assertXMLEqual(JaxbHelper.serializeToXml(content), JaxbHelper.serializeToXml(listener1.getMessage()));
         Assert.assertNotNull(listener2.getMessage());
-        XMLAssert.assertXMLEqual(MessageFactory.extractMessage(content),
-                                 MessageFactory
-                                         .extractMessage(listener2.getMessage()));
+        XMLAssert.assertXMLEqual(JaxbHelper.serializeToXml(content), JaxbHelper.serializeToXml(listener2.getMessage()));
 
     }
 
     @Test(groups = { "specificationonly" })
     public final void twoMessageBusConnectionTest() {
-        addDescription("Verifies that we are switch to a second message bus. Awaiting introduction of robustness issue");
+        addDescription("Verifies that we are switch to a second message bus. "
+                               + "Awaiting introduction of robustness issue");
     }
 
     @Test(groups = { "specificationonly" })
@@ -140,7 +136,8 @@ public class MessageBusTest extends ExtendedTestCase {
     }
 
     /**
-     * Temporary reverting to test-first, because of difficulty in changing messagebus at run time. This perhaps reflects that  
+     * Temporary reverting to test-first, because of difficulty in changing messagebus at run time. This perhaps
+     * reflects that
      * @throws Exception
      */
     @Test(groups = {"test-first", "connectiontest"})
@@ -181,8 +178,8 @@ public class MessageBusTest extends ExtendedTestCase {
 
             Assert.assertNotNull(listener.getMessage(), "A message should be "
                     + "received.");
-            XMLAssert.assertEquals(MessageFactory.extractMessage(content),
-                                   MessageFactory.extractMessage(listener.getMessage()));
+            XMLAssert.assertEquals(JaxbHelper.serializeToXml(content),
+                                   JaxbHelper.serializeToXml(listener.getMessage()));
 
             con.removeListener("EmbeddedBrokerTopic", listener);
         } finally {

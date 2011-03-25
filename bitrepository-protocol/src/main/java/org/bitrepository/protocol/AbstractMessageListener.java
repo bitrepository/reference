@@ -44,6 +44,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileResponse;
+import org.bitrepository.common.JaxbHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,21 +57,23 @@ import javax.xml.bind.JAXBException;
  * exception about these being unsupported.
  */
 public abstract class AbstractMessageListener implements MessageListener {
-    Logger log = LoggerFactory.getLogger(getClass());
+    /** Logger for this class. */
+    private Logger log = LoggerFactory.getLogger(getClass());
 
+    /**
+     * Report an unsupported message by logging a warning and throwing an exception.
+     *
+     * @param message The unsupported message received.
+     */
     private void reportUnsupported(Object message) {
-
         try {
-            log.warn("Received unsupported message '{}'", message.getClass() +
-                    MessageFactory.extractMessage(message));
+            log.warn("Received unsupported message '{}'", JaxbHelper.serializeToXml(message));
         } catch (JAXBException e) {
-            log.warn("Received unsupported message of type '{}', "
-                             + "which could not be serialized as XML.\n{}",
-                     e);
+            log.warn("Received unsupported message of type '" + message.getClass().getName()
+                             + "', which could not be serialized as XML.", e);
         }
         throw new UnsupportedOperationException(
-                "The message listener does not accept messages of this type: '"
-                        + message.getClass() + "'");
+                "The message listener does not accept messages of this type: '" + message.getClass().getName() + "'");
     }
 
     @Override

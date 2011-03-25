@@ -25,6 +25,7 @@
 package org.bitrepository.protocol.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.GetChecksumsComplete;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsResponse;
@@ -45,11 +46,10 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileResponse;
+import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.MessageBus;
-import org.bitrepository.protocol.MessageFactory;
 import org.bitrepository.protocol.MessageListener;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.configuration.MessageBusConfiguration;
 import org.bitrepository.protocol.configuration.MessageBusConfigurations;
 import org.slf4j.Logger;
@@ -65,6 +65,7 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
+import javax.xml.bind.JAXBException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -78,10 +79,12 @@ import java.util.Map;
  *
  * TODO currently creates only topics.
  */
-public final class ActiveMQMessageBus implements MessageBus {
+public class ActiveMQMessageBus implements MessageBus {
     /** The Log. */
-    private Logger log = LoggerFactory.getLogger(ActiveMQMessageBus.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
+    /** The key for storing the message type in a string property in the message headers. */
+    public static final String MESSAGE_TYPE_KEY = "org.bitrepository.messages.type";
     /** The default acknowledge mode. */
     public static final int ACKNOWLEDGE_MODE = Session.AUTO_ACKNOWLEDGE;
     /** Default transacted. */
@@ -93,7 +96,10 @@ public final class ActiveMQMessageBus implements MessageBus {
     /** The session. */
     private final Session session;
 
-    /** Map of the consumers, mapping from topicID"#"listener to consumer. */
+    /**
+     * Map of the consumers, mapping from a hash of "destinations and listener" to consumer.
+     * Used to identify if a listener is already registered.
+     */
     private final Map<String, MessageConsumer> consumers = Collections
             .synchronizedMap(new HashMap<String, MessageConsumer>());
     /** Map of topics, mapping from ID to topic. */
@@ -102,23 +108,20 @@ public final class ActiveMQMessageBus implements MessageBus {
     private final MessageBusConfiguration configuration;
 
     /**
-     * Use the {@link ProtocolComponentFactory} to get a handle on a instance of
+     * Use the {@link org.bitrepository.protocol.ProtocolComponentFactory} to get a handle on a instance of
      * MessageBusConnections. This constructor is for the
      * <code>ProtocolComponentFactory</code> eyes only.
      *
      * @param messageBusConfigurations The properties for the connection.
      */
     public ActiveMQMessageBus(MessageBusConfigurations messageBusConfigurations) {
-        log.debug("Initializing ActiveMQConnection to '"
-                          + messageBusConfigurations + "'.");
-        this.configuration = messageBusConfigurations
-                .getPrimaryMessageBusConfiguration();
+        log.debug("Initializing ActiveMQConnection to '" + messageBusConfigurations + "'.");
+        this.configuration = messageBusConfigurations.getPrimaryMessageBusConfiguration();
 
         // Retrieve factory for connection
-        ActiveMQConnectionFactory connectionFactory
-                = new ActiveMQConnectionFactory(configuration.getUsername(),
-                                                configuration.getPassword(),
-                                                configuration.getUrl());
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getUsername(),
+                                                                                    configuration.getPassword(),
+                                                                                    configuration.getUrl());
 
         try {
             // create and start the connection
@@ -129,246 +132,236 @@ public final class ActiveMQMessageBus implements MessageBus {
 
             session = connection.createSession(TRANSACTED, ACKNOWLEDGE_MODE);
         } catch (JMSException e) {
-            throw new CoordinationLayerException(
-                    "Unable to initialise connection to message bus", e);
+            throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
         log.debug("ActiveMQConnection initialized for '" + configuration + "'.");
     }
 
     @Override
-    public synchronized void addListener(String destinationId,
-                                         final MessageListener listener)
-            throws JMSException {
-        log.debug("Adding listener '" + listener + "' to topic: '" + destinationId
-                        + "' on message-bus '" + configuration.getId() + "'.");
-        MessageConsumer consumer = getMessageConsumer(destinationId, listener);
-        consumer.setMessageListener(new ActiveMQMessageListener(listener));
-    }
-
-    @Override
-    public synchronized void removeListener(String destinationId,
-                                            MessageListener listener)
-            throws JMSException {
-        log.debug("Removing listener '" + listener + "' from topic: '"
-                          + destinationId + "' on message-bus '"
+    public synchronized void addListener(String destinationId, final MessageListener listener) {
+        log.debug("Adding listener '" + listener + "' to destination: '" + destinationId + "' on message-bus '"
                           + configuration.getId() + "'.");
         MessageConsumer consumer = getMessageConsumer(destinationId, listener);
-        consumer.close();
-        consumers.remove(getConsumerKey(destinationId, listener));
+        try {
+            consumer.setMessageListener(new ActiveMQMessageListener(listener));
+        } catch (JMSException e) {
+            throw new CoordinationLayerException(
+                    "Unable to add listener '" + listener + "' to destinationId '" + destinationId + "'", e);
+        }
     }
 
     @Override
-    public void sendMessage(String destinationId, GetChecksumsComplete content)
-            throws Exception {
+    public synchronized void removeListener(String destinationId, MessageListener listener) {
+        log.debug("Removing listener '" + listener + "' from destination: '" + destinationId + "' on message-bus '"
+                          + configuration.getId() + "'.");
+        MessageConsumer consumer = getMessageConsumer(destinationId, listener);
+        try {
+            consumer.close();
+        } catch (JMSException e) {
+            throw new CoordinationLayerException(
+                    "Unable to remove listener '" + listener + "' from destinationId '" + destinationId + "'", e);
+        }
+        consumers.remove(getConsumerHash(destinationId, listener));
+    }
+
+    @Override
+    public void sendMessage(String destinationId, GetChecksumsComplete content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetChecksumsRequest content)
-            throws Exception {
+    public void sendMessage(String destinationId, GetChecksumsRequest content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetChecksumsResponse content)
-            throws Exception {
+    public void sendMessage(String destinationId, GetChecksumsResponse content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileComplete content)
-            throws Exception {
+    public void sendMessage(String destinationId, GetFileComplete content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileIDsComplete content)
-            throws Exception {
+    public void sendMessage(String destinationId, GetFileIDsComplete content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileIDsRequest content)
-            throws Exception {
+    public void sendMessage(String destinationId, GetFileIDsRequest content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileIDsResponse content)
-            throws Exception {
+    public void sendMessage(String destinationId, GetFileIDsResponse content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileRequest content)
-            throws Exception {
+    public void sendMessage(String destinationId, GetFileRequest content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileResponse content)
-            throws Exception {
+    public void sendMessage(String destinationId, GetFileResponse content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-                            IdentifyPillarsForGetChecksumsReply content)
-            throws Exception {
+    public void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsReply content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-                            IdentifyPillarsForGetChecksumsRequest content)
-            throws Exception {
+    public void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsRequest content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-                            IdentifyPillarsForGetFileIDsRequest content)
-            throws Exception {
+    public void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsRequest content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-                            IdentifyPillarsForGetFileIDsReply content)
-            throws Exception {
+    public void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsReply content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-                            IdentifyPillarsForGetFileRequest content)
-            throws Exception {
+    public void sendMessage(String destinationId, IdentifyPillarsForGetFileRequest content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-                            IdentifyPillarsForGetFileReply content)
-            throws Exception {
+    public void sendMessage(String destinationId, IdentifyPillarsForGetFileReply content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-                            IdentifyPillarsForPutFileReply content)
-            throws Exception {
+    public void sendMessage(String destinationId, IdentifyPillarsForPutFileReply content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-                            IdentifyPillarsForPutFileRequest content)
-            throws Exception {
+    public void sendMessage(String destinationId, IdentifyPillarsForPutFileRequest content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileComplete content)
-            throws Exception {
+    public void sendMessage(String destinationId, PutFileComplete content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileRequest content)
-            throws Exception {
+    public void sendMessage(String destinationId, PutFileRequest content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileResponse content)
-            throws Exception {
+    public void sendMessage(String destinationId, PutFileResponse content) {
         sendMessage(destinationId, (Object) content);
     }
 
     /**
-     * Send a message using ActiveMQ
+     * Send a message using ActiveMQ.
      *
-     * @param destinationId Name of topic to send message to
+     * @param destinationId Name of destination to send message to
      * @param content       JAXB-serializable object to send.
      */
     private void sendMessage(String destinationId, Object content) {
         try {
-            String xmlContent = MessageFactory.extractMessage(content);
-            log.debug("The following message is sent to the topic '"
-                              + destinationId + "'"
-                              + " on message-bus '{}': \n{}",
-                      configuration.getId(), xmlContent);
-            MessageProducer producer = addTopicMessageProducer(
-                    destinationId);
+            String xmlContent = JaxbHelper.serializeToXml(content);
+            log.debug("The following message is sent to the destination '" + destinationId + "'" + " on message-bus '"
+                              + configuration.getId() + "': \n{}", xmlContent);
+            MessageProducer producer = addTopicMessageProducer(destinationId);
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
             Message msg = session.createTextMessage(xmlContent);
-            // TODO use the StringProperty instead of this?
-            msg.setJMSType(content.getClass().getSimpleName());
+            msg.setStringProperty(MESSAGE_TYPE_KEY, content.getClass().getSimpleName());
             msg.setJMSReplyTo(session.createQueue(destinationId));
 
             producer.send(msg);
             session.commit();
-        } catch (Exception e) {
+        } catch (JMSException e) {
+            throw new CoordinationLayerException("Could not send message", e);
+        } catch (JAXBException e) {
             throw new CoordinationLayerException("Could not send message", e);
         }
     }
 
     /**
-     * Retrieves a consumer for the specific topic id and message listener.
+     * Retrieves a consumer for the specific destination id and message listener.
      * If no such consumer already exists, then it is created.
      *
-     * @param topicId  The id of the topic to consume messages from.
-     * @param listener The listener to consume the messages.
+     * @param destinationId The id of the destination to consume messages from.
+     * @param listener      The listener to consume the messages.
      * @return The instance for consuming the messages.
      */
-    private MessageConsumer getMessageConsumer(String topicId,
-                                               MessageListener listener)
-            throws JMSException {
-        String key = getConsumerKey(topicId, listener);
-        log.debug("Retrieving message consumer on topic '" + topicId
-                          + "' for listener '" + listener + "'. Key: '" + key
-                          + "'.");
+    private MessageConsumer getMessageConsumer(String destinationId, MessageListener listener) {
+        String key = getConsumerHash(destinationId, listener);
+        log.debug("Retrieving message consumer on destination '" + destinationId + "' for listener '" + listener
+                          + "'. Key: '" + key + "'.");
         if (!consumers.containsKey(key)) {
             log.debug("No consumer known. Creating new for key '" + key + "'.");
-            Topic topic = getTopic(topicId);
-            MessageConsumer consumer = session.createConsumer(topic);
+            Topic topic = getTopic(destinationId);
+            MessageConsumer consumer;
+            try {
+                consumer = session.createConsumer(topic);
+            } catch (JMSException e) {
+                throw new CoordinationLayerException("Could not create message consumer for topic '" + topic + '"', e);
+            }
             consumers.put(key, consumer);
         }
         return consumers.get(key);
     }
 
     /**
-     * Creates a unique key for the message listener and the topic id.
+     * Creates a unique hash of the message listener and the destination id.
      *
-     * @param topicId  The id for the topic.
-     * @param listener The message listener.
-     * @return The key for the message listener and the topic id.
+     * @param destinationId The id for the destination.
+     * @param listener      The message listener.
+     * @return The key for the message listener and the destination id.
      */
-    private String getConsumerKey(String topicId, MessageListener listener) {
-        return topicId + CONSUMER_KEY_SEPARATOR + listener.hashCode();
+    private String getConsumerHash(String destinationId, MessageListener listener) {
+        return destinationId + CONSUMER_KEY_SEPARATOR + listener.hashCode();
     }
 
     /**
      * Method for retrieving the message producer for a specific queue.
      *
-     * @param topicId The id for the queue.
-     * @return The message producer for this queue.
-     *
-     * @throws JMSException If the producer for the queue cannot be established.
+     * @param destination The id for the destination.
+     * @return The message producer for this destination.
      */
-    private MessageProducer addTopicMessageProducer(String topicId)
-            throws JMSException {
-        Topic topic = getTopic(topicId);
-        MessageProducer producer = session.createProducer(topic);
+    private MessageProducer addTopicMessageProducer(String destination) {
+        Topic topic = getTopic(destination);
+        MessageProducer producer;
+        try {
+            producer = session.createProducer(topic);
+        } catch (JMSException e) {
+            throw new CoordinationLayerException(
+                    "Could not create message producer for destination '" + destination + "'", e);
+        }
         return producer;
     }
 
-    private Topic getTopic(String topicId) throws JMSException {
+    /**
+     * Given a topic ID, retrieve the topic object.
+     *
+     * @param topicId ID of the topic.
+     * @return The object representing that topic. Will always return the same topic object for the same topic ID.
+     */
+    private Topic getTopic(String topicId) {
         Topic topic = topics.get(topicId);
         if (topic == null) {
-            // TODO: According to javadoc, topics should be looked up in another fashion
-            topic = session.createTopic(topicId);
+            try {
+                // TODO: According to javadoc, topics should be looked up in another fashion.
+                // See http://download.oracle.com/javaee/6/api/javax/jms/Session.html#createTopic(java.lang.String)
+                topic = session.createTopic(topicId);
+            } catch (JMSException e) {
+                throw new CoordinationLayerException("Could not create topic '" + topicId + "'", e);
+            }
             topics.put(topicId, topic);
         }
         return topic;
@@ -387,17 +380,15 @@ public final class ActiveMQMessageBus implements MessageBus {
      *
      * This adapts from general Active MQ messages to the protocol types.
      */
-    private static class ActiveMQMessageListener
-            implements javax.jms.MessageListener {
+    private static class ActiveMQMessageListener implements javax.jms.MessageListener {
         /** The Log. */
-        private Logger log = LoggerFactory
-                .getLogger(ActiveMQMessageBus.class);
+        private Logger log = LoggerFactory.getLogger(getClass());
 
         /** The protocol message listener that receives the messages. */
         private final MessageListener listener;
 
         /**
-         * Iniitialise the adapter from ActiveMQ message listener to protocol
+         * Initialise the adapter from ActiveMQ message listener to protocol
          * message listener.
          *
          * @param listener The protocol message listener that should receive the
@@ -422,124 +413,113 @@ public final class ActiveMQMessageBus implements MessageBus {
             String text = null;
             Object content;
             try {
-                type = message.getJMSType();
+                type = message.getStringProperty(MESSAGE_TYPE_KEY);
                 text = ((TextMessage) message).getText();
-                content = MessageFactory.createMessage(Class.forName(
-                        "org.bitrepository.bitrepositorymessages." + type),
-                                                       text);
+                content = JaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
+                                             new ByteArrayInputStream(text.getBytes()));
 
-                if (type.equals("GetChecksumsComplete")) {
+                if (content.getClass().equals(GetChecksumsComplete.class)) {
                     listener.onMessage((GetChecksumsComplete) content);
                     return;
                 }
 
-                if (type.equals("GetChecksumsRequest")) {
+                if (content.getClass().equals(GetChecksumsRequest.class)) {
                     listener.onMessage((GetChecksumsRequest) content);
                     return;
                 }
 
-                if (type.equals("GetChecksumsResponse")) {
+                if (content.getClass().equals(GetChecksumsResponse.class)) {
                     listener.onMessage((GetChecksumsResponse) content);
                     return;
                 }
 
-                if (type.equals("GetFileComplete")) {
+                if (content.getClass().equals(GetFileComplete.class)) {
                     listener.onMessage((GetFileComplete) content);
                     return;
                 }
 
-                if (type.equals("GetFileIDsComplete")) {
+                if (content.getClass().equals(GetFileIDsComplete.class)) {
                     listener.onMessage((GetFileIDsComplete) content);
                     return;
                 }
 
-                if (type.equals("GetFileIDsRequest")) {
+                if (content.getClass().equals(GetFileIDsRequest.class)) {
                     listener.onMessage((GetFileIDsRequest) content);
                     return;
                 }
 
-                if (type.equals("GetFileIDsResponse")) {
+                if (content.getClass().equals(GetFileIDsResponse.class)) {
                     listener.onMessage((GetFileIDsResponse) content);
                     return;
                 }
 
-                if (type.equals("GetFileRequest")) {
+                if (content.getClass().equals(GetFileRequest.class)) {
                     listener.onMessage((GetFileRequest) content);
                     return;
                 }
 
-                if (type.equals("GetFileResponse")) {
+                if (content.getClass().equals(GetFileResponse.class)) {
                     listener.onMessage((GetFileResponse) content);
                     return;
                 }
 
-                if (type.equals("IdentifyPillarsForGetChecksumsReply")) {
-                    listener.onMessage(
-                            (IdentifyPillarsForGetChecksumsReply) content);
+                if (content.getClass().equals(IdentifyPillarsForGetChecksumsReply.class)) {
+                    listener.onMessage((IdentifyPillarsForGetChecksumsReply) content);
                     return;
                 }
 
-                if (type.equals("IdentifyPillarsForGetChecksumsRequest")) {
-                    listener.onMessage(
-                            (IdentifyPillarsForGetChecksumsRequest) content);
+                if (content.getClass().equals(IdentifyPillarsForGetChecksumsRequest.class)) {
+                    listener.onMessage((IdentifyPillarsForGetChecksumsRequest) content);
                     return;
                 }
 
-                if (type.equals("IdentifyPillarsForGetFileIDsReply")) {
-                    listener.onMessage(
-                            (IdentifyPillarsForGetFileIDsReply) content);
+                if (content.getClass().equals(IdentifyPillarsForGetFileIDsReply.class)) {
+                    listener.onMessage((IdentifyPillarsForGetFileIDsReply) content);
                     return;
                 }
 
-                if (type.equals("IdentifyPillarsForGetFileIDsRequest")) {
-                    listener.onMessage(
-                            (IdentifyPillarsForGetFileIDsRequest) content);
+                if (content.getClass().equals(IdentifyPillarsForGetFileIDsRequest.class)) {
+                    listener.onMessage((IdentifyPillarsForGetFileIDsRequest) content);
                     return;
                 }
 
-                if (type.equals("IdentifyPillarsForGetFileReply")) {
-                    listener.onMessage(
-                            (IdentifyPillarsForGetFileReply) content);
+                if (content.getClass().equals(IdentifyPillarsForGetFileReply.class)) {
+                    listener.onMessage((IdentifyPillarsForGetFileReply) content);
                     return;
                 }
 
-                if (type.equals("IdentifyPillarsForGetFileRequest")) {
-                    listener.onMessage(
-                            (IdentifyPillarsForGetFileRequest) content);
+                if (content.getClass().equals(IdentifyPillarsForGetFileRequest.class)) {
+                    listener.onMessage((IdentifyPillarsForGetFileRequest) content);
                     return;
                 }
 
-                if (type.equals("IdentifyPillarsForPutFileReply")) {
-                    listener.onMessage(
-                            (IdentifyPillarsForPutFileReply) content);
+                if (content.getClass().equals(IdentifyPillarsForPutFileReply.class)) {
+                    listener.onMessage((IdentifyPillarsForPutFileReply) content);
                     return;
                 }
 
-                if (type.equals("IdentifyPillarsForPutFileRequest")) {
-                    listener.onMessage(
-                            (IdentifyPillarsForPutFileRequest) content);
+                if (content.getClass().equals(IdentifyPillarsForPutFileRequest.class)) {
+                    listener.onMessage((IdentifyPillarsForPutFileRequest) content);
                     return;
                 }
 
-                if (type.equals("PutFileComplete")) {
+                if (content.getClass().equals(PutFileComplete.class)) {
                     listener.onMessage((PutFileComplete) content);
                     return;
                 }
 
-                if (type.equals("PutFileRequest")) {
+                if (content.getClass().equals(PutFileRequest.class)) {
                     listener.onMessage((PutFileRequest) content);
                     return;
                 }
 
-                if (type.equals("PutFileResponse")) {
+                if (content.getClass().equals(PutFileResponse.class)) {
                     listener.onMessage((PutFileResponse) content);
                     return;
                 }
-                log.warn("Received message of unknown type '{}'\n{}", type,
-                         text);
+                log.error("Received message of unknown type '" + type + "'\n{}", text);
             } catch (Exception e) {
-                log.warn("Error handling message. Received type was '{}'.\n{}",
-                         type, text);
+                log.error("Error handling message. Received type was '" + type + "'.\n{}", text);
             }
 
         }
