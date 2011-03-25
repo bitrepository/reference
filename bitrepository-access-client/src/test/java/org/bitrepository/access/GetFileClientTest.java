@@ -27,10 +27,12 @@ package org.bitrepository.access;
 import java.io.File;
 import java.math.BigInteger;
 import java.net.URL;
+import java.util.Date;
 
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 
+import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
@@ -64,21 +66,26 @@ public class GetFileClientTest extends ExtendedTestCase {
     @Test(groups = {"test first"})
     public void identifyAndGetForSimpleGetFileClient() throws Exception {
         addDescription("Tests whether a specific message is sent by the GetClient");
+        addStep("Initialising variables for testing, e.g. defining the queue to be the date for 'now'."
+                + "Also making the ....", "");
         String dataId = "dataId1";
         String slaId = "THE-SLA";
         String pillarId = "THE-ONLY-PILLAR";
+        AccessConfiguration config = AccessComponentFactory.getInstance().getConfig();
+        String queue = "" + (new Date().getTime());
+        config.setQueue(queue);
+        
         SimpleGetFileClient gc = new SimpleGetFileClient();
         TestMessageListener listener = new TestMessageListener();
-        ProtocolComponentFactory.getInstance().getMessageBus().addListener(gc.getQueue(), listener);
+        ProtocolComponentFactory.getInstance().getMessageBus().addListener(queue, listener);
         
         File oldFile = new File(gc.getFileDir(), dataId);
         if(oldFile.exists()) {
-            Assert.assertTrue(oldFile.delete(), "The previously downloaded "
-                    + "file should be deleted.");
+            Assert.assertTrue(oldFile.delete(), "The previously downloaded file should be deleted.");
         }
         
-        addStep("Request the fastest delivery of file " + dataId, 
-                "The GetClient should send a IdentifyPillarsForGetFileRequest "
+        addStep("Request the fastest delivery of file '" + dataId + "' from SLA '" + slaId + "', and the knowledge, "
+                + "that only one pillar should reply.", "The GetClient should send a IdentifyPillarsForGetFileRequest "
                 + "message.");
         gc.retrieveFastest(dataId, slaId, 1);
 
@@ -101,8 +108,7 @@ public class GetFileClientTest extends ExtendedTestCase {
         IdentifyPillarsForGetFileRequest identifyMessage = (IdentifyPillarsForGetFileRequest) listener.getMessage();
         Assert.assertEquals(identifyMessage.getFileID(), dataId);
 
-        addStep("Sending a reply for the message.", "Should be handled by the "
-                + "GetClient.");
+        addStep("Sending a reply for the message.", "Should be handled by the GetClient.");
         TimeMeasureTYPE time = new TimeMeasureTYPE();
         time.setMiliSec(BigInteger.valueOf(1000));
 
@@ -116,8 +122,7 @@ public class GetFileClientTest extends ExtendedTestCase {
         reply.setTimeToDeliver(time);
         reply.setVersion((short) 1);
 
-        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(
-                gc.getQueue(), reply);
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, reply);
         
         synchronized(this) {
             try {
@@ -130,7 +135,7 @@ public class GetFileClientTest extends ExtendedTestCase {
         
         addStep("Verifies whether the GetClient sends a request for the file.", 
                 "Should be a GetFileRequest for the pillar.");
-        Assert.assertEquals(listener.getMessageClass(), GetFileRequest.class,
+        Assert.assertEquals(listener.getMessageClass(), GetFileRequest.class, 
                 "The last message should be a GetFileRequest");
         // The test fails here (2011-03-16). The TestMessageListener does not
         // receive the message...
@@ -139,16 +144,15 @@ public class GetFileClientTest extends ExtendedTestCase {
         Assert.assertEquals(getMessage.getFileID(), dataId);
         Assert.assertEquals(getMessage.getPillarID(), pillarId);
         
-        addStep("Upload a file to the given destination, send a complete to "
-                + "the GetClient.", "The GetClient should download the file."); 
+        addStep("Upload a file to the given destination, send a complete to the GetClient.", 
+                "The GetClient should download the file."); 
         GetFileResponse getReply = new GetFileResponse();
         getReply.setMinVersion((short) 1);
         getReply.setVersion((short) 1);
         getReply.setPillarID(pillarId);
         getReply.setFileID(dataId);
 
-        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(
-                gc.getQueue(), getReply);
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, getReply);
         
         synchronized(this) {
             try {
@@ -160,8 +164,7 @@ public class GetFileClientTest extends ExtendedTestCase {
         }
         
         // TODO read from log, that it has been caught by the GetClientServer.
-        Assert.assertEquals(listener.getMessageClass().getName(), 
-                getReply.getClass().getName());
+        Assert.assertEquals(listener.getMessageClass().getName(), getReply.getClass().getName());
 
         addStep("Uploading the file to the default HTTPServer.", 
                 "Should be allowed.");
@@ -181,8 +184,7 @@ public class GetFileClientTest extends ExtendedTestCase {
         completeMsg.setVersion((short) 1);
         completeMsg.setPillarID(pillarId);
 
-        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(
-                gc.getQueue(), completeMsg);
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, completeMsg);
         
         synchronized(this) {
             try {
@@ -205,15 +207,23 @@ public class GetFileClientTest extends ExtendedTestCase {
                 + "possible, where it has to choose between to pillars with "
                 + "different times. The messages should be delivered at the "
                 + "same time.");
+        addStep("Defining the test variables.", "Nothing should be able to go wrong here!");
         String dataId = "dataId2";
         String slaId = "THE-SLA";
         String fastPillar = "THE-FAST-PILLAR";
         String slowPillar = "THE-SLOW-PILLAR";
+        
+        addStep("Defining the varibles for the GetFileClient and defining them in the configuration", 
+                "It should be possible to change the values of the configurations.");
+        AccessConfiguration config = AccessComponentFactory.getInstance().getConfig();
+        String queue = "" + (new Date().getTime());
+        config.setQueue(queue);
+        
         SimpleGetFileClient gc = new SimpleGetFileClient();
         TestMessageListener listener = new TestMessageListener();
-        ProtocolComponentFactory.getInstance().getMessageBus().addListener(gc.getQueue(), listener);
+        ProtocolComponentFactory.getInstance().getMessageBus().addListener(queue, listener);
         
-        addStep("Make the GetClient ask for fastest pillar.", "");
+        addStep("Make the GetClient ask for fastest pillar.", "It should send message to identify which pillars.");
         gc.retrieveFastest(dataId, slaId, 2);
         
         synchronized(this) {
@@ -253,8 +263,7 @@ public class GetFileClientTest extends ExtendedTestCase {
         slowReply.setTimeToDeliver(slowTime);
         slowReply.setPillarID(slowPillar);
         
-        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(
-                gc.getQueue(), fastReply);
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, fastReply);
         
         synchronized(this) {
             try {
@@ -264,8 +273,7 @@ public class GetFileClientTest extends ExtendedTestCase {
                 e.printStackTrace();
             }
         }
-        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(
-                gc.getQueue(), slowReply);
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, slowReply);
         synchronized(this) {
             try {
                 wait(WAITING_TIME_FOR_MESSAGE);

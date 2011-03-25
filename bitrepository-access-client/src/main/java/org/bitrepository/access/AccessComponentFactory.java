@@ -24,7 +24,10 @@
  */
 package org.bitrepository.access;
 
+import org.bitrepository.access_client.configuration.AccessConfiguration;
+import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
+import org.bitrepository.protocol.configuration.ProtocolConfiguration;
 
 /**
  * Factory class for the access module. 
@@ -49,6 +52,8 @@ public class AccessComponentFactory {
     
     /** The characteristics for this module.*/
     private ModuleCharacteristics moduleCharacter;
+    /** The configuration for this module.*/
+    private AccessConfiguration config;
     
     /**
      * Private constructor for initialisation of the singleton.
@@ -64,6 +69,20 @@ public class AccessComponentFactory {
     public ModuleCharacteristics getModuleCharacteristics() {
         return moduleCharacter;
     }
+    
+    /**
+     * Method for extracting the configuration for the access module.
+     * @return The access module configuration.
+     */
+    public AccessConfiguration getConfig() {
+        if (config == null) {
+            ConfigurationFactory configurationFactory = new ConfigurationFactory();
+            config =
+                configurationFactory.loadConfiguration(getModuleCharacteristics(), AccessConfiguration.class);
+        }
+        return config;
+    }
+
     
     /**
      * Method for instantiating the GetFileClient defined in the configuration.

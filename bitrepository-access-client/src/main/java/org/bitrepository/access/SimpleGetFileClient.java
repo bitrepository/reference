@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
@@ -61,6 +62,8 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
     private final GetFileClientMessageListener messageListener;
     /** The directory where the retrieved files should be placed.*/
     private final File fileDir;
+    /** The configuration for the access module.*/
+    private final AccessConfiguration config;
     
     /** Map for keeping track of which files are outstanding for retrieval. Key is the unique id for the file and value
      * is the container for keeping track the outstanding file instance.*/
@@ -73,15 +76,14 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
     
     /**
      * Constructor.
+     * Initialises the file directory, the message listener and puts the message listener on the queue.
+     * The fileDir and the queue is retrieved from the configuration.
      */
     public SimpleGetFileClient() {
         log.info("Initialising the GetClient");
-        // TODO
-        // Load settings!
-        // Establish connection to bus!
+        config = AccessComponentFactory.getInstance().getConfig();
         
-        messageListener = new GetFileClientMessageListener(this);
-        fileDir = new File("fileDir");
+        fileDir = new File(config.getFileDir());
         if(fileDir.isFile()) {
             throw new AccessException("The file directory '" + fileDir.getAbsolutePath() + "' already exists as a "
                     + "file, and not as a directory, which is required.");
@@ -95,7 +97,10 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
         }
         
         // TODO use a settings. Temporarily use the current time.
-        queue = "" + (new Date().getTime());
+        queue = config.getQueue();
+        System.out.println("GetFileClient Queue: " + queue);
+        
+        messageListener = new GetFileClientMessageListener(this);
         
         // Add the messageListener to the messagebus for listening to the queue.
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus();
@@ -140,7 +145,6 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
         log.info("Requesting the file '" + fileId + "' from pillar '" + pillarId + "'.");
         try {
             URL url = ProtocolComponentFactory.getInstance().getFileExchange().getURL(fileId);
-//            URL url = HTTPFileExchange.getURL(fileId);
             GetFileRequest msg = new GetFileRequest();
             msg.setSlaID(slaId);
             msg.setFileAddress(url.toExternalForm());
@@ -154,8 +158,7 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
             // set the file to be awaiting retrieval.
             awaitingComplete.put(FileIdInstance.getInstance(fileId, slaId), pillarId);
         } catch (Exception e) {
-            throw new AccessException("Problems sending a request for "
-                    + "retrieving a specific file.", e);
+            throw new AccessException("Problems sending a request for retrieving a specific file.", e);
         }
     }
     
@@ -214,14 +217,12 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
         FileIdInstance id = FileIdInstance.getInstance(msg.getFileID(), msg.getSlaID());
         if(!awaitingComplete.containsKey(id)) {
             // not for me.
-            log.debug("GetFileComplete for '" + id + "', but it is not "
-                    + "awaited by me. Ignoring message.");
+            log.debug("GetFileComplete for '" + id + "', but it is not awaited by me. Ignoring message.");
             return;
         }
         
         try {
-            log.info("Downloading the file '" + id + "' from '" 
-                    + msg.getFileAddress() + "'.");
+            log.info("Downloading the file '" + id + "' from '" + msg.getFileAddress() + "'.");
             
             URL url = new URL(msg.getFileAddress());
             
@@ -245,8 +246,7 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
                 }
             }
         } catch (Exception e) {
-            throw new AccessException("Problems with retrieving the file '" 
-                    + id + "'.", e);
+            throw new AccessException("Problems with retrieving the file '" + id + "'.", e);
         }
         
         // remove from list when download is completed.
@@ -256,10 +256,11 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
     /**
      * Method for deprecating a file by renaming it to '*.old' (where '*' is the current file name).
      * If an old version already exists, then rename it to '*.old.old', etc.
+     * Should also work with a directory, though not be intended. 
      * 
-     * Should also work with a directory. TODO verify!
+     * TODO verify!
      * 
-     * @param current The current file to deprecate.
+     * @param current The current file to deprecate. Aka move to old.
      */
     private void moveDeprecatedFile(File current) {
         File newLocation = new File(current.getParent(), current.getName() + ".old");
@@ -268,15 +269,6 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
             moveDeprecatedFile(newLocation);
         }
         current.renameTo(newLocation);
-    }
-    
-    
-    /**
-     * TEST function. Is to be replaced by configurations.
-     * @return The queue for this get file client.
-     */
-    String getQueue() {
-        return queue;
     }
     
     /**
