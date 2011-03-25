@@ -32,21 +32,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handler of the messages. Just takes the message and sends it to the 
- * corresponding method in the actual GetClient.
- * TODO this should probably be renamed, or made obsolete by refactoring.
+ * Handler of the messages. Just takes the message and sends it to the corresponding method in the actual GetClient.
  */
-public class GetClientServer extends AbstractMessageListener {
+public class GetFileClientMessageListener extends AbstractMessageListener {
     /** The log for this class.*/
-    private Logger log = LoggerFactory.getLogger(GetClientServer.class);
+    private Logger log = LoggerFactory.getLogger(getClass());
     /** The GetClient which should handle the messages.*/
-    private GetClient client;
+    private GetFileClientAPI client;
     
     /**
      * Constructor.
      * @param gc The GetClient which should handle the content of the messages.
      */
-    public GetClientServer(GetClient gc) {
+    public GetFileClientMessageListener(GetFileClientAPI gc) {
         this.client = gc;
     }
 
@@ -58,7 +56,7 @@ public class GetClientServer extends AbstractMessageListener {
     @Override
     public void onMessage(IdentifyPillarsForGetFileReply msg) {
         log.info("Received IdentifyPillarsForGetFileReply '" + msg + "'.");
-        client.handleReplyForFastest(msg);
+        client.handleIdentifyPillarsForGetFileReply(msg);
     }
     
     /**
@@ -69,7 +67,7 @@ public class GetClientServer extends AbstractMessageListener {
     @Override
     public void onMessage(GetFileResponse msg) {
         log.info("Received GetFileResponse message '" + msg + "'.");
-        // TODO handle this!
+        client.handleGetFileResponse(msg);
     }
     
     /**
@@ -80,6 +78,6 @@ public class GetClientServer extends AbstractMessageListener {
     @Override
     public void onMessage(GetFileComplete msg) {
         log.info("Reieved GetFileComplete message '" + msg + "'.");
-        client.completeGet(msg);
+        client.handleGetFileComplete(msg);
     }
 }

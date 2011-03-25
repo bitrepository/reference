@@ -1,6 +1,6 @@
 /*
  * #%L
- * bitrepository-common
+ * bitrepository-access-client
  * 
  * $Id$
  * $HeadURL$
@@ -22,18 +22,18 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access.exception;
+package org.bitrepository.access;
 
 /**
- * Exception for the access module.
- * @author jolf
+ * Exception for the access module. It to be thrown whenever an error in accessing the data in the bitrepository 
+ * occurs.
+ * Needs to be caught at the fault-barriers.
  */
 public class AccessException extends RuntimeException {
     /**
      * Constructor for this exception with both text message and a cause.
      * @param message The message for the exception.
-     * @param cause The cause in the form of another Throwable which has 
-     * triggered this exception.
+     * @param cause The cause in the form of another Throwable which has triggered this exception.
      */
     public AccessException(String message, Throwable cause) {
         super(message, cause);
@@ -45,13 +45,5 @@ public class AccessException extends RuntimeException {
      */
     public AccessException(String message) {
         super(message);
-    }
-
-    /**
-     * Constructor for this exception based on a cause.
-     * @param cause The Throwable cause which has triggered this exception.
-     */
-    public AccessException(Throwable cause) {
-        super(cause);
     }
 }
