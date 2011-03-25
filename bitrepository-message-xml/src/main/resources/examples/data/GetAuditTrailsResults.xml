@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  #%L
+  Bitmagasin protokol
+  
+  $Id$
+  $HeadURL$
+  %%
+  Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as 
+  published by the Free Software Foundation, either version 2.1 of the 
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Lesser Public License for more details.
+  
+  You should have received a copy of the GNU General Lesser Public 
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  #L%
+  -->
+
+<bro:GetAuditTrailsResults version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryData.xsd' 
+xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
+  <SlaID>MySla</SlaID>
+  <NoOfItems>2</NoOfItems>
+  <AuditTrailData> 
+    <FileID>MydataId1</FileID>
+    <ActionDateTime>2011-02-17T09:47:00</ActionDateTime>
+    <ReportingComponent>
+      <ComponentID>MyClientID</ComponentID>
+      <ComponentType>CLIENT</ComponentType>
+      <ComponentComment>Client doing integrity check</ComponentComment>
+    </ReportingComponent>
+    <ActorOnFile>
+      <ActorID>MyActorID</ActorID>
+      <ActorName>MyActorName</ActorName>
+      <ActorType>OTHER</ActorType>
+      <ActorComment>System trigger of client</ActorComment>
+    </ActorOnFile>
+    <ActionOnFile>
+      <IntegrityCheck>CHEKSUMSCHECK</IntegrityCheck>
+    </ActionOnFile>
+  </AuditTrailData>
+  <AuditTrailData>
+    <FileID>MydataId1</FileID>
+    <ActionDateTime>2011-02-17T09:47:00</ActionDateTime>
+    <ReportingComponent>
+      <ComponentID>MyPillarID</ComponentID>
+      <ComponentType>PILLAR</ComponentType>
+      <ComponentComment>East pillar</ComponentComment>
+    </ReportingComponent>
+    <ActorOnFile>
+      <ActorID>MyActorID</ActorID>
+      <ActorName>MyActorName</ActorName>
+      <ActorType>PROCESS</ActorType>
+      <ActorComment>Requested mass processing</ActorComment>
+    </ActorOnFile>
+    <ActionOnFile>
+      <Access>MASSPROCESS</Access>
+    </ActionOnFile>
+  </AuditTrailData>
+</bro:GetAuditTrailsResults>

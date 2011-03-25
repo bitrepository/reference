@@ -13,6 +13,47 @@
 <!-- ****** USED ELEMENTS AND GROUPS IN ALPHABETIC ORDER     ****** -->
 <!-- ************************************************************** -->
 
+  <xs:element name="AuditTrailData">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Data format for elements in an audit trail for a FileID
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+    <xs:sequence>
+      <xs:element ref="FileID" > 
+        <xs:annotation><xs:documentation xml:lang="en">
+        FileID for object ehich the audit trail concern
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element name="ActionDateTime" type="SystemDateTime_TYPE"> 
+        <xs:annotation><xs:documentation xml:lang="en">
+        Date and time for when action took place
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element name="ReportingComponent" type="Component_TYPE"> 
+        <xs:annotation><xs:documentation xml:lang="en">
+        Component of the bit repository which initiated audit trail entry on FileId object.
+        For example client, pillar or coordination layer
+        </xs:documentation></xs:annotation>
+      </xs:element>
+  
+      <xs:element name="ActorOnFile" type="Actor_TYPE"> 
+        <xs:annotation><xs:documentation xml:lang="en">
+        Actor who performed the specified action on FileId object.
+        For example specific user or specific process
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element name="ActionOnFile" type="Action_TYPE"> 
+        <xs:annotation><xs:documentation xml:lang="en">
+        Action performed by the actor on FileId object
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
   <xs:element name="Checksum" type="Checksum_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Checksum measure for specific data object
@@ -38,7 +79,7 @@
         </xs:documentation></xs:annotation>
       </xs:element>
 
-      <xs:element name="CalculationTime" type="CalculationTime_TYPE">
+      <xs:element name="CalculationTime" type="SystemDateTime_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         The time when the checksum was last calculated
         (especially for ordinary checksums on off-line medias, there can be long intervals between
@@ -177,7 +218,7 @@
         </xs:documentation></xs:annotation>
       </xs:element>
          
-      <xs:element name="CalculationTime" type="CalculationTime_TYPE">
+      <xs:element name="CalculationTime" type="SystemDateTime_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         The time when the data  was last seen
         (especially for off-line medias, there can be long intervals between
@@ -287,19 +328,317 @@
 <!-- ************************************************************** -->
 <!-- ****** USED TYPES IN ALPHABETIC ORDER                   ****** -->
 <!-- ************************************************************** -->
+  
+  <xs:complexType name="Action_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Action that can be made on data in the bit repository
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:choice>
+        <xs:element name="Access">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Access action 
+          </xs:documentation></xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="GET">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Access via GET operation 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="MASSPROCESS">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Access via mass processing operation 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="INTERNALUSER">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Access made from internal user  
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="INTERNALPROGRAM">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Access made from internal program  
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="OTHER">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Other forms of access 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="Create">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Creation action 
+          </xs:documentation></xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="INGEST">
+                <xs:annotation><xs:documentation xml:lang="en">
+                creation done via ingestion 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="TRANSFER">
+                <xs:annotation><xs:documentation xml:lang="en">
+                creation done via transfer, e.g. after loss of data 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="CORRECT">
+                <xs:annotation><xs:documentation xml:lang="en">
+                creation done as part of correction of fault data 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="OTHER">
+                <xs:annotation><xs:documentation xml:lang="en">
+                creation done for other reasons 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="Endanger">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Action possibly endagering the object
+          </xs:documentation></xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="UNKNOWNACCESS">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Unknown access where object can have been involved 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="FAILURE">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Failure that can have involved object, e.g. general system failure with recovery actions 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="OTHER">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Other action that can have endagered object 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="IntegrityCheck">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Action in connection with integrity check
+          </xs:documentation></xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="CHEKSUMSCHECK">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Checksums check as part of integrity check 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="REPLICACHECK">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Check whether any/all replica exists as part of integrity check 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="SALTCHECK">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Check of checksum with salt as part of integrity check
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="OTHER">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Other checks as part of integrity check
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="Modify">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Modification action
+          </xs:documentation></xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="COMPRESS">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Modification in connection with compression 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="CORRECT">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Modification in form of minor internal correction, e.g. via RAID 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="OTHER">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Modification done for other reasons than the above 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="PhysicalMove">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Physical move action 
+          </xs:documentation></xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="MIGRATION">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Move in connection with media migration
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="OPERATION">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Move in connection with internal operation, e.g. storage optimisation
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="OTHER">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Move done for other reasons than the above 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="Remove">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Remove action 
+          </xs:documentation></xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="TERMINATION">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Complete termination in remove of object
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="PARTIAL">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Partial removal with regeret period
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="OTHER">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Other types of removal action 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:choice>
+      <xs:element name="ActionComment" type="xs:string" minOccurs="0" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Additional information about the action, e.g. details or specification of 'other' action
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
 
+  <xs:complexType name="Actor_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Actor who can perform actions on data in the bit repository
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="ActorID" type="ActorID_TYPE" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Identifier of the actor in question in the bit repository
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="ActorName" type="xs:string" minOccurs="0">
+        <xs:annotation><xs:documentation xml:lang="en">
+        name of the actor in question in the bit repository
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="ActorType">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Type of actor
+        </xs:documentation></xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="USER">
+                <xs:annotation><xs:documentation xml:lang="en">
+                user logged on e.g. coordination layer or pillar
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="PROCESS">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Process, e.g. mass-processing process on pillar 
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="OTHER">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Something that cannot be covered by other alternatives.
+                In this case ActorComment should be filled out
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+            </xs:restriction>
+          </xs:simpleType>
+      </xs:element>
+      <xs:element name="ActorComment" type="xs:string" minOccurs="0" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Additional information about the actor
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="ActorID_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Unique identifiers for an actor doing actions in the Bit Repository 
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  
   <xs:simpleType name="Address_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Address for where data files can be found or placed
     </xs:documentation></xs:annotation>
-    <xs:restriction base="xs:string">
-    </xs:restriction>
+    <xs:restriction base="xs:string"/>
   </xs:simpleType>
   
-  <xs:simpleType name="CalculationTime_TYPE">
+  <xs:complexType name="Component_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    The data and time for when a calculation took place
-    At some stage this must include more precis definition including timezones.
+    Component of the bit repository
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="ComponentID" type="ComponentID_TYPE" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Identifier of the component in question in the bit repository
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="ComponentType">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Component of the bit repository
+        </xs:documentation></xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="CLIENT">
+                <xs:annotation><xs:documentation xml:lang="en">
+                A Client component
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="PILLAR">
+                <xs:annotation><xs:documentation xml:lang="en">
+                A Pillar component
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="COORLAYER">
+                <xs:annotation><xs:documentation xml:lang="en">
+                A component in the coordination layer
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+            </xs:restriction>
+          </xs:simpleType>
+      </xs:element>
+      <xs:element name="ComponentComment" type="xs:string" minOccurs="0" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Additional information about the component
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="SystemDateTime_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    General type for how date/time is specifed in the bit repository
     </xs:documentation></xs:annotation>
     <xs:restriction base="xs:dateTime">
     </xs:restriction>
@@ -331,6 +670,14 @@
         Code telling that message request has been completed successfully
         </xs:documentation></xs:annotation>
       </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="ComponentID_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Unique identifiers for a component in the Bit Repository 
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
     </xs:restriction>
   </xs:simpleType>
   
@@ -380,7 +727,7 @@
       </xs:enumeration>
       <xs:enumeration value="ERR_DID">
         <xs:annotation><xs:documentation xml:lang="en">
-        Code telling that there are dublicate FileID 
+        Code telling that there are duplicate FileID 
         </xs:documentation></xs:annotation>
       </xs:enumeration>
       <xs:enumeration value="ERR_OTHER">

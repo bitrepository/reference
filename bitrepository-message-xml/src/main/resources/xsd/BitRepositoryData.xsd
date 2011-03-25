@@ -12,6 +12,42 @@
 
   <xs:import schemaLocation="BitRepositoryElements.xsd" namespace="http://bitrepository.org/BitRepositoryElements.xsd" />
 
+  <!-- ****************************** -->
+  <!-- * Results for GetAuditTrails * -->
+  <!-- ****************************** -->
+  
+  <xs:element name="GetAuditTrailsResults">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Data format for delivery of audit trail as result of e.g. GetAuditTrails
+    </xs:documentation></xs:annotation>
+  
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="bre:SlaID" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          SlaID is a unique identifier for SLA which data belongs to.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:NoOfItems" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of checksums included
+          </xs:documentation></xs:annotation>
+        </xs:element>
+ 
+        <xs:element ref="bre:AuditTrailData" minOccurs="1" maxOccurs="unbounded" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of data for checksums in result
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+
+      <!-- Attributes with information of message version for version control -->
+      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+    </xs:complexType>
+  </xs:element>
+
   <!-- ***************************** -->
   <!-- * Results for GetChecksums  * -->
   <!-- ***************************** -->
