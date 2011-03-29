@@ -505,7 +505,7 @@
 
         <xs:element ref="bre:ResponseCode" >  
           <xs:annotation><xs:documentation xml:lang="en">
-          Response code telling whether PutRequest has been received and is expected to be completed
+          Response code telling whether PutFileRequest has been received and is expected to be completed
           </xs:documentation></xs:annotation>
         </xs:element>
         
@@ -562,7 +562,7 @@
 
         <xs:element ref="bre:CompleteCode" >  
           <xs:annotation><xs:documentation xml:lang="en">
-          Complete code telling how Put has been completed
+          Complete code telling how PutFile has been completed
           </xs:documentation></xs:annotation>
         </xs:element>
         

@@ -21,7 +21,7 @@
     <xs:sequence>
       <xs:element ref="FileID" > 
         <xs:annotation><xs:documentation xml:lang="en">
-        FileID for object ehich the audit trail concern
+        FileID for object which the audit trail concern
         </xs:documentation></xs:annotation>
       </xs:element>
 
@@ -318,7 +318,7 @@
   </xs:element>
 
 <!-- ************************************************************** -->
-<!-- ****** FUTURE ELEMNETS IN ALPHABETIC ORDER (used later) ****** -->
+<!-- ****** FUTURE ELEMENTS IN ALPHABETIC ORDER (used later) ****** -->
 <!-- ************************************************************** -->
   
   <!-- Control sizes -->
@@ -428,7 +428,7 @@
           </xs:documentation></xs:annotation>
           <xs:simpleType>
             <xs:restriction base="xs:string">
-              <xs:enumeration value="CHEKSUMSCHECK">
+              <xs:enumeration value="CHECKSUMSCHECK">
                 <xs:annotation><xs:documentation xml:lang="en">
                 Checksums check as part of integrity check 
                 </xs:documentation></xs:annotation>
@@ -512,7 +512,7 @@
               </xs:enumeration>
               <xs:enumeration value="PARTIAL">
                 <xs:annotation><xs:documentation xml:lang="en">
-                Partial removal with regeret period
+                Partial removal with regret period
                 </xs:documentation></xs:annotation>
               </xs:enumeration>
               <xs:enumeration value="OTHER">
@@ -544,7 +544,7 @@
       </xs:element>
       <xs:element name="ActorName" type="xs:string" minOccurs="0">
         <xs:annotation><xs:documentation xml:lang="en">
-        name of the actor in question in the bit repository
+        Name of the actor in question in the bit repository
         </xs:documentation></xs:annotation>
       </xs:element>
       <xs:element name="ActorType">
@@ -555,7 +555,7 @@
             <xs:restriction base="xs:string">
               <xs:enumeration value="USER">
                 <xs:annotation><xs:documentation xml:lang="en">
-                user logged on e.g. coordination layer or pillar
+                User logged on e.g. coordination layer or pillar
                 </xs:documentation></xs:annotation>
               </xs:enumeration>
               <xs:enumeration value="PROCESS">
@@ -594,6 +594,35 @@
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
   
+  <xs:simpleType name="ChecksumsType_TYPE">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="MD5"/>
+      <xs:enumeration value="SHA-3"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Checksum_TYPE">
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="CompleteCode_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Type with all complete codes for complete message in the bit repository protocol
+    </xs:documentation></xs:annotation>
+    <xs:union memberTypes="CompleteCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_COMPLETE_TYPE"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="CompleteCodePositive_TYPE">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="OK">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Code telling that message request has been completed successfully
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:complexType name="Component_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Component of the bit repository
@@ -636,43 +665,6 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:simpleType name="SystemDateTime_TYPE">
-    <xs:annotation><xs:documentation xml:lang="en">
-    General type for how date/time is specifed in the bit repository
-    </xs:documentation></xs:annotation>
-    <xs:restriction base="xs:dateTime">
-    </xs:restriction>
-  </xs:simpleType>
-
-  <xs:simpleType name="ChecksumsType_TYPE">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="MD5"/>
-      <xs:enumeration value="SHA-3"/>
-    </xs:restriction>
-  </xs:simpleType>
-
-  <xs:simpleType name="Checksum_TYPE">
-    <xs:restriction base="xs:string">
-    </xs:restriction>
-  </xs:simpleType>
-  
-  <xs:simpleType name="CompleteCode_TYPE">
-    <xs:annotation><xs:documentation xml:lang="en">
-    Type with all complete codes for complete message in the bit repository protocol
-    </xs:documentation></xs:annotation>
-    <xs:union memberTypes="CompleteCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_COMPLETE_TYPE"/>
-  </xs:simpleType>
-
-  <xs:simpleType name="CompleteCodePositive_TYPE">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="OK">
-        <xs:annotation><xs:documentation xml:lang="en">
-        Code telling that message request has been completed successfully
-        </xs:documentation></xs:annotation>
-      </xs:enumeration>
-    </xs:restriction>
-  </xs:simpleType>
-  
   <xs:simpleType name="ComponentID_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Unique identifiers for a component in the Bit Repository 
@@ -807,6 +799,14 @@
 
   <xs:simpleType name="SlaID_TYPE">
     <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SystemDateTime_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    General type for how date/time is specifed in the bit repository
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:dateTime">
     </xs:restriction>
   </xs:simpleType>
 
