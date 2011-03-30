@@ -34,14 +34,13 @@ import javax.xml.bind.JAXBException;
 public final class ConfigurationFactory {
 
     /**
-     * This is configuration file the <code>\ConfigurationFactory</code> will look , unless another name has been 
-     * specified.
+     * This is configuration the <code>\ConfigurationFactory</code> will look for, if no test configuration is found.
      */
     public static final String DEFAULT_CONFIGURATION_CLASSPATH_LOCATION = 
         "configuration/xml/%s-configuration.xml";
     
     /**
-     * This is test configuration file the <code>ConfigurationFactory</code> will look for
+     * This is test configuration the <code>ConfigurationFactory</code> will look for.
      */
     public static final String DEFAULT_TEST_CONFIGURATION_CLASSPATH_LOCATION = 
         "configuration/xml/%s-test-configuration.xml";
@@ -66,18 +65,18 @@ public final class ConfigurationFactory {
      */
     public <T> T loadConfiguration(ModuleCharacteristics moduleCharacteristics, Class<T> configurationClass) {
 
-        String defaultFileName = String.format(DEFAULT_CONFIGURATION_CLASSPATH_LOCATION, 
+        String defaultClassPathLocation = String.format(DEFAULT_CONFIGURATION_CLASSPATH_LOCATION, 
                 moduleCharacteristics.getLowerCaseName());
-        String defaultTestFileName = String.format(DEFAULT_TEST_CONFIGURATION_CLASSPATH_LOCATION, 
+        String defaultTestClassPathLocation = String.format(DEFAULT_TEST_CONFIGURATION_CLASSPATH_LOCATION, 
                         moduleCharacteristics.getLowerCaseName());
 
-        InputStream configStream = ClassLoader.getSystemResourceAsStream(defaultTestFileName);
+        InputStream configStream = ClassLoader.getSystemResourceAsStream(defaultTestClassPathLocation);
         if (configStream == null) {
-            configStream = ClassLoader.getSystemResourceAsStream(defaultFileName);
+            configStream = ClassLoader.getSystemResourceAsStream(defaultClassPathLocation);
         }
         if (configStream == null) {
-            throw new ConfigurationException("Failed to find " + defaultTestFileName + " or " + defaultFileName + 
-                    " in classpath");
+            throw new ConfigurationException("Failed to find " + defaultTestClassPathLocation + " or " + 
+                    defaultClassPathLocation + " in classpath");
         }
         try {
             return (T) JaxbHelper.loadXml(configurationClass, configStream);
