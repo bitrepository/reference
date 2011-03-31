@@ -28,6 +28,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <description>Contains functionality for reading from a Bitrepository system. This includes ﻿Get File, ﻿Get Checksums and Get File IDs.</description>
     <build>
         <plugins>
             <plugin>

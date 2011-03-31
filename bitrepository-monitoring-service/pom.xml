@@ -7,5 +7,5 @@
   </parent>
   <artifactId>bitrepository-monitoring-service</artifactId>
   <name>Bitrepository Monitoring Service</name>
-  <description>Contains functionality for monitoring the Bitrepository system.</description>
+  <description>Contains functionality for monitoring the Bitrepository system. The monitoring comonent is part of the system infrastructure.</description>
 </project>

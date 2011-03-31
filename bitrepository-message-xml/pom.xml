@@ -9,6 +9,6 @@
 	</parent>
 	<artifactId>bitrepository-message-xml</artifactId>
 
-	<name>Bitrepository message xml definition</name>
+	<name>Bitrepository message xml definitions</name>
 	<description>Contains the definitions for the Bitrepository message content</description>
 </project>

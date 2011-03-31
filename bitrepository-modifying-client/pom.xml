@@ -9,7 +9,8 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>bitrepository-modifying-client</artifactId>
   <name>Bitrepository Modifying Client</name>
-    <dependencies>
+  <description>Functionality for modifing the content of a Bitrepository system. This includes PutFIle, Replace and Delete functionality.</description>
+  <dependencies>
         <dependency>
             <groupId>org.bitrepository</groupId>
             <artifactId>bitrepository-protocol</artifactId>

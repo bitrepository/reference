@@ -93,10 +93,12 @@
     <url>http://sbforge.statsbiblioteket.dk/fisheye/hudson/job/Bitmagasinet-compile/</url>
   </ciManagement>
 
+  <description>The Bitrepository system is to enable longterm preservation of data in a distributed, highly redundant architecture. The data integrity is ensured by using multiple, independently developed data storage systems (﻿Pillars) across different organizations, together with functionality for maintaining the ﻿Integrity of the data over time. </description>
   <url>https://sbforge.org/display/BITMAG</url>
 
   <organization>
     <name>The State and University Library, The Royal Library and The State Archives, Denmark</name>
+    <url>https://sbforge.org/display/BITMAG</url>
   </organization>
 
   <scm>
@@ -251,15 +253,13 @@
               <version>3.0-beta-3</version>
               <configuration>
                 <reportPlugins>
-                <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-project-info-reports-plugin</artifactId>
-              <version>2.3.1</version>
-              <configuration>
-                <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-              </configuration>
-            </plugin>
+                  <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>2.3.1</version>
+                    <configuration>
+                    </configuration>
+                  </plugin>
                   <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
