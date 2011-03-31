@@ -103,7 +103,7 @@
 
   <scm>
     <url>https://sbforge.org/fisheye</url>
-    <connection>scm:svn:https://gforge.statsbiblioteket.dk/svn/bitmagasin</connection>
+    <connection>scm:svn:https://sbforge.org/svn/bitrepository/trunk</connection>
   </scm>
 
   <dependencies>
