@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +38,7 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.slf4j.Logger;
@@ -48,8 +48,10 @@ import org.slf4j.LoggerFactory;
  * The client for sending and handling 'GetFile' operations.
  * Is able to either retrieve a file from a specific pillar, or to identify how fast each pillar in a given SLA is to 
  * retrieve  a specific file and then retrieve it from the fastest pillar.
+ * The files are delivered to a preconfigured directory.
  * 
- * TODO move all the message generations into separate methods.
+ * TODO move all the message generations into separate methods, or use the auto-generated constructors, which Mikis
+ * has talked about.
  */
 public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClientExternalAPI {
     /** The log for this instance.*/
@@ -83,23 +85,11 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
         log.info("Initialising the GetClient");
         config = AccessComponentFactory.getInstance().getConfig();
         
-        fileDir = new File(config.getFileDir());
-        if(fileDir.isFile()) {
-            throw new AccessException("The file directory '" + fileDir.getAbsolutePath() + "' already exists as a "
-                    + "file, and not as a directory, which is required.");
-        }
-        if(!fileDir.exists() || !fileDir.isDirectory()) {
-            fileDir.mkdirs();
-            if(!fileDir.isDirectory()) {
-                throw new AccessException("The file directory '" + fileDir.getAbsolutePath() + "' cannot be "
-                        + "instantiated as a directory.");
-            }
-        }
+        // retrieve the directory for delivering the output files.
+        fileDir = FileUtils.retrieveDirectory(config.getFileDir());
         
-        // TODO use a settings. Temporarily use the current time.
+        // retrieve the queue from the configuration.
         queue = config.getQueue();
-        System.out.println("GetFileClient Queue: " + queue);
-        
         messageListener = new GetFileClientMessageListener(this);
         
         // Add the messageListener to the messagebus for listening to the queue.

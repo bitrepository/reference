@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.modify;
+package org.bitrepository.common.utils;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -30,9 +30,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
-import org.bitrepository.bitrepositoryelements.ChecksumsTypeTYPE;
+import org.bitrepository.common.ConfigurationException;
 
 /**
  * Utility class for handling checksum calculations.
@@ -52,53 +51,21 @@ public final class ChecksumUtils {
      * Private constructor. To prevent instantiation of this utility class.
      */
     private ChecksumUtils() { }
-    
-    /**
-     * Calculates the checksum for a file based on the given checksums type.
-     * The type of checksum is used for finding the corresponding algorithm,
-     * which is used for the actual calculation of the checksum.
-     * The answer is delivered in hexadecimal form.
-     * 
-     * @param type The type of checksum.
-     * @param file The file to calculate the checksum for.
-     * @return The checksum in hexadecimal form.
-     */
-    public static String getChecksum(ChecksumsTypeTYPE type, File file) {
-        try {
-            MessageDigest md;
-            if(type.equals(ChecksumsTypeTYPE.MD_5)) {
-                md = MessageDigest.getInstance("MD5");
-            } else if(type.equals(ChecksumsTypeTYPE.SHA_3)) {
-                md = MessageDigest.getInstance("SHA");
-            } else {
-                throw new IllegalArgumentException("The digest is not "
-                        + "supported! . . . Yet at least.");
-            }
-            
-            return generateChecksum(file, md);
-        } catch (NoSuchAlgorithmException e) {
-            throw new ModifyException("Could not digest checksum algorith '" 
-                    + type.value() + "'.", e);
-        }
-    }
 
     /**
      * Calculates the checksum for a file based on the given checksum algorith.
      * 
      * @param file The file to calculate the checksum for.
-     * @param messageDigest The digest algorithm to use for calculating the 
-     * checksum of the file.
+     * @param messageDigest The digest algorithm to use for calculating the checksum of the file.
      * @return The checksum of the file in hexadecimal.
      */
-    private static String generateChecksum(File file, 
-            MessageDigest messageDigest) {
+    public static String generateChecksum(File file, MessageDigest messageDigest) {
         byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
         int bytesRead;
         try {
             DataInputStream fis = null;
             try {
-                fis = new DataInputStream(new BufferedInputStream(
-                        new FileInputStream(file)));
+                fis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
                 messageDigest.reset();
                 while ((bytesRead = fis.read(bytes)) > 0) {
                     messageDigest.update(bytes, 0, bytesRead);
@@ -109,9 +76,8 @@ public final class ChecksumUtils {
                 }
             }
         } catch (IOException e) {
-            throw new ModifyException("Could not calculate the checksum with "
-                    + "algorithm '" + messageDigest + "' for file '"
-                    + file.getAbsolutePath() + "'.", e);
+            throw new ConfigurationException("Could not calculate the checksum with algorithm '" + messageDigest 
+                    + "' for file '" + file.getAbsolutePath() + "'.", e);
         }
         return toHex(messageDigest.digest());
     }
@@ -124,10 +90,7 @@ public final class ChecksumUtils {
      */
     private static String toHex(byte[] byteArray) {
         // The list of value representations for hexadecimals.
-        char[] hexdigit = {
-                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c',
-                'd', 'e', 'f'
-        };
+        char[] hexdigit = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
         StringBuffer sb = new StringBuffer("");
         for (byte b : byteArray) {
@@ -136,5 +99,4 @@ public final class ChecksumUtils {
         }
         return sb.toString();
     }
-
 }

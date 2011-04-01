@@ -24,34 +24,20 @@
  */
 package org.bitrepository.modify;
 
+import java.io.File;
+
 /**
- * The default exception for the Modify module.
- * @author jolf
+ * This is the external interface for the put client.
+ * A put client must have both the internal (PutClientAPI) and the external (PutClientExternalAPI) APIs.
  */
-public class ModifyException extends RuntimeException {
+interface PutClientExternalAPI {
     /**
-     * Constructor for this exception with both text message and a cause.
-     * @param message The message for the exception.
-     * @param cause The cause in the form of another Throwable which has 
-     * triggered this exception.
+     * Method for putting a file with a given ID.
+     * 
+     * @param file The file to put.
+     * @param fileId The unique identification for the file (unique within 
+     * the SLA).
+     * @param slaId The ID for the SLA which the file belongs to.
      */
-    public ModifyException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    /**
-     * Constructor for this exception based on a text message.
-     * @param message The message for the exception.
-     */
-    public ModifyException(String message) {
-        super(message);
-    }
-
-    /**
-     * Constructor for this exception based on a cause.
-     * @param cause The Throwable cause which has triggered this exception.
-     */
-    public ModifyException(Throwable cause) {
-        super(cause);
-    }
+    abstract void putFileWithId(File file, String fileId, String slaId);
 }

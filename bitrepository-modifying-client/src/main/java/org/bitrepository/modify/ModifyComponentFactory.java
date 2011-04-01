@@ -1,6 +1,6 @@
 /*
  * #%L
- * bitrepository-access-client
+ * Bitmagasin modify client
  * 
  * $Id$
  * $HeadURL$
@@ -22,9 +22,10 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access;
 
-import org.bitrepository.access_client.configuration.AccessConfiguration;
+package org.bitrepository.modify;
+
+import org.bitrepository.modify_client.configuration.ModifyConfiguration;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 
@@ -32,35 +33,35 @@ import org.bitrepository.common.ModuleCharacteristics;
  * Factory class for the access module. 
  * Instantiates the instances of the interfaces within this module.
  */
-public class AccessComponentFactory {
+public class ModifyComponentFactory {
     /** The singleton instance. */
-    private static AccessComponentFactory instance;
-    
+    private static ModifyComponentFactory instance;
+
     /**
      * Instantiation of this singleton.
      * 
      * @return The singleton instance of this factory class.
      */
-    public static AccessComponentFactory getInstance() {
+    public static ModifyComponentFactory getInstance() {
         // ensure singleton.
         if(instance == null) {
-            instance = new AccessComponentFactory();
+            instance = new ModifyComponentFactory();
         }
         return instance;
     }
-    
+
     /** The characteristics for this module.*/
     private ModuleCharacteristics moduleCharacter;
     /** The configuration for this module.*/
-    private AccessConfiguration config;
-    
+    private ModifyConfiguration config;
+
     /**
      * Private constructor for initialisation of the singleton.
      */
-    private AccessComponentFactory() { 
-        moduleCharacter = new ModuleCharacteristics("access-client");
+    private ModifyComponentFactory() { 
+        moduleCharacter = new ModuleCharacteristics("modify-client");
     }
-    
+
     /**
      * Method for retrieving the characteristics for this module.
      * @return The characteristics for this module.
@@ -68,29 +69,21 @@ public class AccessComponentFactory {
     public ModuleCharacteristics getModuleCharacteristics() {
         return moduleCharacter;
     }
-    
+
     /**
      * Method for extracting the configuration for the access module.
      * @return The access module configuration.
      */
-    public AccessConfiguration getConfig() {
+    public ModifyConfiguration getConfig() {
         if (config == null) {
             ConfigurationFactory configurationFactory = new ConfigurationFactory();
             config =
-                configurationFactory.loadConfiguration(getModuleCharacteristics(), AccessConfiguration.class);
+                configurationFactory.loadConfiguration(getModuleCharacteristics(), ModifyConfiguration.class);
         }
         return config;
     }
-
     
-    /**
-     * Method for instantiating the GetFileClient defined in the configuration.
-     * TODO use the configuration!!!!!
-     * 
-     * @return The GetFileClient.
-     */
-    public GetFileClientExternalAPI retrieveGetFileClient() {
-        // TODO use the configurations instead!
-        return new SimpleGetFileClient();
+    public PutClientExternalAPI retrievePutClient() {
+        return new SimplePutClient();
     }
 }

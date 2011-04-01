@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- URLs in schema targetNamespace must be updated later -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://bitrepository.org/modify-client/Configuration.xsd"
+	targetNamespace="http://bitrepository.org/modify-client/Configuration.xsd"
+	elementFormDefault="qualified">
+	
+	
+ <element name="ModifyConfiguration">
+  <annotation>
+   <documentation xml:lang="en">
+    The full configuration for the modify module
+   </documentation>
+  </annotation>
+  <complexType>
+   <sequence>
+    <element name="queue" type="string">
+     <annotation>
+      <documentation xml:lang="en">
+       The queue for communication.
+      </documentation>
+     </annotation>
+    </element>
+    <element name="use-checksum" type="boolean">
+     <annotation>
+      <documentation xml:lang="en">
+       Whether or not to use a checksum for put.
+      </documentation>
+     </annotation>
+    </element>
+    <element name="ChecksumType" type="string">
+     <annotation>
+      <documentation xml:lang="en">
+       The type of checksum to use for put.
+      </documentation>
+     </annotation>
+    </element>
+    <element name="salt" type="string">
+     <annotation>
+      <documentation xml:lang="en">
+       The salt for successfull checksum calculation.
+      </documentation>
+     </annotation>
+    </element>
+    <element name="use-salt" type="boolean">
+     <annotation>
+      <documentation xml:lang="en">
+       Whether to use a salt in during the Put operation.
+      </documentation>
+     </annotation>
+    </element>
+    <!-- Content! -->
+   </sequence>
+  </complexType>
+ </element>
+</schema>

@@ -30,7 +30,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
 
 /**
  * Internal interface for communication from the GetFileMessageListener.
- * 
+ * A GetFileClient needs to inherit both this external interface and the internal interface 'GetFileClientAPI'.
  */
 public abstract class GetFileClientAPI {
     /**

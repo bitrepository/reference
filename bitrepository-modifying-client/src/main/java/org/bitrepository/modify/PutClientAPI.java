@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitmagasin integrationstest
+ * Bitmagasin modify client
  * 
  * $Id$
  * $HeadURL$
@@ -24,31 +24,20 @@
  */
 package org.bitrepository.modify;
 
-import java.io.File;
-
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileResponse;
 
+/**
+ * This is the internal interface for the PutClientMessage listener.
+ * A put client must have both the internal (PutClientAPI) and the external (PutClientExternalAPI) APIs.
+ */
 public abstract class PutClientAPI {
-
     /**
-     * Method for putting a file with a given ID.
-     * 
-     * @param file The file to put.
-     * @param fileId The unique identification for the file (unique within 
-     * the SLA).
-     * @param slaId The ID for the SLA which the file belongs to.
-     */
-    abstract void putFileWithId(File file, String fileId, String slaId);
-    
-    /**
-     * Method for handling a PutFileResponse. This message tells how far in the
-     * storage process the given pillar is. 
-     * It is possible for the pillars have a storage procedure which involves
-     * several steps before the file is properly stored. After each step one of
-     * these PutFileResponse messages should be sent, and only when the storage
-     * process is finished should the final PutFileComplete message be sent.
+     * Method for handling a PutFileResponse. This message tells how far in the storage process the given pillar is. 
+     * It is possible for the pillars have a storage procedure which involves several steps before the file is 
+     * properly stored. After each step one of these PutFileResponse messages should be sent, and only when the 
+     * storage process is finished should the final PutFileComplete message be sent.
      * 
      * @param msg The PutFileResponse to be handled.
      */
@@ -67,5 +56,4 @@ public abstract class PutClientAPI {
      * @param msg The IdentifyPillarsForPutfileReply message.
      */
     abstract void identifyReply(IdentifyPillarsForPutFileReply msg);
-    
 }

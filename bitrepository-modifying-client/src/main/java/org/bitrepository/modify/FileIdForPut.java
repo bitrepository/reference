@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitmagasin integrationstest
+ * Bitmagasin modify client
  * 
  * $Id$
  * $HeadURL$

@@ -31,6 +31,7 @@ import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileResponse;
 import org.bitrepository.common.JaxbHelper;
+import org.bitrepository.modify_client.configuration.ModifyConfiguration;
 import org.bitrepository.protocol.AbstractMessageListener;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.jaccept.structure.ExtendedTestCase;
@@ -43,6 +44,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigInteger;
 import java.net.URL;
+import java.util.Date;
 
 /**
  * Tester class for testing the PutClient functionality. 
@@ -60,9 +62,12 @@ public class PutClientTester extends ExtendedTestCase {
         String dataId = "dataId1";
         String slaId = "THE-SLA";
         String pillarId = "The-Test-Pillar";
+        String queue = "" + (new Date()).getTime();
+        ModifyConfiguration config = ModifyComponentFactory.getInstance().getConfig();
+        config.setQueue(queue);
         SimplePutClient pc = new SimplePutClient();
         TestMessageListener listener = new TestMessageListener();
-        ProtocolComponentFactory.getInstance().getMessageBus().addListener(pc.queue, listener);
+        ProtocolComponentFactory.getInstance().getMessageBus().addListener(queue, listener);
         
         File testFile = new File("src/test/resources/test.txt");
 
@@ -102,8 +107,7 @@ public class PutClientTester extends ExtendedTestCase {
         identifyReply.setVersion((short) 1);
         // TODO identifyReply.setTimeToDeliver(value) ???
         
-        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(pc.queue, 
-                identifyReply);
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, identifyReply);
         
         synchronized(this) {
             try {
@@ -159,8 +163,7 @@ public class PutClientTester extends ExtendedTestCase {
         response.setMinVersion((short) 1);
         response.setVersion((short) 1);
         
-        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(
-                pc.queue, response);
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, response);
         
         synchronized(this) {
             try {
@@ -192,8 +195,7 @@ public class PutClientTester extends ExtendedTestCase {
                 + "When do we come to the action?");
         // Ignore the salt!
         
-        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(
-                pc.queue, complete);
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, complete);
         
         synchronized(this) {
             try {
