@@ -43,7 +43,7 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
       <ActorComment>System trigger of client</ActorComment>
     </ActorOnFile>
     <ActionOnFile>
-      <IntegrityCheck>CHEKSUMSCHECK</IntegrityCheck>
+      <IntegrityCheck>CHECKSUMSCHECK</IntegrityCheck>
     </ActionOnFile>
   </AuditTrailData>
   <AuditTrailData>
@@ -57,11 +57,11 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
     <ActorOnFile>
       <ActorID>MyActorID</ActorID>
       <ActorName>MyActorName</ActorName>
-      <ActorType>PROCESS</ActorType>
+      <ActorType>MASSPROCESS</ActorType>
       <ActorComment>Requested mass processing</ActorComment>
     </ActorOnFile>
     <ActionOnFile>
-      <Access>MASSPROCESS</Access>
+      <Access>OTHER</Access>
     </ActionOnFile>
   </AuditTrailData>
 </bro:GetAuditTrailsResults>
