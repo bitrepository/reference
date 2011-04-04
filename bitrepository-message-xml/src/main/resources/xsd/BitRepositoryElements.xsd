@@ -346,21 +346,6 @@
                 Access via GET operation 
                 </xs:documentation></xs:annotation>
               </xs:enumeration>
-              <xs:enumeration value="MASSPROCESS">
-                <xs:annotation><xs:documentation xml:lang="en">
-                Access via mass processing operation 
-                </xs:documentation></xs:annotation>
-              </xs:enumeration>
-              <xs:enumeration value="INTERNALUSER">
-                <xs:annotation><xs:documentation xml:lang="en">
-                Access made from internal user  
-                </xs:documentation></xs:annotation>
-              </xs:enumeration>
-              <xs:enumeration value="INTERNALPROGRAM">
-                <xs:annotation><xs:documentation xml:lang="en">
-                Access made from internal program  
-                </xs:documentation></xs:annotation>
-              </xs:enumeration>
               <xs:enumeration value="OTHER">
                 <xs:annotation><xs:documentation xml:lang="en">
                 Other forms of access 
@@ -558,9 +543,24 @@
                 User logged on e.g. coordination layer or pillar
                 </xs:documentation></xs:annotation>
               </xs:enumeration>
+              <xs:enumeration value="INTERNALUSER">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Internal user
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="INTERNALPROGRAM">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Internal program
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
               <xs:enumeration value="PROCESS">
                 <xs:annotation><xs:documentation xml:lang="en">
-                Process, e.g. mass-processing process on pillar 
+                Single File Processing operation
+                </xs:documentation></xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="MASSPROCESS">
+                <xs:annotation><xs:documentation xml:lang="en">
+                Mass processing operation
                 </xs:documentation></xs:annotation>
               </xs:enumeration>
               <xs:enumeration value="OTHER">
