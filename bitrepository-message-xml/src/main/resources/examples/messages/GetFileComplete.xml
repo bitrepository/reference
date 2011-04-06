@@ -28,12 +28,15 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <FileID>MyDataID</FileID>
-  <PartOffSet>10</PartOffSet> 
-  <PartLength>100</PartLength> 
-  <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
   <PillarID>MyPillar</PillarID>
-  <PillarChecksumType>MD5</PillarChecksumType>
-  <CompleteCode>ERR_NFID</CompleteCode>
-  <CompleteText>File not found</CompleteText>
+  <FileID>MyDataID</FileID>
+  <FilePart>
+    <PartOffSet>10</PartOffSet> 
+    <PartLength>100</PartLength>
+  </FilePart> 
+  <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
+  <CompleteInfo>
+    <CompleteCode>480</CompleteCode>
+    <CompleteText>successfull completion</CompleteText>
+  </CompleteInfo>
 </bro:GetFileComplete>

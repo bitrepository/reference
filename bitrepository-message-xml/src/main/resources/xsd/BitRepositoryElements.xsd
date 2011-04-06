@@ -19,7 +19,7 @@
     </xs:documentation></xs:annotation>
     <xs:complexType>
     <xs:sequence>
-      <xs:element ref="FileID" > 
+      <xs:element name="FileID" type="FileID_TYPE"> 
         <xs:annotation><xs:documentation xml:lang="en">
         FileID for object which the audit trail concern
         </xs:documentation></xs:annotation>
@@ -54,40 +54,135 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="Checksum" type="Checksum_TYPE">
-    <xs:annotation><xs:documentation xml:lang="en">
-    Checksum measure for specific data object
-    e.g. used in delivery of GetChecksums result
-    </xs:documentation></xs:annotation>
+ <xs:element name="ChecksumDataPairs" > 
+   <xs:complexType>
+     <xs:sequence>
+       <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" > 
+         <xs:annotation><xs:documentation xml:lang="en">
+         The number of checksums included
+         </xs:documentation></xs:annotation>
+       </xs:element>
+       <xs:element name="ChecksumDataItems">
+         <xs:annotation><xs:documentation xml:lang="en">
+         List of data for checksums
+         </xs:documentation></xs:annotation>
+         <xs:complexType>
+           <xs:sequence>
+             <xs:element name="ChecksumDataItem" type="ChecksumData_TYPE" minOccurs="0" maxOccurs="unbounded" /> 
+           </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+ 
+  <xs:element name="ChecksumSpecs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of checksums included
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="ChecksumSpecsItems">
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of data for checksums
+          </xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ChecksumSpecsItem"  type="ChecksumSpec_TYPE" minOccurs="0" maxOccurs="unbounded" > 
+                <xs:annotation><xs:documentation xml:lang="en">
+                Optionally salt and/or type of checksum for extra checksumscheck of data object at 
+                completion to of put file. The result can be given in PutFileComplete
+                </xs:documentation></xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
   </xs:element>
 
-  <xs:group name="ChecksumsData">
+  <xs:element name="ChecksumsData">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of checksums included
+          </xs:documentation></xs:annotation>
+        </xs:element>
+ 
+        <xs:element name="ChecksumDataItems">
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of data for checksums
+          </xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ChecksumDataItem" type="ChecksumData_TYPE" minOccurs="0" maxOccurs="unbounded" /> 
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="ChecksumsDataPerFileID">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ChecksumSpec" type="ChecksumSpec_TYPE" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The type and possible salt of checksums included
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of checksums included
+          </xs:documentation></xs:annotation>
+        </xs:element>
+ 
+        <xs:element name="ChecksumDataPerFileIDItems">
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of data for checksums
+          </xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="ChecksumDataPerFileIDItem" minOccurs="0" maxOccurs="unbounded" /> 
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ChecksumDataPerFileIDItem">
     <xs:annotation><xs:documentation xml:lang="en">
-    Includes relevant information for a checksum in a result
+    Includes relevant information for one checksum in a result
     </xs:documentation></xs:annotation>
-
-    <xs:sequence>
-      <xs:element name="FileID" type="FileID_TYPE" >
-        <xs:annotation><xs:documentation xml:lang="en">
-        Identifier of data the checksum is for
-        </xs:documentation></xs:annotation>
-      </xs:element>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="FileID" type="FileID_TYPE" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of data the checksum is for
+          </xs:documentation></xs:annotation>
+        </xs:element>
          
-      <xs:element name="Checksum" type="Checksum_TYPE">
-        <xs:annotation><xs:documentation xml:lang="en">
-        Checksum of data which will be based on given algorithm and include salt if specified 
-        </xs:documentation></xs:annotation>
-      </xs:element>
+        <xs:element name="ChecksumValue" type="ChecksumValue_TYPE">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksum value of data which will be based on given algorithm and include salt if specified 
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-      <xs:element name="CalculationTime" type="SystemDateTime_TYPE">
-        <xs:annotation><xs:documentation xml:lang="en">
-        The time when the checksum was last calculated
-        (especially for ordinary checksums on off-line medias, there can be long intervals between
-        calculations, - in such cases this information is crucial for alarming)
-        </xs:documentation></xs:annotation>
-      </xs:element>
-    </xs:sequence>
-  </xs:group>
+        <xs:element name="CalculationTimestamp" type="SystemDateTime_TYPE">
+          <xs:annotation><xs:documentation xml:lang="en">
+          The time when the checksum was last calculated
+          (especially for ordinary checksums on off-line medias, there can be long intervals between
+          calculations, - in such cases this information is crucial for alarming)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 
   <xs:group name="Core">
     <xs:annotation><xs:documentation xml:lang="en">
@@ -96,7 +191,7 @@
     </xs:documentation></xs:annotation>
 
     <xs:sequence>
-      <xs:element ref="CorrelationID">
+      <xs:element name="CorrelationID" type="CorrelationID_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         CorrelationID is a unique identifier for communication usually on primitive level, 
         e.g the IdentifyPillarsForGet part of a get operation
@@ -118,37 +213,34 @@
       </xs:element>
     </xs:sequence>
   </xs:group>
-  
-  
-  <xs:element name="CompleteCode" type="CompleteCode_TYPE">
+
+  <xs:element name="CorrelationID" type="CorrelationID_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    CompleteCode is a code for the type of completion given
-    The actual codes are specified later, e.g. IoError, DataNotFound, AccessDenied, OK
+    Used for parameters
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="CompleteText" type="xs:string">
+  <xs:element name="CompleteInfo">
     <xs:annotation><xs:documentation xml:lang="en">
-    CompleteText is a text for logging in the completion
-    It does not have a semantic meaning, but contributes to a more readable log
+    Information of completion
     </xs:documentation></xs:annotation>
-  </xs:element>
-  
-  <xs:element name="CorrelationID" type="CorrelationID_TYPE">
-    <xs:annotation><xs:documentation xml:lang="en">
-    A unique identifier for communication usually on primitive level, 
-    e.g the IdentifyPillarsForGet part of a get operation.
-    It can also be used to make relation to a message e.g. for data IDs 
-    delivered via data transmission.
-    </xs:documentation></xs:annotation>
-  </xs:element>
-  
-  <xs:element name="ExpectedFileSize" type="xs:nonNegativeInteger"> 
-    <xs:annotation><xs:documentation xml:lang="en">
-    The size of data expressed in number of bytes
-    e.g. size of data to be put
-    The type can later be extended to include measure type and measure
-    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="CompleteCode" type="CompleteCode_TYPE">
+          <xs:annotation><xs:documentation xml:lang="en">
+          CompleteCode is a code for the type of completion given
+          The actual codes are specified later, e.g. IoError, DataNotFound, AccessDenied, OK
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element name="CompleteText" type="xs:string">
+          <xs:annotation><xs:documentation xml:lang="en">
+          CompleteText is a text for logging in the completion
+          It does not have a semantic meaning, but contributes to a more readable log
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
   </xs:element>
 
   <xs:element name="FileAddress" type="Address_TYPE">
@@ -159,11 +251,9 @@
     </xs:documentation></xs:annotation>
   </xs:element>
   
-  <xs:element name="FileChecksumType" type="ChecksumsType_TYPE">
+  <xs:element name="FileChecksumSpec" type="ChecksumSpec_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Gives information about which type of checksum is used for data
-    This is for instance used for the GetChecksum operation 
-    In first version this will be text like MD5, later it will be aligned with a standard 
     </xs:documentation></xs:annotation>
   </xs:element>
 
@@ -206,47 +296,109 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:group name="FileIDsData">
+  <xs:element name="FileIDsData">
     <xs:annotation><xs:documentation xml:lang="en">
     Includes relevant information on data IDs in a result
     </xs:documentation></xs:annotation>
-    <xs:sequence>
-             
-      <xs:element name="FileID" type="FileID_TYPE">
-        <xs:annotation><xs:documentation xml:lang="en">
-        Identifier of data
-        </xs:documentation></xs:annotation>
-      </xs:element>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of data IDs included
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        
+        <xs:element name="FileIDsDataItems" > 
+          <xs:annotation><xs:documentation xml:lang="en" >
+          List of data on data identifiers in result
+          </xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="FileIDsDataItem" minOccurs="0" maxOccurs="unbounded" /> 
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="FileIDsDataItem">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Includes relevant information on a data ID in a result
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="FileID" type="FileID_TYPE">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of data
+          </xs:documentation></xs:annotation>
+        </xs:element>
          
-      <xs:element name="CalculationTime" type="SystemDateTime_TYPE">
-        <xs:annotation><xs:documentation xml:lang="en">
-        The time when the data  was last seen
-        (especially for off-line medias, there can be long intervals between
-        actually seeing the file with the data, - in such cases this information is crucial for alarming)
-        </xs:documentation></xs:annotation>
-      </xs:element>
+        <xs:element name="CalculationTimestamp" type="SystemDateTime_TYPE">
+          <xs:annotation><xs:documentation xml:lang="en">
+          The time when the data  was last seen
+          (especially for off-line medias, there can be long intervals between
+          actually seeing the file with the data, - in such cases this information is crucial for alarming)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 
-    </xs:sequence>
-  </xs:group>
+  <xs:element name="FileIDsParameterData">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Includes information on data IDs use in parameter
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of data IDs included
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-  <xs:group name="FilePart" > 
+        <xs:element name="FileIDsItems" > 
+          <xs:annotation><xs:documentation xml:lang="en" >
+          List of file identifiers 
+          </xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="FileID" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType> 
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="FilePart" > 
     <xs:annotation><xs:documentation xml:lang="en">
     Specification of data object part by posion and length after position
     </xs:documentation></xs:annotation>
-    <xs:sequence>
-      <xs:element name="PartOffSet" type="xs:nonNegativeInteger">
-        <xs:annotation><xs:documentation xml:lang="en">
-        Start position of the part of the data object
-        </xs:documentation></xs:annotation>
-      </xs:element>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="PartOffSet" type="xs:nonNegativeInteger">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Start position of the part of the data object
+          </xs:documentation></xs:annotation>
+        </xs:element>
 
-      <xs:element name="PartLength" type="xs:nonNegativeInteger">
-        <xs:annotation><xs:documentation xml:lang="en">
-        length of the part of the data object
-        </xs:documentation></xs:annotation>
-      </xs:element>
-    </xs:sequence>
-  </xs:group>
+        <xs:element name="PartLength" type="xs:nonNegativeInteger">
+          <xs:annotation><xs:documentation xml:lang="en">
+          length of the part of the data object
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="FileSize" type="xs:nonNegativeInteger"> 
+    <xs:annotation><xs:documentation xml:lang="en">
+    The size of data expressed in number of bytes
+    e.g. size of data to be put
+    The type can later be extended to include measure type and measure
+    </xs:documentation></xs:annotation>
+  </xs:element>
 
   <xs:element name="NoOfItems" type="xs:nonNegativeInteger"> 
     <xs:annotation><xs:documentation xml:lang="en">
@@ -261,9 +413,9 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="PillarChecksumType" type="ChecksumsType_TYPE">
+  <xs:element name="PillarChecksumSpec" type="ChecksumSpec_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    Information about which type of checksum is used for data on checksums pillar
+    Information about which type of checksum is used for data on checksums pillar (algorith and possible salt)
     In a Get this information will only be relevant for identification of pillars
     In a Put this will give input to check if the right put is performed on checksums pillar according to SLA
     In first version this will be text like MD5, later it will be aligned with a standard 
@@ -276,18 +428,27 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="ResponseCode" type="ResponseCode_TYPE">
+  <xs:element name="ResponseInfo">
     <xs:annotation><xs:documentation xml:lang="en">
-    A code for the type of response given
-    The actual codes are specified later, e.g. UnknownFileId, OK
+    Information of reponse
     </xs:documentation></xs:annotation>
-  </xs:element>
-
-  <xs:element name="ResponseText" type="xs:string">
-    <xs:annotation><xs:documentation xml:lang="en">
-    A text for logging in the response. 
-    It does not have a semantic meaning, but contributes to a more readable log
-    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ResponseCode" type="ResponseCode_TYPE">  
+          <xs:annotation><xs:documentation xml:lang="en">
+          A code for the type of response given
+          The actual codes are specified later, e.g. UnknownFileId, OK
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        
+        <xs:element name="ResponseText" type="xs:string" minOccurs="0" maxOccurs="1" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          A text for logging in the response. 
+          It does not have a semantic meaning, but contributes to a more readable log
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
   </xs:element>
 
   <xs:element name="ResultAddress" type="Address_TYPE">
@@ -296,11 +457,46 @@
     </xs:documentation></xs:annotation>
   </xs:element>
   
-  <xs:element name="SaltParameter" type="SaltParameter_TYPE">
+  <xs:element name="ResultingFileIDs">   
     <xs:annotation><xs:documentation xml:lang="en">
-    An extra salt to be added in the checksum calculation
-    If this parameter is given, it is also specification the checksum calculation must include the salt
+    result is either given via specified address or directly 
     </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="ResultAddress" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where result data has been delivered (if completed)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="FileIDsData"> 
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of data for file ids in result, if given in this message instead of via data transfer
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ResultingChecksums">
+    <xs:annotation><xs:documentation xml:lang="en">
+    result is either given via specified address or directly 
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="ResultAddress" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where result data has been delivered (if completed)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="ChecksumsDataPerFileID"> 
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of data for checksums in result, if given in this message instead of via data transfer
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
   </xs:element>
 
   <xs:element name="SlaID" type="SlaID_TYPE"> 
@@ -317,6 +513,14 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
+  <xs:attributeGroup name="VersionAttributes">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Attributes with information of message version for version control 
+    </xs:documentation></xs:annotation>
+    <xs:attribute name="version" type="xs:positiveInteger" use="required" />
+    <xs:attribute name="minVersion" type="xs:nonNegativeInteger" use="required" />
+  </xs:attributeGroup>
+  
 <!-- ************************************************************** -->
 <!-- ****** FUTURE ELEMENTS IN ALPHABETIC ORDER (used later) ****** -->
 <!-- ************************************************************** -->
@@ -593,15 +797,49 @@
     </xs:documentation></xs:annotation>
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
+
+  <xs:complexType name="ChecksumData_TYPE">
+    <xs:sequence>
+      <xs:element name="ChecksumSpec" type="ChecksumSpec_TYPE" > 
+        <xs:annotation><xs:documentation xml:lang="en">
+        The type and possible salt for calculation of the checksum 
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element name="ChecksumValue" type="ChecksumValue_TYPE" > 
+        <xs:annotation><xs:documentation xml:lang="en">
+        The value of the checksum
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ChecksumSpec_TYPE">
+    <xs:sequence>
+      <xs:element name="ChecksumType" type="ChecksumType_TYPE" > 
+        <xs:annotation><xs:documentation xml:lang="en">
+        The checksum type 
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element name="ChecksumSalt" type="SaltParameter_TYPE" minOccurs="0" maxOccurs="1" > 
+        <xs:annotation><xs:documentation xml:lang="en">
+        Optionally a salt parameter included in the checksum calculation 
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
   
-  <xs:simpleType name="ChecksumsType_TYPE">
+  <xs:simpleType name="ChecksumType_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Could e.g. be MD5, SHA-1. the protocol, however, does not make restriction of
+    which values that exists
+    </xs:documentation></xs:annotation>
     <xs:restriction base="xs:string">
-      <xs:enumeration value="MD5"/>
-      <xs:enumeration value="SHA-3"/>
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="Checksum_TYPE">
+  <xs:simpleType name="ChecksumValue_TYPE">
     <xs:restriction base="xs:string">
     </xs:restriction>
   </xs:simpleType>
@@ -614,10 +852,10 @@
   </xs:simpleType>
 
   <xs:simpleType name="CompleteCodePositive_TYPE">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="OK">
+    <xs:restriction base="xs:positiveInteger">
+      <xs:enumeration value="480">
         <xs:annotation><xs:documentation xml:lang="en">
-        Code telling that message request has been completed successfully
+        Message request has been completed successfully
         </xs:documentation></xs:annotation>
       </xs:enumeration>
     </xs:restriction>
@@ -688,11 +926,12 @@
   <xs:simpleType name="ERRORCODE_COMPLETE_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Error codes that are specific for Complete messages
+    Numbers may later be adjusted to fit a standard
     </xs:documentation></xs:annotation>
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="ERR_NOCOM">
+    <xs:restriction base="xs:positiveInteger">
+      <xs:enumeration value="581">
         <xs:annotation><xs:documentation xml:lang="en">
-        Code telling that operation was not completed for unknown reason
+        Operation was not completed for unknown reason
         </xs:documentation></xs:annotation>
       </xs:enumeration>
     </xs:restriction>
@@ -702,8 +941,12 @@
     <xs:annotation><xs:documentation xml:lang="en">
     Error codes that are specific for Alarm messages
     </xs:documentation></xs:annotation>
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="UNKNOWNUSER"/>
+    <xs:restriction base="xs:positiveInteger">
+      <xs:enumeration value="541">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Unknown user access
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
@@ -711,20 +954,20 @@
     <xs:annotation><xs:documentation xml:lang="en">
     General error codes
     </xs:documentation></xs:annotation>
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="ERR_NFID">
+    <xs:restriction base="xs:positiveInteger">
+      <xs:enumeration value="501">
         <xs:annotation><xs:documentation xml:lang="en">
-        Code telling that data for a FileID has been NOT been found for som sort of Get request
+        Data for a FileID has been NOT been found for som sort of Get request
         </xs:documentation></xs:annotation>
       </xs:enumeration>
-      <xs:enumeration value="ERR_DID">
+      <xs:enumeration value="502">
         <xs:annotation><xs:documentation xml:lang="en">
-        Code telling that there are duplicate FileID 
+        Duplicate FileID 
         </xs:documentation></xs:annotation>
       </xs:enumeration>
-      <xs:enumeration value="ERR_OTHER">
+      <xs:enumeration value="500">
         <xs:annotation><xs:documentation xml:lang="en">
-        Code telling that there are other reasons for failure
+        There are other reasons for failure
         text following error code must explain reason.
         This code should rarely be used, and use indicates that this type should be updated 
         </xs:documentation></xs:annotation>
@@ -736,10 +979,10 @@
     <xs:annotation><xs:documentation xml:lang="en">
     Error codes that are specific for Response messages
     </xs:documentation></xs:annotation>
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="ERR_NOUND">
+    <xs:restriction base="xs:positiveInteger">
+      <xs:enumeration value="561">
         <xs:annotation><xs:documentation xml:lang="en">
-        Code telling that request was not understood
+        Request was not understood
         </xs:documentation></xs:annotation>
       </xs:enumeration>
     </xs:restriction>
@@ -773,26 +1016,30 @@
   </xs:simpleType>
 
   <xs:simpleType name="ResponseCodePositive_TYPE">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="OK">
+    <xs:restriction base="xs:positiveInteger">
+      <xs:enumeration value="460">
         <xs:annotation><xs:documentation xml:lang="en">
-        Code telling that message request has been received and is expected to be met successfully
+        Message request has been received and is expected to be met successfully
         </xs:documentation></xs:annotation>
       </xs:enumeration>
-      <xs:enumeration value="OK_BF">
+      <xs:enumeration value="461">
         <xs:annotation><xs:documentation xml:lang="en">
-        Code telling that data from a PutFile request has been buffered successfully
+        Data from a PutFile request has been buffered successfully
         </xs:documentation></xs:annotation>
       </xs:enumeration>
-      <xs:enumeration value="OK_DF">
+      <xs:enumeration value="462">
         <xs:annotation><xs:documentation xml:lang="en">
-        Code telling that data for a FileID has been found for some sort of Get request
+        Data for a FileID has been found for some sort of Get request
         </xs:documentation></xs:annotation>
       </xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="SaltParameter_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    An extra salt to be added in the checksum calculation
+    If this parameter is given, it is also specification the checksum calculation must include the salt
+    </xs:documentation></xs:annotation>
     <xs:restriction base="xs:string">
     </xs:restriction>
   </xs:simpleType>
@@ -815,17 +1062,29 @@
     Indicates time measure from a point in time to another.
     In first version this will be in miliseconds, later it will be consisting of time and unit according to a standard 
     </xs:documentation></xs:annotation>
-    <xs:choice>
-      <xs:element name="MiliSec" type="xs:positiveInteger" >
+    <xs:sequence>
+      <xs:element name="TimeMeasureUnit" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="MILLISECONDS">
+              <xs:annotation><xs:documentation xml:lang="en">
+              Measure is specified in milli seconds
+              </xs:documentation></xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="HOURS">
+              <xs:annotation><xs:documentation xml:lang="en">
+              Measure is specified in hours
+              </xs:documentation></xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    
+      <xs:element name="TimeMeasureValue" type="xs:nonNegativeInteger" >
         <xs:annotation><xs:documentation xml:lang="en">
-        number of miliseconds
+        number of units 
         </xs:documentation></xs:annotation>
       </xs:element>
-      <xs:element name="Hours" type="xs:positiveInteger" >
-        <xs:annotation><xs:documentation xml:lang="en">
-        number of hours
-        </xs:documentation></xs:annotation>
-      </xs:element>
-    </xs:choice>
+    </xs:sequence>
   </xs:complexType>
 </xs:schema>

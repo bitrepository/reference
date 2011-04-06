@@ -28,6 +28,10 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <ResultAddress>http://myServer/myPlace/Myfile</ResultAddress>
   <PillarID>MyPillar</PillarID>
+  <FileIDs>
+    <FileID>MyDataID1</FileID>
+    <FileID>MyDataID2</FileID>
+  </FileIDs>
+  <ResultAddress>http://myServer/myPlace/Myfile</ResultAddress>
 </bro:GetFileIDsRequest>

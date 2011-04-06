@@ -32,9 +32,17 @@
     <FileID>MyDataID1</FileID>
     <FileID>MyDataID2</FileID>
   </FileIDs>
-  <FileChecksumType>MD5</FileChecksumType>
-  <SaltParameter>X</SaltParameter>
+  <FileChecksumSpec>
+    <ChecksumType>MD5</ChecksumType>
+    <ChecksumSalt>X</ChecksumSalt>
+  </FileChecksumSpec>
   <PillarID>MyPillar</PillarID>
-  <PillarChecksumType>MD5</PillarChecksumType>
-  <TimeToDeliver><MiliSec>1000</MiliSec></TimeToDeliver>
+  <PillarChecksumSpec>
+    <ChecksumType>MD5</ChecksumType>
+    <ChecksumSalt>X</ChecksumSalt>
+  </PillarChecksumSpec>
+  <TimeToDeliver>
+    <TimeMeasureUnit>MILLISECONDS</TimeMeasureUnit>
+    <TimeMeasureValue>1000</TimeMeasureValue>
+  </TimeToDeliver>
 </bro:IdentifyPillarsForGetChecksumsReply>

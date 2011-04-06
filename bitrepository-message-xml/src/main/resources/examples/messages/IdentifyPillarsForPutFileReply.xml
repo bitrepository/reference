@@ -28,8 +28,13 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <FileID>MyDataID</FileID>
   <PillarID>MyPillar</PillarID>
-  <PillarChecksumType>MD5</PillarChecksumType>
-  <TimeToDeliver><MiliSec>1000</MiliSec></TimeToDeliver>
+  <PillarChecksumSpec>
+    <ChecksumType>MD5</ChecksumType>
+    <ChecksumSalt>X</ChecksumSalt>
+  </PillarChecksumSpec>
+  <TimeToDeliver>
+    <TimeMeasureUnit>MILLISECONDS</TimeMeasureUnit>
+    <TimeMeasureValue>1000</TimeMeasureValue>
+  </TimeToDeliver>
 </bro:IdentifyPillarsForPutFileReply>

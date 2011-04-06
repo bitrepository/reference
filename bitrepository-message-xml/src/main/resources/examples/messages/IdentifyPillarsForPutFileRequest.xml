@@ -28,5 +28,4 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <FileID>MyDataID</FileID>
 </bro:IdentifyPillarsForPutFileRequest>

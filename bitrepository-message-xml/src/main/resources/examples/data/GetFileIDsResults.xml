@@ -28,9 +28,17 @@
 xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <SlaID>MySla</SlaID>
   <PillarID>MyPillar</PillarID>
-  <NoOfItems>1</NoOfItems>
-  <FileID>MydataId1</FileID>
-  <CalculationTime>2011-02-17T09:47:00</CalculationTime>
-  <FileID>MydataId1</FileID>
-  <CalculationTime>2011-02-17T09:47:00</CalculationTime>
+  <FileIDsData>
+    <NoOfItems>2</NoOfItems>
+    <FileIDsDataItems>
+      <FileIDsDataItem>
+        <FileID>MydataId1</FileID>
+        <CalculationTimestamp>2011-02-17T09:47:00</CalculationTimestamp>
+      </FileIDsDataItem>
+      <FileIDsDataItem>
+        <FileID>MydataId1</FileID>
+        <CalculationTimestamp>2011-02-17T09:47:00</CalculationTimestamp>
+      </FileIDsDataItem>
+    </FileIDsDataItems>
+  </FileIDsData>
 </bro:GetFileIDsResults>

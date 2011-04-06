@@ -28,17 +28,40 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
+  <PillarID>MyPillar</PillarID>
   <FileID>MyDataID</FileID>
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
-  <ExpectedFileSize>10000</ExpectedFileSize>
-  <bro:ChecksumForCheck>
-    <Checksum>135F21564</Checksum>
-    <FileChecksumType>MD5</FileChecksumType>
-  </bro:ChecksumForCheck>
-  <bro:SaltForCheck>
-    <SaltParameter>A</SaltParameter>
-    <bro:SaltChecksumType>MD5</bro:SaltChecksumType>
-  </bro:SaltForCheck>
-  <PillarID>MyPillar</PillarID>
-  <PillarChecksumType>MD5</PillarChecksumType>
+  <FileSize>10000</FileSize>
+  <ChecksumDataPairs>
+    <NoOfItems>2</NoOfItems>
+    <ChecksumDataItems>
+      <ChecksumDataItem>
+        <ChecksumSpec>
+          <ChecksumType>MD5</ChecksumType>
+          <ChecksumSalt>A</ChecksumSalt>
+        </ChecksumSpec>
+        <ChecksumValue>135F21564</ChecksumValue>
+      </ChecksumDataItem>
+      <ChecksumDataItem>
+        <ChecksumSpec>
+          <ChecksumType>MD5</ChecksumType>
+          <ChecksumSalt>A</ChecksumSalt>
+        </ChecksumSpec>
+        <ChecksumValue>135F21564</ChecksumValue>
+      </ChecksumDataItem>
+    </ChecksumDataItems>
+  </ChecksumDataPairs>
+  <ChecksumSpecs>
+    <NoOfItems>2</NoOfItems>
+    <ChecksumSpecsItems>
+      <ChecksumSpecsItem>
+        <ChecksumType>MD5</ChecksumType>
+        <ChecksumSalt>A</ChecksumSalt>
+      </ChecksumSpecsItem>
+      <ChecksumSpecsItem>
+        <ChecksumType>MD5</ChecksumType>
+        <ChecksumSalt>A</ChecksumSalt>
+      </ChecksumSpecsItem>
+    </ChecksumSpecsItems>
+  </ChecksumSpecs>
 </bro:PutFileRequest>

@@ -28,11 +28,34 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
+  <PillarID>MyPillar</PillarID>
+  <PillarChecksumSpec>
+    <ChecksumType>MD5</ChecksumType>
+    <ChecksumSalt>X</ChecksumSalt>
+  </PillarChecksumSpec>
   <FileID>MyDataID</FileID>
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
-  <PillarID>MyPillar</PillarID>
-  <PillarChecksumType>MD5</PillarChecksumType>
-  <CompleteCode>ERR_NOCOM</CompleteCode>
-  <CompleteText>Not completed for unknown reasons</CompleteText>
-  <bro:CompleteSaltChecksum>135F21564</bro:CompleteSaltChecksum>
+  <CompleteInfo>
+    <CompleteCode>480</CompleteCode>
+    <CompleteText>successfull completion</CompleteText>
+  </CompleteInfo>
+  <ChecksumDataPairs>
+    <NoOfItems>2</NoOfItems>
+    <ChecksumDataItems>
+      <ChecksumDataItem>
+        <ChecksumSpec>
+          <ChecksumType>MD5</ChecksumType>
+          <ChecksumSalt>A</ChecksumSalt>
+        </ChecksumSpec>
+        <ChecksumValue>135F21564</ChecksumValue>
+      </ChecksumDataItem>
+      <ChecksumDataItem>
+        <ChecksumSpec>
+          <ChecksumType>MD5</ChecksumType>
+          <ChecksumSalt>A</ChecksumSalt>
+        </ChecksumSpec>
+        <ChecksumValue>135F21564</ChecksumValue>
+      </ChecksumDataItem>
+    </ChecksumDataItems>
+  </ChecksumDataPairs>
 </bro:PutFileComplete>

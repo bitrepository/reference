@@ -28,10 +28,15 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
+  <PillarID>MyPillar</PillarID>
+  <PillarChecksumSpec>
+    <ChecksumType>MD5</ChecksumType>
+    <ChecksumSalt>X</ChecksumSalt>
+  </PillarChecksumSpec>
   <FileID>MyDataID</FileID>
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
-  <PillarID>MyPillar</PillarID>
-  <PillarChecksumType>MD5</PillarChecksumType>
-  <ResponseCode>OK</ResponseCode>
-  <ResponseText>Message request has been received and is expected to be met successfully</ResponseText>
+  <ResponseInfo>
+    <ResponseCode>460</ResponseCode>
+    <ResponseText>Message request has been received and is expected to be met successfully</ResponseText>
+  </ResponseInfo>
 </bro:PutFileResponse>

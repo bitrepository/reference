@@ -28,8 +28,14 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <ResultAddress>http://myServer/myPlace/Myfile</ResultAddress>
   <PillarID>MyPillar</PillarID>
-  <ResponseCode>ERR_NOUND</ResponseCode>
-  <ResponseText>Message request not understood</ResponseText>
+  <FileIDs>
+    <FileID>MyDataID1</FileID>
+    <FileID>MyDataID2</FileID>
+  </FileIDs>
+  <ResultAddress>http://myServer/myPlace/Myfile</ResultAddress>
+  <ResponseInfo>
+    <ResponseCode>460</ResponseCode>
+    <ResponseText>Message request has been received and is expected to be met successfully</ResponseText>
+  </ResponseInfo>
 </bro:GetFileIDsResponse>

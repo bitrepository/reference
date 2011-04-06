@@ -7,6 +7,7 @@
          
   xmlns="http://bitrepository.org/BitRepositoryData.xsd"   
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:bre="http://bitrepository.org/BitRepositoryElements.xsd"
 >
 
@@ -20,7 +21,6 @@
     <xs:annotation><xs:documentation xml:lang="en">
     Data format for delivery of audit trail as result of e.g. GetAuditTrails
     </xs:documentation></xs:annotation>
-  
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="bre:SlaID" > 
@@ -41,10 +41,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
-
-      <!-- Attributes with information of message version for version control -->
-      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
-      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
     </xs:complexType>
   </xs:element>
 
@@ -56,7 +53,6 @@
     <xs:annotation><xs:documentation xml:lang="en">
     Data format for delivery of checksums as result of GetChecksums
     </xs:documentation></xs:annotation>
-  
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="bre:SlaID" > 
@@ -70,35 +66,14 @@
           Identifier of pillar, that created the result
           </xs:documentation></xs:annotation>
         </xs:element>
-
-        <xs:element ref="bre:FileChecksumType" > 
-          <xs:annotation><xs:documentation xml:lang="en">
-          The type of checksums included
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element ref="bre:SaltParameter" minOccurs="0" maxOccurs="1" > 
-          <xs:annotation><xs:documentation xml:lang="en">
-          SaltParameter included in calculation of checksums 
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element ref="bre:NoOfItems" minOccurs="0" maxOccurs="1" > 
-          <xs:annotation><xs:documentation xml:lang="en">
-          The number of checksums included
-          </xs:documentation></xs:annotation>
-        </xs:element>
  
-        <xs:group ref="bre:ChecksumsData" minOccurs="1" maxOccurs="unbounded" > 
+        <xs:element ref="bre:ChecksumsDataPerFileID"> 
           <xs:annotation><xs:documentation xml:lang="en">
           List of data for checksums in result
           </xs:documentation></xs:annotation>
-        </xs:group>
+        </xs:element>
       </xs:sequence>
-
-      <!-- Attributes with information of message version for version control -->
-      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
-      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
     </xs:complexType>
   </xs:element>
 
@@ -110,7 +85,6 @@
     <xs:annotation><xs:documentation xml:lang="en">
     Data format for delivery of data IDs as result of GetFileIDs
     </xs:documentation></xs:annotation>
-
     <xs:complexType>
       <xs:sequence>
 
@@ -126,23 +100,13 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:NoOfItems" minOccurs="0" maxOccurs="1" > 
+        <xs:element ref="bre:FileIDsData"> 
           <xs:annotation><xs:documentation xml:lang="en">
-          The number of data IDs included
+          Resulting data with list of file identifiers in result
           </xs:documentation></xs:annotation>
         </xs:element>
-
-        <xs:group ref="bre:FileIDsData" minOccurs="1" maxOccurs="unbounded" > 
-          <xs:annotation><xs:documentation xml:lang="en">
-          List of data on data identifiers in result
-          </xs:documentation></xs:annotation>
-        </xs:group>
-
       </xs:sequence>
-
-      <!-- Attributes with information of message version for version control -->
-      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
-      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
     </xs:complexType>
   </xs:element>
 
@@ -152,13 +116,12 @@
 
   <xs:element name="FileIDsParameters">
     <xs:annotation><xs:documentation xml:lang="en">
-    Data format for parameters data ID parameters sent via data transmission
+    Data format for data IDs parameters which is given in parameter-file transferred via data transmission,
+    i.e. the parameter-file is accessed if ParameterAddress is specified in a message.
     </xs:documentation></xs:annotation>
-
     <xs:complexType>
       <xs:sequence>
-
-        <xs:element ref="bre:CorrelationID"  minOccurs="0" maxOccurs="1" >
+        <xs:element ref="bre:CorrelationID" >
           <xs:annotation><xs:documentation xml:lang="en">
           A unique identifier for message communication, which the parameter is belonging to.
           </xs:documentation></xs:annotation>
@@ -176,22 +139,13 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:NoOfItems" minOccurs="0" maxOccurs="1" > 
+        <xs:element ref="bre:FileIDsParameterData" > 
           <xs:annotation><xs:documentation xml:lang="en">
-          The number of data IDs included
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element ref="bre:FileID" minOccurs="1" maxOccurs="unbounded" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          List of identifiers for data in given SLA
+          parameter data with list of parameter file identifiers
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
-
-      <!-- Attributes with information of message version for version control -->
-      <xs:attribute name="version" type="xs:unsignedByte" use="required" />
-      <xs:attribute name="minVersion" type="xs:unsignedByte" use="required" />
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
     </xs:complexType>
   </xs:element>
 

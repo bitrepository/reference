@@ -29,7 +29,11 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>MyCorrelationID</CorrelationID>
   <SlaID>MySla</SlaID>
   <PillarID>MyPillar</PillarID>
-  <NoOfItems>2</NoOfItems>
-  <FileID>MydataId1</FileID>
-  <FileID>MydataId2</FileID>
+  <FileIDsParameterData>
+    <NoOfItems>2</NoOfItems>
+    <FileIDsItems>
+      <FileID>MydataId1</FileID>
+      <FileID>MydataId2</FileID>
+    </FileIDsItems>
+  </FileIDsParameterData>
 </bro:FileIDsParameters>

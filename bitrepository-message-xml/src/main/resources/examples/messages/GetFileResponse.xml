@@ -28,15 +28,35 @@
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <FileID>MyDataID</FileID>
-  <PartOffSet>10</PartOffSet> 
-  <PartLength>100</PartLength> 
-  <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
-  <ExpectedFileSize>90</ExpectedFileSize>
-  <Checksum>ABCDEF1234</Checksum>
-  <FileChecksumType>MD5</FileChecksumType>
   <PillarID>MyPillar</PillarID>
-  <PillarChecksumType>MD5</PillarChecksumType>
-  <ResponseCode>ERR_NFID</ResponseCode>
-  <ResponseText>FileID has been NOT been found</ResponseText>
+  <FileID>MyDataID</FileID>
+  <FilePart>
+    <PartOffSet>10</PartOffSet> 
+    <PartLength>100</PartLength>
+  </FilePart> 
+  <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
+  <ResponseInfo>
+    <ResponseCode>460</ResponseCode>
+    <ResponseText>Message request has been received and is expected to be met successfully</ResponseText>
+  </ResponseInfo>
+  <FileSize>90</FileSize>
+  <ChecksumsData>
+    <NoOfItems>2</NoOfItems>
+    <ChecksumDataItems>
+      <ChecksumDataItem>
+        <ChecksumSpec>
+          <ChecksumType>MD5</ChecksumType>
+          <ChecksumSalt>X</ChecksumSalt>
+        </ChecksumSpec>
+        <ChecksumValue>ABC423789</ChecksumValue>
+      </ChecksumDataItem>
+      <ChecksumDataItem>
+        <ChecksumSpec>
+          <ChecksumType>SHA-1</ChecksumType>
+          <ChecksumSalt>X</ChecksumSalt>
+        </ChecksumSpec>
+        <ChecksumValue>ABCDEF1234</ChecksumValue>
+      </ChecksumDataItem>
+    </ChecksumDataItems>
+  </ChecksumsData>
 </bro:GetFileResponse>

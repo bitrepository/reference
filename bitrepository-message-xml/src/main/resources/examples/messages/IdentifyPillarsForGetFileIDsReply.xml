@@ -29,5 +29,12 @@
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
   <PillarID>MyPillar</PillarID>
-  <TimeToDeliver><MiliSec>1000</MiliSec></TimeToDeliver>
+  <FileIDs>
+    <FileID>MyDataID1</FileID>
+    <FileID>MyDataID2</FileID>
+  </FileIDs>
+  <TimeToDeliver>
+    <TimeMeasureUnit>MILLISECONDS</TimeMeasureUnit>
+    <TimeMeasureValue>1000</TimeMeasureValue>
+  </TimeToDeliver>
 </bro:IdentifyPillarsForGetFileIDsReply>

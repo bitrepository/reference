@@ -30,5 +30,8 @@
   <ReplyTo>MyQueueOrTopic</ReplyTo>
   <FileID>MyFile</FileID>
   <PillarID>MyPillar</PillarID>
-  <TimeToDeliver><MiliSec>1000</MiliSec></TimeToDeliver>
+  <TimeToDeliver>
+    <TimeMeasureUnit>MILLISECONDS</TimeMeasureUnit>
+    <TimeMeasureValue>1000</TimeMeasureValue>
+  </TimeToDeliver>
 </bro:IdentifyPillarsForGetFileReply>
