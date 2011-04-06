@@ -31,13 +31,34 @@ import java.util.List;
  * Prototype GetFileIDs Client
  */
 public class GetFileIDsClientImpl implements GetFileIDsClient {
+    /**
+     * Identify potential pillars for retrieving File IDs from pillar.
+     * If sendIdentifyPillarsForGetFileIDsRequest has been invoked and replies
+     * received recently, these replies are returned.
+     * Otherwise sendIdentifyPillarsForGetFileIDsRequest is invoked and
+     * the method waits for replies and returns these.
+     * The waiting time is limited to a set time out.
+     *
+     * @param slaID The ID of a collection.
+     * @return A list of IDs of pillars that could respond to this request.
+     */
     @Override
     public List<String> identifyPillarsForGetFileIDs(String slaID) {
         return null;  //Todo implement identifyPillarsForGetFileIDs
     }
 
     @Override
+    public void sendIdentifyPillarsForGetFileIDsRequest(String slaID) {
+        //Todo implement sendIdentifyPillarsForGetFileIDsRequest
+    }
+
+    @Override
     public File getFileIDs(String slaID, String pillarID) {
         return null;  //Todo implement getFileIDs
+    }
+
+    @Override
+    public void sendGetFileIDsRequest(String slaID, String pillarID) {
+        //Todo implement sendGetFileIDsRequest
     }
 }

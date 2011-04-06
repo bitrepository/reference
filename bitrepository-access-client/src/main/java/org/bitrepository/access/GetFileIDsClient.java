@@ -40,11 +40,27 @@ public interface GetFileIDsClient {
     List<String> identifyPillarsForGetFileIDs(String slaID);
 
     /**
-     * Retrieve a set of File IDs from pillar.
+     * Send Request to identify potential pillars for retrieving File IDs from pillar.
+     *
+     * @param slaID The ID of a collection.
+     */
+    void sendIdentifyPillarsForGetFileIDsRequest(String slaID);
+
+    /**
+     * Retrieve a list of File IDs from pillar.
      *
      * @param slaID The ID of a collection.
      * @param pillarID The ID of the pillar
-     * @return A file containing a set of File IDs. The file is in XML format.
+     * TODO what about queue?
+     * @return A file containing a list of File IDs. The file is in XML format.
      */
     File getFileIDs(String slaID, String pillarID);
+
+    /**
+     * Send request to retrieve a list of File IDs from pillar.
+     *
+     * @param slaID The ID of a collection.
+     * @param pillarID The ID of the pillar
+     */
+    void sendGetFileIDsRequest(String slaID, String pillarID);
 }
