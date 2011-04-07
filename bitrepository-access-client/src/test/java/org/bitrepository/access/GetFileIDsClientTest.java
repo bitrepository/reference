@@ -33,6 +33,7 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
+import org.testng.AssertJUnit;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -193,7 +194,14 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
         }
     }
 
-    @Test(groups = {"specificationonly"})
+    /**
+     * Test the Get functionality of the GetFileIDsClient.
+     * Corresponds to the second part of the test described in the
+     * https://sbforge.org/display/BITMAG/Use+of+GetFileIDs
+     * user story.
+     * @throws Exception
+     */
+    @Test(groups = {"test first"})
     public void GetFileIDsTest() throws Exception {
         addDescription("Tests that a pillar returns the expected list of " +
                 "FileIDs");
@@ -220,10 +228,6 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
                     }
                 }
 
-
-                // WORK IN PROGRESS
-
-
                 addStep("Ensure that the GetFileIDsRequest " +
                         "message has been caught by all mock up pillars.",
                         "It should be valid.");
@@ -238,7 +242,7 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
 
                 // send replies
                 addStep("Sending replies to the request message.",
-                        "Should be handled by the GetFileIDsClient.");
+                        "Will be logged.");
                 mockUpSendGetFileIDsReplies();
             }
 
@@ -252,34 +256,44 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
                 }
             }
 
-
-
-
-
             File fileWithFileIds = getFileIDsClient.getFileIDs(slaID, pillarID);
-            FileReader reader = new FileReader(fileWithFileIds);
-            Assert.assertEquals(reader.read(), -1);
+            Assert.assertNotNull(fileWithFileIds, "The returned file should" +
+                    "not be null.");
+            // Todo format of fileWithFileIds should be GetFileIDsResults
+            // Expected, not required, I think
         }
+    }
 
+
+    /**
+     * Test the results from the GetFileIDsClient.
+     * This test also tests the responses of the pillars.
+     * To test only the results of the Client, we need to know the
+     * exact responses of the pillars.
+     * @throws Exception
+     */
+    @Test(groups = {"specificationonly"})
+    public void GetFileIDsResultTest() throws Exception {
+        //TODO test known fileIDs part of FileIDs list
         addStep("Put three files with known IDs into the Bit Repository " +
-                "under given SLA. First version: Put fake files into local " +
+                "under given SLA. Mock-up: Put fake files into local " +
                 "test pillars.", "Received PutFileComplete messages with " +
-                "positive CompleteCode. First version: Logging of Puts.");
+                "positive CompleteCode. Mock-up: Logging of Puts.");
 
         addStep("Send a message to get FileIDs",
                 "The returned list of FileIDs should be a GetFileIDsResults " +
                         "(see BitRepositoryData.xsd and contain the three " +
-                        "known IDs");
-        for (String pillarID: pillarIDs) {
-            File fileWithFileIds = getFileIDsClient.getFileIDs(slaID, pillarID);
-            BufferedReader in = new BufferedReader(new FileReader(fileWithFileIds));
-            String fileIdsString = "";
-            while (in.ready()) {
-                fileIdsString += in.readLine();
-            }
-            //TODO extract GetFileIDsResults + asserts
-        }
+                        "known IDs.");
+        //TODO test removed fileID NOT part of FileIDs list
+        addStep("Remove one of the files with known IDs from the Bit " +
+                "Repository under given SLA. Mock-up: Remove fake file from " +
+                "local test pillars.", "Received DeleteFileComplete messages " +
+                "with positive CompleteCode. Mock-up: Logging of Puts.");
 
+        addStep("Send a message to get FileIDs",
+                "The returned list of FileIDs should be a GetFileIDsResults " +
+                        "(see BitRepositoryData.xsd and not contain the ID " +
+                        "of the file just removed.");
     }
 
     /**
