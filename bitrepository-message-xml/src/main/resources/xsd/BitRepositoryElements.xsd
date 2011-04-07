@@ -184,6 +184,12 @@
     </xs:complexType>
   </xs:element>
 
+  <xs:element name="Contributor" type="Component_TYPE" >
+    <xs:annotation><xs:documentation xml:lang="en">
+    Contributor to audit trails
+    </xs:documentation></xs:annotation>
+  </xs:element>
+   
   <xs:group name="Core">
     <xs:annotation><xs:documentation xml:lang="en">
     Includes elements that all protocol messages must include.
@@ -455,6 +461,27 @@
     <xs:annotation><xs:documentation xml:lang="en">
     Address (e.g. in form of an URL) for where result data can be found
     </xs:documentation></xs:annotation>
+  </xs:element>
+  
+  <xs:element name="ResultingAuditTrails">   
+    <xs:annotation><xs:documentation xml:lang="en">
+    result is either given via specified address or directly 
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="ResultAddress" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where result data has been delivered (if completed)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="AuditTrailData"> 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Audit trail data in result, if given in this message instead of via data transfer
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
   </xs:element>
   
   <xs:element name="ResultingFileIDs">   

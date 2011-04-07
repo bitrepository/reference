@@ -831,7 +831,7 @@
 
         <xs:element ref="bre:ResponseInfo" >  
           <xs:annotation><xs:documentation xml:lang="en">
-          Response information telling whether GetRequest has been received and is expected to be completed
+          Response information telling whether GetFilIDsRequest has been received and is expected to be completed
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -874,6 +874,200 @@
         <xs:element ref="bre:ResultingFileIDs">  
           <xs:annotation><xs:documentation xml:lang="en">
           Result with file IDs 
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <!-- **************************************************************** -->
+  <!-- * Messages for GetAuditTrails                                  * -->
+  <!-- **************************************************************** -->
+
+  <!-- **************                                                   -->
+  <!-- *** Messages for IdentifyContributorsForGetAuditTrails Primitive -->
+
+  <xs:element name="IdentifyContributorsForGetAuditTrailsRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in IdentifyContributorsForGetAuditTrails primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          FileID uniquely identifies the data in given SLA which the audit trails is requested for
+          Given in order to be able to give possible estimate of time to deliver
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="IdentifyContributorsForGetAuditTrailsReply">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REPLY in IdentifyContributorsForGetAuditTrails primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:Contributor">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Type and unique identifier for contributor replying
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        
+        <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en" >
+          FileID uniquely identifies the data in given SLA which the audit trails is requested for
+          only to repeat parameter from request
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:TimeToDeliver" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Estimated time before delivery of data requested
+          That means the time from receival of a GetAuditTrailsRequest message to the time 
+          when data is delivered.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- **************                                                   -->
+  <!-- *** Messages for GetAuditTrails Primitive                        -->
+  
+  <!-- ***  Messages for GetAuditTrails Primitive are sent the           -->
+  <!-- ***  individualcontributors which corresponds to ReplyTo from     -->
+  <!-- ***  IdentifyContributorsForGetAuditTrailsReply                   -->
+  
+  <xs:element name="GetAuditTrailsRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in GetAuditTrails primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
+      
+        <xs:element ref="bre:Contributor" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving contributor, which can be used for possible checks
+          (IdentifyContributorsForGetAuditTrailsReply.ReplyTo should ensure that right pillar is reached) 
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FileID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          FileID uniquely identifies the data in given SLA which the audit trails is requested for
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where audit trails must be delivered via data transmission
+          In cases where the address is not given, the result will be given in the GetAuditTrailsComplete message
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="GetAuditTrailsResponse">
+    <xs:annotation><xs:documentation xml:lang="en">
+    RESPONSE in GetFileIDs primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
+        
+        <xs:element ref="bre:Contributor" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving contributor, which can be used for possible checks
+          (otherwise it is known via CorrelationID and ReplyTo)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        
+        <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          FileID uniquely identifies the data in given SLA which the audit trails is requested for
+          (otherwise it is known via CorrelationID)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where data will be delivered
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ResponseInfo" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response information telling whether GetAuditTrailsRequest has been received and is expected to be completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetAuditTrailsComplete">
+    <xs:annotation><xs:documentation xml:lang="en">
+    COMPLETE in GetAuditTrails primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          </xs:documentation></xs:annotation>
+        </xs:group>
+        
+        <xs:element ref="bre:Contributor" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving contributor, which can be used for possible checks
+          (otherwise it is known via CorrelationID and ReplyTo)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        
+        <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          FileID uniquely identifies the data in given SLA which the audit trailsis requested for
+          (otherwise it is known via CorrelationID)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:CompleteInfo" >  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Information on how GetAuditTrails has been completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ResultingAuditTrails">  
+          <xs:annotation><xs:documentation xml:lang="en">
+          Result with audit trails 
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
