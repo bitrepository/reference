@@ -25,6 +25,8 @@
 package org.bitrepository.access;
 
 import org.bitrepository.access_client.configuration.AccessConfiguration;
+import org.bitrepository.bitrepositoryelements.CompleteInfo;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.protocol.AbstractMessageListener;
@@ -183,11 +185,12 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
             reply.setPillarID(listener.getPillarID());
 
             TimeMeasureTYPE time = new TimeMeasureTYPE();
-            time.setMiliSec(BigInteger.valueOf(1000));
+            time.setTimeMeasureValue(BigInteger.valueOf(1000));
+            time.setTimeMeasureUnit("milliseconds");
             reply.setTimeToDeliver(time);
 
-            reply.setVersion((short) 1);
-            reply.setMinVersion((short) 1);
+            reply.setVersion(BigInteger.valueOf(1L));
+            reply.setMinVersion(BigInteger.valueOf(1L));
 
             ProtocolComponentFactory.getInstance().getMessageBus().
                     sendMessage(queue, reply);
@@ -317,10 +320,12 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
             response.setSlaID(requestMessage.getSlaID());
             response.setReplyTo(queue);
             response.setPillarID(listener.getPillarID());
-            response.setResponseCode("OK");
+            ResponseInfo rInfo = new ResponseInfo();
+            rInfo.setResponseCode("OK");
+            response.setResponseInfo(rInfo);
 
-            response.setVersion((short) 1);
-            response.setMinVersion((short) 1);
+            response.setVersion(BigInteger.valueOf(1L));
+            response.setMinVersion(BigInteger.valueOf(1L));
 
             ProtocolComponentFactory.getInstance().getMessageBus().
                     sendMessage(queue, response);
@@ -332,14 +337,14 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
             completeMsg.setSlaID(requestMessage.getSlaID());
             completeMsg.setReplyTo(queue);
             completeMsg.setPillarID(listener.getPillarID());
-            completeMsg.setCompleteCode("OK");
+            CompleteInfo cInfo = new CompleteInfo();
+            cInfo.setCompleteCode("OK");
+            completeMsg.setCompleteInfo(cInfo);
 
-            completeMsg.setNoOfItems(BigInteger.valueOf(0));
+//            completeMsg.setNoOfItems(BigInteger.valueOf(0));
 
-
-
-            completeMsg.setVersion((short) 1);
-            completeMsg.setMinVersion((short) 1);
+            completeMsg.setVersion(BigInteger.valueOf(1L));
+            completeMsg.setMinVersion(BigInteger.valueOf(1L));
 
             ProtocolComponentFactory.getInstance().getMessageBus().
                     sendMessage(queue, completeMsg);

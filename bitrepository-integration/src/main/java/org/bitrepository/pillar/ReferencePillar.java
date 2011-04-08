@@ -25,6 +25,8 @@
 package org.bitrepository.pillar;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.bitrepository.bitrepositoryelements.CompleteInfo;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
@@ -134,12 +136,12 @@ public class ReferencePillar extends PillarAPI {
             // get time
             synchronized(targetFile) {
                 long time = millisUploadPerMB * targetFile.length() / BYTES_PER_MB;
-                timeToDeliver.setMiliSec(BigInteger.valueOf(time));
+                timeToDeliver.setTimeMeasureValue(BigInteger.valueOf(time));
+                timeToDeliver.setTimeMeasureUnit("milliseconds");
             }
         } else {
-            // Set the time to max in this case when the file is not found.
-            timeToDeliver.setMiliSec(BigInteger.valueOf(Long.MAX_VALUE));
-            timeToDeliver.setHours(BigInteger.valueOf(Long.MAX_VALUE));
+            timeToDeliver.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
+            timeToDeliver.setTimeMeasureUnit("years");
         }
         
         // Create the reply.
@@ -238,15 +240,17 @@ public class ReferencePillar extends PillarAPI {
         GetFileResponse response = messageCreator.createGetFileResponse(msg);
         // set response accordingly to where the file exists.
         if(targetFile != null) {
-            response.setExpectedFileSize(BigInteger.valueOf(targetFile.length()));
-            response.setResponseCode("1");
-            response.setResponseText("Found the file and will begin to "
-                    + "upload.");
+            response.setFileSize(BigInteger.valueOf(targetFile.length()));
+            ResponseInfo info = new ResponseInfo();
+            info.setResponseCode("1");
+            info.setResponseText("Found the file and will begin to upload.");
+            response.setResponseInfo(info);
         } else {
-            response.setExpectedFileSize(BigInteger.valueOf(-1L));
-            response.setResponseCode("2");
-            response.setResponseText("File is missing. Cannot upload what "
-                    + "cannot be found.");
+            response.setFileSize(BigInteger.valueOf(-1L));
+            ResponseInfo info = new ResponseInfo();
+            info.setResponseCode("2");
+            info.setResponseText("File is missing. Cannot upload what cannot be found.");
+            response.setResponseInfo(info);
         }
         // TODO handle these?
 //        response.setChecksum("??");
@@ -281,9 +285,11 @@ public class ReferencePillar extends PillarAPI {
         GetFileComplete complete = messageCreator.createGetFileComplete(msg);
         // adjust message according to 
         complete.setFileAddress(url.toExternalForm());
-        complete.setCompleteCode("1");
-        complete.setCompleteText("File successfully uploaded to server and is "
+        CompleteInfo cInfo = new CompleteInfo();
+        cInfo.setCompleteCode("1");
+        cInfo.setCompleteText("File successfully uploaded to server and is "
                 + "ready to be downloaded by you (the GetFileClient)!");
+        complete.setCompleteInfo(cInfo);
         // TODO handle these?
 //        complete.setPartLength("??");
 //        complete.setPartOffSet("??");
@@ -330,11 +336,15 @@ public class ReferencePillar extends PillarAPI {
         PutFileResponse response = messageCreator.createPutFileResponse(msg);
         // give response accordingly to whether
         if(targetFile == null) {
-            response.setResponseCode("1");
-            response.setResponseText("We are ready to receive the file.");
+            ResponseInfo info = new ResponseInfo();
+            info.setResponseCode("1");
+            info.setResponseText("We are ready to receive the file.");
+            response.setResponseInfo(info);
         } else {
-            response.setResponseCode("2");
-            response.setResponseText("We already have the file.");
+            ResponseInfo info = new ResponseInfo();
+            info.setResponseCode("2");
+            info.setResponseText("We already have the file.");
+            response.setResponseInfo(info);
         }
         // TODO handle these?
 //      response.setFileAddress(msg.getFileAddress());
@@ -368,8 +378,10 @@ public class ReferencePillar extends PillarAPI {
         archive.archiveFile(msg.getFileID(), msg.getSlaID());
         
         PutFileComplete complete = messageCreator.createPutFileComplete(msg);
-        complete.setCompleteCode("1");
-        complete.setCompleteText("File successfully put");
+        CompleteInfo cInfo = new CompleteInfo();
+        cInfo.setCompleteCode("1");
+        cInfo.setCompleteText("File successfully put");
+        complete.setCompleteInfo(cInfo);
         // TODO handle these?
 //      complete.setReplyTo(value)
 //      complete.setCompleteSaltChecksum(value)

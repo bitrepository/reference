@@ -27,21 +27,16 @@ package org.bitrepository.modify;
 import java.io.File;
 import java.math.BigInteger;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bitrepository.bitrepositoryelements.ChecksumsTypeTYPE;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileRequest.ChecksumForCheck;
-import org.bitrepository.bitrepositorymessages.PutFileRequest.SaltForCheck;
 import org.bitrepository.bitrepositorymessages.PutFileResponse;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify_client.configuration.ModifyConfiguration;
 import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -63,10 +58,12 @@ public class SimplePutClient extends PutClientAPI implements PutClientExternalAP
     private final String queue;
     /** The message bus which is used for all the communication.*/
     private final MessageBus messageBus;
-    
-    /** Which type of checksum to use. TODO define in settings.*/
-    private static final ChecksumsTypeTYPE DEFAULT_CHECKSUM_TYPE 
-            = ChecksumsTypeTYPE.MD_5;
+//    
+//    
+//    
+//    /** Which type of checksum to use. TODO define in settings.*/
+//    private static final ChecksumsTypeTYPE DEFAULT_CHECKSUM_TYPE 
+//            = ChecksumsTypeTYPE.MD_5;
     
     /** Map for keeping track of the data for a fileId. */
     private Map<String, FileIdForPut> fileIds = Collections.synchronizedMap(
@@ -90,7 +87,6 @@ public class SimplePutClient extends PutClientAPI implements PutClientExternalAP
         queue = config.getQueue();
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus();
         messageBus.addListener(queue, listener);
-        
     }
     
     /**
@@ -135,35 +131,36 @@ public class SimplePutClient extends PutClientAPI implements PutClientExternalAP
      */
     @Override
     final synchronized void identifyReply(IdentifyPillarsForPutFileReply msg) {
-        String fileId = msg.getFileID();
-        // validate the content of the message
-        if(!fileIds.containsKey(fileId)) {
-            log.warn("Could not handle reply message for putting file '" + fileId + "', since no such file is known.");
-            return;
-        }
-        // verify that the slaId for the fileId is the same as the message.
-        if(!fileIds.get(fileId).getSlaId().equals(msg.getSlaID())) {
-            // TODO handle this scenario differently? Probably send alarm.
-            log.warn("The known SLA for the file '" + fileId + "' is not identical to the SLA from the reply message. "
-                    + "Expected : '" + fileIds.get(fileId).getSlaId() + "', but was '" + msg.getSlaID() 
-                    + "'. WE DO NOT PROCEED!");
-            return;
-        }
-        
-        File file = fileIds.get(fileId).getFile();
-        URL url = fileIds.get(fileId).getUrl();
-        String pillarId = msg.getPillarID();
-        
-        // create the putMessage and set file to be outstanding at the pillar.
-        PutFileRequest putMsg = getPutFileRequestMessage(file, fileId, url, pillarId, msg.getSlaID());
-        outstandings.insertEntry(fileId, pillarId);
-        
-        try {
-            // send the put message.
-            messageBus.sendMessage(queue, putMsg);
-        } catch (Exception e) {
-            throw new ModifyException("Problems sending the message '" + putMsg + "'.", e);
-        }
+        // TODO !
+//        String fileId = msg.getFileID();
+//        // validate the content of the message
+//        if(!fileIds.containsKey(fileId)) {
+//            log.warn("Could not handle reply message for putting file '" + fileId + "', since no such file is known.");
+//            return;
+//        }
+//        // verify that the slaId for the fileId is the same as the message.
+//        if(!fileIds.get(fileId).getSlaId().equals(msg.getSlaID())) {
+//            // TODO handle this scenario differently? Probably send alarm.
+//            log.warn("The known SLA for the file '" + fileId + "' is not identical to the SLA from the reply message. "
+//                    + "Expected : '" + fileIds.get(fileId).getSlaId() + "', but was '" + msg.getSlaID() 
+//                    + "'. WE DO NOT PROCEED!");
+//            return;
+//        }
+//        
+//        File file = fileIds.get(fileId).getFile();
+//        URL url = fileIds.get(fileId).getUrl();
+//        String pillarId = msg.getPillarID();
+//        
+//        // create the putMessage and set file to be outstanding at the pillar.
+//        PutFileRequest putMsg = getPutFileRequestMessage(file, fileId, url, pillarId, msg.getSlaID());
+//        outstandings.insertEntry(fileId, pillarId);
+//        
+//        try {
+//            // send the put message.
+//            messageBus.sendMessage(queue, putMsg);
+//        } catch (Exception e) {
+//            throw new ModifyException("Problems sending the message '" + putMsg + "'.", e);
+//        }
     }
     
     /**
@@ -176,10 +173,11 @@ public class SimplePutClient extends PutClientAPI implements PutClientExternalAP
      */
     @Override
     final synchronized void handlePutResponse(PutFileResponse msg) {
+        ResponseInfo info = msg.getResponseInfo();
         // TODO Perform the actual handling of this message! 
         log.debug("The pillar '" + msg.getPillarID() + "' is in the process of storing the file '" + msg.getFileID() 
-                + "' and has sent the following response status code '" + msg.getResponseCode() 
-                + "' along with the text: " + msg.getResponseText());
+                + "' and has sent the following response status code '" + info.getResponseCode() 
+                + "' along with the text: " + info.getResponseText());
     }
     
     /**
@@ -215,22 +213,24 @@ public class SimplePutClient extends PutClientAPI implements PutClientExternalAP
     private PutFileRequest getPutFileRequestMessage(File file, String fileId, URL url, String pillarID, String slaID) {
         PutFileRequest putMsg = new PutFileRequest();
         if(config.isUseChecksum()) {
-            ChecksumForCheck check = new ChecksumForCheck();
-            check.setFileChecksumType(DEFAULT_CHECKSUM_TYPE);
-            check.setChecksum(getChecksum(DEFAULT_CHECKSUM_TYPE, file));
-            putMsg.setChecksumForCheck(check);
+            // TODO !!
+//            ChecksumForCheck check = new ChecksumForCheck();
+//            check.setFileChecksumType(DEFAULT_CHECKSUM_TYPE);
+//            check.setChecksum(getChecksum(DEFAULT_CHECKSUM_TYPE, file));
+//            putMsg.setChecksumForCheck(check);
         }
         putMsg.setCorrelationID("THE-CORRELATION-ID");
-        putMsg.setExpectedFileSize(BigInteger.valueOf(file.length()));
+        putMsg.setFileSize(BigInteger.valueOf(file.length()));
         putMsg.setReplyTo(queue);
         if(config.isUseSalt()) {
-            SaltForCheck salt = new SaltForCheck();
-            salt.setSaltChecksumType(DEFAULT_CHECKSUM_TYPE);
-            salt.setSaltParameter(config.getSalt());
-            putMsg.setSaltForCheck(salt);
+            // TODO !!
+//            SaltForCheck salt = new SaltForCheck();
+//            salt.setSaltChecksumType(DEFAULT_CHECKSUM_TYPE);
+//            salt.setSaltParameter(config.getSalt());
+//            putMsg.setSaltForCheck(salt);
         }
-        putMsg.setMinVersion((short) 1);
-        putMsg.setVersion((short) 1);
+        putMsg.setMinVersion(BigInteger.valueOf(1L));
+        putMsg.setVersion(BigInteger.valueOf(1L));
         
         putMsg.setFileAddress(url.toExternalForm());
         putMsg.setFileID(fileId);
@@ -251,39 +251,38 @@ public class SimplePutClient extends PutClientAPI implements PutClientExternalAP
     private IdentifyPillarsForPutFileRequest makeIdentifyPillarsMessage(String fileId, String slaId) {
         IdentifyPillarsForPutFileRequest identifyMsg = new IdentifyPillarsForPutFileRequest();
         identifyMsg.setCorrelationID("SOME-CORRELATION-ID");
-        identifyMsg.setFileID(fileId);
         identifyMsg.setReplyTo(queue);
         identifyMsg.setSlaID(slaId);
-        identifyMsg.setMinVersion((short) 1);
-        identifyMsg.setVersion((short) 1);
+        identifyMsg.setMinVersion(BigInteger.valueOf(1L));
+        identifyMsg.setVersion(BigInteger.valueOf(1L));
 
         return identifyMsg;
     }
     
-    
-    /**
-     * Calculates the checksum for a file based on the given checksums type. The type of checksum is used for 
-     * finding the corresponding algorithm, which is used for the actual calculation of the checksum.
-     * The answer is delivered in hexadecimal form.
-     * 
-     * @param type The type of checksum.
-     * @param file The file to calculate the checksum for.
-     * @return The checksum in hexadecimal form.
-     */
-    public static String getChecksum(ChecksumsTypeTYPE type, File file) {
-        try {
-            MessageDigest md;
-            if(type.equals(ChecksumsTypeTYPE.MD_5)) {
-                md = MessageDigest.getInstance("MD5");
-            } else if(type.equals(ChecksumsTypeTYPE.SHA_3)) {
-                md = MessageDigest.getInstance("SHA");
-            } else {
-                throw new IllegalArgumentException("The digest is not supported! . . . Yet at least.");
-            }
-            
-            return ChecksumUtils.generateChecksum(file, md);
-        } catch (NoSuchAlgorithmException e) {
-            throw new ModifyException("Could not digest checksum algorith '" + type.value() + "'.", e);
-        }
-    }
+//    
+//    /**
+//     * Calculates the checksum for a file based on the given checksums type. The type of checksum is used for 
+//     * finding the corresponding algorithm, which is used for the actual calculation of the checksum.
+//     * The answer is delivered in hexadecimal form.
+//     * 
+//     * @param type The type of checksum.
+//     * @param file The file to calculate the checksum for.
+//     * @return The checksum in hexadecimal form.
+//     */
+//    public static String getChecksum(ChecksumsTypeTYPE type, File file) {
+//        try {
+//            MessageDigest md;
+//            if(type.equals(ChecksumsTypeTYPE.MD_5)) {
+//                md = MessageDigest.getInstance("MD5");
+//            } else if(type.equals(ChecksumsTypeTYPE.SHA_3)) {
+//                md = MessageDigest.getInstance("SHA");
+//            } else {
+//                throw new IllegalArgumentException("The digest is not supported! . . . Yet at least.");
+//            }
+//            
+//            return ChecksumUtils.generateChecksum(file, md);
+//        } catch (NoSuchAlgorithmException e) {
+//            throw new ModifyException("Could not digest checksum algorith '" + type.value() + "'.", e);
+//        }
+//    }
 }

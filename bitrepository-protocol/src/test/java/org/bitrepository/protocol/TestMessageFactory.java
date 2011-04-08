@@ -24,6 +24,8 @@
  */
 package org.bitrepository.protocol;
 
+import java.math.BigInteger;
+
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 
 /**
@@ -46,10 +48,10 @@ public class TestMessageFactory {
                 = new IdentifyPillarsForGetFileRequest();
         identifyPillarsForGetFileRequest.setCorrelationID("CorrelationID");
         identifyPillarsForGetFileRequest.setFileID("FileID");
-        identifyPillarsForGetFileRequest.setMinVersion((short) 0);
+        identifyPillarsForGetFileRequest.setMinVersion(BigInteger.valueOf(1L));
         identifyPillarsForGetFileRequest.setReplyTo("ReplyTo");
         identifyPillarsForGetFileRequest.setSlaID("SlaID");
-        identifyPillarsForGetFileRequest.setVersion((short) 0);
+        identifyPillarsForGetFileRequest.setVersion(BigInteger.valueOf(1L));
         return identifyPillarsForGetFileRequest;
     }
 }

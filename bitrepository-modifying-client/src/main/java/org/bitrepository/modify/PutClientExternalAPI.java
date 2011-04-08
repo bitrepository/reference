@@ -39,5 +39,5 @@ interface PutClientExternalAPI {
      * the SLA).
      * @param slaId The ID for the SLA which the file belongs to.
      */
-    abstract void putFileWithId(File file, String fileId, String slaId);
+    void putFileWithId(File file, String fileId, String slaId);
 }

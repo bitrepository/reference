@@ -83,6 +83,11 @@ public class ModifyComponentFactory {
         return config;
     }
     
+    /**
+     * Method for initialising the PutClient in the configuration.
+     * TODO use the configuration instead of this default. 
+     * @return The configured PutClient.
+     */
     public PutClientExternalAPI retrievePutClient() {
         return new SimplePutClient();
     }

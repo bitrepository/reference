@@ -33,6 +33,8 @@ import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 
 import org.bitrepository.access_client.configuration.AccessConfiguration;
+import org.bitrepository.bitrepositoryelements.CompleteInfo;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
@@ -110,17 +112,18 @@ public class GetFileClientTest extends ExtendedTestCase {
 
         addStep("Sending a reply for the message.", "Should be handled by the GetClient.");
         TimeMeasureTYPE time = new TimeMeasureTYPE();
-        time.setMiliSec(BigInteger.valueOf(1000));
+        time.setTimeMeasureValue(BigInteger.valueOf(1000));
+        time.setTimeMeasureUnit("milliseconds");
 
         IdentifyPillarsForGetFileReply reply = new IdentifyPillarsForGetFileReply();
         reply.setCorrelationID(identifyMessage.getCorrelationID());
         reply.setFileID(identifyMessage.getFileID());
-        reply.setMinVersion((short) 1);
+        reply.setMinVersion(BigInteger.valueOf(1L));
+        reply.setVersion(BigInteger.valueOf(1L));
         reply.setPillarID(pillarId);
         // reply.setReplyTo(value)
         reply.setSlaID(identifyMessage.getSlaID());
         reply.setTimeToDeliver(time);
-        reply.setVersion((short) 1);
 
         ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, reply);
         
@@ -147,8 +150,8 @@ public class GetFileClientTest extends ExtendedTestCase {
         addStep("Upload a file to the given destination, send a complete to the GetClient.", 
                 "The GetClient should download the file."); 
         GetFileResponse getReply = new GetFileResponse();
-        getReply.setMinVersion((short) 1);
-        getReply.setVersion((short) 1);
+        getReply.setMinVersion(BigInteger.valueOf(1L));
+        getReply.setVersion(BigInteger.valueOf(1L));
         getReply.setPillarID(pillarId);
         getReply.setFileID(dataId);
 
@@ -173,15 +176,17 @@ public class GetFileClientTest extends ExtendedTestCase {
         
         addStep("Send a complete upload message with the URL", "Should be "
                 + "caugth by the GetClient.");
+        CompleteInfo info = new CompleteInfo();
+        info.setCompleteCode("Complete code");
+        info.setCompleteText("Complete text");
         GetFileComplete completeMsg = new GetFileComplete();
-        completeMsg.setCompleteCode("Complete code");
-        completeMsg.setCompleteText("Complete text");
+        completeMsg.setCompleteInfo(info);
         completeMsg.setCorrelationID(identifyMessage.getCorrelationID());
         completeMsg.setFileAddress(url.toExternalForm());
         completeMsg.setSlaID(slaId);
         completeMsg.setFileID(dataId);
-        completeMsg.setMinVersion((short) 1);
-        completeMsg.setVersion((short) 1);
+        completeMsg.setMinVersion(BigInteger.valueOf(1L));
+        completeMsg.setVersion(BigInteger.valueOf(1L));
         completeMsg.setPillarID(pillarId);
 
         ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, completeMsg);
@@ -242,23 +247,25 @@ public class GetFileClientTest extends ExtendedTestCase {
         Assert.assertEquals(request.getFileID(), dataId);
         Assert.assertEquals(request.getSlaID(), slaId);
         TimeMeasureTYPE fastTime = new TimeMeasureTYPE();
-        fastTime.setMiliSec(BigInteger.valueOf(10));
+        fastTime.setTimeMeasureUnit("milliseconds");
+        fastTime.setTimeMeasureValue(BigInteger.valueOf(10L));
         TimeMeasureTYPE slowTime = new TimeMeasureTYPE();
-        slowTime.setMiliSec(BigInteger.valueOf(10000));
+        slowTime.setTimeMeasureValue(BigInteger.valueOf(10000));
+        slowTime.setTimeMeasureUnit("hours");
         
         IdentifyPillarsForGetFileReply fastReply = new IdentifyPillarsForGetFileReply();
         fastReply.setCorrelationID(request.getCorrelationID());
         fastReply.setFileID(dataId);
-        fastReply.setMinVersion((short) 1);
-        fastReply.setVersion((short) 1);
+        fastReply.setMinVersion(BigInteger.valueOf(1L));
+        fastReply.setVersion(BigInteger.valueOf(1L));
         fastReply.setSlaID(request.getSlaID());
         fastReply.setTimeToDeliver(fastTime);
         fastReply.setPillarID(fastPillar);
         IdentifyPillarsForGetFileReply slowReply = new IdentifyPillarsForGetFileReply();
         slowReply.setCorrelationID(request.getCorrelationID());
         slowReply.setFileID(dataId);
-        slowReply.setMinVersion((short) 1);
-        slowReply.setVersion((short) 1);
+        slowReply.setMinVersion(BigInteger.valueOf(1L));
+        slowReply.setVersion(BigInteger.valueOf(1L));
         slowReply.setSlaID(request.getSlaID());
         slowReply.setTimeToDeliver(slowTime);
         slowReply.setPillarID(slowPillar);

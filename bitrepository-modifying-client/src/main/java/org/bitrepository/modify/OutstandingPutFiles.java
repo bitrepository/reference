@@ -60,7 +60,13 @@ public class OutstandingPutFiles {
      * @param pillarId The id of the pillar, where the file is being put.
      */
     public void insertEntry(String fileId, String pillarId) {
-        // TODO validate arguments?
+        // validate arguments
+        if(fileId == null || fileId.isEmpty()) {
+            throw new IllegalArgumentException("The fileId is invalid: " + fileId);
+        }
+        if(pillarId == null || pillarId.isEmpty()) {
+            throw new IllegalArgumentException("The pillarId is invalid: " + pillarId);
+        }
         
         // Retrieve the list of pillars outstanding for this file. If the
         // the file is not yet outstanding, then create a new list for the 
@@ -93,7 +99,13 @@ public class OutstandingPutFiles {
      * @param pillarId The pillar where the file is no longer outstanding.
      */
     public void removeEntry(String fileId, String pillarId) {
-        // TODO validate arguments?
+        // validate arguments
+        if(fileId == null || fileId.isEmpty()) {
+            throw new IllegalArgumentException("The fileId is invalid: " + fileId);
+        }
+        if(pillarId == null || pillarId.isEmpty()) {
+            throw new IllegalArgumentException("The pillarId is invalid: " + pillarId);
+        }
         
         if(!outstandingPutFiles.containsKey(fileId)) {
             // TODO handle this. Perhaps throw exception?
@@ -135,7 +147,11 @@ public class OutstandingPutFiles {
      * @return Whether the file is actually outstanding.
      */
     public boolean isOutstanding(String fileId) {
-        // TODO validate argument?
+        // validate arguments
+        if(fileId == null || fileId.isEmpty()) {
+            throw new IllegalArgumentException("The fileId is invalid: " + fileId);
+        }
+
         return outstandingPutFiles.containsKey(fileId);
     }
     
@@ -150,7 +166,14 @@ public class OutstandingPutFiles {
      * @return Whether the file is outstanding at the given pillar.
      */
     public boolean isOutstandingAtPillar(String fileId, String pillarId) {
-        // TODO validate arguments?
+        // validate arguments
+        if(fileId == null || fileId.isEmpty()) {
+            throw new IllegalArgumentException("The fileId is invalid: " + fileId);
+        }
+        if(pillarId == null || pillarId.isEmpty()) {
+            throw new IllegalArgumentException("The pillarId is invalid: " + pillarId);
+        }
+
         if(!outstandingPutFiles.containsKey(fileId)) {
             return false;
         }

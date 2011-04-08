@@ -90,13 +90,8 @@ public class FileIdForPut {
     public URL getUrl() {
         // check whether it already has been uploaded to a server.
         if(url == null) {
-            try {
-                // upload the file and store the URL.
-                url = ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(file);
-            } catch (Exception e) {
-                throw new ModifyException("Could not upload the file '"
-                        + fileId + "'.", e);
-            }
+            // upload the file and store the URL.
+            url = ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(file);
         }
         return url;
     }

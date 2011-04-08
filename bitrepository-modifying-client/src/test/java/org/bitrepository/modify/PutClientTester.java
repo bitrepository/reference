@@ -25,6 +25,7 @@
 package org.bitrepository.modify;
 
 import org.apache.activemq.util.ByteArrayInputStream;
+import org.bitrepository.bitrepositoryelements.CompleteInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
@@ -92,7 +93,6 @@ public class PutClientTester extends ExtendedTestCase {
                 = org.bitrepository.common.JaxbHelper.loadXml(IdentifyPillarsForPutFileRequest.class,
                                                               new ByteArrayInputStream(
                                                                       listener.getMessage().getBytes()));
-        Assert.assertEquals(identify.getFileID(), dataId);
         Assert.assertEquals(identify.getSlaID(), slaId);
         
         addStep("Reply identify request.", "No problems.");
@@ -100,11 +100,10 @@ public class PutClientTester extends ExtendedTestCase {
         IdentifyPillarsForPutFileReply identifyReply 
                 = new IdentifyPillarsForPutFileReply();
         identifyReply.setCorrelationID(identify.getCorrelationID());
-        identifyReply.setFileID(dataId);
         identifyReply.setPillarID(pillarId);
         identifyReply.setSlaID(slaId);
-        identifyReply.setMinVersion((short) 1);
-        identifyReply.setVersion((short) 1);
+        identifyReply.setMinVersion(BigInteger.valueOf(1L));
+        identifyReply.setVersion(BigInteger.valueOf(1L));
         // TODO identifyReply.setTimeToDeliver(value) ???
         
         ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, identifyReply);
@@ -144,7 +143,7 @@ public class PutClientTester extends ExtendedTestCase {
         
         Assert.assertTrue(outputFile.isFile());
         Assert.assertEquals(BigInteger.valueOf(outputFile.length()), 
-                put.getExpectedFileSize(), "Different size than expected!");
+                put.getFileSize(), "Different size than expected!");
 
         addStep("Check whether the file is missing for this pillar.",
                 "Should be part of the outstanding.");
@@ -160,8 +159,8 @@ public class PutClientTester extends ExtendedTestCase {
         response.setFileID(put.getFileID());
         response.setPillarID(pillarId);
         response.setSlaID(slaId);
-        response.setMinVersion((short) 1);
-        response.setVersion((short) 1);
+        response.setMinVersion(BigInteger.valueOf(1L));
+        response.setVersion(BigInteger.valueOf(1L));
         
         ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, response);
         
@@ -188,11 +187,12 @@ public class PutClientTester extends ExtendedTestCase {
         complete.setFileID(put.getFileID());
         complete.setPillarID(pillarId);
         complete.setSlaID(slaId);
-        complete.setMinVersion((short) 1);
-        complete.setVersion((short) 1);
-        complete.setCompleteCode("1");
-        complete.setCompleteText("I'm finished 'just putting'. "
-                + "When do we come to the action?");
+        complete.setMinVersion(BigInteger.valueOf(1L));
+        complete.setVersion(BigInteger.valueOf(1L));
+        CompleteInfo completeInfo = new CompleteInfo();
+        completeInfo.setCompleteCode("1");
+        completeInfo.setCompleteText("Done with put.");
+        complete.setCompleteInfo(completeInfo);
         // Ignore the salt!
         
         ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, complete);

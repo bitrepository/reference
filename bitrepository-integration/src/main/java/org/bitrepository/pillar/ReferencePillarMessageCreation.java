@@ -66,8 +66,8 @@ public class ReferencePillarMessageCreation {
         IdentifyPillarsForGetFileReply res 
                 = new IdentifyPillarsForGetFileReply();
         res.setCorrelationID(msg.getCorrelationID());
-        res.setMinVersion((short) 1);
-        res.setVersion((short) 1);
+        res.setMinVersion(BigInteger.valueOf(1L));
+        res.setVersion(BigInteger.valueOf(1L));
         res.setFileID(msg.getFileID());
         res.setPillarID(pillar.getPillarId());
         res.setSlaID(msg.getSlaID());
@@ -89,9 +89,9 @@ public class ReferencePillarMessageCreation {
         IdentifyPillarsForPutFileReply res
                 = new IdentifyPillarsForPutFileReply();
         res.setCorrelationID(msg.getCorrelationID());
-        res.setMinVersion((short) 1);
-        res.setVersion((short) 1);
-        res.setFileID(msg.getFileID());
+        res.setMinVersion(BigInteger.valueOf(1L));
+        res.setVersion(BigInteger.valueOf(1L));
+//        res.setFileID(msg.getFileID());
         res.setSlaID(msg.getSlaID());
         res.setPillarID(pillar.getPillarId());
         
@@ -118,8 +118,8 @@ public class ReferencePillarMessageCreation {
     public GetFileResponse createGetFileResponse(GetFileRequest msg) {
         GetFileResponse res = new GetFileResponse();
         res.setCorrelationID(msg.getCorrelationID());
-        res.setMinVersion((short) 1);
-        res.setVersion((short) 1);
+        res.setMinVersion(BigInteger.valueOf(1L));
+        res.setVersion(BigInteger.valueOf(1L));
         res.setFileID(msg.getFileID());
         res.setPillarID(pillar.getPillarId());
         res.setSlaID(msg.getSlaID());
@@ -143,8 +143,8 @@ public class ReferencePillarMessageCreation {
     public GetFileComplete createGetFileComplete(GetFileRequest msg) {
         GetFileComplete res = new GetFileComplete();
         res.setCorrelationID(msg.getCorrelationID());
-        res.setMinVersion((short) 1);
-        res.setVersion((short) 1);
+        res.setMinVersion(BigInteger.valueOf(1L));
+        res.setVersion(BigInteger.valueOf(1L));
         res.setFileID(msg.getFileID());
         res.setPillarID(pillar.getPillarId());
         res.setSlaID(msg.getSlaID());
@@ -167,8 +167,8 @@ public class ReferencePillarMessageCreation {
     public PutFileResponse createPutFileResponse(PutFileRequest msg) {
         PutFileResponse res = new PutFileResponse();
         res.setCorrelationID(msg.getCorrelationID());
-        res.setVersion((short) 1);
-        res.setMinVersion((short) 1);
+        res.setVersion(BigInteger.valueOf(1L));
+        res.setMinVersion(BigInteger.valueOf(1L));
         res.setPillarID(pillar.getPillarId());
         res.setSlaID(msg.getSlaID());
         
@@ -192,8 +192,8 @@ public class ReferencePillarMessageCreation {
         PutFileComplete res = new PutFileComplete();
         res.setCorrelationID(msg.getCorrelationID());
         res.setFileID(msg.getFileID());
-        res.setMinVersion((short) 1);
-        res.setVersion((short) 1);
+        res.setMinVersion(BigInteger.valueOf(1L));
+        res.setVersion(BigInteger.valueOf(1L));
         res.setPillarID(pillar.getPillarId());
         res.setSlaID(msg.getSlaID());
 

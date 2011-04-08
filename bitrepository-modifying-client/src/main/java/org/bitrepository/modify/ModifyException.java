@@ -26,7 +26,6 @@ package org.bitrepository.modify;
 
 /**
  * The default exception for the Modify module.
- * @author jolf
  */
 public class ModifyException extends RuntimeException {
     /**
@@ -45,13 +44,5 @@ public class ModifyException extends RuntimeException {
      */
     public ModifyException(String message) {
         super(message);
-    }
-
-    /**
-     * Constructor for this exception based on a cause.
-     * @param cause The Throwable cause which has triggered this exception.
-     */
-    public ModifyException(Throwable cause) {
-        super(cause);
     }
 }

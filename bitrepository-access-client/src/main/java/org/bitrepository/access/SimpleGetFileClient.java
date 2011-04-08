@@ -26,12 +26,14 @@ package org.bitrepository.access;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.bitrepository.access_client.configuration.AccessConfiguration;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
@@ -109,8 +111,8 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
         log.info("Requesting fastest retrieval of the file '" + fileId + "' which belong to the SLA '" + slaId + "'.");
         // create message requesting delivery time for the given file.
         IdentifyPillarsForGetFileRequest msg = new IdentifyPillarsForGetFileRequest();
-        msg.setMinVersion((short) 1);
-        msg.setVersion((short) 1);
+        msg.setMinVersion(BigInteger.valueOf(1L));
+        msg.setVersion(BigInteger.valueOf(1L));
         msg.setFileID(fileId);
         msg.setCorrelationID("TheCorrelationID_FOR_THIS_MESSAGE");
         msg.setSlaID(slaId);
@@ -141,8 +143,8 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
             msg.setFileID(fileId);
             msg.setPillarID(pillarId);
             msg.setReplyTo(queue);
-            msg.setMinVersion((short) 1);
-            msg.setVersion((short) 1);
+            msg.setMinVersion(BigInteger.valueOf(1L));
+            msg.setVersion(BigInteger.valueOf(1L));
             messageBus.sendMessage(queue, msg);
             
             // set the file to be awaiting retrieval.
@@ -177,7 +179,7 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
         
         TimeMeasureTYPE time = reply.getTimeToDeliver();
         OutstandingFileID outstanding = outstandingFiles.get(id);
-        outstanding.pillarReply(reply.getPillarID(), time.getMiliSec().longValue());
+        outstanding.pillarReply(reply.getPillarID(), time.getTimeMeasureValue().longValue());
     }
     
     /**
@@ -188,9 +190,10 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
     @Override
     void handleGetFileResponse(GetFileResponse msg) {
         // TODO Something else?
+        ResponseInfo info = msg.getResponseInfo();
         log.info("Received response for retrieval of file '" + msg.getFileID() + "' in SLA '" + msg.getSlaID() 
-                + "' from pillar '" + msg.getPillarID() + "' with the following message: \n" + msg.getResponseCode()
-                + " : " + msg.getResponseText());
+                + "' from pillar '" + msg.getPillarID() + "' with the following message: \n" + info.getResponseCode()
+                + " : " + info.getResponseText());
     }
     
     /**
