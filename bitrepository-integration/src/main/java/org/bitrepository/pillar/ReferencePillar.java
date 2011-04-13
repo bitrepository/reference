@@ -117,14 +117,11 @@ public class ReferencePillar extends PillarAPI {
     void identifyForGetFile(IdentifyPillarsForGetFileRequest msg) {
         // validate the message
         if(msg == null) {
-            throw new IllegalArgumentException("The "
-                    + "IdentifyPillarsForGetFileRequest may not be null!");
+            throw new IllegalArgumentException("The IdentifyPillarsForGetFileRequest may not be null!");
         }
         if(!slaIds.contains(msg.getSlaID())) {
-            // TODO is this the correct log-level? This pillar is just no part
-            // of the given SLA!
-            log.warn("The SLA '" + msg.getSlaID() + "' is not known by this "
-                    + "reference pillar. Ignoring "
+            // TODO is this the correct log-level? This pillar is just no part of the given SLA!
+            log.warn("The SLA '" + msg.getSlaID() + "' is not known by this reference pillar. Ignoring "
                     + "IdentifyPillarsForGetFileRequest '" + msg + "'.");
             return;
         }
@@ -145,18 +142,12 @@ public class ReferencePillar extends PillarAPI {
         }
         
         // Create the reply.
-        IdentifyPillarsForGetFileResponse reply 
-                = messageCreator.createIdentifyPillarsForGetFileResponse(msg);
+        IdentifyPillarsForGetFileResponse reply = messageCreator.createIdentifyPillarsForGetFileResponse(msg);
         reply.setTimeToDeliver(timeToDeliver);
         // TODO missing elements in the reply: PillarCheckType, ReplyTo ?
         
         // Send the reply.
-        try {
-            messageBus.sendMessage(msg.getReplyTo(), reply);
-        } catch (Exception e) {
-            log.error("Could not send message '" + reply + "' on the Message "
-                    + "Bus on the queue '" + msg.getReplyTo() + "'.");
-        }
+        messageBus.sendMessage(msg.getReplyTo(), reply);
     }
 
     @Override
@@ -175,14 +166,11 @@ public class ReferencePillar extends PillarAPI {
     void identifyForPutFile(IdentifyPillarsForPutFileRequest msg) {
         // validate the message
         if(msg == null) {
-            throw new IllegalArgumentException("The "
-                    + "IdentifyPillarsForPutFileRequest may not be null!");
+            throw new IllegalArgumentException("The IdentifyPillarsForPutFileRequest may not be null!");
         }
         if(!slaIds.contains(msg.getSlaID())) {
-            // TODO is this the correct log-level? This pillar is just no part
-            // of the given SLA!
-            log.warn("The SLA '" + msg.getSlaID() + "' is not known by this "
-                    + "reference pillar. Ignoring "
+            // TODO is this the correct log-level? This pillar is just no part of the given SLA!
+            log.warn("The SLA '" + msg.getSlaID() + "' is not known by this reference pillar. Ignoring "
                     + "IdentifyPillarsForPutFileRequest '" + msg + "'.");
             return;
         }
@@ -190,20 +178,14 @@ public class ReferencePillar extends PillarAPI {
         // TODO handle the case, when the file already exists.
         
         // create the reply.
-        IdentifyPillarsForPutFileResponse reply
-                = messageCreator.createIdentifyPillarsForPutFileResponse(msg);
+        IdentifyPillarsForPutFileResponse reply = messageCreator.createIdentifyPillarsForPutFileResponse(msg);
         // TODO should these be set?
 //        reply.setTimeToDeliver("??");
 //        reply.setPillarChecksumType("??");
 //        reply.setReplyTo("??");
         
         // Send the reply.
-        try {
-            messageBus.sendMessage(msg.getReplyTo(), reply);
-        } catch (Exception e) {
-            log.error("Could not send message '" + reply + "' on the Message "
-                    + "Bus on the queue '" + msg.getReplyTo() + "'.");
-        }
+        messageBus.sendMessage(msg.getReplyTo(), reply);
     }
 
     @Override
@@ -216,20 +198,17 @@ public class ReferencePillar extends PillarAPI {
     void getFile(GetFileRequest msg) {
         // validate the message
         if(msg == null) {
-            throw new IllegalArgumentException("The GetFileRequest may not be "
-                    + "null!");
+            throw new IllegalArgumentException("The GetFileRequest may not be null!");
         }
         if(!slaIds.contains(msg.getSlaID())) {
-            // TODO is this the correct log-level? This pillar is just no part
-            // of the given SLA!
-            log.warn("The SLA '" + msg.getSlaID() + "' is not known by this "
-                    + "reference pillar. Ignoring "
+            // TODO is this the correct log-level? This pillar is just no part of the given SLA!
+            log.warn("The SLA '" + msg.getSlaID() + "' is not known by this reference pillar. Ignoring "
                     + "IdentifyPillarsForPutFileRequest '" + msg + "'.");
             return;
         }
         if(!msg.getPillarID().equals(pillarId)) {
-            log.debug("The GetFileRequest was meant for another pillar ('" 
-                    + msg.getPillarID() + "'). I will ignore it!");
+            log.debug("The GetFileRequest was meant for another pillar ('" + msg.getPillarID() + "'). I will "
+                    + "ignore it!");
             return;
         }
         
@@ -262,18 +241,12 @@ public class ReferencePillar extends PillarAPI {
 //        response.setReplyTo("??");
 
         // Send the response message.
-        try {
-            messageBus.sendMessage(msg.getReplyTo(), response);
-        } catch (Exception e) {
-            log.error("Could not send message '" + response + "' on the Message "
-                    + "Bus on the queue '" + msg.getReplyTo() + "'.");
-        }
+        messageBus.sendMessage(msg.getReplyTo(), response);
         
         // If the file was not found, then do not upload it. Just stop here!
         if(targetFile == null) {
-            log.error("Could not find the file '" + msg.getFileID() 
-                    + "' for the SLA '" + msg.getSlaID() + "' which was "
-                    + "requested for retrieval.");
+            log.error("Could not find the file '" + msg.getFileID() + "' for the SLA '" + msg.getSlaID() 
+                    + "' which was requested for retrieval.");
             return;
         }
         
@@ -287,8 +260,8 @@ public class ReferencePillar extends PillarAPI {
         complete.setFileAddress(url.toExternalForm());
         CompleteInfo cInfo = new CompleteInfo();
         cInfo.setCompleteCode("1");
-        cInfo.setCompleteText("File successfully uploaded to server and is "
-                + "ready to be downloaded by you (the GetFileClient)!");
+        cInfo.setCompleteText("File successfully uploaded to server and is ready to be downloaded by you "
+                + "(the GetFileClient)!");
         complete.setCompleteInfo(cInfo);
         // TODO handle these?
 //        complete.setPartLength("??");
@@ -296,12 +269,7 @@ public class ReferencePillar extends PillarAPI {
 //        complete.setPillarChecksumType("??");
 
         // Send the complete message.
-        try {
-            messageBus.sendMessage(msg.getReplyTo(), complete);
-        } catch (Exception e) {
-            log.error("Could not send message '" + complete + "' on the Message "
-                    + "Bus on the queue '" + msg.getReplyTo() + "'.");
-        }
+        messageBus.sendMessage(msg.getReplyTo(), complete);
     }
 
     @Override
@@ -314,20 +282,17 @@ public class ReferencePillar extends PillarAPI {
     void putFile(PutFileRequest msg) {
         // validate the message
         if(msg == null) {
-            throw new IllegalArgumentException("The PutFileRequest may not be "
-                    + "null!");
+            throw new IllegalArgumentException("The PutFileRequest may not be null!");
         }
         if(!slaIds.contains(msg.getSlaID())) {
-            // TODO is this the correct log-level? This pillar is just no part
-            // of the given SLA!
-            log.warn("The SLA '" + msg.getSlaID() + "' is not known by this "
-                    + "reference pillar. Ignoring "
+            // TODO is this the correct log-level? This pillar is just no part of the given SLA!
+            log.warn("The SLA '" + msg.getSlaID() + "' is not known by this reference pillar. Ignoring "
                     + "IdentifyPillarsForPutFileRequest '" + msg + "'.");
             return;
         }
         if(!msg.getPillarID().equals(pillarId)) {
-            log.debug("The PutFileRequest was meant for another pillar ('" 
-                    + msg.getPillarID() + "'). I will ignore it!");
+            log.debug("The PutFileRequest was meant for another pillar ('" + msg.getPillarID() + "'). I will ignore "
+                    + "it!");
             return;
         }
         
@@ -352,18 +317,12 @@ public class ReferencePillar extends PillarAPI {
 //      response.setReplyTo("??")
         
         // Send the response message.
-        try {
-            messageBus.sendMessage(msg.getReplyTo(), response);
-        } catch (Exception e) {
-            log.error("Could not send message '" + response + "' on the Message "
-                    + "Bus on the queue '" + msg.getReplyTo() + "'.");
-        }
+        messageBus.sendMessage(msg.getReplyTo(), response);
         
         // Do not continue if the file was already known
         if(targetFile != null) {
-            log.warn("Asked for putting file '" + msg.getFileID() 
-                    + "' for sla '" + msg.getSlaID() + "', but it already "
-                    + "exists. Do not continue with put!");
+            log.warn("Asked for putting file '" + msg.getFileID() + "' for sla '" + msg.getSlaID() + "', but it "
+                    + "already exists. Do not continue with put!");
             return;
         }
         
@@ -372,7 +331,7 @@ public class ReferencePillar extends PillarAPI {
         
         // Download the file. 
         // TODO send a erroneous PutFileResponse if the download fails.
-        ProtocolComponentFactory.getInstance().getFileExchange().downloadFromServer(fileToDownload,
+        ProtocolComponentFactory.getInstance().getFileExchange().downloadFromServer(fileToDownload, 
                 msg.getFileAddress());
         
         archive.archiveFile(msg.getFileID(), msg.getSlaID());
@@ -389,11 +348,6 @@ public class ReferencePillar extends PillarAPI {
 //      complete.setPillarChecksumType(value)
         
         // Send the complete message.
-        try {
-            messageBus.sendMessage(msg.getReplyTo(), complete);
-        } catch (Exception e) {
-            log.error("Could not send message '" + complete + "' on the Message "
-                    + "Bus on the queue '" + msg.getReplyTo() + "'.");
-        }
+        messageBus.sendMessage(msg.getReplyTo(), complete);
     }
 }

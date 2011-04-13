@@ -26,6 +26,7 @@ package org.bitrepository.pillar;
 
 import java.io.File;
 
+import org.bitrepository.common.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,38 +56,10 @@ public class ReferenceArchive {
             throw new IllegalArgumentException("The name for the reference "
                     + "directory is invalid. Was '" + dirName + "'.");
         }
-        fileDir = new File(dirName);
         
-        // TODO move this to utility class for directory instantiation.
-        if(!fileDir.isDirectory()) {
-            if(fileDir.isFile()) {
-                throw new IllegalStateException("The file directory '" 
-                        + fileDir.getAbsolutePath() + "' is a file and not a "
-                        + "directory.");
-            }
-            fileDir.mkdirs();
-            if(!fileDir.isDirectory()) {
-                throw new IllegalStateException("Cannot instantiate the file "
-                        + "directory '" + fileDir.getAbsolutePath() + "' as a "
-                        + "directory.");
-            }
-        }
-        
-        tmpDir = new File(fileDir, "tmp");
-        // TODO move this to utility class for directory instantiation.
-        if(!tmpDir.isDirectory()) {
-            if(tmpDir.isFile()) {
-                throw new IllegalStateException("The temp directory '" 
-                        + tmpDir.getAbsolutePath() + "' is a file and not a "
-                        + "directory.");
-            }
-            tmpDir.mkdirs();
-            if(!tmpDir.isDirectory()) {
-                throw new IllegalStateException("Cannot instantiate the temp "
-                        + "directory '" + tmpDir.getAbsolutePath() + "' as a "
-                        + "directory.");
-            }
-        }
+        // Instantiate the directories for this archive.
+        fileDir = FileUtils.retrieveDirectory(dirName);
+        tmpDir = FileUtils.retrieveSubDirectory(fileDir, "tmp");
     }
     
     /**
@@ -117,20 +90,7 @@ public class ReferenceArchive {
      * @return The directory for the given SLA.
      */
     public File getSlaDir(String slaId) {
-        File slaDir = new File(fileDir, slaId);
-        if(slaDir.isFile()) {
-            throw new IllegalStateException("The subdirectory for the SLA '"
-                    + slaId + "' is not a directory, but a file!");
-        }
-        if(!slaDir.exists()) {
-            log.debug("Creating the directory for the SLA '" + slaId + "'.");
-            slaDir.mkdirs();
-        }
-        if(!slaDir.isDirectory()) {
-            throw new IllegalStateException("The directory for the SLA '" 
-                    + slaId + "' cannot be instantiated.");
-        }
-        
+        File slaDir = FileUtils.retrieveSubDirectory(fileDir, slaId);
         return slaDir;
     }
     

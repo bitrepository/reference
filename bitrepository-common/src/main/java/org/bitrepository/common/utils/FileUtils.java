@@ -45,18 +45,53 @@ public final class FileUtils {
     public static File retrieveDirectory(String dirPath) {
         // validate the argument
         if(dirPath == null || dirPath.isEmpty()) {
-            throw new ConfigurationException("");
+            throw new ConfigurationException("Bad path for the directory: " + dirPath);
         }
         
         // instantiate the directory
         File directory = new File(dirPath);
+        instantiateAsDirectory(directory);
         
+        return directory;
+    }
+    
+    /**
+     * Method for instantiating a subdirectory with a given name to a given directory.
+     * 
+     * @param parentDir The directory to be parent to the new directory.
+     * @param dirName The name of the directory to be instantiated.
+     * @return The instantiated subdirectory.
+     */
+    public static File retrieveSubDirectory(File parentDir, String dirName) {
+        // validate the argument
+        if(dirName == null || dirName.isEmpty()) {
+            throw new ConfigurationException("Invalid name for the directory: " + dirName);
+        }
+        // validate the argument
+        if(parentDir == null || !parentDir.isDirectory()) {
+            throw new ConfigurationException("The parent directory, " + parentDir + ", is invalid");
+        }
+        
+        // instantiate the directory
+        File directory = new File(parentDir, dirName);
+        instantiateAsDirectory(directory);
+        
+        return directory;
+    }
+    
+    /**
+     * Instantiates the given file as a directory. 
+     * Throws exception if invalid or it somehow cannot be instantiated.
+     * 
+     * @param directory The file to instantiate as a directory.
+     */
+    private static void instantiateAsDirectory(File directory) {
         // validate that it is not a file.
         if(directory.isFile()) {
             throw new ConfigurationException("The file directory '" + directory.getAbsolutePath() 
                     + "' already exists as a file, and not as a directory, which is required.");
         }
-        
+
         // Create the directory if it does not exist, and validate that it is a directory afterwards.
         if(!directory.exists() || !directory.isDirectory()) {
             directory.mkdirs();
@@ -65,7 +100,5 @@ public final class FileUtils {
                         + "instantiated as a directory.");
             }
         }
-
-        return directory;
     }
 }
