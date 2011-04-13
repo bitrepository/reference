@@ -35,9 +35,9 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -145,8 +145,8 @@ public class ReferencePillar extends PillarAPI {
         }
         
         // Create the reply.
-        IdentifyPillarsForGetFileReply reply 
-                = messageCreator.createIdentifyPillarsForGetFileReply(msg);
+        IdentifyPillarsForGetFileResponse reply 
+                = messageCreator.createIdentifyPillarsForGetFileResponse(msg);
         reply.setTimeToDeliver(timeToDeliver);
         // TODO missing elements in the reply: PillarCheckType, ReplyTo ?
         
@@ -190,8 +190,8 @@ public class ReferencePillar extends PillarAPI {
         // TODO handle the case, when the file already exists.
         
         // create the reply.
-        IdentifyPillarsForPutFileReply reply
-                = messageCreator.createIdentifyPillarsForPutFileReply(msg);
+        IdentifyPillarsForPutFileResponse reply
+                = messageCreator.createIdentifyPillarsForPutFileResponse(msg);
         // TODO should these be set?
 //        reply.setTimeToDeliver("??");
 //        reply.setPillarChecksumType("??");

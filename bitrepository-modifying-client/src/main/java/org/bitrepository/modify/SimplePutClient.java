@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -130,7 +130,7 @@ public class SimplePutClient extends PutClientAPI implements PutClientExternalAP
      * @param msg The IdentifyPillarsForPutFileReply message to be handled.
      */
     @Override
-    final synchronized void identifyReply(IdentifyPillarsForPutFileReply msg) {
+    final synchronized void identifyResponse(IdentifyPillarsForPutFileResponse msg) {
         // TODO !
 //        String fileId = msg.getFileID();
 //        // validate the content of the message

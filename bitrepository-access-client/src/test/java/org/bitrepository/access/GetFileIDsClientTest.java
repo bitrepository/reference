@@ -26,8 +26,8 @@ package org.bitrepository.access;
 
 import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReply;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.TestMessageListener;
 import org.jaccept.structure.ExtendedTestCase;
@@ -103,8 +103,8 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
                 log.debug("identifyRequest stimuli loaded");
                 // TODO fill out message
 
-                IdentifyPillarsForGetFileIDsReply identifyReply =
-                        (IdentifyPillarsForGetFileIDsReply) unmarshaller.unmarshal(
+                IdentifyPillarsForGetFileIDsResponse identifyReply =
+                        (IdentifyPillarsForGetFileIDsResponse) unmarshaller.unmarshal(
                                 new File(MESSAGE_TEMPLATE_DIR + "IdentifyPillarsForGetFileIDsReplyTemplate.xml"));
                 List<Object> identifyReplyList = new ArrayList<Object>();
                 identifyReplyList.add(identifyReply);
@@ -138,7 +138,7 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
      * @throws Exception
      */
     @Test(groups = {"test first"})
-    public List<IdentifyPillarsForGetFileIDsReply> identifyPillarsForGetFileIDsTest() throws Exception {
+    public List<IdentifyPillarsForGetFileIDsResponse> identifyPillarsForGetFileIDsTest() throws Exception {
         addDescription("Tests that the expected number of pillars reply to " +
                 "request");
 
@@ -146,7 +146,7 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
                 "Logging of one request message and three reply messages " +
                         "(All pillars should reply (they may have no files, " +
                         "but can give the empty list of FileIDs)).");
-        List<IdentifyPillarsForGetFileIDsReply> identifyReplyList =
+        List<IdentifyPillarsForGetFileIDsResponse> identifyReplyList =
                 getFileIDsClient.identifyPillarsForGetFileIDs(slaID);
 
         addStep("Ensure that the returned IdentifyPillarsForGetFileIDsReply list " +
@@ -159,7 +159,7 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
                 "Expected number of replies is " + numberOfPillars);
 
         List<String> pillarIDs = new ArrayList<String>();
-        for (IdentifyPillarsForGetFileIDsReply msg: identifyReplyList) {
+        for (IdentifyPillarsForGetFileIDsResponse msg: identifyReplyList) {
             pillarIDs.add(msg.getPillarID());
         }
         if (mockUp) {
@@ -189,7 +189,7 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
 
         addStep("Use identifyPillarsForGetFileIDsTest to identify pillars",
                 "The returned list of pillar replies should not be empty.");
-        List<IdentifyPillarsForGetFileIDsReply> pillarReplies = identifyPillarsForGetFileIDsTest();
+        List<IdentifyPillarsForGetFileIDsResponse> pillarReplies = identifyPillarsForGetFileIDsTest();
         Assert.assertTrue(pillarReplies != null && pillarReplies.size()>0, "Fail: no reachable pillars");
 
         addStep("Send a message to the pillar with shortest TimeToDeliver to get FileIDs and receive " +
@@ -200,7 +200,7 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
         BigInteger value = time.getTimeMeasureValue();
         String pillarID = pillarReplies.get(0).getPillarID();
 
-        for (IdentifyPillarsForGetFileIDsReply reply: pillarReplies) {
+        for (IdentifyPillarsForGetFileIDsResponse reply: pillarReplies) {
             if (unit.equals(reply.getTimeToDeliver().getTimeMeasureUnit()) &&
                     reply.getTimeToDeliver().getTimeMeasureValue().compareTo(value) < 0) {
                 value = reply.getTimeToDeliver().getTimeMeasureValue();

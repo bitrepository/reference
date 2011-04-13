@@ -26,7 +26,7 @@ package org.bitrepository.access;
 
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 
 /**
  * Internal interface for communication from the GetFileMessageListener.
@@ -38,7 +38,7 @@ public abstract class GetFileClientAPI {
      * 
      * @param msg The IdentifyPillarsForGetFileReply message to be handled.
      */
-    abstract void handleIdentifyPillarsForGetFileReply(IdentifyPillarsForGetFileReply msg);
+    abstract void handleIdentifyPillarsForGetFileResponse(IdentifyPillarsForGetFileResponse msg);
     
     /**
      * Method for handling a GetFileResponse message.

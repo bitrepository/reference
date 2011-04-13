@@ -33,13 +33,13 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -122,7 +122,7 @@ public abstract class AbstractMessageListener implements MessageListener {
     }
 
     @Override
-    public void onMessage(IdentifyPillarsForGetChecksumsReply message) {
+    public void onMessage(IdentifyPillarsForGetChecksumsResponse message) {
         reportUnsupported(message);
     }
 
@@ -132,7 +132,7 @@ public abstract class AbstractMessageListener implements MessageListener {
     }
 
     @Override
-    public void onMessage(IdentifyPillarsForGetFileIDsReply message) {
+    public void onMessage(IdentifyPillarsForGetFileIDsResponse message) {
         reportUnsupported(message);
     }
 
@@ -142,7 +142,7 @@ public abstract class AbstractMessageListener implements MessageListener {
     }
 
     @Override
-    public void onMessage(IdentifyPillarsForGetFileReply message) {
+    public void onMessage(IdentifyPillarsForGetFileResponse message) {
         reportUnsupported(message);
     }
 
@@ -152,7 +152,7 @@ public abstract class AbstractMessageListener implements MessageListener {
     }
 
     @Override
-    public void onMessage(IdentifyPillarsForPutFileReply message) {
+    public void onMessage(IdentifyPillarsForPutFileResponse message) {
         reportUnsupported(message);
     }
 

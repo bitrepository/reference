@@ -35,13 +35,13 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -210,7 +210,7 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsReply content) {
+    public void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsResponse content) {
         sendMessage(destinationId, (Object) content);
     }
 
@@ -225,7 +225,7 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsReply content) {
+    public void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsResponse content) {
         sendMessage(destinationId, (Object) content);
     }
 
@@ -235,12 +235,12 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetFileReply content) {
+    public void sendMessage(String destinationId, IdentifyPillarsForGetFileResponse content) {
         sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForPutFileReply content) {
+    public void sendMessage(String destinationId, IdentifyPillarsForPutFileResponse content) {
         sendMessage(destinationId, (Object) content);
     }
 
@@ -463,8 +463,8 @@ public class ActiveMQMessageBus implements MessageBus {
                     return;
                 }
 
-                if (content.getClass().equals(IdentifyPillarsForGetChecksumsReply.class)) {
-                    listener.onMessage((IdentifyPillarsForGetChecksumsReply) content);
+                if (content.getClass().equals(IdentifyPillarsForGetChecksumsResponse.class)) {
+                    listener.onMessage((IdentifyPillarsForGetChecksumsResponse) content);
                     return;
                 }
 
@@ -473,8 +473,8 @@ public class ActiveMQMessageBus implements MessageBus {
                     return;
                 }
 
-                if (content.getClass().equals(IdentifyPillarsForGetFileIDsReply.class)) {
-                    listener.onMessage((IdentifyPillarsForGetFileIDsReply) content);
+                if (content.getClass().equals(IdentifyPillarsForGetFileIDsResponse.class)) {
+                    listener.onMessage((IdentifyPillarsForGetFileIDsResponse) content);
                     return;
                 }
 
@@ -483,8 +483,8 @@ public class ActiveMQMessageBus implements MessageBus {
                     return;
                 }
 
-                if (content.getClass().equals(IdentifyPillarsForGetFileReply.class)) {
-                    listener.onMessage((IdentifyPillarsForGetFileReply) content);
+                if (content.getClass().equals(IdentifyPillarsForGetFileResponse.class)) {
+                    listener.onMessage((IdentifyPillarsForGetFileResponse) content);
                     return;
                 }
 
@@ -493,8 +493,8 @@ public class ActiveMQMessageBus implements MessageBus {
                     return;
                 }
 
-                if (content.getClass().equals(IdentifyPillarsForPutFileReply.class)) {
-                    listener.onMessage((IdentifyPillarsForPutFileReply) content);
+                if (content.getClass().equals(IdentifyPillarsForPutFileResponse.class)) {
+                    listener.onMessage((IdentifyPillarsForPutFileResponse) content);
                     return;
                 }
 

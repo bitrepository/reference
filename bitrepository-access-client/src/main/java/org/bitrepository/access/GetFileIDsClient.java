@@ -24,7 +24,7 @@
  */
 package org.bitrepository.access;
 
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 
 import java.io.File;
 import java.util.List;
@@ -40,7 +40,7 @@ public interface GetFileIDsClient {
      * @return A list of replies from pillars that could respond to this request.
      *         The replies contain pillarID, reply-to-queue and possibly response-times.
      */
-    List<IdentifyPillarsForGetFileIDsReply> identifyPillarsForGetFileIDs(String slaID);
+    List<IdentifyPillarsForGetFileIDsResponse> identifyPillarsForGetFileIDs(String slaID);
 
     /**
      * Retrieve a list of File IDs from pillar.

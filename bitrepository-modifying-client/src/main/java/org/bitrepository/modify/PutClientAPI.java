@@ -24,7 +24,7 @@
  */
 package org.bitrepository.modify;
 
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileResponse;
 
@@ -55,5 +55,5 @@ public abstract class PutClientAPI {
      * 
      * @param msg The IdentifyPillarsForPutfileReply message.
      */
-    abstract void identifyReply(IdentifyPillarsForPutFileReply msg);
+    abstract void identifyResponse(IdentifyPillarsForPutFileResponse msg);
 }

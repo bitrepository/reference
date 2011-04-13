@@ -33,13 +33,13 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -119,7 +119,7 @@ public interface MessageListener {
      *
      * @param message The message received.
      */
-    void onMessage(IdentifyPillarsForGetChecksumsReply message);
+    void onMessage(IdentifyPillarsForGetChecksumsResponse message);
 
     /**
      * Action to perform upon receiving a message.
@@ -133,7 +133,7 @@ public interface MessageListener {
      *
      * @param message The message received.
      */
-    void onMessage(IdentifyPillarsForGetFileIDsReply message);
+    void onMessage(IdentifyPillarsForGetFileIDsResponse message);
 
     /**
      * Action to perform upon receiving a message.
@@ -147,7 +147,7 @@ public interface MessageListener {
      *
      * @param message The message received.
      */
-    void onMessage(IdentifyPillarsForGetFileReply message);
+    void onMessage(IdentifyPillarsForGetFileResponse message);
 
     /**
      * Action to perform upon receiving a message.
@@ -161,7 +161,7 @@ public interface MessageListener {
      *
      * @param message The message received.
      */
-    void onMessage(IdentifyPillarsForPutFileReply message);
+    void onMessage(IdentifyPillarsForPutFileResponse message);
 
     /**
      * Action to perform upon receiving a message.

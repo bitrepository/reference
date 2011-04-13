@@ -112,9 +112,9 @@ public class TestMessageListener extends AbstractMessageListener
     private void sendReply(IdentifyPillarsForGetFileIDsRequest message) {
         List<Object> replyList = stimuliResponseMap.get(message);
         if (replyList != null && !replyList.isEmpty() &&
-                replyList.get(0) instanceof IdentifyPillarsForGetFileIDsReply) {
+                replyList.get(0) instanceof IdentifyPillarsForGetFileIDsResponse) {
         ProtocolComponentFactory.getInstance().getMessageBus().
-                sendMessage(testQueue, (IdentifyPillarsForGetFileIDsReply) replyList.get(0));
+                sendMessage(testQueue, (IdentifyPillarsForGetFileIDsResponse) replyList.get(0));
         }
     }
 

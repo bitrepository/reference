@@ -33,13 +33,13 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -150,7 +150,7 @@ public interface MessageBus {
      * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsReply content);
+    void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsResponse content);
 
     /**
      * Method for sending a message on a specific destination.
@@ -174,7 +174,7 @@ public interface MessageBus {
      * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsReply content);
+    void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsResponse content);
 
     /**
      * Method for sending a message on a specific destination.
@@ -190,7 +190,7 @@ public interface MessageBus {
      * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, IdentifyPillarsForGetFileReply content);
+    void sendMessage(String destinationId, IdentifyPillarsForGetFileResponse content);
 
     /**
      * Method for sending a message on a specific destination.
@@ -198,7 +198,7 @@ public interface MessageBus {
      * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, IdentifyPillarsForPutFileReply content);
+    void sendMessage(String destinationId, IdentifyPillarsForPutFileResponse content);
 
     /**
      * Method for sending a message on a specific destination.

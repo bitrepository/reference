@@ -42,7 +42,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="IdentifyPillarsForGetFileReply">
+  <xs:element name="IdentifyPillarsForGetFileResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     REPLY in IdentifyPillarsForGetFile primitive
     </xs:documentation></xs:annotation>
@@ -82,7 +82,7 @@
   <!-- *** Messages for GetFile Primitive                                        -->
   
   <!-- ***  Messages for GetFile Primitive are only sent to one specific pillar  -->
-  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForGetFileReply     -->
+  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForGetFileResponse     -->
   
   <xs:element name="GetFileRequest">
     <xs:annotation><xs:documentation xml:lang="en">
@@ -99,7 +99,7 @@
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of receiving pillar, which can be used for possible checks
-          (IdentifyPillarsForGetFileReply.ReplyTo should ensure that right pillar is reached) 
+          (IdentifyPillarsForGetFileResponse.ReplyTo should ensure that right pillar is reached) 
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -258,7 +258,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="IdentifyPillarsForPutFileReply">
+  <xs:element name="IdentifyPillarsForPutFileResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     REPLY in IdentifyPillarsForPutFile primitive
     </xs:documentation></xs:annotation>
@@ -299,7 +299,7 @@
   <!-- *** Messages for PutFile Primitive                                       -->
 
   <!-- ***  Messages for PutFile Primitive are only sent to one specific pillar  -->
-  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForPutFileReply     -->
+  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForPutFileResponse     -->
   
   <xs:element name="PutFileRequest">
     <xs:annotation><xs:documentation xml:lang="en">
@@ -316,7 +316,7 @@
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of receiving pillar, which can be used for possible checks
-          (IdentifyPillarsForPutFileReply.ReplyTo should ensure that right pillar is reached)
+          (IdentifyPillarsForPutFileResponse.ReplyTo should ensure that right pillar is reached)
           </xs:documentation></xs:annotation>
         </xs:element>
         
@@ -495,7 +495,7 @@
     </xs:complexType>
   </xs:element>
   
-  <xs:element name="IdentifyPillarsForGetChecksumsReply">
+  <xs:element name="IdentifyPillarsForGetChecksumsResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     REPLY in IdentifyPillarsForGetChecksums primitive
     </xs:documentation></xs:annotation>
@@ -548,7 +548,7 @@
   <!-- *** Messages for GetChecksums Primitive                        -->
 
   <!-- ***  Messages for GetChecksums Primitive are only sent to one specific pillar  -->
-  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForGetChecksumsReply     -->
+  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForGetChecksumsResponse     -->
   
   <xs:element name="GetChecksumsRequest">
     <xs:annotation><xs:documentation xml:lang="en">
@@ -565,7 +565,7 @@
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of receiving pillar, which can be used for possible checks
-          (IdentifyPillarsForGetReply.ReplyTo should ensure that right pillar is reached)         
+          (IdentifyPillarsForGetChecksumsResponse.ReplyTo should ensure that right pillar is reached)         
           </xs:documentation></xs:annotation>
         </xs:element>
         
@@ -718,7 +718,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="IdentifyPillarsForGetFileIDsReply">
+  <xs:element name="IdentifyPillarsForGetFileIDsResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     REPLY in IdentifyPillarsForGetFileIDs primitive
     </xs:documentation></xs:annotation>
@@ -759,7 +759,7 @@
   <!-- *** Messages for GetFileIDs Primitive                          -->
   
   <!-- ***  Messages for GetFileIDs Primitive are only sent to one specific pillar  -->
-  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForGetFileIDsReply     -->
+  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForGetFileIDsResponse     -->
   
   <xs:element name="GetFileIDsRequest">
     <xs:annotation><xs:documentation xml:lang="en">
@@ -776,7 +776,7 @@
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of receiving pillar, which can be used for possible checks
-          (IdentifyPillarsForGetFileIDsReply.ReplyTo should ensure that right pillar is reached) 
+          (IdentifyPillarsForGetFileIDsResponse.ReplyTo should ensure that right pillar is reached) 
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -911,7 +911,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="IdentifyContributorsForGetAuditTrailsReply">
+  <xs:element name="IdentifyContributorsForGetAuditTrailsResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     REPLY in IdentifyContributorsForGetAuditTrails primitive
     </xs:documentation></xs:annotation>
@@ -953,7 +953,7 @@
   
   <!-- ***  Messages for GetAuditTrails Primitive are sent the           -->
   <!-- ***  individualcontributors which corresponds to ReplyTo from     -->
-  <!-- ***  IdentifyContributorsForGetAuditTrailsReply                   -->
+  <!-- ***  IdentifyContributorsForGetAuditTrailsResponse                   -->
   
   <xs:element name="GetAuditTrailsRequest">
     <xs:annotation><xs:documentation xml:lang="en">
@@ -970,7 +970,7 @@
         <xs:element ref="bre:Contributor" minOccurs="0" maxOccurs="1" > 
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of receiving contributor, which can be used for possible checks
-          (IdentifyContributorsForGetAuditTrailsReply.ReplyTo should ensure that right pillar is reached) 
+          (IdentifyContributorsForGetAuditTrailsResponse.ReplyTo should ensure that right pillar is reached) 
           </xs:documentation></xs:annotation>
         </xs:element>
 

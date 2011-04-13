@@ -29,9 +29,9 @@ import java.math.BigInteger;
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -61,10 +61,10 @@ public class ReferencePillarMessageCreation {
      * @param msg The IdentifyPillarsForGetFileRequest to base the reply on.
      * @return The reply to the request.
      */
-    public IdentifyPillarsForGetFileReply createIdentifyPillarsForGetFileReply(
+    public IdentifyPillarsForGetFileResponse createIdentifyPillarsForGetFileResponse(
             IdentifyPillarsForGetFileRequest msg) {
-        IdentifyPillarsForGetFileReply res 
-                = new IdentifyPillarsForGetFileReply();
+        IdentifyPillarsForGetFileResponse res 
+                = new IdentifyPillarsForGetFileResponse();
         res.setCorrelationID(msg.getCorrelationID());
         res.setMinVersion(BigInteger.valueOf(1L));
         res.setVersion(BigInteger.valueOf(1L));
@@ -84,10 +84,10 @@ public class ReferencePillarMessageCreation {
      * @param msg The IdentifyPillarsForPutFileRequest to base the reply on.
      * @return A IdentifyPillarsForPutFileReply from the request.
      */
-    public IdentifyPillarsForPutFileReply createIdentifyPillarsForPutFileReply(
+    public IdentifyPillarsForPutFileResponse createIdentifyPillarsForPutFileResponse(
             IdentifyPillarsForPutFileRequest msg) {
-        IdentifyPillarsForPutFileReply res
-                = new IdentifyPillarsForPutFileReply();
+        IdentifyPillarsForPutFileResponse res
+                = new IdentifyPillarsForPutFileResponse();
         res.setCorrelationID(msg.getCorrelationID());
         res.setMinVersion(BigInteger.valueOf(1L));
         res.setVersion(BigInteger.valueOf(1L));

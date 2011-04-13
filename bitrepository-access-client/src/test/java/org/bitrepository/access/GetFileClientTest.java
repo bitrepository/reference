@@ -39,7 +39,7 @@ import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.protocol.AbstractMessageListener;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -115,7 +115,7 @@ public class GetFileClientTest extends ExtendedTestCase {
         time.setTimeMeasureValue(BigInteger.valueOf(1000));
         time.setTimeMeasureUnit("milliseconds");
 
-        IdentifyPillarsForGetFileReply reply = new IdentifyPillarsForGetFileReply();
+        IdentifyPillarsForGetFileResponse reply = new IdentifyPillarsForGetFileResponse();
         reply.setCorrelationID(identifyMessage.getCorrelationID());
         reply.setFileID(identifyMessage.getFileID());
         reply.setMinVersion(BigInteger.valueOf(1L));
@@ -253,7 +253,7 @@ public class GetFileClientTest extends ExtendedTestCase {
         slowTime.setTimeMeasureValue(BigInteger.valueOf(10000));
         slowTime.setTimeMeasureUnit("hours");
         
-        IdentifyPillarsForGetFileReply fastReply = new IdentifyPillarsForGetFileReply();
+        IdentifyPillarsForGetFileResponse fastReply = new IdentifyPillarsForGetFileResponse();
         fastReply.setCorrelationID(request.getCorrelationID());
         fastReply.setFileID(dataId);
         fastReply.setMinVersion(BigInteger.valueOf(1L));
@@ -261,7 +261,7 @@ public class GetFileClientTest extends ExtendedTestCase {
         fastReply.setSlaID(request.getSlaID());
         fastReply.setTimeToDeliver(fastTime);
         fastReply.setPillarID(fastPillar);
-        IdentifyPillarsForGetFileReply slowReply = new IdentifyPillarsForGetFileReply();
+        IdentifyPillarsForGetFileResponse slowReply = new IdentifyPillarsForGetFileResponse();
         slowReply.setCorrelationID(request.getCorrelationID());
         slowReply.setFileID(dataId);
         slowReply.setMinVersion(BigInteger.valueOf(1L));

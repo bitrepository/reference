@@ -38,7 +38,7 @@ import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.protocol.MessageBus;
@@ -162,7 +162,7 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
      * @param reply The IdentifyPillarsForGetFileReply to handle.
      */
     @Override
-    void handleIdentifyPillarsForGetFileReply(IdentifyPillarsForGetFileReply reply) {
+    void handleIdentifyPillarsForGetFileResponse(IdentifyPillarsForGetFileResponse reply) {
         // validate arguments
         if(reply == null) {
             throw new IllegalArgumentException("The IdentifyPillarsForGetFileReply reply may not be null.");

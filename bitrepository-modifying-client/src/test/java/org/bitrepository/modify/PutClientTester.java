@@ -26,7 +26,7 @@ package org.bitrepository.modify;
 
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositoryelements.CompleteInfo;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -97,8 +97,8 @@ public class PutClientTester extends ExtendedTestCase {
         
         addStep("Reply identify request.", "No problems.");
         
-        IdentifyPillarsForPutFileReply identifyReply 
-                = new IdentifyPillarsForPutFileReply();
+        IdentifyPillarsForPutFileResponse identifyReply 
+                = new IdentifyPillarsForPutFileResponse();
         identifyReply.setCorrelationID(identify.getCorrelationID());
         identifyReply.setPillarID(pillarId);
         identifyReply.setSlaID(slaId);

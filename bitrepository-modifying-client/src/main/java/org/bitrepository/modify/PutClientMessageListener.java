@@ -24,7 +24,7 @@
  */
 package org.bitrepository.modify;
 
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileResponse;
 import org.bitrepository.protocol.AbstractMessageListener;
@@ -51,9 +51,9 @@ public class PutClientMessageListener extends AbstractMessageListener {
     }
 
     @Override
-    public void onMessage(IdentifyPillarsForPutFileReply msg) {
+    public void onMessage(IdentifyPillarsForPutFileResponse msg) {
         log.debug("Received IdentifyPillarsForPutFileReply message.");
-        client.identifyReply(msg);
+        client.identifyResponse(msg);
     }
     
     @Override

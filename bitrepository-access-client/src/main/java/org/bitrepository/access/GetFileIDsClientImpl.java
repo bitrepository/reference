@@ -24,7 +24,7 @@
  */
 package org.bitrepository.access;
 
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 
 import java.io.File;
 import java.util.List;
@@ -45,7 +45,7 @@ public class GetFileIDsClientImpl implements GetFileIDsClient {
      * @return A list of IDs of pillars that could respond to this request.
      */
     @Override
-    public List<IdentifyPillarsForGetFileIDsReply> identifyPillarsForGetFileIDs(String slaID) {
+    public List<IdentifyPillarsForGetFileIDsResponse> identifyPillarsForGetFileIDs(String slaID) {
         return null;  //Todo implement identifyPillarsForGetFileIDs
     }
 

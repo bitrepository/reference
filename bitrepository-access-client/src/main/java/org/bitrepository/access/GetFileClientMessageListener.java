@@ -26,7 +26,7 @@ package org.bitrepository.access;
 
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.protocol.AbstractMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,9 +54,9 @@ public class GetFileClientMessageListener extends AbstractMessageListener {
      * @param msg The IdentyfyPillarsForGetFileReply message.
      */
     @Override
-    public void onMessage(IdentifyPillarsForGetFileReply msg) {
+    public void onMessage(IdentifyPillarsForGetFileResponse msg) {
         log.info("Received IdentifyPillarsForGetFileReply '" + msg + "'.");
-        client.handleIdentifyPillarsForGetFileReply(msg);
+        client.handleIdentifyPillarsForGetFileResponse(msg);
     }
     
     /**
