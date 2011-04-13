@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitmagasin integrationstest
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -25,28 +25,24 @@
 package org.bitrepository.access;
 
 import org.bitrepository.access_client.configuration.AccessConfiguration;
-import org.bitrepository.bitrepositoryelements.CompleteInfo;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositorymessages.*;
-import org.bitrepository.protocol.AbstractMessageListener;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReply;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.TestMessageListener;
 import org.jaccept.structure.ExtendedTestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
-import org.testng.AssertJUnit;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import java.io.BufferedReader;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import java.io.File;
-import java.io.FileReader;
 import java.math.BigInteger;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Test class for the 'GetFileIDsClient'.
@@ -55,52 +51,94 @@ import java.util.List;
 public class GetFileIDsClientTest extends ExtendedTestCase {
 
     private Logger log = LoggerFactory.getLogger(GetFileIDsClientTest.class);
-    private static int WAITING_TIME_FOR_MESSAGE = 1000;
-    private static String slaID = "THE-SLA";
-    private static String queue = "" + (new Date().getTime());
+
+    private static final String slaID = "TestSLA";
+    private static final int WAITING_TIME_FOR_MESSAGE = 1000;
+    private static final String queue = "" + (new Date().getTime());
+
+    private static final String MESSAGE_TEMPLATE_DIR = "bitrepository-access-client/target/test-classes/messages/xml/";
+    private static final String HOURS = "HOURS";
+    private static final String MILLISECONDS = "MILLISECONDS";
 
     private boolean mockUp = true;
     private TestMessageListener[] listeners;
-    GetFileIDsClient getFileIDsClient = new GetFileIDsClientImpl();
+
+    private GetFileIDsClient getFileIDsClient = new GetFileIDsClientImpl();
+    private int numberOfPillars;
 
 
+    /**
+     * Set up the test scenario before running the tests in this class.
+     */
     @BeforeClass
     public void setUp() {
-        addStep("Initialising variables for testing, e.g. defining the " +
-                "queue to be the date for 'now'.", "");
+        log.debug("setUp");
+
+        // Defining the test queue to be the date for 'now'.
         AccessConfiguration config = AccessComponentFactory.getInstance().getConfig();
         config.setQueue(queue);
 
-        addStep("Add pillars that reply to given SLA. Mockup:" +
-                "TestMessageListeners.",
-                "Logging on INFO level that reports the pillars started");
+        // Add pillars that reply to given SLA. Mockup: TestMessageListeners.
         setUpPillars();
     }
 
     /**
-     * Set up the pillars used in this test scenario
+     * Set up the pillars used in this test scenario.
      */
     private void setUpPillars() {
         if (mockUp) {
-            listeners = new TestMessageListener[3];
-            for (int i = 1; i <= 3; i++) {
-                listeners[i-1] = new TestMessageListener("Pillar" + (i));
+            // Create stimuli-response-map
+            Map<Object, List<Object>> stimuliResponseMap = new HashMap<Object, List<Object>>();
+
+            try {
+                JAXBContext context = JAXBContext.newInstance("org.bitrepository.bitrepositorymessages");
+                Unmarshaller unmarshaller = context.createUnmarshaller();
+
+                IdentifyPillarsForGetFileIDsRequest identifyRequest =
+                        (IdentifyPillarsForGetFileIDsRequest) unmarshaller.unmarshal(
+                                new File(MESSAGE_TEMPLATE_DIR + "IdentifyPillarsForGetFileIDsRequestTemplate.xml"));
+                Assert.assertNotNull(identifyRequest, "The message should not be null.");
+                Assert.assertEquals(identifyRequest.getClass(), IdentifyPillarsForGetFileIDsRequest.class,
+                        "The message should be of the type " + IdentifyPillarsForGetFileIDsRequest.class.getName());
+                log.debug("identifyRequest stimuli loaded");
+                // TODO fill out message
+
+                IdentifyPillarsForGetFileIDsReply identifyReply =
+                        (IdentifyPillarsForGetFileIDsReply) unmarshaller.unmarshal(
+                                new File(MESSAGE_TEMPLATE_DIR + "IdentifyPillarsForGetFileIDsReplyTemplate.xml"));
+                List<Object> identifyReplyList = new ArrayList<Object>();
+                identifyReplyList.add(identifyReply);
+                // TODO fill out message
+
+                stimuliResponseMap.put(identifyRequest, identifyReplyList);
+
+                // TODO fill up map
+
+            } catch (JAXBException e) {
+                e.printStackTrace();
+            }
+
+
+            // Create test-message-listeners
+            numberOfPillars = 3;
+            listeners = new TestMessageListener[numberOfPillars];
+            for (int i = 1; i <= numberOfPillars; i++) {
+                listeners[i-1] = new TestMessageListener("Pillar" + (i), stimuliResponseMap, queue);
                 ProtocolComponentFactory.getInstance().getMessageBus().addListener(queue, listeners[i-1]);
             }
         }
-        // TODO set up Test Pillar and/or Reference Pillar?
+        // TODO set up Test Pillar and/or Reference Pillar? (remember numberOfPillars)
     }
 
     /**
      * Test the identify pillars functionality of the GetFileIDsClient.
      * Corresponds to the first part of the test described in the
-     * https://sbforge.org/display/BITMAG/Use+of+GetFileIDs
-     * user story WITHOUT the alarm/error part.
-     * @return list of pillarIDs
+     * https://sbforge.org/display/BITMAG/Use+of+GetFileIDs user story
+     * @return list of pillar replies
      * @throws Exception
      */
     @Test(groups = {"test first"})
-    public List<String> identifyPillarsForGetFileIDsTest() throws Exception {
+    public List<IdentifyPillarsForGetFileIDsReply> identifyPillarsForGetFileIDsTest() throws Exception {
         addDescription("Tests that the expected number of pillars reply to " +
                 "request");
 
@@ -108,93 +146,34 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
                 "Logging of one request message and three reply messages " +
                         "(All pillars should reply (they may have no files, " +
                         "but can give the empty list of FileIDs)).");
-        getFileIDsClient.sendIdentifyPillarsForGetFileIDsRequest(slaID);
-
-        if (mockUp) {
-            // wait for mock up pillars to receive request messages
-            synchronized(this) {
-                try {
-                    wait(WAITING_TIME_FOR_MESSAGE);
-                } catch (Exception e) {
-                    // print, but ignore!
-                    e.printStackTrace();
-                }
-            }
-
-            addStep("Ensure that the IdentifyPillarsForGetFileIDsRequest " +
-                    "message has been caught by all mock up pillars.",
-                    "It should be valid.");
-            for (TestMessageListener listener: listeners) {
-                Assert.assertNotNull(listener.getMessage(),
-                        "The message must not be null.");
-                Assert.assertEquals(listener.getMessageClass().getName(),
-                        IdentifyPillarsForGetFileIDsRequest.class.getName(),
-                        "The message should be of the type " +
-                                IdentifyPillarsForGetFileIDsRequest.
-                                        class.getName());
-            }
-
-            // send replies
-            addStep("Sending replies to the identify message.",
-                    "Should be handled by the GetFileIDsClient.");
-            mockUpSendIdentifyPillarsForGetFileIDsReplies();
-        }
-
-        // wait for getFileIDsClient to receive replies
-        synchronized(this) {
-            try {
-                wait(WAITING_TIME_FOR_MESSAGE);
-            } catch (Exception e) {
-                // print, but ignore!
-                e.printStackTrace();
-            }
-        }
-
-        List<String> pillarIDs =
+        List<IdentifyPillarsForGetFileIDsReply> identifyReplyList =
                 getFileIDsClient.identifyPillarsForGetFileIDs(slaID);
 
-        Assert.assertNotNull(pillarIDs,
-                "The list of pillar IDs should not be null.");
+        addStep("Ensure that the returned IdentifyPillarsForGetFileIDsReply list " +
+                "contains the expected answers.",
+                "Assertion test.");
+
+        Assert.assertNotNull(identifyReplyList,
+                "The list of replies should not be null.");
+        Assert.assertEquals(identifyReplyList.size(), numberOfPillars,
+                "Expected number of replies is " + numberOfPillars);
+
+        List<String> pillarIDs = new ArrayList<String>();
+        for (IdentifyPillarsForGetFileIDsReply msg: identifyReplyList) {
+            pillarIDs.add(msg.getPillarID());
+        }
         if (mockUp) {
+
             for (TestMessageListener listener: listeners) {
             Assert.assertTrue(pillarIDs.contains(listener.getPillarID()),
                     "pillarID " + listener.getPillarID() +
                             "should be in the result.");
             }
+            // TODO test if the messages are the expected test messages
         } else {
-            // TODO it should be possible to determine which pillars are part
-            // of a test set up
+            // TODO it should be possible to determine which pillars are part of a test set up
         }
-        return pillarIDs;
-    }
-
-    /**
-     * If mock up, we send the replies for the pillars.
-     */
-    private void mockUpSendIdentifyPillarsForGetFileIDsReplies() {
-        for (TestMessageListener listener: listeners) {
-            IdentifyPillarsForGetFileIDsRequest identifyMessage =
-                    (IdentifyPillarsForGetFileIDsRequest) listener.getMessage();
-            // TODO String queue = identifyMessage.getReplyTo();
-
-            IdentifyPillarsForGetFileIDsReply reply =
-                    new IdentifyPillarsForGetFileIDsReply();
-            reply.setCorrelationID(identifyMessage.getCorrelationID());
-            reply.setSlaID(identifyMessage.getSlaID());
-            reply.setReplyTo(queue);
-            reply.setPillarID(listener.getPillarID());
-
-            TimeMeasureTYPE time = new TimeMeasureTYPE();
-            time.setTimeMeasureValue(BigInteger.valueOf(1000));
-            time.setTimeMeasureUnit("milliseconds");
-            reply.setTimeToDeliver(time);
-
-            reply.setVersion(BigInteger.valueOf(1L));
-            reply.setMinVersion(BigInteger.valueOf(1L));
-
-            ProtocolComponentFactory.getInstance().getMessageBus().
-                    sendMessage(queue, reply);
-        }
+        return identifyReplyList;
     }
 
     /**
@@ -206,65 +185,35 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
      */
     @Test(groups = {"test first"})
     public void GetFileIDsTest() throws Exception {
-        addDescription("Tests that a pillar returns the expected list of " +
-                "FileIDs");
+        addDescription("Tests that the client sends the request and receives a list of FileIDs.");
 
-        addStep("Use identifyPillarsForGetFileIDsTest to identify pillars","");
-        List<String> pillarIDs = identifyPillarsForGetFileIDsTest();
-        assert pillarIDs != null && pillarIDs.size()>0: "Fail: no reachable " +
-                "pillars";
+        addStep("Use identifyPillarsForGetFileIDsTest to identify pillars",
+                "The returned list of pillar replies should not be empty.");
+        List<IdentifyPillarsForGetFileIDsReply> pillarReplies = identifyPillarsForGetFileIDsTest();
+        Assert.assertTrue(pillarReplies != null && pillarReplies.size()>0, "Fail: no reachable pillars");
 
-        for (String pillarID: pillarIDs) {
-            addStep("Send a message to a known pillar to get FileIDs",
-                    "The returned file with the list of FileIDs should not be " +
-                            "null");
-            getFileIDsClient.sendGetFileIDsRequest(slaID, pillarID);
+        addStep("Send a message to the pillar with shortest TimeToDeliver to get FileIDs and receive " +
+                "answer as part of message",
+                "The returned file with the list of FileIDs should not be null");
+        TimeMeasureTYPE time = pillarReplies.get(0).getTimeToDeliver();
+        String unit = time.getTimeMeasureUnit();
+        BigInteger value = time.getTimeMeasureValue();
+        String pillarID = pillarReplies.get(0).getPillarID();
 
-            if (mockUp) {
-                // wait for mock up pillar to receive request messages
-                synchronized(this) {
-                    try {
-                        wait(WAITING_TIME_FOR_MESSAGE);
-                    } catch (Exception e) {
-                        // print, but ignore!
-                        e.printStackTrace();
-                    }
-                }
-
-                addStep("Ensure that the GetFileIDsRequest " +
-                        "message has been caught by all mock up pillars.",
-                        "It should be valid.");
-                for (TestMessageListener listener: listeners) {
-                    Assert.assertNotNull(listener.getMessage(),
-                            "The message must not be null.");
-                    Assert.assertEquals(listener.getMessageClass().getName(),
-                            GetFileIDsRequest.class.getName(),
-                            "The message should be of the type " +
-                                    GetFileIDsRequest.class.getName());
-                }
-
-                // send replies
-                addStep("Sending replies to the request message.",
-                        "Will be logged.");
-                mockUpSendGetFileIDsReplies();
+        for (IdentifyPillarsForGetFileIDsReply reply: pillarReplies) {
+            if (unit.equals(reply.getTimeToDeliver().getTimeMeasureUnit()) &&
+                    reply.getTimeToDeliver().getTimeMeasureValue().compareTo(value) < 0) {
+                value = reply.getTimeToDeliver().getTimeMeasureValue();
+                pillarID = reply.getPillarID();
+            } else if (unit.equals(HOURS) && reply.getTimeToDeliver().getTimeMeasureUnit().equals(MILLISECONDS)) {
+                unit = MILLISECONDS;
+                value = reply.getTimeToDeliver().getTimeMeasureValue();
+                pillarID = reply.getPillarID();
             }
-
-            // wait for getFileIDsClient to receive replies
-            synchronized(this) {
-                try {
-                    wait(WAITING_TIME_FOR_MESSAGE);
-                } catch (Exception e) {
-                    // print, but ignore!
-                    e.printStackTrace();
-                }
-            }
-
-            File fileWithFileIds = getFileIDsClient.getFileIDs(slaID, pillarID);
-            Assert.assertNotNull(fileWithFileIds, "The returned file should" +
-                    "not be null.");
-            // Todo format of fileWithFileIds should be GetFileIDsResults
-            // Expected, not required, I think
         }
+
+        File fileWithFileIds = getFileIDsClient.getFileIDs(slaID, pillarID, queue);
+        Assert.assertNotNull(fileWithFileIds, "The returned file should not be null.");
     }
 
 
@@ -277,6 +226,7 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
      */
     @Test(groups = {"specificationonly"})
     public void GetFileIDsResultTest() throws Exception {
+        addDescription("Tests the result list of FileIds from the client and thus the involved pillars.");
         //TODO test known fileIDs part of FileIDs list
         addStep("Put three files with known IDs into the Bit Repository " +
                 "under given SLA. Mock-up: Put fake files into local " +
@@ -299,101 +249,4 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
                         "of the file just removed.");
     }
 
-    /**
-     * If mock up, we send the replies for the pillars.
-     * We assume NO result Address is given and the result is therefore
-     * included in the complete message.
-     */
-    private void mockUpSendGetFileIDsReplies() {
-        for (TestMessageListener listener: listeners) {
-            GetFileIDsRequest requestMessage =
-                    (GetFileIDsRequest) listener.getMessage();
-            // TODO String queue = requestMessage.getReplyTo();
-            String address = requestMessage.getResultAddress();
-            Assert.assertTrue(address == null || address.equals(""), "We " +
-                    "assume no result address is given");
-
-            // send response
-            GetFileIDsResponse response =
-                    new GetFileIDsResponse();
-            response.setCorrelationID(requestMessage.getCorrelationID());
-            response.setSlaID(requestMessage.getSlaID());
-            response.setReplyTo(queue);
-            response.setPillarID(listener.getPillarID());
-            ResponseInfo rInfo = new ResponseInfo();
-            rInfo.setResponseCode("OK");
-            response.setResponseInfo(rInfo);
-
-            response.setVersion(BigInteger.valueOf(1L));
-            response.setMinVersion(BigInteger.valueOf(1L));
-
-            ProtocolComponentFactory.getInstance().getMessageBus().
-                    sendMessage(queue, response);
-
-            // send complete
-            GetFileIDsComplete completeMsg =
-                    new GetFileIDsComplete();
-            completeMsg.setCorrelationID(requestMessage.getCorrelationID());
-            completeMsg.setSlaID(requestMessage.getSlaID());
-            completeMsg.setReplyTo(queue);
-            completeMsg.setPillarID(listener.getPillarID());
-            CompleteInfo cInfo = new CompleteInfo();
-            cInfo.setCompleteCode("OK");
-            completeMsg.setCompleteInfo(cInfo);
-
-//            completeMsg.setNoOfItems(BigInteger.valueOf(0));
-
-            completeMsg.setVersion(BigInteger.valueOf(1L));
-            completeMsg.setMinVersion(BigInteger.valueOf(1L));
-
-            ProtocolComponentFactory.getInstance().getMessageBus().
-                    sendMessage(queue, completeMsg);
-        }
-    }
-
-    /**
-     * Test message listener
-     */
-    protected class TestMessageListener extends AbstractMessageListener
-            implements ExceptionListener {
-        private String pillarID;
-        private Object lastMessage;
-
-        public TestMessageListener(String pillarID) {
-            this.pillarID = pillarID;
-        }
-
-        @Override
-        public void onMessage(GetFileIDsRequest message) {
-            onMessage((Object) message);
-        }
-
-        @Override
-        public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
-            onMessage((Object) message);
-        }
-
-        public void onMessage(Object msg) {
-            try {
-                lastMessage = msg;
-                log.debug("TestMessageListener onMessage: " + msg.getClass());
-            } catch (Exception e) {
-                Assert.fail("Should not throw an exception: ", e);
-            }
-        }
-
-        @Override
-        public void onException(JMSException e) {
-            e.printStackTrace();
-        }
-        public String getPillarID() {
-            return pillarID;
-        }
-        public Object getMessage() {
-            return lastMessage;
-        }
-        public Class getMessageClass() {
-            return lastMessage.getClass();
-        }
-    }
 }

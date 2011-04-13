@@ -8,21 +8,23 @@
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 package org.bitrepository.access;
+
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReply;
 
 import java.io.File;
 import java.util.List;
@@ -43,22 +45,13 @@ public class GetFileIDsClientImpl implements GetFileIDsClient {
      * @return A list of IDs of pillars that could respond to this request.
      */
     @Override
-    public List<String> identifyPillarsForGetFileIDs(String slaID) {
+    public List<IdentifyPillarsForGetFileIDsReply> identifyPillarsForGetFileIDs(String slaID) {
         return null;  //Todo implement identifyPillarsForGetFileIDs
     }
 
     @Override
-    public void sendIdentifyPillarsForGetFileIDsRequest(String slaID) {
-        //Todo implement sendIdentifyPillarsForGetFileIDsRequest
-    }
-
-    @Override
-    public File getFileIDs(String slaID, String pillarID) {
+    public File getFileIDs(String slaID, String queue, String pillarID) {
         return null;  //Todo implement getFileIDs
     }
 
-    @Override
-    public void sendGetFileIDsRequest(String slaID, String pillarID) {
-        //Todo implement sendGetFileIDsRequest
-    }
 }
