@@ -76,12 +76,13 @@ public class GetFileClientTest extends ExtendedTestCase {
         AccessConfiguration config = AccessComponentFactory.getInstance().getConfig();
         String queue = "" + (new Date().getTime());
         config.setQueue(queue);
+        File fileDir = new File(config.getFileDir());
         
         SimpleGetFileClient gc = new SimpleGetFileClient();
         TestMessageListener listener = new TestMessageListener();
         ProtocolComponentFactory.getInstance().getMessageBus().addListener(queue, listener);
         
-        File oldFile = new File(gc.getFileDir(), dataId);
+        File oldFile = new File(fileDir, dataId);
         if(oldFile.exists()) {
             Assert.assertTrue(oldFile.delete(), "The previously downloaded file should be deleted.");
         }
@@ -202,7 +203,7 @@ public class GetFileClientTest extends ExtendedTestCase {
         
         addStep("Verify that the file is downloaded in by the GetClient and "
                 + "placed within the GetClient's fileDir.", "Should be fine!");
-        File outputFile = new File(gc.getFileDir(), dataId);
+        File outputFile = new File(fileDir, dataId);
         Assert.assertTrue(outputFile.isFile());
     }
     

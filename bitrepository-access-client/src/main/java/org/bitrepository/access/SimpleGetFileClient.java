@@ -60,7 +60,7 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
     private final Logger log = LoggerFactory.getLogger(getClass());
     /** The connection to the message bus.*/
     private final MessageBus messageBus;
-    /** The queue to talk. TODO replace with a configuration.*/
+    /** The queue to talk. */
     private final String queue;
     /** The GetClientServer, which receives the messages.*/
     private final GetFileClientMessageListener messageListener;
@@ -257,18 +257,10 @@ public class SimpleGetFileClient extends GetFileClientAPI implements GetFileClie
      */
     private void moveDeprecatedFile(File current) {
         File newLocation = new File(current.getParent(), current.getName() + ".old");
-        // Handle scenario, when a old copy already exists. Move the old one too!
+        // Handle scenario, when a old copy already exists. Move the old one too! (to old.old)
         if(newLocation.exists()) {
             moveDeprecatedFile(newLocation);
         }
         current.renameTo(newLocation);
-    }
-    
-    /**
-     * TEST FUNCTION. Is to be replaced by configurations.
-     * @return The fileDir for this get file client.
-     */
-    File getFileDir() {
-        return fileDir;
     }
 }
