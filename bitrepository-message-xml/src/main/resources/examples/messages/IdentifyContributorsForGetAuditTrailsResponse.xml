@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  Bitmagasin protokol
+  Bitrepository message xml definitions
   
   $Id$
   $HeadURL$
   %%
-  Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
+  Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as 
@@ -24,25 +24,19 @@
   #L%
   -->
 
-<bro:IdentifyPillarsForGetChecksumsReply version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd' xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
+<bro:IdentifyContributorsForGetAuditTrailsResponse
+        version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
+        xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <FileIDs>
-    <FileID>MyDataID1</FileID>
-    <FileID>MyDataID2</FileID>
-  </FileIDs>
-  <FileChecksumSpec>
-    <ChecksumType>MD5</ChecksumType>
-    <ChecksumSalt>X</ChecksumSalt>
-  </FileChecksumSpec>
-  <PillarID>MyPillar</PillarID>
-  <PillarChecksumSpec>
-    <ChecksumType>MD5</ChecksumType>
-    <ChecksumSalt>X</ChecksumSalt>
-  </PillarChecksumSpec>
+  <Contributor>
+      <ComponentID>MyPillar</ComponentID>
+      <ComponentType>PILLAR</ComponentType>
+  </Contributor>
+  <FileID>MyFile</FileID>
   <TimeToDeliver>
     <TimeMeasureUnit>MILLISECONDS</TimeMeasureUnit>
     <TimeMeasureValue>1000</TimeMeasureValue>
   </TimeToDeliver>
-</bro:IdentifyPillarsForGetChecksumsReply>
+</bro:IdentifyContributorsForGetAuditTrailsResponse>

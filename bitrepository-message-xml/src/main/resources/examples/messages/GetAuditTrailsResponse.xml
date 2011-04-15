@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  Bitmagasin protokol
+  Bitrepository message xml definitions
   
   $Id$
   $HeadURL$
   %%
-  Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
+  Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as 
@@ -24,14 +24,19 @@
   #L%
   -->
 
-<bro:IdentifyPillarsForGetFileReply version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd' xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
+<bro:GetAuditTrailsResponse
+        version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
+        xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
+  <Contributor>
+    <ComponentID>MyPillar</ComponentID>
+    <ComponentType>PILLAR</ComponentType>
+  </Contributor>
   <FileID>MyFile</FileID>
-  <PillarID>MyPillar</PillarID>
-  <TimeToDeliver>
-    <TimeMeasureUnit>MILLISECONDS</TimeMeasureUnit>
-    <TimeMeasureValue>1000</TimeMeasureValue>
-  </TimeToDeliver>
-</bro:IdentifyPillarsForGetFileReply>
+  <ResponseInfo>
+    <ResponseCode>460</ResponseCode>
+    <ResponseText>Message request has been received and is expected to be met successfully</ResponseText>
+  </ResponseInfo>
+</bro:GetAuditTrailsResponse>

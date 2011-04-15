@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   #%L
-  Bitmagasin protokol
+  Bitrepository message xml definitions
   
   $Id$
   $HeadURL$
   %%
-  Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
+  Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as 
@@ -24,17 +24,11 @@
   #L%
   -->
 
-<bro:IdentifyPillarsForGetFileIDsReply version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd' xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
+<bro:IdentifyContributorsForGetAuditTrailsRequest version="1" minVersion="1"
+xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
+xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <PillarID>MyPillar</PillarID>
-  <FileIDs>
-    <FileID>MyDataID1</FileID>
-    <FileID>MyDataID2</FileID>
-  </FileIDs>
-  <TimeToDeliver>
-    <TimeMeasureUnit>MILLISECONDS</TimeMeasureUnit>
-    <TimeMeasureValue>1000</TimeMeasureValue>
-  </TimeToDeliver>
-</bro:IdentifyPillarsForGetFileIDsReply>
+  <FileID>MyDataID</FileID>
+</bro:IdentifyContributorsForGetAuditTrailsRequest>
