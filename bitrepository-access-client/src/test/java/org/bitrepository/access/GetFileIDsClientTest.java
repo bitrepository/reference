@@ -26,9 +26,9 @@ package org.bitrepository.access;
 
 import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.TestMessageFactory;
 import org.bitrepository.protocol.TestMessageListener;
 import org.jaccept.structure.ExtendedTestCase;
 import org.slf4j.Logger;
@@ -37,9 +37,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.*;
@@ -53,10 +51,8 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
     private Logger log = LoggerFactory.getLogger(GetFileIDsClientTest.class);
 
     private static final String slaID = "TestSLA";
-    private static final int WAITING_TIME_FOR_MESSAGE = 1000;
     private static final String queue = "" + (new Date().getTime());
 
-    private static final String MESSAGE_TEMPLATE_DIR = "bitrepository-access-client/target/test-classes/messages/xml/";
     private static final String HOURS = "HOURS";
     private static final String MILLISECONDS = "MILLISECONDS";
 
@@ -71,7 +67,7 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
      * Set up the test scenario before running the tests in this class.
      */
     @BeforeClass
-    public void setUp() {
+    public void setUp() throws JAXBException {
         log.debug("setUp");
 
         // Defining the test queue to be the date for 'now'.
@@ -85,46 +81,37 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
     /**
      * Set up the pillars used in this test scenario.
      */
-    private void setUpPillars() {
+    private void setUpPillars() throws JAXBException {
         if (mockUp) {
-            // Create stimuli-response-map
-            Map<Object, List<Object>> stimuliResponseMap = new HashMap<Object, List<Object>>();
-
-            try {
-                JAXBContext context = JAXBContext.newInstance("org.bitrepository.bitrepositorymessages");
-                Unmarshaller unmarshaller = context.createUnmarshaller();
-
-                IdentifyPillarsForGetFileIDsRequest identifyRequest =
-                        (IdentifyPillarsForGetFileIDsRequest) unmarshaller.unmarshal(
-                                new File(MESSAGE_TEMPLATE_DIR + "IdentifyPillarsForGetFileIDsRequestTemplate.xml"));
-                Assert.assertNotNull(identifyRequest, "The message should not be null.");
-                Assert.assertEquals(identifyRequest.getClass(), IdentifyPillarsForGetFileIDsRequest.class,
-                        "The message should be of the type " + IdentifyPillarsForGetFileIDsRequest.class.getName());
-                log.debug("identifyRequest stimuli loaded");
-                // TODO fill out message
-
-                IdentifyPillarsForGetFileIDsResponse identifyReply =
-                        (IdentifyPillarsForGetFileIDsResponse) unmarshaller.unmarshal(
-                                new File(MESSAGE_TEMPLATE_DIR + "IdentifyPillarsForGetFileIDsReplyTemplate.xml"));
-                List<Object> identifyReplyList = new ArrayList<Object>();
-                identifyReplyList.add(identifyReply);
-                // TODO fill out message
-
-                stimuliResponseMap.put(identifyRequest, identifyReplyList);
-
-                // TODO fill up map
-
-            } catch (JAXBException e) {
-                e.printStackTrace();
-            }
-
-
-            // Create test-message-listeners
-            numberOfPillars = 3;
+            numberOfPillars = 2;
             listeners = new TestMessageListener[numberOfPillars];
             for (int i = 1; i <= numberOfPillars; i++) {
-                listeners[i-1] = new TestMessageListener("Pillar" + (i), stimuliResponseMap, queue);
+                String pillarID = "Pillar" + (i);
+                log.debug("Setting up TestMessageListener with PillarID: " + pillarID);
+
+                // Create stimuli-response-map
+                Map<Object, List<Object>> stimuliResponseMap = new HashMap<Object, List<Object>>();
+
+                IdentifyPillarsForGetFileIDsRequest identifyRequest =
+                        TestMessageFactory.getIdentifyPillarsForGetFileIDsRequestTestMessage();
+                IdentifyPillarsForGetFileIDsResponse identifyReply =
+                        TestMessageFactory.getIdentifyPillarsForGetFileIDsResponseTestMessage(pillarID);
+                List<Object> identifyReplyList = new ArrayList<Object>();
+                identifyReplyList.add(identifyReply);
+                stimuliResponseMap.put(identifyRequest, identifyReplyList);
+
+                GetFileIDsRequest request = TestMessageFactory.getGetFileIDsRequestTestMessage(pillarID);
+                GetFileIDsResponse response = TestMessageFactory.getGetFileIDsResponseTestMessage(pillarID);
+                List<Object> responseList = new ArrayList<Object>();
+                responseList.add(response);
+                GetFileIDsComplete complete = TestMessageFactory.getGetFileIDsCompleteTestMessage(pillarID);
+                responseList.add(complete);
+                stimuliResponseMap.put(request, responseList);
+
+                // Create test-message-listener
+                listeners[i-1] = new TestMessageListener(pillarID, stimuliResponseMap, queue);
                 ProtocolComponentFactory.getInstance().getMessageBus().addListener(queue, listeners[i-1]);
+
             }
         }
         // TODO set up Test Pillar and/or Reference Pillar? (remember numberOfPillars)
@@ -132,8 +119,8 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
 
     /**
      * Test the identify pillars functionality of the GetFileIDsClient.
-     * Corresponds to the first part of the test described in the
-     * https://sbforge.org/display/BITMAG/Use+of+GetFileIDs user story
+     * Corresponds to the first part of the first user story described on
+     * https://sbforge.org/display/BITMAG/Get+File+IDs+User+Stories
      * @return list of pillar replies
      * @throws Exception
      */
@@ -178,9 +165,8 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
 
     /**
      * Test the Get functionality of the GetFileIDsClient.
-     * Corresponds to the second part of the test described in the
-     * https://sbforge.org/display/BITMAG/Use+of+GetFileIDs
-     * user story.
+     * Corresponds to the second part of the first user story described on
+     * https://sbforge.org/display/BITMAG/Get+File+IDs+User+Stories
      * @throws Exception
      */
     @Test(groups = {"test first"})
