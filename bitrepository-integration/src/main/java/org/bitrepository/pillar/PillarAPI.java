@@ -36,62 +36,60 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 /**
  * Interface for a reference pillar implementation.
  */
-public abstract class PillarAPI {
-
+interface PillarAPI {
     /**
      * Method for handling a IdentifyPillarsForGetFileRequest.
      * 
      * @param msg The IdentifyPillarsForGetFileRequest to be handled.
      */
-    abstract void identifyForGetFile(IdentifyPillarsForGetFileRequest msg);
+    void identifyForGetFile(IdentifyPillarsForGetFileRequest msg);
     
     /**
      * Method for handling a IdentifyPillarsForGetFileIDsRequest.
      * 
      * @param msg The IdentifyPillarsForGetFileIDsRequest to be handled.
      */
-    abstract void identifyForGetFileIds(IdentifyPillarsForGetFileIDsRequest msg);
+    void identifyForGetFileIds(IdentifyPillarsForGetFileIDsRequest msg);
 
     /**
      * Method for handling a IdentifyPillarsForGetChecksumRequest.
      * 
      * @param msg The IdentifyPillarsForGetChecksumRequest to be handled.
      */
-    abstract void identifyForGetChecksum(IdentifyPillarsForGetChecksumsRequest msg);
+    void identifyForGetChecksum(IdentifyPillarsForGetChecksumsRequest msg);
     
     /**
      * Method for handling a IdentifyPillarsForPutFileRequest.
      * 
      * @param msg The IdentifyPillarsForPutFileRequest to be handled.
      */
-    abstract void identifyForPutFile(IdentifyPillarsForPutFileRequest msg);
+    void identifyForPutFile(IdentifyPillarsForPutFileRequest msg);
     
     /**
      * Method for handling a GetChecksumsRequest.
      * 
      * @param msg The GetChecksumsRequest to be handled.
      */
-    abstract void getChecksum(GetChecksumsRequest msg);
+    void getChecksum(GetChecksumsRequest msg);
     
     /**
      * Method for handling a GetFileRequest.
      * 
      * @param msg The GetFileRequest to be handled.
      */
-    abstract void getFile(GetFileRequest msg);
+    void getFile(GetFileRequest msg);
     
     /**
      * Method for handling a GetFileIDsRequest.
      * 
      * @param msg The GetFileIDsRequest to be handled.
      */
-    abstract void getFileIds(GetFileIDsRequest msg);
+    void getFileIds(GetFileIDsRequest msg);
     
     /**
      * Method for handling a PutFileRequest.
      * 
      * @param msg The PutFileRequest to be handled.
      */
-    abstract void putFile(PutFileRequest msg);
-    
+    void putFile(PutFileRequest msg);
 }

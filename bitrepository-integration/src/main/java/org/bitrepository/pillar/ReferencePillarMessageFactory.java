@@ -40,14 +40,14 @@ import org.bitrepository.bitrepositorymessages.PutFileResponse;
 /**
  * Class for generating the messages for the Reference Pillar.
  */
-public class ReferencePillarMessageCreation {
+public class ReferencePillarMessageFactory {
     /** The pillar this message creator belongs to.*/
     ReferencePillar pillar;
     
     /**
      * Package protected constructor.
      */
-    ReferencePillarMessageCreation(ReferencePillar refPillar) {
+    ReferencePillarMessageFactory(ReferencePillar refPillar) {
         pillar = refPillar;
     }
     

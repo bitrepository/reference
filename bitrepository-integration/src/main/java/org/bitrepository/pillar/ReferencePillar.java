@@ -42,6 +42,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileResponse;
+import org.bitrepository.common.utils.ArgumentValidationUtils;
 import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.slf4j.Logger;
@@ -57,10 +58,10 @@ import java.util.List;
  * Reference pillar.
  * The TODOs Will be implemented as needed. 
  */
-public class ReferencePillar extends PillarAPI {
+public class ReferencePillar implements PillarAPI {
     
     /** The log.*/
-    private Logger log = LoggerFactory.getLogger(ReferencePillar.class);
+    private Logger log = LoggerFactory.getLogger(getClass());
     
     /** The amount of bytes per megabyte.*/
     private static long BYTES_PER_MB = 1024*1024;
@@ -83,7 +84,7 @@ public class ReferencePillar extends PillarAPI {
     private List<String> slaIds;
     
     /** The instance for generating the messages.*/
-    private ReferencePillarMessageCreation messageCreator;
+    private ReferencePillarMessageFactory messageCreator;
     
     /**
      * Constructor.
@@ -96,7 +97,7 @@ public class ReferencePillar extends PillarAPI {
         
         // TODO use settings.
         archive = new ReferenceArchive("filedir");
-        messageCreator = new ReferencePillarMessageCreation(this);
+        messageCreator = new ReferencePillarMessageFactory(this);
         
         listener = new PillarMessageListener(this);
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus();
@@ -114,15 +115,12 @@ public class ReferencePillar extends PillarAPI {
     }
 
     @Override
-    void identifyForGetFile(IdentifyPillarsForGetFileRequest msg) {
-        // validate the message
-        if(msg == null) {
-            throw new IllegalArgumentException("The IdentifyPillarsForGetFileRequest may not be null!");
-        }
+    public void identifyForGetFile(IdentifyPillarsForGetFileRequest msg) {
+        ArgumentValidationUtils.checkNotNull(msg, "IdentifyPillarsForGetFileRequest msg");
         if(!slaIds.contains(msg.getSlaID())) {
             // TODO is this the correct log-level? This pillar is just no part of the given SLA!
-            log.warn("The SLA '" + msg.getSlaID() + "' is not known by this reference pillar. Ignoring "
-                    + "IdentifyPillarsForGetFileRequest '" + msg + "'.");
+            log.warn("The SLA '{}' is not known by this reference pillar. Ignoring "
+                    + "IdentifyPillarsForGetFileRequest '{}'.", msg.getSlaID(), msg);
             return;
         }
         
@@ -151,31 +149,26 @@ public class ReferencePillar extends PillarAPI {
     }
 
     @Override
-    void identifyForGetFileIds(IdentifyPillarsForGetFileIDsRequest msg) {
+    public void identifyForGetFileIds(IdentifyPillarsForGetFileIDsRequest msg) {
         // TODO Auto-generated method stub
         throw new NotImplementedException("To be implemented, when needed");
     }
 
     @Override
-    void identifyForGetChecksum(IdentifyPillarsForGetChecksumsRequest msg) {
+    public void identifyForGetChecksum(IdentifyPillarsForGetChecksumsRequest msg) {
         // TODO Auto-generated method stub
         throw new NotImplementedException("To be implemented, when needed");
     }
 
     @Override
-    void identifyForPutFile(IdentifyPillarsForPutFileRequest msg) {
-        // validate the message
-        if(msg == null) {
-            throw new IllegalArgumentException("The IdentifyPillarsForPutFileRequest may not be null!");
-        }
+    public void identifyForPutFile(IdentifyPillarsForPutFileRequest msg) {
+        ArgumentValidationUtils.checkNotNull(msg, "IdentifyPillarsForPutFileRequest msg");
         if(!slaIds.contains(msg.getSlaID())) {
             // TODO is this the correct log-level? This pillar is just no part of the given SLA!
-            log.warn("The SLA '" + msg.getSlaID() + "' is not known by this reference pillar. Ignoring "
-                    + "IdentifyPillarsForPutFileRequest '" + msg + "'.");
+            log.warn("The SLA '{}' is not known by this reference pillar. Ignoring "
+                    + "IdentifyPillarsForGetFileRequest '{}'.", msg.getSlaID(), msg);
             return;
         }
-        
-        // TODO handle the case, when the file already exists.
         
         // create the reply.
         IdentifyPillarsForPutFileResponse reply = messageCreator.createIdentifyPillarsForPutFileResponse(msg);
@@ -189,21 +182,18 @@ public class ReferencePillar extends PillarAPI {
     }
 
     @Override
-    void getChecksum(GetChecksumsRequest msg) {
+    public void getChecksum(GetChecksumsRequest msg) {
         // TODO Auto-generated method stub
         throw new NotImplementedException("To be implemented, when needed");
     }
 
     @Override
-    void getFile(GetFileRequest msg) {
-        // validate the message
-        if(msg == null) {
-            throw new IllegalArgumentException("The GetFileRequest may not be null!");
-        }
+    public void getFile(GetFileRequest msg) {
+        ArgumentValidationUtils.checkNotNull(msg, "GetFileRequest msg");
         if(!slaIds.contains(msg.getSlaID())) {
             // TODO is this the correct log-level? This pillar is just no part of the given SLA!
-            log.warn("The SLA '" + msg.getSlaID() + "' is not known by this reference pillar. Ignoring "
-                    + "IdentifyPillarsForPutFileRequest '" + msg + "'.");
+            log.warn("The SLA '{}' is not known by this reference pillar. Ignoring "
+                    + "IdentifyPillarsForGetFileRequest '{}'.", msg.getSlaID(), msg);
             return;
         }
         if(!msg.getPillarID().equals(pillarId)) {
@@ -227,7 +217,7 @@ public class ReferencePillar extends PillarAPI {
         } else {
             response.setFileSize(BigInteger.valueOf(-1L));
             ResponseInfo info = new ResponseInfo();
-            info.setResponseCode("2");
+            info.setResponseCode("404");
             info.setResponseText("File is missing. Cannot upload what cannot be found.");
             response.setResponseInfo(info);
         }
@@ -273,21 +263,18 @@ public class ReferencePillar extends PillarAPI {
     }
 
     @Override
-    void getFileIds(GetFileIDsRequest msg) {
+    public void getFileIds(GetFileIDsRequest msg) {
         // TODO Auto-generated method stub
         throw new NotImplementedException("To be implemented, when needed");
     }
 
     @Override
-    void putFile(PutFileRequest msg) {
-        // validate the message
-        if(msg == null) {
-            throw new IllegalArgumentException("The PutFileRequest may not be null!");
-        }
+    public void putFile(PutFileRequest msg) {
+        ArgumentValidationUtils.checkNotNull(msg, "PutFileRequest msg");
         if(!slaIds.contains(msg.getSlaID())) {
             // TODO is this the correct log-level? This pillar is just no part of the given SLA!
-            log.warn("The SLA '" + msg.getSlaID() + "' is not known by this reference pillar. Ignoring "
-                    + "IdentifyPillarsForPutFileRequest '" + msg + "'.");
+            log.warn("The SLA '{}' is not known by this reference pillar. Ignoring "
+                    + "IdentifyPillarsForGetFileRequest '{}'.", msg.getSlaID(), msg);
             return;
         }
         if(!msg.getPillarID().equals(pillarId)) {
@@ -299,7 +286,6 @@ public class ReferencePillar extends PillarAPI {
         File targetFile = archive.findFile(msg.getFileID(), msg.getSlaID());
         
         PutFileResponse response = messageCreator.createPutFileResponse(msg);
-        // give response accordingly to whether
         if(targetFile == null) {
             ResponseInfo info = new ResponseInfo();
             info.setResponseCode("1");

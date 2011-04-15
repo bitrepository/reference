@@ -26,6 +26,7 @@ package org.bitrepository.pillar;
 
 import java.io.File;
 
+import org.bitrepository.common.utils.ArgumentValidationUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,13 +38,14 @@ import org.slf4j.LoggerFactory;
  */
 public class ReferenceArchive {
     /** The log.*/
-    private Logger log = LoggerFactory.getLogger(ReferenceArchive.class);
+    private Logger log = LoggerFactory.getLogger(getClass());
 
-    /** The directory for the files. Each */
-    private File fileDir;
+    /** The directory for the files. Each SLA has its own sub-directory to this base directory, which also contains
+     * a temporary directory where files are downloaded to before they are archived in their SLA file directory.*/
+    private File baseDepositDir;
     
-    /** The directory where files are being downloaded to before they are put 
-     * into the corresponding filedir. */
+    /** The directory where files are being downloaded to before they are put into the directory for the
+     * corresponding SLA. */
     private File tmpDir;
     
     /** 
@@ -52,14 +54,11 @@ public class ReferenceArchive {
      * @param dir The directory
      */
     public ReferenceArchive(String dirName) {
-        if(dirName == null || dirName.isEmpty()) {
-            throw new IllegalArgumentException("The name for the reference "
-                    + "directory is invalid. Was '" + dirName + "'.");
-        }
+        ArgumentValidationUtils.checkNotNullOrEmpty(dirName, "String dirName");
         
         // Instantiate the directories for this archive.
-        fileDir = FileUtils.retrieveDirectory(dirName);
-        tmpDir = FileUtils.retrieveSubDirectory(fileDir, "tmp");
+        baseDepositDir = FileUtils.retrieveDirectory(dirName);
+        tmpDir = FileUtils.retrieveSubDirectory(baseDepositDir, "tmp");
     }
     
     /**
@@ -89,8 +88,8 @@ public class ReferenceArchive {
      * @param slaId The id for the SLA.
      * @return The directory for the given SLA.
      */
-    public File getSlaDir(String slaId) {
-        File slaDir = FileUtils.retrieveSubDirectory(fileDir, slaId);
+    private File getSlaDir(String slaId) {
+        File slaDir = FileUtils.retrieveSubDirectory(baseDepositDir, slaId);
         return slaDir;
     }
     
@@ -114,11 +113,9 @@ public class ReferenceArchive {
      */
     public void archiveFile(String fileId, String slaId) {
         File oldLocation = new File(tmpDir, fileId);
-        File slaDir = getSlaDir(slaId);
-        File newLocation = new File(slaDir, fileId);
-        
-        // TODO verify existence of the oldLocation and the lack thereof for the
-        // newLocation.
+        ArgumentValidationUtils.checkIsFile(oldLocation);
+        File newLocation = new File(getSlaDir(slaId), fileId);
+        ArgumentValidationUtils.checkFileDoesNotExist(newLocation);
         
         oldLocation.renameTo(newLocation);
     }

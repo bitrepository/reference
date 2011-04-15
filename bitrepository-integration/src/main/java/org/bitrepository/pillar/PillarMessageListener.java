@@ -38,21 +38,19 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Simple message listener for the reference pillar.
- * Handles all the different request messages by sending them directly to the
- * reference pillar. 
+ * Handles all the different request messages by sending them directly to the reference pillar. 
  */
 public class PillarMessageListener extends AbstractMessageListener {
     /** The log for this class.*/
-    private final Logger log = LoggerFactory.getLogger(
-            PillarMessageListener.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
-    /** The PutClient dedicated to this message listener instance.*/
+    /** The pillar dedicated to this message listener instance.*/
     private PillarAPI client;
     
     /** 
-     * Constructor. Is instantiated by the PutClient.
+     * Constructor. Is instantiated by the reference pillar.
      * 
-     * @param gc The PutClient for this instance.
+     * @param pillar The reference pillar inheriting the PillarAPI.
      */
     public PillarMessageListener(PillarAPI pillar) {
         this.client = pillar;
@@ -60,49 +58,49 @@ public class PillarMessageListener extends AbstractMessageListener {
 
     @Override
     public void onMessage(IdentifyPillarsForGetFileRequest msg) {
-        log.debug("Received IdentifyPillarsForGetFileRequest message.");
+        log.debug("Received {} message.", msg.getClass());
         client.identifyForGetFile(msg);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetFileIDsRequest msg) {
-        log.debug("Received IdentifyPillarsForGetFileIDsRequest message.");
+        log.debug("Received {} message.", msg.getClass());
         client.identifyForGetFileIds(msg);
     }
     
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsRequest msg) {
-        log.debug("Received IdentifyPillarsForGetChecksumsRequest message.");
+        log.debug("Received {} message.", msg.getClass());
         client.identifyForGetChecksum(msg);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForPutFileRequest msg) {
-        log.debug("Received IdentifyPillarsForPutFileRequest message.");
+        log.debug("Received {} message.", msg.getClass());
         client.identifyForPutFile(msg);
     }
     
     @Override
     public void onMessage(GetChecksumsRequest msg) {
-        log.debug("Received GetChecksumsRequest message.");
+        log.debug("Received {} message.", msg.getClass());
         client.getChecksum(msg);
     }
 
     @Override
     public void onMessage(GetFileIDsRequest msg) {
-        log.debug("Received GetFileIDsRequest message.");
+        log.debug("Received {} message.", msg.getClass());
         client.getFileIds(msg);
     }
 
     @Override
     public void onMessage(GetFileRequest msg) {
-        log.debug("Received GetFileRequest message.");
+        log.debug("Received {} message.", msg.getClass());
         client.getFile(msg);
     }
     
     @Override
     public void onMessage(PutFileRequest msg) {
-        log.debug("Received PutFileRequest message.");
+        log.debug("Received {} message.", msg.getClass());
         client.putFile(msg);
     }
 }
