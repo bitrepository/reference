@@ -1,14 +1,76 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <groupId>org.bitrepository</groupId>
-    <artifactId>bitrepository</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>bitrepository-integrity-client</artifactId>
-  <name>Bitrepository Integritetsklient</name>
-  <description>Integrity functionality consists of regularly collecting information about the data in the various pillars, and ensuring that the data are consistent. In case of inconsistency, integrity functionality ensures processes for raising alarms and restoring consistency.</description>
-  <url>https://sbforge.org/display/BITMAG/Integrity</url>
+    <parent>
+        <groupId>org.bitrepository</groupId>
+        <artifactId>bitrepository</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>bitrepository-integrity-client</artifactId>
+    <name>Bitrepository Integrity Client</name>
+    <description>Integrity functionality consists of regularly collecting information about the data in the various
+        pillars, and ensuring that the data are consistent. In case of inconsistency, integrity functionality ensures
+        processes for raising alarms and restoring consistency.
+    </description>
+    <url>https://sbforge.org/display/BITMAG/Integrity</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.bitrepository</groupId>
+            <artifactId>bitrepository-message-xml</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bitrepository</groupId>
+            <artifactId>bitrepository-access-client</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>Extract xsd files</id>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <includeGroupIds>org.bitrepository</includeGroupIds>
+                            <includeArtifactIds>bitrepository-message-xml</includeArtifactIds>
+                            <includes>examples/messages/*.xml,xsd/*.xsd</includes>
+                            <outputDirectory>${project.build.directory}/message-xml</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.7.4</version>
+                <executions>
+                    <execution>
+                        <id>generate-message-classes</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                        <configuration>
+                            <schemaDirectory>${project.build.directory}/message-xml/xsd</schemaDirectory>
+                            <generateDirectory>${project.build.directory}/generated-sources/messages</generateDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources/configurations/xml</directory>
+            </resource>
+        </resources>
+    </build>
 </project>
