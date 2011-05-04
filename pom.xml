@@ -104,6 +104,7 @@
   <scm>
     <url>https://sbforge.org/fisheye</url>
     <connection>scm:svn:https://sbforge.org/svn/bitrepository/trunk</connection>
+    <developerConnection>scm:svn:https://sbforge.org/svn/bitrepository/trunk</developerConnection>
   </scm>
 
   <distributionManagement>
