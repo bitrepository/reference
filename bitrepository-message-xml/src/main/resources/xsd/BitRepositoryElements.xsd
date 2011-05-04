@@ -13,37 +13,99 @@
 <!-- ****** USED ELEMENTS AND GROUPS IN ALPHABETIC ORDER     ****** -->
 <!-- ************************************************************** -->
 
+  <xs:element name="AlarmConcerning">
+    <xs:annotation><xs:documentation xml:lang="en">
+      Data format for information on which components the alarm concern
+    </xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="AlarmInformation">
+    <xs:annotation><xs:documentation xml:lang="en">
+      Data format for elements in the description of the alarm
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="OrigDateTime" type="SystemDateTime_TYPE">
+          <xs:annotation><xs:documentation xml:lang="en">
+            Original data/time for discovery of alarm
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element name="AlarmCode" type="ERRORCODE_ALARM_TYPE">
+          <xs:annotation><xs:documentation xml:lang="en">
+            Global alarm code for the system which describes what the alarm consist of
+            The actual codes are specified later, e.g. IoError, DataNotFound, AccessDenied, OK
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element name="AlarmText" type="xs:string">
+          <xs:annotation><xs:documentation xml:lang="en">
+            AlarmText is a free text for logging of the alarm
+            It does not have a semantic meaning, but contributes to a more readable log
+            and possible notifications
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element name="Priority" type="PriorityCode_TYPE">
+          <xs:annotation><xs:documentation xml:lang="en">
+            Global priority code for the system, which indicates e.g. how and how fast the alarm must be treated
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element name="Risk" type="xs:nonNegativeInteger">
+          <xs:annotation><xs:documentation xml:lang="en">
+            Risk of specified scenario becoming reality, if alarm is not treated.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element name="RiskArea" type="RiskArea_TYPE">
+          <xs:annotation><xs:documentation xml:lang="en">
+            Global risk code for likelyhood for certain risks to becom reality, if alarm is not treated.
+            Known risk areas are: availability, bit safety, confidentiality
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="AlarmRaiser" type="Component_TYPE" >
+    <xs:annotation><xs:documentation xml:lang="en">
+    Component responsible for raising an alarm
+    </xs:documentation></xs:annotation>
+  </xs:element>
+
   <xs:element name="AuditTrailData">
-      <xs:annotation><xs:documentation xml:lang="en">
-          Data format for elements in an audit trail for a FileID
-      </xs:documentation></xs:annotation>
-      <xs:complexType>
-        <xs:sequence>
-          <xs:element name="FileID" type="FileID_TYPE">
-            <xs:annotation><xs:documentation xml:lang="en">
-            FileID for object which the audit trail concern
-            </xs:documentation></xs:annotation>
-          </xs:element>
+        <xs:annotation><xs:documentation xml:lang="en">
+            Data format for elements in an audit trail for a FileID
+        </xs:documentation></xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="FileID" type="FileID_TYPE">
+              <xs:annotation><xs:documentation xml:lang="en">
+              FileID for object which the audit trail concern
+              </xs:documentation></xs:annotation>
+            </xs:element>
 
-          <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
-            <xs:annotation><xs:documentation xml:lang="en">
-            The number of audit trail data items included
-            </xs:documentation></xs:annotation>
-          </xs:element>
+            <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
+              <xs:annotation><xs:documentation xml:lang="en">
+              The number of audit trail data items included
+              </xs:documentation></xs:annotation>
+            </xs:element>
 
-          <xs:element name="AuditTrailDataItems" >
-            <xs:annotation><xs:documentation xml:lang="en" >
-            List of audit trail data items in result
-            </xs:documentation></xs:annotation>
-            <xs:complexType>
-              <xs:sequence>
-                <xs:element ref="AuditTrailDataItem" minOccurs="0" maxOccurs="unbounded" />
-              </xs:sequence>
-            </xs:complexType>
-          </xs:element>
-        </xs:sequence>
-      </xs:complexType>
-    </xs:element>
+            <xs:element name="AuditTrailDataItems" >
+              <xs:annotation><xs:documentation xml:lang="en" >
+              List of audit trail data items in result
+              </xs:documentation></xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element ref="AuditTrailDataItem" minOccurs="0" maxOccurs="unbounded" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
 
     <xs:element name="AuditTrailDataItem">
     <xs:annotation><xs:documentation xml:lang="en">
@@ -1056,6 +1118,35 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="PriorityCode_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Global priority codes for the system, which indicate e.g. how and how fast alarms must be treated
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:positiveInteger">
+      <xs:enumeration value="1">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Alarm requires manual checks. Notification should be sent.
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="2">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Integrity Client Alarm: Missing IDs.
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="3">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Integrity Client Alarm: Checksum errors.
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="4">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Other. Notification should be sent. Alarmtext should explain what the alarm consists of.
+        This code should rarely be used, and use indicates that this type should be updated.
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:simpleType name="ReplyTo_TYPE">
     <xs:restriction base="xs:string">
     </xs:restriction>
@@ -1083,6 +1174,26 @@
       <xs:enumeration value="462">
         <xs:annotation><xs:documentation xml:lang="en">
         Data for a FileID has been found for some sort of Get request
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="RiskArea_TYPE">
+    <xs:restriction base="xs:positiveInteger">
+      <xs:enumeration value="1">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Risk Area availability
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="2">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Risk Area bit safety
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="3">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Risk Area confidentiality
         </xs:documentation></xs:annotation>
       </xs:enumeration>
     </xs:restriction>
@@ -1140,4 +1251,5 @@
       </xs:element>
     </xs:sequence>
   </xs:complexType>
+
 </xs:schema>

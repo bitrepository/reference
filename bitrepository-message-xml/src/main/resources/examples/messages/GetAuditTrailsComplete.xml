@@ -71,8 +71,8 @@
           <ActionOnFile>
             <Access>GET</Access>
           </ActionOnFile>
-            </AuditTrailDataItem>
-          </AuditTrailDataItems>
-      </AuditTrailData>
+        </AuditTrailDataItem>
+      </AuditTrailDataItems>
+    </AuditTrailData>
   </ResultingAuditTrails>
 </bro:GetAuditTrailsComplete>
