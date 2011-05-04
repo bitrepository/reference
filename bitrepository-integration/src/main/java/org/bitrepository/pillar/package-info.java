@@ -23,7 +23,7 @@
  * #L%
  */
 /**
- * This package provides a reference pillar
+ * This package implementes a reference pillar.
  * <p/>
  * The class {@link org.bitrepository.pillar.PillarAPI} provides the basic interface for the reference pillar towards
  * the {@link org.bitrepository.pillar.PillarMessageListener}.
