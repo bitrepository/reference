@@ -46,21 +46,26 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <version>2.1</version>
         <executions>
-          <execution>
-            <id>Extract xsd files</id>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <phase>generate-sources</phase>
-            <configuration>
-              <type>jar</type>
-              <includeGroupIds>org.bitrepository</includeGroupIds>
-              <includeArtifactIds>bitrepository-message-xml</includeArtifactIds>
-              <includes>examples/messages/*.xml,xsd/*.xsd</includes>
-              <excludeTransitive>true</excludeTransitive>
-              <outputDirectory>${project.build.directory}/message-xml</outputDirectory>
-            </configuration>
-          </execution>
+           <execution>
+             <id>unpack</id>
+             <phase>generate-sources</phase>
+          <goals>
+          <goal>unpack</goal>
+             </goals>
+             <configuration>
+               <artifactItems>
+                 <artifactItem>
+                   <groupId>org.bitrepository</groupId>
+                   <artifactId>bitrepository-message-xml</artifactId>
+                   <type>jar</type>                   
+                   <excludes>**/classes</excludes>                   
+                   <overWrite>true</overWrite>
+                 </artifactItem>
+               </artifactItems>
+               <includes>examples/messages/*.xml,xsd/*.xsd</includes>
+               <outputDirectory>${project.build.directory}/message-xml</outputDirectory>
+             </configuration>
+           </execution>
         </executions>
       </plugin>
       <plugin>

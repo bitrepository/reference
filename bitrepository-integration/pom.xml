@@ -36,7 +36,8 @@
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
-  <description>Here you can find the functionality for working with crosscutting module concerns. This is mainly integration tests.</description>
+  <description>Here you can find the functionality for working with crosscutting module concerns. 
+  This is mainly integration tests.</description>
   <build>
     <resources>
         <resource>
