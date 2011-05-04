@@ -103,7 +103,7 @@
   <scm>
     <url>https://sbforge.org/fisheye/tags/bitrepository-0.1</url>
     <connection>scm:svn:https://sbforge.org/svn/bitrepository/tags/bitrepository-0.1</connection>
-    <developerConnection>scm:svn:https://sbforge.org/svn/sbforge-parent/tags/bitrepository-0.1</developerConnection>
+    <developerConnection>scm:svn:https://sbforge.org/svn/bitrepository/tags/bitrepository-0.1</developerConnection>
   </scm>
 
   <distributionManagement>
