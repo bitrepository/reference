@@ -17,6 +17,64 @@
     <xs:annotation><xs:documentation xml:lang="en">
       Data format for information on which components the alarm concern
     </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="DataInformation">
+          <xs:annotation><xs:documentation xml:lang="en">
+            Identifies which objects the alarm concerns
+            (dataIds, dataIdPattern, dataTimeInterval, dataSizeInterval, checksumsType)
+          </xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:choice>
+              <xs:element ref="FileIDs">
+                <xs:annotation><xs:documentation xml:lang="en">
+                  Identifiers that uniquely identifies the data in given SLA
+                </xs:documentation></xs:annotation>
+              </xs:element>
+              <!-- todo To be extended with more ways to identify the files concerned -->
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="Contributors">
+          <xs:annotation><xs:documentation xml:lang="en">
+            Identifies the pillars and clients which the alarm concerns
+          </xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="Contributor" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType>
+          <!-- todo Any reason for separating clients and pillars? -->
+        </xs:element>
+
+        <xs:element name="SLAs">
+          <xs:annotation><xs:documentation xml:lang="en">
+            Identifies the SLAs which the alarm concerns
+          </xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="SlaID" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="Messages" type="xs:string">
+          <xs:annotation><xs:documentation xml:lang="en">
+            Inclusion of message(s) which the alarm concerns
+          </xs:documentation></xs:annotation>
+          <!-- todo Work in progress -->
+        </xs:element>
+
+        <xs:element name="DataTransmissions" type="xs:string">
+          <xs:annotation><xs:documentation xml:lang="en">
+            Specification of data transmission(s) which the alarm concerns
+          </xs:documentation></xs:annotation>
+          <!-- todo Work in progress -->
+        </xs:element>
+
+      </xs:sequence>
+    </xs:complexType>
   </xs:element>
 
   <xs:element name="AlarmInformation">
@@ -52,16 +110,9 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element name="Risk" type="xs:nonNegativeInteger">
+        <xs:element name="Risk" type="Risk_TYPE">
           <xs:annotation><xs:documentation xml:lang="en">
             Risk of specified scenario becoming reality, if alarm is not treated.
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element name="RiskArea" type="RiskArea_TYPE">
-          <xs:annotation><xs:documentation xml:lang="en">
-            Global risk code for likelyhood for certain risks to becom reality, if alarm is not treated.
-            Known risk areas are: availability, bit safety, confidentiality
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -1179,6 +1230,32 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:complexType name="Risk_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+      Indicates Risk and Risk Area for Alarm if not treated
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="RiskProbabilityScore" type="RiskProbabilityScore_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Probability of specified scenario becoming reality, if alarm is not treated.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element name="RiskImpactScore" type="RiskImpactScore_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Potential impact of specified scenario becoming reality, if alarm is not treated.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element name="RiskArea" type="RiskArea_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Global risk code for likelyhood for certain risks to becom reality, if alarm is not treated.
+          Known risk areas are: availability, bit safety, confidentiality
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:simpleType name="RiskArea_TYPE">
     <xs:restriction base="xs:positiveInteger">
       <xs:enumeration value="1">
@@ -1194,6 +1271,87 @@
       <xs:enumeration value="3">
         <xs:annotation><xs:documentation xml:lang="en">
           Risk Area confidentiality
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="RiskImpactScore_TYPE">
+    <xs:restriction base="xs:nonNegativeInteger">
+      <xs:enumeration value="0">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Zero impact, results in zero loss of digital object authenticity and understandability
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Negligible impact, results in isolated but fully recoverable loss of
+          digital object authenticity and understandability
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="2">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Superficial impact, results in widespread but fully recoverable
+          loss of digital object authenticity and understandability
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="3">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Medium impact, results in total but fully recoverable loss of
+          digital object authenticity and understandability
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="4">
+        <xs:annotation><xs:documentation xml:lang="en">
+          High impact, results in isolated loss, including unrecoverable loss
+          of digital object authenticity and understandability
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="5">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Considerable impact, results in widespread loss, including unrecoverable loss or loss that is
+          recoverable only by third party of digital object authenticity and understandability
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="6">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Cataclysmic impact, results in total and unrecoverable loss of
+          digital object authenticity and understandability
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="RiskProbabilityScore_TYPE">
+    <xs:restriction base="xs:positiveInteger">
+      <xs:enumeration value="1">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Minimal probability, occurs once every 100 years or more
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="2">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Very low probability, occurs once every 10 years
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="3">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Low probability, occurs once every 5 years
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="4">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Medium probability, occurs once every year
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="5">
+        <xs:annotation><xs:documentation xml:lang="en">
+        High probability, occurs once every month
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="6">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Very high probability, occurs more than once every month
         </xs:documentation></xs:annotation>
       </xs:enumeration>
     </xs:restriction>

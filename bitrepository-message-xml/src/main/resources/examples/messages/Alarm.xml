@@ -30,21 +30,37 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <AlarmRaiser>MyPillar</AlarmRaiser>
+  <AlarmRaiser>
+    <ComponentID>MyPillar</ComponentID>
+    <ComponentType>PILLAR</ComponentType>
+  </AlarmRaiser>
   <AlarmInformation>
     <OrigDateTime>2011-05-03T11:18:00</OrigDateTime>
-    <AlarmCode></AlarmCode>
-    <AlarmText></AlarmText>
-    <Priority></Priority>
-    <Risk></Risk>
+    <AlarmCode>541</AlarmCode>
+    <AlarmText>Unknown user access </AlarmText>
+    <Priority>1</Priority>
+    <Risk>
+      <RiskProbabilityScore>4</RiskProbabilityScore>
+      <RiskImpactScore>0</RiskImpactScore>
+      <RiskArea>1</RiskArea>
+    </Risk>
   </AlarmInformation>
   <AlarmConcerning>
-    <!--<DataInformation>
+    <DataInformation>
+      <FileIDs>
+        <FileID>MydataId1</FileID>
+      </FileIDs>
     </DataInformation>
-    <Pillars></Pillars>
-    <Clients></Clients>
-    <SLAs></SLAs>
-    <Messages></Messages>
-    <DataTramsmissions></DataTramsmissions>-->
+    <Contributors>
+      <Contributor>
+        <ComponentID>MyPillar</ComponentID>
+        <ComponentType>PILLAR</ComponentType>
+      </Contributor>
+    </Contributors>
+    <SLAs>
+      <SlaID>MySla</SlaID>
+    </SLAs>
+    <Messages>todo</Messages>
+    <DataTransmissions>todo</DataTransmissions>
   </AlarmConcerning>
 </bro:Alarm>
