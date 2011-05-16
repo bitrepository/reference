@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.bitrepository</groupId>
@@ -8,7 +9,7 @@
   <parent>
     <groupId>org.sbforge</groupId>
     <artifactId>SBForge-parent</artifactId>
-    <version>5</version>
+    <version>8</version>
   </parent>
 
   <name>Bitrepository</name>
@@ -92,7 +93,10 @@
     <url>http://sbforge.statsbiblioteket.dk/fisheye/hudson/job/Bitmagasinet-compile/</url>
   </ciManagement>
 
-  <description>The Bitrepository system is to enable longterm preservation of data in a distributed, highly redundant architecture. The data integrity is ensured by using multiple, independently developed data storage systems (﻿Pillars) across different organizations, together with functionality for maintaining the ﻿Integrity of the data over time. </description>
+  <description>The Bitrepository system is to enable longterm preservation of data in a distributed, highly redundant 
+  architecture. The data integrity is ensured by using multiple, independently developed data storage systems (﻿Pillars) 
+  across different organizations, together with functionality for maintaining the ﻿Integrity of the data over time. 
+  </description>
   <url>https://sbforge.org/display/BITMAG</url>
 
   <organization>
@@ -222,12 +226,16 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
-        <configuration>
-          <aggregate>true</aggregate>
-          <detectLinks>false</detectLinks>
-          <detectOfflineLinks>true</detectOfflineLinks>
-        </configuration>
+        <version>2.8</version>
+        <executions>
+          <execution>
+            <id>aggregate</id>
+            <goals>
+              <goal>aggregate</goal>
+            </goals>
+            <phase>site</phase>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -254,21 +262,29 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>        
+        <version>2.3.1</version>
         <configuration>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
+        <!--configuration>
+          <configLocation>
+            https://sbforge.org/sonar/profiles/export?format=checkstyle&amp;language=java&amp;name=SBForge%2520way
+        </configLocation>
+        </configuration-->
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>2.8.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
+        <artifactId>maven-jxr-plugin</artifactId>        
+        <version>2.2</version>
         <configuration>
           <aggregate>true</aggregate>
           <linkJavadoc>true</linkJavadoc>
@@ -276,89 +292,42 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
+        <artifactId>maven-javadoc-plugin</artifactId>     
+        <version>2.8</version>
         <configuration>
-        <aggregate>true</aggregate>
+          <aggregate>true</aggregate>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
+        <artifactId>maven-pmd-plugin</artifactId>             
+        <version>2.5</version>
         <configuration>
           <aggregate>true</aggregate>
           <linkXref>true</linkXref>
           <targetJdk>1.6</targetJdk>
+          <!--rulesets>
+            <ruleset>
+              https://sbforge.org/sonar/profiles/export?format=pmd&amp;language=java&amp;name=SBForge%2520way
+            </ruleset>
+          </rulesets-->
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
+        <artifactId>findbugs-maven-plugin</artifactId>     
+        <version>2.3.2</version>
         <configuration>
           <aggregate>true</aggregate>
           <xmlOutput>true</xmlOutput>
           <effort>Max</effort>
+          <!--includeFilterFile>
+            https://sbforge.org/sonar/profiles/export?format=findbugs&amp;language=java&amp;name=SBForge%2520way
+          </includeFilterFile-->
         </configuration>
       </plugin>
     </plugins>
   </reporting>
-  <profiles>
-
-    <profile>
-      <id>maven-3</id>
-      <activation>
-        <file>
-          <!-- This employs that the basedir expression is only recognized
-            by Maven 3.x (see MNG-2363) -->
-          <exists>${basedir}</exists>
-        </file>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-site-plugin</artifactId>
-              <version>3.0-beta-3</version>
-              <configuration>
-                <reportPlugins>
-                  <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-project-info-reports-plugin</artifactId>
-                    <version>2.3.1</version>
-                    <configuration>
-                    </configuration>
-                  </plugin>
-                  <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.7</version>
-                    <configuration>
-                      <aggregate>true</aggregate>
-                      <detectLinks>false</detectLinks>
-                      <detectOfflineLinks>true</detectOfflineLinks>
-                    </configuration>
-                  </plugin>
-                </reportPlugins>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-        <plugins>
-          <plugin>
-            <artifactId>maven-site-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>attach-descriptor</id>
-                <goals>
-                  <goal>attach-descriptor</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
