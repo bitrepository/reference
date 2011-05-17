@@ -27,14 +27,11 @@
 <bro:Alarm version="1" minVersion="1"
 xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
 xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
-  <CorrelationID>12345</CorrelationID>
-  <SlaID>MySla</SlaID>
-  <ReplyTo>MyQueueOrTopic</ReplyTo>
   <AlarmRaiser>
     <ComponentID>MyPillar</ComponentID>
     <ComponentType>PILLAR</ComponentType>
   </AlarmRaiser>
-  <AlarmInformation>
+  <AlarmDescription>
     <OrigDateTime>2011-05-03T11:18:00</OrigDateTime>
     <AlarmCode>541</AlarmCode>
     <AlarmText>Unknown user access </AlarmText>
@@ -44,23 +41,23 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
       <RiskImpactScore>0</RiskImpactScore>
       <RiskArea>1</RiskArea>
     </Risk>
-  </AlarmInformation>
+  </AlarmDescription>
   <AlarmConcerning>
-    <DataInformation>
+    <FileInformation>
       <FileIDs>
         <FileID>MydataId1</FileID>
       </FileIDs>
-    </DataInformation>
-    <Contributors>
+    </FileInformation>
+    <Components>
       <Contributor>
         <ComponentID>MyPillar</ComponentID>
         <ComponentType>PILLAR</ComponentType>
       </Contributor>
-    </Contributors>
+      <DataTransmission>todo</DataTransmission>
+    </Components>
     <SLAs>
       <SlaID>MySla</SlaID>
     </SLAs>
     <Messages>todo</Messages>
-    <DataTransmissions>todo</DataTransmissions>
   </AlarmConcerning>
 </bro:Alarm>

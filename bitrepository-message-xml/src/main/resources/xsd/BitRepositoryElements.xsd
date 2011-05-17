@@ -19,7 +19,7 @@
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="DataInformation">
+        <xs:element name="FileInformation">
           <xs:annotation><xs:documentation xml:lang="en">
             Identifies which objects the alarm concerns
             (dataIds, dataIdPattern, dataTimeInterval, dataSizeInterval, checksumsType)
@@ -36,16 +36,16 @@
           </xs:complexType>
         </xs:element>
 
-        <xs:element name="Contributors">
+        <xs:element name="Components">
           <xs:annotation><xs:documentation xml:lang="en">
-            Identifies the pillars and clients which the alarm concerns
+            Identifies the pillars, clients and data transmission(s) which the alarm concerns
           </xs:documentation></xs:annotation>
           <xs:complexType>
             <xs:sequence>
-              <xs:element ref="Contributor" minOccurs="0" maxOccurs="unbounded" />
+              <xs:element ref="Contributor" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element name="DataTransmission" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
           </xs:complexType>
-          <!-- todo Any reason for separating clients and pillars? -->
         </xs:element>
 
         <xs:element name="SLAs">
@@ -66,18 +66,11 @@
           <!-- todo Work in progress -->
         </xs:element>
 
-        <xs:element name="DataTransmissions" type="xs:string">
-          <xs:annotation><xs:documentation xml:lang="en">
-            Specification of data transmission(s) which the alarm concerns
-          </xs:documentation></xs:annotation>
-          <!-- todo Work in progress -->
-        </xs:element>
-
       </xs:sequence>
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="AlarmInformation">
+  <xs:element name="AlarmDescription">
     <xs:annotation><xs:documentation xml:lang="en">
       Data format for elements in the description of the alarm
     </xs:documentation></xs:annotation>
