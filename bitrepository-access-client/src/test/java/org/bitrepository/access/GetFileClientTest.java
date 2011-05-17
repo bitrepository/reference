@@ -24,23 +24,18 @@
  */
 package org.bitrepository.access;
 
-import java.io.File;
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.Date;
-
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-
+import org.bitrepository.access.getfile.GetFileClient;
+import org.bitrepository.access.getfile.SimpleGetFileClient;
+import org.bitrepository.access.getfile.SimpleGetFileConversation;
+import org.bitrepository.access.getfile.SimpleGetFileConversationFactory;
 import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.bitrepositoryelements.CompleteInfo;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetFileComplete;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.protocol.AbstractMessageListener;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.jaccept.structure.ExtendedTestCase;
@@ -48,6 +43,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
+import java.io.File;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.Date;
 
 /**
  * Test class for the 'GetFileClient'.
@@ -60,9 +62,9 @@ public class GetFileClientTest extends ExtendedTestCase {
     
     @Test(groups = {"factory"})
     public void verifyGetFileClientFromFactory() throws Exception {
-        GetFileClientExternalAPI client = AccessComponentFactory.getInstance().retrieveGetFileClient();
+        GetFileClient client = AccessComponentFactory.getInstance().retrieveGetFileClient("mySlaID");
         Assert.assertTrue(client instanceof SimpleGetFileClient, "The default GetFileClient from the Access factory"
-                + " should be of the type '" + SimpleGetFileClient.class.getName() + "'.");
+                + " should be of the type '" + SimpleGetFileConversation.class.getName() + "'.");
     }
 
     @Test(groups = {"test first"})
@@ -77,8 +79,16 @@ public class GetFileClientTest extends ExtendedTestCase {
         String queue = "" + (new Date().getTime());
         config.setQueue(queue);
         File fileDir = new File(config.getFileDir());
-        
-        SimpleGetFileClient gc = new SimpleGetFileClient();
+
+        SimpleGetFileClient gc = new SimpleGetFileClient(ProtocolComponentFactory.getInstance().getMessageBus(),
+                                                         new SimpleGetFileConversationFactory(
+                                                                 ProtocolComponentFactory.getInstance().getMessageBus(),
+                                                                 1,
+                                                                 3600000L,
+                                                                 AccessComponentFactory.getInstance().getConfig()
+                                                                         .getFileDir()),
+                                                         slaId,
+                                                         AccessComponentFactory.getInstance().getConfig().getQueue());
         TestMessageListener listener = new TestMessageListener();
         ProtocolComponentFactory.getInstance().getMessageBus().addListener(queue, listener);
         
@@ -90,7 +100,7 @@ public class GetFileClientTest extends ExtendedTestCase {
         addStep("Request the fastest delivery of file '" + dataId + "' from SLA '" + slaId + "', and the knowledge, "
                 + "that only one pillar should reply.", "The GetClient should send a IdentifyPillarsForGetFileRequest "
                 + "message.");
-        gc.retrieveFastest(dataId, slaId, 1);
+        gc.retrieveFastest(dataId);
 
         synchronized(this) {
             try {
@@ -113,16 +123,17 @@ public class GetFileClientTest extends ExtendedTestCase {
 
         addStep("Sending a reply for the message.", "Should be handled by the GetClient.");
         TimeMeasureTYPE time = new TimeMeasureTYPE();
-        time.setTimeMeasureValue(BigInteger.valueOf(1000));
+        time.setTimeMeasureValue(BigInteger.valueOf(WAITING_TIME_FOR_MESSAGE*2));
         time.setTimeMeasureUnit("milliseconds");
 
         IdentifyPillarsForGetFileResponse reply = new IdentifyPillarsForGetFileResponse();
-        reply.setCorrelationID(identifyMessage.getCorrelationID());
+        String correlationID = identifyMessage.getCorrelationID();
+        reply.setCorrelationID(correlationID);
         reply.setFileID(identifyMessage.getFileID());
         reply.setMinVersion(BigInteger.valueOf(1L));
         reply.setVersion(BigInteger.valueOf(1L));
         reply.setPillarID(pillarId);
-        // reply.setReplyTo(value)
+        reply.setReplyTo(queue);
         reply.setSlaID(identifyMessage.getSlaID());
         reply.setTimeToDeliver(time);
 
@@ -225,12 +236,20 @@ public class GetFileClientTest extends ExtendedTestCase {
         String queue = "" + (new Date().getTime());
         config.setQueue(queue);
         
-        SimpleGetFileClient gc = new SimpleGetFileClient();
+        SimpleGetFileClient gc = new SimpleGetFileClient(ProtocolComponentFactory.getInstance().getMessageBus(), new SimpleGetFileConversationFactory(
+                                                                 ProtocolComponentFactory.getInstance().getMessageBus(),
+                                                                 2,
+                                                                 3600000L,
+                                                                 AccessComponentFactory.getInstance().getConfig()
+                                                                         .getFileDir()),
+                                                         slaId,
+                                                         AccessComponentFactory.getInstance().getConfig().getQueue());
+
         TestMessageListener listener = new TestMessageListener();
         ProtocolComponentFactory.getInstance().getMessageBus().addListener(queue, listener);
         
         addStep("Make the GetClient ask for fastest pillar.", "It should send message to identify which pillars.");
-        gc.retrieveFastest(dataId, slaId, 2);
+        gc.retrieveFastest(dataId);
         
         synchronized(this) {
             try {
@@ -251,7 +270,7 @@ public class GetFileClientTest extends ExtendedTestCase {
         fastTime.setTimeMeasureUnit("milliseconds");
         fastTime.setTimeMeasureValue(BigInteger.valueOf(10L));
         TimeMeasureTYPE slowTime = new TimeMeasureTYPE();
-        slowTime.setTimeMeasureValue(BigInteger.valueOf(10000));
+        slowTime.setTimeMeasureValue(BigInteger.valueOf(20000L));
         slowTime.setTimeMeasureUnit("hours");
         
         IdentifyPillarsForGetFileResponse fastReply = new IdentifyPillarsForGetFileResponse();
@@ -262,6 +281,7 @@ public class GetFileClientTest extends ExtendedTestCase {
         fastReply.setSlaID(request.getSlaID());
         fastReply.setTimeToDeliver(fastTime);
         fastReply.setPillarID(fastPillar);
+        fastReply.setReplyTo(queue);
         IdentifyPillarsForGetFileResponse slowReply = new IdentifyPillarsForGetFileResponse();
         slowReply.setCorrelationID(request.getCorrelationID());
         slowReply.setFileID(dataId);
@@ -270,7 +290,8 @@ public class GetFileClientTest extends ExtendedTestCase {
         slowReply.setSlaID(request.getSlaID());
         slowReply.setTimeToDeliver(slowTime);
         slowReply.setPillarID(slowPillar);
-        
+        slowReply.setReplyTo(queue);
+
         ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, fastReply);
         
         synchronized(this) {
@@ -319,7 +340,17 @@ public class GetFileClientTest extends ExtendedTestCase {
         }
 
         @Override
+        public void onMessage(GetFileComplete message) {
+            onMessage((Object) message);
+        }
+
+        @Override
         public void onMessage(IdentifyPillarsForGetFileRequest message) {
+            onMessage((Object) message);
+        }
+
+        @Override
+        public void onMessage(IdentifyPillarsForGetFileResponse message) {
             onMessage((Object) message);
         }
 

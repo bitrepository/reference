@@ -1,5 +1,7 @@
 package org.bitrepository.integrityclient.collection;
 
+import org.bitrepository.integrityclient.configuration.integrityclientconfiguration.CollectionConfiguration;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -14,10 +16,10 @@ public class TimerIntegrityInformationScheduler implements IntegrityInformationS
 
     /** Setup a timer task for triggering all triggers at requested interval.
      *
-     * @param interval The period between events.
+     * @param configuration The configuration for the collection. Currently contains polling interval.
      */
-    public TimerIntegrityInformationScheduler(long interval) {
-        this.interval = interval;
+    public TimerIntegrityInformationScheduler(CollectionConfiguration configuration) {
+        this.interval = configuration.getPollingInterval();
         timer = new Timer("Integrity Information Scheduler", true);
     }
 
@@ -25,6 +27,7 @@ public class TimerIntegrityInformationScheduler implements IntegrityInformationS
     public void addTrigger(Trigger trigger) {
         TimerTask task = new TriggerTimerTask(trigger);
         // TODO: Should the interval rather be a suggestion from the trigger?
+        // TODO: Should triggers be defined in configuration? How?
         timer.scheduleAtFixedRate(task, 0L, interval);
     }
 

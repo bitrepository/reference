@@ -24,9 +24,13 @@
  */
 package org.bitrepository.access;
 
+import org.bitrepository.access.getfile.GetFileClient;
+import org.bitrepository.access.getfile.SimpleGetFileClient;
+import org.bitrepository.access.getfile.SimpleGetFileConversationFactory;
 import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 
 /**
  * Factory class for the access module. 
@@ -87,10 +91,16 @@ public class AccessComponentFactory {
      * Method for instantiating the GetFileClient defined in the configuration.
      * TODO use the configuration!!!!!
      * 
+     * @param slaID The SLA ID for this client.
+     *
      * @return The GetFileClient.
      */
-    public GetFileClientExternalAPI retrieveGetFileClient() {
+    public GetFileClient retrieveGetFileClient(String slaID) {
         // TODO use the configurations instead!
-        return new SimpleGetFileClient();
+        return new SimpleGetFileClient(ProtocolComponentFactory.getInstance().getMessageBus(),
+                                       new SimpleGetFileConversationFactory(
+                                               ProtocolComponentFactory.getInstance().getMessageBus(), 3, 3600000L, getConfig().getFileDir()),
+                                       slaID,
+                                       getConfig().getQueue());
     }
 }

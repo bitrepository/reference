@@ -35,10 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Prototype GetFileIDs Client
@@ -56,15 +53,6 @@ public class GetFileIDsClientImpl implements GetFileIDsClient {
 
     /** The configuration for the access module.*/
     private final AccessConfiguration config;
-
-    /** Map for keeping track of which files are outstanding for retrieval. Key is the unique id for the file and value
-     * is the container for keeping track the outstanding file instance.*/
-    private Map<FileIdInstance, OutstandingFileID> outstandingFiles = Collections.synchronizedMap(
-            new HashMap<FileIdInstance, OutstandingFileID>());
-    /** Map for the files which are attempted to be retrieved from the pillars. Maps between unique identification
-     * of the file and the id for the pillar, where it is being retrieved from. */
-    private Map<FileIdInstance, String> awaitingComplete = Collections.synchronizedMap(new HashMap<FileIdInstance,
-            String>());
 
     /** TODO The correlationIDs should be generated such that we avoid id conflicts. */
     private int correlationIDcounter;

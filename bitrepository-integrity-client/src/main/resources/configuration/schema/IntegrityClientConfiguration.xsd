@@ -1,8 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Empty schema to satisfy the requirement for a configuration definition in each module -->
-<xs:schema 
-	targetNamespace="http://bitrepository.org/protocol/configuration/IntegrityClientConfiguration.xsd"
-    elementFormDefault="qualified"
-    xmlns="http://bitrepository.org/protocol/configuration/IntegrityClientConfiguration.xsd"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+<!-- Configuration definition for integrity client -->
+<schema
+        targetNamespace="http://bitrepository.org/integrityclient/configuration/IntegrityClientConfiguration.xsd"
+        elementFormDefault="qualified"
+        xmlns:tns="http://bitrepository.org/integrityclient/configuration/IntegrityClientConfiguration.xsd"
+        xmlns="http://www.w3.org/2001/XMLSchema">
+
+    <element name="IntegrityClientConfiguration">
+        <annotation>
+            <documentation xml:lang="en">
+                The full configuration for the protocol module
+            </documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element name="CollectionConfiguration" type="tns:CollectionConfiguration">
+                    <annotation>
+                        <documentation xml:lang="en">
+                            Configuration of information collection
+                        </documentation>
+                    </annotation>
+                </element>
+                <element name="StorageConfiguration" type="tns:StorageConfiguration">
+                    <annotation>
+                        <documentation xml:lang="en">
+                            Configuration of information collection
+                        </documentation>
+                    </annotation>
+                </element>
+            </sequence>
+        </complexType>
+    </element>
+    <complexType name="CollectionConfiguration">
+        <sequence>
+            <element name="PollingInterval" type="int"/>
+        </sequence>
+    </complexType>
+    <complexType name="StorageConfiguration">
+        <sequence>
+            <element name="DatabaseURL" type="anyURI"/>
+            <element name="DatabaseUser" type="string"/>
+            <element name="DatabasePass" type="string"/>
+        </sequence>
+    </complexType>
+</schema>

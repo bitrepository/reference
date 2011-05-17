@@ -49,7 +49,7 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
         for (IdentifyPillarsForGetFileIDsResponse response: responses) {
             if (pillarID == null || pillarID.equals(response.getPillarID())) {
                 File file = getFileIDsClient.getFileIDs(slaID, response.getReplyTo(), response.getPillarID());
-                FileIDsData data = null;
+                FileIDsData data;
                 try {
                     data = JaxbHelper.loadXml(FileIDsData.class, new FileInputStream(file));
                 } catch (JAXBException e) {

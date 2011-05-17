@@ -35,14 +35,14 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileComplete;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileResponse;
@@ -131,6 +131,7 @@ public class ActiveMQMessageBus implements MessageBus {
             connection.start();
 
             session = connection.createSession(TRANSACTED, ACKNOWLEDGE_MODE);
+
         } catch (JMSException e) {
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
@@ -165,103 +166,103 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     @Override
-    public void sendMessage(String destinationId, GetChecksumsComplete content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, GetChecksumsComplete content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetChecksumsRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, GetChecksumsRequest content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetChecksumsResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, GetChecksumsResponse content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileComplete content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, GetFileComplete content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileIDsComplete content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, GetFileIDsComplete content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileIDsRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, GetFileIDsRequest content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileIDsResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, GetFileIDsResponse content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, GetFileRequest content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, GetFileResponse content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, IdentifyPillarsForGetChecksumsResponse content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, IdentifyPillarsForGetChecksumsRequest content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, IdentifyPillarsForGetFileIDsRequest content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, IdentifyPillarsForGetFileIDsResponse content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetFileRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, IdentifyPillarsForGetFileRequest content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetFileResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, IdentifyPillarsForGetFileResponse content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForPutFileResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, IdentifyPillarsForPutFileResponse content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForPutFileRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, IdentifyPillarsForPutFileRequest content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileComplete content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, PutFileComplete content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, PutFileRequest content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public String sendMessage(String destinationId, PutFileResponse content) {
+        return sendMessage(destinationId, (Object) content);
     }
 
     /**
@@ -269,8 +270,10 @@ public class ActiveMQMessageBus implements MessageBus {
      *
      * @param destinationId Name of destination to send message to
      * @param content       JAXB-serializable object to send.
+     *
+     * @return The message ID of the message sent.
      */
-    private void sendMessage(String destinationId, Object content) {
+    private String sendMessage(String destinationId, Object content) {
         try {
             String xmlContent = JaxbHelper.serializeToXml(content);
             log.debug("The following message is sent to the destination '" + destinationId + "'" + " on message-bus '"
@@ -284,6 +287,8 @@ public class ActiveMQMessageBus implements MessageBus {
 
             producer.send(msg);
             session.commit();
+
+            return msg.getJMSMessageID();
         } catch (JMSException e) {
             throw new CoordinationLayerException("Could not send message", e);
         } catch (JAXBException e) {
@@ -411,115 +416,197 @@ public class ActiveMQMessageBus implements MessageBus {
         public void onMessage(final Message message) {
             String type = null;
             String text = null;
+            String id = null;
             Object content;
             try {
                 type = message.getStringProperty(MESSAGE_TYPE_KEY);
+                id = message.getJMSMessageID();
                 text = ((TextMessage) message).getText();
                 content = JaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
                                              new ByteArrayInputStream(text.getBytes()));
 
                 if (content.getClass().equals(GetChecksumsComplete.class)) {
-                    listener.onMessage((GetChecksumsComplete) content);
+                    GetChecksumsComplete message1 = (GetChecksumsComplete) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(GetChecksumsRequest.class)) {
-                    listener.onMessage((GetChecksumsRequest) content);
+                    GetChecksumsRequest message1 = (GetChecksumsRequest) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(GetChecksumsResponse.class)) {
-                    listener.onMessage((GetChecksumsResponse) content);
+                    GetChecksumsResponse message1 = (GetChecksumsResponse) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(GetFileComplete.class)) {
-                    listener.onMessage((GetFileComplete) content);
+                    GetFileComplete message1 = (GetFileComplete) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(GetFileIDsComplete.class)) {
-                    listener.onMessage((GetFileIDsComplete) content);
+                    GetFileIDsComplete message1 = (GetFileIDsComplete) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(GetFileIDsRequest.class)) {
-                    listener.onMessage((GetFileIDsRequest) content);
+                    GetFileIDsRequest message1 = (GetFileIDsRequest) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(GetFileIDsResponse.class)) {
-                    listener.onMessage((GetFileIDsResponse) content);
+                    GetFileIDsResponse message1 = (GetFileIDsResponse) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(GetFileRequest.class)) {
-                    listener.onMessage((GetFileRequest) content);
+                    GetFileRequest message1 = (GetFileRequest) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(GetFileResponse.class)) {
-                    listener.onMessage((GetFileResponse) content);
+                    GetFileResponse message1 = (GetFileResponse) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(IdentifyPillarsForGetChecksumsResponse.class)) {
-                    listener.onMessage((IdentifyPillarsForGetChecksumsResponse) content);
+                    IdentifyPillarsForGetChecksumsResponse message1 = (IdentifyPillarsForGetChecksumsResponse) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(IdentifyPillarsForGetChecksumsRequest.class)) {
-                    listener.onMessage((IdentifyPillarsForGetChecksumsRequest) content);
+                    IdentifyPillarsForGetChecksumsRequest message1 = (IdentifyPillarsForGetChecksumsRequest) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(IdentifyPillarsForGetFileIDsResponse.class)) {
-                    listener.onMessage((IdentifyPillarsForGetFileIDsResponse) content);
+                    IdentifyPillarsForGetFileIDsResponse message1 = (IdentifyPillarsForGetFileIDsResponse) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(IdentifyPillarsForGetFileIDsRequest.class)) {
-                    listener.onMessage((IdentifyPillarsForGetFileIDsRequest) content);
+                    IdentifyPillarsForGetFileIDsRequest message1 = (IdentifyPillarsForGetFileIDsRequest) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(IdentifyPillarsForGetFileResponse.class)) {
-                    listener.onMessage((IdentifyPillarsForGetFileResponse) content);
+                    IdentifyPillarsForGetFileResponse message1 = (IdentifyPillarsForGetFileResponse) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(IdentifyPillarsForGetFileRequest.class)) {
-                    listener.onMessage((IdentifyPillarsForGetFileRequest) content);
+                    IdentifyPillarsForGetFileRequest message1 = (IdentifyPillarsForGetFileRequest) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(IdentifyPillarsForPutFileResponse.class)) {
-                    listener.onMessage((IdentifyPillarsForPutFileResponse) content);
+                    IdentifyPillarsForPutFileResponse message1 = (IdentifyPillarsForPutFileResponse) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(IdentifyPillarsForPutFileRequest.class)) {
-                    listener.onMessage((IdentifyPillarsForPutFileRequest) content);
+                    IdentifyPillarsForPutFileRequest message1 = (IdentifyPillarsForPutFileRequest) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(PutFileComplete.class)) {
-                    listener.onMessage((PutFileComplete) content);
+                    PutFileComplete message1 = (PutFileComplete) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(PutFileRequest.class)) {
-                    listener.onMessage((PutFileRequest) content);
+                    PutFileRequest message1 = (PutFileRequest) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
 
                 if (content.getClass().equals(PutFileResponse.class)) {
-                    listener.onMessage((PutFileResponse) content);
+                    PutFileResponse message1 = (PutFileResponse) content;
+                    if (message1.getCorrelationID() == null) {
+                        message1.setCorrelationID(id);
+                    }
+                    listener.onMessage(message1);
                     return;
                 }
                 log.error("Received message of unknown type '" + type + "'\n{}", text);
             } catch (Exception e) {
-                log.error("Error handling message. Received type was '" + type + "'.\n{}", text);
+                log.error("Error handling message. Received type was '" + type + "'.\n{}", text, e);
             }
 
         }
