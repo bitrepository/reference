@@ -34,7 +34,7 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import javax.xml.bind.JAXBException;
@@ -59,14 +59,14 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
     private boolean mockUp = true;
     private TestMessageListener[] listeners;
 
-    private GetFileIDsClient getFileIDsClient = new GetFileIDsClientImpl();
+    private GetFileIDsClient getFileIDsClient = new BasicGetFileIDsClient();
     private int numberOfPillars;
 
 
     /**
      * Set up the test scenario before running the tests in this class.
      */
-    @BeforeClass
+    @BeforeMethod
     public void setUp() throws JAXBException {
         log.debug("setUp");
 

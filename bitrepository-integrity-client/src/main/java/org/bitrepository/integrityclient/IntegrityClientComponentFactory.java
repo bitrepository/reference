@@ -1,7 +1,7 @@
 /*
  * #%L
  * Bitrepository Protocol
- * 
+ * *
  * $Id$
  * $HeadURL$
  * %%
@@ -24,7 +24,7 @@
  */
 package org.bitrepository.integrityclient;
 
-import org.bitrepository.access.GetFileIDsClientImpl;
+import org.bitrepository.access.BasicGetFileIDsClient;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
@@ -74,7 +74,7 @@ public final class IntegrityClientComponentFactory {
 
     /**
      * Gets you a <code>ModuleCharacteristics</code> object defining the generic characteristics of this module
-     * @return A <code>ModuleCharacteristics</code> object defining the generic characteristics of this module 
+     * @return A <code>ModuleCharacteristics</code> object defining the generic characteristics of this module
      */
     public ModuleCharacteristics getModuleCharacteristics() {
         return MODULE_CHARACTERISTICS;
@@ -101,7 +101,7 @@ public final class IntegrityClientComponentFactory {
             integrityInformationCollector = new DelegatingIntegrityInformationCollector(
                     getCachedIntegrityInformationStorage(),
                     // TODO: Hardcoded implementation
-                    new GetFileIDsClientImpl(),
+                    new BasicGetFileIDsClient(),
                     // TODO: No implementation
                     null);
         }

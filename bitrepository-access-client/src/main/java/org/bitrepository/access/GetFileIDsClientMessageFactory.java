@@ -1,7 +1,7 @@
 /*
  * #%L
  * Bitrepository Access Client
- * 
+ * *
  * $Id$
  * $HeadURL$
  * %%
@@ -48,12 +48,13 @@
 package org.bitrepository.access;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 
 import java.math.BigInteger;
 
 /**
- * GetFileIDsClientMessageFactory generates request messages for GetFileIDsClientImpl.
+ * GetFileIDsClientMessageFactory generates request messages for BasicGetFileIDsClient.
  */
 public class GetFileIDsClientMessageFactory {
 
@@ -72,7 +73,7 @@ public class GetFileIDsClientMessageFactory {
      * @param fileIDs
      * @return test message
      */
-    public static IdentifyPillarsForGetFileIDsRequest getIdentifyPillarsForGetFileIDsRequestTestMessage(
+    public static IdentifyPillarsForGetFileIDsRequest getIdentifyPillarsForGetFileIDsRequestMessage(
             String correlationID, String slaID, String replyTo, FileIDs fileIDs) {
         IdentifyPillarsForGetFileIDsRequest request = new IdentifyPillarsForGetFileIDsRequest();
         request.setCorrelationID(correlationID);
@@ -88,4 +89,34 @@ public class GetFileIDsClientMessageFactory {
         return request;
     }
 
+    /**
+     * Generate GetFileIDsRequest message with specified values.
+     * @param correlationID
+     * @param slaID
+     * @param replyTo
+     * @param pillarID
+     * @param resultAddress
+     * @param fileIDs
+     * @return
+     */
+    public static GetFileIDsRequest getGetFileIDsRequestMessage(
+            String correlationID, String slaID, String replyTo, String pillarID,
+            String resultAddress, FileIDs fileIDs) {
+        GetFileIDsRequest request = new GetFileIDsRequest();
+        request.setCorrelationID(correlationID);
+        request.setSlaID(slaID);
+        request.setReplyTo(replyTo);
+        request.setPillarID(pillarID);
+        if (resultAddress != null) {
+            request.setResultAddress(resultAddress);
+        }
+        if (fileIDs == null) {
+            fileIDs = new FileIDs();
+            fileIDs.setAllFileIDs("Why is this a String? Change to Boolean?");
+        }
+        request.setFileIDs(fileIDs);
+        request.setVersion(VERSION_DEFAULT);
+        request.setMinVersion(VERSION_DEFAULT);
+        return request;
+    }
 }

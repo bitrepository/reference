@@ -36,6 +36,20 @@
         </documentation>
        </annotation>
       </element>
+      <element name="GetFileIDsClientTimeOut" type="string">
+       <annotation>
+        <documentation xml:lang="en">
+         The time out used by the GetFileIDsclient.
+        </documentation>
+       </annotation>
+      </element>
+      <element name="GetFileIDsClientNumberOfPillars" type="string">
+       <annotation>
+        <documentation xml:lang="en">
+         The number of pillars the client expect to get an answer from.
+        </documentation>
+       </annotation>
+      </element>
  	  <!-- Content! -->
  	 </sequence>
  	</complexType>

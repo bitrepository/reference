@@ -1,7 +1,7 @@
 /*
  * #%L
  * Bitrepository Access Client
- * 
+ * *
  * $Id$
  * $HeadURL$
  * %%
@@ -60,14 +60,14 @@ import org.slf4j.LoggerFactory;
 public class GetFileIDsClientMessageListener extends AbstractMessageListener {
     /** The log for this class.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    /** The GetFileIDsClientImpl which should handle the messages.*/
-    private GetFileIDsClientImpl client;
+    /** The BasicGetFileIDsClient which should handle the messages.*/
+    private BasicGetFileIDsClient client;
 
     /**
      * Constructor.
      * @param gfic The GetFileIDsClient which should handle the content of the messages.
      */
-    public GetFileIDsClientMessageListener(GetFileIDsClientImpl gfic) {
+    public GetFileIDsClientMessageListener(BasicGetFileIDsClient gfic) {
         this.client = gfic;
     }
 
