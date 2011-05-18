@@ -57,8 +57,8 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractMessagebusBackedConversation<T> implements Conversation<T> {
     /** The message bus used for sending messages. */
     private final MessageBus messagebus;
-    /** The conversation ID. Null until the first message is sent. */
-    private String conversationID;
+    /** The conversation ID. */
+    private final String conversationID;
     /** The conversation mediator that handles this conversation. */
     protected ConversationMediator mediator;
     /** The logger for this class. */
@@ -68,9 +68,11 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
      * Initialise a conversation on the given messagebus.
      *
      * @param messagebus The message bus used for exchanging messages.
+     * @param conversationID The conversation ID for this conversation.
      */
-    public AbstractMessagebusBackedConversation(MessageBus messagebus) {
+    public AbstractMessagebusBackedConversation(MessageBus messagebus, String conversationID) {
         this.messagebus = messagebus;
+        this.conversationID = conversationID;
     }
 
 
@@ -117,203 +119,123 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     }
 
     @Override
-    public String sendMessage(String destinationId, GetChecksumsComplete content) {
+    public void sendMessage(String destinationId, GetChecksumsComplete content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, GetChecksumsRequest content) {
+    public void sendMessage(String destinationId, GetChecksumsRequest content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, GetChecksumsResponse content) {
+    public void sendMessage(String destinationId, GetChecksumsResponse content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, GetFileComplete content) {
+    public void sendMessage(String destinationId, GetFileComplete content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, GetFileIDsComplete content) {
+    public void sendMessage(String destinationId, GetFileIDsComplete content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, GetFileIDsRequest content) {
+    public void sendMessage(String destinationId, GetFileIDsRequest content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, GetFileIDsResponse content) {
+    public void sendMessage(String destinationId, GetFileIDsResponse content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, GetFileRequest content) {
+    public void sendMessage(String destinationId, GetFileRequest content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, GetFileResponse content) {
+    public void sendMessage(String destinationId, GetFileResponse content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, IdentifyPillarsForGetChecksumsResponse content) {
+    public void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsResponse content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, IdentifyPillarsForGetChecksumsRequest content) {
+    public void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsRequest content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, IdentifyPillarsForGetFileIDsRequest content) {
+    public void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsRequest content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, IdentifyPillarsForGetFileIDsResponse content) {
+    public void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsResponse content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, IdentifyPillarsForGetFileRequest content) {
+    public void sendMessage(String destinationId, IdentifyPillarsForGetFileRequest content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, IdentifyPillarsForGetFileResponse content) {
+    public void sendMessage(String destinationId, IdentifyPillarsForGetFileResponse content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, IdentifyPillarsForPutFileResponse content) {
+    public void sendMessage(String destinationId, IdentifyPillarsForPutFileResponse content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, IdentifyPillarsForPutFileRequest content) {
+    public void sendMessage(String destinationId, IdentifyPillarsForPutFileRequest content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, PutFileComplete content) {
+    public void sendMessage(String destinationId, PutFileComplete content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, PutFileRequest content) {
+    public void sendMessage(String destinationId, PutFileRequest content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public String sendMessage(String destinationId, PutFileResponse content) {
+    public void sendMessage(String destinationId, PutFileResponse content) {
         content.setCorrelationID(getConversationID());
-        String id = messagebus.sendMessage(destinationId, content);
-        if (conversationID == null) {
-            conversationID = id;
-        }
-        return id;
+        messagebus.sendMessage(destinationId, content);
     }
 
     @Override

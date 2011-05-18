@@ -1,7 +1,7 @@
 /*
  * #%L
  * Bitrepository Integrity Client
- * *
+ * 
  * $Id$
  * $HeadURL$
  * %%
@@ -24,8 +24,8 @@
  */
 package org.bitrepository.integrityclient.collection;
 
-import org.bitrepository.access.GetFileIDsClient;
 import org.bitrepository.access.BasicGetFileIDsClient;
+import org.bitrepository.access.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.common.JaxbHelper;

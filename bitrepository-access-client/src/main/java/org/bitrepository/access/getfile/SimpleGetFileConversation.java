@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 /**
  * A conversation for GetFile.
@@ -112,7 +113,7 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
      */
     public SimpleGetFileConversation(MessageBus messageBus, int expectedNumberOfPillars, long getFileDefaultTimeout,
                                      String fileDir) {
-        super(messageBus);
+        super(messageBus, UUID.randomUUID().toString());
 
         this.expectedNumberOfPillars = expectedNumberOfPillars;
         this.getFileTimeout = getFileDefaultTimeout;
@@ -140,15 +141,12 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
      *
      * @param destination Destination of message.
      * @param message Message to send.
-     *
-     * @return id of message sent.
      */
     @Override
-    public String sendMessage(String destination, IdentifyPillarsForGetFileRequest message) {
-        String id = super.sendMessage(destination, message);
+    public void sendMessage(String destination, IdentifyPillarsForGetFileRequest message) {
+        super.sendMessage(destination, message);
         // add this as a task for the timer.
         timer.schedule(identifyTimeoutTask, TIMER_TASK_DELAY);
-        return id;
     }
 
     /**
@@ -159,15 +157,12 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
      *
      * @param destination Destination of message.
      * @param message Message to send.
-     *
-     * @return id of message sent.
      */
     @Override
-    public String sendMessage(String destination, GetFileRequest message) {
-        String id = super.sendMessage(destination, message);
+    public void sendMessage(String destination, GetFileRequest message) {
+        super.sendMessage(destination, message);
         // add this as a task for the timer.
         timer.schedule(getFileTimeoutTask, getFileTimeout);
-        return id;
     }
 
     /**

@@ -46,10 +46,6 @@ public interface Conversation<T> extends MessageListener, MessageSender {
      * Implementations must ensure that conversation IDs are unique, and that this ID is always used when sending
      * messages.
      *
-     * The conversation may have no ID until the first message is sent. In that case, this method returns null. Once
-     * a message has been sent, however, this method should never return null, and the conversation ID should never
-     * change.
-     *
      * @return The conversation ID.
      */
     String getConversationID();
