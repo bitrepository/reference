@@ -270,6 +270,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.6</version>
         <!--configuration>
           <configLocation>
             https://sbforge.org/sonar/profiles/export?format=checkstyle&amp;language=java&amp;name=SBForge%2520way
