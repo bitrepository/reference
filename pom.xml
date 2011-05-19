@@ -141,7 +141,7 @@
     </dependency>
     <dependency>
       <groupId>org.jaccept</groupId>
-      <artifactId>jaccept-core</artifactId>
+      <artifactId>jaccept-gui</artifactId>
       <version>0.2</version>
       <scope>test</scope>
     </dependency>

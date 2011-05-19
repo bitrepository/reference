@@ -31,6 +31,7 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.common.sla.SLAConfiguration;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.protocol.AbstractMessagebusBackedConversation;
 import org.bitrepository.protocol.MessageBus;
@@ -77,8 +78,8 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
 
     /** The directory where the retrieved files should be placed. */
     private final File fileDir;
-    /** Expected number of pillars to respond when identifying pillars. */
-    private final int expectedNumberOfPillars;
+    /** The configuration specific to the SLA related to this conversion. */
+    private final SLAConfiguration slaConfiguration;
     /** The timeout when getting a file. */
     private long getFileTimeout;
 
@@ -102,7 +103,7 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
     private File result;
 
     /**
-     * Initialises the file directory, and the message bus used for sending messages.
+     * Initializes the file directory, and the message bus used for sending messages.
      * The fileDir is retrieved from the configuration.
      *
      * @param messageBus The message bus used for sending messages.
@@ -111,16 +112,17 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
      * is replaced by twice the time the pillar estimated.
      * @param fileDir The directory to store retrieved files in.
      */
-    public SimpleGetFileConversation(MessageBus messageBus, int expectedNumberOfPillars, long getFileDefaultTimeout,
-                                     String fileDir) {
+    public SimpleGetFileConversation(MessageBus messageBus, 
+            SLAConfiguration slaConfiguration, 
+                                     long getFileDefaultTimeout) {
         super(messageBus, UUID.randomUUID().toString());
 
-        this.expectedNumberOfPillars = expectedNumberOfPillars;
+        this.slaConfiguration = slaConfiguration;
         this.getFileTimeout = getFileDefaultTimeout;
 
         // retrieve the directory for delivering the output files.
         // TODO: Should we really have files?
-        this.fileDir = FileUtils.retrieveDirectory(fileDir);
+        this.fileDir = FileUtils.retrieveDirectory(slaConfiguration.getLocalFileStorage());
     }
 
     @Override
@@ -180,7 +182,7 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
         }
 
         pillarTime.put(reply.getPillarID(), reply);
-        if (pillarTime.size() == expectedNumberOfPillars) {
+        if (pillarTime.size() == slaConfiguration.getNumberOfPillars()) {
             // stop the timer task for this outstanding instance, and then get file from fastest pillar
             identifyTimeoutTask.cancel();
             // TODO: Race condition, what if timeout task already triggered this just before now
@@ -198,11 +200,7 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
     @Override
     public void onMessage(GetFileResponse msg) {
         // TODO Something else?
-        ResponseInfo info = msg.getResponseInfo();
-        SimpleGetFileConversation.this.log
-                .info("Received response for retrieval of file '" + msg.getFileID() + "' in SLA '" + msg.getSlaID()
-                              + "' from pillar '" + msg.getPillarID() + "' with the following message: \n"
-                              + info.getResponseCode() + " : " + info.getResponseText());
+        log.info("Received response for retrieval of file {}'" + msg.toString());
     }
 
     /**
@@ -222,8 +220,7 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
         String id = msg.getFileID();
         try {
             // TODO: Should we really download the file, or is the interface the URL?
-            SimpleGetFileConversation.this.log
-                    .info("Downloading the file '" + id + "' from '" + msg.getFileAddress() + "'.");
+            log.info("Downloading the file '" + id + "' from '" + msg.getFileAddress() + "'.");
 
             URL url = new URL(msg.getFileAddress());
 
@@ -286,10 +283,11 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
         }
         GetFileRequest msg = new GetFileRequest();
         msg.setSlaID(response.getSlaID());
+        msg.setCorrelationID(response.getCorrelationID());
         msg.setFileAddress(url.toExternalForm());
         msg.setFileID(response.getFileID());
         msg.setPillarID(response.getPillarID());
-        msg.setReplyTo(response.getReplyTo());
+        msg.setReplyTo(slaConfiguration.getClientTopicId());
         msg.setMinVersion(BigInteger.valueOf(PROTOCOL_MIN_VERSION));
         msg.setVersion(BigInteger.valueOf(PROTOCOL_VERSION));
 

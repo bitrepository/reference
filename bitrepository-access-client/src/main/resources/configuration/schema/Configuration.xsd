@@ -2,23 +2,25 @@
 
 <!-- URLs in schema targetNamespace must be updated later -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:tns="http://bitrepository.org/access-client/Configuration.xsd"
-	targetNamespace="http://bitrepository.org/access-client/Configuration.xsd"
-	elementFormDefault="qualified">
+  xmlns:tns="http://bitrepository.org/access-client/Configuration.xsd"
+  targetNamespace="http://bitrepository.org/access-client/Configuration.xsd"
+  elementFormDefault="qualified">
 
 
- <element name="AccessConfiguration">
- 	<annotation>
- 	 <documentation xml:lang="en">
-    The full configuration for the access module
+  <element name="AccessConfiguration">
+    <annotation>
+      <documentation xml:lang="en">
+        The full configuration for
+        the access module
    </documentation>
- 	</annotation>
- 	<complexType>
- 	 <sequence>
- 	  <element name="fileDir" type="string">
- 	   <annotation>
- 	    <documentation xml:lang="en">
- 	     The directory where the output files are placed.
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="fileDir" type="string">
+          <annotation>
+            <documentation xml:lang="en">
+              The directory where
+              the output files are placed.
  	    </documentation>
  	   </annotation>
  	  </element>

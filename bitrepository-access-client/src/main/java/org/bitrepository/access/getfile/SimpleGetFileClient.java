@@ -27,6 +27,7 @@ package org.bitrepository.access.getfile;
 import org.bitrepository.access.AccessException;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.common.sla.SLAConfiguration;
 import org.bitrepository.protocol.CollectionBasedConversationMediator;
 import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -50,19 +51,16 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
         GetFileClient {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
-    /** The queue to talk to. */
-    private final String queue;
-    /** The ID of the SLA. */
-    private String slaID;
+    
+    private final SLAConfiguration slaConfiguration;
 
-    public SimpleGetFileClient(MessageBus messagebus, SimpleGetFileConversationFactory simpleGetFileConversationFactory,
-                               String slaID, String queue) {
-        super(simpleGetFileConversationFactory, messagebus, queue);
-        log.info("Initialising the GetFileClient");
+    public SimpleGetFileClient(MessageBus messagebus, 
+            SimpleGetFileConversationFactory simpleGetFileConversationFactory,
+            SLAConfiguration slaConfiguration) {
+        super(simpleGetFileConversationFactory, messagebus, slaConfiguration.getClientTopicId());
+        log.info("Initialized the GetFileClient");
 
-        // TODO: Replace with one parameter denoting the SLA, which can produce the queue
-        this.queue = queue;
-        this.slaID = slaID;
+        this.slaConfiguration = slaConfiguration;
     }
 
     @Override
@@ -71,23 +69,24 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
         if(fileID == null || fileID.isEmpty()) {
             throw new IllegalArgumentException("The String fileId may not be null or the empty string.");
         }
-        log.info("Requesting fastest retrieval of the file '" + fileID + "' which belong to the SLA '" + slaID + "'.");
+        log.info("Requesting fastest retrieval of the file '" + fileID + "' which belong to the SLA '" + 
+                slaConfiguration.getSlaId() + "'.");
         // create message requesting delivery time for the given file.
         IdentifyPillarsForGetFileRequest msg = new IdentifyPillarsForGetFileRequest();
         msg.setMinVersion(BigInteger.valueOf(1L));
         msg.setVersion(BigInteger.valueOf(1L));
-        msg.setSlaID(slaID);
+        msg.setSlaID(slaConfiguration.getSlaId());
         msg.setFileID(fileID);
-        msg.setReplyTo(queue);
+        msg.setReplyTo(slaConfiguration.getClientTopicId());
 
         SimpleGetFileConversation conversation = startConversation();
-        conversation.sendMessage(queue, msg);
+        conversation.sendMessage(slaConfiguration.getSlaTopicId(), msg);
 
         // TODO: Should we wait for the conversation to end before returning? How is the result delivered?
     }
 
     @Override
-    public void getFile(String fileID, String pillarID) {
+    public void getFile(String fileID, String pillarTopicId, String pillarID) {
         log.info("Requesting the file '" + fileID + "' from pillar '" + pillarID + "'.");
 
         URL url;
@@ -99,15 +98,17 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
         GetFileRequest msg = new GetFileRequest();
         msg.setMinVersion(BigInteger.valueOf(1L));
         msg.setVersion(BigInteger.valueOf(1L));
-        msg.setSlaID(slaID);
+        msg.setSlaID(slaConfiguration.getSlaId());
         msg.setFileID(fileID);
         msg.setPillarID(pillarID);
-        msg.setReplyTo(queue);
+        msg.setReplyTo(slaConfiguration.getClientTopicId());
         msg.setFileAddress(url.toExternalForm());
 
         SimpleGetFileConversation conversation = startConversation();
-        conversation.sendMessage(queue, msg);
+        conversation.sendMessage(pillarTopicId, msg);
 
         // TODO: Should we wait for the conversation to end before returning? How is the result delivered?
     }
+    
+    
 }

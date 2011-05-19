@@ -30,6 +30,7 @@ import org.bitrepository.access.getfile.SimpleGetFileConversationFactory;
 import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
+import org.bitrepository.common.sla.SLAConfiguration;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 
 /**
@@ -59,7 +60,7 @@ public class AccessComponentFactory {
     private AccessConfiguration config;
     
     /**
-     * Private constructor for initialisation of the singleton.
+     * Private constructor for initialization of the singleton.
      */
     private AccessComponentFactory() { 
         moduleCharacter = new ModuleCharacteristics("access-client");
@@ -85,22 +86,20 @@ public class AccessComponentFactory {
         }
         return config;
     }
-
     
     /**
-     * Method for instantiating the GetFileClient defined in the configuration.
-     * TODO use the configuration!!!!!
+     * Method for getting a GetFileClient as defined in the access configuration.<p>
      * 
-     * @param slaID The SLA ID for this client.
-     *
-     * @return The GetFileClient.
+     * Note that this client instance might be handed out to ours and used in parallel. 
+     * 
+     * @return A GetFileClient.
      */
-    public GetFileClient retrieveGetFileClient(String slaID) {
+    public GetFileClient createGetFileClient(SLAConfiguration slaConfiguration) {
         // TODO use the configurations instead!
         return new SimpleGetFileClient(ProtocolComponentFactory.getInstance().getMessageBus(),
                                        new SimpleGetFileConversationFactory(
-                                               ProtocolComponentFactory.getInstance().getMessageBus(), 3, 3600000L, getConfig().getFileDir()),
-                                       slaID,
-                                       getConfig().getQueue());
+                                               ProtocolComponentFactory.getInstance().getMessageBus(),
+                                               slaConfiguration, 3600000L, getConfig().getFileDir()),
+                                       slaConfiguration);
     }
 }

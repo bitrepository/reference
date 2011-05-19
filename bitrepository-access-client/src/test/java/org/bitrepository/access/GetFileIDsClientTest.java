@@ -72,7 +72,8 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
 
         // Defining the test queue to be the date for 'now'.
         AccessConfiguration config = AccessComponentFactory.getInstance().getConfig();
-        config.setQueue(queue);
+        // ToDo Convert to use SLACOnfiguration injection
+        //config.setQueue(queue);
 
         // Add pillars that reply to given SLA. Mockup: TestMessageListeners.
         setUpPillars();

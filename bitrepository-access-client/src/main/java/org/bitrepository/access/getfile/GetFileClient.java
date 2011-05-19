@@ -43,5 +43,7 @@ public interface GetFileClient {
      * @param fileId The id of the file to retrieve.
      * @param pillarId The id of pillar, where the file should be retrieved from.
      */
-    void getFile(String fileId, String pillarId);
+    void getFile(String fileId, String pillarTopicId, String pillarId);
+    // ToDo This operation shouldn't need a pillarTopicId has it should be retrieved through a IdentifyPillar request
+    // prior to the actual getFileRequest.
 }

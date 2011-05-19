@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>bitrepository</artifactId>
@@ -37,6 +38,13 @@
       <artifactId>xmlunit</artifactId>
       <version>1.3</version>
     </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-common</artifactId>
+      <version>0.2-SNAPSHOT</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -45,26 +53,26 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <version>2.1</version>
         <executions>
-           <execution>
-             <id>unpack</id>
-             <phase>generate-sources</phase>
-          <goals>
-          <goal>unpack</goal>
-             </goals>
-             <configuration>
-               <artifactItems>
-                 <artifactItem>
-                   <groupId>org.bitrepository</groupId>
-                   <artifactId>bitrepository-message-xml</artifactId>
-                   <type>jar</type>                   
-                   <excludes>**/classes</excludes>                   
-                   <overWrite>true</overWrite>
-                 </artifactItem>
-               </artifactItems>
-               <includes>examples/messages/*.xml,xsd/*.xsd</includes>
-               <outputDirectory>${project.build.directory}/message-xml</outputDirectory>
-             </configuration>
-           </execution>
+          <execution>
+            <id>unpack</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.bitrepository</groupId>
+                  <artifactId>bitrepository-message-xml</artifactId>
+                  <type>jar</type>
+                  <excludes>**/classes</excludes>
+                  <overWrite>true</overWrite>
+                </artifactItem>
+              </artifactItems>
+              <includes>examples/messages/*.xml,xsd/*.xsd</includes>
+              <outputDirectory>${project.build.directory}/message-xml</outputDirectory>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -81,6 +89,18 @@
             <configuration>
               <schemaDirectory>${project.build.directory}/message-xml/xsd</schemaDirectory>
               <generateDirectory>${project.build.directory}/generated-sources/messages</generateDirectory>
+              <args>
+                <arg>-XtoString</arg>
+                <arg>-Xequals</arg>
+                <arg>-XhashCode</arg>
+              </args>       
+              <plugins>
+                <plugin>
+                  <groupId>org.jvnet.jaxb2_commons</groupId>
+                  <artifactId>jaxb2-basics</artifactId>
+                  <version>0.6.0</version>
+                </plugin>
+              </plugins>
             </configuration>
           </execution>
         </executions>

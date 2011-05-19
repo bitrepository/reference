@@ -50,7 +50,7 @@ public class TestMessageFactory {
     private static final String COMPLETE_TEXT_DEFAULT = "successful completion";
 
     /**
-     * Prevent initialisation - currently a utility class.
+     * Prevent initialization - currently a utility class.
      */
     private TestMessageFactory() {}
 

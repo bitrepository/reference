@@ -24,6 +24,7 @@
  */
 package org.bitrepository.access.getfile;
 
+import org.bitrepository.common.sla.SLAConfiguration;
 import org.bitrepository.protocol.ConversationFactory;
 import org.bitrepository.protocol.MessageBus;
 
@@ -31,30 +32,30 @@ import org.bitrepository.protocol.MessageBus;
 public class SimpleGetFileConversationFactory implements ConversationFactory<SimpleGetFileConversation> {
     /** The message bus used by the conversations to communicate. */
     private final MessageBus messageBus;
-    /** The expected numbers of pillars involved in the GetFile conversations. */
-    private final int expectedNumberOfPillars;
+    /** The configuration specific to the SLA related to this conversion. */
+    private final SLAConfiguration slaConfiguration;
     /** The default timeout for GetFile operations. May be overridden by better data. */
     private long getFileDefaultTimeout;
     /**The directory where retrieved files are stored. */
     private String fileDir;
 
     /**
-     * Initialise a factory that generates GetFile conversations.
+     * Initialize a factory that generates GetFile conversations.
      * @param messageBus The message bus used by the conversations to communicate.
      * @param expectedNumberOfPillars The expected numbers of pillars involved in the GetFile conversations.
      * @param getFileDefaultTimeout The default timeout for GetFile operations. May be overridden by better data.
      * @param fileDir The directory where retrieved files are stored.
      */
-    public SimpleGetFileConversationFactory(MessageBus messageBus, int expectedNumberOfPillars,
+    public SimpleGetFileConversationFactory(MessageBus messageBus, SLAConfiguration slaConfiguration,
                                             long getFileDefaultTimeout, String fileDir) {
         this.messageBus = messageBus;
         this.fileDir = fileDir;
-        this.expectedNumberOfPillars = expectedNumberOfPillars;
+        this.slaConfiguration = slaConfiguration;
         this.getFileDefaultTimeout = getFileDefaultTimeout;
     }
 
     @Override
     public SimpleGetFileConversation createConversation() {
-        return new SimpleGetFileConversation(messageBus, expectedNumberOfPillars, getFileDefaultTimeout, fileDir);
+        return new SimpleGetFileConversation(messageBus, slaConfiguration, getFileDefaultTimeout);
     }
 }

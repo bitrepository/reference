@@ -139,8 +139,8 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public synchronized void addListener(String destinationId, final MessageListener listener) {
-        log.debug("Adding listener '" + listener + "' to destination: '" + destinationId + "' on message-bus '"
-                          + configuration.getId() + "'.");
+        log.debug("Adding listener '{}' to destination: '{}' on message-bus '{}'.", 
+                new Object[] {listener, destinationId, configuration.getId()});
         MessageConsumer consumer = getMessageConsumer(destinationId, listener);
         try {
             consumer.setMessageListener(new ActiveMQMessageListener(listener));
@@ -152,8 +152,8 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public synchronized void removeListener(String destinationId, MessageListener listener) {
-        log.debug("Removing listener '" + listener + "' from destination: '" + destinationId + "' on message-bus '"
-                          + configuration.getId() + "'.");
+        log.debug("Removing listener '{}' from destination: '{}' on message-bus '{}'.", 
+                          new Object[] {listener, destinationId, configuration.getId()});
         MessageConsumer consumer = getMessageConsumer(destinationId, listener);
         try {
             consumer.close();
@@ -519,7 +519,7 @@ public class ActiveMQMessageBus implements MessageBus {
                 }
                 log.error("Received message of unknown type '" + type + "'\n{}", text);
             } catch (Exception e) {
-                log.error("Error handling message. Received type was '" + type + "'.\n{}", text);
+                log.error("Error handling message. Received type was '" + type + "'.\n{}", text, e);
             }
 
         }

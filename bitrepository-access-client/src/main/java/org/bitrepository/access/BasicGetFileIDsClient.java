@@ -96,7 +96,7 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         timeOut = Long.parseLong(config.getGetFileIDsClientTimeOut());
         numberOfPillars = Integer.parseInt(config.getGetFileIDsClientNumberOfPillars());
 
-        // initialise correlationIDcounter and Maps
+        // initialize correlationIDcounter and Maps
         correlationIDcounter = 786543;
         identifyResponseCountDownLatchMap = Collections.synchronizedMap(new HashMap<String, CountDownLatch>());
         identifyPillarsForGetFileIDsResponseMap =

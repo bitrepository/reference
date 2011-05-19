@@ -45,7 +45,7 @@ public final class IntegrityClientComponentFactory {
 
     /**
      * The singletonic access to the instance of this class
-     * @return The one and onl instance
+     * @return The one and only instance
      */
     public static synchronized IntegrityClientComponentFactory getInstance() {
         if (instance == null) {

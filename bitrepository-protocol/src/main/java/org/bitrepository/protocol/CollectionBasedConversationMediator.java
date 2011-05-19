@@ -74,6 +74,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
      */
     public CollectionBasedConversationMediator(ConversationFactory<T> conversationFactory, MessageBus messagebus,
                                                String listenerDestination) {
+        log.debug("Initializing the CollectionBasedConversationMediator");
         this.conversationFactory = conversationFactory;
         this.conversations = Collections.synchronizedMap(new HashMap<String, T>());
         messagebus.addListener(listenerDestination, this);
@@ -190,7 +191,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            log.debug("Message with correlationID'" + messageCorrelationID + "' could not be delegated to any conversation.");
         }
     }
 

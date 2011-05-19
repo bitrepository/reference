@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <groupId>org.bitrepository</groupId>
     <artifactId>bitrepository</artifactId>
@@ -7,69 +8,82 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>bitrepository-access-client</artifactId>
   <name>Bitrepository Access Client</name>
-    <dependencies>
-        <dependency>
-            <groupId>org.bitrepository</groupId>
-            <artifactId>bitrepository-protocol</artifactId>
-            <version>0.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bitrepository</groupId>
-            <artifactId>bitrepository-message-xml</artifactId>
-            <version>0.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bitrepository</groupId>
-            <artifactId>bitrepository-protocol</artifactId>
-            <version>0.2-SNAPSHOT</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-    <description>Contains functionality for reading from a Bitrepository system. This includes ﻿Get File, ﻿Get Checksums and Get File IDs.</description>
-    <build>
-        <plugins>
-            <plugin>
-              	<artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>Extract xsd files</id>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <includeGroupIds>org.bitrepository</includeGroupIds>
-                            <includeArtifactIds>bitrepository-message-xml</includeArtifactIds>
-                            <includes>examples/messages/*.xml,xsd/*.xsd</includes>
-                            <outputDirectory>${project.build.directory}/message-xml</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.7.4</version>
-                <executions>
-                    <execution>
-                        <id>generate-message-classes</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <phase>process-sources</phase>
-                        <configuration>
-                            <schemaDirectory>${project.build.directory}/message-xml/xsd</schemaDirectory>
-                            <generateDirectory>${project.build.directory}/generated-sources/messages</generateDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-        <resources>
-            <resource>
-                <directory>src/main/resources/configurations/xml</directory>
-            </resource>
-        </resources>
-    </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-protocol</artifactId>
+      <version>0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-message-xml</artifactId>
+      <version>0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-common</artifactId>
+      <version>0.2-SNAPSHOT</version>
+    </dependency>
+    <!--  Test dependencies -->
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-protocol</artifactId>
+      <version>0.2-SNAPSHOT</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-common</artifactId>
+      <version>0.2-SNAPSHOT</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <description>Contains functionality for reading from a Bitrepository system. This includes ﻿Get File, ﻿Get Checksums and Get File IDs.</description>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>Extract xsd files</id>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <includeGroupIds>org.bitrepository</includeGroupIds>
+              <includeArtifactIds>bitrepository-message-xml</includeArtifactIds>
+              <includes>examples/messages/*.xml,xsd/*.xsd</includes>
+              <outputDirectory>${project.build.directory}/message-xml</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>0.7.4</version>
+        <executions>
+          <execution>
+            <id>generate-message-classes</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <phase>process-sources</phase>
+            <configuration>
+              <schemaDirectory>${project.build.directory}/message-xml/xsd</schemaDirectory>
+              <generateDirectory>${project.build.directory}/generated-sources/messages</generateDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/resources/configurations/xml</directory>
+      </resource>
+    </resources>
+  </build>
 </project>
