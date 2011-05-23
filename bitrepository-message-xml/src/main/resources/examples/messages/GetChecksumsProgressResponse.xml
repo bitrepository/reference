@@ -3,8 +3,8 @@
   #%L
   Bitmagasin protokol
 
-  $Id$
-  $HeadURL$
+  $Id: GetChecksumsProgressResponse.xml 149 2011-04-15 11:42:09Z bam $
+  $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-message-xml/src/main/resources/examples/messages/GetChecksumsProgressResponse.xml $
   %%
   Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
@@ -24,7 +24,7 @@
   #L%
   -->
 
-<bro:GetChecksumsResponse version="1" minVersion="1"
+<bro:GetChecksumsProgressResponse version="1" minVersion="1"
 xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
 xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
@@ -40,8 +40,8 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
     <ChecksumSalt>X</ChecksumSalt>
   </FileChecksumSpec>
   <ResultAddress>http://myServer/myPlace/Myfile</ResultAddress>
-  <ResponseInfo>
-    <ResponseCode>460</ResponseCode>
-    <ResponseText>Message request has been received and is expected to be met successfully</ResponseText>
-  </ResponseInfo>
-</bro:GetChecksumsResponse>
+  <ProgressResponseInfo>
+    <ProgressResponseCode>460</ProgressResponseCode>
+    <ProgressResponseText>Message request has been received and is expected to be met successfully</ProgressResponseText>
+  </ProgressResponseInfo>
+</bro:GetChecksumsProgressResponse>

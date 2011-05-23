@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
   Bitmagasin protokol
 
-  $Id$
-  $HeadURL$
+  $Id: GetFileIDsFinalResponse.xml 149 2011-04-15 11:42:09Z bam $
+  $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-message-xml/src/main/resources/examples/messages/GetFileIDsFinalResponse.xml $
   %%
   Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
@@ -24,21 +24,34 @@
   #L%
   -->
 
-<bro:PutFileResponse version="1" minVersion="1"
+<bro:GetFileIDsFinalResponse version="1" minVersion="1"
 xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
 xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
   <PillarID>MyPillar</PillarID>
-  <PillarChecksumSpec>
-    <ChecksumType>MD5</ChecksumType>
-    <ChecksumSalt>X</ChecksumSalt>
-  </PillarChecksumSpec>
-  <FileID>MyDataID</FileID>
-  <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
-  <ResponseInfo>
-    <ResponseCode>460</ResponseCode>
-    <ResponseText>Message request has been received and is expected to be met successfully</ResponseText>
-  </ResponseInfo>
-</bro:PutFileResponse>
+  <FileIDs>
+    <FileID>MyDataID1</FileID>
+    <FileID>MyDataID2</FileID>
+  </FileIDs>
+  <FinalResponseInfo>
+    <FinalResponseCode>480</FinalResponseCode>
+    <FinalResponseText>successfull completion</FinalResponseText>
+  </FinalResponseInfo>
+  <ResultingFileIDs>
+    <FileIDsData>
+      <NoOfItems>2</NoOfItems>
+    <FileIDsDataItems>
+      <FileIDsDataItem>
+        <FileID>MydataId1</FileID>
+        <CalculationTimestamp>2011-02-17T09:47:00</CalculationTimestamp>
+      </FileIDsDataItem>
+      <FileIDsDataItem>
+        <FileID>MydataId1</FileID>
+        <CalculationTimestamp>2011-02-17T09:47:00</CalculationTimestamp>
+      </FileIDsDataItem>
+    </FileIDsDataItems>
+  </FileIDsData>
+  </ResultingFileIDs>
+</bro:GetFileIDsFinalResponse>

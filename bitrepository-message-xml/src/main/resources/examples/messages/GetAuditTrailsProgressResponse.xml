@@ -3,8 +3,8 @@
   #%L
   Bitrepository message xml definitions
   
-  $Id$
-  $HeadURL$
+  $Id: GetAuditTrailsProgressResponse.xml 149 2011-04-15 11:42:09Z bam $
+  $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-message-xml/src/main/resources/examples/messages/GetAuditTrailsProgressResponse.xml $
   %%
   Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
@@ -24,7 +24,7 @@
   #L%
   -->
 
-<bro:GetAuditTrailsResponse
+<bro:GetAuditTrailsProgressResponse
         version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
         xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
@@ -35,8 +35,8 @@
     <ComponentType>PILLAR</ComponentType>
   </Contributor>
   <FileID>MyFile</FileID>
-  <ResponseInfo>
-    <ResponseCode>460</ResponseCode>
-    <ResponseText>Message request has been received and is expected to be met successfully</ResponseText>
-  </ResponseInfo>
-</bro:GetAuditTrailsResponse>
+  <ProgressResponseInfo>
+    <ProgressResponseCode>460</ProgressResponseCode>
+    <ProgressResponseText>Message request has been received and is expected to be met successfully</ProgressResponseText>
+  </ProgressResponseInfo>
+</bro:GetAuditTrailsProgressResponse>

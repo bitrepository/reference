@@ -3,8 +3,8 @@
   #%L
   Bitmagasin protokol
   
-  $Id$
-  $HeadURL$
+  $Id: GetChecksumsFinalResponse.xml 139 2011-04-06 14:00:41Z elzi $
+  $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-message-xml/src/main/resources/examples/messages/GetChecksumsFinalResponse.xml $
   %%
   Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
@@ -24,7 +24,7 @@
   #L%
   -->
 
-<bro:GetChecksumsComplete version="1" minVersion="1"  
+<bro:GetChecksumsFinalResponse version="1" minVersion="1"  
 xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd' 
 xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
@@ -39,10 +39,10 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
     <ChecksumType>MD5</ChecksumType>
     <ChecksumSalt>X</ChecksumSalt>
   </FileChecksumSpec>
-  <CompleteInfo>
-    <CompleteCode>480</CompleteCode>
-    <CompleteText>successfull completion</CompleteText>
-  </CompleteInfo>
+  <FinalResponseInfo>
+    <FinalResponseCode>480</FinalResponseCode>
+    <FinalResponseText>successfull completion</FinalResponseText>
+  </FinalResponseInfo>
   <ResultingChecksums>
     <ChecksumsDataPerFileID>
       <ChecksumSpec>
@@ -64,4 +64,4 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
       </ChecksumDataPerFileIDItems>
     </ChecksumsDataPerFileID>
   </ResultingChecksums>
-</bro:GetChecksumsComplete>
+</bro:GetChecksumsFinalResponse>

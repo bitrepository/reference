@@ -3,8 +3,8 @@
   #%L
   Bitmagasin protokol
 
-  $Id$
-  $HeadURL$
+  $Id: PutFileFinalResponse.xml 149 2011-04-15 11:42:09Z bam $
+  $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-message-xml/src/main/resources/examples/messages/PutFileFinalResponse.xml $
   %%
   Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
@@ -24,21 +24,40 @@
   #L%
   -->
 
-<bro:GetFileComplete version="1" minVersion="1"
+<bro:PutFileFinalResponse version="1" minVersion="1"
 xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
 xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
   <SlaID>MySla</SlaID>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
   <PillarID>MyPillar</PillarID>
+  <PillarChecksumSpec>
+    <ChecksumType>MD5</ChecksumType>
+    <ChecksumSalt>X</ChecksumSalt>
+  </PillarChecksumSpec>
   <FileID>MyDataID</FileID>
-  <FilePart>
-    <PartOffSet>10</PartOffSet>
-    <PartLength>100</PartLength>
-  </FilePart>
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
-  <CompleteInfo>
-    <CompleteCode>480</CompleteCode>
-    <CompleteText>successfull completion</CompleteText>
-  </CompleteInfo>
-</bro:GetFileComplete>
+  <FinalResponseInfo>
+    <FinalResponseCode>480</FinalResponseCode>
+    <FinalResponseText>successfull completion</FinalResponseText>
+  </FinalResponseInfo>
+  <ChecksumDataPairs>
+    <NoOfItems>2</NoOfItems>
+    <ChecksumDataItems>
+      <ChecksumDataItem>
+        <ChecksumSpec>
+          <ChecksumType>MD5</ChecksumType>
+          <ChecksumSalt>A</ChecksumSalt>
+        </ChecksumSpec>
+        <ChecksumValue>135F21564</ChecksumValue>
+      </ChecksumDataItem>
+      <ChecksumDataItem>
+        <ChecksumSpec>
+          <ChecksumType>MD5</ChecksumType>
+          <ChecksumSalt>A</ChecksumSalt>
+        </ChecksumSpec>
+        <ChecksumValue>135F21564</ChecksumValue>
+      </ChecksumDataItem>
+    </ChecksumDataItems>
+  </ChecksumDataPairs>
+</bro:PutFileFinalResponse>

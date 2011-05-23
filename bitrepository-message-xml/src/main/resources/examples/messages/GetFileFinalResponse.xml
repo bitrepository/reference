@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
   Bitmagasin protokol
 
-  $Id$
-  $HeadURL$
+  $Id: GetFileFinalResponse.xml 149 2011-04-15 11:42:09Z bam $
+  $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-message-xml/src/main/resources/examples/messages/GetFileFinalResponse.xml $
   %%
   Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
@@ -24,7 +24,7 @@
   #L%
   -->
 
-<bro:GetFileResponse version="1" minVersion="1"
+<bro:GetFileFinalResponse version="1" minVersion="1"
 xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
 xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
@@ -37,28 +37,8 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
     <PartLength>100</PartLength>
   </FilePart>
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
-  <ResponseInfo>
-    <ResponseCode>460</ResponseCode>
-    <ResponseText>Message request has been received and is expected to be met successfully</ResponseText>
-  </ResponseInfo>
-  <FileSize>90</FileSize>
-  <ChecksumsData>
-    <NoOfItems>2</NoOfItems>
-    <ChecksumDataItems>
-      <ChecksumDataItem>
-        <ChecksumSpec>
-          <ChecksumType>MD5</ChecksumType>
-          <ChecksumSalt>X</ChecksumSalt>
-        </ChecksumSpec>
-        <ChecksumValue>ABC423789</ChecksumValue>
-      </ChecksumDataItem>
-      <ChecksumDataItem>
-        <ChecksumSpec>
-          <ChecksumType>SHA-1</ChecksumType>
-          <ChecksumSalt>X</ChecksumSalt>
-        </ChecksumSpec>
-        <ChecksumValue>ABCDEF1234</ChecksumValue>
-      </ChecksumDataItem>
-    </ChecksumDataItems>
-  </ChecksumsData>
-</bro:GetFileResponse>
+  <FinalResponseInfo>
+    <FinalResponseCode>480</FinalResponseCode>
+    <FinalResponseText>successfull completion</FinalResponseText>
+  </FinalResponseInfo>
+</bro:GetFileFinalResponse>

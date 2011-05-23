@@ -3,8 +3,8 @@
   #%L
   Bitrepository message xml definitions
 
-  $Id$
-  $HeadURL$
+  $Id: GetAuditTrailsFinalResponse.xml 163 2011-05-04 10:14:47Z bam $
+  $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-message-xml/src/main/resources/examples/messages/GetAuditTrailsFinalResponse.xml $
   %%
   Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
@@ -24,7 +24,7 @@
   #L%
   -->
 
-<bro:GetAuditTrailsComplete
+<bro:GetAuditTrailsFinalResponse
         version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
         xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
@@ -35,10 +35,10 @@
     <ComponentType>PILLAR</ComponentType>
   </Contributor>
   <FileID>MyFile</FileID>
-  <CompleteInfo>
-    <CompleteCode>480</CompleteCode>
-    <CompleteText>successfull completion</CompleteText>
-  </CompleteInfo>
+  <FinalResponseInfo>
+    <FinalResponseCode>480</FinalResponseCode>
+    <FinalResponseText>successfull completion</FinalResponseText>
+  </FinalResponseInfo>
   <ResultingAuditTrails>
     <AuditTrailData>
       <FileID>MyFile</FileID>
@@ -75,4 +75,4 @@
       </AuditTrailDataItems>
     </AuditTrailData>
   </ResultingAuditTrails>
-</bro:GetAuditTrailsComplete>
+</bro:GetAuditTrailsFinalResponse>
