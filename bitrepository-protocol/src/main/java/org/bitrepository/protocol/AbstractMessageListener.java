@@ -24,31 +24,34 @@
  */
 package org.bitrepository.protocol;
 
-import org.bitrepository.bitrepositorymessages.GetChecksumsComplete;
+import javax.xml.bind.JAXBException;
+
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.GetChecksumsResponse;
-import org.bitrepository.bitrepositorymessages.GetFileComplete;
-import org.bitrepository.bitrepositorymessages.GetFileIDsComplete;
+import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.GetFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileComplete;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.JAXBException;
 
 /**
  * Abstract implementation of message listener.
@@ -77,7 +80,22 @@ public abstract class AbstractMessageListener implements MessageListener {
     }
 
     @Override
-    public void onMessage(GetChecksumsComplete message) {
+    public void onMessage(GetAuditTrailsFinalResponse message) {
+        reportUnsupported(message);
+    }
+    
+    @Override
+    public void onMessage(GetAuditTrailsProgressResponse message) {
+        reportUnsupported(message);
+    }
+
+    @Override
+    public void onMessage(GetAuditTrailsRequest message) {
+        reportUnsupported(message);
+    }
+    
+    @Override
+    public void onMessage(GetChecksumsFinalResponse message) {
         reportUnsupported(message);
     }
 
@@ -87,17 +105,17 @@ public abstract class AbstractMessageListener implements MessageListener {
     }
 
     @Override
-    public void onMessage(GetChecksumsResponse message) {
+    public void onMessage(GetChecksumsProgressResponse message) {
         reportUnsupported(message);
     }
 
     @Override
-    public void onMessage(GetFileComplete message) {
+    public void onMessage(GetFileFinalResponse message) {
         reportUnsupported(message);
     }
 
     @Override
-    public void onMessage(GetFileIDsComplete message) {
+    public void onMessage(GetFileIDsFinalResponse message) {
         reportUnsupported(message);
     }
 
@@ -107,7 +125,7 @@ public abstract class AbstractMessageListener implements MessageListener {
     }
 
     @Override
-    public void onMessage(GetFileIDsResponse message) {
+    public void onMessage(GetFileIDsProgressResponse message) {
         reportUnsupported(message);
     }
 
@@ -117,7 +135,7 @@ public abstract class AbstractMessageListener implements MessageListener {
     }
 
     @Override
-    public void onMessage(GetFileResponse message) {
+    public void onMessage(GetFileProgressResponse message) {
         reportUnsupported(message);
     }
 
@@ -162,7 +180,7 @@ public abstract class AbstractMessageListener implements MessageListener {
     }
 
     @Override
-    public void onMessage(PutFileComplete message) {
+    public void onMessage(PutFileFinalResponse message) {
         reportUnsupported(message);
     }
 
@@ -172,7 +190,7 @@ public abstract class AbstractMessageListener implements MessageListener {
     }
 
     @Override
-    public void onMessage(PutFileResponse message) {
+    public void onMessage(PutFileProgressResponse message) {
         reportUnsupported(message);
     }
 }

@@ -31,12 +31,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileComplete;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.modify_client.configuration.ModifyConfiguration;
 import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -164,30 +164,30 @@ public class SimplePutClient extends PutClientAPI implements PutClientExternalAP
     }
     
     /**
-     * Method for handling a PutFileResponse. This message tells how far in the storage process the given pillar is. 
+     * Method for handling a PutFileProgressResponse. This message tells how far in the storage process the given pillar is. 
      * It is possible for the pillars have a storage procedure which involves several steps before the file is 
-     * properly stored. After each step one of these PutFileResponse messages should be sent, and only when the 
-     * storage process is finished should the final PutFileComplete message be sent.
+     * properly stored. After each step one of these PutFileProgressResponse messages should be sent, and only when the 
+     * storage process is finished should the final PutFileFinalResponse message be sent.
      * 
-     * @param msg The PutFileResponse to be handled.
+     * @param msg The PutFileProgressResponse to be handled.
      */
     @Override
-    final synchronized void handlePutResponse(PutFileResponse msg) {
-        ResponseInfo info = msg.getResponseInfo();
+    final synchronized void handlePutProgressResponse(PutFileProgressResponse msg) {
+        ProgressResponseInfo info = msg.getProgressResponseInfo();
         // TODO Perform the actual handling of this message! 
         log.debug("The pillar '" + msg.getPillarID() + "' is in the process of storing the file '" + msg.getFileID() 
-                + "' and has sent the following response status code '" + info.getResponseCode() 
-                + "' along with the text: " + info.getResponseText());
+                + "' and has sent the following response status code '" + info.getProgressResponseCode() 
+                + "' along with the text: " + info.getProgressResponseText());
     }
     
     /**
-     * Method for handling a PutFilecomplete message.
+     * Method for handling a PutFileFinalResponse message.
      * The file is removed as outstanding on the given pillar.
      * 
-     * @param msg The PutFileComplete message to be handled.
+     * @param msg The PutFileFinalResponse message to be handled.
      */
     @Override
-    final synchronized void handlePutComplete(PutFileComplete msg) {
+    final synchronized void handlePutFinalResponse(PutFileFinalResponse msg) {
         log.debug("The pillar '" + msg.getPillarID() + "' has finished storing the file '" + msg.getFileID() + "'");
         
         outstandings.removeEntry(msg.getFileID(), msg.getPillarID());

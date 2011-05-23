@@ -33,15 +33,18 @@ import java.util.concurrent.TimeUnit;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 
-import org.bitrepository.bitrepositorymessages.GetChecksumsComplete;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.GetChecksumsResponse;
-import org.bitrepository.bitrepositorymessages.GetFileComplete;
-import org.bitrepository.bitrepositorymessages.GetFileIDsComplete;
+import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.GetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -50,12 +53,11 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.bitrepositorymessages.PutFileComplete;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileResponse;
 import org.bitrepository.protocol.MessageListener;
 import org.jaccept.TestEventManager;
-import org.jaccept.TestManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +113,7 @@ public class MessageReceiver {
      * @param messageType The type of message to wait for.
      * @param timeout The amount of time to wait for a message of this type.
      * @param unit The unit of time for the timeout value
-     * @return The received message ot null if no message was received.
+     * @return The received message or null if no message was received.
      * @throws InterruptedException 
      */
     public <T> T waitForMessage(Class<T> messageType, long timeout, TimeUnit unit) {
@@ -174,7 +176,19 @@ public class MessageReceiver {
         }
         
         @Override
-        public void onMessage(GetChecksumsComplete message) {
+        public void onMessage(GetAuditTrailsRequest message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(GetAuditTrailsProgressResponse message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(GetAuditTrailsFinalResponse message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(GetChecksumsFinalResponse message) {
             messageModel.addMessage(message);
         }
         @Override
@@ -182,15 +196,15 @@ public class MessageReceiver {
             messageModel.addMessage(message);
         }
         @Override
-        public void onMessage(GetChecksumsResponse message) {
+        public void onMessage(GetChecksumsProgressResponse message) {
             messageModel.addMessage(message);            
         }
         @Override
-        public void onMessage(GetFileComplete message) {
+        public void onMessage(GetFileFinalResponse message) {
             messageModel.addMessage(message);
         }
         @Override
-        public void onMessage(GetFileIDsComplete message) {
+        public void onMessage(GetFileIDsFinalResponse message) {
             messageModel.addMessage(message);
         }
         @Override
@@ -198,7 +212,7 @@ public class MessageReceiver {
             messageModel.addMessage(message);
         }
         @Override
-        public void onMessage(GetFileIDsResponse message) {
+        public void onMessage(GetFileIDsProgressResponse message) {
             messageModel.addMessage(message);
         }
         @Override
@@ -206,7 +220,7 @@ public class MessageReceiver {
             messageModel.addMessage(message);
         }
         @Override
-        public void onMessage(GetFileResponse message) {
+        public void onMessage(GetFileProgressResponse message) {
             messageModel.addMessage(message);
         }
         @Override
@@ -242,7 +256,7 @@ public class MessageReceiver {
             messageModel.addMessage(message);
         }
         @Override
-        public void onMessage(PutFileComplete message) {
+        public void onMessage(PutFileFinalResponse message) {
             messageModel.addMessage(message);
         }
         @Override
@@ -250,7 +264,7 @@ public class MessageReceiver {
             messageModel.addMessage(message);
         }
         @Override
-        public void onMessage(PutFileResponse message) {
+        public void onMessage(PutFileProgressResponse message) {
             messageModel.addMessage(message);
         }   
 

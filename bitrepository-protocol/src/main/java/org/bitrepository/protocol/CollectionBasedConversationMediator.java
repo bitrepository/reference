@@ -24,15 +24,18 @@
  */
 package org.bitrepository.protocol;
 
-import org.bitrepository.bitrepositorymessages.GetChecksumsComplete;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.GetChecksumsResponse;
-import org.bitrepository.bitrepositorymessages.GetFileComplete;
-import org.bitrepository.bitrepositorymessages.GetFileIDsComplete;
+import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.GetFileResponse;
+import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -41,9 +44,9 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.bitrepositorymessages.PutFileComplete;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +100,40 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     }
 
     @Override
-    public void onMessage(GetChecksumsComplete message) {
+    public void onMessage(GetAuditTrailsFinalResponse message) {
+        String messageCorrelationID = message.getCorrelationID();
+        T conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+        }
+    }
+    
+    @Override
+    public void onMessage(GetAuditTrailsRequest message) {
+        String messageCorrelationID = message.getCorrelationID();
+        T conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+        }
+    }
+    
+    @Override
+    public void onMessage(GetAuditTrailsProgressResponse message) {
+        String messageCorrelationID = message.getCorrelationID();
+        T conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+        }
+    }
+    
+    @Override
+    public void onMessage(GetChecksumsFinalResponse message) {
         String messageCorrelationID = message.getCorrelationID();
         T conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
@@ -119,7 +155,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     }
 
     @Override
-    public void onMessage(GetChecksumsResponse message) {
+    public void onMessage(GetChecksumsProgressResponse message) {
         String messageCorrelationID = message.getCorrelationID();
         T conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
@@ -130,7 +166,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     }
 
     @Override
-    public void onMessage(GetFileComplete message) {
+    public void onMessage(GetFileFinalResponse message) {
         String messageCorrelationID = message.getCorrelationID();
         T conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
@@ -141,7 +177,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     }
 
     @Override
-    public void onMessage(GetFileIDsComplete message) {
+    public void onMessage(GetFileIDsFinalResponse message) {
         String messageCorrelationID = message.getCorrelationID();
         T conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
@@ -163,7 +199,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     }
 
     @Override
-    public void onMessage(GetFileIDsResponse message) {
+    public void onMessage(GetFileIDsProgressResponse message) {
         String messageCorrelationID = message.getCorrelationID();
         T conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
@@ -185,13 +221,14 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     }
 
     @Override
-    public void onMessage(GetFileResponse message) {
+    public void onMessage(GetFileProgressResponse message) {
         String messageCorrelationID = message.getCorrelationID();
         T conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID'" + messageCorrelationID + "' could not be delegated to any conversation.");
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any "
+            		+ "conversation.");
         }
     }
 
@@ -284,7 +321,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     }
 
     @Override
-    public void onMessage(PutFileComplete message) {
+    public void onMessage(PutFileFinalResponse message) {
         String messageCorrelationID = message.getCorrelationID();
         T conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
@@ -306,7 +343,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     }
 
     @Override
-    public void onMessage(PutFileResponse message) {
+    public void onMessage(PutFileProgressResponse message) {
         String messageCorrelationID = message.getCorrelationID();
         T conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {

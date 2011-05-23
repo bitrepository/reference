@@ -24,22 +24,6 @@
  */
 package org.bitrepository.access.getfile;
 
-import org.bitrepository.access.AccessException;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositorymessages.GetFileComplete;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.GetFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.common.sla.SLAConfiguration;
-import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.protocol.AbstractMessagebusBackedConversation;
-import org.bitrepository.protocol.MessageBus;
-import org.bitrepository.protocol.MessageSender;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigInteger;
@@ -51,6 +35,21 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+
+import org.bitrepository.access.AccessException;
+import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.common.sla.SLAConfiguration;
+import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.protocol.AbstractMessagebusBackedConversation;
+import org.bitrepository.protocol.MessageBus;
+import org.bitrepository.protocol.MessageSender;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A conversation for GetFile.
@@ -169,19 +168,19 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
 
     /**
      * Handles a reply for identifying the fastest pillar to deliver a given file.
-     * Removes the pillar responsible for the reply from the outstanding list for the file in the reply. If no more
+     * Removes the pillar responsible for the response from the outstanding list for the file in the reply. If no more
      * pillars are outstanding, then the file is requested from fastest pillar.
      *
-     * @param reply The IdentifyPillarsForGetFileReply to handle.
+     * @param response The IdentifyPillarsForGetFileResponse to handle.
      */
     @Override
-    public void onMessage(IdentifyPillarsForGetFileResponse reply) {
+    public void onMessage(IdentifyPillarsForGetFileResponse response) {
         // validate arguments
-        if (reply == null) {
-            throw new IllegalArgumentException("The IdentifyPillarsForGetFileReply reply may not be null.");
+        if (response == null) {
+            throw new IllegalArgumentException("The IdentifyPillarsForGetFileResponse reply may not be null.");
         }
 
-        pillarTime.put(reply.getPillarID(), reply);
+        pillarTime.put(response.getPillarID(), response);
         if (pillarTime.size() == slaConfiguration.getNumberOfPillars()) {
             // stop the timer task for this outstanding instance, and then get file from fastest pillar
             identifyTimeoutTask.cancel();
@@ -192,27 +191,27 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
     }
 
     /**
-     * Method for handling the GetFileResponse messages.
-     * Currently logs the response, but does nothing else.
+     * Method for handling the GetFileProgressResponse messages.
+     * Currently logs the progress response, but does nothing else.
      *
-     * @param msg The GetFileResponse message to be handled by this method.
+     * @param msg The GetFileProgressResponse message to be handled by this method.
      */
     @Override
-    public void onMessage(GetFileResponse msg) {
+    public void onMessage(GetFileProgressResponse msg) {
         // TODO Something else?
-        log.info("Received response for retrieval of file {}'" + msg.toString());
+        log.info("Received progress response for retrieval of file {}'" + msg.toString());
     }
 
     /**
-     * Method for completing the get.
+     * Method for final response the get.
      * Downloads the file, and remembers the result. Then marks the conversation as ended.
      *
-     * @param msg The GetFileCompleteMessage.
+     * @param msg The GetFileFinalResponse message to be handled by this method.
      */
     @Override
-    public void onMessage(GetFileComplete msg) {
+    public void onMessage(GetFileFinalResponse msg) {
         if (msg == null) {
-            throw new IllegalArgumentException("Cannot handle a null as GetFileComplete.");
+            throw new IllegalArgumentException("Cannot handle a null as GetFileFinalResponse.");
         }
 
         getFileTimeoutTask.cancel();

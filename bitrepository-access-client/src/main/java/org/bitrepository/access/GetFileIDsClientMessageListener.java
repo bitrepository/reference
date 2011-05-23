@@ -47,8 +47,8 @@
  */
 package org.bitrepository.access;
 
-import org.bitrepository.bitrepositorymessages.GetFileIDsComplete;
-import org.bitrepository.bitrepositorymessages.GetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.protocol.AbstractMessageListener;
 import org.slf4j.Logger;
@@ -82,22 +82,22 @@ public class GetFileIDsClientMessageListener extends AbstractMessageListener {
     }
 
     /**
-     * Method for handling the GetFileIDsResponse messages.
-     * @param msg The GetFileIDsResponse message.
+     * Method for handling the GetFileIDsProgressResponse messages.
+     * @param msg The GetFileIDsProgressResponse message.
      */
     @Override
-    public void onMessage(GetFileIDsResponse msg) {
-        log.info("Received GetFileIDsResponse message '" + msg + "'.");
-        client.handleGetFileIDsResponse(msg);
+    public void onMessage(GetFileIDsProgressResponse msg) {
+        log.info("Received GetFileIDsProgressResponse message '" + msg + "'.");
+        client.handleGetFileIDsProgressResponse(msg);
     }
 
     /**
-     * Method for handling the GetFileIDsComplete messages.
-     * @param msg The GetFileIDsComplete message.
+     * Method for handling the GetFileIDsFinalResponse messages.
+     * @param msg The GetFileIDsFinalResponse message.
      */
     @Override
-    public void onMessage(GetFileIDsComplete msg) {
-        log.info("Reieved GetFileComplete message '" + msg + "'.");
-        client.handleGetFileIDsComplete(msg);
+    public void onMessage(GetFileIDsFinalResponse msg) {
+        log.info("Reieved GetFileIDsFinalResponse message '" + msg + "'.");
+        client.handleGetFileIDsFinalResponse(msg);
     }
 }

@@ -101,11 +101,10 @@ public class TestMessageFactory {
         return request;
     }
     /**
-     * Generate IdentifyPillarsForGetFileIDsResponse test message with default values.
+     * Generate IdentifyPillarsForGetFileIDsProgressResponse test message with default values.
      * @param pillarID
      * @return test message
      */
-
     public static IdentifyPillarsForGetFileIDsResponse getIdentifyPillarsForGetFileIDsResponseTestMessage(
             String pillarID) {
         return getIdentifyPillarsForGetFileIDsResponseTestMessage(
@@ -113,7 +112,7 @@ public class TestMessageFactory {
                 TIME_MEASURE_UNIT_DEFAULT, TIME_MEASURE_VALUE_DEFAULT);
     }
     /**
-     * Generate IdentifyPillarsForGetFileIDsResponse test message with specified values.
+     * Generate IdentifyPillarsForGetFileIDsProgressResponse test message with specified values.
      * @param correlationID
      * @param slaID
      * @param replyTo
@@ -177,18 +176,17 @@ public class TestMessageFactory {
         return request;
     }
     /**
-     * Generate GetFileIDsResponse test message with default values.
+     * Generate GetFileIDsProgressResponse test message with default values.
      * @param pillarID
      * @return test message
      */
-
-    public static GetFileIDsResponse getGetFileIDsResponseTestMessage(String pillarID) {
+    public static GetFileIDsProgressResponse getGetFileIDsResponseTestMessage(String pillarID) {
         return getGetFileIDsResponseTestMessage(
                 CORRELATION_ID_DEFAULT, SLA_ID_DEFAULT, REPLY_TO_DEFAULT, pillarID, new FileIDs(),
                 RESPONSE_CODE_DEFAULT, RESPONSE_TEXT_DEFAULT);
     }
     /**
-     * Generate GetFileIDsResponse test message with specified values.
+     * Generate GetFileIDsProgressResponse test message with specified values.
      * @param correlationID
      * @param slaID
      * @param replyTo
@@ -198,20 +196,20 @@ public class TestMessageFactory {
      * @param responseText
      * @return test message
      */
-    public static GetFileIDsResponse getGetFileIDsResponseTestMessage(
+    public static GetFileIDsProgressResponse getGetFileIDsResponseTestMessage(
             String correlationID, String slaID, String replyTo, String pillarID, FileIDs fileIDs,
             String responseCode, String responseText) {
-        GetFileIDsResponse response = new GetFileIDsResponse();
+        GetFileIDsProgressResponse response = new GetFileIDsProgressResponse();
         response.setCorrelationID(correlationID);
         response.setSlaID(slaID);
         response.setReplyTo(replyTo);
         response.setPillarID(pillarID);
         response.setFileIDs(fileIDs);
 
-        ResponseInfo responseInfo = new ResponseInfo();
-        responseInfo.setResponseCode(responseCode);
-        responseInfo.setResponseText(responseText);
-        response.setResponseInfo(responseInfo);
+        ProgressResponseInfo responseInfo = new ProgressResponseInfo();
+        responseInfo.setProgressResponseCode(responseCode);
+        responseInfo.setProgressResponseText(responseText);
+        response.setProgressResponseInfo(responseInfo);
 
         response.setVersion(VERSION_DEFAULT);
         response.setMinVersion(VERSION_DEFAULT);
@@ -219,17 +217,17 @@ public class TestMessageFactory {
     }
 
     /**
-     * Generate GetFileIDsComplete test message with default values.
+     * Generate GetFileIDsFinalResponse test message with default values.
      * @param pillarID
      * @return test message
      */
-    public static GetFileIDsComplete getGetFileIDsCompleteTestMessage(String pillarID) {
-        return getGetFileIDsCompleteTestMessage(
+    public static GetFileIDsFinalResponse getGetFileIDsCompleteTestMessage(String pillarID) {
+        return getGetFileIDsFinalResponseTestMessage(
                 CORRELATION_ID_DEFAULT, SLA_ID_DEFAULT, REPLY_TO_DEFAULT, pillarID, new FileIDs(),
                 COMPLETE_CODE_DEFAULT, COMPLETE_TEXT_DEFAULT, new ResultingFileIDs());
     }
     /**
-     * Generate GetFileIDsComplete test message with specified values.
+     * Generate GetFileIDsFinalResponse test message with specified values.
      * @param correlationID
      * @param slaID
      * @param replyTo
@@ -240,10 +238,10 @@ public class TestMessageFactory {
      * @param resultingFileIDs
      * @return test message
      */
-    public static GetFileIDsComplete getGetFileIDsCompleteTestMessage(
+    public static GetFileIDsFinalResponse getGetFileIDsFinalResponseTestMessage(
             String correlationID, String slaID, String replyTo, String pillarID, FileIDs fileIDs,
             String completeCode, String completeText, ResultingFileIDs resultingFileIDs) {
-        GetFileIDsComplete complete = new GetFileIDsComplete();
+        GetFileIDsFinalResponse complete = new GetFileIDsFinalResponse();
         complete.setCorrelationID(correlationID);
         complete.setSlaID(slaID);
         complete.setReplyTo(replyTo);
@@ -251,10 +249,10 @@ public class TestMessageFactory {
 
         complete.setFileIDs(fileIDs);
 
-        CompleteInfo completeInfo = new CompleteInfo();
-        completeInfo.setCompleteCode(completeCode);
-        completeInfo.setCompleteText(completeText);
-        complete.setCompleteInfo(completeInfo);
+        FinalResponseInfo completeInfo = new FinalResponseInfo();
+        completeInfo.setFinalResponseCode(completeCode);
+        completeInfo.setFinalResponseText(completeText);
+        complete.setFinalResponseInfo(completeInfo);
 
         complete.setResultingFileIDs(resultingFileIDs);
 

@@ -25,8 +25,8 @@
 package org.bitrepository.modify;
 
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.bitrepositorymessages.PutFileComplete;
-import org.bitrepository.bitrepositorymessages.PutFileResponse;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 
 /**
  * This is the internal interface for the PutClientMessage listener.
@@ -34,26 +34,26 @@ import org.bitrepository.bitrepositorymessages.PutFileResponse;
  */
 public abstract class PutClientAPI {
     /**
-     * Method for handling a PutFileResponse. This message tells how far in the storage process the given pillar is. 
+     * Method for handling a PutFileProgressResponse. This message tells how far in the storage process the given pillar is. 
      * It is possible for the pillars have a storage procedure which involves several steps before the file is 
-     * properly stored. After each step one of these PutFileResponse messages should be sent, and only when the 
-     * storage process is finished should the final PutFileComplete message be sent.
+     * properly stored. After each step one of these PutFileProgressResponse messages should be sent, and only when the 
+     * storage process is finished should the final PutFileFinalResponse message be sent.
      * 
-     * @param msg The PutFileResponse to be handled.
+     * @param msg The PutFileProgressResponse to be handled.
      */
-    abstract void handlePutResponse(PutFileResponse msg);
+    abstract void handlePutProgressResponse(PutFileProgressResponse msg);
     
     /**
-     * Method for handling a PutFileComplete message.
+     * Method for handling a PutFileFinalResponse message.
      * 
-     * @param msg The PutFileComplete message to be handled.
+     * @param msg The PutFileFinalResponse message to be handled.
      */
-    abstract void handlePutComplete(PutFileComplete msg);
+    abstract void handlePutFinalResponse(PutFileFinalResponse msg);
     
     /**
-     * Method for handling the IdentifyPillarsForPutFileReply messages.
+     * Method for handling the IdentifyPillarsForPutFileResponse messages.
      * 
-     * @param msg The IdentifyPillarsForPutfileReply message.
+     * @param msg The IdentifyPillarsForPutfileResponse message.
      */
     abstract void identifyResponse(IdentifyPillarsForPutFileResponse msg);
 }

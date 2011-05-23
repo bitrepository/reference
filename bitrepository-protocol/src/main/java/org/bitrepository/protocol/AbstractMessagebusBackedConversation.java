@@ -24,15 +24,18 @@
  */
 package org.bitrepository.protocol;
 
-import org.bitrepository.bitrepositorymessages.GetChecksumsComplete;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.GetChecksumsResponse;
-import org.bitrepository.bitrepositorymessages.GetFileComplete;
-import org.bitrepository.bitrepositorymessages.GetFileIDsComplete;
+import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.GetFileResponse;
+import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -41,9 +44,9 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.bitrepositorymessages.PutFileComplete;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,7 +122,7 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     }
 
     @Override
-    public void sendMessage(String destinationId, GetChecksumsComplete content) {
+    public void sendMessage(String destinationId, GetChecksumsFinalResponse content) {
         content.setCorrelationID(getConversationID());
         messagebus.sendMessage(destinationId, content);
     }
@@ -131,19 +134,19 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     }
 
     @Override
-    public void sendMessage(String destinationId, GetChecksumsResponse content) {
+    public void sendMessage(String destinationId, GetChecksumsProgressResponse content) {
         content.setCorrelationID(getConversationID());
         messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileComplete content) {
+    public void sendMessage(String destinationId, GetFileFinalResponse content) {
         content.setCorrelationID(getConversationID());
         messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileIDsComplete content) {
+    public void sendMessage(String destinationId, GetFileIDsFinalResponse content) {
         content.setCorrelationID(getConversationID());
         messagebus.sendMessage(destinationId, content);
     }
@@ -155,7 +158,7 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileIDsResponse content) {
+    public void sendMessage(String destinationId, GetFileIDsProgressResponse content) {
         content.setCorrelationID(getConversationID());
         messagebus.sendMessage(destinationId, content);
     }
@@ -167,7 +170,7 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileResponse content) {
+    public void sendMessage(String destinationId, GetFileProgressResponse content) {
         content.setCorrelationID(getConversationID());
         messagebus.sendMessage(destinationId, content);
     }
@@ -221,7 +224,7 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileComplete content) {
+    public void sendMessage(String destinationId, PutFileFinalResponse content) {
         content.setCorrelationID(getConversationID());
         messagebus.sendMessage(destinationId, content);
     }
@@ -233,13 +236,28 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileResponse content) {
+    public void sendMessage(String destinationId, PutFileProgressResponse content) {
         content.setCorrelationID(getConversationID());
         messagebus.sendMessage(destinationId, content);
     }
 
     @Override
-    public void onMessage(GetChecksumsComplete message) {
+    public void onMessage(GetAuditTrailsFinalResponse message) {
+       log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
+    }
+
+    @Override
+    public void onMessage(GetAuditTrailsProgressResponse message) {
+       log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
+    }
+    
+    @Override
+    public void onMessage(GetAuditTrailsRequest message) {
+       log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
+    }
+
+    @Override
+    public void onMessage(GetChecksumsFinalResponse message) {
        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
     }
 
@@ -249,17 +267,17 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     }
 
     @Override
-    public void onMessage(GetChecksumsResponse message) {
+    public void onMessage(GetChecksumsProgressResponse message) {
         log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
     }
 
     @Override
-    public void onMessage(GetFileComplete message) {
+    public void onMessage(GetFileFinalResponse message) {
         log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
     }
 
     @Override
-    public void onMessage(GetFileIDsComplete message) {
+    public void onMessage(GetFileIDsFinalResponse message) {
         log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
     }
 
@@ -269,7 +287,7 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     }
 
     @Override
-    public void onMessage(GetFileIDsResponse message) {
+    public void onMessage(GetFileIDsProgressResponse message) {
         log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
     }
 
@@ -279,7 +297,7 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     }
 
     @Override
-    public void onMessage(GetFileResponse message) {
+    public void onMessage(GetFileProgressResponse message) {
         log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
     }
 
@@ -324,7 +342,7 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     }
 
     @Override
-    public void onMessage(PutFileComplete message) {
+    public void onMessage(PutFileFinalResponse message) {
         log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
     }
 
@@ -334,7 +352,7 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     }
 
     @Override
-    public void onMessage(PutFileResponse message) {
+    public void onMessage(PutFileProgressResponse message) {
         log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
     }
 }

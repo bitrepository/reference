@@ -70,15 +70,15 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
     /** Map from correlationID to List of IdentifyPillarsForGetFileIDsResponses. */
     private Map<String, List<IdentifyPillarsForGetFileIDsResponse>> identifyPillarsForGetFileIDsResponseMap;
 
-    /** Map from correlationID to CountDownLatch counting down the responses we are waiting for. */
-    private Map<String, CountDownLatch> getFileIDsResponseCountDownLatchMap;
-    /** Map from correlationID to List of GetFileIDsResponses. */
-    private Map<String, GetFileIDsResponse> getFileIDsResponseMap;
+    /** Map from correlationID to CountDownLatch counting down the progress responses we are waiting for. */
+    private Map<String, CountDownLatch> getFileIDsProgressResponseCountDownLatchMap;
+    /** Map from correlationID to List of GetFileIDsProgressResponses. */
+    private Map<String, GetFileIDsProgressResponse> getFileIDsProgressResponseMap;
 
-    /** Map from correlationID to CountDownLatch counting down the complete messages we are waiting for. */
-    private Map<String, CountDownLatch> getFileIDsCompleteCountDownLatchMap;
-    /** Map from correlationID to List of GetFileIDsComplete messages. */
-    private Map<String, GetFileIDsComplete> getFileIDsCompleteMap;
+    /** Map from correlationID to CountDownLatch counting down the final messages we are waiting for. */
+    private Map<String, CountDownLatch> getFileIDsFinalResponseCountDownLatchMap;
+    /** Map from correlationID to List of GetFileIDsFinalResponse messages. */
+    private Map<String, GetFileIDsFinalResponse> getFileIDsCompleteMap;
 
     public BasicGetFileIDsClient() {
         config = AccessComponentFactory.getInstance().getConfig();
@@ -101,10 +101,10 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         identifyResponseCountDownLatchMap = Collections.synchronizedMap(new HashMap<String, CountDownLatch>());
         identifyPillarsForGetFileIDsResponseMap =
                 Collections.synchronizedMap(new HashMap<String, List<IdentifyPillarsForGetFileIDsResponse>>());
-        getFileIDsResponseCountDownLatchMap = Collections.synchronizedMap(new HashMap<String, CountDownLatch>());
-        getFileIDsResponseMap = Collections.synchronizedMap(new HashMap<String, GetFileIDsResponse>());
-        getFileIDsCompleteCountDownLatchMap = Collections.synchronizedMap(new HashMap<String, CountDownLatch>());
-        getFileIDsCompleteMap = Collections.synchronizedMap(new HashMap<String, GetFileIDsComplete>());
+        getFileIDsProgressResponseCountDownLatchMap = Collections.synchronizedMap(new HashMap<String, CountDownLatch>());
+        getFileIDsProgressResponseMap = Collections.synchronizedMap(new HashMap<String, GetFileIDsProgressResponse>());
+        getFileIDsFinalResponseCountDownLatchMap = Collections.synchronizedMap(new HashMap<String, CountDownLatch>());
+        getFileIDsCompleteMap = Collections.synchronizedMap(new HashMap<String, GetFileIDsFinalResponse>());
     }
 
     // TODO BItRepositoryMessages.xsd IdentifyPillarsForGetFileIDsRequest element FileIDs
@@ -156,9 +156,9 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
 
         // put correlationID and new CountDownLatches in appropriate Maps
         CountDownLatch responseCountDown = new CountDownLatch(1);
-        getFileIDsResponseCountDownLatchMap.put(corrID, responseCountDown);
+        getFileIDsProgressResponseCountDownLatchMap.put(corrID, responseCountDown);
         CountDownLatch completeCountDown = new CountDownLatch(1);
-        getFileIDsCompleteCountDownLatchMap.put(corrID, completeCountDown);
+        getFileIDsFinalResponseCountDownLatchMap.put(corrID, completeCountDown);
 
         // send message
         messageBus.sendMessage(queue, request);
@@ -167,10 +167,10 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         try {
             boolean responseOk = responseCountDown.await(timeOut, TimeUnit.MILLISECONDS);
             if (responseOk) {
-                GetFileIDsResponse response = getFileIDsResponseMap.get(corrID);
-                // TODO how do we want to use the response?
+                GetFileIDsProgressResponse response = getFileIDsProgressResponseMap.get(corrID);
+                // TODO how do we want to use the progress response?
             } else {
-                // TODO we did not receive a response before time out - it may still come or a complete message may come
+                // TODO we did not receive a progress response before time out - it may still come or a complete message may come
             }
         } catch (InterruptedException e) {
             e.printStackTrace();  // TODO handle exception
@@ -181,14 +181,14 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         try {
             boolean completeOk = completeCountDown.await(timeOut, TimeUnit.MILLISECONDS);
             if (completeOk) {
-                GetFileIDsComplete completeMsg = getFileIDsCompleteMap.get(corrID);
+                GetFileIDsFinalResponse completeMsg = getFileIDsCompleteMap.get(corrID);
                 ResultingFileIDs result = completeMsg.getResultingFileIDs();
                 JAXBContext jaxbContext = JAXBContext.newInstance("org.bitrepository.bitrepositoryelements");
                 Marshaller marshaller = jaxbContext.createMarshaller();
                 marshaller.marshal(result, new FileOutputStream(file));
-                // TODO use other parts of complete message ?
+                // TODO use other parts of final response message ?
             } else {
-                // TODO we did not receive a complete message - throw exception or?
+                // TODO we did not receive a final response message - throw exception or?
                 file = null;
             }
         } catch (InterruptedException e) {
@@ -224,13 +224,13 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         }
     }
 
-    public void handleGetFileIDsResponse(GetFileIDsResponse msg) {
+    public void handleGetFileIDsProgressResponse(GetFileIDsProgressResponse msg) {
 
         // TODO
 
     }
 
-    public void handleGetFileIDsComplete(GetFileIDsComplete msg) {
+    public void handleGetFileIDsFinalResponse(GetFileIDsFinalResponse msg) {
 
         // TODO
 

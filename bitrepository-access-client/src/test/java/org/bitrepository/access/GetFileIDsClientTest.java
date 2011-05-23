@@ -102,10 +102,10 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
                 stimuliResponseMap.put(identifyRequest, identifyReplyList);
 
                 GetFileIDsRequest request = TestMessageFactory.getGetFileIDsRequestTestMessage(pillarID);
-                GetFileIDsResponse response = TestMessageFactory.getGetFileIDsResponseTestMessage(pillarID);
+                GetFileIDsProgressResponse response = TestMessageFactory.getGetFileIDsResponseTestMessage(pillarID);
                 List<Object> responseList = new ArrayList<Object>();
                 responseList.add(response);
-                GetFileIDsComplete complete = TestMessageFactory.getGetFileIDsCompleteTestMessage(pillarID);
+                GetFileIDsFinalResponse complete = TestMessageFactory.getGetFileIDsCompleteTestMessage(pillarID);
                 responseList.add(complete);
                 stimuliResponseMap.put(request, responseList);
 
@@ -217,7 +217,7 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
         //TODO test known fileIDs part of FileIDs list
         addStep("Put three files with known IDs into the Bit Repository " +
                 "under given SLA. Mock-up: Put fake files into local " +
-                "test pillars.", "Received PutFileComplete messages with " +
+                "test pillars.", "Received PutFileFinalResponse messages with " +
                 "positive CompleteCode. Mock-up: Logging of Puts.");
 
         addStep("Send a message to get FileIDs",

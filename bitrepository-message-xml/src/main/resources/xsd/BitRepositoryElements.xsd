@@ -225,7 +225,7 @@
               <xs:element name="ChecksumSpecsItem"  type="ChecksumSpec_TYPE" minOccurs="0" maxOccurs="unbounded" >
                 <xs:annotation><xs:documentation xml:lang="en">
                 Optionally salt and/or type of checksum for extra checksumscheck of data object at
-                completion to of put file. The result can be given in PutFileComplete
+                completion to of put file. The result can be given in PutFileFinalResponse
                 </xs:documentation></xs:annotation>
               </xs:element>
             </xs:sequence>
@@ -358,22 +358,22 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="CompleteInfo">
+  <xs:element name="FinalResponseInfo">
     <xs:annotation><xs:documentation xml:lang="en">
     Information of completion
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="CompleteCode" type="CompleteCode_TYPE">
+        <xs:element name="FinalResponseCode" type="FinalResponseCode_TYPE">
           <xs:annotation><xs:documentation xml:lang="en">
-          CompleteCode is a code for the type of completion given
+          FinalResponseCode is a code for the type of completion given
           The actual codes are specified later, e.g. IoError, DataNotFound, AccessDenied, OK
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element name="CompleteText" type="xs:string">
+        <xs:element name="FinalResponseText" type="xs:string">
           <xs:annotation><xs:documentation xml:lang="en">
-          CompleteText is a text for logging in the completion
+          FinalResponseText is a text for logging in the completion
           It does not have a semantic meaning, but contributes to a more readable log
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -566,22 +566,22 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="ResponseInfo">
+  <xs:element name="ProgressResponseInfo">
     <xs:annotation><xs:documentation xml:lang="en">
     Information of reponse
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="ResponseCode" type="ResponseCode_TYPE">
+        <xs:element name="ProgressResponseCode" type="ProgressResponseCode_TYPE">
           <xs:annotation><xs:documentation xml:lang="en">
-          A code for the type of response given
+          A code for the type of progress response given
           The actual codes are specified later, e.g. UnknownFileId, OK
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element name="ResponseText" type="xs:string" minOccurs="0" maxOccurs="1" >
+        <xs:element name="ProgressResponseText" type="xs:string" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          A text for logging in the response.
+          A text for logging in the progress response.
           It does not have a semantic meaning, but contributes to a more readable log
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -855,7 +855,7 @@
             <xs:restriction base="xs:string">
               <xs:enumeration value="TERMINATION">
                 <xs:annotation><xs:documentation xml:lang="en">
-                Complete termination in remove of object
+                FinalResponse termination in remove of object
                 </xs:documentation></xs:annotation>
               </xs:enumeration>
               <xs:enumeration value="PARTIAL">
@@ -1003,14 +1003,14 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="CompleteCode_TYPE">
+  <xs:simpleType name="FinalResponseCode_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    Type with all complete codes for complete message in the bit repository protocol
+    Type with all final response codes for final response messages in the bit repository protocol
     </xs:documentation></xs:annotation>
-    <xs:union memberTypes="CompleteCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_COMPLETE_TYPE"/>
+    <xs:union memberTypes="FinalResponseCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_COMPLETE_TYPE"/>
   </xs:simpleType>
 
-  <xs:simpleType name="CompleteCodePositive_TYPE">
+  <xs:simpleType name="FinalResponseCodePositive_TYPE">
     <xs:restriction base="xs:positiveInteger">
       <xs:enumeration value="480">
         <xs:annotation><xs:documentation xml:lang="en">
@@ -1084,7 +1084,7 @@
 
   <xs:simpleType name="ERRORCODE_COMPLETE_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    Error codes that are specific for Complete messages
+    Error codes that are specific for FinalResponse messages
     Numbers may later be adjusted to fit a standard
     </xs:documentation></xs:annotation>
     <xs:restriction base="xs:positiveInteger">
@@ -1136,7 +1136,7 @@
 
   <xs:simpleType name="ERRORCODE_RESPONSE_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    Error codes that are specific for Response messages
+    Error codes that are specific for ProgressResponse messages
     </xs:documentation></xs:annotation>
     <xs:restriction base="xs:positiveInteger">
       <xs:enumeration value="561">
@@ -1196,14 +1196,14 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="ResponseCode_TYPE">
+  <xs:simpleType name="ProgressResponseCode_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    Type with all response codes for response message in the bit repository protocol
+    Type with all progress response codes for progress response message in the bit repository protocol
     </xs:documentation></xs:annotation>
-    <xs:union memberTypes="ResponseCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_RESPONSE_TYPE"/>
+    <xs:union memberTypes="ProgressResponseCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_RESPONSE_TYPE"/>
   </xs:simpleType>
 
-  <xs:simpleType name="ResponseCodePositive_TYPE">
+  <xs:simpleType name="ProgressResponseCodePositive_TYPE">
     <xs:restriction base="xs:positiveInteger">
       <xs:enumeration value="460">
         <xs:annotation><xs:documentation xml:lang="en">

@@ -25,12 +25,12 @@
 package org.bitrepository.modify;
 
 import org.apache.activemq.util.ByteArrayInputStream;
-import org.bitrepository.bitrepositoryelements.CompleteInfo;
+import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileComplete;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.modify_client.configuration.ModifyConfiguration;
 import org.bitrepository.protocol.AbstractMessageListener;
@@ -95,18 +95,18 @@ public class PutClientTester extends ExtendedTestCase {
                                                                       listener.getMessage().getBytes()));
         Assert.assertEquals(identify.getSlaID(), slaId);
         
-        addStep("Reply identify request.", "No problems.");
+        addStep("Respond to identify request.", "No problems.");
         
-        IdentifyPillarsForPutFileResponse identifyReply 
+        IdentifyPillarsForPutFileResponse identifyResponse 
                 = new IdentifyPillarsForPutFileResponse();
-        identifyReply.setCorrelationID(identify.getCorrelationID());
-        identifyReply.setPillarID(pillarId);
-        identifyReply.setSlaID(slaId);
-        identifyReply.setMinVersion(BigInteger.valueOf(1L));
-        identifyReply.setVersion(BigInteger.valueOf(1L));
+        identifyResponse.setCorrelationID(identify.getCorrelationID());
+        identifyResponse.setPillarID(pillarId);
+        identifyResponse.setSlaID(slaId);
+        identifyResponse.setMinVersion(BigInteger.valueOf(1L));
+        identifyResponse.setVersion(BigInteger.valueOf(1L));
         // TODO identifyReply.setTimeToDeliver(value) ???
         
-        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, identifyReply);
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, identifyResponse);
         
         synchronized(this) {
             try {
@@ -152,8 +152,8 @@ public class PutClientTester extends ExtendedTestCase {
         Assert.assertTrue(pc.outstandings.isOutstandingAtPillar(dataId, pillarId),
                 "The dataId should be marked as outstanding for the pillar.");
 
-        addStep("Send PutFileResponse for the request.", "Should be handled.");
-        PutFileResponse response = new PutFileResponse();
+        addStep("Send PutFileProgressResponse for the request.", "Should be handled.");
+        PutFileProgressResponse response = new PutFileProgressResponse();
         response.setCorrelationID(put.getCorrelationID());
         response.setFileAddress(put.getFileAddress());
         response.setFileID(put.getFileID());
@@ -180,8 +180,8 @@ public class PutClientTester extends ExtendedTestCase {
         Assert.assertTrue(pc.outstandings.isOutstandingAtPillar(dataId, pillarId),
                 "The dataId should be marked as outstanding for the pillar.");
 
-        addStep("Send PutFileComplete for the request.", "Should be handled.");
-        PutFileComplete complete = new PutFileComplete();
+        addStep("Send PutFileFinalResponse for the request.", "Should be handled.");
+        PutFileFinalResponse complete = new PutFileFinalResponse();
         complete.setCorrelationID(put.getCorrelationID());
         complete.setFileAddress(put.getFileAddress());
         complete.setFileID(put.getFileID());
@@ -189,10 +189,10 @@ public class PutClientTester extends ExtendedTestCase {
         complete.setSlaID(slaId);
         complete.setMinVersion(BigInteger.valueOf(1L));
         complete.setVersion(BigInteger.valueOf(1L));
-        CompleteInfo completeInfo = new CompleteInfo();
-        completeInfo.setCompleteCode("1");
-        completeInfo.setCompleteText("Done with put.");
-        complete.setCompleteInfo(completeInfo);
+        FinalResponseInfo completeInfo = new FinalResponseInfo();
+        completeInfo.setFinalResponseCode("1");
+        completeInfo.setFinalResponseText("Done with put.");
+        complete.setFinalResponseInfo(completeInfo);
         // Ignore the salt!
         
         ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, complete);
@@ -227,7 +227,7 @@ public class PutClientTester extends ExtendedTestCase {
         }
 
         @Override
-        public void onMessage(PutFileResponse message) {
+        public void onMessage(PutFileProgressResponse message) {
             onMessage((Object) message);
         }
 

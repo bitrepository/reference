@@ -43,15 +43,15 @@ public class TestMessageListener extends AbstractMessageListener
     private Logger log = LoggerFactory.getLogger(TestMessageListener.class);
 
     private String pillarID;
-    private Map<Object, List<Object>> stimuliResponseMap;
+    private Map<Object, List<Object>> stimuliProgressResponseMap;
     private String testQueue;
 
     private Object lastMessage;
 
     /**
-     * TestMessageListener constructor sets pillarID and StimuliResponseMap.
+     * TestMessageListener constructor sets pillarID and StimuliProgressResponseMap.
      * @param pillarID pillar ID
-     * @param StimuliResponseMap Map from request messages to reply messages. When one
+     * @param StimuliProgressResponseMap Map from request messages to reply messages. When one
      *        request gives rise to both a response and a complete message, the request key
      *        maps to a list with the response first and the complete message second.
      * @param testQueue in the mock up test scenario all communication is via this queue
@@ -61,17 +61,17 @@ public class TestMessageListener extends AbstractMessageListener
         log.debug("TestMessageListener: " + pillarID);
 
         this.pillarID = pillarID;
-        stimuliResponseMap = StimuliResponseMap;
+        stimuliProgressResponseMap = StimuliResponseMap;
         this.testQueue = testQueue;
     }
 
     @Override
     public void onMessage(GetFileIDsRequest message) {
         onMessage((Object) message);
-        if (stimuliResponseMap.containsKey(message)) {
+        if (stimuliProgressResponseMap.containsKey(message)) {
             sendReply(message);
         } else {
-            for (Object stimuli: stimuliResponseMap.keySet()) {
+            for (Object stimuli: stimuliProgressResponseMap.keySet()) {
                 // TODO which messages should this test message listener react on?
                 if (stimuli instanceof GetFileIDsRequest &&
                         ((GetFileIDsRequest) stimuli).getPillarID().equals(pillarID)) {
@@ -84,7 +84,7 @@ public class TestMessageListener extends AbstractMessageListener
     @Override
     public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
         onMessage((Object) message);
-        if (stimuliResponseMap.containsKey(message)) {
+        if (stimuliProgressResponseMap.containsKey(message)) {
             sendReply(message);
         } // AGAIN which messages should this test message listener react on?
     }
@@ -99,19 +99,19 @@ public class TestMessageListener extends AbstractMessageListener
     }
 
     private void sendReply(GetFileIDsRequest message) {
-        List<Object> replyList = stimuliResponseMap.get(message);
-        if (replyList != null && !replyList.isEmpty() && replyList.get(0) instanceof GetFileIDsResponse) {
+        List<Object> replyList = stimuliProgressResponseMap.get(message);
+        if (replyList != null && !replyList.isEmpty() && replyList.get(0) instanceof GetFileIDsProgressResponse) {
             ProtocolComponentFactory.getInstance().getMessageBus().
-                    sendMessage(testQueue, (GetFileIDsResponse) replyList.get(0));
+                    sendMessage(testQueue, (GetFileIDsProgressResponse) replyList.get(0));
         }
-        if (replyList != null && !replyList.isEmpty() && replyList.get(1) instanceof GetFileIDsComplete) {
+        if (replyList != null && !replyList.isEmpty() && replyList.get(1) instanceof GetFileIDsFinalResponse) {
             ProtocolComponentFactory.getInstance().getMessageBus().
-                    sendMessage(testQueue, (GetFileIDsComplete) replyList.get(1));
+                    sendMessage(testQueue, (GetFileIDsFinalResponse) replyList.get(1));
         }
     }
 
     private void sendReply(IdentifyPillarsForGetFileIDsRequest message) {
-        List<Object> replyList = stimuliResponseMap.get(message);
+        List<Object> replyList = stimuliProgressResponseMap.get(message);
         if (replyList != null && !replyList.isEmpty() &&
                 replyList.get(0) instanceof IdentifyPillarsForGetFileIDsResponse) {
         ProtocolComponentFactory.getInstance().getMessageBus().

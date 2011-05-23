@@ -44,7 +44,7 @@
 
   <xs:element name="IdentifyPillarsForGetFileResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    REPLY in IdentifyPillarsForGetFile primitive
+    RESPONSE in IdentifyPillarsForGetFile primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -125,7 +125,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="GetFileResponse">
+  <xs:element name="GetFileProgressResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     RESPONSE in GetFile primitive.
     Note that there can be more responses to the same GetFileRequest, e.g. if a
@@ -164,9 +164,9 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ResponseInfo" >
+        <xs:element ref="bre:ProgressResponseInfo" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Response information telling whether GetFileRequest has been received and is expected to be completed
+          ProgressResponse information telling whether GetFileRequest has been received and is expected to be completed
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -188,7 +188,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="GetFileComplete">
+  <xs:element name="GetFileFinalResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     COMPLETE in GetFile primitive
     </xs:documentation></xs:annotation>
@@ -225,7 +225,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:CompleteInfo" >
+        <xs:element ref="bre:FinalResponseInfo" >
           <xs:annotation><xs:documentation xml:lang="en">
           Information on how Get has been completed
           </xs:documentation></xs:annotation>
@@ -260,7 +260,7 @@
 
   <xs:element name="IdentifyPillarsForPutFileResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    REPLY in IdentifyPillarsForPutFile primitive
+    RESPONSE in IdentifyPillarsForPutFile primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -349,7 +349,7 @@
         <xs:element ref="bre:ChecksumSpecs">
           <xs:annotation><xs:documentation xml:lang="en">
           Optionally salt and/or type of checksum for extra checksumscheck of data object at
-          completion to of put file. The result can be given in PutFileComplete
+          completion to of put file. The result can be given in PutFileFinalResponse
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -357,7 +357,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="PutFileResponse">
+  <xs:element name="PutFileProgressResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     RESPONSE in PutFile primitive
     Note that there can be more responses to the same PutFileRequest, e.g. if a
@@ -396,9 +396,9 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ResponseInfo" >
+        <xs:element ref="bre:ProgressResponseInfo" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Response information telling whether PutFileRequest has been received and is expected to be completed
+          ProgressResponse information telling whether PutFileRequest has been received and is expected to be completed
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -406,7 +406,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="PutFileComplete">
+  <xs:element name="PutFileFinalResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     COMPLETE in PutFile primitive
     </xs:documentation></xs:annotation>
@@ -443,7 +443,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:CompleteInfo" >
+        <xs:element ref="bre:FinalResponseInfo" >
           <xs:annotation><xs:documentation xml:lang="en">
           Information on how PutFile has been completed
           </xs:documentation></xs:annotation>
@@ -497,7 +497,7 @@
 
   <xs:element name="IdentifyPillarsForGetChecksumsResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    REPLY in IdentifyPillarsForGetChecksums primitive
+    RESPONSE in IdentifyPillarsForGetChecksums primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -584,7 +584,7 @@
         <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where checksums must be delivered via data transmission.
-          In cases where the address is not given, the result will be given in the GetChecksumsComplete message
+          In cases where the address is not given, the result will be given in the GetChecksumsFinalResponse message
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -592,7 +592,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="GetChecksumsResponse">
+  <xs:element name="GetChecksumsProgressResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     RESPONSE in GetChecksums primitive
     </xs:documentation></xs:annotation>
@@ -629,9 +629,9 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ResponseInfo" >
+        <xs:element ref="bre:ProgressResponseInfo" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Response information telling whether GetChecksumsRequest has been received and is expected to be completed
+          ProgressResponse information telling whether GetChecksumsRequest has been received and is expected to be completed
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -639,7 +639,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="GetChecksumsComplete">
+  <xs:element name="GetChecksumsFinalResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     COMPLETE in GetChecksums primitive
     </xs:documentation></xs:annotation>
@@ -672,7 +672,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:CompleteInfo" >
+        <xs:element ref="bre:FinalResponseInfo" >
           <xs:annotation><xs:documentation xml:lang="en">
           Information on how GetChecksums has been completed
           </xs:documentation></xs:annotation>
@@ -720,7 +720,7 @@
 
   <xs:element name="IdentifyPillarsForGetFileIDsResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    REPLY in IdentifyPillarsForGetFileIDs primitive
+    RESPONSE in IdentifyPillarsForGetFileIDs primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -789,7 +789,7 @@
         <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where data ids must be delivered via data transmission
-          In cases where the address is not given, the result will be given in the GetFileIdsComplete message
+          In cases where the address is not given, the result will be given in the GetFileIdsFinalResponse message
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -797,7 +797,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="GetFileIDsResponse">
+  <xs:element name="GetFileIDsProgressResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     RESPONSE in GetFileIDs primitive
     </xs:documentation></xs:annotation>
@@ -829,9 +829,9 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ResponseInfo" >
+        <xs:element ref="bre:ProgressResponseInfo" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Response information telling whether GetFilIDsRequest has been received and is expected to be completed
+          ProgressResponse information telling whether GetFilIDsRequest has been received and is expected to be completed
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -839,7 +839,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="GetFileIDsComplete">
+  <xs:element name="GetFileIDsFinalResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     COMPLETE in GetFileIDs primitive
     </xs:documentation></xs:annotation>
@@ -865,7 +865,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:CompleteInfo" >
+        <xs:element ref="bre:FinalResponseInfo" >
           <xs:annotation><xs:documentation xml:lang="en">
           Information on how GetFileIDs has been completed
           </xs:documentation></xs:annotation>
@@ -913,7 +913,7 @@
 
   <xs:element name="IdentifyContributorsForGetAuditTrailsResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    REPLY in IdentifyContributorsForGetAuditTrails primitive
+    RESPONSE in IdentifyContributorsForGetAuditTrails primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -983,7 +983,7 @@
         <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where audit trails must be delivered via data transmission
-          In cases where the address is not given, the result will be given in the GetAuditTrailsComplete message
+          In cases where the address is not given, the result will be given in the GetAuditTrailsFinalResponse message
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -991,7 +991,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="GetAuditTrailsResponse">
+  <xs:element name="GetAuditTrailsProgressResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     RESPONSE in GetFileIDs primitive
     </xs:documentation></xs:annotation>
@@ -1023,9 +1023,9 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ResponseInfo" >
+        <xs:element ref="bre:ProgressResponseInfo" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Response information telling whether GetAuditTrailsRequest has been received and is expected to be completed
+          ProgressResponse information telling whether GetAuditTrailsRequest has been received and is expected to be completed
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -1033,7 +1033,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="GetAuditTrailsComplete">
+  <xs:element name="GetAuditTrailsFinalResponse">
     <xs:annotation><xs:documentation xml:lang="en">
     COMPLETE in GetAuditTrails primitive
     </xs:documentation></xs:annotation>
@@ -1059,7 +1059,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:CompleteInfo" >
+        <xs:element ref="bre:FinalResponseInfo" >
           <xs:annotation><xs:documentation xml:lang="en">
           Information on how GetAuditTrails has been completed
           </xs:documentation></xs:annotation>

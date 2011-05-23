@@ -24,15 +24,15 @@
  */
 package org.bitrepository.protocol;
 
-import org.bitrepository.bitrepositorymessages.GetChecksumsComplete;
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.GetChecksumsResponse;
-import org.bitrepository.bitrepositorymessages.GetFileComplete;
-import org.bitrepository.bitrepositorymessages.GetFileIDsComplete;
+import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.GetFileResponse;
+import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -41,9 +41,9 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.bitrepositorymessages.PutFileComplete;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 
 /**
  * Interface for sending messages.
@@ -57,7 +57,7 @@ public interface MessageSender {
      * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, GetChecksumsComplete content);
+    void sendMessage(String destinationId, GetChecksumsFinalResponse content);
 
     /**
      * Method for sending a message on a specific destination.
@@ -73,7 +73,7 @@ public interface MessageSender {
      * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, GetChecksumsResponse content);
+    void sendMessage(String destinationId, GetChecksumsProgressResponse content);
 
     /**
      * Method for sending a message on a specific destination.
@@ -81,7 +81,7 @@ public interface MessageSender {
      * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, GetFileComplete content);
+    void sendMessage(String destinationId, GetFileFinalResponse content);
 
     /**
      * Method for sending a message on a specific destination.
@@ -89,7 +89,7 @@ public interface MessageSender {
      * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, GetFileIDsComplete content);
+    void sendMessage(String destinationId, GetFileIDsFinalResponse content);
 
     /**
      * Method for sending a message on a specific destination.
@@ -105,7 +105,7 @@ public interface MessageSender {
      * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, GetFileIDsResponse content);
+    void sendMessage(String destinationId, GetFileIDsProgressResponse content);
 
     /**
      * Method for sending a message on a specific destination.
@@ -121,7 +121,7 @@ public interface MessageSender {
      * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, GetFileResponse content);
+    void sendMessage(String destinationId, GetFileProgressResponse content);
 
     /**
      * Method for sending a message on a specific destination.
@@ -193,7 +193,7 @@ public interface MessageSender {
      * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, PutFileComplete content);
+    void sendMessage(String destinationId, PutFileFinalResponse content);
 
     /**
      * Method for sending a message on a specific destination.
@@ -209,5 +209,5 @@ public interface MessageSender {
      * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, PutFileResponse content);
+    void sendMessage(String destinationId, PutFileProgressResponse content);
 }

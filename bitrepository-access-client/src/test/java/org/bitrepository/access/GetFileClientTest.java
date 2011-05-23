@@ -28,21 +28,17 @@ import java.io.File;
 import java.math.BigInteger;
 import java.net.URL;
 
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfile.SimpleGetFileClient;
-import org.bitrepository.bitrepositoryelements.CompleteInfo;
+import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositorymessages.GetFileComplete;
+import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.GetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.clienttest.ClientTest;
 import org.bitrepository.common.sla.MutableSLAConfiguration;
-import org.bitrepository.protocol.AbstractMessageListener;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -123,7 +119,7 @@ public class GetFileClientTest extends ClientTest {
         addStep("Verify that the GetClient sends a getFile request.", 
                 "A GetFileRequest should be received by the pillar.");
         GetFileRequest getFileRequest = pillar1TopicMessageReceiver.waitForMessage(GetFileRequest.class);
-        Assert.assertNotNull(getFileRequest, "No GetFileResponse received.");
+        Assert.assertNotNull(getFileRequest, "No GetFileRequest received.");
         Assert.assertEquals(getFileRequest.getFileID(), fileId);
         Assert.assertEquals(getFileRequest.getPillarID(), pillarId);
         responseTopic = getFileRequest.getReplyTo();
@@ -131,28 +127,28 @@ public class GetFileClientTest extends ClientTest {
         addStep("Send a getFile response to the GetClient.", 
                 "The GetClient should notify about the response through the callback interface."); 
         //Todo Convert to TestMessageFactory loading        
-        GetFileResponse getFileResponse = new GetFileResponse();
-        getFileResponse.setMinVersion(BigInteger.valueOf(1L));
-        getFileResponse.setVersion(BigInteger.valueOf(1L));
-        getFileResponse.setCorrelationID(getFileRequest.getCorrelationID());
-        getFileResponse.setSlaID(getFileRequest.getSlaID());
-        getFileResponse.setPillarID(pillarId);
-        getFileResponse.setFileID(getFileRequest.getFileID());
-        messageBus.sendMessage(getFileRequest.getReplyTo(), getFileResponse);
+        GetFileProgressResponse getFileProgressResponse = new GetFileProgressResponse();
+        getFileProgressResponse.setMinVersion(BigInteger.valueOf(1L));
+        getFileProgressResponse.setVersion(BigInteger.valueOf(1L));
+        getFileProgressResponse.setCorrelationID(getFileRequest.getCorrelationID());
+        getFileProgressResponse.setSlaID(getFileRequest.getSlaID());
+        getFileProgressResponse.setPillarID(pillarId);
+        getFileProgressResponse.setFileID(getFileRequest.getFileID());
+        messageBus.sendMessage(getFileRequest.getReplyTo(), getFileProgressResponse);
 
         addStep("Uploading the file to the default HTTPServer.", "");
         File uploadFile = new File("src/test/resources/test.txt");
         URL url = ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(uploadFile);
         
-        addStep("Send a complete upload message with the URL", 
-                "The GetFileClient on reception of the complete message, notify that the file is ready " +
+        addStep("Send a final response upload message with the URL", 
+                "The GetFileClient on reception of the final response message, notify that the file is ready " +
                 "through the callback listener and return from the blocking getFile method.");
         //Todo Convert to TestMessageFactory
-        CompleteInfo info = new CompleteInfo();
-        info.setCompleteCode("Complete code");
-        info.setCompleteText("Complete text");
-        GetFileComplete completeMsg = new GetFileComplete();
-        completeMsg.setCompleteInfo(info);
+        FinalResponseInfo info = new FinalResponseInfo();
+        info.setFinalResponseCode("Complete code");
+        info.setFinalResponseText("Complete text");
+        GetFileFinalResponse completeMsg = new GetFileFinalResponse();
+        completeMsg.setFinalResponseInfo(info);
         completeMsg.setCorrelationID(getFileRequest.getCorrelationID());
         completeMsg.setFileAddress(url.toExternalForm());
         completeMsg.setSlaID(getFileRequest.getSlaID());
@@ -173,7 +169,7 @@ public class GetFileClientTest extends ClientTest {
             }
         }
         
-        addStep("Verify that the file is downloaded in by the GetClient and  placed within the GetClient's fileDir.", 
+        addStep("Verify that the file is downloaded in by the GetClient and placed within the GetClient's fileDir.", 
                 "Should be fine!");
         File outputFile = new File(slaConfiguration.getLocalFileStorage(), fileId);
         Assert.assertTrue(outputFile.isFile());

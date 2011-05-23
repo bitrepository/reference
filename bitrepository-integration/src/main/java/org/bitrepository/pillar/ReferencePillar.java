@@ -25,23 +25,23 @@
 package org.bitrepository.pillar;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.bitrepository.bitrepositoryelements.CompleteInfo;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
+import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileComplete;
+import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.GetFileResponse;
+import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileComplete;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.common.utils.ArgumentValidationUtils;
 import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -205,21 +205,21 @@ public class ReferencePillar implements PillarAPI {
         // retrieve the file.
         File targetFile = archive.findFile(msg.getFileID(), msg.getSlaID());
         
-        // create the response message 
-        GetFileResponse response = messageCreator.createGetFileResponse(msg);
-        // set response accordingly to where the file exists.
+        // create the progress response message 
+        GetFileProgressResponse response = messageCreator.createGetFileProgressResponse(msg);
+        // set progress response accordingly to where the file exists.
         if(targetFile != null) {
             response.setFileSize(BigInteger.valueOf(targetFile.length()));
-            ResponseInfo info = new ResponseInfo();
-            info.setResponseCode("1");
-            info.setResponseText("Found the file and will begin to upload.");
-            response.setResponseInfo(info);
+            ProgressResponseInfo info = new ProgressResponseInfo();
+            info.setProgressResponseCode("1");
+            info.setProgressResponseText("Found the file and will begin to upload.");
+            response.setProgressResponseInfo(info);
         } else {
             response.setFileSize(BigInteger.valueOf(-1L));
-            ResponseInfo info = new ResponseInfo();
-            info.setResponseCode("404");
-            info.setResponseText("File is missing. Cannot upload what cannot be found.");
-            response.setResponseInfo(info);
+            ProgressResponseInfo info = new ProgressResponseInfo();
+            info.setProgressResponseCode("404");
+            info.setProgressResponseText("File is missing. Cannot upload what cannot be found.");
+            response.setProgressResponseInfo(info);
         }
         // TODO handle these?
 //        response.setChecksum("??");
@@ -230,7 +230,7 @@ public class ReferencePillar implements PillarAPI {
 //        response.setPillarChecksumType("??");
 //        response.setReplyTo("??");
 
-        // Send the response message.
+        // Send the progress response message.
         messageBus.sendMessage(msg.getReplyTo(), response);
         
         // If the file was not found, then do not upload it. Just stop here!
@@ -244,15 +244,15 @@ public class ReferencePillar implements PillarAPI {
         URL url = ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(targetFile);
         // TODO handle the case, when the upload fails!
         
-        // create the complete message 
-        GetFileComplete complete = messageCreator.createGetFileComplete(msg);
+        // create the final response message 
+        GetFileFinalResponse complete = messageCreator.createGetFileFinalResponse(msg);
         // adjust message according to 
         complete.setFileAddress(url.toExternalForm());
-        CompleteInfo cInfo = new CompleteInfo();
-        cInfo.setCompleteCode("1");
-        cInfo.setCompleteText("File successfully uploaded to server and is ready to be downloaded by you "
+        FinalResponseInfo finalInfo = new FinalResponseInfo();
+        finalInfo.setFinalResponseCode("1");
+        finalInfo.setFinalResponseText("File successfully uploaded to server and is ready to be downloaded by you "
                 + "(the GetFileClient)!");
-        complete.setCompleteInfo(cInfo);
+        complete.setFinalResponseInfo(finalInfo);
         // TODO handle these?
 //        complete.setPartLength("??");
 //        complete.setPartOffSet("??");
@@ -285,17 +285,17 @@ public class ReferencePillar implements PillarAPI {
         
         File targetFile = archive.findFile(msg.getFileID(), msg.getSlaID());
         
-        PutFileResponse response = messageCreator.createPutFileResponse(msg);
+        PutFileProgressResponse response = messageCreator.createPutFileProgressResponse(msg);
         if(targetFile == null) {
-            ResponseInfo info = new ResponseInfo();
-            info.setResponseCode("1");
-            info.setResponseText("We are ready to receive the file.");
-            response.setResponseInfo(info);
+        	ProgressResponseInfo info = new ProgressResponseInfo();
+            info.setProgressResponseCode("1");
+            info.setProgressResponseText("We are ready to receive the file.");
+            response.setProgressResponseInfo(info);
         } else {
-            ResponseInfo info = new ResponseInfo();
-            info.setResponseCode("2");
-            info.setResponseText("We already have the file.");
-            response.setResponseInfo(info);
+        	ProgressResponseInfo info = new ProgressResponseInfo();
+            info.setProgressResponseCode("2");
+            info.setProgressResponseText("We already have the file.");
+            response.setProgressResponseInfo(info);
         }
         // TODO handle these?
 //      response.setFileAddress(msg.getFileAddress());
@@ -322,11 +322,11 @@ public class ReferencePillar implements PillarAPI {
         
         archive.archiveFile(msg.getFileID(), msg.getSlaID());
         
-        PutFileComplete complete = messageCreator.createPutFileComplete(msg);
-        CompleteInfo cInfo = new CompleteInfo();
-        cInfo.setCompleteCode("1");
-        cInfo.setCompleteText("File successfully put");
-        complete.setCompleteInfo(cInfo);
+        PutFileFinalResponse complete = messageCreator.createPutFileFinalResponse(msg);
+        FinalResponseInfo finalInfo = new FinalResponseInfo();
+        finalInfo.setFinalResponseCode("1");
+        finalInfo.setFinalResponseText("File successfully put");
+        complete.setFinalResponseInfo(finalInfo);
         // TODO handle these?
 //      complete.setReplyTo(value)
 //      complete.setCompleteSaltChecksum(value)

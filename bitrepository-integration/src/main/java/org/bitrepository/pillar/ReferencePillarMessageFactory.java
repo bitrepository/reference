@@ -26,16 +26,16 @@ package org.bitrepository.pillar;
 
 import java.math.BigInteger;
 
-import org.bitrepository.bitrepositorymessages.GetFileComplete;
+import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.GetFileResponse;
+import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileComplete;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 
 /**
  * Class for generating the messages for the Reference Pillar.
@@ -52,14 +52,14 @@ public class ReferencePillarMessageFactory {
     }
     
     /**
-     * Creates a IdentifyPillarsForGetFileReply based on a 
+     * Creates a IdentifyPillarsForGetFileResponse based on a 
      * IdentifyPillarsForGetFileRequest. The following fields are not inserted:
      * <br/> - TimeToDeliver
      * <br/> - PillarChecksumType
      * <br/> - ReplyTo
      * 
-     * @param msg The IdentifyPillarsForGetFileRequest to base the reply on.
-     * @return The reply to the request.
+     * @param msg The IdentifyPillarsForGetFileRequest to base the response on.
+     * @return The response to the request.
      */
     public IdentifyPillarsForGetFileResponse createIdentifyPillarsForGetFileResponse(
             IdentifyPillarsForGetFileRequest msg) {
@@ -75,14 +75,14 @@ public class ReferencePillarMessageFactory {
     }
     
     /**
-     * Creates a IdentifyPillarsForPutFileReply based on a 
+     * Creates a IdentifyPillarsForPutFileResponse based on a 
      * IdentifyPillarsForPutFileRequest. The following fields are not inserted:
      * <br/> - TimeToDeliver
      * <br/> - ChecksumType
      * <br/> - ReplyTo
      * 
-     * @param msg The IdentifyPillarsForPutFileRequest to base the reply on.
-     * @return A IdentifyPillarsForPutFileReply from the request.
+     * @param msg The IdentifyPillarsForPutFileRequest to base the response on.
+     * @return A IdentifyPillarsForPutFileResponse from the request.
      */
     public IdentifyPillarsForPutFileResponse createIdentifyPillarsForPutFileResponse(
             IdentifyPillarsForPutFileRequest msg) {
@@ -112,11 +112,11 @@ public class ReferencePillarMessageFactory {
      * <br/> - ResponseCode
      * <br/> - ResponseText
      * 
-     * @param msg The GetFileRequest to base the response on.
-     * @return The GetFileResponse based on the request.
+     * @param msg The GetFileRequest to base the progress response on.
+     * @return The GetFileProgressResponse based on the request.
      */
-    public GetFileResponse createGetFileResponse(GetFileRequest msg) {
-        GetFileResponse res = new GetFileResponse();
+    public GetFileProgressResponse createGetFileProgressResponse(GetFileRequest msg) {
+        GetFileProgressResponse res = new GetFileProgressResponse();
         res.setCorrelationID(msg.getCorrelationID());
         res.setMinVersion(BigInteger.valueOf(1L));
         res.setVersion(BigInteger.valueOf(1L));
@@ -128,7 +128,7 @@ public class ReferencePillarMessageFactory {
     }
     
     /**
-     * Creates a GetFileComplete based on a GetFileRequest. Missing the 
+     * Creates a GetFileFinalResponse based on a GetFileRequest. Missing the 
      * following fields:
      * <br/> - FileAddress
      * <br/> - CompleteCode
@@ -137,11 +137,11 @@ public class ReferencePillarMessageFactory {
      * <br/> - PartOffSet
      * <br/> - PillarChecksumType
      * 
-     * @param msg The GetFileRequest to base the reply for complete on.
-     * @return The GetFileComplete based on the request.
+     * @param msg The GetFileRequest to base the final response on.
+     * @return The GetFileFinalResponse based on the request.
      */
-    public GetFileComplete createGetFileComplete(GetFileRequest msg) {
-        GetFileComplete res = new GetFileComplete();
+    public GetFileFinalResponse createGetFileFinalResponse(GetFileRequest msg) {
+        GetFileFinalResponse res = new GetFileFinalResponse();
         res.setCorrelationID(msg.getCorrelationID());
         res.setMinVersion(BigInteger.valueOf(1L));
         res.setVersion(BigInteger.valueOf(1L));
@@ -153,7 +153,7 @@ public class ReferencePillarMessageFactory {
     }
     
     /**
-     * Creates a PutFileResponse based on a PutFileRequest. Missing the 
+     * Creates a PutFileProgressResponse based on a PutFileRequest. Missing the 
      * following fields:
      * <br/> - ResponseCode
      * <br/> - ResponseText
@@ -161,11 +161,11 @@ public class ReferencePillarMessageFactory {
      * <br/> - PillarChecksumType
      * <br/> - ReplyTo
      * 
-     * @param msg The PutFileRequest to base the response on.
-     * @return The PutFileResponse based on the request.
+     * @param msg The PutFileRequest to base the progress response on.
+     * @return The PutFileProgressResponse based on the request.
      */
-    public PutFileResponse createPutFileResponse(PutFileRequest msg) {
-        PutFileResponse res = new PutFileResponse();
+    public PutFileProgressResponse createPutFileProgressResponse(PutFileRequest msg) {
+        PutFileProgressResponse res = new PutFileProgressResponse();
         res.setCorrelationID(msg.getCorrelationID());
         res.setVersion(BigInteger.valueOf(1L));
         res.setMinVersion(BigInteger.valueOf(1L));
@@ -176,7 +176,7 @@ public class ReferencePillarMessageFactory {
     }
 
     /**
-     * Creates a PutFileComplete based on a PutFileRequest. Missing the
+     * Creates a PutFileFinalResponse based on a PutFileRequest. Missing the
      * following fields:
      * <br/> - CompleteCode
      * <br/> - CompleteText
@@ -185,11 +185,11 @@ public class ReferencePillarMessageFactory {
      * <br/> - FileAddress
      * <br/> - PillarChecksumType
      * 
-     * @param msg The PutFileRequest to base the complete message on.
-     * @return The PutFileComplete message based on the request.
+     * @param msg The PutFileRequest to base the final response message on.
+     * @return The PutFileFinalResponse message based on the request.
      */
-    public PutFileComplete createPutFileComplete(PutFileRequest msg) {
-        PutFileComplete res = new PutFileComplete();
+    public PutFileFinalResponse createPutFileFinalResponse(PutFileRequest msg) {
+        PutFileFinalResponse res = new PutFileFinalResponse();
         res.setCorrelationID(msg.getCorrelationID());
         res.setFileID(msg.getFileID());
         res.setMinVersion(BigInteger.valueOf(1L));
