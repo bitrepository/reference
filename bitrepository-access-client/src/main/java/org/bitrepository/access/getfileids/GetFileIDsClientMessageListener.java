@@ -45,11 +45,9 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access;
+package org.bitrepository.access.getfileids;
 
-import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.protocol.AbstractMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,7 +95,18 @@ public class GetFileIDsClientMessageListener extends AbstractMessageListener {
      */
     @Override
     public void onMessage(GetFileIDsFinalResponse msg) {
-        log.info("Reieved GetFileIDsFinalResponse message '" + msg + "'.");
+        log.info("Reieved GetFileFinalResponse message '" + msg + "'.");
         client.handleGetFileIDsFinalResponse(msg);
     }
+
+    @Override
+    public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
+        log.info("GetFileIDsClientMessageListener.onMessage IdentifyPillarsForGetFileIDsRequest message IGNORE");
+    }
+
+    @Override
+    public void onMessage(GetFileIDsRequest message) {
+        log.info("GetFileIDsClientMessageListener.onMessage GetFileIDsRequest message IGNORE");
+    }
+
 }

@@ -45,7 +45,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access;
+package org.bitrepository.access.getfileids;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;

@@ -1,7 +1,7 @@
 /*
  * #%L
  * Bitrepository Integrity Client
- * 
+ * *
  * $Id$
  * $HeadURL$
  * %%
@@ -24,8 +24,8 @@
  */
 package org.bitrepository.integrityclient.collection;
 
-import org.bitrepository.access.BasicGetFileIDsClient;
-import org.bitrepository.access.GetFileIDsClient;
+import org.bitrepository.access.getfileids.BasicGetFileIDsClient;
+import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.common.JaxbHelper;
@@ -72,7 +72,8 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
 
         for (IdentifyPillarsForGetFileIDsResponse response: responses) {
             if (pillarID == null || pillarID.equals(response.getPillarID())) {
-                File file = getFileIDsClient.getFileIDs(slaID, response.getReplyTo(), response.getPillarID());
+                File file = getFileIDsClient.getFileIDs(response.getCorrelationID(),
+                        slaID, response.getReplyTo(), response.getPillarID());
                 FileIDsData data;
                 try {
                     data = JaxbHelper.loadXml(FileIDsData.class, new FileInputStream(file));

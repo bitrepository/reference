@@ -43,15 +43,15 @@ public class TestMessageListener extends AbstractMessageListener
     private Logger log = LoggerFactory.getLogger(TestMessageListener.class);
 
     private String pillarID;
-    private Map<Object, List<Object>> stimuliProgressResponseMap;
+    private Map<Object, List<Object>> stimuliResponseMap;
     private String testQueue;
 
     private Object lastMessage;
 
     /**
-     * TestMessageListener constructor sets pillarID and StimuliProgressResponseMap.
+     * TestMessageListener constructor sets pillarID and StimuliResponseMap.
      * @param pillarID pillar ID
-     * @param StimuliProgressResponseMap Map from request messages to reply messages. When one
+     * @param StimuliResponseMap Map from request messages to reply messages. When one
      *        request gives rise to both a response and a complete message, the request key
      *        maps to a list with the response first and the complete message second.
      * @param testQueue in the mock up test scenario all communication is via this queue
@@ -61,21 +61,20 @@ public class TestMessageListener extends AbstractMessageListener
         log.debug("TestMessageListener: " + pillarID);
 
         this.pillarID = pillarID;
-        stimuliProgressResponseMap = StimuliResponseMap;
+        stimuliResponseMap = StimuliResponseMap;
         this.testQueue = testQueue;
     }
 
     @Override
     public void onMessage(GetFileIDsRequest message) {
         onMessage((Object) message);
-        if (stimuliProgressResponseMap.containsKey(message)) {
-            sendReply(message);
+        if (stimuliResponseMap.containsKey(message)) {
+            sendReply(message, message.getCorrelationID());
         } else {
-            for (Object stimuli: stimuliProgressResponseMap.keySet()) {
+            for (Object stimuli: stimuliResponseMap.keySet()) {
                 // TODO which messages should this test message listener react on?
-                if (stimuli instanceof GetFileIDsRequest &&
-                        ((GetFileIDsRequest) stimuli).getPillarID().equals(pillarID)) {
-                    sendReply(message);
+                if (stimuli instanceof GetFileIDsRequest) {
+                    sendReply((GetFileIDsRequest) stimuli, message.getCorrelationID());
                 }
             }
         }
@@ -84,9 +83,16 @@ public class TestMessageListener extends AbstractMessageListener
     @Override
     public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
         onMessage((Object) message);
-        if (stimuliProgressResponseMap.containsKey(message)) {
-            sendReply(message);
-        } // AGAIN which messages should this test message listener react on?
+        if (stimuliResponseMap.containsKey(message)) {
+            sendReply(message, message.getCorrelationID());
+        } else {
+            for (Object stimuli: stimuliResponseMap.keySet()) {
+                // TODO which messages should this test message listener react on?
+                if (stimuli instanceof IdentifyPillarsForGetFileIDsRequest) {
+                    sendReply((IdentifyPillarsForGetFileIDsRequest) stimuli, message.getCorrelationID());
+                }
+            }
+        }
     }
 
     public void onMessage(Object msg) {
@@ -98,26 +104,45 @@ public class TestMessageListener extends AbstractMessageListener
         }
     }
 
-    private void sendReply(GetFileIDsRequest message) {
-        List<Object> replyList = stimuliProgressResponseMap.get(message);
+    private void sendReply(GetFileIDsRequest message, String correlationID) {
+        List<Object> replyList = stimuliResponseMap.get(message);
         if (replyList != null && !replyList.isEmpty() && replyList.get(0) instanceof GetFileIDsProgressResponse) {
-            ProtocolComponentFactory.getInstance().getMessageBus().
-                    sendMessage(testQueue, (GetFileIDsProgressResponse) replyList.get(0));
+            GetFileIDsProgressResponse response = (GetFileIDsProgressResponse) replyList.get(0);
+            response.setCorrelationID(correlationID);
+            ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(testQueue, response);
         }
         if (replyList != null && !replyList.isEmpty() && replyList.get(1) instanceof GetFileIDsFinalResponse) {
-            ProtocolComponentFactory.getInstance().getMessageBus().
-                    sendMessage(testQueue, (GetFileIDsFinalResponse) replyList.get(1));
+            GetFileIDsFinalResponse finalResponse = (GetFileIDsFinalResponse) replyList.get(1);
+            finalResponse.setCorrelationID(correlationID);
+            ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(testQueue, finalResponse);
         }
     }
 
-    private void sendReply(IdentifyPillarsForGetFileIDsRequest message) {
-        List<Object> replyList = stimuliProgressResponseMap.get(message);
+    private void sendReply(IdentifyPillarsForGetFileIDsRequest message, String correlationID) {
+        List<Object> replyList = stimuliResponseMap.get(message);
         if (replyList != null && !replyList.isEmpty() &&
                 replyList.get(0) instanceof IdentifyPillarsForGetFileIDsResponse) {
-        ProtocolComponentFactory.getInstance().getMessageBus().
-                sendMessage(testQueue, (IdentifyPillarsForGetFileIDsResponse) replyList.get(0));
+            IdentifyPillarsForGetFileIDsResponse response = (IdentifyPillarsForGetFileIDsResponse) replyList.get(0);
+            response.setCorrelationID(correlationID);
+            ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(testQueue, response);
         }
     }
+
+    @Override
+    public void onMessage(IdentifyPillarsForGetFileIDsResponse message) {
+        log.info("TestMessageListener.onMessage IdentifyPillarsForGetFileIDsResponse message IGNORE");
+    }
+
+    @Override
+    public void onMessage(GetFileIDsProgressResponse message) {
+        log.info("TestMessageListener.onMessage GetFileIDsResponse message IGNORE");
+    }
+
+    @Override
+    public void onMessage(GetFileIDsFinalResponse message) {
+        log.info("TestMessageListener.onMessage GetFileIDsComplete message IGNORE");
+    }
+
 
     @Override
     public void onException(JMSException e) {

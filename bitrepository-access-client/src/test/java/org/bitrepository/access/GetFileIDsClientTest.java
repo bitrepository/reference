@@ -24,16 +24,17 @@
  */
 package org.bitrepository.access;
 
+import org.bitrepository.access.getfileids.BasicGetFileIDsClient;
+import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.*;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.TestMessageFactory;
-import org.bitrepository.protocol.TestMessageListener;
+import org.bitrepository.protocol.*;
 import org.jaccept.structure.ExtendedTestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -51,7 +52,7 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
     private Logger log = LoggerFactory.getLogger(GetFileIDsClientTest.class);
 
     private static final String slaID = "TestSLA";
-    private static final String queue = "" + (new Date().getTime());
+    private static String queue = "" + (new Date().getTime());//todo test queue
 
     private static final String HOURS = "HOURS";
     private static final String MILLISECONDS = "MILLISECONDS";
@@ -61,26 +62,44 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
 
     private GetFileIDsClient getFileIDsClient = new BasicGetFileIDsClient();
     private int numberOfPillars;
+    private MessageMonitor monitor;
 
 
     /**
      * Set up the test scenario before running the tests in this class.
+     * @throws javax.xml.bind.JAXBException
      */
-    @BeforeMethod
+    @BeforeMethod(alwaysRun = true)
     public void setUp() throws JAXBException {
         log.debug("setUp");
 
         // Defining the test queue to be the date for 'now'.
         AccessConfiguration config = AccessComponentFactory.getInstance().getConfig();
         // ToDo Convert to use SLACOnfiguration injection
-        //config.setQueue(queue);
+        queue = config.getGetFileIDsClientQueue();
 
         // Add pillars that reply to given SLA. Mockup: TestMessageListeners.
         setUpPillars();
+
+        // Monitor
+        monitor = new MessageMonitor();
+        ProtocolComponentFactory.getInstance().getMessageBus().addListener(queue, monitor);
+    }
+
+    @AfterMethod(alwaysRun = true)
+    public void cleanUp() {
+        if (mockUp) {
+            for (TestMessageListener listener: listeners) {
+                ProtocolComponentFactory.getInstance().getMessageBus().removeListener(queue, listener);
+            }
+        }
+        // Monitor
+        ProtocolComponentFactory.getInstance().getMessageBus().removeListener(queue, monitor);
     }
 
     /**
      * Set up the pillars used in this test scenario.
+     * @throws javax.xml.bind.JAXBException
      */
     private void setUpPillars() throws JAXBException {
         if (mockUp) {
@@ -125,8 +144,8 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
      * @return list of pillar replies
      * @throws Exception
      */
-    @Test(groups = {"test first"})
-    public List<IdentifyPillarsForGetFileIDsResponse> identifyPillarsForGetFileIDsTest() throws Exception {
+    @Test(groups = {"testfirst"})
+    public void identifyPillarsForGetFileIDsTest() throws Exception {
         addDescription("Tests that the expected number of pillars reply to " +
                 "request");
 
@@ -137,19 +156,32 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
         List<IdentifyPillarsForGetFileIDsResponse> identifyReplyList =
                 getFileIDsClient.identifyPillarsForGetFileIDs(slaID);
 
+        addStep("Ensure that the expected messages have been sent.",
+                "Assertion test using internal monitor.");
+        Map<Date, Class> messageMap = monitor.getMessageMap();
+        Date[] keys = new Date[messageMap.size()];
+        messageMap.keySet().toArray(keys);
+        Arrays.sort(keys);
+        Assert.assertEquals(messageMap.get(keys[0]), IdentifyPillarsForGetFileIDsRequest.class,
+                "The first message is expected to be IdentifyPillarsForGetFileIDsRequest.");
+        Assert.assertEquals(messageMap.get(keys[1]), IdentifyPillarsForGetFileIDsResponse.class,
+                "The second message is expected to be IdentifyPillarsForGetFileIDsResponse.");
+        Assert.assertEquals(messageMap.get(keys[2]), IdentifyPillarsForGetFileIDsResponse.class,
+                "The third message is expected to be IdentifyPillarsForGetFileIDsResponse.");
+
         addStep("Ensure that the returned IdentifyPillarsForGetFileIDsReply list " +
                 "contains the expected answers.",
                 "Assertion test.");
-
         Assert.assertNotNull(identifyReplyList,
                 "The list of replies should not be null.");
-        Assert.assertEquals(identifyReplyList.size(), numberOfPillars,
-                "Expected number of replies is " + numberOfPillars);
-
         List<String> pillarIDs = new ArrayList<String>();
         for (IdentifyPillarsForGetFileIDsResponse msg: identifyReplyList) {
             pillarIDs.add(msg.getPillarID());
         }
+        log.debug(pillarIDs.toString());
+        Assert.assertEquals(identifyReplyList.size(), numberOfPillars,
+                "Expected number of replies is " + numberOfPillars);
+
         if (mockUp) {
 
             for (TestMessageListener listener: listeners) {
@@ -161,7 +193,6 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
         } else {
             // TODO it should be possible to determine which pillars are part of a test set up
         }
-        return identifyReplyList;
     }
 
     /**
@@ -170,13 +201,14 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
      * https://sbforge.org/display/BITMAG/Get+File+IDs+User+Stories
      * @throws Exception
      */
-    @Test(groups = {"test first"})
-    public void GetFileIDsTest() throws Exception {
+    @Test(groups = {"testfirst"})
+    public void getFileIDsTest() throws Exception {
         addDescription("Tests that the client sends the request and receives a list of FileIDs.");
 
         addStep("Use identifyPillarsForGetFileIDsTest to identify pillars",
                 "The returned list of pillar replies should not be empty.");
-        List<IdentifyPillarsForGetFileIDsResponse> pillarReplies = identifyPillarsForGetFileIDsTest();
+        List<IdentifyPillarsForGetFileIDsResponse> pillarReplies =
+                getFileIDsClient.identifyPillarsForGetFileIDs(slaID);
         Assert.assertTrue(pillarReplies != null && pillarReplies.size()>0, "Fail: no reachable pillars");
 
         addStep("Send a message to the pillar with shortest TimeToDeliver to get FileIDs and receive " +
@@ -199,7 +231,24 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
             }
         }
 
-        File fileWithFileIds = getFileIDsClient.getFileIDs(slaID, pillarID, queue);
+        String correlationID = pillarReplies.get(0).getCorrelationID();
+        File fileWithFileIds = getFileIDsClient.getFileIDs(correlationID, slaID, pillarID, queue);
+        addStep("Ensure that the expected messages have been sent.",
+                "Assertion test using internal monitor.");
+        Map<Date, Class> messageMap = monitor.getMessageMap();
+        log.debug(messageMap.toString());
+        Date[] keys = new Date[messageMap.size()];
+        messageMap.keySet().toArray(keys);
+        Arrays.sort(keys);
+        Assert.assertEquals(messageMap.get(keys[keys.length-1]), GetFileIDsFinalResponse.class,
+                "The last message is expected to be a GetFileIDsFinalResponse.");
+        Assert.assertEquals(messageMap.get(keys[keys.length-2]), GetFileIDsProgressResponse.class,
+                "The second to last message is expected to be a GetFileIDsProgressResponse.");
+        Assert.assertEquals(messageMap.get(keys[2]), GetFileIDsRequest.class,
+                "The third last message is expected to be a GetFileIDsRequest.");
+
+        addStep("Ensure the returned file is not null... unless it's supposed to be?",
+                "The returned file with the list of FileIDs should not be null");
         Assert.assertNotNull(fileWithFileIds, "The returned file should not be null.");
     }
 
@@ -212,7 +261,7 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
      * @throws Exception
      */
     @Test(groups = {"specificationonly"})
-    public void GetFileIDsResultTest() throws Exception {
+    public void getFileIDsResultTest() throws Exception {
         addDescription("Tests the result list of FileIds from the client and thus the involved pillars.");
         //TODO test known fileIDs part of FileIDs list
         addStep("Put three files with known IDs into the Bit Repository " +
@@ -236,4 +285,48 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
                         "of the file just removed.");
     }
 
+    /**
+     * MessageMonitor
+     */
+    private class MessageMonitor extends AbstractMessageListener {
+
+        private Map<Date, Class> messages;
+
+        public MessageMonitor() {
+            messages = new HashMap<Date, Class>();
+        }
+
+        public void onMessage(Object msg) {
+            messages.put(new Date(), msg.getClass());
+        }
+
+        @Override
+        public void onMessage(GetFileIDsRequest message) {
+            onMessage((Object) message);
+        }
+
+        @Override
+        public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
+            onMessage((Object) message);
+        }
+
+        @Override
+        public void onMessage(IdentifyPillarsForGetFileIDsResponse message) {
+            onMessage((Object) message);
+        }
+
+        @Override
+        public void onMessage(GetFileIDsProgressResponse message) {
+            onMessage((Object) message);
+        }
+
+        @Override
+        public void onMessage(GetFileIDsFinalResponse message) {
+            onMessage((Object) message);
+        }
+
+        public Map<Date,Class> getMessageMap() {
+            return messages;
+        }
+    }
 }

@@ -22,8 +22,9 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access;
+package org.bitrepository.access.getfileids;
 
+import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.bitrepositorymessages.*;
@@ -47,7 +48,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class BasicGetFileIDsClient implements GetFileIDsClient {
 
-    private Logger log = LoggerFactory.getLogger(BasicGetFileIDsClient.class);
+    /** The log for this class.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     /** The connection to the message bus.*/
     private final MessageBus messageBus;
@@ -62,23 +64,20 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
     private final long timeOut;
     private final int numberOfPillars;
 
-    /** TODO The correlationIDs should be generated such that we avoid id conflicts. */
-    private int correlationIDcounter;
-
     /** Map from correlationID to CountDownLatch counting down the identify responses we are waiting for. */
     private Map<String, CountDownLatch> identifyResponseCountDownLatchMap;
     /** Map from correlationID to List of IdentifyPillarsForGetFileIDsResponses. */
     private Map<String, List<IdentifyPillarsForGetFileIDsResponse>> identifyPillarsForGetFileIDsResponseMap;
 
-    /** Map from correlationID to CountDownLatch counting down the progress responses we are waiting for. */
+    /** Map from correlationID to CountDownLatch counting down the Progress responses we are waiting for. */
     private Map<String, CountDownLatch> getFileIDsProgressResponseCountDownLatchMap;
     /** Map from correlationID to List of GetFileIDsProgressResponses. */
     private Map<String, GetFileIDsProgressResponse> getFileIDsProgressResponseMap;
 
-    /** Map from correlationID to CountDownLatch counting down the final messages we are waiting for. */
+    /** Map from correlationID to CountDownLatch counting down the FinalResponse messages we are waiting for. */
     private Map<String, CountDownLatch> getFileIDsFinalResponseCountDownLatchMap;
     /** Map from correlationID to List of GetFileIDsFinalResponse messages. */
-    private Map<String, GetFileIDsFinalResponse> getFileIDsCompleteMap;
+    private Map<String, GetFileIDsFinalResponse> getFileIDsFinalResponseMap;
 
     public BasicGetFileIDsClient() {
         config = AccessComponentFactory.getInstance().getConfig();
@@ -96,15 +95,13 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         timeOut = Long.parseLong(config.getGetFileIDsClientTimeOut());
         numberOfPillars = Integer.parseInt(config.getGetFileIDsClientNumberOfPillars());
 
-        // initialize correlationIDcounter and Maps
-        correlationIDcounter = 786543;
         identifyResponseCountDownLatchMap = Collections.synchronizedMap(new HashMap<String, CountDownLatch>());
         identifyPillarsForGetFileIDsResponseMap =
                 Collections.synchronizedMap(new HashMap<String, List<IdentifyPillarsForGetFileIDsResponse>>());
         getFileIDsProgressResponseCountDownLatchMap = Collections.synchronizedMap(new HashMap<String, CountDownLatch>());
         getFileIDsProgressResponseMap = Collections.synchronizedMap(new HashMap<String, GetFileIDsProgressResponse>());
         getFileIDsFinalResponseCountDownLatchMap = Collections.synchronizedMap(new HashMap<String, CountDownLatch>());
-        getFileIDsCompleteMap = Collections.synchronizedMap(new HashMap<String, GetFileIDsFinalResponse>());
+        getFileIDsFinalResponseMap = Collections.synchronizedMap(new HashMap<String, GetFileIDsFinalResponse>());
     }
 
     // TODO BItRepositoryMessages.xsd IdentifyPillarsForGetFileIDsRequest element FileIDs
@@ -114,8 +111,8 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
     @Override
     public List<IdentifyPillarsForGetFileIDsResponse> identifyPillarsForGetFileIDs(String slaID) {
         // create identifyPillarsForGetFileIDsRequest message
-        String corrID = "ipfgfir" + correlationIDcounter;
-        correlationIDcounter++;
+        String corrID = UUID.randomUUID().toString();
+        log.debug("identifyPillarsForGetFileIDs new corrID " + corrID);
         IdentifyPillarsForGetFileIDsRequest identifyRequest = GetFileIDsClientMessageFactory.
                 getIdentifyPillarsForGetFileIDsRequestMessage(corrID, slaID, queue, null);
 
@@ -139,6 +136,9 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
             log.error("identifyPillarsForGetFileIDs InterruptedException",e);  // TODO handle exception
         }
 
+        log.debug("identifyPillarsForGetFileIDs responseMap" +
+                identifyPillarsForGetFileIDsResponseMap.get(corrID).toString());
+
         return responses;
     }
 
@@ -147,56 +147,61 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
     // TODO why do we return a File from this method?
     // (the answer is probably that the answer can be given in a file using file exchange and resultAddress)
     @Override
-    public File getFileIDs(String slaID, String queue, String pillarID) {
+    public File getFileIDs(String correlationID, String slaID, String queue, String pillarID) {
+        if (correlationID == null) {
+            correlationID = UUID.randomUUID().toString();
+            log.debug("getFileIDs new correlationID " + correlationID);
+        }
         // create getFileIdsRequest
-        String corrID = "gfir" + correlationIDcounter;
-        correlationIDcounter++;
         GetFileIDsRequest request = GetFileIDsClientMessageFactory.
-                getGetFileIDsRequestMessage(corrID, slaID, queue, pillarID, null, null);
+                getGetFileIDsRequestMessage(correlationID, slaID, queue, pillarID, null, null);
 
         // put correlationID and new CountDownLatches in appropriate Maps
-        CountDownLatch responseCountDown = new CountDownLatch(1);
-        getFileIDsProgressResponseCountDownLatchMap.put(corrID, responseCountDown);
-        CountDownLatch completeCountDown = new CountDownLatch(1);
-        getFileIDsFinalResponseCountDownLatchMap.put(corrID, completeCountDown);
+        CountDownLatch progressResponseCountDown = new CountDownLatch(1);
+        // note there could be multiple progress responses, but we only wait for one...
+        getFileIDsProgressResponseCountDownLatchMap.put(correlationID, progressResponseCountDown);
+        CountDownLatch finalResponseCountDown = new CountDownLatch(1);
+        getFileIDsFinalResponseCountDownLatchMap.put(correlationID, finalResponseCountDown);
 
         // send message
         messageBus.sendMessage(queue, request);
 
         // wait for messages (or until specified waiting time elapses)
         try {
-            boolean responseOk = responseCountDown.await(timeOut, TimeUnit.MILLISECONDS);
+            boolean responseOk = progressResponseCountDown.await(timeOut, TimeUnit.MILLISECONDS);
             if (responseOk) {
-                GetFileIDsProgressResponse response = getFileIDsProgressResponseMap.get(corrID);
-                // TODO how do we want to use the progress response?
+                GetFileIDsProgressResponse response = getFileIDsProgressResponseMap.get(correlationID);
+                // TODO how do we want to use the response?
+                // if ProgressResponseInfo held info on expected remaining time, it could maybe be useful...
             } else {
-                // TODO we did not receive a progress response before time out - it may still come or a complete message may come
+                log.info("getFileIDs time out. No GetFileIDsProgressResponse received.");
+                // TODO we did not receive a response before time out - it may still come or a complete message may come
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();  // TODO handle exception
+            log.error("getFileIDs InterruptedException",e); // TODO handle exception
         }
 
         File file = new File("fileAddress");
 
         try {
-            boolean completeOk = completeCountDown.await(timeOut, TimeUnit.MILLISECONDS);
+            boolean completeOk = finalResponseCountDown.await(timeOut, TimeUnit.MILLISECONDS);
             if (completeOk) {
-                GetFileIDsFinalResponse completeMsg = getFileIDsCompleteMap.get(corrID);
-                ResultingFileIDs result = completeMsg.getResultingFileIDs();
+                GetFileIDsFinalResponse finalResponse = getFileIDsFinalResponseMap.get(correlationID);
+                ResultingFileIDs result = finalResponse.getResultingFileIDs();
                 JAXBContext jaxbContext = JAXBContext.newInstance("org.bitrepository.bitrepositoryelements");
                 Marshaller marshaller = jaxbContext.createMarshaller();
                 marshaller.marshal(result, new FileOutputStream(file));
-                // TODO use other parts of final response message ?
+                // TODO use other parts of complete message ?
             } else {
-                // TODO we did not receive a final response message - throw exception or?
-                file = null;
+                log.info("getFileIDs time out. No GetFileIDsFinalResponse received. return null.");
+                return null;
             }
         } catch (InterruptedException e) {
-            e.printStackTrace(); // TODO handle exception
+            log.error("getFileIDs InterruptedException",e); // TODO handle exception
         } catch (FileNotFoundException e) {
-            e.printStackTrace(); // TODO handle exception
+            log.error("getFileIDs FileNotFoundException",e); // TODO handle exception
         } catch (JAXBException e) {
-            e.printStackTrace(); // TODO handle exception
+            log.error("getFileIDs JAXBException",e); // TODO handle exception
         }
 
         return file;
@@ -214,8 +219,11 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
                 identifyPillarsForGetFileIDsResponseMap.get(correlationID);
         if (responses != null) {
             responses.add(msg);
+            log.debug("IdentifyPillarsForGetFileIDsResponse from " + msg.getPillarID() + " added to map.");
+        } else {
+            log.debug("Unknown correlationID: " + correlationID);
+            // note if responses null, this is a response to an unknown correlationID, and this client ignores it
         }
-        // note if responses null, this is a response to an unknown correlationID, and this client ignores it
 
         // count down corresponding countDownLatch
         CountDownLatch countDownLatch = identifyResponseCountDownLatchMap.get(correlationID);
@@ -225,14 +233,38 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
     }
 
     public void handleGetFileIDsProgressResponse(GetFileIDsProgressResponse msg) {
+        String correlationID = msg.getCorrelationID();
 
-        // TODO
+        // place message in getFileIDsProgressResponseMap
+        if (getFileIDsProgressResponseCountDownLatchMap.containsKey(correlationID)) {
+            getFileIDsProgressResponseMap.put(correlationID, msg);
+            log.debug("GetFileIDsProgressResponse from " + msg.getPillarID() + " added to map.");
+        } else {
+            log.debug("Unknown correlationID: " + correlationID);
+        }
 
+        // count down corresponding countDownLatch
+        CountDownLatch countDownLatch = getFileIDsProgressResponseCountDownLatchMap.get(correlationID);
+        if (countDownLatch != null) {
+            countDownLatch.countDown();
+        }
     }
 
     public void handleGetFileIDsFinalResponse(GetFileIDsFinalResponse msg) {
+        String correlationID = msg.getCorrelationID();
 
-        // TODO
+        // place message in getFileIDsProgressResponseMap
+        if (getFileIDsFinalResponseCountDownLatchMap.containsKey(correlationID)) {
+            getFileIDsFinalResponseMap.put(correlationID, msg);
+            log.debug("GetFileIDsFinalResponse from " + msg.getPillarID() + " added to map.");
+        } else {
+            log.debug("Unknown correlationID: " + correlationID);
+        }
 
+        // count down corresponding countDownLatch
+        CountDownLatch countDownLatch = getFileIDsFinalResponseCountDownLatchMap.get(correlationID);
+        if (countDownLatch != null) {
+            countDownLatch.countDown();
+        }
     }
 }

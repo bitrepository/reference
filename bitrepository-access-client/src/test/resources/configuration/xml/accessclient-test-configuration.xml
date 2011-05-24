@@ -27,7 +27,6 @@
 <AccessConfiguration xmlns="http://bitrepository.org/access-client/Configuration.xsd"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://bitrepository.org/access-client/Configuration.xsd ../schema/Configuration.xsd ">
- <GetFileIDsClientQueue>gficq</GetFileIDsClientQueue>
   <fileDir>fileDir</fileDir>
   <queue>TheAccessQueue</queue>
   <GetFileIDsClientQueue>gficq</GetFileIDsClientQueue>

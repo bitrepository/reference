@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access;
+package org.bitrepository.access.getfileids;
 
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 
@@ -45,11 +45,13 @@ public interface GetFileIDsClient {
     /**
      * Retrieve a list of File IDs from pillar.
      *
+     * @param correlationID The correlationID of the opening identifyPillarsForGetFileIDs conversation.
+     *        if null, a new correlationID is given
      * @param slaID The ID of a collection.
      * @param queue The queue where the request should be send
      * @param pillarID The ID of the pillar
      * @return A file containing a list of File IDs. The file is in XML format.
      */
-    File getFileIDs(String slaID, String queue, String pillarID);
+    File getFileIDs(String correlationID, String slaID, String queue, String pillarID);
 
 }
