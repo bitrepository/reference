@@ -37,9 +37,6 @@ import org.jaccept.gui.ComponentTestFrame;
 import org.jaccept.structure.ExtendedTestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.ITestContext;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
@@ -56,16 +53,25 @@ public abstract class ClientTest extends ExtendedTestCase {
     protected Logger log = LoggerFactory.getLogger(getClass());
 
     protected MessageBus messageBus;
+    protected static final String DEFAULT_FILE_ID = "FileID";
+    
     protected static String clientTopicId;
+    protected MessageReceiver clientTopic;
+    
     protected static String slaTopicId;
+    protected MessageReceiver slaTopic; 
+    
     protected static String pillar1TopicId;
+    protected MessageReceiver pillar1Topic; 
+    protected static final String PILLAR1_ID = "Pillar1";
+    
     protected static String pillar2TopicId;
-    protected MessageReceiver clientTopicMessageReceiver;
-    protected MessageReceiver slaTopicMessageReceiver; 
-    protected MessageReceiver pillar1TopicMessageReceiver; 
-    protected MessageReceiver pillar2TopicMessageReceiver; 
+    protected MessageReceiver pillar2Topic; 
+    protected static final String PILLAR2_ID = "Pillar2";
+    
     protected SLAConfiguration slaConfiguration;
     protected TestEventManager testEventManager = TestEventManager.getInstance();
+    protected boolean useMockupPillar;
 
     @BeforeTest (alwaysRun = true)
     public void startTestGUI() {  
@@ -99,14 +105,14 @@ public abstract class ClientTest extends ExtendedTestCase {
     private void hookupMessageBus() {
         System.out.println("Hooking up meesagebus");
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus();
-        clientTopicMessageReceiver = new MessageReceiver("Client topic receiver", testEventManager);
-        slaTopicMessageReceiver = new MessageReceiver("SLA topic receiver", testEventManager);
-        pillar1TopicMessageReceiver = new MessageReceiver("Pillar1 topic receiver", testEventManager);
-        pillar2TopicMessageReceiver = new MessageReceiver("Pillar2 topic receiver", testEventManager);
-        messageBus.addListener(clientTopicId, clientTopicMessageReceiver.getMessageListener());    
-        messageBus.addListener(slaTopicId, slaTopicMessageReceiver.getMessageListener());    
-        messageBus.addListener(pillar1TopicId, pillar1TopicMessageReceiver.getMessageListener());  
-        messageBus.addListener(pillar2TopicId, pillar2TopicMessageReceiver.getMessageListener());       
+        clientTopic = new MessageReceiver("Client topic receiver", testEventManager);
+        slaTopic = new MessageReceiver("SLA topic receiver", testEventManager);
+        pillar1Topic = new MessageReceiver("Pillar1 topic receiver", testEventManager);
+        pillar2Topic = new MessageReceiver("Pillar2 topic receiver", testEventManager);
+        messageBus.addListener(clientTopicId, clientTopic.getMessageListener());    
+        messageBus.addListener(slaTopicId, slaTopic.getMessageListener());    
+        messageBus.addListener(pillar1TopicId, pillar1Topic.getMessageListener());  
+        messageBus.addListener(pillar2TopicId, pillar2Topic.getMessageListener());       
     }
 
     private void defineTopics() {
@@ -128,9 +134,9 @@ public abstract class ClientTest extends ExtendedTestCase {
     }
 
     private void disconnectFromMessageBus() {
-        messageBus.removeListener(clientTopicId, clientTopicMessageReceiver.getMessageListener());
-        messageBus.removeListener(slaTopicId, slaTopicMessageReceiver.getMessageListener());
-        messageBus.removeListener(pillar1TopicId, pillar1TopicMessageReceiver.getMessageListener());
-        messageBus.removeListener(pillar2TopicId, pillar2TopicMessageReceiver.getMessageListener());
+        messageBus.removeListener(clientTopicId, clientTopic.getMessageListener());
+        messageBus.removeListener(slaTopicId, slaTopic.getMessageListener());
+        messageBus.removeListener(pillar1TopicId, pillar1Topic.getMessageListener());
+        messageBus.removeListener(pillar2TopicId, pillar2Topic.getMessageListener());
     }
 }

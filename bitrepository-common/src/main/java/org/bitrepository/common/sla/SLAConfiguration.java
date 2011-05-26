@@ -24,7 +24,6 @@
  */
 package org.bitrepository.common.sla;
 
-import java.io.File;
 
 /**
  * Defines the configuration parameters for a single Service Level Agreement.

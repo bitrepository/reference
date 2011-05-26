@@ -34,26 +34,39 @@ import java.util.List;
 /**
  * Generates test messages for use in test.
  */
-public class TestMessageFactory {
+public abstract class TestMessageFactory {
 
-    private static final String CORRELATION_ID_DEFAULT = "CorrelationID";
-    private static final String SLA_ID_DEFAULT = "SlaID";
-    private static final String REPLY_TO_DEFAULT = "ReplyTo";
-    private static final String FILE_ID_DEFAULT = "FileID";
-    private static final BigInteger VERSION_DEFAULT = BigInteger.valueOf(1L);
+    protected static final String CORRELATION_ID_DEFAULT = "CorrelationID";
+    protected static final String SLA_ID_DEFAULT = "SlaID";
+    protected static final String REPLY_TO_DEFAULT = "ReplyTo";
+    protected static final String FILE_ID_DEFAULT = "FileID";
+    protected static final BigInteger VERSION_DEFAULT = BigInteger.valueOf(1L);
 
-    private static final String TIME_MEASURE_UNIT_DEFAULT = "MILLISECONDS";
-    private static final BigInteger TIME_MEASURE_VALUE_DEFAULT = BigInteger.valueOf(1000L);
-    private static final String RESPONSE_CODE_DEFAULT = "460";
-    private static final String RESPONSE_TEXT_DEFAULT = "Message request has been received and is expected to be met successfully";
-    private static final String COMPLETE_CODE_DEFAULT = "480";
-    private static final String COMPLETE_TEXT_DEFAULT = "successful completion";
+    protected static final String TIME_MEASURE_UNIT_DEFAULT = "MILLISECONDS";
+    protected static final BigInteger TIME_MEASURE_VALUE_DEFAULT = BigInteger.valueOf(1000L);
+    protected static final String RESPONSE_CODE_DEFAULT = "460";
+    protected static final String RESPONSE_TEXT_DEFAULT = "Message request has been received and is expected to be met successfully";
+    protected static final String COMPLETE_CODE_DEFAULT = "480";
+    protected static final String COMPLETE_TEXT_DEFAULT = "successful completion";
+    
+    protected static final TimeMeasureTYPE TIME_TO_DELIVER_DEFAULT = new TimeMeasureTYPE();
+    static {
+        TIME_TO_DELIVER_DEFAULT.setTimeMeasureUnit(TIME_MEASURE_UNIT_DEFAULT);
+        TIME_TO_DELIVER_DEFAULT.setTimeMeasureValue(TIME_MEASURE_VALUE_DEFAULT);
+    }
+    
+    protected static final ProgressResponseInfo PROGRESS_INFO_DEFAULT = new ProgressResponseInfo();
+    static {
+        PROGRESS_INFO_DEFAULT.setProgressResponseCode("T-minus 3 seconds");
+        PROGRESS_INFO_DEFAULT.setProgressResponseText("First test progress response message");
+    }
 
-    /**
-     * Prevent initialization - currently a utility class.
-     */
-    private TestMessageFactory() {}
-
+    protected static final FinalResponseInfo FINAL_INFO_DEFAULT = new FinalResponseInfo();
+    static {
+        FINAL_INFO_DEFAULT.setFinalResponseCode("T-plus 0");
+        FINAL_INFO_DEFAULT.setFinalResponseText("We have liftoff");
+    }
+    
     /**
      * Generate a test message with dummy values.
      *
