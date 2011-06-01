@@ -28,13 +28,13 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message 
           </xs:documentation></xs:annotation>
         </xs:group>
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for requested data in given SLA
+          Unique identifier for requested data in given bitrepository context
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -50,13 +50,13 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message 
           </xs:documentation></xs:annotation>
         </xs:group>
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for requested data in given SLA
+          Unique identifier for requested data in given bitrepository context
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -92,7 +92,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message 
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -105,7 +105,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for requested data in given SLA
+          Unique identifier for requested data in given bitrepository context
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -135,7 +135,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message 
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -148,7 +148,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for requested data in given SLA
+          Unique identifier for requested data in given bitrepository context
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -196,7 +196,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -209,7 +209,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for requested data in given SLA
+          Unique identifier for requested data in given bitrepository context
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -250,7 +250,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
       </xs:sequence>
@@ -266,7 +266,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -309,7 +309,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -322,7 +322,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for data to be put for given SLA
+          Unique identifier for data to be put for given bitrepository context
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -367,7 +367,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -386,7 +386,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for data to be put for given SLA
+          Unique identifier for data to be put for given bitrepository context
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -414,7 +414,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message 
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -433,7 +433,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for data to be put for given SLA
+          Unique identifier for data to be put for given bitrepository context
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -474,13 +474,13 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message 
           </xs:documentation></xs:annotation>
         </xs:group>
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given SLA which the checksums are requested for
+          FileIDs uniquely identifies the data in given bitrepository context which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -503,13 +503,13 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given SLA which the checksums are requested for
+          FileIDs uniquely identifies the data in given bitrepository context which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -558,7 +558,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -571,7 +571,7 @@
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given SLA which the checksums are requested for
+          FileIDs uniquely identifies the data in given bitrepository context which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -600,7 +600,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -613,7 +613,7 @@
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given SLA which the checksums are requested for
+          FileIDs uniquely identifies the data in given bitrepository context which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -647,7 +647,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -660,7 +660,7 @@
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given SLA which the checksums are requested for
+          FileIDs uniquely identifies the data in given bitrepository context which the checksums are requested for
           (Also in result, and traceable via CorrelationID)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -703,13 +703,13 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given SLA which the file ids are requested for
+          FileIDs uniquely identifies the data in given bitrepository context which the file ids are requested for
           Given in order to be able to give possible estimate of time to deliver
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -726,7 +726,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -738,7 +738,7 @@
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en" >
-          FileIDs uniquely identifies the data in given SLA which the file ids are requested for
+          FileIDs uniquely identifies the data in given bitrepository context which the file ids are requested for
           only to repeat parameter from request
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -769,7 +769,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message 
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -782,7 +782,7 @@
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given SLA which the file ids are requested for
+          FileIDs uniquely identifies the data in given bitrepository context which the file ids are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -805,7 +805,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -818,7 +818,7 @@
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given SLA which the file ids are requested for
+          FileIDs uniquely identifies the data in given bitrepository context which the file ids are requested for
           (otherwise it is known via CorrelationID)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -847,7 +847,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -860,7 +860,7 @@
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given SLA which the file ids are requested for
+          FileIDs uniquely identifies the data in given bitrepository context which the file ids are requested for
           (otherwise it is known via CorrelationID)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -896,13 +896,13 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
         <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileID uniquely identifies the data in given SLA which the audit trails is requested for
+          FileID uniquely identifies the data in given bitrepository context which the audit trails is requested for
           Given in order to be able to give possible estimate of time to deliver
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -919,7 +919,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -931,7 +931,7 @@
 
         <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en" >
-          FileID uniquely identifies the data in given SLA which the audit trails is requested for
+          FileID uniquely identifies the data in given bitrepository context which the audit trails is requested for
           only to repeat parameter from request
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -963,7 +963,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message 
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -976,7 +976,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileID uniquely identifies the data in given SLA which the audit trails is requested for
+          FileID uniquely identifies the data in given bitrepository context which the audit trails is requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -999,7 +999,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -1012,7 +1012,7 @@
 
         <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileID uniquely identifies the data in given SLA which the audit trails is requested for
+          FileID uniquely identifies the data in given bitrepository context which the audit trails is requested for
           (otherwise it is known via CorrelationID)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1041,7 +1041,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message with CorrelationID, SlaID and ReplyTo
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -1054,7 +1054,7 @@
 
         <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileID uniquely identifies the data in given SLA which the audit trailsis requested for
+          FileID uniquely identifies the data in given bitrepository context which the audit trailsis requested for
           (otherwise it is known via CorrelationID)
           </xs:documentation></xs:annotation>
         </xs:element>

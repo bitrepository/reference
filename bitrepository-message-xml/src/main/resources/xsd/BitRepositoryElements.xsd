@@ -28,7 +28,7 @@
             <xs:choice>
               <xs:element ref="FileIDs">
                 <xs:annotation><xs:documentation xml:lang="en">
-                  Identifiers that uniquely identifies the data in given SLA
+                Identifiers that uniquely identifies the data in given bitrepository context
                 </xs:documentation></xs:annotation>
               </xs:element>
               <!-- todo To be extended with more ways to identify the files concerned -->
@@ -48,13 +48,13 @@
           </xs:complexType>
         </xs:element>
 
-        <xs:element name="SLAs">
+        <xs:element name="BitrepositoryContexts">
           <xs:annotation><xs:documentation xml:lang="en">
-            Identifies the SLAs which the alarm concerns
+          Identifies the bitrepository contexts which the alarm concerns
           </xs:documentation></xs:annotation>
           <xs:complexType>
             <xs:sequence>
-              <xs:element ref="SlaID" minOccurs="0" maxOccurs="unbounded" />
+              <xs:element ref="BitrepositoryContextID" minOccurs="0" maxOccurs="unbounded" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -325,7 +325,7 @@
   <xs:group name="Core">
     <xs:annotation><xs:documentation xml:lang="en">
     Includes elements that all protocol messages must include.
-    The core part will NOT be included in specific SLA related encryption
+    The core part will NOT be included in specific bitrepository context related encryption
     </xs:documentation></xs:annotation>
 
     <xs:sequence>
@@ -336,14 +336,20 @@
         </xs:documentation></xs:annotation>
       </xs:element>
 
-      <xs:element name="SlaID" type="SlaID_TYPE">
+      <xs:element name="BitrepositoryContextID" type="BitrepositoryContextID_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
-        SlaID is a unique identifier for SLA which data belongs to.
-        This is also the identification of decryption and keys for contents of message
+        BitrepositoryContextID is a unique identifier for bitrepository context which data belongs to.
+        This is also the identification of decryption and keys for contents of message.
         </xs:documentation></xs:annotation>
       </xs:element>
 
-      <xs:element name="ReplyTo" type="ReplyTo_TYPE">
+      <xs:element name="To" type="QueueTopicName_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Contains name of queue/topic which the message is send to
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element name="ReplyTo" type="QueueTopicName_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         Contains name of queue/topic to reply/respond to
         (blank if not relevant, e.g. for alarms)
@@ -405,7 +411,7 @@
 
   <xs:element name="FileIDs">
     <xs:annotation><xs:documentation xml:lang="en">
-    Identifiers that uniquely identifies the data in given SLA which are requested for
+    Identifiers that uniquely identifies the data in given bitrepository context which are requested for
     These can be specified in different ways, e.g. a list, an all constant or via an address
     </xs:documentation></xs:annotation>
 
@@ -413,13 +419,13 @@
       <xs:choice>
         <xs:element name="FileID" type="FileID_TYPE" minOccurs="1" maxOccurs="unbounded" >
           <xs:annotation><xs:documentation xml:lang="en">
-          List of identifiers for data in given SLA
+          List of identifiers for data in given bitrepository context
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element name="AllFileIDs" type="xs:string">
           <xs:annotation><xs:documentation xml:lang="en">
-          Specification that all data identifiers in SLA is requested
+          Specification that all data identifiers in bitrepository context is requested
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -555,14 +561,14 @@
     <xs:annotation><xs:documentation xml:lang="en">
     Information about which type of checksum is used for data on checksums pillar (algorith and possible salt)
     In a Get this information will only be relevant for identification of pillars
-    In a Put this will give input to check if the right put is performed on checksums pillar according to SLA
+    In a Put this will give input to check if the right put is performed on checksums pillar according to bitrepository context
     In first version this will be text like MD5, later it will be aligned with a standard
     </xs:documentation></xs:annotation>
   </xs:element>
 
   <xs:element name="PillarID" type="PillarID_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    A unique identifier for a specific pillar (covered by  the SLA which data belongs to)
+    A unique identifier for a specific pillar (covered by the bitrepository context which data belongs to)
     </xs:documentation></xs:annotation>
   </xs:element>
 
@@ -658,9 +664,9 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="SlaID" type="SlaID_TYPE">
+  <xs:element name="BitrepositoryContextID" type="BitrepositoryContextID_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    A unique identifier for SLA which data belongs to.
+    A unique identifier for bitrepository context which data belongs to.
     </xs:documentation></xs:annotation>
   </xs:element>
 
@@ -1191,7 +1197,7 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="ReplyTo_TYPE">
+  <xs:simpleType name="QueueTopicName_TYPE">
     <xs:restriction base="xs:string">
     </xs:restriction>
   </xs:simpleType>
@@ -1359,7 +1365,7 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="SlaID_TYPE">
+  <xs:simpleType name="BitrepositoryContextID_TYPE">
     <xs:restriction base="xs:string">
     </xs:restriction>
   </xs:simpleType>

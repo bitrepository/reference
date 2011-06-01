@@ -23,9 +23,9 @@
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="bre:SlaID" > 
+        <xs:element ref="bre:BitrepositoryContextID" > 
           <xs:annotation><xs:documentation xml:lang="en">
-          SlaID is a unique identifier for SLA which data belongs to.
+          BitrepositoryContextID is a unique identifier for bitrepository context which data belongs to.
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -55,9 +55,9 @@
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="bre:SlaID" > 
+        <xs:element ref="bre:BitrepositoryContextID" > 
           <xs:annotation><xs:documentation xml:lang="en">
-          SlaID is a unique identifier for SLA which data belongs to.
+          BitrepositoryContextID is a unique identifier for bitrepository context which data belongs to.
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -88,9 +88,9 @@
     <xs:complexType>
       <xs:sequence>
 
-        <xs:element ref="bre:SlaID" > 
+        <xs:element ref="bre:BitrepositoryContextID" > 
           <xs:annotation><xs:documentation xml:lang="en">
-          SlaID is a unique identifier for SLA which data belongs to.
+          BitrepositoryContextID is a unique identifier for bitrepository context which data belongs to.
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -127,9 +127,9 @@
           </xs:documentation></xs:annotation>
         </xs:element>
         
-        <xs:element ref="bre:SlaID" > 
+        <xs:element ref="bre:BitrepositoryContextID" > 
           <xs:annotation><xs:documentation xml:lang="en">
-          SlaID is a unique identifier for SLA which data belongs to.
+          BitrepositoryContextID is a unique identifier for bitrepository context which data belongs to.
           </xs:documentation></xs:annotation>
         </xs:element>
 
