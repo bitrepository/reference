@@ -93,7 +93,7 @@ public class PutClientTester extends ExtendedTestCase {
                 = org.bitrepository.common.JaxbHelper.loadXml(IdentifyPillarsForPutFileRequest.class,
                                                               new ByteArrayInputStream(
                                                                       listener.getMessage().getBytes()));
-        Assert.assertEquals(identify.getSlaID(), slaId);
+        Assert.assertEquals(identify.getBitrepositoryContextID(), slaId);
         
         addStep("Respond to identify request.", "No problems.");
         
@@ -101,7 +101,7 @@ public class PutClientTester extends ExtendedTestCase {
                 = new IdentifyPillarsForPutFileResponse();
         identifyResponse.setCorrelationID(identify.getCorrelationID());
         identifyResponse.setPillarID(pillarId);
-        identifyResponse.setSlaID(slaId);
+        identifyResponse.setBitrepositoryContextID(slaId);
         identifyResponse.setMinVersion(BigInteger.valueOf(1L));
         identifyResponse.setVersion(BigInteger.valueOf(1L));
         // TODO identifyReply.setTimeToDeliver(value) ???
@@ -124,7 +124,7 @@ public class PutClientTester extends ExtendedTestCase {
         PutFileRequest put = org.bitrepository.common.JaxbHelper
                 .loadXml(PutFileRequest.class, new ByteArrayInputStream(listener.getMessage().getBytes()));
         Assert.assertEquals(put.getFileID(), dataId);
-        Assert.assertEquals(put.getSlaID(), slaId);
+        Assert.assertEquals(put.getBitrepositoryContextID(), slaId);
         Assert.assertEquals(put.getPillarID(), pillarId);
         
         addStep("Verify that the expected file can be downloaded.", 
@@ -158,7 +158,7 @@ public class PutClientTester extends ExtendedTestCase {
         response.setFileAddress(put.getFileAddress());
         response.setFileID(put.getFileID());
         response.setPillarID(pillarId);
-        response.setSlaID(slaId);
+        response.setBitrepositoryContextID(slaId);
         response.setMinVersion(BigInteger.valueOf(1L));
         response.setVersion(BigInteger.valueOf(1L));
         
@@ -186,7 +186,7 @@ public class PutClientTester extends ExtendedTestCase {
         complete.setFileAddress(put.getFileAddress());
         complete.setFileID(put.getFileID());
         complete.setPillarID(pillarId);
-        complete.setSlaID(slaId);
+        complete.setBitrepositoryContextID(slaId);
         complete.setMinVersion(BigInteger.valueOf(1L));
         complete.setVersion(BigInteger.valueOf(1L));
         FinalResponseInfo completeInfo = new FinalResponseInfo();

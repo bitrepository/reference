@@ -33,10 +33,10 @@ import org.bitrepository.protocol.configuration.ProtocolConfiguration;
 /**
  * Provides access to the different component in the protocol module (Spring/IOC wannabe)
  */
-public final class ProtocolComponentFactory {
+public class ProtocolComponentFactory {
 
     //---------------------Singleton-------------------------
-    private static ProtocolComponentFactory instance;
+    protected static ProtocolComponentFactory instance;
 
     /**
      * The singletonic access to the instance of this class
@@ -52,14 +52,14 @@ public final class ProtocolComponentFactory {
     /**
      * The singleton constructor
      */
-    private ProtocolComponentFactory() {
+    protected ProtocolComponentFactory() {
     }
 
     // --------------------- Components-----------------------
     private static final ModuleCharacteristics MODULE_CHARACTERISTICS = new ModuleCharacteristics("protocol");
-    private ProtocolConfiguration protocolConfiguration;
-    private MessageBus messagebus;
-    private FileExchange fileexchange;
+    protected ProtocolConfiguration protocolConfiguration;
+    protected MessageBus messagebus;
+    protected FileExchange fileexchange;
 
     /**
      * Gets you a <code>ModuleCharacteristics</code> object defining the generic characteristics of this module
@@ -94,6 +94,7 @@ public final class ProtocolComponentFactory {
         		throw new CoordinationLayerException("Could not instantiate the fileexchange.", e);
         	}
         }
+        System.err.println(fileexchange);
         return fileexchange;
     }
 

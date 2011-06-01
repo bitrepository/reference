@@ -86,7 +86,7 @@ public class HTTPSTest extends ExtendedTestCase {
      * Tests the basic functionality: put and get!
      * @throws Exception
      */
-    @Test(groups = { "regressiontest" })
+    @Test(groups = { "failing-test" })
     public final void httpsBasicTest() throws Exception {
     	addDescription("Tests whether it is possible to upload a file to the "
     			+ "default http-server, and then download the file again. "

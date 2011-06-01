@@ -180,7 +180,7 @@ public class GetFileClientTest extends ClientTest {
         fastReply.setFileID(identifyRequestMessage.getFileID());
         fastReply.setMinVersion(BigInteger.valueOf(1L));
         fastReply.setVersion(BigInteger.valueOf(1L));
-        fastReply.setSlaID(identifyRequestMessage.getSlaID());
+        fastReply.setBitrepositoryContextID(identifyRequestMessage.getBitrepositoryContextID());
         fastReply.setTimeToDeliver(fastTime);
         fastReply.setPillarID(fastPillar);  
         fastReply.setReplyTo(pillar1TopicId);
@@ -192,7 +192,7 @@ public class GetFileClientTest extends ClientTest {
         slowReply.setFileID(identifyRequestMessage.getFileID());
         slowReply.setMinVersion(BigInteger.valueOf(1L));
         slowReply.setVersion(BigInteger.valueOf(1L));
-        slowReply.setSlaID(identifyRequestMessage.getSlaID());
+        slowReply.setBitrepositoryContextID(identifyRequestMessage.getBitrepositoryContextID());
         slowReply.setTimeToDeliver(slowTime);
         slowReply.setPillarID(slowPillar);  
         slowReply.setReplyTo(pillar2TopicId);

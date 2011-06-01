@@ -75,7 +75,7 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
         IdentifyPillarsForGetFileRequest msg = new IdentifyPillarsForGetFileRequest();
         msg.setMinVersion(BigInteger.valueOf(1L));
         msg.setVersion(BigInteger.valueOf(1L));
-        msg.setSlaID(slaConfiguration.getSlaId());
+        msg.setBitrepositoryContextID(slaConfiguration.getSlaId());
         msg.setFileID(fileID);
         msg.setReplyTo(slaConfiguration.getClientTopicId());
 
@@ -98,7 +98,7 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
         GetFileRequest msg = new GetFileRequest();
         msg.setMinVersion(BigInteger.valueOf(1L));
         msg.setVersion(BigInteger.valueOf(1L));
-        msg.setSlaID(slaConfiguration.getSlaId());
+        msg.setBitrepositoryContextID(slaConfiguration.getSlaId());
         msg.setFileID(fileID);
         msg.setPillarID(pillarID);
         msg.setReplyTo(slaConfiguration.getClientTopicId());

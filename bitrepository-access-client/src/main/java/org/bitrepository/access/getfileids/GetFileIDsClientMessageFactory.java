@@ -77,7 +77,7 @@ public class GetFileIDsClientMessageFactory {
             String correlationID, String slaID, String replyTo, FileIDs fileIDs) {
         IdentifyPillarsForGetFileIDsRequest request = new IdentifyPillarsForGetFileIDsRequest();
         request.setCorrelationID(correlationID);
-        request.setSlaID(slaID);
+        request.setBitrepositoryContextID(slaID);
         request.setReplyTo(replyTo);
         if (fileIDs == null) {
             fileIDs = new FileIDs();
@@ -104,7 +104,7 @@ public class GetFileIDsClientMessageFactory {
             String resultAddress, FileIDs fileIDs) {
         GetFileIDsRequest request = new GetFileIDsRequest();
         request.setCorrelationID(correlationID);
-        request.setSlaID(slaID);
+        request.setBitrepositoryContextID(slaID);
         request.setReplyTo(replyTo);
         request.setPillarID(pillarID);
         if (resultAddress != null) {

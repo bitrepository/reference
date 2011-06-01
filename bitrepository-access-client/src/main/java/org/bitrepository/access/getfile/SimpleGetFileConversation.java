@@ -281,7 +281,7 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
             throw new AccessException("Unable to create file from URL", e);
         }
         GetFileRequest msg = new GetFileRequest();
-        msg.setSlaID(response.getSlaID());
+        msg.setBitrepositoryContextID(response.getBitrepositoryContextID());
         msg.setCorrelationID(response.getCorrelationID());
         msg.setFileAddress(url.toExternalForm());
         msg.setFileID(response.getFileID());

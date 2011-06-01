@@ -70,7 +70,7 @@ public class ReferencePillarMessageFactory {
         res.setVersion(BigInteger.valueOf(1L));
         res.setFileID(msg.getFileID());
         res.setPillarID(pillar.getPillarId());
-        res.setSlaID(msg.getSlaID());
+        res.setBitrepositoryContextID(msg.getBitrepositoryContextID());
         return res;
     }
     
@@ -92,7 +92,7 @@ public class ReferencePillarMessageFactory {
         res.setMinVersion(BigInteger.valueOf(1L));
         res.setVersion(BigInteger.valueOf(1L));
 //        res.setFileID(msg.getFileID());
-        res.setSlaID(msg.getSlaID());
+        res.setBitrepositoryContextID(msg.getBitrepositoryContextID());
         res.setPillarID(pillar.getPillarId());
         
         return res;
@@ -122,7 +122,7 @@ public class ReferencePillarMessageFactory {
         res.setVersion(BigInteger.valueOf(1L));
         res.setFileID(msg.getFileID());
         res.setPillarID(pillar.getPillarId());
-        res.setSlaID(msg.getSlaID());
+        res.setBitrepositoryContextID(msg.getBitrepositoryContextID());
         
         return res;
     }
@@ -147,7 +147,7 @@ public class ReferencePillarMessageFactory {
         res.setVersion(BigInteger.valueOf(1L));
         res.setFileID(msg.getFileID());
         res.setPillarID(pillar.getPillarId());
-        res.setSlaID(msg.getSlaID());
+        res.setBitrepositoryContextID(msg.getBitrepositoryContextID());
 
         return res;
     }
@@ -170,7 +170,7 @@ public class ReferencePillarMessageFactory {
         res.setVersion(BigInteger.valueOf(1L));
         res.setMinVersion(BigInteger.valueOf(1L));
         res.setPillarID(pillar.getPillarId());
-        res.setSlaID(msg.getSlaID());
+        res.setBitrepositoryContextID(msg.getBitrepositoryContextID());
         
         return res;
     }
@@ -195,7 +195,7 @@ public class ReferencePillarMessageFactory {
         res.setMinVersion(BigInteger.valueOf(1L));
         res.setVersion(BigInteger.valueOf(1L));
         res.setPillarID(pillar.getPillarId());
-        res.setSlaID(msg.getSlaID());
+        res.setBitrepositoryContextID(msg.getBitrepositoryContextID());
 
         return res;
     }
