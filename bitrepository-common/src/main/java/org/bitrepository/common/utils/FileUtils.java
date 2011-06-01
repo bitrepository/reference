@@ -101,4 +101,21 @@ public final class FileUtils {
             }
         }
     }
+    
+    /**
+     * Method for recursingly removing a file or a directory (with everything within the directory).
+     * TODO verify, that it has successfully been removed.
+     * @param f The file to remove.
+     */
+    public static void delete(File f) {
+    	if(!f.exists()) {
+    		throw new IllegalArgumentException("The file '" + f + "' does not exist.");
+    	}
+    	if(f.isDirectory()) {
+    		for(File sub : f.listFiles()) {
+    			delete(sub);
+    		}
+    	}
+    	f.delete();
+    }
 }

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitmagasin integrationstest
+ * Bitmagasin Protocol
  * 
  * $Id$
  * $HeadURL$
@@ -24,12 +24,6 @@
  */
 package org.bitrepository.protocol.http;
 
-import org.bitrepository.protocol.CoordinationLayerException;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.configuration.FileExchangeConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -40,43 +34,47 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.bitrepository.protocol.CoordinationLayerException;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.configuration.FileExchangeConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Simple interface for data transfer between an application and a HTTP server.
  *
  * TODO read the configurations for the server where the data should be
  * uploaded from settings.
- * 
- * @author jolf
  */
-public final class HTTPFileExchange implements FileExchange {
+public class HTTPFileExchange implements FileExchange {
     /** The log. */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /** The size of the IO buffer.*/
     private static final int IO_BUFFER_SIZE = 1024;
-
     /** Protocol for URLs. */
     private static final String PROTOCOL = "http";
-    
     /** The default port for the HTTP communication.*/
     private static final int PORT_NUMBER = 80;
-    
     /** The default name of the HTTP server. TODO retrieve from settings.*/
     private static final String HTTP_SERVER_NAME = "sandkasse-01.kb.dk";
-    
     /** The path on the HTTP server to the location, where the data can be 
      * uploaded.*/
     private static final String HTTP_SERVER_PATH = "/dav";
-    
     /** The lower boundary for the error codes of the HTTP codes.*/
     private static final int HTTP_ERROR_CODE_BARRIER = 300;
-
+    
+    /** The configuration for the file exchange.*/
+    private final FileExchangeConfiguration config; 
+    
     /**
      * Initialise HTTP file exchange.
      *
      * @param configuration The configuration for file exchange.
      */
-    public HTTPFileExchange(FileExchangeConfiguration configuration) {
+    public HTTPFileExchange() {
+    	config = ProtocolComponentFactory.getInstance().getProtocolConfiguration().getFileExchangeConfigurations();
     }
     
     @Override
@@ -153,13 +151,13 @@ public final class HTTPFileExchange implements FileExchange {
      * @throws IOException If any problems occurs during the retrieval of the 
      * data.
      */
-    private void performDownload(OutputStream out, URL url)
+    protected void performDownload(OutputStream out, URL url)
             throws IOException {
         if(out == null || url == null) {
             throw new IllegalArgumentException("OutputStream out: '" + out
                     + "', URL: '" + url + "'");
         }
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        HttpURLConnection conn = getConnection(url);
         conn.setDoInput(true);
         conn.setRequestMethod("GET");
         InputStream is = conn.getInputStream();
@@ -182,7 +180,7 @@ public final class HTTPFileExchange implements FileExchange {
         HttpURLConnection conn = null;
         OutputStream out = null;
         try {
-            conn = (HttpURLConnection) url.openConnection();
+            conn = getConnection(url);
             conn.setDoOutput(true);
             conn.setRequestMethod("PUT");
             out = conn.getOutputStream();
@@ -244,5 +242,19 @@ public final class HTTPFileExchange implements FileExchange {
         } finally {
             in.close();
         }
+    }
+    
+    /**
+     * Method for opening a HTTP connection to the given URL.
+     * 
+     * @param url The URL to open the connection to.
+     * @return The HTTP connection to the given URL.
+     */
+    protected HttpURLConnection getConnection(URL url) {
+    	try {
+    		return (HttpURLConnection) url.openConnection();
+    	} catch (IOException e) {
+    		throw new CoordinationLayerException("Could not open the connection to the url '" + url + "'", e);
+    	}
     }
 }

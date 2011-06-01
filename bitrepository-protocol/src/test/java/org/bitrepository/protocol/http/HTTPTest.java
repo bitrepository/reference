@@ -24,11 +24,6 @@
  */
 package org.bitrepository.protocol.http;
 
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -38,6 +33,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import org.bitrepository.common.ConfigurationFactory;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.configuration.ProtocolConfiguration;
+import org.jaccept.structure.ExtendedTestCase;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * Tests the functionality of the HTTPConnection.
@@ -65,6 +67,13 @@ public class HTTPTest extends ExtendedTestCase {
         // choose file and load as inputstream.
         File fil = new File(PATH_TO_TEST_TXT);
         FileInputStream fis = new FileInputStream(fil);
+        
+        addStep("Initialising the configuration for this test.", "No problems.");
+        ProtocolComponentFactory pcf = ProtocolComponentFactory.getInstance();
+        ConfigurationFactory configurationFactory = new ConfigurationFactory();
+        ProtocolConfiguration config =
+            configurationFactory.loadConfiguration(pcf.getModuleCharacteristics(), ProtocolConfiguration.class);
+        config.getFileExchangeConfigurations().setFileExchangeClass(HTTPFileExchange.class.getName());
         
         // upload file to http-server.
         addStep("Uploading file '" + fil.getName() + "'", "The file should now"

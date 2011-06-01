@@ -27,8 +27,8 @@ package org.bitrepository.protocol;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
+import org.bitrepository.protocol.configuration.FileExchangeConfiguration;
 import org.bitrepository.protocol.configuration.ProtocolConfiguration;
-import org.bitrepository.protocol.http.HTTPFileExchange;
 
 /**
  * Provides access to the different component in the protocol module (Spring/IOC wannabe)
@@ -80,11 +80,19 @@ public final class ProtocolComponentFactory {
     }
 
     /**
-     * Gets you an <code>MessageBus</code> instance for accessing to the Bitrepositorys message bus
+     * Gets you an <code>FileExchange</code> instance for data communication. Is instantiated based on the 
+     * configurations.
+     * @return The FileExchange according to the configuration.
      */
     public FileExchange getFileExchange() {
         if (fileexchange == null) {
-            fileexchange = new HTTPFileExchange(getProtocolConfiguration().getFileExchangeConfigurations());
+        	try {
+        		FileExchangeConfiguration feConf = getProtocolConfiguration().getFileExchangeConfigurations();
+            	Class instantiation = Class.forName(feConf.getFileExchangeClass());
+            	fileexchange = (FileExchange) instantiation.newInstance();
+        	} catch (Exception e) {
+        		throw new CoordinationLayerException("Could not instantiate the fileexchange.", e);
+        	}
         }
         return fileexchange;
     }
@@ -94,7 +102,7 @@ public final class ProtocolComponentFactory {
      * method is called, and cannot be reloaded.
      * @return Gets you the configuration for this module
      */
-    private ProtocolConfiguration getProtocolConfiguration() {
+    public ProtocolConfiguration getProtocolConfiguration() {
         if (protocolConfiguration == null) {
             ConfigurationFactory configurationFactory = new ConfigurationFactory();
             protocolConfiguration =

@@ -30,10 +30,13 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://bitrepository.org/protocol/Configuration.xsd ../schema/Configuration.xsd ">
   <messageBusConfigurations>
     <primaryMessageBusConfiguration>
-      <id>kb-test-messagebus</id>
+      <id>local-test-messagebus</id>
       <url>failover://tcp://localhost:61616</url>
       <username></username>
       <password></password>
     </primaryMessageBusConfiguration>
   </messageBusConfigurations>
+  <fileExchangeConfigurations>
+    <fileExchangeClass>org.bitrepository.protocol.http.HTTPFileExchange</fileExchangeClass>
+  </fileExchangeConfigurations>
 </ProtocolConfiguration>

@@ -96,7 +96,42 @@
         </annotation>
 
         <sequence>
+            <element name="fileExchangeClass" type="string">
+                <annotation>
+                    <documentation xml:lang="en">
+                        The class for the file exchange. E.g. org.bitrepository.protocol.http.HTTPFileExchange
+                    </documentation>
+                </annotation>
+            </element>
 
+            <element name="httpsKeystorePath" type="string">
+                <annotation>
+                    <documentation xml:lang="en">
+                        The path to the keystore file for the HTTPS connection.
+                    </documentation>
+                </annotation>
+            </element>
+            <element name="httpsKeyStorePassword" type="string">
+                <annotation>
+                    <documentation xml:lang="en">
+                        The password to the keystore.
+                    </documentation>
+                </annotation>
+            </element>
+            <element name="httpsCertificatePath" type="string">
+                <annotation>
+                    <documentation xml:lang="en">
+                        The path to the file containing the certificate for the HTTPS connection.
+                    </documentation>
+                </annotation>
+            </element>
+            <element name="httpsCertificateAlias" type="string">
+                <annotation>
+                    <documentation xml:lang="en">
+                        The alias for the certificate for the HTTPS connection.
+                    </documentation>
+                </annotation>
+            </element>
         </sequence>
     </complexType>
 </schema>
