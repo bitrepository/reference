@@ -28,7 +28,8 @@
         version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
         xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
-  <SlaID>MySla</SlaID>
+  <BitrepositoryContextID>MySla</BitrepositoryContextID>
+  <To>ToQueueOrTopic</To>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
   <Contributor>
     <ComponentID>MyPillar</ComponentID>

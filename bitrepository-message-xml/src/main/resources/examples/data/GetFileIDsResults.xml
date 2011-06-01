@@ -26,7 +26,7 @@
 
 <bro:GetFileIDsResults version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryData.xsd' 
 xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
-  <SlaID>MySla</SlaID>
+  <BitrepositoryContextID>MySla</BitrepositoryContextID>
   <PillarID>MyPillar</PillarID>
   <FileIDsData>
     <NoOfItems>2</NoOfItems>
