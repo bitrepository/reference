@@ -57,7 +57,8 @@ public class MessageBusTest extends ExtendedTestCase {
                 "on the topic for the message listener to find, and" +
         "tests whether it finds the correct message.");
 
-        IdentifyPillarsForGetFileRequest content = TestMessageFactory.getTestMessage();
+        IdentifyPillarsForGetFileRequest content = 
+            ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);
         TestMessageListener listener = new TestMessageListener();
         MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus();
         Assert.assertNotNull(con);
@@ -84,7 +85,8 @@ public class MessageBusTest extends ExtendedTestCase {
 
         //Test data
         String topicname = "BusActivityTest";
-        IdentifyPillarsForGetFileRequest content = TestMessageFactory.getTestMessage();
+        IdentifyPillarsForGetFileRequest content = 
+            ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);
 
         addStep("Make a connection to the message bus and add two listeners", "No exceptions should be thrown");
         MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus();
@@ -146,7 +148,8 @@ public class MessageBusTest extends ExtendedTestCase {
                 + " and using it for communication by sending a simple message"
                 + " over it and verifying that the corresponding message is "
                 + "received.");
-        IdentifyPillarsForGetFileRequest content = TestMessageFactory.getTestMessage();
+        IdentifyPillarsForGetFileRequest content = 
+            ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);
 
         addStep("Starting the local broker.", "A lot of info-level logs should"
                 + " be seen here.");

@@ -26,34 +26,23 @@ package org.bitrepository.clienttest;
 
 import java.util.Date;
 
-import javax.swing.JFrame;
-
+import org.bitrepository.common.IntegrationTest;
 import org.bitrepository.common.sla.MutableSLAConfiguration;
 import org.bitrepository.common.sla.SLAConfiguration;
 import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.jaccept.TestEventManager;
-import org.jaccept.gui.ComponentTestFrame;
-import org.jaccept.structure.ExtendedTestCase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterTest;
+import org.bitrepository.protocol.bus.MessageBusWrapper;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
-
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.core.util.StatusPrinter;
 
 /**
  * Contains the generic parts for tests integrating to the message bus. 
  * ToDo: pillar concerns should be separated into a TestPillarClass.
  */
-public abstract class ClientTest extends ExtendedTestCase {
-    //ToDo convert to TestLogger
-    protected Logger log = LoggerFactory.getLogger(getClass());
-
+public abstract class DefaultFixtureClientTest extends IntegrationTest {
     protected MessageBus messageBus;
-    protected static final String DEFAULT_FILE_ID = "FileID";
+    protected static final String DEFAULT_FILE_ID = "Default-test-file";
     
     protected static String clientTopicId;
     protected MessageReceiver clientTopic;
@@ -70,41 +59,26 @@ public abstract class ClientTest extends ExtendedTestCase {
     protected static final String PILLAR2_ID = "Pillar2";
     
     protected SLAConfiguration slaConfiguration;
-    protected TestEventManager testEventManager = TestEventManager.getInstance();
     protected boolean useMockupPillar;
 
-    @BeforeTest (alwaysRun = true)
-    public void startTestGUI() {  
-        
-        if (System.getProperty("enableLogStatus", "false").equals("true")) {
-            LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-            StatusPrinter.print(lc);
-        }
-
+    @BeforeClass (alwaysRun = true)
+    public void setupTest() {
         defineTopics();
-        // Experimental, use at own risk.
-        if (System.getProperty("enableTestGUI", "false").equals("true") ) {
-            JFrame hmi = new ComponentTestFrame();
-            hmi.pack();
-            hmi.setVisible(true);
-        }
-        
         hookupMessageBus();
     }
 
     @BeforeMethod (alwaysRun = true)
-    public void setupMethod(java.lang.reflect.Method testMethod) {
+    public void beforeMethodSetup(java.lang.reflect.Method testMethod) {
         configureSLA(testMethod.getName());
     }
 
-    @AfterTest (alwaysRun = true)
+    @AfterClass (alwaysRun = true)
     public void teardownTest() {
-        disconnectFromMessageBus();
+        disconnectFromMessageBus(); 
     }
 
     private void hookupMessageBus() {
-        System.out.println("Hooking up meesagebus");
-        messageBus = ProtocolComponentFactory.getInstance().getMessageBus();
+        messageBus = new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(), testEventManager);
         clientTopic = new MessageReceiver("Client topic receiver", testEventManager);
         slaTopic = new MessageReceiver("SLA topic receiver", testEventManager);
         pillar1Topic = new MessageReceiver("Pillar1 topic receiver", testEventManager);
@@ -129,7 +103,7 @@ public abstract class ClientTest extends ExtendedTestCase {
         mutableSLAConfiguration.setSlaId(slaID);
         mutableSLAConfiguration.setClientTopicId(clientTopicId);
         mutableSLAConfiguration.setSlaTopicId(slaTopicId);
-        mutableSLAConfiguration.setLocalFileStorage("fileDir");
+        mutableSLAConfiguration.setLocalFileStorage("target/fileDir");
         slaConfiguration = mutableSLAConfiguration;
     }
 

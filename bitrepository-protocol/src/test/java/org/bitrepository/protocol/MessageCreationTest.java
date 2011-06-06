@@ -24,12 +24,8 @@
  */
 package org.bitrepository.protocol;
 
-import org.apache.activemq.util.ByteArrayInputStream;
-import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
+import java.io.File;
+import java.util.Iterator;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,17 +33,18 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.Iterator;
+
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
+import org.jaccept.structure.ExtendedTestCase;
+import org.testng.annotations.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 /**
  * Test whether we are able to create message objects from xml. The input XML is the example code defined in the
  * message-xml, thereby also testing whether this is valid. *
  */
 public class MessageCreationTest extends ExtendedTestCase {
-
-    private static final String XML_MESSAGE_DIR = "target/message-xml/";
 
     @Test(groups = {"regressiontest"})
     public void messageCreationTest() throws Exception {
@@ -57,10 +54,8 @@ public class MessageCreationTest extends ExtendedTestCase {
         for (String messageName : messageNames) {
         	addStep("Creating " + messageName + " message" , 
         			"The test is able to instantiate message based on the example in the message-xml modules");
-            String xmlMessage = loadXMLExample(messageName);
-            org.bitrepository.common.JaxbHelper.loadXml(
-                    Class.forName(GetChecksumsFinalResponse.class.getPackage().getName() + "." + messageName),
-                    new ByteArrayInputStream(xmlMessage.getBytes()));
+        	ExampleMessageFactory.createMessage(
+        	        Class.forName(GetChecksumsFinalResponse.class.getPackage().getName() + "." + messageName));
         }
     }
 
@@ -70,7 +65,7 @@ public class MessageCreationTest extends ExtendedTestCase {
      * @return List of messages to test
      */
     private String[] getMessageNames() throws Exception {
-        File file = new File(XML_MESSAGE_DIR + "xsd/BitRepositoryMessages.xsd");
+        File file = new File(ExampleMessageFactory.XML_MESSAGE_DIR + "xsd/BitRepositoryMessages.xsd");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         Document doc = factory.newDocumentBuilder().parse(file);
@@ -119,20 +114,5 @@ public class MessageCreationTest extends ExtendedTestCase {
             }
         };
         return ctx;
-    }
-
-    /**
-     * Loads the example XML for the indicated message. Assumes the XML examples are found under the
-     * XML_MESSAGE_DIR/examples directory, and the naming convention for the example files are '${messagename}.xml'
-     *
-     * @param messageName
-     * @return
-     */
-    private String loadXMLExample(String messageName) throws Exception {
-        String filePath = XML_MESSAGE_DIR + "examples/messages/" + messageName + ".xml";
-        byte[] buffer = new byte[(int) new File(filePath).length()];
-        FileInputStream f = new FileInputStream(filePath);
-        f.read(buffer);
-        return new String(buffer);
     }
 }

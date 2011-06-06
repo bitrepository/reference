@@ -7,7 +7,7 @@
     <version>0.2-SNAPSHOT</version>
   </parent>
   <artifactId>bitrepository-common</artifactId>
-  <name>bitrepository-common</name>
+  <name>Bitrepository Common</name>
 	<description>General functionality for working with the Bitrepository code. </description>
 	<dependencies>
 		<dependency>

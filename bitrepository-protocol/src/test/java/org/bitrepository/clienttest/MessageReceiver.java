@@ -126,9 +126,9 @@ public class MessageReceiver {
         }
         long waitTime = System.currentTimeMillis()-startWait;
         if (message != null) {
-            log.debug("Received message in ({}ms): {}",  waitTime, message);
+            log.debug("Received message in (" + waitTime + " ms): " + message);
         } else {
-            log.info("Wait for {} message timed out ({}ms).", messageType.getName(), waitTime);
+            log.info("Wait for " + messageType.getName() + " message timed out (" + waitTime + " ms).");
         }
         return message;
     }
@@ -156,8 +156,7 @@ public class MessageReceiver {
     
     @Override
     public String toString() {
-        return "MessageReceiver [name=" + name + ", messageModel="
-                + messageModel + "]";
+        return "MessageReceiver [name=" + name + "]";
     }
 
     // ToDo: Should the exception lister be part of this class?

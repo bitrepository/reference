@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access;
+package org.bitrepository.access.getfile;
 
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
@@ -31,25 +31,15 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.protocol.TestMessageFactory;
 
+/**
+ * Constructs the GetFile specific messages.
+ */
 public class TestGetFileMessageFactory extends TestMessageFactory {
-    protected final String defaultSlaID;
-    protected final String defaultClientDestination;
-    protected final String defaultSlaDestination;
+    protected final String slaID;
 
-    public TestGetFileMessageFactory(String defaultSlaID,
-            String defaultClientDestination,
-            String defaultSlaDestination) {
+    public TestGetFileMessageFactory(String slaID) {
         super();
-        this.defaultSlaID = defaultSlaID;
-        this.defaultClientDestination = defaultClientDestination;
-        this.defaultSlaDestination = defaultSlaDestination;
-    }
-
-    public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileIDsRequest(
-            IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage) {
-        IdentifyPillarsForGetFileRequest identifyPillarsForGetFileRequest = createIdentifyPillarsForGetFileRequest();
-        identifyPillarsForGetFileRequest.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
-        return identifyPillarsForGetFileRequest;
+        this.slaID = slaID;
     }
 
     public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileRequest() {
@@ -57,9 +47,24 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         identifyPillarsForGetFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         identifyPillarsForGetFileRequest.setFileID(FILE_ID_DEFAULT);
         identifyPillarsForGetFileRequest.setMinVersion(VERSION_DEFAULT);
-        identifyPillarsForGetFileRequest.setReplyTo(defaultClientDestination);
-        identifyPillarsForGetFileRequest.setBitrepositoryContextID(defaultSlaID);
+        identifyPillarsForGetFileRequest.setBitrepositoryContextID(slaID);
         identifyPillarsForGetFileRequest.setVersion(VERSION_DEFAULT);
+        return identifyPillarsForGetFileRequest;
+    }
+    
+    /**
+     * Creates a reference <code>IdentifyPillarsForGetFileRequest</code> message for comparing against a received 
+     * request.  
+     * @param receivedIdentifyRequestMessage The request to compare against. Any attributes which can't be determined 
+     * prior to receiving the request are copied from the supplied request to the returned message. Attributes copied 
+     * include <code>correlationId</code>.
+     * @return A reference <code>IdentifyPillarsForGetFileRequest</code> message.
+     */
+    public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileIDsRequest(
+            IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage) {
+        IdentifyPillarsForGetFileRequest identifyPillarsForGetFileRequest = createIdentifyPillarsForGetFileRequest();
+        identifyPillarsForGetFileRequest.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
+        identifyPillarsForGetFileRequest.setReplyTo(receivedIdentifyRequestMessage.getReplyTo());
         return identifyPillarsForGetFileRequest;
     }
 
@@ -79,19 +84,21 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         return identifyPillarsForGetFileRequest;
     }
   
-    public GetFileRequest createGetFileRequest() {
+    public GetFileRequest createGetFileRequest(String pillarId) {
         GetFileRequest getFileRequest = new GetFileRequest();
         getFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         getFileRequest.setFileID(FILE_ID_DEFAULT);
         getFileRequest.setMinVersion(VERSION_DEFAULT);
-        getFileRequest.setReplyTo(defaultClientDestination);
-        getFileRequest.setBitrepositoryContextID(defaultSlaID);
         getFileRequest.setVersion(VERSION_DEFAULT);
+        getFileRequest.setPillarID(pillarId);
+        getFileRequest.setBitrepositoryContextID(slaID);
         return getFileRequest;
     }
-    public GetFileRequest createGetFileRequest(GetFileRequest receivedGetFileRequest) {
-        GetFileRequest getFileRequest = createGetFileRequest();
+    public GetFileRequest createGetFileRequest(GetFileRequest receivedGetFileRequest,
+            String pillarId) {
+        GetFileRequest getFileRequest = createGetFileRequest(pillarId);
         getFileRequest.setCorrelationID(receivedGetFileRequest.getCorrelationID());
+        getFileRequest.setFileAddress(receivedGetFileRequest.getFileAddress());
         return getFileRequest;
     }
 
@@ -106,6 +113,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         getFileProgressResponse.setProgressResponseInfo(PROGRESS_INFO_DEFAULT);
         getFileProgressResponse.setVersion(VERSION_DEFAULT);
         getFileProgressResponse.setMinVersion(VERSION_DEFAULT);
+        getFileProgressResponse.setFileAddress(receivedGetFileRequest.getFileAddress());
         return getFileProgressResponse;
     }
 
@@ -120,6 +128,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         getFileFinalResponse.setFinalResponseInfo(FINAL_INFO_DEFAULT);
         getFileFinalResponse.setVersion(VERSION_DEFAULT);
         getFileFinalResponse.setMinVersion(VERSION_DEFAULT);
+        getFileFinalResponse.setFileAddress(receivedGetFileRequest.getFileAddress());
         return getFileFinalResponse;
     }
 }

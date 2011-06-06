@@ -26,9 +26,11 @@ package org.bitrepository.access;
 
 import org.bitrepository.access.getfileids.BasicGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
+import org.bitrepository.access.getfileids.TestGetFileIDsMessageFactory;
 import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.protocol.*;
 import org.jaccept.structure.ExtendedTestCase;
 import org.slf4j.Logger;
@@ -47,7 +49,7 @@ import java.util.*;
  * Test class for the 'GetFileIDsClient'.
  * @author kfc
  */
-public class GetFileIDsClientTest extends ExtendedTestCase {
+public class GetFileIDsClientTest extends DefaultFixtureClientTest {
 
     private Logger log = LoggerFactory.getLogger(GetFileIDsClientTest.class);
 
@@ -63,7 +65,7 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
     private GetFileIDsClient getFileIDsClient = new BasicGetFileIDsClient();
     private int numberOfPillars;
     private MessageMonitor monitor;
-
+    private TestGetFileIDsMessageFactory messageFactory;
 
     /**
      * Set up the test scenario before running the tests in this class.
@@ -84,6 +86,8 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
         // Monitor
         monitor = new MessageMonitor();
         ProtocolComponentFactory.getInstance().getMessageBus().addListener(queue, monitor);
+
+        messageFactory = new TestGetFileIDsMessageFactory(slaConfiguration.getSlaId());
     }
 
     @AfterMethod(alwaysRun = true)
@@ -113,18 +117,18 @@ public class GetFileIDsClientTest extends ExtendedTestCase {
                 Map<Object, List<Object>> stimuliResponseMap = new HashMap<Object, List<Object>>();
 
                 IdentifyPillarsForGetFileIDsRequest identifyRequest =
-                        TestMessageFactory.getIdentifyPillarsForGetFileIDsRequestTestMessage();
+                    messageFactory.getIdentifyPillarsForGetFileIDsRequestTestMessage();
                 IdentifyPillarsForGetFileIDsResponse identifyReply =
-                        TestMessageFactory.getIdentifyPillarsForGetFileIDsResponseTestMessage(pillarID);
+                    messageFactory.getIdentifyPillarsForGetFileIDsResponseTestMessage(pillarID);
                 List<Object> identifyReplyList = new ArrayList<Object>();
                 identifyReplyList.add(identifyReply);
                 stimuliResponseMap.put(identifyRequest, identifyReplyList);
 
-                GetFileIDsRequest request = TestMessageFactory.getGetFileIDsRequestTestMessage(pillarID);
-                GetFileIDsProgressResponse response = TestMessageFactory.getGetFileIDsResponseTestMessage(pillarID);
+                GetFileIDsRequest request = messageFactory.getGetFileIDsRequestTestMessage(pillarID);
+                GetFileIDsProgressResponse response = messageFactory.getGetFileIDsResponseTestMessage(pillarID);
                 List<Object> responseList = new ArrayList<Object>();
                 responseList.add(response);
-                GetFileIDsFinalResponse complete = TestMessageFactory.getGetFileIDsCompleteTestMessage(pillarID);
+                GetFileIDsFinalResponse complete = messageFactory.getGetFileIDsCompleteTestMessage(pillarID);
                 responseList.add(complete);
                 stimuliResponseMap.put(request, responseList);
 

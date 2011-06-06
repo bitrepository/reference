@@ -22,23 +22,20 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access;
+package org.bitrepository.access.getfile;
 
 import java.io.File;
 import java.math.BigInteger;
 import java.net.URL;
 
-import org.bitrepository.access.getfile.GetFileClient;
-import org.bitrepository.access.getfile.GetFileClientTestWrapper;
-import org.bitrepository.access.getfile.SimpleGetFileClient;
-import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
+import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.clienttest.ClientTest;
+import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.common.sla.MutableSLAConfiguration;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.testng.Assert;
@@ -48,25 +45,25 @@ import org.testng.annotations.Test;
 /**
  * Test class for the 'GetFileClient'.
  */
-public class GetFileClientTest extends ClientTest {
+public class GetFileClientComponentTest extends DefaultFixtureClientTest {
     private GetFileClient getFileClient;
     private TestGetFileMessageFactory testMessageFactory;
 
     @BeforeMethod (alwaysRun=true)
-    public void setupTest() {
+    public void beforeMethodSetup() {
         // In case of multiple types of GetFileClients, the concrete class should be configurable (perhaps specialize 
         // this test with an overload of this method)
         getFileClient = 
             new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(slaConfiguration), 
                     testEventManager);
-              
+
         File oldFile = new File(slaConfiguration.getLocalFileStorage(), DEFAULT_FILE_ID);
         if(oldFile.exists()) {
             Assert.assertTrue(oldFile.delete(), "The previously downloaded file should be deleted.");
         }
-        testMessageFactory = new TestGetFileMessageFactory(slaConfiguration.getSlaId(), clientTopicId, slaTopicId);
+        testMessageFactory = new TestGetFileMessageFactory(slaConfiguration.getSlaId());
     }
-    
+
     @Test(groups = {"regressiontest"})
     public void verifyGetFileClientFromFactory() throws Exception {
         Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(slaConfiguration) 
@@ -78,74 +75,66 @@ public class GetFileClientTest extends ClientTest {
     @Test(groups = {"test-first"})
     public void identifyAndGetSinglePillar() throws Exception {
         addDescription("Tests whether a specific message is sent by the GetClient, when only a single pillar " +
-        		"participates");
-        addStep("Initialising", "");
+        "participates");
+        addStep("Set the number of p[illars for this SLA to 1", "");
         ((MutableSLAConfiguration)slaConfiguration).setNumberOfPillars(1);
-   
-        addStep("Register a callback listener in the GetFileClient", "");
-        //ToDo implement this when the listener registration method has been added to the GetFIleClient interface
-        
-        addStep("Request the fastest delivery of file '" + DEFAULT_FILE_ID + "' from SLA '" + slaConfiguration.getSlaId() + 
-                "', and the knowledge, that only one pillar should reply. Note that this call should block, so the " +
-                "call needs to be performed in a seperat thread", 
-                "A IdentifyPillarsForGetFileRequest should be received on the pillar.");
-        // Todo the blocking functionality isn't implemented yet. Awaits the refactoring of the client to Kåres 
-        // general client design 
-        getFileClient.retrieveFastest(DEFAULT_FILE_ID);
-        IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = 
-            slaTopic.waitForMessage(IdentifyPillarsForGetFileRequest.class);
-        Assert.assertEquals(receivedIdentifyRequestMessage, 
-                testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage));
-        
-        Assert.assertNotNull(receivedIdentifyRequestMessage, "No IdentifyPillarsForGetFileRequest received.");
-        Assert.assertEquals(receivedIdentifyRequestMessage.getFileID(), DEFAULT_FILE_ID);
-        
-        addStep("Sending a response to the identify message.", 
-                "The callback listener IdentifyPillarsForGetFileResponse object should be returned from the client"); 
-        IdentifyPillarsForGetFileResponse identifyResponse = testMessageFactory.createIdentifyPillarsForGetFileResponse(
-                    receivedIdentifyRequestMessage, PILLAR1_ID, pillar1TopicId);
-        messageBus.sendMessage(clientTopicId, identifyResponse);
-        //Todo Verify the result when the GetFileClient callback interface has been defined 
-        
-        addStep("Verify that the GetClient sends a getFile request.", 
-                "A GetFileRequest should be received by the pillar.");
-        GetFileRequest receivedGetFileRequest = pillar1Topic.waitForMessage(GetFileRequest.class);
-        Assert.assertEquals(receivedGetFileRequest, testMessageFactory.createGetFileRequest(receivedGetFileRequest));
-        
-        addStep("Send a getFile response to the GetClient.", 
-                "The GetClient should notify about the response through the callback interface."); 
-        GetFileProgressResponse getFileProgressResponse = testMessageFactory.createGetFileProgressResponse(
-                receivedGetFileRequest, PILLAR1_ID, pillar1TopicId);
-        messageBus.sendMessage(clientTopicId, getFileProgressResponse);
 
-        addStep("Uploading the file to the default HTTPServer.", "");
-        File uploadFile = new File("src/test/resources/test.txt");
-        URL url = ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(uploadFile);
-        
-        addStep("Send a final response upload message with the URL", 
-                "The GetFileClient on reception of the final response message, notify that the file is ready " +
-                "through the callback listener and return from the blocking getFile method.");
-        GetFileFinalResponse completeMsg = testMessageFactory.createGetFileFinalResponse(
-                receivedGetFileRequest, PILLAR1_ID, pillar1TopicId);
-        messageBus.sendMessage(clientTopicId, completeMsg);
-        
-        //Need some kind of generic test functionality similar to the Message Receiver to handle the callbacks and 
-        //blocking call operation stuff(without a fixed wait period).
-        synchronized(this) {
-            try {
-                wait(1000);
-            } catch (Exception e) {
-                // print, but ignore!
-                e.printStackTrace();
-            }
+        addStep("Request the fastest delivery of a file. A callback listener should be supplied.", 
+                "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
+        getFileClient.retrieveFastest(DEFAULT_FILE_ID);
+        IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
+        if (useMockupPillar) {
+            receivedIdentifyRequestMessage = slaTopic.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+            Assert.assertEquals(receivedIdentifyRequestMessage, 
+                    testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage));
+
+            Assert.assertNotNull(receivedIdentifyRequestMessage, "No IdentifyPillarsForGetFileRequest received.");
+            Assert.assertEquals(receivedIdentifyRequestMessage.getFileID(), DEFAULT_FILE_ID);
+
+        }
+
+        addStep("The pillar sends a response to the identify message.", 
+        "The callback listener should notify of the response and the client should send a GetFileRequest message to " +
+        "the pillar"); 
+
+        //Todo Verify the result when the GetFileClient callback interface has been defined 
+        GetFileRequest receivedGetFileRequest = null;
+        if (useMockupPillar) {
+            IdentifyPillarsForGetFileResponse identifyResponse = testMessageFactory.createIdentifyPillarsForGetFileResponse(
+                    receivedIdentifyRequestMessage, PILLAR1_ID, pillar1TopicId);
+            messageBus.sendMessage(clientTopicId, identifyResponse);
+            receivedGetFileRequest = pillar1Topic.waitForMessage(GetFileRequest.class);
+            Assert.assertEquals(receivedGetFileRequest, 
+                    testMessageFactory.createGetFileRequest(receivedGetFileRequest,PILLAR1_ID));
         }
         
-        addStep("Verify that the file is downloaded in by the GetClient and placed within the GetClient's fileDir.", 
-                "Should be fine!");
+        addStep("The pillar sends a getFile response to the GetClient.", 
+        "The GetClient should notify about the response through the callback interface."); 
+        if (useMockupPillar) {
+            GetFileProgressResponse getFileProgressResponse = testMessageFactory.createGetFileProgressResponse(
+                    receivedGetFileRequest, PILLAR1_ID, pillar1TopicId);
+            messageBus.sendMessage(clientTopicId, getFileProgressResponse);
+        }
+        // ToDo The listener call should be verified.
+        
+        addStep("The file is uploaded to the indicated url and the pillar sends a final response upload message", 
+                "The GetFileClient notifies that the file is ready through the callback listener and the uploaded " +
+                "file is present.");
+        if (useMockupPillar) {
+            // ToDo Switch to use test uploader using the attributes supplied in the request, eg. 
+            // testPillar.uploadFile(receivedGetFileRequest.getFileAddress(), receivedGetFileRequest.getFileID());
+            File uploadFile = new File("src/test/resources/test.txt");
+            URL url = ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(uploadFile);
+
+            GetFileFinalResponse completeMsg = testMessageFactory.createGetFileFinalResponse(
+                    receivedGetFileRequest, PILLAR1_ID, pillar1TopicId);
+            messageBus.sendMessage(clientTopicId, completeMsg);
+        }
+        //Todo Assert that the callback listener has received an 'uploadComplete' event.
         File outputFile = new File(slaConfiguration.getLocalFileStorage(), DEFAULT_FILE_ID);
         Assert.assertTrue(outputFile.isFile());
     }
-    
+
     @Test(groups = {"regressiontest"})
     public void chooseFastestPillarGetFileClient() throws Exception {
         addDescription("Set the GetClient to retrieve a file as fast as "
@@ -157,24 +146,23 @@ public class GetFileClientTest extends ClientTest {
         String fastPillar = "THE-FAST-PILLAR";
         String slowPillar = "THE-SLOW-PILLAR";
         ((MutableSLAConfiguration)slaConfiguration).setNumberOfPillars(2);
-        
-        addStep("Defining the varibles for the GetFileClient and defining them in the configuration", 
-                "It should be possible to change the values of the configurations.");
-        
+
+        addStep("Defining the variables for the GetFileClient and defining them in the configuration", 
+        "It should be possible to change the values of the configurations.");
+
         addStep("Make the GetClient ask for fastest pillar.", "It should send message to identify which pillars.");
 
         getFileClient.retrieveFastest(fileId);
-        
+
         IdentifyPillarsForGetFileRequest identifyRequestMessage = 
             slaTopic.waitForMessage(IdentifyPillarsForGetFileRequest.class);
-        
         TimeMeasureTYPE fastTime = new TimeMeasureTYPE();
         fastTime.setTimeMeasureUnit("milliseconds");
         fastTime.setTimeMeasureValue(BigInteger.valueOf(10L));
         TimeMeasureTYPE slowTime = new TimeMeasureTYPE();
         slowTime.setTimeMeasureValue(BigInteger.valueOf(20000L));
         slowTime.setTimeMeasureUnit("hours");
-        
+
         IdentifyPillarsForGetFileResponse fastReply = new IdentifyPillarsForGetFileResponse();
         fastReply.setCorrelationID(identifyRequestMessage.getCorrelationID());
         fastReply.setFileID(identifyRequestMessage.getFileID());
@@ -185,7 +173,7 @@ public class GetFileClientTest extends ClientTest {
         fastReply.setPillarID(fastPillar);  
         fastReply.setReplyTo(pillar1TopicId);
         messageBus.sendMessage(identifyRequestMessage.getReplyTo(), fastReply);
-      
+
         fastReply.setReplyTo(identifyRequestMessage.getReplyTo());
         IdentifyPillarsForGetFileResponse slowReply = new IdentifyPillarsForGetFileResponse();
         slowReply.setCorrelationID(identifyRequestMessage.getCorrelationID());
@@ -197,7 +185,7 @@ public class GetFileClientTest extends ClientTest {
         slowReply.setPillarID(slowPillar);  
         slowReply.setReplyTo(pillar2TopicId);
         messageBus.sendMessage(identifyRequestMessage.getReplyTo(), slowReply);
-    
+
         addStep("Verify that it has chosen the fast pillar.", "");
         GetFileRequest getFileRequestMessage = pillar1Topic.waitForMessage(GetFileRequest.class);
         Assert.assertNotNull(getFileRequestMessage, "No GetFileResponse received.");

@@ -27,9 +27,9 @@
 <AccessConfiguration xmlns="http://bitrepository.org/access-client/Configuration.xsd"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://bitrepository.org/access-client/Configuration.xsd ../schema/Configuration.xsd ">
-  <fileDir>target/fileDir</fileDir>
-  <queue>TheAccessQueue</queue>
-  <GetFileIDsClientQueue>gficq</GetFileIDsClientQueue>
-  <GetFileIDsClientTimeOut>1000</GetFileIDsClientTimeOut>
-  <GetFileIDsClientNumberOfPillars>3</GetFileIDsClientNumberOfPillars>
+  <fileDir>target/fileDir</fileDir><!-- Move to SLAConfiguration -->
+  <queue>TheAccessQueue</queue><!-- Move to SLAConfiguration -->
+  <GetFileIDsClientQueue>gficq</GetFileIDsClientQueue><!-- Move to SLAConfiguration -->
+  <GetFileIDsClientTimeOut>1000</GetFileIDsClientTimeOut><!-- Move to SLAConfiguration -->
+  <GetFileIDsClientNumberOfPillars>3</GetFileIDsClientNumberOfPillars><!-- Move to SLAConfiguration -->
 </AccessConfiguration>
