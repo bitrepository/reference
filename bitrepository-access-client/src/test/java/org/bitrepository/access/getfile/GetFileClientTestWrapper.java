@@ -24,6 +24,8 @@
  */
 package org.bitrepository.access.getfile;
 
+import java.net.URL;
+
 import org.jaccept.TestEventManager;
 
 /**
@@ -40,14 +42,14 @@ public class GetFileClientTestWrapper implements GetFileClient {
     }
 
     @Override
-    public void retrieveFastest(String fileId) {
-        testEventManager.addStimuli("Calling GetfileCLient.retrieveFastest(" + fileId + ")");
-        createGetFileClient.retrieveFastest(fileId);
+    public void getFileFromFastestPillar(String fileId, URL uploadUrl) {
+        testEventManager.addStimuli("Calling getFileFromFastestPillar(" + fileId + ", " + uploadUrl + ")");
+        createGetFileClient.getFileFromFastestPillar(fileId, uploadUrl);
     }
 
     @Override
-    public void getFile(String fileId, String pillarTopicId, String pillarId) {
-        testEventManager.addStimuli("Calling getFile(" + fileId + ", " + pillarTopicId+ ", " + pillarId + ")");
-        createGetFileClient.getFile(fileId, pillarTopicId, pillarId);
+    public void getFileFromSpecificPillar(String fileId, URL uploadUrl, String pillarId) {
+        testEventManager.addStimuli("Calling getFileFromSpecificPillar(" + fileId + ", " + uploadUrl+ ", " + pillarId + ")");
+        createGetFileClient.getFileFromSpecificPillar(fileId, uploadUrl, pillarId);
     }
 }

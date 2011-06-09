@@ -25,6 +25,7 @@
 package org.bitrepository.protocol.fileexchange;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,34 +62,48 @@ public class HTTPServer {
     public HTTPServer(HttpServerConfiguration config, TestEventManager testEventManager) {
         this.config = config;
         this.testEventManager = testEventManager;
-        
+
         tempDownloadedFilesDir = TEMP_DOWNLOADED_FILES_ROOT + File.separator + config.getHttpServerName();
         File tempDownloadedFilesDirHandle = new File(tempDownloadedFilesDir);
         tempDownloadedFilesDirHandle.delete();
         tempDownloadedFilesDirHandle.mkdirs();
     }
 
-    private URL saveFile(InputStream in, String filename)
-    throws IOException {
-        URL url = getURL(filename);
-        performUpload(in, url);
-        return url;
-    }
-
-    public void uploadFile(InputStream in, URL fileAddress) {
+    /**
+     * Simulates a upload from a pillar to the HTTP server.
+     * @param in The input stream for the file which should be uploaded. 
+     * @param fileAddress The url where the file should be uploaded.
+     */
+    public void uploadFile(FileInputStream in, URL fileAddress) {
         performUpload(in, fileAddress);
     }
 
-    public void downloadFromServer(OutputStream out, URL url)
+    /**
+     * Simulates a download from a http server to a pillar.
+     * @param out The output stream where the file should be saved.
+     * @param url The url the downlaod the file from.
+     */
+    public void downloadFile(OutputStream out, URL url)
     throws IOException {
         performDownload(out, url);
+    }
+
+    /**
+     * Removes the indicated file from the server
+     * @param filename
+     */
+    public void removeFile(String filename) throws Exception {
+        URL url = new URL(filename);
+        HttpURLConnection conn = getConnection(url);
+        conn = getConnection(url);
+        conn.setRequestMethod("DELETE");
     }
 
     private void loadFile(File outputFile, String fileAddress) {
         try {
             // retrieve the url and the outputstream for the file.
             URL url = new URL(fileAddress);
-            
+
             FileOutputStream fos = new FileOutputStream(outputFile);
 
             // download the file.
@@ -101,16 +116,32 @@ public class HTTPServer {
     }
 
     /**
+     * Used in test to save files onto the http server. Simulates a client putting a file on the http server prior to a 
+     * put/replace request.
+     * 
+     * ToDo: Used more flexibl;e mapping between urls and file names.
+     * @param in Read the file from here
+     * @param filename Name of the file
+     * @return
+     * @throws IOException
+     */
+    public URL saveFile(FileInputStream in, String filename)
+    throws IOException {
+        URL url = getURL(filename);
+        performUpload(in, url);
+        return url;
+    }
+
+
+    /**
      * Retrieves the data from a given url and puts it onto a given 
      * outputstream. It has to be a 'HTTP' url, since the data is retrieved 
      * through a HTTP-request.
      * 
      * @param out The output stream to put the data.
      * @param url The url for where the data should be retrieved.
-     * @throws IOException If any problems occurs during the retrieval of the 
-     * data.
      */
-    protected void performDownload(OutputStream out, URL url) {
+    private void performDownload(OutputStream out, URL url) {
         try {
             HttpURLConnection conn = getConnection(url);
             conn.setDoInput(true);
@@ -124,9 +155,6 @@ public class HTTPServer {
 
     /**
      * Method for putting data on the HTTP-server of a given url.
-     * 
-     * TODO perhaps make it synchronized around the URL, to prevent data from 
-     * trying to uploaded several times to the same location simultaneously. 
      * 
      * @param in The data to put into the url.
      * @param url The place to put the data.
@@ -158,24 +186,22 @@ public class HTTPServer {
         }
     }
 
+    /** Calculates the url for the giving file based on the http configuration */
     public URL getURL(String filename) throws MalformedURLException {
-        // create the URL based on hardcoded values (change to using settings!)
-        URL res = new URL(config.getProtocol(), config.getHttpServerName(), config.getPortNumber(), 
+        return new URL(
+                config.getProtocol(), 
+                config.getHttpServerName(), 
+                config.getPortNumber(), 
                 config.getHttpServerPath() + "/" + filename);
-        return res;
     }
 
     /**
      * Utility function for moving data from an inputstream to an outputstream.
-     * TODO move to a utility class.
      * 
      * @param in The input stream to copy to the output stream.
      * @param out The output stream where the input stream should be copied.
-     * @throws IOException If anything problems occur with transferring the 
-     * data between the streams.
      */
-    private void copyInputStreamToOutputStream(InputStream in,
-            OutputStream out) throws IOException {
+    private void copyInputStreamToOutputStream(InputStream in, OutputStream out) throws IOException {
         if(in == null || out == null) {
             throw new IllegalArgumentException("InputStream: " + in 
                     + ", OutputStream: " + out);
@@ -198,13 +224,10 @@ public class HTTPServer {
      * 
      * @param url The URL to open the connection to.
      * @return The HTTP connection to the given URL.
+     * @throws IOException 
      */
-    protected HttpURLConnection getConnection(URL url) {
-        try {
-            return (HttpURLConnection) url.openConnection();
-        } catch (IOException e) {
-            throw new CoordinationLayerException("Could not open the connection to the url '" + url + "'", e);
-        }
+    protected HttpURLConnection getConnection(URL url) throws IOException {
+        return (HttpURLConnection) url.openConnection();
     }
 
     /**
@@ -222,7 +245,7 @@ public class HTTPServer {
             Assert.assertEquals( 
                     FileUtils.readFileToString(serverFile, "utf-8"),
                     FileUtils.readFileToString(referenceFile, "utf-8"
-                            ));
+                    ));
         }
     }
 

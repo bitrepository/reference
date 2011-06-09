@@ -27,6 +27,7 @@ package org.bitrepository.access.getfile;
 import org.bitrepository.access.AccessException;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.CollectionBasedConversationMediator;
 import org.bitrepository.protocol.MessageBus;
@@ -64,14 +65,13 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
     }
 
     @Override
-    public void retrieveFastest(String fileID) {
-        // validate arguments
-        if(fileID == null || fileID.isEmpty()) {
-            throw new IllegalArgumentException("The String fileId may not be null or the empty string.");
-        }
+    public void getFileFromFastestPillar(String fileID, URL uploadUrl) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
+        ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
+        
         log.info("Requesting fastest retrieval of the file '" + fileID + "' which belong to the SLA '" + 
                 slaConfiguration.getId() + "'.");
-        // create message requesting delivery time for the given file.
+        // Create message requesting delivery time for the given file.
         IdentifyPillarsForGetFileRequest msg = new IdentifyPillarsForGetFileRequest();
         msg.setMinVersion(BigInteger.valueOf(1L));
         msg.setVersion(BigInteger.valueOf(1L));
@@ -86,26 +86,25 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
     }
 
     @Override
-    public void getFile(String fileID, String pillarTopicId, String pillarID) {
+    public void getFileFromSpecificPillar(String fileID, URL uploadUrl, String pillarID) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
+        ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
+        ArgumentValidator.checkNotNullOrEmpty(pillarID, "pillarID");
+        
         log.info("Requesting the file '" + fileID + "' from pillar '" + pillarID + "'.");
 
-        URL url;
-        try {
-            url = ProtocolComponentFactory.getInstance().getFileExchange().getURL(fileID);
-        } catch (MalformedURLException e) {
-            throw new AccessException("Unable to create file from URL", e);
-        }
-        GetFileRequest msg = new GetFileRequest();
+        IdentifyPillarsForGetFileRequest msg = new IdentifyPillarsForGetFileRequest();
         msg.setMinVersion(BigInteger.valueOf(1L));
         msg.setVersion(BigInteger.valueOf(1L));
         msg.setBitrepositoryContextID(slaConfiguration.getId());
         msg.setFileID(fileID);
-        msg.setPillarID(pillarID);
+        //msg.setPillarId(pillarID);
+        if (true) throw new UnsupportedOperationException("The get file by pillar identification isn't currently " +
+        		"supported by the protocol");
         msg.setReplyTo(slaConfiguration.getClientTopicId());
-        msg.setFileAddress(url.toExternalForm());
 
         SimpleGetFileConversation conversation = startConversation();
-        conversation.sendMessage(pillarTopicId, msg);
+        conversation.sendMessage(slaConfiguration.getSlaTopicId(), msg);
 
         // TODO: Should we wait for the conversation to end before returning? How is the result delivered?
     }

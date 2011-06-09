@@ -113,7 +113,7 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     private void hookupHttpServer() {
         HttpServerConfiguration config = new HttpServerConfiguration();
         config.setHttpServerPath("/dav/" + System.getProperty("user.name"));
-        httpServer = new HTTPServer(new HttpServerConfiguration(), testEventManager);
+        httpServer = new HTTPServer(config, testEventManager);
     }
 
     private void defineTopics() {

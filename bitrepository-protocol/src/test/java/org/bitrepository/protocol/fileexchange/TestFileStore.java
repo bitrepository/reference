@@ -60,7 +60,7 @@ public class TestFileStore {
      * @param outputStream
      * @return
      */
-    public InputStream readDefaultFile() {
+    public FileInputStream readDefaultFile() {
             return getInputstream(DEFAULT_EXISTING_FILE);
     }
     
@@ -70,7 +70,7 @@ public class TestFileStore {
      * @param outputStream
      * @return
      */
-    public InputStream getInputstream(String fileID) {
+    public FileInputStream getInputstream(String fileID) {
         try {
             return new FileInputStream(new File(storageDir, fileID));
         } catch (Exception e) {

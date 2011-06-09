@@ -78,15 +78,14 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
     }
 
     @Test(groups = {"test-first"})
-    public void identifyAndGetSinglePillar() throws Exception {
+    public void getFileFromSpecificPillar() throws Exception {
         addDescription("Tests whether a specific message is sent by the GetClient, when only a single pillar " +
         "participates");
         addStep("Set the number of pillars for this SLA to 1", "");
-        ((MutableClientSettings)slaConfiguration).setNumberOfPillars(1);
         
         addStep("Request the fastest delivery of a file. A callback listener should be supplied.", 
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
-        getFileClient.retrieveFastest(DEFAULT_FILE_ID);
+        getFileClient.getFileFromSpecificPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), PILLAR1_ID);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage = slaTopic.waitForMessage(IdentifyPillarsForGetFileRequest.class);
@@ -158,7 +157,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Make the GetClient ask for fastest pillar.", "It should send message to identify which pillars.");
 
-        getFileClient.retrieveFastest(fileId);
+        getFileClient.getFileFromFastestPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID));
 
         IdentifyPillarsForGetFileRequest identifyRequestMessage = 
             slaTopic.waitForMessage(IdentifyPillarsForGetFileRequest.class);
