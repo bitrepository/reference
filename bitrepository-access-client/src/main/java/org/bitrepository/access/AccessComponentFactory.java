@@ -30,7 +30,7 @@ import org.bitrepository.access.getfile.SimpleGetFileConversationFactory;
 import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
-import org.bitrepository.common.sla.SLAConfiguration;
+import org.bitrepository.common.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 
 /**
@@ -94,7 +94,7 @@ public class AccessComponentFactory {
      * 
      * @return A GetFileClient.
      */
-    public GetFileClient createGetFileClient(SLAConfiguration slaConfiguration) {
+    public GetFileClient createGetFileClient(ClientSettings slaConfiguration) {
         // TODO use the configurations instead!
         return new SimpleGetFileClient(ProtocolComponentFactory.getInstance().getMessageBus(),
                                        new SimpleGetFileConversationFactory(

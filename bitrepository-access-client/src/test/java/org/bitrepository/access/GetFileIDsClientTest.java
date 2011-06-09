@@ -24,26 +24,37 @@
  */
 package org.bitrepository.access;
 
+import java.io.File;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.bind.JAXBException;
+
 import org.bitrepository.access.getfileids.BasicGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.access.getfileids.TestGetFileIDsMessageFactory;
 import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
-import org.bitrepository.protocol.*;
-import org.jaccept.structure.ExtendedTestCase;
+import org.bitrepository.protocol.AbstractMessageListener;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.TestMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.math.BigInteger;
-import java.util.*;
 
 /**
  * Test class for the 'GetFileIDsClient'.
@@ -87,7 +98,7 @@ public class GetFileIDsClientTest extends DefaultFixtureClientTest {
         monitor = new MessageMonitor();
         ProtocolComponentFactory.getInstance().getMessageBus().addListener(queue, monitor);
 
-        messageFactory = new TestGetFileIDsMessageFactory(slaConfiguration.getSlaId());
+        messageFactory = new TestGetFileIDsMessageFactory(slaConfiguration.getId());
     }
 
     @AfterMethod(alwaysRun = true)

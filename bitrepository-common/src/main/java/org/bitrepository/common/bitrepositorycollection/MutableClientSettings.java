@@ -22,25 +22,25 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.common.sla;
+package org.bitrepository.common.bitrepositorycollection;
 
 
 /**
  * The concrete implementation of the SLAConfiguration interface. Contains set operations for all attributes,
  * eg. it is mutable.
  */
-public class MutableSLAConfiguration implements SLAConfiguration {	
+public class MutableClientSettings implements ClientSettings {	
     
-    private String slaId;
+    private String id;
     @Override
-	public String getSlaId() {
-        return slaId;
+	public String getId() {
+        return id;
     }
     /**
      * @see #getSlaId()
      */
-    public void setSlaId(String slaId) {
-        this.slaId = slaId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     private String slaTopicId;

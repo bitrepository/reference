@@ -27,7 +27,7 @@ package org.bitrepository.access.getfile;
 import org.bitrepository.access.AccessException;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.common.sla.SLAConfiguration;
+import org.bitrepository.common.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.CollectionBasedConversationMediator;
 import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -52,11 +52,11 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
     
-    private final SLAConfiguration slaConfiguration;
+    private final ClientSettings slaConfiguration;
 
     public SimpleGetFileClient(MessageBus messagebus, 
             SimpleGetFileConversationFactory simpleGetFileConversationFactory,
-            SLAConfiguration slaConfiguration) {
+            ClientSettings slaConfiguration) {
         super(simpleGetFileConversationFactory, messagebus, slaConfiguration.getClientTopicId());
         log.info("Initialized the GetFileClient");
 
@@ -70,12 +70,12 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
             throw new IllegalArgumentException("The String fileId may not be null or the empty string.");
         }
         log.info("Requesting fastest retrieval of the file '" + fileID + "' which belong to the SLA '" + 
-                slaConfiguration.getSlaId() + "'.");
+                slaConfiguration.getId() + "'.");
         // create message requesting delivery time for the given file.
         IdentifyPillarsForGetFileRequest msg = new IdentifyPillarsForGetFileRequest();
         msg.setMinVersion(BigInteger.valueOf(1L));
         msg.setVersion(BigInteger.valueOf(1L));
-        msg.setBitrepositoryContextID(slaConfiguration.getSlaId());
+        msg.setBitrepositoryContextID(slaConfiguration.getId());
         msg.setFileID(fileID);
         msg.setReplyTo(slaConfiguration.getClientTopicId());
 
@@ -98,7 +98,7 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
         GetFileRequest msg = new GetFileRequest();
         msg.setMinVersion(BigInteger.valueOf(1L));
         msg.setVersion(BigInteger.valueOf(1L));
-        msg.setBitrepositoryContextID(slaConfiguration.getSlaId());
+        msg.setBitrepositoryContextID(slaConfiguration.getId());
         msg.setFileID(fileID);
         msg.setPillarID(pillarID);
         msg.setReplyTo(slaConfiguration.getClientTopicId());

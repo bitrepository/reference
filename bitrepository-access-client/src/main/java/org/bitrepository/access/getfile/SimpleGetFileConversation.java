@@ -42,7 +42,7 @@ import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.common.sla.SLAConfiguration;
+import org.bitrepository.common.bitrepositorycollection.ClientSettings;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.protocol.AbstractMessagebusBackedConversation;
 import org.bitrepository.protocol.MessageBus;
@@ -78,7 +78,7 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
     /** The directory where the retrieved files should be placed. */
     private final File fileDir;
     /** The configuration specific to the SLA related to this conversion. */
-    private final SLAConfiguration slaConfiguration;
+    private final ClientSettings slaConfiguration;
     /** The timeout when getting a file. */
     private long getFileTimeout;
 
@@ -112,7 +112,7 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
      * @param fileDir The directory to store retrieved files in.
      */
     public SimpleGetFileConversation(MessageBus messageBus, 
-            SLAConfiguration slaConfiguration, 
+            ClientSettings slaConfiguration, 
                                      long getFileDefaultTimeout) {
         super(messageBus, UUID.randomUUID().toString());
 

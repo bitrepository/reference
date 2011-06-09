@@ -24,7 +24,7 @@
  */
 package org.bitrepository.access.getfile;
 
-import org.bitrepository.common.sla.SLAConfiguration;
+import org.bitrepository.common.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.ConversationFactory;
 import org.bitrepository.protocol.MessageBus;
 
@@ -33,7 +33,7 @@ public class SimpleGetFileConversationFactory implements ConversationFactory<Sim
     /** The message bus used by the conversations to communicate. */
     private final MessageBus messageBus;
     /** The configuration specific to the SLA related to this conversion. */
-    private final SLAConfiguration slaConfiguration;
+    private final ClientSettings slaConfiguration;
     /** The default timeout for GetFile operations. May be overridden by better data. */
     private long getFileDefaultTimeout;
     /**The directory where retrieved files are stored. */
@@ -46,7 +46,7 @@ public class SimpleGetFileConversationFactory implements ConversationFactory<Sim
      * @param getFileDefaultTimeout The default timeout for GetFile operations. May be overridden by better data.
      * @param fileDir The directory where retrieved files are stored.
      */
-    public SimpleGetFileConversationFactory(MessageBus messageBus, SLAConfiguration slaConfiguration,
+    public SimpleGetFileConversationFactory(MessageBus messageBus, ClientSettings slaConfiguration,
                                             long getFileDefaultTimeout, String fileDir) {
         this.messageBus = messageBus;
         this.fileDir = fileDir;

@@ -99,6 +99,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         GetFileRequest getFileRequest = createGetFileRequest(pillarId);
         getFileRequest.setCorrelationID(receivedGetFileRequest.getCorrelationID());
         getFileRequest.setFileAddress(receivedGetFileRequest.getFileAddress());
+        getFileRequest.setReplyTo(receivedGetFileRequest.getReplyTo());
         return getFileRequest;
     }
 

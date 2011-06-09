@@ -22,19 +22,14 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.common.sla;
+package org.bitrepository.common.bitrepositorycollection;
 
 
 /**
  * Defines the configuration parameters for a single Service Level Agreement.
  */
-public interface SLAConfiguration {
+public interface ClientSettings extends BitRepositoryCollectionSettings {
     /**
-     * Returns the ID for this SLA
-     */
-    public String getSlaId();
-
-	/**
 	 * Return the ID for the topic used for messages with are broadcasted to all participants for a given SLA. 
 	 * 
 	 * See <a href="https://sbforge.org/display/BITMAG/Queues+and+topics#Queuesandtopics-TheperSLAtopic">The per-SLA topic,/a> for details.
@@ -57,7 +52,7 @@ public interface SLAConfiguration {
 	
     /**
      * The location of the directory where the files which are downloaded/uploaded are placed. The location corresponds
-     *  to a url exposed by the http server.
+     *  to a url exposed by the http server. This might be null in case of no shared file system.
      */
     public String getLocalFileStorage();
 }

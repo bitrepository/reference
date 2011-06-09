@@ -39,7 +39,7 @@ public abstract class TestMessageFactory {
     protected static final String CORRELATION_ID_DEFAULT = "CorrelationID";
     protected static final String SLA_ID_DEFAULT = "SlaID";
     protected static final String REPLY_TO_DEFAULT = "ReplyTo";
-    protected static final String FILE_ID_DEFAULT = "Default-test-file";
+    public static final String FILE_ID_DEFAULT = "default-test-file.txt";
     protected static final BigInteger VERSION_DEFAULT = BigInteger.valueOf(1L);
 
     protected static final String TIME_MEASURE_UNIT_DEFAULT = "MILLISECONDS";

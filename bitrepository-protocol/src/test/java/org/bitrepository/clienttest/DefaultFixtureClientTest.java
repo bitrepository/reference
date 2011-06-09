@@ -27,11 +27,14 @@ package org.bitrepository.clienttest;
 import java.util.Date;
 
 import org.bitrepository.common.IntegrationTest;
-import org.bitrepository.common.sla.MutableSLAConfiguration;
-import org.bitrepository.common.sla.SLAConfiguration;
+import org.bitrepository.common.bitrepositorycollection.ClientSettings;
+import org.bitrepository.common.bitrepositorycollection.MutableClientSettings;
 import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.TestMessageFactory;
 import org.bitrepository.protocol.bus.MessageBusWrapper;
+import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
+import org.bitrepository.protocol.fileexchange.HTTPServer;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -42,7 +45,7 @@ import org.testng.annotations.BeforeMethod;
  */
 public abstract class DefaultFixtureClientTest extends IntegrationTest {
     protected MessageBus messageBus;
-    protected static final String DEFAULT_FILE_ID = "Default-test-file";
+    protected static final String DEFAULT_FILE_ID = TestMessageFactory.FILE_ID_DEFAULT;
     
     protected static String clientTopicId;
     protected MessageReceiver clientTopic;
@@ -58,13 +61,19 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     protected MessageReceiver pillar2Topic; 
     protected static final String PILLAR2_ID = "Pillar2";
     
-    protected SLAConfiguration slaConfiguration;
-    protected boolean useMockupPillar;
+    protected ClientSettings slaConfiguration;
+    
+    private boolean useMockupPillar = true;
+    
+    protected HTTPServer httpServer;
 
     @BeforeClass (alwaysRun = true)
     public void setupTest() {
         defineTopics();
-        hookupMessageBus();
+        if (useMockupPillar) {
+            hookupMessageBus();
+        }
+        hookupHttpServer();
     }
 
     @BeforeMethod (alwaysRun = true)
@@ -74,7 +83,19 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
 
     @AfterClass (alwaysRun = true)
     public void teardownTest() {
-        disconnectFromMessageBus(); 
+        if (useMockupPillar) {
+            disconnectFromMessageBus(); 
+        }
+    }
+    
+    /**
+     * Indicated whether the embedded mockup pillars are going to be used in the test (means the test is run as a client 
+     * component test, or if external pillar are going to be used. If external pillar are going to be used they need 
+     * to be started before running the test, and have the following configuration: <ul>
+     * <li>The pillar should contain one file, the {@link TestMessageFactory#FILE_ID_DEFAULT} file. The c
+     */
+    public boolean useMockupPillar() {
+        return useMockupPillar;
     }
 
     private void hookupMessageBus() {
@@ -88,6 +109,12 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
         messageBus.addListener(pillar1TopicId, pillar1Topic.getMessageListener());  
         messageBus.addListener(pillar2TopicId, pillar2Topic.getMessageListener());       
     }
+    
+    private void hookupHttpServer() {
+        HttpServerConfiguration config = new HttpServerConfiguration();
+        config.setHttpServerPath("/dav/" + System.getProperty("user.name"));
+        httpServer = new HTTPServer(new HttpServerConfiguration(), testEventManager);
+    }
 
     private void defineTopics() {
         String topicPostfix = "-" + System.getProperty("user.name") + "-" + new Date().getTime();
@@ -99,8 +126,8 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
 
     private void configureSLA(String testName) {
         String slaID = testName + "-" + System.getProperty("user.name") + "-" + new Date().getTime();
-        MutableSLAConfiguration mutableSLAConfiguration = new MutableSLAConfiguration();
-        mutableSLAConfiguration.setSlaId(slaID);
+        MutableClientSettings mutableSLAConfiguration = new MutableClientSettings();
+        mutableSLAConfiguration.setId(slaID);
         mutableSLAConfiguration.setClientTopicId(clientTopicId);
         mutableSLAConfiguration.setSlaTopicId(slaTopicId);
         mutableSLAConfiguration.setLocalFileStorage("target/fileDir");
