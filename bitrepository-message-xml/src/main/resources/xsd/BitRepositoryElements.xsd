@@ -28,7 +28,7 @@
             <xs:choice>
               <xs:element ref="FileIDs">
                 <xs:annotation><xs:documentation xml:lang="en">
-                Identifiers that uniquely identifies the data in given bitrepository context
+                Identifiers that uniquely identifies the data in given bit repository collection
                 </xs:documentation></xs:annotation>
               </xs:element>
               <!-- todo To be extended with more ways to identify the files concerned -->
@@ -48,13 +48,13 @@
           </xs:complexType>
         </xs:element>
 
-        <xs:element name="BitrepositoryContexts">
+        <xs:element name="BitRepositoryCollections">
           <xs:annotation><xs:documentation xml:lang="en">
-          Identifies the bitrepository contexts which the alarm concerns
+          Identifies the bit repository collections which the alarm concerns
           </xs:documentation></xs:annotation>
           <xs:complexType>
             <xs:sequence>
-              <xs:element ref="BitrepositoryContextID" minOccurs="0" maxOccurs="unbounded" />
+              <xs:element ref="BitRepositoryCollectionID" minOccurs="0" maxOccurs="unbounded" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -258,6 +258,33 @@
     </xs:complexType>
   </xs:element>
 
+  <xs:element name="StatusPerComponent">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Contain information for a componenet in the bit repository
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Contributor" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of the component contributing to the status
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element name="ContributorStatus" type="ContributorStatus_TYPE">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Status from the contributor
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element name="StatusTimestamp" type="SystemDateTime_TYPE">
+          <xs:annotation><xs:documentation xml:lang="en">
+          The time when the status was calculated
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
   <xs:element name="ChecksumsDataPerFileID">
     <xs:complexType>
       <xs:sequence>
@@ -325,7 +352,7 @@
   <xs:group name="Core">
     <xs:annotation><xs:documentation xml:lang="en">
     Includes elements that all protocol messages must include.
-    The core part will NOT be included in specific bitrepository context related encryption
+    The core part will NOT be included in specific bit repository collection related encryption
     </xs:documentation></xs:annotation>
 
     <xs:sequence>
@@ -336,10 +363,12 @@
         </xs:documentation></xs:annotation>
       </xs:element>
 
-      <xs:element name="BitrepositoryContextID" type="BitrepositoryContextID_TYPE">
+      <xs:element name="BitRepositoryCollectionID" type="BitRepositoryCollectionID_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
-        BitrepositoryContextID is a unique identifier for bitrepository context which data belongs to.
-        This is also the identification of decryption and keys for contents of message.
+        BitRepositoryCollectionID is a unique identifier for bit repository collection 
+        which data belongs to.
+        This is also the identification of decryption and keys for contents of message, 
+        and it is part of unique identification of files together with a file id.
         </xs:documentation></xs:annotation>
       </xs:element>
 
@@ -411,7 +440,7 @@
 
   <xs:element name="FileIDs">
     <xs:annotation><xs:documentation xml:lang="en">
-    Identifiers that uniquely identifies the data in given bitrepository context which are requested for
+    Identifiers that uniquely identifies the data in given bit repository collection which are requested for
     These can be specified in different ways, e.g. a list, an all constant or via an address
     </xs:documentation></xs:annotation>
 
@@ -419,13 +448,13 @@
       <xs:choice>
         <xs:element name="FileID" type="FileID_TYPE" minOccurs="1" maxOccurs="unbounded" >
           <xs:annotation><xs:documentation xml:lang="en">
-          List of identifiers for data in given bitrepository context
+          List of identifiers for data in given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element name="AllFileIDs" type="xs:string">
           <xs:annotation><xs:documentation xml:lang="en">
-          Specification that all data identifiers in bitrepository context is requested
+          Specification that all data identifiers in bit repository collection is requested
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -561,14 +590,14 @@
     <xs:annotation><xs:documentation xml:lang="en">
     Information about which type of checksum is used for data on checksums pillar (algorith and possible salt)
     In a Get this information will only be relevant for identification of pillars
-    In a Put this will give input to check if the right put is performed on checksums pillar according to bitrepository context
+    In a Put this will give input to check if the right put is performed on checksums pillar according to bit repository collection
     In first version this will be text like MD5, later it will be aligned with a standard
     </xs:documentation></xs:annotation>
   </xs:element>
 
   <xs:element name="PillarID" type="PillarID_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    A unique identifier for a specific pillar (covered by the bitrepository context which data belongs to)
+    A unique identifier for a specific pillar (covered by the bit repository collection which data belongs to)
     </xs:documentation></xs:annotation>
   </xs:element>
 
@@ -664,9 +693,30 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="BitrepositoryContextID" type="BitrepositoryContextID_TYPE">
+  <xs:element name="ResultingStatus">
     <xs:annotation><xs:documentation xml:lang="en">
-    A unique identifier for bitrepository context which data belongs to.
+    result is either given via specified address or directly
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="ResultAddress" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where result data has been delivered (if completed)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="StatusPerComponent">
+          <xs:annotation><xs:documentation xml:lang="en">
+          status from the component as result, - if given in this message instead of via data transfer
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="BitRepositoryCollectionID" type="BitRepositoryCollectionID_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    A unique identifier for bit repository collection which data belongs to.
     </xs:documentation></xs:annotation>
   </xs:element>
 
@@ -1009,6 +1059,14 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="ContributorStatus_TYPE">
+    <xs:restriction base="xs:string">
+    <xs:annotation><xs:documentation xml:lang="en">
+    TBD: extend this later e.g. with status elements for ping, water level from pillars etc.
+    </xs:documentation></xs:annotation>
+    </xs:restriction>
+  </xs:simpleType>
+ 
   <xs:simpleType name="FinalResponseCode_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Type with all final response codes for final response messages in the bit repository protocol
@@ -1365,7 +1423,7 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="BitrepositoryContextID_TYPE">
+  <xs:simpleType name="BitRepositoryCollectionID_TYPE">
     <xs:restriction base="xs:string">
     </xs:restriction>
   </xs:simpleType>

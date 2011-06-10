@@ -34,7 +34,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for requested data in given bitrepository context
+          Unique identifier for requested data in given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -56,7 +56,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for requested data in given bitrepository context
+          Unique identifier for requested data in given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -105,7 +105,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for requested data in given bitrepository context
+          Unique identifier for requested data in given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -148,7 +148,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for requested data in given bitrepository context
+          Unique identifier for requested data in given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -209,7 +209,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for requested data in given bitrepository context
+          Unique identifier for requested data in given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -322,7 +322,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for data to be put for given bitrepository context
+          Unique identifier for data to be put for given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -386,7 +386,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for data to be put for given bitrepository context
+          Unique identifier for data to be put for given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -433,7 +433,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for data to be put for given bitrepository context
+          Unique identifier for data to be put for given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -480,7 +480,7 @@
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bitrepository context which the checksums are requested for
+          FileIDs uniquely identifies the data in given bit repository collection which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -509,7 +509,7 @@
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bitrepository context which the checksums are requested for
+          FileIDs uniquely identifies the data in given bit repository collection which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -571,7 +571,7 @@
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bitrepository context which the checksums are requested for
+          FileIDs uniquely identifies the data in given bit repository collection which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -613,7 +613,7 @@
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bitrepository context which the checksums are requested for
+          FileIDs uniquely identifies the data in given bit repository collection which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -660,7 +660,7 @@
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bitrepository context which the checksums are requested for
+          FileIDs uniquely identifies the data in given bit repository collection which the checksums are requested for
           (Also in result, and traceable via CorrelationID)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -709,7 +709,7 @@
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bitrepository context which the file ids are requested for
+          FileIDs uniquely identifies the data in given bit repository collection which the file ids are requested for
           Given in order to be able to give possible estimate of time to deliver
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -738,7 +738,7 @@
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en" >
-          FileIDs uniquely identifies the data in given bitrepository context which the file ids are requested for
+          FileIDs uniquely identifies the data in given bit repository collection which the file ids are requested for
           only to repeat parameter from request
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -782,7 +782,7 @@
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bitrepository context which the file ids are requested for
+          FileIDs uniquely identifies the data in given bit repository collection which the file ids are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -818,7 +818,7 @@
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bitrepository context which the file ids are requested for
+          FileIDs uniquely identifies the data in given bit repository collection which the file ids are requested for
           (otherwise it is known via CorrelationID)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -860,7 +860,7 @@
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bitrepository context which the file ids are requested for
+          FileIDs uniquely identifies the data in given bit repository collection which the file ids are requested for
           (otherwise it is known via CorrelationID)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -874,6 +874,197 @@
         <xs:element ref="bre:ResultingFileIDs">
           <xs:annotation><xs:documentation xml:lang="en">
           Result with file IDs
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ************************************************************** -->
+  <!-- * Messages Get Status                                     * -->
+  <!-- ************************************************************** -->
+
+  <!-- **************                                                 -->
+  <!-- *** Messages for IdentifyContributorsForGetStatus Primitive      -->
+
+  <xs:element name="IdentifyContributorsForGetStatusRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in IdentifyPillarsForGetChecksums primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message 
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:FileIDs" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          FileIDs uniquely identifies the data in given bit repository collection which the checksums are requested for
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FileChecksumSpec" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type and possible salt parameter requested
+          (only pillars that can deliver this kind of checksum should reply)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="IdentifyContributorsForGetStatusResponse">
+    <xs:annotation><xs:documentation xml:lang="en">
+    RESPONSE in IdentifyPillarsForGetChecksums primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:FileIDs" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          FileIDs uniquely identifies the data in given bit repository collection which the checksums are requested for
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FileChecksumSpec" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type and possible salt requested
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:PillarID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for pillar replying
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:PillarChecksumSpec" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type in case it is a checksum pillar replying,
+          only used for extra checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:TimeToDeliver" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Estimated time before delivery of checksums requested
+          That means the time from receival of a GetChecksumsRequest message to the time
+          when data is uploaded.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- **************                                                 -->
+  <!-- *** Messages for GetStatus Primitive                        -->
+
+  <!-- ***  Messages for GetStatus Primitive  -->
+  <!-- ***  which corresponds to ReplyTo from IdentifyContributorsForGetStatusResponse     -->
+
+  <xs:element name="GetStatusRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in GetStatus primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:Contributor" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving component, which can be used for possible checks
+          (IdentifyPillarsForGetChecksumsResponse.ReplyTo should ensure that right pillar is reached)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where results must be delivered via data transmission.
+          In cases where the address is not given, the result will be given in the GetChecksumsFinalResponse message
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetStatusProgressResponse">
+    <xs:annotation><xs:documentation xml:lang="en">
+    RESPONSE in GetStatus primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:Contributor" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving pillar, which can be used for possible checks
+          (otherwise it is known via CorrelationID and ReplyTo)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where results will be delivered
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ProgressResponseInfo" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          ProgressResponse information telling whether GetStatusRequest has been received and is expected to be completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetStatusFinalResponse">
+    <xs:annotation><xs:documentation xml:lang="en">
+    COMPLETE in GetStatus primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:Contributor" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving pillar, which can be used for possible checks
+          (otherwise it is known via CorrelationID and ReplyTo)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FinalResponseInfo" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Information on how GetStatus has been completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ResultingStatus">
+          <xs:annotation><xs:documentation xml:lang="en">
+          result with requested status
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -902,7 +1093,7 @@
 
         <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileID uniquely identifies the data in given bitrepository context which the audit trails is requested for
+          FileID uniquely identifies the data in given bit repository collection which the audit trails is requested for
           Given in order to be able to give possible estimate of time to deliver
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -931,7 +1122,7 @@
 
         <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en" >
-          FileID uniquely identifies the data in given bitrepository context which the audit trails is requested for
+          FileID uniquely identifies the data in given bit repository collection which the audit trails is requested for
           only to repeat parameter from request
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -976,7 +1167,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileID uniquely identifies the data in given bitrepository context which the audit trails is requested for
+          FileID uniquely identifies the data in given bit repository collection which the audit trails is requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -1012,7 +1203,7 @@
 
         <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileID uniquely identifies the data in given bitrepository context which the audit trails is requested for
+          FileID uniquely identifies the data in given bit repository collection which the audit trails is requested for
           (otherwise it is known via CorrelationID)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1054,7 +1245,7 @@
 
         <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileID uniquely identifies the data in given bitrepository context which the audit trailsis requested for
+          FileID uniquely identifies the data in given bit repository collection which the audit trailsis requested for
           (otherwise it is known via CorrelationID)
           </xs:documentation></xs:annotation>
         </xs:element>

@@ -23,9 +23,9 @@
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="bre:BitrepositoryContextID" > 
+        <xs:element ref="bre:BitRepositoryCollectionID" > 
           <xs:annotation><xs:documentation xml:lang="en">
-          BitrepositoryContextID is a unique identifier for bitrepository context which data belongs to.
+          A unique identifier for bit repository collection which data belongs to.
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -55,9 +55,9 @@
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="bre:BitrepositoryContextID" > 
+        <xs:element ref="bre:BitRepositoryCollectionID" > 
           <xs:annotation><xs:documentation xml:lang="en">
-          BitrepositoryContextID is a unique identifier for bitrepository context which data belongs to.
+          A unique identifier for bit repository collection which data belongs to.
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -88,9 +88,9 @@
     <xs:complexType>
       <xs:sequence>
 
-        <xs:element ref="bre:BitrepositoryContextID" > 
+        <xs:element ref="bre:BitRepositoryCollectionID" > 
           <xs:annotation><xs:documentation xml:lang="en">
-          BitrepositoryContextID is a unique identifier for bitrepository context which data belongs to.
+          A unique identifier for bit repository collection which data belongs to.
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -103,6 +103,33 @@
         <xs:element ref="bre:FileIDsData"> 
           <xs:annotation><xs:documentation xml:lang="en">
           Resulting data with list of file identifiers in result
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ***************************** -->
+  <!-- * Results for GetStatus     * -->
+  <!-- ***************************** -->
+
+  <xs:element name="GetStatusResults">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Data format for delivery of data IDs as result of GetFileIDs
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+
+        <xs:element ref="bre:BitRepositoryCollectionID" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          A unique identifier for bit repository collection status is given for.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:StatusPerComponent"> 
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of status contributed from different components
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -127,9 +154,9 @@
           </xs:documentation></xs:annotation>
         </xs:element>
         
-        <xs:element ref="bre:BitrepositoryContextID" > 
+        <xs:element ref="bre:BitRepositoryCollectionID" > 
           <xs:annotation><xs:documentation xml:lang="en">
-          BitrepositoryContextID is a unique identifier for bitrepository context which data belongs to.
+          A unique identifier for bit repository collection which data belongs to.
           </xs:documentation></xs:annotation>
         </xs:element>
 
