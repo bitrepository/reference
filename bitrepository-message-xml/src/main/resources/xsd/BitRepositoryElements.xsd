@@ -258,17 +258,12 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="StatusPerComponent">
+  <xs:element name="ComponentStatus">
     <xs:annotation><xs:documentation xml:lang="en">
     Contain information for a componenet in the bit repository
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="Contributor" minOccurs="0" maxOccurs="1" > 
-          <xs:annotation><xs:documentation xml:lang="en">
-          Identifier of the component contributing to the status
-          </xs:documentation></xs:annotation>
-        </xs:element>
 
         <xs:element name="ContributorStatus" type="ContributorStatus_TYPE">
           <xs:annotation><xs:documentation xml:lang="en">
@@ -705,7 +700,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="StatusPerComponent">
+        <xs:element ref="ComponentStatus">
           <xs:annotation><xs:documentation xml:lang="en">
           status from the component as result, - if given in this message instead of via data transfer
           </xs:documentation></xs:annotation>
@@ -1040,6 +1035,13 @@
       <xs:element name="ChecksumSalt" type="SaltParameter_TYPE" minOccurs="0" maxOccurs="1" >
         <xs:annotation><xs:documentation xml:lang="en">
         Optionally a salt parameter included in the checksum calculation
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element ref="FilePart" minOccurs="0" maxOccurs="1" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Optionally a specification of which part of a file should be included in the checksum calculation
+        Note that this only makes sense for requests on sigle checksums on a file
         </xs:documentation></xs:annotation>
       </xs:element>
     </xs:sequence>

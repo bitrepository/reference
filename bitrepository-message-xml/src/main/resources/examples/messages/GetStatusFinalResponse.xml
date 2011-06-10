@@ -2,29 +2,29 @@
 <!--
   #%L
   Bitrepository message xml definitions
-  
-  $Id$
-  $HeadURL$
+
+  $Id: GetAuditTrailsFinalResponse.xml 163 2011-05-04 10:14:47Z bam $
+  $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-message-xml/src/main/resources/examples/messages/GetAuditTrailsFinalResponse.xml $
   %%
   Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
   This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Lesser General Public License as 
-  published by the Free Software Foundation, either version 2.1 of the 
+  it under the terms of the GNU Lesser General Public License as
+  published by the Free Software Foundation, either version 2.1 of the
   License, or (at your option) any later version.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Lesser Public License for more details.
-  
-  You should have received a copy of the GNU General Lesser Public 
+
+  You should have received a copy of the GNU General Lesser Public
   License along with this program.  If not, see
   <http://www.gnu.org/licenses/lgpl-2.1.html>.
   #L%
   -->
 
-<bro:IdentifyContributorsForGetAuditTrailsResponse
+<bro:GetStatusFinalResponse
         version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
         xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
@@ -32,12 +32,17 @@
   <To>ToQueueOrTopic</To>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
   <Contributor>
-      <ComponentID>MyPillar</ComponentID>
-      <ComponentType>PILLAR</ComponentType>
+    <ComponentID>MyPillar</ComponentID>
+    <ComponentType>PILLAR</ComponentType>
   </Contributor>
-  <FileID>MyFile</FileID>
-  <TimeToDeliver>
-    <TimeMeasureUnit>MILLISECONDS</TimeMeasureUnit>
-    <TimeMeasureValue>1000</TimeMeasureValue>
-  </TimeToDeliver>
-</bro:IdentifyContributorsForGetAuditTrailsResponse>
+  <FinalResponseInfo>
+    <FinalResponseCode>480</FinalResponseCode>
+    <FinalResponseText>successfull completion</FinalResponseText>
+  </FinalResponseInfo>
+  <ResultingStatus>
+    <ComponentStatus>
+      <ContributorStatus>MyStatus</ContributorStatus>
+      <StatusTimestamp>2011-02-17T09:47:00</StatusTimestamp>
+    </ComponentStatus>
+  </ResultingStatus>
+</bro:GetStatusFinalResponse>

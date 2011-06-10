@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
   Bitrepository message xml definitions
   
-  $Id$
-  $HeadURL$
+  $Id: IdentifyContributorsForGetAuditTrailsResponse.xml 183 2011-06-01 13:29:13Z elzi $
+  $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-message-xml/src/main/resources/examples/messages/IdentifyContributorsForGetAuditTrailsResponse.xml $
   %%
   Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
@@ -24,9 +24,9 @@
   #L%
   -->
 
-<bro:GetAuditTrailsRequest version="1" minVersion="1"
-xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
-xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
+<bro:IdentifyContributorsForGetStatusResponse
+        version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
+        xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
   <BitRepositoryCollectionID>MySla</BitRepositoryCollectionID>
   <To>ToQueueOrTopic</To>
@@ -35,5 +35,8 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
       <ComponentID>MyPillar</ComponentID>
       <ComponentType>PILLAR</ComponentType>
   </Contributor>
-  <FileID>MyDataID</FileID>
-</bro:GetAuditTrailsRequest>
+  <TimeToDeliver>
+    <TimeMeasureUnit>MILLISECONDS</TimeMeasureUnit>
+    <TimeMeasureValue>1000</TimeMeasureValue>
+  </TimeToDeliver>
+</bro:IdentifyContributorsForGetStatusResponse>

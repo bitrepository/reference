@@ -3,8 +3,8 @@
   #%L
   Bitmagasin protokol
   
-  $Id$
-  $HeadURL$
+  $Id: GetChecksumsResults.xml 183 2011-06-01 13:29:13Z elzi $
+  $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-message-xml/src/main/resources/examples/data/GetChecksumsResults.xml $
   %%
   Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
@@ -24,21 +24,16 @@
   #L%
   -->
 
-<bro:GetFileIDsResults version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryData.xsd' 
+<bro:GetStatusResults version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryData.xsd' 
 xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <BitRepositoryCollectionID>MySla</BitRepositoryCollectionID>
-  <PillarID>MyPillar</PillarID>
-  <FileIDsData>
-    <NoOfItems>2</NoOfItems>
-    <FileIDsDataItems>
-      <FileIDsDataItem>
-        <FileID>MydataId1</FileID>
-        <CalculationTimestamp>2011-02-17T09:47:00</CalculationTimestamp>
-      </FileIDsDataItem>
-      <FileIDsDataItem>
-        <FileID>MydataId1</FileID>
-        <CalculationTimestamp>2011-02-17T09:47:00</CalculationTimestamp>
-      </FileIDsDataItem>
-    </FileIDsDataItems>
-  </FileIDsData>
-</bro:GetFileIDsResults>
+  <Contributor>
+      <ComponentID>MyClientID</ComponentID>
+      <ComponentType>CLIENT</ComponentType>
+      <ComponentComment>Client doing integrity check</ComponentComment>
+  </Contributor>
+  <ComponentStatus>
+      <ContributorStatus>Status</ContributorStatus>
+      <StatusTimestamp>2011-02-17T09:47:00</StatusTimestamp>
+  </ComponentStatus>
+</bro:GetStatusResults>

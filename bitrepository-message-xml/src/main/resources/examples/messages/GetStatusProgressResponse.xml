@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
   Bitrepository message xml definitions
   
-  $Id$
-  $HeadURL$
+  $Id: GetAuditTrailsProgressResponse.xml 149 2011-04-15 11:42:09Z bam $
+  $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-message-xml/src/main/resources/examples/messages/GetAuditTrailsProgressResponse.xml $
   %%
   Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
@@ -24,16 +24,19 @@
   #L%
   -->
 
-<bro:GetAuditTrailsRequest version="1" minVersion="1"
-xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
-xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
+<bro:GetStatusProgressResponse
+        version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
+        xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
   <BitRepositoryCollectionID>MySla</BitRepositoryCollectionID>
   <To>ToQueueOrTopic</To>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
   <Contributor>
-      <ComponentID>MyPillar</ComponentID>
-      <ComponentType>PILLAR</ComponentType>
+    <ComponentID>MyPillar</ComponentID>
+    <ComponentType>PILLAR</ComponentType>
   </Contributor>
-  <FileID>MyDataID</FileID>
-</bro:GetAuditTrailsRequest>
+  <ProgressResponseInfo>
+    <ProgressResponseCode>460</ProgressResponseCode>
+    <ProgressResponseText>Message request has been received and is expected to be met successfully</ProgressResponseText>
+  </ProgressResponseInfo>
+</bro:GetStatusProgressResponse>

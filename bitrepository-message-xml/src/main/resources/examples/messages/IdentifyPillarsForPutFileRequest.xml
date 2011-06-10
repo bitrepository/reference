@@ -28,7 +28,7 @@
 xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
 xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <CorrelationID>12345</CorrelationID>
-  <BitrepositoryContextID>MySla</BitrepositoryContextID>
+  <BitRepositoryCollectionID>MySla</BitRepositoryCollectionID>
   <To>ToQueueOrTopic</To>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
 </bro:IdentifyPillarsForPutFileRequest>

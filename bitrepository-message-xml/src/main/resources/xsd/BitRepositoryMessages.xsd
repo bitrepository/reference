@@ -890,7 +890,7 @@
 
   <xs:element name="IdentifyContributorsForGetStatusRequest">
     <xs:annotation><xs:documentation xml:lang="en">
-    REQUEST in IdentifyPillarsForGetChecksums primitive
+    REQUEST in IdentifyPillarsForGetStatus primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -899,19 +899,6 @@
           The mandatory part of a message 
           </xs:documentation></xs:annotation>
         </xs:group>
-
-        <xs:element ref="bre:FileIDs" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bit repository collection which the checksums are requested for
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element ref="bre:FileChecksumSpec" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          Checksums type and possible salt parameter requested
-          (only pillars that can deliver this kind of checksum should reply)
-          </xs:documentation></xs:annotation>
-        </xs:element>
       </xs:sequence>
       <xs:attributeGroup ref="bre:VersionAttributes"/>
     </xs:complexType>
@@ -919,7 +906,7 @@
 
   <xs:element name="IdentifyContributorsForGetStatusResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    RESPONSE in IdentifyPillarsForGetChecksums primitive
+    RESPONSE in IdentifyContributorsForGetStatus primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -929,28 +916,9 @@
           </xs:documentation></xs:annotation>
         </xs:group>
 
-        <xs:element ref="bre:FileIDs" >
+        <xs:element ref="bre:Contributor" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bit repository collection which the checksums are requested for
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element ref="bre:FileChecksumSpec" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          Checksums type and possible salt requested
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element ref="bre:PillarID" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for pillar replying
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element ref="bre:PillarChecksumSpec" minOccurs="0" maxOccurs="1" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          Checksums type in case it is a checksum pillar replying,
-          only used for extra checks
+          Unique identification of contributor replying
           </xs:documentation></xs:annotation>
         </xs:element>
 

@@ -55,9 +55,9 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
       </Contributor>
       <DataTransmission>todo</DataTransmission>
     </Components>
-    <BitrepositoryContexts>
-      <BitrepositoryContextID>MyBitrepositoryContextID</BitrepositoryContextID>
-    </BitrepositoryContexts>
+    <BitRepositoryCollections>
+      <BitRepositoryCollectionID>MyBitRepositoryCollection</BitRepositoryCollectionID>
+    </BitRepositoryCollections>
     <Messages>todo</Messages>
   </AlarmConcerning>
 </bro:Alarm>

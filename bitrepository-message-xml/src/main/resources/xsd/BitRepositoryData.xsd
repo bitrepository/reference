@@ -127,7 +127,13 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:StatusPerComponent"> 
+        <xs:element ref="bre:Contributor" minOccurs="0" maxOccurs="1" > 
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of the component contributing to the status
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ComponentStatus"> 
           <xs:annotation><xs:documentation xml:lang="en">
           List of status contributed from different components
           </xs:documentation></xs:annotation>
