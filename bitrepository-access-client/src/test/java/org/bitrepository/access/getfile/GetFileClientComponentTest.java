@@ -173,7 +173,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
         fastReply.setFileID(identifyRequestMessage.getFileID());
         fastReply.setMinVersion(BigInteger.valueOf(1L));
         fastReply.setVersion(BigInteger.valueOf(1L));
-        fastReply.setBitrepositoryContextID(identifyRequestMessage.getBitrepositoryContextID());
+        fastReply.setBitRepositoryCollectionID(identifyRequestMessage.getBitRepositoryCollectionID());
         fastReply.setTimeToDeliver(fastTime);
         fastReply.setPillarID(fastPillar);  
         fastReply.setReplyTo(pillar1TopicId);
@@ -185,7 +185,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
         slowReply.setFileID(identifyRequestMessage.getFileID());
         slowReply.setMinVersion(BigInteger.valueOf(1L));
         slowReply.setVersion(BigInteger.valueOf(1L));
-        slowReply.setBitrepositoryContextID(identifyRequestMessage.getBitrepositoryContextID());
+        slowReply.setBitRepositoryCollectionID(identifyRequestMessage.getBitRepositoryCollectionID());
         slowReply.setTimeToDeliver(slowTime);
         slowReply.setPillarID(slowPillar);  
         slowReply.setReplyTo(pillar2TopicId);

@@ -235,7 +235,7 @@ public class SimplePutClient extends PutClientAPI implements PutClientExternalAP
         putMsg.setFileAddress(url.toExternalForm());
         putMsg.setFileID(fileId);
         putMsg.setPillarID(pillarID);
-        putMsg.setBitrepositoryContextID(slaID);
+        putMsg.setBitRepositoryCollectionID(slaID);
 
         return putMsg;
     }
@@ -252,7 +252,7 @@ public class SimplePutClient extends PutClientAPI implements PutClientExternalAP
         IdentifyPillarsForPutFileRequest identifyMsg = new IdentifyPillarsForPutFileRequest();
         identifyMsg.setCorrelationID("SOME-CORRELATION-ID");
         identifyMsg.setReplyTo(queue);
-        identifyMsg.setBitrepositoryContextID(slaId);
+        identifyMsg.setBitRepositoryCollectionID(slaId);
         identifyMsg.setMinVersion(BigInteger.valueOf(1L));
         identifyMsg.setVersion(BigInteger.valueOf(1L));
 

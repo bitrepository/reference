@@ -64,7 +64,7 @@ public class TestGetFileIDsMessageFactory extends TestMessageFactory {
             String correlationID, String slaID, String replyTo, List<String> fileIDlist) {
         IdentifyPillarsForGetFileIDsRequest request = new IdentifyPillarsForGetFileIDsRequest();
         request.setCorrelationID(correlationID);
-        request.setBitrepositoryContextID(slaID);
+        request.setBitRepositoryCollectionID(slaID);
         request.setReplyTo(replyTo);
         FileIDs fileIDs = new FileIDs();
         request.setFileIDs(fileIDs);
@@ -99,7 +99,7 @@ public class TestGetFileIDsMessageFactory extends TestMessageFactory {
             String timeMeasureUnit, BigInteger timeMeasureValue) {
         IdentifyPillarsForGetFileIDsResponse response = new IdentifyPillarsForGetFileIDsResponse();
         response.setCorrelationID(correlationID);
-        response.setBitrepositoryContextID(slaID);
+        response.setBitRepositoryCollectionID(slaID);
         response.setReplyTo(replyTo);
         response.setPillarID(pillarID);
         // todo how do I add a fileID to fileIDs?
@@ -138,7 +138,7 @@ public class TestGetFileIDsMessageFactory extends TestMessageFactory {
             String correlationID, String slaID, String replyTo, String pillarID, FileIDs fileIDs) {
         GetFileIDsRequest request = new GetFileIDsRequest();
         request.setCorrelationID(correlationID);
-        request.setBitrepositoryContextID(slaID);
+        request.setBitRepositoryCollectionID(slaID);
         request.setReplyTo(replyTo);
         request.setPillarID(pillarID);
         request.setFileIDs(fileIDs);
@@ -173,7 +173,7 @@ public class TestGetFileIDsMessageFactory extends TestMessageFactory {
             String responseCode, String responseText) {
         GetFileIDsProgressResponse response = new GetFileIDsProgressResponse();
         response.setCorrelationID(correlationID);
-        response.setBitrepositoryContextID(slaID);
+        response.setBitRepositoryCollectionID(slaID);
         response.setReplyTo(replyTo);
         response.setPillarID(pillarID);
         response.setFileIDs(fileIDs);
@@ -215,7 +215,7 @@ public class TestGetFileIDsMessageFactory extends TestMessageFactory {
             String completeCode, String completeText, ResultingFileIDs resultingFileIDs) {
         GetFileIDsFinalResponse complete = new GetFileIDsFinalResponse();
         complete.setCorrelationID(correlationID);
-        complete.setBitrepositoryContextID(slaID);
+        complete.setBitRepositoryCollectionID(slaID);
         complete.setReplyTo(replyTo);
         complete.setPillarID(pillarID);
 

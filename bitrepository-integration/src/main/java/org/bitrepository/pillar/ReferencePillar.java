@@ -117,15 +117,15 @@ public class ReferencePillar implements PillarAPI {
     @Override
     public void identifyForGetFile(IdentifyPillarsForGetFileRequest msg) {
         ArgumentValidationUtils.checkNotNull(msg, "IdentifyPillarsForGetFileRequest msg");
-        if(!slaIds.contains(msg.getBitrepositoryContextID())) {
+        if(!slaIds.contains(msg.getBitRepositoryCollectionID())) {
             // TODO is this the correct log-level? This pillar is just no part of the given SLA!
             log.warn("The SLA '{}' is not known by this reference pillar. Ignoring "
-                    + "IdentifyPillarsForGetFileRequest '{}'.", msg.getBitrepositoryContextID(), msg);
+                    + "IdentifyPillarsForGetFileRequest '{}'.", msg.getBitRepositoryCollectionID(), msg);
             return;
         }
         
         // find file.
-        File targetFile = archive.findFile(msg.getFileID(), msg.getBitrepositoryContextID());
+        File targetFile = archive.findFile(msg.getFileID(), msg.getBitRepositoryCollectionID());
         TimeMeasureTYPE timeToDeliver = new TimeMeasureTYPE();
         if(targetFile != null) {
             // get time
@@ -163,10 +163,10 @@ public class ReferencePillar implements PillarAPI {
     @Override
     public void identifyForPutFile(IdentifyPillarsForPutFileRequest msg) {
         ArgumentValidationUtils.checkNotNull(msg, "IdentifyPillarsForPutFileRequest msg");
-        if(!slaIds.contains(msg.getBitrepositoryContextID())) {
+        if(!slaIds.contains(msg.getBitRepositoryCollectionID())) {
             // TODO is this the correct log-level? This pillar is just no part of the given SLA!
             log.warn("The SLA '{}' is not known by this reference pillar. Ignoring "
-                    + "IdentifyPillarsForGetFileRequest '{}'.", msg.getBitrepositoryContextID(), msg);
+                    + "IdentifyPillarsForGetFileRequest '{}'.", msg.getBitRepositoryCollectionID(), msg);
             return;
         }
         
@@ -190,10 +190,10 @@ public class ReferencePillar implements PillarAPI {
     @Override
     public void getFile(GetFileRequest msg) {
         ArgumentValidationUtils.checkNotNull(msg, "GetFileRequest msg");
-        if(!slaIds.contains(msg.getBitrepositoryContextID())) {
+        if(!slaIds.contains(msg.getBitRepositoryCollectionID())) {
             // TODO is this the correct log-level? This pillar is just no part of the given SLA!
             log.warn("The SLA '{}' is not known by this reference pillar. Ignoring "
-                    + "IdentifyPillarsForGetFileRequest '{}'.", msg.getBitrepositoryContextID(), msg);
+                    + "IdentifyPillarsForGetFileRequest '{}'.", msg.getBitRepositoryCollectionID(), msg);
             return;
         }
         if(!msg.getPillarID().equals(pillarId)) {
@@ -203,7 +203,7 @@ public class ReferencePillar implements PillarAPI {
         }
         
         // retrieve the file.
-        File targetFile = archive.findFile(msg.getFileID(), msg.getBitrepositoryContextID());
+        File targetFile = archive.findFile(msg.getFileID(), msg.getBitRepositoryCollectionID());
         
         // create the progress response message 
         GetFileProgressResponse response = messageCreator.createGetFileProgressResponse(msg);
@@ -235,8 +235,8 @@ public class ReferencePillar implements PillarAPI {
         
         // If the file was not found, then do not upload it. Just stop here!
         if(targetFile == null) {
-            log.error("Could not find the file '" + msg.getFileID() + "' for the SLA '" + msg.getBitrepositoryContextID() 
-                    + "' which was requested for retrieval.");
+            log.error("Could not find the file '" + msg.getFileID() + "' for the SLA '" 
+            		+ msg.getBitRepositoryCollectionID() + "' which was requested for retrieval.");
             return;
         }
         
@@ -271,10 +271,10 @@ public class ReferencePillar implements PillarAPI {
     @Override
     public void putFile(PutFileRequest msg) {
         ArgumentValidationUtils.checkNotNull(msg, "PutFileRequest msg");
-        if(!slaIds.contains(msg.getBitrepositoryContextID())) {
+        if(!slaIds.contains(msg.getBitRepositoryCollectionID())) {
             // TODO is this the correct log-level? This pillar is just no part of the given SLA!
             log.warn("The SLA '{}' is not known by this reference pillar. Ignoring "
-                    + "IdentifyPillarsForGetFileRequest '{}'.", msg.getBitrepositoryContextID(), msg);
+                    + "IdentifyPillarsForGetFileRequest '{}'.", msg.getBitRepositoryCollectionID(), msg);
             return;
         }
         if(!msg.getPillarID().equals(pillarId)) {
@@ -283,7 +283,7 @@ public class ReferencePillar implements PillarAPI {
             return;
         }
         
-        File targetFile = archive.findFile(msg.getFileID(), msg.getBitrepositoryContextID());
+        File targetFile = archive.findFile(msg.getFileID(), msg.getBitRepositoryCollectionID());
         
         PutFileProgressResponse response = messageCreator.createPutFileProgressResponse(msg);
         if(targetFile == null) {
@@ -307,8 +307,8 @@ public class ReferencePillar implements PillarAPI {
         
         // Do not continue if the file was already known
         if(targetFile != null) {
-            log.warn("Asked for putting file '" + msg.getFileID() + "' for sla '" + msg.getBitrepositoryContextID() + "', but it "
-                    + "already exists. Do not continue with put!");
+            log.warn("Asked for putting file '" + msg.getFileID() + "' for sla '" + msg.getBitRepositoryCollectionID() 
+            		+ "', but it already exists. Do not continue with put!");
             return;
         }
         
@@ -320,7 +320,7 @@ public class ReferencePillar implements PillarAPI {
         ProtocolComponentFactory.getInstance().getFileExchange().downloadFromServer(fileToDownload, 
                 msg.getFileAddress());
         
-        archive.archiveFile(msg.getFileID(), msg.getBitrepositoryContextID());
+        archive.archiveFile(msg.getFileID(), msg.getBitRepositoryCollectionID());
         
         PutFileFinalResponse complete = messageCreator.createPutFileFinalResponse(msg);
         FinalResponseInfo finalInfo = new FinalResponseInfo();

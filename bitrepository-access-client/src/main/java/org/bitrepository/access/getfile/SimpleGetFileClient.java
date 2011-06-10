@@ -75,7 +75,7 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
         IdentifyPillarsForGetFileRequest msg = new IdentifyPillarsForGetFileRequest();
         msg.setMinVersion(BigInteger.valueOf(1L));
         msg.setVersion(BigInteger.valueOf(1L));
-        msg.setBitrepositoryContextID(slaConfiguration.getId());
+        msg.setBitRepositoryCollectionID(slaConfiguration.getId());
         msg.setFileID(fileID);
         msg.setReplyTo(slaConfiguration.getClientTopicId());
 
@@ -96,7 +96,7 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
         IdentifyPillarsForGetFileRequest msg = new IdentifyPillarsForGetFileRequest();
         msg.setMinVersion(BigInteger.valueOf(1L));
         msg.setVersion(BigInteger.valueOf(1L));
-        msg.setBitrepositoryContextID(slaConfiguration.getId());
+        msg.setBitRepositoryCollectionID(slaConfiguration.getId());
         msg.setFileID(fileID);
         //msg.setPillarId(pillarID);
         if (true) throw new UnsupportedOperationException("The get file by pillar identification isn't currently " +
