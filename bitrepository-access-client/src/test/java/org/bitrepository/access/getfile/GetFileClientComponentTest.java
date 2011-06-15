@@ -24,10 +24,6 @@
  */
 package org.bitrepository.access.getfile;
 
-import java.io.File;
-import java.math.BigInteger;
-import java.net.URL;
-
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
@@ -41,6 +37,10 @@ import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.math.BigInteger;
+import java.net.URL;
 
 /**
  * Test class for the 'GetFileClient'.
@@ -105,7 +105,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
         if (useMockupPillar()) {
             IdentifyPillarsForGetFileResponse identifyResponse = testMessageFactory.createIdentifyPillarsForGetFileResponse(
                     receivedIdentifyRequestMessage, PILLAR1_ID, pillar1TopicId);
-            messageBus.sendMessage(clientTopicId, identifyResponse);
+            messageBus.sendMessage(identifyResponse);
             receivedGetFileRequest = pillar1Topic.waitForMessage(GetFileRequest.class);
             Assert.assertEquals(receivedGetFileRequest, 
                     testMessageFactory.createGetFileRequest(receivedGetFileRequest,PILLAR1_ID));
@@ -116,7 +116,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
         if (useMockupPillar()) {
             GetFileProgressResponse getFileProgressResponse = testMessageFactory.createGetFileProgressResponse(
                     receivedGetFileRequest, PILLAR1_ID, pillar1TopicId);
-            messageBus.sendMessage(clientTopicId, getFileProgressResponse);
+            messageBus.sendMessage(getFileProgressResponse);
         }
         // ToDo The listener call should be verified.
         
@@ -132,7 +132,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
 
             GetFileFinalResponse completeMsg = testMessageFactory.createGetFileFinalResponse(
                     receivedGetFileRequest, PILLAR1_ID, pillar1TopicId);
-            messageBus.sendMessage(clientTopicId, completeMsg);
+            messageBus.sendMessage(completeMsg);
         }
         // Todo Assert that the callback listener has received an 'uploadComplete' event.
         // How do we know the where the file is located. 
@@ -177,7 +177,8 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
         fastReply.setTimeToDeliver(fastTime);
         fastReply.setPillarID(fastPillar);  
         fastReply.setReplyTo(pillar1TopicId);
-        messageBus.sendMessage(identifyRequestMessage.getReplyTo(), fastReply);
+        fastReply.setTo(identifyRequestMessage.getReplyTo());
+        messageBus.sendMessage(fastReply);
 
         fastReply.setReplyTo(identifyRequestMessage.getReplyTo());
         IdentifyPillarsForGetFileResponse slowReply = new IdentifyPillarsForGetFileResponse();
@@ -189,7 +190,8 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
         slowReply.setTimeToDeliver(slowTime);
         slowReply.setPillarID(slowPillar);  
         slowReply.setReplyTo(pillar2TopicId);
-        messageBus.sendMessage(identifyRequestMessage.getReplyTo(), slowReply);
+        slowReply.setTo(identifyRequestMessage.getReplyTo());
+        messageBus.sendMessage(slowReply);
 
         addStep("Verify that it has chosen the fast pillar.", "");
         GetFileRequest getFileRequestMessage = pillar1Topic.waitForMessage(GetFileRequest.class);

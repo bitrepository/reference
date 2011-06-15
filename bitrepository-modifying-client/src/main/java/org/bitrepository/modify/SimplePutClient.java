@@ -24,24 +24,24 @@
  */
 package org.bitrepository.modify;
 
+import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.modify_client.configuration.ModifyConfiguration;
+import org.bitrepository.protocol.MessageBus;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
-import org.bitrepository.modify_client.configuration.ModifyConfiguration;
-import org.bitrepository.protocol.MessageBus;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A simple implementation of the PutClient.
@@ -118,7 +118,8 @@ public class SimplePutClient extends PutClientAPI implements PutClientExternalAP
         
         // Send request for identifying pillars.
         IdentifyPillarsForPutFileRequest identifyMsg = makeIdentifyPillarsMessage(fileId, slaId);
-        messageBus.sendMessage(queue, identifyMsg);
+        identifyMsg.setTo(queue);
+        messageBus.sendMessage(identifyMsg);
         
         // Store information about the file and SLA.
         fileIds.put(fileId, new FileIdForPut(fileId, file, slaId));

@@ -59,137 +59,123 @@ public class MessageBusWrapper implements MessageBus {
     }
 
     @Override
-    public void sendMessage(String destinationId,
-            GetChecksumsFinalResponse content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(GetChecksumsFinalResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetChecksumsRequest content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(GetChecksumsRequest content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-            GetChecksumsProgressResponse content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(GetChecksumsProgressResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileFinalResponse content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(GetFileFinalResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-            GetFileIDsFinalResponse content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(GetFileIDsFinalResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileIDsRequest content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(GetFileIDsRequest content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-            GetFileIDsProgressResponse content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(GetFileIDsProgressResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileRequest content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(GetFileRequest content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-            GetFileProgressResponse content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(GetFileProgressResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-            IdentifyPillarsForGetChecksumsResponse content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(IdentifyPillarsForGetChecksumsResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-            IdentifyPillarsForGetChecksumsRequest content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(IdentifyPillarsForGetChecksumsRequest content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-            IdentifyPillarsForGetFileIDsRequest content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(IdentifyPillarsForGetFileIDsRequest content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-            IdentifyPillarsForGetFileIDsResponse content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(IdentifyPillarsForGetFileIDsResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-            IdentifyPillarsForGetFileRequest content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(IdentifyPillarsForGetFileRequest content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-            IdentifyPillarsForGetFileResponse content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(IdentifyPillarsForGetFileResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-            IdentifyPillarsForPutFileResponse content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(IdentifyPillarsForPutFileResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-            IdentifyPillarsForPutFileRequest content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(IdentifyPillarsForPutFileRequest content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileFinalResponse content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(PutFileFinalResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileRequest content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(PutFileRequest content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId,
-            PutFileProgressResponse content) {
-        testEventManager.addStimuli("Sending message (on topic " + destinationId + "): " + content);
-        messageBus.sendMessage(destinationId, content);
+    public void sendMessage(PutFileProgressResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
     }
 
     @Override

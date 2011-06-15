@@ -24,7 +24,11 @@
  */
 package org.bitrepository.protocol;
 
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -109,12 +113,14 @@ public class TestMessageListener extends AbstractMessageListener
         if (replyList != null && !replyList.isEmpty() && replyList.get(0) instanceof GetFileIDsProgressResponse) {
             GetFileIDsProgressResponse response = (GetFileIDsProgressResponse) replyList.get(0);
             response.setCorrelationID(correlationID);
-            ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(testQueue, response);
+            response.setTo(testQueue);
+            ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(response);
         }
         if (replyList != null && !replyList.isEmpty() && replyList.get(1) instanceof GetFileIDsFinalResponse) {
             GetFileIDsFinalResponse finalResponse = (GetFileIDsFinalResponse) replyList.get(1);
             finalResponse.setCorrelationID(correlationID);
-            ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(testQueue, finalResponse);
+            response.setTo(testQueue);
+            ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(finalResponse);
         }
     }
 
@@ -124,7 +130,8 @@ public class TestMessageListener extends AbstractMessageListener
                 replyList.get(0) instanceof IdentifyPillarsForGetFileIDsResponse) {
             IdentifyPillarsForGetFileIDsResponse response = (IdentifyPillarsForGetFileIDsResponse) replyList.get(0);
             response.setCorrelationID(correlationID);
-            ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(testQueue, response);
+            response.setTo(testQueue);
+            ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(response);
         }
     }
 

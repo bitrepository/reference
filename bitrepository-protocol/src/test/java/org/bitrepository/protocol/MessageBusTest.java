@@ -63,7 +63,8 @@ public class MessageBusTest extends ExtendedTestCase {
         MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus();
         Assert.assertNotNull(con);
         con.addListener("BusActivityTest", listener);
-        con.sendMessage("BusActivityTest", content);
+        content.setTo("BusActivityTest");
+        con.sendMessage(content);
 
         synchronized(this) {
             try {
@@ -98,7 +99,7 @@ public class MessageBusTest extends ExtendedTestCase {
         con.addListener(topicname, listener2);
 
         addStep("Send a message to the topic", "No exceptions should be thrown");
-        con.sendMessage(topicname, content);
+        con.sendMessage(content);
         synchronized (this) {
             try {
                 wait(5 * TIME_FOR_MESSAGE_TRANSFER_WAIT);
@@ -169,7 +170,7 @@ public class MessageBusTest extends ExtendedTestCase {
                     "several DEBUG-level logs");
             TestMessageListener listener = new TestMessageListener();
             con.addListener("EmbeddedBrokerTopic", listener);
-            con.sendMessage("EmbeddedBrokerTopic", content);
+            con.sendMessage(content);
 
             synchronized(this) {
                 try {

@@ -25,14 +25,14 @@
 package org.bitrepository.protocol;
 
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -42,172 +42,150 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
 
 /**
  * Interface for sending messages.
- *
- * TODO: Recipient queue should be extracted from message, rather than be given as parameter
  */
 public interface MessageSender {
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, GetChecksumsFinalResponse content);
+    void sendMessage(GetChecksumsFinalResponse content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, GetChecksumsRequest content);
+    void sendMessage(GetChecksumsRequest content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, GetChecksumsProgressResponse content);
+    void sendMessage(GetChecksumsProgressResponse content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, GetFileFinalResponse content);
+    void sendMessage(GetFileFinalResponse content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, GetFileIDsFinalResponse content);
+    void sendMessage(GetFileIDsFinalResponse content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, GetFileIDsRequest content);
+    void sendMessage(GetFileIDsRequest content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, GetFileIDsProgressResponse content);
+    void sendMessage(GetFileIDsProgressResponse content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, GetFileRequest content);
+    void sendMessage(GetFileRequest content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, GetFileProgressResponse content);
+    void sendMessage(GetFileProgressResponse content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsResponse content);
+    void sendMessage(IdentifyPillarsForGetChecksumsResponse content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsRequest content);
+    void sendMessage(IdentifyPillarsForGetChecksumsRequest content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsRequest content);
+    void sendMessage(IdentifyPillarsForGetFileIDsRequest content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsResponse content);
+    void sendMessage(IdentifyPillarsForGetFileIDsResponse content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, IdentifyPillarsForGetFileRequest content);
+    void sendMessage(IdentifyPillarsForGetFileRequest content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, IdentifyPillarsForGetFileResponse content);
+    void sendMessage(IdentifyPillarsForGetFileResponse content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, IdentifyPillarsForPutFileResponse content);
+    void sendMessage(IdentifyPillarsForPutFileResponse content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, IdentifyPillarsForPutFileRequest content);
+    void sendMessage(IdentifyPillarsForPutFileRequest content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, PutFileFinalResponse content);
+    void sendMessage(PutFileFinalResponse content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, PutFileRequest content);
+    void sendMessage(PutFileRequest content);
 
     /**
      * Method for sending a message on a specific destination.
      *
-     * @param destinationId The id for the destination to send message.
      * @param content       The content of the message.
      */
-    void sendMessage(String destinationId, PutFileProgressResponse content);
+    void sendMessage(PutFileProgressResponse content);
 }

@@ -73,6 +73,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
             String pillarId, 
             String pillarDestinationId) {
         IdentifyPillarsForGetFileResponse identifyPillarsForGetFileRequest = new IdentifyPillarsForGetFileResponse();
+        identifyPillarsForGetFileRequest.setTo(receivedIdentifyRequestMessage.getReplyTo());
         identifyPillarsForGetFileRequest.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
         identifyPillarsForGetFileRequest.setBitRepositoryCollectionID(
         		receivedIdentifyRequestMessage.getBitRepositoryCollectionID());
@@ -107,6 +108,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
     public GetFileProgressResponse createGetFileProgressResponse(
             GetFileRequest receivedGetFileRequest, String pillarId, String pillarDestinationId) {
         GetFileProgressResponse getFileProgressResponse = new GetFileProgressResponse();
+        getFileProgressResponse.setTo(receivedGetFileRequest.getReplyTo());
         getFileProgressResponse.setCorrelationID(receivedGetFileRequest.getCorrelationID());
         getFileProgressResponse.setBitRepositoryCollectionID(receivedGetFileRequest.getBitRepositoryCollectionID());
         getFileProgressResponse.setReplyTo(pillarDestinationId);
@@ -122,6 +124,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
     public GetFileFinalResponse createGetFileFinalResponse(
             GetFileRequest receivedGetFileRequest, String pillarId, String pillarDestinationId) {
         GetFileFinalResponse getFileFinalResponse = new GetFileFinalResponse();
+        getFileFinalResponse.setTo(receivedGetFileRequest.getReplyTo());
         getFileFinalResponse.setCorrelationID(receivedGetFileRequest.getCorrelationID());
         getFileFinalResponse.setBitRepositoryCollectionID(receivedGetFileRequest.getBitRepositoryCollectionID());
         getFileFinalResponse.setReplyTo(pillarDestinationId);

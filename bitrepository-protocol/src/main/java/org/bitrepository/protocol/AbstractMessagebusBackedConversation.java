@@ -25,17 +25,17 @@
 package org.bitrepository.protocol;
 
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -45,8 +45,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,123 +122,123 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     }
 
     @Override
-    public void sendMessage(String destinationId, GetChecksumsFinalResponse content) {
+    public void sendMessage(GetChecksumsFinalResponse content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetChecksumsRequest content) {
+    public void sendMessage(GetChecksumsRequest content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetChecksumsProgressResponse content) {
+    public void sendMessage(GetChecksumsProgressResponse content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileFinalResponse content) {
+    public void sendMessage(GetFileFinalResponse content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileIDsFinalResponse content) {
+    public void sendMessage(GetFileIDsFinalResponse content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileIDsRequest content) {
+    public void sendMessage(GetFileIDsRequest content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileIDsProgressResponse content) {
+    public void sendMessage(GetFileIDsProgressResponse content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileRequest content) {
+    public void sendMessage(GetFileRequest content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileProgressResponse content) {
+    public void sendMessage(GetFileProgressResponse content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsResponse content) {
+    public void sendMessage(IdentifyPillarsForGetChecksumsResponse content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsRequest content) {
+    public void sendMessage(IdentifyPillarsForGetChecksumsRequest content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsRequest content) {
+    public void sendMessage(IdentifyPillarsForGetFileIDsRequest content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsResponse content) {
+    public void sendMessage(IdentifyPillarsForGetFileIDsResponse content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetFileRequest content) {
+    public void sendMessage(IdentifyPillarsForGetFileRequest content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetFileResponse content) {
+    public void sendMessage(IdentifyPillarsForGetFileResponse content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForPutFileResponse content) {
+    public void sendMessage(IdentifyPillarsForPutFileResponse content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForPutFileRequest content) {
+    public void sendMessage(IdentifyPillarsForPutFileRequest content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileFinalResponse content) {
+    public void sendMessage(PutFileFinalResponse content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileRequest content) {
+    public void sendMessage(PutFileRequest content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileProgressResponse content) {
+    public void sendMessage(PutFileProgressResponse content) {
         content.setCorrelationID(getConversationID());
-        messagebus.sendMessage(destinationId, content);
+        messagebus.sendMessage(content);
     }
 
     @Override

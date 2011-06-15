@@ -24,19 +24,15 @@
  */
 package org.bitrepository.access.getfile;
 
-import org.bitrepository.access.AccessException;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.CollectionBasedConversationMediator;
 import org.bitrepository.protocol.MessageBus;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -78,9 +74,10 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
         msg.setBitRepositoryCollectionID(slaConfiguration.getId());
         msg.setFileID(fileID);
         msg.setReplyTo(slaConfiguration.getClientTopicId());
+        msg.setTo(slaConfiguration.getSlaTopicId());
 
         SimpleGetFileConversation conversation = startConversation();
-        conversation.sendMessage(slaConfiguration.getSlaTopicId(), msg);
+        conversation.sendMessage(msg);
 
         // TODO: Should we wait for the conversation to end before returning? How is the result delivered?
     }
@@ -102,9 +99,10 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
         if (true) throw new UnsupportedOperationException("The get file by pillar identification isn't currently " +
         		"supported by the protocol");
         msg.setReplyTo(slaConfiguration.getClientTopicId());
+        msg.setTo(slaConfiguration.getSlaTopicId());
 
         SimpleGetFileConversation conversation = startConversation();
-        conversation.sendMessage(slaConfiguration.getSlaTopicId(), msg);
+        conversation.sendMessage(msg);
 
         // TODO: Should we wait for the conversation to end before returning? How is the result delivered?
     }

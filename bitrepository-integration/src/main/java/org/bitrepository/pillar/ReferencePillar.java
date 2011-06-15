@@ -31,17 +31,17 @@ import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.ArgumentValidationUtils;
 import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -145,7 +145,8 @@ public class ReferencePillar implements PillarAPI {
         // TODO missing elements in the reply: PillarCheckType, ReplyTo ?
         
         // Send the reply.
-        messageBus.sendMessage(msg.getReplyTo(), reply);
+        reply.setTo(msg.getReplyTo());
+        messageBus.sendMessage(reply);
     }
 
     @Override
@@ -178,7 +179,8 @@ public class ReferencePillar implements PillarAPI {
 //        reply.setReplyTo("??");
         
         // Send the reply.
-        messageBus.sendMessage(msg.getReplyTo(), reply);
+        reply.setTo(msg.getReplyTo());
+        messageBus.sendMessage(reply);
     }
 
     @Override
@@ -231,7 +233,8 @@ public class ReferencePillar implements PillarAPI {
 //        response.setReplyTo("??");
 
         // Send the progress response message.
-        messageBus.sendMessage(msg.getReplyTo(), response);
+        response.setTo(msg.getReplyTo());
+        messageBus.sendMessage(response);
         
         // If the file was not found, then do not upload it. Just stop here!
         if(targetFile == null) {
@@ -259,7 +262,8 @@ public class ReferencePillar implements PillarAPI {
 //        complete.setPillarChecksumType("??");
 
         // Send the complete message.
-        messageBus.sendMessage(msg.getReplyTo(), complete);
+        complete.setTo(msg.getReplyTo());
+        messageBus.sendMessage(complete);
     }
 
     @Override
@@ -303,7 +307,8 @@ public class ReferencePillar implements PillarAPI {
 //      response.setReplyTo("??")
         
         // Send the response message.
-        messageBus.sendMessage(msg.getReplyTo(), response);
+        response.setTo(msg.getReplyTo());
+        messageBus.sendMessage(response);
         
         // Do not continue if the file was already known
         if(targetFile != null) {
@@ -334,6 +339,7 @@ public class ReferencePillar implements PillarAPI {
 //      complete.setPillarChecksumType(value)
         
         // Send the complete message.
-        messageBus.sendMessage(msg.getReplyTo(), complete);
+        complete.setTo(msg.getReplyTo());
+        messageBus.sendMessage(complete);
     }
 }

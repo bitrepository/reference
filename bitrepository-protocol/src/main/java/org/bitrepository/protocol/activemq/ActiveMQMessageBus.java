@@ -27,14 +27,14 @@ package org.bitrepository.protocol.activemq;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -44,8 +44,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.MessageBus;
@@ -165,103 +165,103 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     @Override
-    public void sendMessage(String destinationId, GetChecksumsFinalResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(GetChecksumsFinalResponse content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetChecksumsRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(GetChecksumsRequest content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetChecksumsProgressResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(GetChecksumsProgressResponse content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileFinalResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(GetFileFinalResponse content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileIDsFinalResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(GetFileIDsFinalResponse content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileIDsRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(GetFileIDsRequest content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileIDsProgressResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(GetFileIDsProgressResponse content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(GetFileRequest content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, GetFileProgressResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(GetFileProgressResponse content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(IdentifyPillarsForGetChecksumsResponse content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetChecksumsRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(IdentifyPillarsForGetChecksumsRequest content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(IdentifyPillarsForGetFileIDsRequest content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetFileIDsResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(IdentifyPillarsForGetFileIDsResponse content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetFileRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(IdentifyPillarsForGetFileRequest content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForGetFileResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(IdentifyPillarsForGetFileResponse content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForPutFileResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(IdentifyPillarsForPutFileResponse content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, IdentifyPillarsForPutFileRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(IdentifyPillarsForPutFileRequest content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileFinalResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(PutFileFinalResponse content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileRequest content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(PutFileRequest content) {
+        sendMessage(content.getTo(), content);
     }
 
     @Override
-    public void sendMessage(String destinationId, PutFileProgressResponse content) {
-        sendMessage(destinationId, (Object) content);
+    public void sendMessage(PutFileProgressResponse content) {
+        sendMessage(content.getTo(), content);
     }
 
     /**

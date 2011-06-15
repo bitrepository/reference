@@ -26,11 +26,11 @@ package org.bitrepository.modify;
 
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.modify_client.configuration.ModifyConfiguration;
 import org.bitrepository.protocol.AbstractMessageListener;
@@ -106,7 +106,8 @@ public class PutClientTester extends ExtendedTestCase {
         identifyResponse.setVersion(BigInteger.valueOf(1L));
         // TODO identifyReply.setTimeToDeliver(value) ???
         
-        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, identifyResponse);
+        identifyResponse.setTo(queue);
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(identifyResponse);
         
         synchronized(this) {
             try {
@@ -162,7 +163,7 @@ public class PutClientTester extends ExtendedTestCase {
         response.setMinVersion(BigInteger.valueOf(1L));
         response.setVersion(BigInteger.valueOf(1L));
         
-        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, response);
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(response);
         
         synchronized(this) {
             try {
@@ -195,7 +196,7 @@ public class PutClientTester extends ExtendedTestCase {
         complete.setFinalResponseInfo(completeInfo);
         // Ignore the salt!
         
-        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(queue, complete);
+        ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(complete);
         
         synchronized(this) {
             try {

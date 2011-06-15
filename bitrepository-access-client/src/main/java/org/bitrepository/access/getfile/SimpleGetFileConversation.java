@@ -24,18 +24,6 @@
  */
 package org.bitrepository.access.getfile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
-
 import org.bitrepository.access.AccessException;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
@@ -50,6 +38,18 @@ import org.bitrepository.protocol.MessageSender;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
 
 /**
  * A conversation for GetFile.
@@ -138,14 +138,12 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
      * Sends the message as expected, but also sets up a timer task, that times out if we wait too long for enough
      * replies.
      *
-     * @see MessageSender#sendMessage(String, IdentifyPillarsForGetFileRequest)
-     *
-     * @param destination Destination of message.
+     * @see MessageSender#sendMessage(IdentifyPillarsForGetFileRequest)
      * @param message Message to send.
      */
     @Override
-    public void sendMessage(String destination, IdentifyPillarsForGetFileRequest message) {
-        super.sendMessage(destination, message);
+    public void sendMessage(IdentifyPillarsForGetFileRequest message) {
+        super.sendMessage(message);
         // add this as a task for the timer.
         timer.schedule(identifyTimeoutTask, TIMER_TASK_DELAY);
     }
@@ -154,14 +152,12 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
      * Sends the message as expected, but also sets up a timer task, that times out if we wait too long for enough
      * replies.
      *
-     * @see MessageSender#sendMessage(String, GetFileRequest)
-     *
-     * @param destination Destination of message.
+     * @see MessageSender#sendMessage(GetFileRequest)
      * @param message Message to send.
      */
     @Override
-    public void sendMessage(String destination, GetFileRequest message) {
-        super.sendMessage(destination, message);
+    public void sendMessage(GetFileRequest message) {
+        super.sendMessage(message);
         // add this as a task for the timer.
         timer.schedule(getFileTimeoutTask, getFileTimeout);
     }
@@ -289,8 +285,9 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
         msg.setReplyTo(slaConfiguration.getClientTopicId());
         msg.setMinVersion(BigInteger.valueOf(PROTOCOL_MIN_VERSION));
         msg.setVersion(BigInteger.valueOf(PROTOCOL_VERSION));
+        msg.setTo(response.getReplyTo());
 
-        sendMessage(response.getReplyTo(), msg);
+        sendMessage(msg);
     }
 
     /**
