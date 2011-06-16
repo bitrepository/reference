@@ -42,11 +42,10 @@
   </FinalResponseInfo>
   <ResultingAuditTrails>
     <AuditTrailData>
-      <FileID>MyFile</FileID>
       <NoOfItems>2</NoOfItems>
       <AuditTrailDataItems>
         <AuditTrailDataItem>
-          <ActionDateTime>2011-04-15T12:55:00</ActionDateTime>
+          <FileID>MyFile</FileID>
           <ReportingComponent>
             <ComponentID>MyPillar</ComponentID>
             <ComponentType>PILLAR</ComponentType>
@@ -58,9 +57,10 @@
           <ActionOnFile>
             <Create>INGEST</Create>
           </ActionOnFile>
+          <ActionDateTime>2011-04-15T12:55:00</ActionDateTime>
         </AuditTrailDataItem>
         <AuditTrailDataItem>
-          <ActionDateTime>2011-04-15T13:20:00</ActionDateTime>
+          <FileID>MyFile</FileID>
           <ReportingComponent>
             <ComponentID>MyPillar</ComponentID>
             <ComponentType>PILLAR</ComponentType>
@@ -72,6 +72,7 @@
           <ActionOnFile>
             <Access>GET</Access>
           </ActionOnFile>
+          <ActionDateTime>2011-04-15T13:20:00</ActionDateTime>
         </AuditTrailDataItem>
       </AuditTrailDataItems>
     </AuditTrailData>
