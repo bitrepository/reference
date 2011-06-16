@@ -955,14 +955,14 @@
         <xs:element ref="bre:Contributor" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of receiving component, which can be used for possible checks
-          (IdentifyPillarsForGetChecksumsResponse.ReplyTo should ensure that right pillar is reached)
+          (IdentifyContributiorsForGetStatusResponse.ReplyTo should ensure that right component is reached)
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Address (e.g. in form of an URL) for where results must be delivered via data transmission.
-          In cases where the address is not given, the result will be given in the GetChecksumsFinalResponse message
+          In cases where the address is not given, the result will be given in the GetStatusFinalResponse message
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -984,7 +984,7 @@
 
         <xs:element ref="bre:Contributor" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Identifier of receiving pillar, which can be used for possible checks
+          Identifier of receiving contributor, which can be used for possible checks
           (otherwise it is known via CorrelationID and ReplyTo)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1019,7 +1019,7 @@
 
         <xs:element ref="bre:Contributor" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Identifier of receiving pillar, which can be used for possible checks
+          Identifier of receiving contributor, which can be used for possible checks
           (otherwise it is known via CorrelationID and ReplyTo)
           </xs:documentation></xs:annotation>
         </xs:element>

@@ -37,12 +37,17 @@
   </Contributor>
   <FinalResponseInfo>
     <FinalResponseCode>480</FinalResponseCode>
-    <FinalResponseText>successfull completion</FinalResponseText>
+    <FinalResponseText>successful completion</FinalResponseText>
   </FinalResponseInfo>
   <ResultingStatus>
-    <ComponentStatus>
-      <ContributorStatus>MyStatus</ContributorStatus>
+    <ContributorStatus>
+      <ContributorStatusElements>
+        <NoOfItems>1</NoOfItems>
+        <ContributorStatusElement>
+          <StatusPing>Alive</StatusPing>
+        </ContributorStatusElement>
+      </ContributorStatusElements>
       <StatusTimestamp>2011-02-17T09:47:00</StatusTimestamp>
-    </ComponentStatus>
+    </ContributorStatus>
   </ResultingStatus>
 </bro:GetStatusFinalResponse>

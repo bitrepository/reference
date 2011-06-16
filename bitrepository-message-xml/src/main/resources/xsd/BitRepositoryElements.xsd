@@ -121,19 +121,14 @@
 
   <xs:element name="AuditTrailData">
         <xs:annotation><xs:documentation xml:lang="en">
-            Data format for elements in an audit trail for a FileID
+        Data format for items in an audit trail
         </xs:documentation></xs:annotation>
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="FileID" type="FileID_TYPE">
-              <xs:annotation><xs:documentation xml:lang="en">
-              FileID for object which the audit trail concern
-              </xs:documentation></xs:annotation>
-            </xs:element>
 
             <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
               <xs:annotation><xs:documentation xml:lang="en">
-              The number of audit trail data items included
+              The number of audit trail data items included for the specified FileID
               </xs:documentation></xs:annotation>
             </xs:element>
 
@@ -157,12 +152,12 @@
     </xs:documentation></xs:annotation>
     <xs:complexType>
     <xs:sequence>
-      <xs:element name="ActionDateTime" type="SystemDateTime_TYPE">
+      <xs:element name="FileID" type="FileID_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
-        Date and time for when action took place
+        FileID for object which the audit trail concern
         </xs:documentation></xs:annotation>
       </xs:element>
-
+      
       <xs:element name="ReportingComponent" type="Component_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         Component of the bit repository which initiated audit trail entry on FileId object.
@@ -180,6 +175,12 @@
       <xs:element name="ActionOnFile" type="Action_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         Action performed by the actor on FileId object
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element name="ActionDateTime" type="SystemDateTime_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Date and time for when action took place
         </xs:documentation></xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -258,26 +259,10 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="ComponentStatus">
+  <xs:element name="ContributorStatus" type="ContributorStatus_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    Contain information for a componenet in the bit repository
+    Contain status information for a componenet in the bit repository
     </xs:documentation></xs:annotation>
-    <xs:complexType>
-      <xs:sequence>
-
-        <xs:element name="ContributorStatus" type="ContributorStatus_TYPE">
-          <xs:annotation><xs:documentation xml:lang="en">
-          Status from the contributor
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element name="StatusTimestamp" type="SystemDateTime_TYPE">
-          <xs:annotation><xs:documentation xml:lang="en">
-          The time when the status was calculated
-          </xs:documentation></xs:annotation>
-        </xs:element>
-      </xs:sequence>
-    </xs:complexType>
   </xs:element>
 
   <xs:element name="ChecksumsDataPerFileID">
@@ -700,7 +685,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="ComponentStatus">
+        <xs:element ref="ContributorStatus">
           <xs:annotation><xs:documentation xml:lang="en">
           status from the component as result, - if given in this message instead of via data transfer
           </xs:documentation></xs:annotation>
@@ -1037,13 +1022,6 @@
         Optionally a salt parameter included in the checksum calculation
         </xs:documentation></xs:annotation>
       </xs:element>
-
-      <xs:element ref="FilePart" minOccurs="0" maxOccurs="1" >
-        <xs:annotation><xs:documentation xml:lang="en">
-        Optionally a specification of which part of a file should be included in the checksum calculation
-        Note that this only makes sense for requests on sigle checksums on a file
-        </xs:documentation></xs:annotation>
-      </xs:element>
     </xs:sequence>
   </xs:complexType>
 
@@ -1061,13 +1039,34 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="ContributorStatus_TYPE">
-    <xs:restriction base="xs:string">
-    <xs:annotation><xs:documentation xml:lang="en">
-    TBD: extend this later e.g. with status elements for ping, water level from pillars etc.
-    </xs:documentation></xs:annotation>
-    </xs:restriction>
-  </xs:simpleType>
+  <xs:complexType name="ContributorStatus_TYPE">
+    <xs:sequence>
+      <xs:element name="ContributorStatusElements">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="NoOfItems" />
+            <xs:element name="ContributorStatusElement" type="ContributorStatusElement_TYPE" minOccurs="1" maxOccurs="unbounded"/>
+          </xs:sequence>        
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="StatusTimestamp" type="SystemDateTime_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+        The time when the status was calculated
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="ContributorStatusElement_TYPE">
+    <xs:choice>
+      <xs:annotation><xs:documentation xml:lang="en">
+      TBD: extend this later e.g. with status elements for ping, water level from pillars etc.
+      </xs:documentation></xs:annotation>
+      <xs:element name="StatusPlainText" type="xs:string" />
+      <xs:element name="StatusPing" type="xs:string" />
+    </xs:choice>
+  </xs:complexType>
  
   <xs:simpleType name="FinalResponseCode_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">

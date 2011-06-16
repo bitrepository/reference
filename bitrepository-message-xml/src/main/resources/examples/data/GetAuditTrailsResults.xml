@@ -27,41 +27,45 @@
 <bro:GetAuditTrailsResults version="1" minVersion="1" xmlns:bro='http://bitrepository.org/BitRepositoryData.xsd' 
 xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <BitRepositoryCollectionID>MySla</BitRepositoryCollectionID>
-  <NoOfItems>2</NoOfItems>
   <AuditTrailData> 
-    <FileID>MydataId1</FileID>
-    <ActionDateTime>2011-02-17T09:47:00</ActionDateTime>
-    <ReportingComponent>
-      <ComponentID>MyClientID</ComponentID>
-      <ComponentType>CLIENT</ComponentType>
-      <ComponentComment>Client doing integrity check</ComponentComment>
-    </ReportingComponent>
-    <ActorOnFile>
-      <ActorID>MyActorID</ActorID>
-      <ActorName>MyActorName</ActorName>
-      <ActorType>OTHER</ActorType>
-      <ActorComment>System trigger of client</ActorComment>
-    </ActorOnFile>
-    <ActionOnFile>
-      <IntegrityCheck>CHECKSUMSCHECK</IntegrityCheck>
-    </ActionOnFile>
-  </AuditTrailData>
-  <AuditTrailData>
-    <FileID>MydataId1</FileID>
-    <ActionDateTime>2011-02-17T09:47:00</ActionDateTime>
-    <ReportingComponent>
-      <ComponentID>MyPillarID</ComponentID>
-      <ComponentType>PILLAR</ComponentType>
-      <ComponentComment>East pillar</ComponentComment>
-    </ReportingComponent>
-    <ActorOnFile>
-      <ActorID>MyActorID</ActorID>
-      <ActorName>MyActorName</ActorName>
-      <ActorType>MASSPROCESS</ActorType>
-      <ActorComment>Requested mass processing</ActorComment>
-    </ActorOnFile>
-    <ActionOnFile>
-      <Access>OTHER</Access>
-    </ActionOnFile>
+    <NoOfItems>2</NoOfItems>
+    <AuditTrailDataItems>
+      <AuditTrailDataItem>
+        <FileID>MydataId1</FileID>
+        <ReportingComponent>
+          <ComponentID>MyClientID</ComponentID>
+          <ComponentType>CLIENT</ComponentType>
+          <ComponentComment>Client doing integrity check</ComponentComment>
+        </ReportingComponent>
+        <ActorOnFile>
+          <ActorID>MyActorID</ActorID>
+          <ActorName>MyActorName</ActorName>
+          <ActorType>OTHER</ActorType>
+          <ActorComment>System trigger of client</ActorComment>
+        </ActorOnFile>
+        <ActionOnFile>
+          <IntegrityCheck>CHECKSUMSCHECK</IntegrityCheck>
+        </ActionOnFile>
+        <ActionDateTime>2011-02-17T09:47:00</ActionDateTime>
+      </AuditTrailDataItem>
+      <AuditTrailDataItem>
+        <FileID>MydataId1</FileID>
+        <ReportingComponent>
+          <ComponentID>MyClientID</ComponentID>
+          <ComponentType>CLIENT</ComponentType>
+          <ComponentComment>Client doing integrity check</ComponentComment>
+        </ReportingComponent>
+        <ActorOnFile>
+          <ActorID>MyActorID</ActorID>
+          <ActorName>MyActorName</ActorName>
+          <ActorType>OTHER</ActorType>
+          <ActorComment>System trigger of client</ActorComment>
+        </ActorOnFile>
+        <ActionOnFile>
+          <IntegrityCheck>REPLICACHECK</IntegrityCheck>
+        </ActionOnFile>
+        <ActionDateTime>2011-02-17T09:47:00</ActionDateTime>
+      </AuditTrailDataItem>
+    </AuditTrailDataItems>
   </AuditTrailData>
 </bro:GetAuditTrailsResults>

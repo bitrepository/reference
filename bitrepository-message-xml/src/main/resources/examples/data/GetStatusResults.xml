@@ -32,8 +32,13 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
       <ComponentType>CLIENT</ComponentType>
       <ComponentComment>Client doing integrity check</ComponentComment>
   </Contributor>
-  <ComponentStatus>
-      <ContributorStatus>Status</ContributorStatus>
-      <StatusTimestamp>2011-02-17T09:47:00</StatusTimestamp>
-  </ComponentStatus>
+  <ContributorStatus>
+    <ContributorStatusElements>
+      <NoOfItems>1</NoOfItems>
+      <ContributorStatusElement>
+        <StatusPing>Alive</StatusPing>
+      </ContributorStatusElement>
+    </ContributorStatusElements>
+    <StatusTimestamp>2011-02-17T09:47:00</StatusTimestamp>
+  </ContributorStatus>
 </bro:GetStatusResults>

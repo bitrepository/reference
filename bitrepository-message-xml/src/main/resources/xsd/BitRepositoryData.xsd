@@ -29,12 +29,6 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:NoOfItems" minOccurs="0" maxOccurs="1" > 
-          <xs:annotation><xs:documentation xml:lang="en">
-          The number of audit trail data items included
-          </xs:documentation></xs:annotation>
-        </xs:element>
- 
         <xs:element ref="bre:AuditTrailData" minOccurs="1" maxOccurs="unbounded" > 
           <xs:annotation><xs:documentation xml:lang="en">
           List of data for checksums in result
@@ -133,7 +127,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ComponentStatus"> 
+        <xs:element ref="bre:ContributorStatus"> 
           <xs:annotation><xs:documentation xml:lang="en">
           List of status contributed from different components
           </xs:documentation></xs:annotation>
