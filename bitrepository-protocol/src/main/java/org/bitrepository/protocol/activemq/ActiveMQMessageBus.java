@@ -85,6 +85,8 @@ public class ActiveMQMessageBus implements MessageBus {
 
     /** The key for storing the message type in a string property in the message headers. */
     public static final String MESSAGE_TYPE_KEY = "org.bitrepository.messages.type";
+    /** The key for storing the BitRepositoryCollectionID in a string property in the message headers. */
+    public static final String COLLECTION_ID_KEY = "org.bitrepository.messages.collectionid";
     /** The default acknowledge mode. */
     public static final int ACKNOWLEDGE_MODE = Session.AUTO_ACKNOWLEDGE;
     /** Default transacted. */
@@ -138,149 +140,175 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     @Override
-    public synchronized void addListener(String destinationId, final MessageListener listener) {
+    public synchronized void addListener(String destinationID, final MessageListener listener) {
         log.debug("Adding listener '{}' to destination: '{}' on message-bus '{}'.", 
-                new Object[] {listener, destinationId, configuration.getId()});
-        MessageConsumer consumer = getMessageConsumer(destinationId, listener);
+                new Object[] {listener, destinationID, configuration.getId()});
+        MessageConsumer consumer = getMessageConsumer(destinationID, listener);
         try {
             consumer.setMessageListener(new ActiveMQMessageListener(listener));
         } catch (JMSException e) {
             throw new CoordinationLayerException(
-                    "Unable to add listener '" + listener + "' to destinationId '" + destinationId + "'", e);
+                    "Unable to add listener '" + listener + "' to destinationID '" + destinationID + "'", e);
         }
     }
 
     @Override
-    public synchronized void removeListener(String destinationId, MessageListener listener) {
+    public synchronized void removeListener(String destinationID, MessageListener listener) {
         log.debug("Removing listener '{}' from destination: '{}' on message-bus '{}'.", 
-                          new Object[] {listener, destinationId, configuration.getId()});
-        MessageConsumer consumer = getMessageConsumer(destinationId, listener);
+                          new Object[] {listener, destinationID, configuration.getId()});
+        MessageConsumer consumer = getMessageConsumer(destinationID, listener);
         try {
             consumer.close();
         } catch (JMSException e) {
             throw new CoordinationLayerException(
-                    "Unable to remove listener '" + listener + "' from destinationId '" + destinationId + "'", e);
+                    "Unable to remove listener '" + listener + "' from destinationID '" + destinationID + "'", e);
         }
-        consumers.remove(getConsumerHash(destinationId, listener));
+        consumers.remove(getConsumerHash(destinationID, listener));
     }
 
     @Override
     public void sendMessage(GetChecksumsFinalResponse content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetChecksumsRequest content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetChecksumsProgressResponse content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetFileFinalResponse content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetFileIDsFinalResponse content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetFileIDsRequest content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetFileIDsProgressResponse content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetFileRequest content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetFileProgressResponse content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForGetChecksumsResponse content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForGetChecksumsRequest content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForGetFileIDsRequest content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForGetFileIDsResponse content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForGetFileRequest content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForGetFileResponse content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForPutFileResponse content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForPutFileRequest content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(PutFileFinalResponse content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(PutFileRequest content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(PutFileProgressResponse content) {
-        sendMessage(content.getTo(), content);
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                    content.getCorrelationID(), content);
     }
 
     /**
      * Send a message using ActiveMQ.
      *
-     * @param destinationId Name of destination to send message to
+     * @param destinationID Name of destination to send message to.
+     * @param replyTo       The queue to reply to.
+     * @param collectionID  The collection ID of the message.
+     * @param correlationID The correlation ID of the message.
      * @param content       JAXB-serializable object to send.
      */
-    private void sendMessage(String destinationId, Object content) {
+    private void sendMessage(String destinationID, String replyTo, String collectionID, String correlationID,
+                             Object content) {
         try {
             String xmlContent = JaxbHelper.serializeToXml(content);
-            log.debug("The following message is sent to the destination '" + destinationId + "'" + " on message-bus '"
+            log.debug("The following message is sent to the destination '" + destinationID + "'" + " on message-bus '"
                               + configuration.getId() + "': \n{}", xmlContent);
-            MessageProducer producer = addTopicMessageProducer(destinationId);
+            MessageProducer producer = addTopicMessageProducer(destinationID);
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
             Message msg = session.createTextMessage(xmlContent);
             msg.setStringProperty(MESSAGE_TYPE_KEY, content.getClass().getSimpleName());
-            msg.setJMSReplyTo(session.createQueue(destinationId));
+            msg.setStringProperty(COLLECTION_ID_KEY, collectionID);
+            msg.setJMSCorrelationID(correlationID);
+            msg.setJMSReplyTo(getTopic(replyTo));
 
             producer.send(msg);
             session.commit();
@@ -295,17 +323,17 @@ public class ActiveMQMessageBus implements MessageBus {
      * Retrieves a consumer for the specific destination id and message listener.
      * If no such consumer already exists, then it is created.
      *
-     * @param destinationId The id of the destination to consume messages from.
+     * @param destinationID The id of the destination to consume messages from.
      * @param listener      The listener to consume the messages.
      * @return The instance for consuming the messages.
      */
-    private MessageConsumer getMessageConsumer(String destinationId, MessageListener listener) {
-        String key = getConsumerHash(destinationId, listener);
-        log.debug("Retrieving message consumer on destination '" + destinationId + "' for listener '" + listener
+    private MessageConsumer getMessageConsumer(String destinationID, MessageListener listener) {
+        String key = getConsumerHash(destinationID, listener);
+        log.debug("Retrieving message consumer on destination '" + destinationID + "' for listener '" + listener
                           + "'. Key: '" + key + "'.");
         if (!consumers.containsKey(key)) {
             log.debug("No consumer known. Creating new for key '" + key + "'.");
-            Topic topic = getTopic(destinationId);
+            Topic topic = getTopic(destinationID);
             MessageConsumer consumer;
             try {
                 consumer = session.createConsumer(topic);
@@ -320,12 +348,12 @@ public class ActiveMQMessageBus implements MessageBus {
     /**
      * Creates a unique hash of the message listener and the destination id.
      *
-     * @param destinationId The id for the destination.
+     * @param destinationID The id for the destination.
      * @param listener      The message listener.
      * @return The key for the message listener and the destination id.
      */
-    private String getConsumerHash(String destinationId, MessageListener listener) {
-        return destinationId + CONSUMER_KEY_SEPARATOR + listener.hashCode();
+    private String getConsumerHash(String destinationID, MessageListener listener) {
+        return destinationID + CONSUMER_KEY_SEPARATOR + listener.hashCode();
     }
 
     /**
@@ -349,20 +377,20 @@ public class ActiveMQMessageBus implements MessageBus {
     /**
      * Given a topic ID, retrieve the topic object.
      *
-     * @param topicId ID of the topic.
+     * @param topicID ID of the topic.
      * @return The object representing that topic. Will always return the same topic object for the same topic ID.
      */
-    private Topic getTopic(String topicId) {
-        Topic topic = topics.get(topicId);
+    private Topic getTopic(String topicID) {
+        Topic topic = topics.get(topicID);
         if (topic == null) {
             try {
                 // TODO: According to javadoc, topics should be looked up in another fashion.
                 // See http://download.oracle.com/javaee/6/api/javax/jms/Session.html#createTopic(java.lang.String)
-                topic = session.createTopic(topicId);
+                topic = session.createTopic(topicID);
             } catch (JMSException e) {
-                throw new CoordinationLayerException("Could not create topic '" + topicId + "'", e);
+                throw new CoordinationLayerException("Could not create topic '" + topicID + "'", e);
             }
-            topics.put(topicId, topic);
+            topics.put(topicID, topic);
         }
         return topic;
     }
