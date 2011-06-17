@@ -119,7 +119,7 @@ public class TestMessageListener extends AbstractMessageListener
         if (replyList != null && !replyList.isEmpty() && replyList.get(1) instanceof GetFileIDsFinalResponse) {
             GetFileIDsFinalResponse finalResponse = (GetFileIDsFinalResponse) replyList.get(1);
             finalResponse.setCorrelationID(correlationID);
-            response.setTo(testQueue);
+            finalResponse.setTo(testQueue);
             ProtocolComponentFactory.getInstance().getMessageBus().sendMessage(finalResponse);
         }
     }

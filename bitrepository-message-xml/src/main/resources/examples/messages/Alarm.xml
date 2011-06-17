@@ -27,6 +27,10 @@
 <bro:Alarm version="1" minVersion="1"
 xmlns:bro='http://bitrepository.org/BitRepositoryMessages.xsd'
 xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
+  <CorrelationID>12345</CorrelationID>
+  <BitRepositoryCollectionID>MySla</BitRepositoryCollectionID>
+  <To>ToQueueOrTopic</To>
+  <ReplyTo>MyQueueOrTopic</ReplyTo>
   <AlarmRaiser>
     <ComponentID>MyPillar</ComponentID>
     <ComponentType>PILLAR</ComponentType>

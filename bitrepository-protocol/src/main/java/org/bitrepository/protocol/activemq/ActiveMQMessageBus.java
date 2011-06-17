@@ -26,6 +26,7 @@ package org.bitrepository.protocol.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.util.ByteArrayInputStream;
+import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -35,6 +36,9 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -167,6 +171,12 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     @Override
+    public void sendMessage(Alarm content) {
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                content.getCorrelationID(), content);
+    }
+
+    @Override
     public void sendMessage(GetChecksumsFinalResponse content) {
         sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
                     content.getCorrelationID(), content);
@@ -218,6 +228,24 @@ public class ActiveMQMessageBus implements MessageBus {
     public void sendMessage(GetFileProgressResponse content) {
         sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
                     content.getCorrelationID(), content);
+    }
+
+    @Override
+    public void sendMessage(GetStatusRequest content) {
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                content.getCorrelationID(), content);
+    }
+
+    @Override
+    public void sendMessage(GetStatusProgressResponse content) {
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                content.getCorrelationID(), content);
+    }
+
+    @Override
+    public void sendMessage(GetStatusFinalResponse content) {
+        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+                content.getCorrelationID(), content);
     }
 
     @Override
@@ -446,6 +474,11 @@ public class ActiveMQMessageBus implements MessageBus {
                 content = JaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
                                              new ByteArrayInputStream(text.getBytes()));
 
+                if(content.getClass().equals(Alarm.class)){
+                	listener.onMessage((Alarm) content);
+                	return;
+                }
+                
                 if (content.getClass().equals(GetChecksumsFinalResponse.class)) {
                     listener.onMessage((GetChecksumsFinalResponse) content);
                     return;

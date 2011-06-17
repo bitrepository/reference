@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 
+import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
@@ -45,6 +46,9 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -175,6 +179,10 @@ public class MessageReceiver {
         }
         
         @Override
+        public void onMessage(Alarm message) {
+            messageModel.addMessage(message);
+        }
+        @Override
         public void onMessage(GetAuditTrailsRequest message) {
             messageModel.addMessage(message);
         }
@@ -220,6 +228,18 @@ public class MessageReceiver {
         }
         @Override
         public void onMessage(GetFileProgressResponse message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(GetStatusRequest message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(GetStatusProgressResponse message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(GetStatusFinalResponse message) {
             messageModel.addMessage(message);
         }
         @Override

@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol;
 
+import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
@@ -36,6 +37,9 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -122,6 +126,12 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     }
 
     @Override
+    public void sendMessage(Alarm content) {
+        content.setCorrelationID(getConversationID());
+        messagebus.sendMessage(content);
+    }
+
+    @Override
     public void sendMessage(GetChecksumsFinalResponse content) {
         content.setCorrelationID(getConversationID());
         messagebus.sendMessage(content);
@@ -171,6 +181,24 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
 
     @Override
     public void sendMessage(GetFileProgressResponse content) {
+        content.setCorrelationID(getConversationID());
+        messagebus.sendMessage(content);
+    }
+    
+    @Override
+    public void sendMessage(GetStatusRequest content) {
+        content.setCorrelationID(getConversationID());
+        messagebus.sendMessage(content);
+    }
+
+    @Override
+    public void sendMessage(GetStatusProgressResponse content) {
+        content.setCorrelationID(getConversationID());
+        messagebus.sendMessage(content);
+    }
+
+    @Override
+    public void sendMessage(GetStatusFinalResponse content) {
         content.setCorrelationID(getConversationID());
         messagebus.sendMessage(content);
     }

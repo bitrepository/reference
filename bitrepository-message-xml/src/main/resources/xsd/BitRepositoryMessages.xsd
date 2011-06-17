@@ -1246,6 +1246,12 @@
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
         <xs:element ref="bre:AlarmRaiser" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of component who raises the alarm (typically it will be the sender of the message)

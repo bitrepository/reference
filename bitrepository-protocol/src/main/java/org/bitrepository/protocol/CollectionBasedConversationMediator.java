@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol;
 
+import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
@@ -36,6 +37,9 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -99,6 +103,17 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         }
     }
 
+    @Override
+    public void onMessage(Alarm message) {
+        String messageCorrelationID = message.getCorrelationID();
+        T conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+        }
+    }
+    
     @Override
     public void onMessage(GetAuditTrailsFinalResponse message) {
         String messageCorrelationID = message.getCorrelationID();
@@ -232,6 +247,42 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         }
     }
 
+    @Override
+    public void onMessage(GetStatusRequest message) {
+        String messageCorrelationID = message.getCorrelationID();
+        T conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any "
+            		+ "conversation.");
+        }
+    }
+
+    @Override
+    public void onMessage(GetStatusProgressResponse message) {
+        String messageCorrelationID = message.getCorrelationID();
+        T conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any "
+            		+ "conversation.");
+        }
+    }
+
+    @Override
+    public void onMessage(GetStatusFinalResponse message) {
+        String messageCorrelationID = message.getCorrelationID();
+        T conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any "
+            		+ "conversation.");
+        }
+    }
+    
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsResponse message) {
         String messageCorrelationID = message.getCorrelationID();

@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol;
 
+import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
@@ -36,6 +37,9 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
@@ -54,6 +58,12 @@ import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
  * If an implementation does not support a method, it may throw {@link UnsupportedOperationException}
  */
 public interface MessageListener {
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+	void onMessage(Alarm message);
     /**
      * Action to perform upon receiving a message.
      *
@@ -134,6 +144,27 @@ public interface MessageListener {
      * @param message The message received.
      */
     void onMessage(GetFileProgressResponse message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(GetStatusRequest message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(GetStatusProgressResponse message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(GetStatusFinalResponse message);
 
     /**
      * Action to perform upon receiving a message.

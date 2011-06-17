@@ -26,6 +26,7 @@ package org.bitrepository.protocol;
 
 import javax.xml.bind.JAXBException;
 
+import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
@@ -38,6 +39,9 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -79,6 +83,11 @@ public abstract class AbstractMessageListener implements MessageListener {
                 "The message listener does not accept messages of this type: '" + message.getClass().getName() + "'");
     }
 
+    @Override
+    public void onMessage(Alarm message) {
+        reportUnsupported(message);
+    }
+    
     @Override
     public void onMessage(GetAuditTrailsFinalResponse message) {
         reportUnsupported(message);
@@ -136,6 +145,21 @@ public abstract class AbstractMessageListener implements MessageListener {
 
     @Override
     public void onMessage(GetFileProgressResponse message) {
+        reportUnsupported(message);
+    }
+
+    @Override
+    public void onMessage(GetStatusRequest message) {
+        reportUnsupported(message);
+    }
+
+    @Override
+    public void onMessage(GetStatusProgressResponse message) {
+        reportUnsupported(message);
+    }
+
+    @Override
+    public void onMessage(GetStatusFinalResponse message) {
         reportUnsupported(message);
     }
 

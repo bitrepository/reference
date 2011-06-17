@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol;
 
+import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -33,6 +34,9 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -49,6 +53,13 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
  * Interface for sending messages.
  */
 public interface MessageSender {
+    /**
+     * Method for sending a message on a specific destination.
+     *
+     * @param content       The content of the message.
+     */
+    void sendMessage(Alarm content);
+    
     /**
      * Method for sending a message on a specific destination.
      *
@@ -111,6 +122,27 @@ public interface MessageSender {
      * @param content       The content of the message.
      */
     void sendMessage(GetFileProgressResponse content);
+
+    /**
+     * Method for sending a message on a specific destination.
+     *
+     * @param content       The content of the message.
+     */
+    void sendMessage(GetStatusRequest content);
+
+    /**
+     * Method for sending a message on a specific destination.
+     *
+     * @param content       The content of the message.
+     */
+    void sendMessage(GetStatusProgressResponse content);
+
+    /**
+     * Method for sending a message on a specific destination.
+     *
+     * @param content       The content of the message.
+     */
+    void sendMessage(GetStatusFinalResponse content);
 
     /**
      * Method for sending a message on a specific destination.
