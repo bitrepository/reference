@@ -24,24 +24,34 @@
  */
 package org.bitrepository.access.getfileids;
 
-import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access_client.configuration.AccessConfiguration;
-import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
-import org.bitrepository.bitrepositorymessages.*;
-import org.bitrepository.protocol.MessageBus;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+
+import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access_client.configuration.AccessConfiguration;
+import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.protocol.MessageBus;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Prototype GetFileIDs Client
@@ -124,7 +134,7 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         identifyPillarsForGetFileIDsResponseMap.put(corrID, responses);
 
         // send message
-        messageBus.sendMessage(queue, identifyRequest);
+        messageBus.sendMessage(identifyRequest);
 
         // wait for messages (or until specified waiting time elapses)
         try {
@@ -164,7 +174,7 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         getFileIDsFinalResponseCountDownLatchMap.put(correlationID, finalResponseCountDown);
 
         // send message
-        messageBus.sendMessage(queue, request);
+        messageBus.sendMessage(request);
 
         // wait for messages (or until specified waiting time elapses)
         try {

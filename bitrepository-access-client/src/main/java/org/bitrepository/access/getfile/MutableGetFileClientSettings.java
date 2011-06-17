@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitrepository Common
+ * Bitrepository Access
  * 
  * $Id$
  * $HeadURL$
@@ -22,13 +22,24 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.common.bitrepositorycollection;
+package org.bitrepository.access.getfile;
 
-public interface BitRepositoryCollectionSettings {
+import org.bitrepository.common.bitrepositorycollection.ClientSettings;
+import org.bitrepository.common.bitrepositorycollection.MutableClientSettings;
 
-    /**
-     * Returns the ID for this BitRepositoryCollection
-     */
-    public String getBitRepositoryCollectionID();
+public class MutableGetFileClientSettings extends MutableClientSettings
+        implements GetFileClientSettings {
+    
+    public MutableGetFileClientSettings(ClientSettings settings) {
+        super(settings);
+    }
 
+    private int getFileDefaultTimeout;
+    @Override
+    public int getGetFileDefaultTimeout() {
+        return getFileDefaultTimeout;
+    }
+    public void setGetFileDefaultTimeout(int getFileDefaultTimeout) {
+        this.getFileDefaultTimeout = getFileDefaultTimeout;
+    }
 }

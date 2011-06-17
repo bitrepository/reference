@@ -24,6 +24,10 @@
  */
 package org.bitrepository.access.getfile;
 
+import java.io.File;
+import java.math.BigInteger;
+import java.net.URL;
+
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
@@ -38,29 +42,22 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.math.BigInteger;
-import java.net.URL;
-
 /**
  * Test class for the 'GetFileClient'.
  */
 public class GetFileClientComponentTest extends DefaultFixtureClientTest {
-    private GetFileClient getFileClient;
     private TestGetFileMessageFactory testMessageFactory;
     private TestFileStore pillar1FileStore;
     private TestFileStore pillar2FileStore;
+    private MutableGetFileClientSettings getFileClientSettings;
 
     @BeforeMethod (alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
-        // In case of multiple types of GetFileClients, the concrete class should be configurable (perhaps specialize 
-        // this test with an overload of this method)
-        getFileClient = 
-            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(slaConfiguration), 
-                    testEventManager);
+        getFileClientSettings = new MutableGetFileClientSettings(settings);
+        getFileClientSettings.setGetFileDefaultTimeout(1000);
         
         if (useMockupPillar()) {
-            testMessageFactory = new TestGetFileMessageFactory(slaConfiguration.getId());
+            testMessageFactory = new TestGetFileMessageFactory(settings.getBitRepositoryCollectionID());
             pillar1FileStore = new TestFileStore("Pillar1");
             pillar2FileStore = new TestFileStore("Pillar2");
             // The following line is also relevant for non-mockup senarios, where the pillars needs to be initialized 
@@ -71,26 +68,35 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
 
     @Test(groups = {"regressiontest"})
     public void verifyGetFileClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(slaConfiguration) 
+        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings) 
                 instanceof SimpleGetFileClient, 
                 "The default GetFileClient from the Access factory should be of the type '" + 
                 SimpleGetFileClient.class.getName() + "'.");
     }
 
-    @Test(groups = {"test-first"})
+    @Test(groups = {"regressiontest"})
     public void getFileFromSpecificPillar() throws Exception {
         addDescription("Tests whether a specific message is sent by the GetClient, when only a single pillar " +
         "participates");
         addStep("Set the number of pillars for this SLA to 1", "");
+        
+        ((MutableClientSettings)getFileClientSettings).setPillarIDs(new String[] {PILLAR1_ID});
+        GetFileClient getFileClient = 
+            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings), 
+                    testEventManager);
+        
+        addStep("Ensure the file isn't already present on the http server", "");
+        httpServer.removeFile(DEFAULT_FILE_ID);
         
         addStep("Request the fastest delivery of a file. A callback listener should be supplied.", 
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
         getFileClient.getFileFromSpecificPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), PILLAR1_ID);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
-            receivedIdentifyRequestMessage = slaTopic.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+            receivedIdentifyRequestMessage = bitRepositoryCollectionTopic.waitForMessage(IdentifyPillarsForGetFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
-                    testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage));
+                    testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage, 
+                            bitRepositoryCollectionTopicID));
 
             Assert.assertNotNull(receivedIdentifyRequestMessage, "No IdentifyPillarsForGetFileRequest received.");
             Assert.assertEquals(receivedIdentifyRequestMessage.getFileID(), DEFAULT_FILE_ID);
@@ -108,7 +114,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(identifyResponse);
             receivedGetFileRequest = pillar1Topic.waitForMessage(GetFileRequest.class);
             Assert.assertEquals(receivedGetFileRequest, 
-                    testMessageFactory.createGetFileRequest(receivedGetFileRequest,PILLAR1_ID));
+                    testMessageFactory.createGetFileRequest(receivedGetFileRequest,PILLAR1_ID, pillar1TopicId));
         }
         
         addStep("The pillar sends a getFile response to the GetClient.", 
@@ -146,11 +152,15 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
                 + "possible, where it has to choose between to pillars with "
                 + "different times. The messages should be delivered at the "
                 + "same time.");
-        addStep("Defining the test variables.", "Nothing should be able to go wrong here!");
-        String fileId = "fileId";
-        String fastPillar = "THE-FAST-PILLAR";
-        String slowPillar = "THE-SLOW-PILLAR";
-        ((MutableClientSettings)slaConfiguration).setNumberOfPillars(2);
+        addStep("Create a GetFileClient configured to use a fast and a slow pillar.", "");
+        
+        String fastPillarID = "THE-FAST-PILLAR";
+        String averagePillarID = "THE-AVERAGE-PILLAR";
+        String slowPillarID = "THE-SLOW-PILLAR";
+        ((MutableClientSettings)getFileClientSettings).setPillarIDs(new String[] {averagePillarID, fastPillarID, slowPillarID});
+        GetFileClient getFileClient = 
+            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings), 
+                    testEventManager);
 
         addStep("Defining the variables for the GetFileClient and defining them in the configuration", 
         "It should be possible to change the values of the configurations.");
@@ -159,15 +169,31 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
 
         getFileClient.getFileFromFastestPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID));
 
+        //ToDo use message factory
         IdentifyPillarsForGetFileRequest identifyRequestMessage = 
-            slaTopic.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+            bitRepositoryCollectionTopic.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+        TimeMeasureTYPE averageTime = new TimeMeasureTYPE();
+        averageTime.setTimeMeasureUnit("MILLISECONDS");
+        averageTime.setTimeMeasureValue(BigInteger.valueOf(100L));
         TimeMeasureTYPE fastTime = new TimeMeasureTYPE();
-        fastTime.setTimeMeasureUnit("milliseconds");
+        fastTime.setTimeMeasureUnit("MILLISECONDS");
         fastTime.setTimeMeasureValue(BigInteger.valueOf(10L));
         TimeMeasureTYPE slowTime = new TimeMeasureTYPE();
-        slowTime.setTimeMeasureValue(BigInteger.valueOf(20000L));
-        slowTime.setTimeMeasureUnit("hours");
+        slowTime.setTimeMeasureValue(BigInteger.valueOf(1L));
+        slowTime.setTimeMeasureUnit("HOURS");
 
+        IdentifyPillarsForGetFileResponse averageReply = new IdentifyPillarsForGetFileResponse();
+        averageReply.setCorrelationID(identifyRequestMessage.getCorrelationID());
+        averageReply.setFileID(identifyRequestMessage.getFileID());
+        averageReply.setMinVersion(BigInteger.valueOf(1L));
+        averageReply.setVersion(BigInteger.valueOf(1L));
+        averageReply.setBitRepositoryCollectionID(identifyRequestMessage.getBitRepositoryCollectionID());
+        averageReply.setTimeToDeliver(averageTime);
+        averageReply.setPillarID(averagePillarID);  
+        averageReply.setReplyTo(pillar2TopicId);
+        averageReply.setTo(identifyRequestMessage.getReplyTo());
+        messageBus.sendMessage(averageReply);
+        
         IdentifyPillarsForGetFileResponse fastReply = new IdentifyPillarsForGetFileResponse();
         fastReply.setCorrelationID(identifyRequestMessage.getCorrelationID());
         fastReply.setFileID(identifyRequestMessage.getFileID());
@@ -175,12 +201,11 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
         fastReply.setVersion(BigInteger.valueOf(1L));
         fastReply.setBitRepositoryCollectionID(identifyRequestMessage.getBitRepositoryCollectionID());
         fastReply.setTimeToDeliver(fastTime);
-        fastReply.setPillarID(fastPillar);  
+        fastReply.setPillarID(fastPillarID);  
         fastReply.setReplyTo(pillar1TopicId);
         fastReply.setTo(identifyRequestMessage.getReplyTo());
         messageBus.sendMessage(fastReply);
 
-        fastReply.setReplyTo(identifyRequestMessage.getReplyTo());
         IdentifyPillarsForGetFileResponse slowReply = new IdentifyPillarsForGetFileResponse();
         slowReply.setCorrelationID(identifyRequestMessage.getCorrelationID());
         slowReply.setFileID(identifyRequestMessage.getFileID());
@@ -188,7 +213,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
         slowReply.setVersion(BigInteger.valueOf(1L));
         slowReply.setBitRepositoryCollectionID(identifyRequestMessage.getBitRepositoryCollectionID());
         slowReply.setTimeToDeliver(slowTime);
-        slowReply.setPillarID(slowPillar);  
+        slowReply.setPillarID(slowPillarID);  
         slowReply.setReplyTo(pillar2TopicId);
         slowReply.setTo(identifyRequestMessage.getReplyTo());
         messageBus.sendMessage(slowReply);
@@ -197,6 +222,6 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
         GetFileRequest getFileRequestMessage = pillar1Topic.waitForMessage(GetFileRequest.class);
         Assert.assertNotNull(getFileRequestMessage, "No GetFileResponse received.");
         Assert.assertEquals(getFileRequestMessage.getFileID(), identifyRequestMessage.getFileID());
-        Assert.assertEquals(getFileRequestMessage.getPillarID(), fastPillar);     
+        Assert.assertEquals(getFileRequestMessage.getPillarID(), fastPillarID);     
     }
 }

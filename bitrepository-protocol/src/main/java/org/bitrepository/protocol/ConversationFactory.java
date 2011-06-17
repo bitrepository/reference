@@ -24,6 +24,9 @@
  */
 package org.bitrepository.protocol;
 
+import org.bitrepository.protocol.pillarselector.PillarSelector;
+
+
 /**
  * Creator of conversations.
  */
@@ -33,5 +36,5 @@ public interface ConversationFactory<T extends Conversation> {
      *
      * @return A new conversation.
      */
-    T createConversation();
+    T createConversation(PillarSelector selector);
 }

@@ -35,7 +35,12 @@ public class HttpServerConfiguration {
     private String httpServerName = "sandkasse-01.kb.dk";
     /** The path on the HTTP server to the location, where the data can be 
      * uploaded.*/
-    private String httpServerPath = "/dav";
+    private String httpServerPath = "/dav/";
+    /**
+     * Prefix to use when working with files on the http server. The prefix is used to distinguish between different 
+     * users/processes working with the server in parallel
+     */
+    private String prefix = "";
     
     public String getProtocol() {
         return protocol;
@@ -60,5 +65,8 @@ public class HttpServerConfiguration {
     }
     public void setHttpServerPath(String httpServerPath) {
         this.httpServerPath = httpServerPath;
+    }
+    public void setFilePrefix(String prefix) {
+        this.prefix = prefix;
     }
 }

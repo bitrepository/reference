@@ -46,7 +46,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -93,7 +92,7 @@
                 <arg>-XtoString</arg>
                 <arg>-Xequals</arg>
                 <arg>-XhashCode</arg>
-              </args>       
+              </args>
               <plugins>
                 <plugin>
                   <groupId>org.jvnet.jaxb2_commons</groupId>

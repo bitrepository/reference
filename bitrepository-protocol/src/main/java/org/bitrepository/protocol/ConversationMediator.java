@@ -36,9 +36,9 @@ public interface ConversationMediator<T extends Conversation> extends MessageLis
     /**
      * Start a conversation of type T and begin delegating messages to this conversation when received.
      *
-     * @return The started conversation.
+     * @param The new conversation.
      */
-    T startConversation();
+    void startConversation(T conversation);
 
     /**
      * Consider a conversation as ended and stop delegating messages for it.

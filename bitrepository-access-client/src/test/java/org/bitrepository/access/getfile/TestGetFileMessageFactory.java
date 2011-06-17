@@ -33,6 +33,8 @@ import org.bitrepository.protocol.TestMessageFactory;
 
 /**
  * Constructs the GetFile specific messages.
+ * 
+ * ToDo based on example messages.
  */
 public class TestGetFileMessageFactory extends TestMessageFactory {
     protected final String slaID;
@@ -61,10 +63,11 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
      * @return A reference <code>IdentifyPillarsForGetFileRequest</code> message.
      */
     public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileIDsRequest(
-            IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage) {
+            IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage, String toTopic) {
         IdentifyPillarsForGetFileRequest identifyPillarsForGetFileRequest = createIdentifyPillarsForGetFileRequest();
         identifyPillarsForGetFileRequest.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
         identifyPillarsForGetFileRequest.setReplyTo(receivedIdentifyRequestMessage.getReplyTo());
+        identifyPillarsForGetFileRequest.setTo(toTopic);
         return identifyPillarsForGetFileRequest;
     }
 
@@ -86,7 +89,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         return identifyPillarsForGetFileRequest;
     }
   
-    public GetFileRequest createGetFileRequest(String pillarId) {
+    public GetFileRequest createGetFileRequest(String pillarId, String toTopic) {
         GetFileRequest getFileRequest = new GetFileRequest();
         getFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         getFileRequest.setFileID(FILE_ID_DEFAULT);
@@ -94,11 +97,12 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         getFileRequest.setVersion(VERSION_DEFAULT);
         getFileRequest.setPillarID(pillarId);
         getFileRequest.setBitRepositoryCollectionID(slaID);
+        getFileRequest.setTo(toTopic);
         return getFileRequest;
     }
     public GetFileRequest createGetFileRequest(GetFileRequest receivedGetFileRequest,
-            String pillarId) {
-        GetFileRequest getFileRequest = createGetFileRequest(pillarId);
+            String pillarId, String toTopic) {
+        GetFileRequest getFileRequest = createGetFileRequest(pillarId, toTopic);
         getFileRequest.setCorrelationID(receivedGetFileRequest.getCorrelationID());
         getFileRequest.setFileAddress(receivedGetFileRequest.getFileAddress());
         getFileRequest.setReplyTo(receivedGetFileRequest.getReplyTo());

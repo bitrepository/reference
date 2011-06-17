@@ -24,19 +24,23 @@
  */
 package org.bitrepository.protocol;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
@@ -49,14 +53,10 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Conversation handler that delegates messages to registered conversations.
@@ -66,33 +66,29 @@ import java.util.Map;
 public class CollectionBasedConversationMediator<T extends Conversation> implements ConversationMediator<T> {
     /** Logger for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
-    /** The factory for generating conversations. */
-    private final ConversationFactory<T> conversationFactory;
     /** Registered conversations, mapping from correlation ID to conversation. */
     private final Map<String, T> conversations;
 
     /**
-     * Initiate a mediator, that generates conversations with the given factory, and mediates messages sent on the
+     * Create a mediator that handles conversations and mediates messages sent on the
      * given destination on the given messagebus.
      *
      * @param conversationFactory The factory that generates conversations.
      * @param messagebus The message bus to mediate messages on.
      * @param listenerDestination The destinations to mediate messages for.
      */
-    public CollectionBasedConversationMediator(ConversationFactory<T> conversationFactory, MessageBus messagebus,
+    public CollectionBasedConversationMediator(MessageBus messagebus,
                                                String listenerDestination) {
         log.debug("Initializing the CollectionBasedConversationMediator");
-        this.conversationFactory = conversationFactory;
         this.conversations = Collections.synchronizedMap(new HashMap<String, T>());
         messagebus.addListener(listenerDestination, this);
     }
 
     @Override
-    public T startConversation() {
-        T conversation = conversationFactory.createConversation();
+    public void startConversation(T conversation) {
         conversation.setMediator(this);
         conversations.put(conversation.getConversationID(), conversation);
-        return conversation;
+        conversation.startConversion();
     }
 
     @Override

@@ -22,13 +22,20 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.common.bitrepositorycollection;
+package org.bitrepository.common.exceptions;
 
-public interface BitRepositoryCollectionSettings {
+/**
+ * Indicates a failure to finish a task. <p>
+ * 
+ * An example would be a failure to handle of a set of responses to reach a well defined finish state.
+ */
+public class UnableToFinishException extends Exception {
 
-    /**
-     * Returns the ID for this BitRepositoryCollection
-     */
-    public String getBitRepositoryCollectionID();
+    public UnableToFinishException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
+    public UnableToFinishException(String message) {
+        super(message);
+    }
 }

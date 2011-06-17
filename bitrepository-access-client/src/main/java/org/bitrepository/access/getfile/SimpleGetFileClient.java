@@ -24,40 +24,34 @@
  */
 package org.bitrepository.access.getfile;
 
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import java.net.URL;
+
+import org.bitrepository.access.getfile.selectors.FastestPillarSelectorForGetFile;
+import org.bitrepository.access.getfile.selectors.PillarSelectorForGetFile;
+import org.bitrepository.access.getfile.selectors.SpecificPillarSelectorForGetFile;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.CollectionBasedConversationMediator;
+import org.bitrepository.protocol.ConversationMediator;
 import org.bitrepository.protocol.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
-import java.net.URL;
-
 /**
- * The client for sending and handling 'GetFile' operations.
- * Is able to either retrieve a file from a specific pillar, or to identify how fast each pillar in a given SLA is to
- * retrieve  a specific file and then retrieve it from the fastest pillar.
- * The files are delivered to a preconfigured directory.
- *
- * TODO move all the message generations into separate methods, or use the auto-generated constructors, which Mikis
- * has talked about.
+ * The default <code>GetFileClient</code>.
  */
-public class SimpleGetFileClient extends CollectionBasedConversationMediator<SimpleGetFileConversation> implements
-        GetFileClient {
+public class SimpleGetFileClient implements GetFileClient {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
-    
-    private final ClientSettings slaConfiguration;
 
-    public SimpleGetFileClient(MessageBus messagebus, 
-            SimpleGetFileConversationFactory simpleGetFileConversationFactory,
-            ClientSettings slaConfiguration) {
-        super(simpleGetFileConversationFactory, messagebus, slaConfiguration.getClientTopicId());
-        log.info("Initialized the GetFileClient");
+    private final GetFileClientSettings settings;    
+    private final MessageBus messageBus;
+    private final ConversationMediator<SimpleGetFileConversation> conversationMediator;
 
-        this.slaConfiguration = slaConfiguration;
+    public SimpleGetFileClient(MessageBus messageBus, GetFileClientSettings settings) {
+        conversationMediator = 
+            new CollectionBasedConversationMediator<SimpleGetFileConversation>(messageBus, settings.getClientTopicID());
+        this.settings = settings;
+        this.messageBus = messageBus;
     }
 
     @Override
@@ -66,20 +60,8 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
         
         log.info("Requesting fastest retrieval of the file '" + fileID + "' which belong to the SLA '" + 
-                slaConfiguration.getId() + "'.");
-        // Create message requesting delivery time for the given file.
-        IdentifyPillarsForGetFileRequest msg = new IdentifyPillarsForGetFileRequest();
-        msg.setMinVersion(BigInteger.valueOf(1L));
-        msg.setVersion(BigInteger.valueOf(1L));
-        msg.setBitRepositoryCollectionID(slaConfiguration.getId());
-        msg.setFileID(fileID);
-        msg.setReplyTo(slaConfiguration.getClientTopicId());
-        msg.setTo(slaConfiguration.getSlaTopicId());
-
-        SimpleGetFileConversation conversation = startConversation();
-        conversation.sendMessage(msg);
-
-        // TODO: Should we wait for the conversation to end before returning? How is the result delivered?
+                settings.getBitRepositoryCollectionID() + "'.");
+        startConversation(new FastestPillarSelectorForGetFile(settings.getPillarIDs()), fileID, uploadUrl);   
     }
 
     @Override
@@ -87,25 +69,14 @@ public class SimpleGetFileClient extends CollectionBasedConversationMediator<Sim
         ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "pillarID");
-        
+
         log.info("Requesting the file '" + fileID + "' from pillar '" + pillarID + "'.");
-
-        IdentifyPillarsForGetFileRequest msg = new IdentifyPillarsForGetFileRequest();
-        msg.setMinVersion(BigInteger.valueOf(1L));
-        msg.setVersion(BigInteger.valueOf(1L));
-        msg.setBitRepositoryCollectionID(slaConfiguration.getId());
-        msg.setFileID(fileID);
-        //msg.setPillarId(pillarID);
-        if (true) throw new UnsupportedOperationException("The get file by pillar identification isn't currently " +
-        		"supported by the protocol");
-        msg.setReplyTo(slaConfiguration.getClientTopicId());
-        msg.setTo(slaConfiguration.getSlaTopicId());
-
-        SimpleGetFileConversation conversation = startConversation();
-        conversation.sendMessage(msg);
-
-        // TODO: Should we wait for the conversation to end before returning? How is the result delivered?
+        startConversation(new SpecificPillarSelectorForGetFile(pillarID, settings.getPillarIDs()), fileID, uploadUrl);
     }
     
-    
+    private void startConversation(PillarSelectorForGetFile selector, String fileID, URL uploadUrl) {
+        SimpleGetFileConversation conversation = new SimpleGetFileConversation(
+                messageBus, settings, selector, fileID, uploadUrl);
+        conversationMediator.startConversation(conversation);
+    }
 }

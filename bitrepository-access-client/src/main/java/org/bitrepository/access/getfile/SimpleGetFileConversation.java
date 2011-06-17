@@ -24,32 +24,32 @@
  */
 package org.bitrepository.access.getfile;
 
-import org.bitrepository.access.AccessException;
-import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.common.bitrepositorycollection.ClientSettings;
-import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.protocol.AbstractMessagebusBackedConversation;
-import org.bitrepository.protocol.MessageBus;
-import org.bitrepository.protocol.MessageSender;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
-import java.io.FileOutputStream;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+
+import org.bitrepository.access.AccessException;
+import org.bitrepository.access.getfile.selectors.PillarSelectorForGetFile;
+import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.bitrepositorycollection.ClientSettings;
+import org.bitrepository.common.exceptions.UnableToFinishException;
+import org.bitrepository.protocol.AbstractMessagebusBackedConversation;
+import org.bitrepository.protocol.MessageSender;
+import org.bitrepository.protocol.flow.UnexpectedResponseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A conversation for GetFile.
@@ -75,20 +75,10 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    /** The directory where the retrieved files should be placed. */
-    private final File fileDir;
     /** The configuration specific to the SLA related to this conversion. */
-    private final ClientSettings slaConfiguration;
+    private final ClientSettings settings;
     /** The timeout when getting a file. */
     private long getFileTimeout;
-
-    /**
-     * The replies registered for each pillar to deliver this file. Maps between
-     * pillar id and the replies received from the pillar.
-     */
-    private final Map<String, IdentifyPillarsForGetFileResponse> pillarTime
-            = Collections.synchronizedMap(new HashMap<String, IdentifyPillarsForGetFileResponse>());
-
     /** The timer. Schedules conversation timeouts for this conversation. */
     private final Timer timer = new Timer(TIMER_IS_DAEMON);
     /** The timer task for timeout of identify in this conversation. */
@@ -98,8 +88,12 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
 
     /** Whether the conversation has ended. */
     private boolean ended = false;
-    /** The result of this conversation. */
-    private File result;
+    /** The url which the pillar should upload the file to. */
+    private final URL uploadUrl;
+    /** The ID of the file which should be uploaded to the supplied url */
+    private final String fileID;
+    /** Selects a pillar based on responses. */
+    private final PillarSelectorForGetFile selector;
 
     /**
      * Initializes the file directory, and the message bus used for sending messages.
@@ -111,17 +105,18 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
      * is replaced by twice the time the pillar estimated.
      * @param fileDir The directory to store retrieved files in.
      */
-    public SimpleGetFileConversation(MessageBus messageBus, 
-            ClientSettings slaConfiguration, 
-                                     long getFileDefaultTimeout) {
-        super(messageBus, UUID.randomUUID().toString());
+    public SimpleGetFileConversation(
+            MessageSender messageSender, 
+            GetFileClientSettings settings,
+            PillarSelectorForGetFile selector,
+            String fileID,
+            URL uploadUrl) {
+        super(messageSender, UUID.randomUUID().toString());
 
-        this.slaConfiguration = slaConfiguration;
-        this.getFileTimeout = getFileDefaultTimeout;
-
-        // retrieve the directory for delivering the output files.
-        // TODO: Should we really have files?
-        this.fileDir = FileUtils.retrieveDirectory(slaConfiguration.getLocalFileStorage());
+        this.settings = settings;
+        this.selector = selector;
+        this.uploadUrl = uploadUrl;
+        this.fileID = fileID;
     }
 
     @Override
@@ -131,7 +126,7 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
 
     @Override
     public File getResult() {
-        return result;
+        return null;
     }
 
     /**
@@ -171,17 +166,21 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
      */
     @Override
     public void onMessage(IdentifyPillarsForGetFileResponse response) {
-        // validate arguments
-        if (response == null) {
-            throw new IllegalArgumentException("The IdentifyPillarsForGetFileResponse reply may not be null.");
+        try {
+            selector.processResponse(response);
+        } catch (UnexpectedResponseException e) {
+            throw new IllegalArgumentException("Invalid IdentifyPillarsForGetFileResponse.");
         }
-
-        pillarTime.put(response.getPillarID(), response);
-        if (pillarTime.size() == slaConfiguration.getNumberOfPillars()) {
-            // stop the timer task for this outstanding instance, and then get file from fastest pillar
-            identifyTimeoutTask.cancel();
-            // TODO: Race condition, what if timeout task already triggered this just before now
-            getFileFromFastest();
+        
+        try {
+            if (selector.isFinished()) {
+                // stop the timer task for this outstanding instance, and then get the file from the selected pillar
+                identifyTimeoutTask.cancel();
+                // TODO: Race condition, what if timeout task already triggered this just before now
+                getFileFromSelectedPillar();
+            }
+        } catch (UnableToFinishException e) {
+            failConversation("Cannot request file, since no valid pillar could be found", e);
         }
 
     }
@@ -195,101 +194,52 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
     @Override
     public void onMessage(GetFileProgressResponse msg) {
         // TODO Something else?
-        log.info("Received progress response for retrieval of file {}'" + msg.toString());
+        log.info("Received progress response for retrieval of file " + msg);
     }
 
     /**
      * Method for final response the get.
-     * Downloads the file, and remembers the result. Then marks the conversation as ended.
      *
      * @param msg The GetFileFinalResponse message to be handled by this method.
      */
     @Override
     public void onMessage(GetFileFinalResponse msg) {
-        if (msg == null) {
-            throw new IllegalArgumentException("Cannot handle a null as GetFileFinalResponse.");
-        }
-
+        ArgumentValidator.checkNotNull(msg, "GetFileFinalResponse");
         getFileTimeoutTask.cancel();
         // TODO: Race condition, what if timeout task already triggered this just before now
-        String id = msg.getFileID();
-        try {
-            // TODO: Should we really download the file, or is the interface the URL?
-            log.info("Downloading the file '" + id + "' from '" + msg.getFileAddress() + "'.");
-
-            URL url = new URL(msg.getFileAddress());
-
-            File outputFile = new File(fileDir, id);
-
-            // Handle the scenario when a file already exists by deprecating the old one (move to '*.old')
-            if (outputFile.exists()) {
-                SimpleGetFileConversation.this.log.warn("The file '" + id + "' does already exist. Moving old one.");
-                moveDeprecatedFile(outputFile);
-            }
-
-            FileOutputStream outStream = null;
-            try {
-                // download the file.
-                outStream = new FileOutputStream(outputFile);
-                ProtocolComponentFactory.getInstance().getFileExchange().downloadFromServer(outStream, url);
-                outStream.flush();
-            } finally {
-                if (outStream != null) {
-                    outStream.close();
-                }
-            }
-
-            result = outputFile;
-        } catch (Exception e) {
-            throw new AccessException("Problems with retrieving the file '" + id + "'.", e);
-        } finally {
-            endConversation();
-        }
+        endConversation();
     }
 
     /** Method for making the client send a request for the file to the fastest pillar. */
-    private void getFileFromFastest() {
-        IdentifyPillarsForGetFileResponse response = null;
-        Long timeToDeliver = Long.MAX_VALUE;
-        for (Map.Entry<String, IdentifyPillarsForGetFileResponse> entry : pillarTime.entrySet()) {
-            if (entry.getValue().getTimeToDeliver().getTimeMeasureValue().longValue() < timeToDeliver) {
-                response = entry.getValue();
-                // TODO Unit is ignored! Assumed to be ms
-                timeToDeliver = entry.getValue().getTimeToDeliver().getTimeMeasureValue().longValue();
-            }
-        }
-
-        if (response == null) {
-            endConversation();
-            // TODO But reporting an actual time to deliver is optional ?!
-            throw new AccessException("Cannot request file, since the no pillar with a "
-                                              + "valid time has replied. Number of replies: '" + pillarTime.size()
-                                              + "'");
-        }
-
-        // TODO Hardcoded doubling of timeout
-        getFileTimeout = 2 * timeToDeliver;
-        // make the client perform the request for the file from the fastest pillar.
-        URL url;
-        try {
-            url = ProtocolComponentFactory.getInstance().getFileExchange().getURL(response.getFileID());
-        } catch (MalformedURLException e) {
-            throw new AccessException("Unable to create file from URL", e);
+    private void getFileFromSelectedPillar() {
+        if (selector.getPillarID() == null) {
+            failConversation("Unable to getFile, no pillar was selected");
         }
         GetFileRequest msg = new GetFileRequest();
-        msg.setBitRepositoryCollectionID(response.getBitRepositoryCollectionID());
-        msg.setCorrelationID(response.getCorrelationID());
-        msg.setFileAddress(url.toExternalForm());
-        msg.setFileID(response.getFileID());
-        msg.setPillarID(response.getPillarID());
-        msg.setReplyTo(slaConfiguration.getClientTopicId());
+        msg.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        msg.setCorrelationID(getConversationID());
+        msg.setFileAddress(uploadUrl.toExternalForm());
+        msg.setFileID(fileID);
+        msg.setPillarID(selector.getPillarID());
+        msg.setReplyTo(settings.getClientTopicID());
         msg.setMinVersion(BigInteger.valueOf(PROTOCOL_MIN_VERSION));
         msg.setVersion(BigInteger.valueOf(PROTOCOL_VERSION));
-        msg.setTo(response.getReplyTo());
-
+        msg.setTo(selector.getPillarTopic());
         sendMessage(msg);
     }
 
+    @Override
+    public void startConversion() {
+        IdentifyPillarsForGetFileRequest identifyRequest = new IdentifyPillarsForGetFileRequest();
+        identifyRequest.setMinVersion(BigInteger.valueOf(1L));
+        identifyRequest.setVersion(BigInteger.valueOf(1L));
+        identifyRequest.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        identifyRequest.setFileID(fileID);
+        identifyRequest.setReplyTo(settings.getClientTopicID());
+        identifyRequest.setTo(settings.getBitRepositoryCollectionTopicID());
+        sendMessage(identifyRequest);
+    }
+    
     /**
      * Mark this conversation as ended, and notifies whoever waits for it to end.
      */
@@ -301,34 +251,32 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
         mediator.endConversation(this);
     }
 
-    /**
-     * Method for deprecating a file by renaming it to '*.old' (where '*' is the current file name).
-     * If an old version already exists, then rename it to '*.old.old', etc.
-     * Should also work with a directory, though not be intended.
-     *
-     * TODO verify!
-     *
-     * @param current The current file to deprecate. Aka move to old.
-     */
-    private void moveDeprecatedFile(File current) {
-        File newLocation = new File(current.getParent(), current.getName() + ".old");
-        // Handle scenario, when a old copy already exists. Move the old one too! (to old.old)
-        if (newLocation.exists()) {
-            moveDeprecatedFile(newLocation);
-        }
-        current.renameTo(newLocation);
-    }
 
+    private void failConversation(String message) {
+        failConversation(message, null);
+    }
     /**
-     * The timer task class for the outstanding identify requests. When the time is reached the fastest pillar should
+     * Standard operation for failing the conversation in a standard way
+     * @param message Information about why the conversation did fail.
+     * @param e Optional exception if this caused the failure.
+     */
+    // ToDo 
+    private void failConversation(String message, Exception e) {
+        endConversation();
+        // TODO But reporting an actual time to deliver is optional ?!
+        throw new AccessException(message, e);
+    }
+    
+    /**
+     * The timer task class for the outstanding identify requests. When the time is reached the selected pillar should
      * be called requested for the delivery of the file.
      */
     private class IdentifyTimerTask extends TimerTask {
         @Override
         public void run() {
             //TODO: Exception handler needed, this is a thread
-            log.debug("Time has run out for identifying the fastest pillar.");
-            getFileFromFastest();
+            log.warn("Time has run out for selecting a pillar.");
+            getFileFromSelectedPillar();
         }
     }
 

@@ -35,24 +35,25 @@ public interface ClientSettings extends BitRepositoryCollectionSettings {
 	 * See <a href="https://sbforge.org/display/BITMAG/Queues+and+topics#Queuesandtopics-TheperSLAtopic">The per-SLA topic,/a> for details.
 	 * @return
 	 */
-	public String getSlaTopicId();
+	public String getBitRepositoryCollectionTopicID();
 	
 	/**
 	 * Return the Id for the topic used for messages with are broadcasted to all clients for a given SLA. 
 	 * 
 	 * See <a href="https://sbforge.org/display/BITMAG/Queues+and+topics#Queuesandtopics-Thededicatedclientpersistenttopic%3A">The per-SLA topic,/a> for details.
 	 */
-	public String getClientTopicId();
+	public String getClientTopicID();
 
 	/**
 	 * Returns the number of pillar participating in this SLA. The number can be used to evaluate whether all pillars
 	 * has responded to a broadcast.
 	 */
-	public int getNumberOfPillars();
+	public String[] getPillarIDs();
 	
     /**
      * The location of the directory where the files which are downloaded/uploaded are placed. The location corresponds
      *  to a url exposed by the http server. This might be null in case of no shared file system.
      */
     public String getLocalFileStorage();
+    
 }

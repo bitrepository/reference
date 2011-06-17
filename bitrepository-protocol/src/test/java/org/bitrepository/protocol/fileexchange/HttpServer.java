@@ -26,6 +26,7 @@ package org.bitrepository.protocol.fileexchange;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,11 +41,11 @@ import org.jaccept.TestEventManager;
 import org.testng.Assert;
 
 /**
- * Test helper class for uploading and downloading files from a http server.
+ * Test helper class for uploading and downloading files from a http server. 
  * <p>
  * Also contains functionality for asserting whether a file is present on the HTTP server.
  */
-public class HTTPServer {
+public class HttpServer {
     /** The lower boundary for the error codes of the HTTP codes.*/
     private static final int HTTP_ERROR_CODE_BARRIER = 300;
 
@@ -59,10 +60,9 @@ public class HTTPServer {
      *
      * @param configuration The configuration for file exchange.
      */
-    public HTTPServer(HttpServerConfiguration config, TestEventManager testEventManager) {
+    public HttpServer(HttpServerConfiguration config, TestEventManager testEventManager) {
         this.config = config;
         this.testEventManager = testEventManager;
-
         tempDownloadedFilesDir = TEMP_DOWNLOADED_FILES_ROOT + File.separator + config.getHttpServerName();
         File tempDownloadedFilesDirHandle = new File(tempDownloadedFilesDir);
         tempDownloadedFilesDirHandle.delete();
@@ -81,7 +81,7 @@ public class HTTPServer {
     /**
      * Simulates a download from a http server to a pillar.
      * @param out The output stream where the file should be saved.
-     * @param url The url the downlaod the file from.
+     * @param url The url the download the file from.
      */
     public void downloadFile(OutputStream out, URL url)
     throws IOException {
@@ -89,14 +89,17 @@ public class HTTPServer {
     }
 
     /**
-     * Removes the indicated file from the server
+     * Removes the indicated file from the server. Will not complain if the file isn't present.
      * @param filename
      */
     public void removeFile(String filename) throws Exception {
-        URL url = new URL(filename);
+        URL url = getURL(filename);
         HttpURLConnection conn = getConnection(url);
         conn = getConnection(url);
         conn.setRequestMethod("DELETE");
+        try {
+            conn.getInputStream();
+        } catch (FileNotFoundException fnf) {} // No problem
     }
 
     private void loadFile(File outputFile, String fileAddress) {
@@ -192,7 +195,7 @@ public class HTTPServer {
                 config.getProtocol(), 
                 config.getHttpServerName(), 
                 config.getPortNumber(), 
-                config.getHttpServerPath() + "/" + filename);
+                config.getHttpServerPath() + filename);
     }
 
     /**
@@ -226,7 +229,7 @@ public class HTTPServer {
      * @return The HTTP connection to the given URL.
      * @throws IOException 
      */
-    protected HttpURLConnection getConnection(URL url) throws IOException {
+    private HttpURLConnection getConnection(URL url) throws IOException {
         return (HttpURLConnection) url.openConnection();
     }
 

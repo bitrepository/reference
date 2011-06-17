@@ -31,52 +31,64 @@ package org.bitrepository.common.bitrepositorycollection;
  */
 public class MutableClientSettings implements ClientSettings {	
     
+    public MutableClientSettings() {
+        super();
+    }
+    
+    public MutableClientSettings(ClientSettings settingsToCopy) {
+        setBitRepositoryCollectionID(settingsToCopy.getBitRepositoryCollectionID());
+        setBitRepositoryCollectionTopicID(settingsToCopy.getBitRepositoryCollectionTopicID());
+        setClientTopicID(settingsToCopy.getClientTopicID());
+        setPillarIDs(settingsToCopy.getPillarIDs());
+        setLocalFileStorage(settingsToCopy.getLocalFileStorage());
+    }
+    
     private String id;
     @Override
-	public String getId() {
+	public String getBitRepositoryCollectionID() {
         return id;
     }
     /**
      * @see #getSlaId()
      */
-    public void setId(String id) {
+    public void setBitRepositoryCollectionID(String id) {
         this.id = id;
     }
 
-    private String slaTopicId;
+    private String bitRepositoryCollectionTopicID;
 	@Override
-	public String getSlaTopicId() {
-		return slaTopicId;
+	public String getBitRepositoryCollectionTopicID() {
+		return bitRepositoryCollectionTopicID;
 	}	
 	/**
-	 * @see #getSlaTopicId()
+	 * @see #getBitRepositoryCollectionTopicID()
 	 */
-	public void setSlaTopicId(String slaTopicId) {
-		this.slaTopicId = slaTopicId;
+	public void setBitRepositoryCollectionTopicID(String bitRepositoryCollectionTopicID) {
+		this.bitRepositoryCollectionTopicID = bitRepositoryCollectionTopicID;
 	}
 
     private String clientTopicId;
 	@Override
-	public String getClientTopicId() {
+	public String getClientTopicID() {
 		return clientTopicId;
 	}	
 	/**
 	 * @see #getClientTopicId()
 	 */
-	public void setClientTopicId(String clientTopicId) {
+	public void setClientTopicID(String clientTopicId) {
 		this.clientTopicId = clientTopicId;
 	}
 
-    private int numberOfPillars;
+    private String[] pillarIDs;
 	@Override
-	public int getNumberOfPillars() {
-		return numberOfPillars;
+	public String[] getPillarIDs() {
+		return pillarIDs;
 	}
 	/**
-	 * @see #getClientTopicId()
+	 * @see #getPillarIDs()
 	 */
-	public void setNumberOfPillars(int numberOfPillars) {
-		this.numberOfPillars = numberOfPillars;
+	public void setPillarIDs(String[] pillarIDs) {
+		this.pillarIDs = pillarIDs;
 	}
 	
 	private String fileStorage;
@@ -93,7 +105,7 @@ public class MutableClientSettings implements ClientSettings {
 
 	@Override
 	public String toString() {
-		return "SLAConfigurationMutable [slaTopicId=" + slaTopicId + ", clientTopicId=" + clientTopicId
-				+ ", numberOfPillars=" + numberOfPillars + "]";
+		return "MutableClientSettings [bitRepositoryCollectionTopicID=" + bitRepositoryCollectionTopicID + ", clientTopicId=" + clientTopicId
+				+ ", pillarIDs=" + pillarIDs + "]";
 	}
 }

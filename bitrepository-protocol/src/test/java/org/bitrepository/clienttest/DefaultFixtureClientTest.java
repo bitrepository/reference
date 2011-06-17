@@ -33,8 +33,8 @@ import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.TestMessageFactory;
 import org.bitrepository.protocol.bus.MessageBusWrapper;
+import org.bitrepository.protocol.fileexchange.HttpServer;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
-import org.bitrepository.protocol.fileexchange.HTTPServer;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -50,8 +50,8 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     protected static String clientTopicId;
     protected MessageReceiver clientTopic;
     
-    protected static String slaTopicId;
-    protected MessageReceiver slaTopic; 
+    protected static String bitRepositoryCollectionTopicID;
+    protected MessageReceiver bitRepositoryCollectionTopic; 
     
     protected static String pillar1TopicId;
     protected MessageReceiver pillar1Topic; 
@@ -61,19 +61,19 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     protected MessageReceiver pillar2Topic; 
     protected static final String PILLAR2_ID = "Pillar2";
     
-    protected ClientSettings slaConfiguration;
+    protected ClientSettings settings;
     
     private boolean useMockupPillar = true;
     
-    protected HTTPServer httpServer;
+    protected HttpServer httpServer;
 
     @BeforeClass (alwaysRun = true)
     public void setupTest() {
         defineTopics();
         if (useMockupPillar) {
-            hookupMessageBus();
+            initializeMessageBus();
         }
-        hookupHttpServer();
+        initializeHttpServer();
     }
 
     @BeforeMethod (alwaysRun = true)
@@ -98,45 +98,49 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
         return useMockupPillar;
     }
 
-    private void hookupMessageBus() {
+    private void initializeMessageBus() {
         messageBus = new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(), testEventManager);
         clientTopic = new MessageReceiver("Client topic receiver", testEventManager);
-        slaTopic = new MessageReceiver("SLA topic receiver", testEventManager);
+        bitRepositoryCollectionTopic = new MessageReceiver("BitRepositoryCollection topic receiver", testEventManager);
         pillar1Topic = new MessageReceiver("Pillar1 topic receiver", testEventManager);
         pillar2Topic = new MessageReceiver("Pillar2 topic receiver", testEventManager);
         messageBus.addListener(clientTopicId, clientTopic.getMessageListener());    
-        messageBus.addListener(slaTopicId, slaTopic.getMessageListener());    
+        messageBus.addListener(bitRepositoryCollectionTopicID, bitRepositoryCollectionTopic.getMessageListener());    
         messageBus.addListener(pillar1TopicId, pillar1Topic.getMessageListener());  
         messageBus.addListener(pillar2TopicId, pillar2Topic.getMessageListener());       
     }
     
-    private void hookupHttpServer() {
+    private void initializeHttpServer() {
         HttpServerConfiguration config = new HttpServerConfiguration();
-        config.setHttpServerPath("/dav/" + System.getProperty("user.name"));
-        httpServer = new HTTPServer(config, testEventManager);
+        // The line below is meant to separate different testsruns into separate folders on the server. The current 
+        // challenge is howto do this programmatically. MSS tried Apache JackRabbit, but this invloved a lot of 
+        // additional dependencies which caused inconsistencies in the dependency model (usage of incompatible 
+        // SLJ4J API 1.5 and 1.6)
+        //config.setHttpServerPath("/dav/" + System.getProperty("user.name") + "/");
+        httpServer = new HttpServer(config, testEventManager);
     }
 
     private void defineTopics() {
         String topicPostfix = "-" + System.getProperty("user.name") + "-" + new Date().getTime();
         clientTopicId = "Client_topic" + topicPostfix;
-        slaTopicId = "SLA_topic" + topicPostfix;
+        bitRepositoryCollectionTopicID = "BitRepositoryCollection_topic" + topicPostfix;
         pillar1TopicId = "Pillar1_topic" + topicPostfix;
         pillar2TopicId = "Pillar2_topic" + topicPostfix;
     }
 
     private void configureSLA(String testName) {
-        String slaID = testName + "-" + System.getProperty("user.name") + "-" + new Date().getTime();
-        MutableClientSettings mutableSLAConfiguration = new MutableClientSettings();
-        mutableSLAConfiguration.setId(slaID);
-        mutableSLAConfiguration.setClientTopicId(clientTopicId);
-        mutableSLAConfiguration.setSlaTopicId(slaTopicId);
-        mutableSLAConfiguration.setLocalFileStorage("target/fileDir");
-        slaConfiguration = mutableSLAConfiguration;
+        String bitRepositoryCollectionID = testName + "-" + System.getProperty("user.name") + "-" + new Date().getTime();
+        MutableClientSettings clientSettings = new MutableClientSettings();
+        clientSettings.setBitRepositoryCollectionID(bitRepositoryCollectionID);
+        clientSettings.setClientTopicID(clientTopicId);
+        clientSettings.setBitRepositoryCollectionTopicID(bitRepositoryCollectionTopicID);
+        clientSettings.setLocalFileStorage("target/fileDir");
+        settings = clientSettings;
     }
 
     private void disconnectFromMessageBus() {
         messageBus.removeListener(clientTopicId, clientTopic.getMessageListener());
-        messageBus.removeListener(slaTopicId, slaTopic.getMessageListener());
+        messageBus.removeListener(bitRepositoryCollectionTopicID, bitRepositoryCollectionTopic.getMessageListener());
         messageBus.removeListener(pillar1TopicId, pillar1Topic.getMessageListener());
         messageBus.removeListener(pillar2TopicId, pillar2Topic.getMessageListener());
     }

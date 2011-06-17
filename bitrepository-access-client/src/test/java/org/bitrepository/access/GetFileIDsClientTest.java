@@ -98,7 +98,7 @@ public class GetFileIDsClientTest extends DefaultFixtureClientTest {
         monitor = new MessageMonitor();
         ProtocolComponentFactory.getInstance().getMessageBus().addListener(queue, monitor);
 
-        messageFactory = new TestGetFileIDsMessageFactory(slaConfiguration.getId());
+        messageFactory = new TestGetFileIDsMessageFactory(settings.getBitRepositoryCollectionID());
     }
 
     @AfterMethod(alwaysRun = true)

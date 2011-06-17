@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitrepository Common
+ * Bitrepository Protocol
  * 
  * $Id$
  * $HeadURL$
@@ -22,13 +22,18 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.common.bitrepositorycollection;
+package org.bitrepository.protocol.flow;
 
-public interface BitRepositoryCollectionSettings {
+/**
+ * Used to indicate that an unexpected repsonse has been received.
+ */
+public class UnexpectedResponseException extends Exception {
 
-    /**
-     * Returns the ID for this BitRepositoryCollection
-     */
-    public String getBitRepositoryCollectionID();
+    public UnexpectedResponseException(String arg0, Throwable arg1) {
+        super(arg0, arg1);
+    }
 
+    public UnexpectedResponseException(String arg0) {
+        super(arg0);
+    }
 }

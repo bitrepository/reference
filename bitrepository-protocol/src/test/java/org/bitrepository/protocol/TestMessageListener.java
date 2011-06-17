@@ -24,6 +24,12 @@
  */
 package org.bitrepository.protocol;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
+
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
@@ -32,11 +38,6 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRespo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
-
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * TestMessageListener

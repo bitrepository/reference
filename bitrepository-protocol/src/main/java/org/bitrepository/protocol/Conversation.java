@@ -32,7 +32,7 @@ package org.bitrepository.protocol;
 public interface Conversation<T> extends MessageListener, MessageSender {
     /**
      * Set the mediator that handles this conversation. This method should always be called by the mediator
-     * that generates the conversation, immediately after the conversation is generated.
+     * that manages the conversation, immediately after the conversation is registered.
      *
      * Implementations of conversations may use this mediator to end the conversation from within.
      *
@@ -86,4 +86,5 @@ public interface Conversation<T> extends MessageListener, MessageSender {
      */
     T waitFor(long timeout) throws ConversationTimedOutException;
 
+    void startConversion();
 }

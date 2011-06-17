@@ -25,12 +25,11 @@
 package org.bitrepository.access;
 
 import org.bitrepository.access.getfile.GetFileClient;
+import org.bitrepository.access.getfile.GetFileClientSettings;
 import org.bitrepository.access.getfile.SimpleGetFileClient;
-import org.bitrepository.access.getfile.SimpleGetFileConversationFactory;
 import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
-import org.bitrepository.common.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 
 /**
@@ -90,16 +89,11 @@ public class AccessComponentFactory {
     /**
      * Method for getting a GetFileClient as defined in the access configuration.<p>
      * 
-     * Note that this client instance might be handed out to ours and used in parallel. 
-     * 
      * @return A GetFileClient.
      */
-    public GetFileClient createGetFileClient(ClientSettings slaConfiguration) {
+    public GetFileClient createGetFileClient(GetFileClientSettings settings) {
         // TODO use the configurations instead!
         return new SimpleGetFileClient(ProtocolComponentFactory.getInstance().getMessageBus(),
-                                       new SimpleGetFileConversationFactory(
-                                               ProtocolComponentFactory.getInstance().getMessageBus(),
-                                               slaConfiguration, 3600000L, getConfig().getFileDir()),
-                                       slaConfiguration);
+                                               settings);
     }
 }
