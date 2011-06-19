@@ -27,14 +27,18 @@ package org.bitrepository.clienttest;
 import java.util.Date;
 
 import org.bitrepository.common.IntegrationTest;
-import org.bitrepository.common.bitrepositorycollection.ClientSettings;
-import org.bitrepository.common.bitrepositorycollection.MutableClientSettings;
+import org.bitrepository.protocol.LocalActiveMQBroker;
 import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
+import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
+import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.bus.MessageBusWrapper;
+import org.bitrepository.protocol.configuration.MessageBusConfigurations;
 import org.bitrepository.protocol.fileexchange.HttpServer;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
+import org.bitrepository.protocol.messagebus.MessageBusFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -62,15 +66,16 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     protected static final String PILLAR2_ID = "Pillar2";
     
     protected ClientSettings settings;
+    protected MessageBusConfigurations messageBusConfigurations;
     
-    private boolean useMockupPillar = true;
+    protected LocalActiveMQBroker broker;
     
     protected HttpServer httpServer;
 
     @BeforeClass (alwaysRun = true)
-    public void setupTest() {
+    public void setupTest() throws Exception {
         defineTopics();
-        if (useMockupPillar) {
+        if (useMockupPillar()) {
             initializeMessageBus();
         }
         initializeHttpServer();
@@ -78,12 +83,12 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethodSetup(java.lang.reflect.Method testMethod) {
-        configureSLA(testMethod.getName());
+        configureBitRepositoryCollectionConfig(testMethod.getName());
     }
 
     @AfterClass (alwaysRun = true)
     public void teardownTest() {
-        if (useMockupPillar) {
+        if (useMockupPillar()) {
             disconnectFromMessageBus(); 
         }
     }
@@ -95,11 +100,24 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
      * <li>The pillar should contain one file, the {@link TestMessageFactory#FILE_ID_DEFAULT} file. The c
      */
     public boolean useMockupPillar() {
-        return useMockupPillar;
+        return System.getProperty("useMockupPillar", "true").equals("true");
     }
 
-    private void initializeMessageBus() {
-        messageBus = new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(), testEventManager);
+    /** Indicated whether an embedded avtive MQ should be started and used */ 
+    public boolean useEmbeddedMessageBus() {
+        return System.getProperty("useEmbeddedMessageBus", "false").equals("true");
+    }
+    
+    private void initializeMessageBus() throws Exception {
+    	if (useEmbeddedMessageBus()) { 
+    		messageBusConfigurations = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+    		broker = new LocalActiveMQBroker(messageBusConfigurations.getPrimaryMessageBusConfiguration());
+    		broker.start();
+    		new MessageBusWrapper(messageBus = MessageBusFactory.createMessageBus(messageBusConfigurations), testEventManager);
+    	} else {
+    		messageBusConfigurations = MessageBusConfigurationFactory.createDefaultConfiguration();
+    		messageBus = new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(), testEventManager);
+    	}
         clientTopic = new MessageReceiver("Client topic receiver", testEventManager);
         bitRepositoryCollectionTopic = new MessageReceiver("BitRepositoryCollection topic receiver", testEventManager);
         pillar1Topic = new MessageReceiver("Pillar1 topic receiver", testEventManager);
@@ -112,7 +130,7 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     
     private void initializeHttpServer() {
         HttpServerConfiguration config = new HttpServerConfiguration();
-        // The line below is meant to separate different testsruns into separate folders on the server. The current 
+        // The commented line below is meant to separate different testsruns into separate folders on the server. The current 
         // challenge is howto do this programmatically. MSS tried Apache JackRabbit, but this invloved a lot of 
         // additional dependencies which caused inconsistencies in the dependency model (usage of incompatible 
         // SLJ4J API 1.5 and 1.6)
@@ -128,13 +146,14 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
         pillar2TopicId = "Pillar2_topic" + topicPostfix;
     }
 
-    private void configureSLA(String testName) {
+    private void configureBitRepositoryCollectionConfig(String testName) {
         String bitRepositoryCollectionID = testName + "-" + System.getProperty("user.name") + "-" + new Date().getTime();
         MutableClientSettings clientSettings = new MutableClientSettings();
         clientSettings.setBitRepositoryCollectionID(bitRepositoryCollectionID);
         clientSettings.setClientTopicID(clientTopicId);
         clientSettings.setBitRepositoryCollectionTopicID(bitRepositoryCollectionTopicID);
         clientSettings.setLocalFileStorage("target/fileDir");
+        clientSettings.setMessageBusConfiguration(messageBusConfigurations);
         settings = clientSettings;
     }
 
@@ -143,5 +162,13 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
         messageBus.removeListener(bitRepositoryCollectionTopicID, bitRepositoryCollectionTopic.getMessageListener());
         messageBus.removeListener(pillar1TopicId, pillar1Topic.getMessageListener());
         messageBus.removeListener(pillar2TopicId, pillar2Topic.getMessageListener());
+
+    	if (useEmbeddedMessageBus()) { 
+    		try {
+				broker.stop();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+    	}
     }
 }

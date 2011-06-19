@@ -32,6 +32,7 @@ import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
+import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.configuration.MessageBusConfiguration;
 import org.bitrepository.protocol.configuration.MessageBusConfigurations;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -132,10 +133,13 @@ public class MessageBusTest extends ExtendedTestCase {
         addStep("Defining constants for this test.", "Should be allowed.");
         String QUEUE = "DUAL-MESSAGEBUS-TEST-" + new Date().getTime();
         
-        addStep("Setup a local activeMQ instance.", "Should be allowed.");
-        LocalActiveMQBroker broker = new LocalActiveMQBroker();
+    	addStep("Making the configurations for a embedded message bus.", "Should be allowed.");
+    	MessageBusConfigurations embeddedMBConfig = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+        
+        addStep("Start a embedded activeMQ instance based on the configuration.", "Should be allowed.");
+        LocalActiveMQBroker broker = new LocalActiveMQBroker(embeddedMBConfig.getPrimaryMessageBusConfiguration());
         try {
-        	broker.init();
+        	broker.start();
 
         	addStep("Making the configurations for the first message bus.", "Should be allowed.");
         	MessageBusConfigurations configs1 = new MessageBusConfigurations();
@@ -150,18 +154,9 @@ public class MessageBusTest extends ExtendedTestCase {
         	"This should definitly be allowed.");
         	MessageBus bus1 = new ActiveMQMessageBus(configs1);
 
-        	addStep("Making the configurations for the second message bus.", "Should be allowed.");
-        	MessageBusConfigurations configs2 = new MessageBusConfigurations();
-        	MessageBusConfiguration config2 = new MessageBusConfiguration();
-        	config2.setUrl("tcp://localhost:61616");
-        	config2.setId("my-test-messagebus");
-        	config2.setUsername("");
-        	config2.setPassword("");
-        	configs2.setPrimaryMessageBusConfiguration(config2);
-
         	addStep("Initiating the connection to the messagebus based on the second configuration", 
         	"It should be possible to have several message busses at the same time.");
-        	MessageBus bus2 = new ActiveMQMessageBus(configs2);
+        	MessageBus bus2 = new ActiveMQMessageBus(embeddedMBConfig);
 
         	addStep("Creating a test message to send.", "The interface is tested elsewhere and should work.");
         	Alarm message1 = ExampleMessageFactory.createMessage(Alarm.class);
@@ -225,7 +220,7 @@ public class MessageBusTest extends ExtendedTestCase {
             Assert.assertEquals(((Alarm) listener2.getMessage()).getCorrelationID(), "2");
 
         } finally {
-        	broker.close();
+        	broker.stop();
         }
     }
 
