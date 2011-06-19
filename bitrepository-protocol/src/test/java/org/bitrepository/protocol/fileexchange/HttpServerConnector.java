@@ -45,7 +45,7 @@ import org.testng.Assert;
  * <p>
  * Also contains functionality for asserting whether a file is present on the HTTP server.
  */
-public class HttpServer {
+public class HttpServerConnector {
     /** The lower boundary for the error codes of the HTTP codes.*/
     private static final int HTTP_ERROR_CODE_BARRIER = 300;
 
@@ -60,7 +60,7 @@ public class HttpServer {
      *
      * @param configuration The configuration for file exchange.
      */
-    public HttpServer(HttpServerConfiguration config, TestEventManager testEventManager) {
+    public HttpServerConnector(HttpServerConfiguration config, TestEventManager testEventManager) {
         this.config = config;
         this.testEventManager = testEventManager;
         tempDownloadedFilesDir = TEMP_DOWNLOADED_FILES_ROOT + File.separator + config.getHttpServerName();
@@ -102,19 +102,27 @@ public class HttpServer {
         } catch (FileNotFoundException fnf) {} // No problem
     }
 
-    private void loadFile(File outputFile, String fileAddress) {
+    /**
+     * Loads a file from the server. Used in test to verify that a file is located on the server.
+     * @param outputFile The file to write to 
+     * @param fileAddress
+     */
+    public File loadFile(String fileAddress) {
+    	String fileName = fileAddress.substring(fileAddress.lastIndexOf('/'));
+        File downloadedFile = new File(tempDownloadedFilesDir, fileName); 
         try {
             // retrieve the url and the outputstream for the file.
             URL url = new URL(fileAddress);
 
-            FileOutputStream fos = new FileOutputStream(outputFile);
+            FileOutputStream fos = new FileOutputStream(downloadedFile);
 
             // download the file.
             performDownload(fos, url);
+            return downloadedFile;
         } catch (IOException e) {
             throw new CoordinationLayerException("Could not download data "
                     + "from '" + fileAddress + "' to the file '" 
-                    + outputFile.getAbsolutePath() + "'.", e);
+                    + downloadedFile.getAbsolutePath() + "'.", e);
         }
     }
 
@@ -229,19 +237,18 @@ public class HttpServer {
      * @return The HTTP connection to the given URL.
      * @throws IOException 
      */
-    private HttpURLConnection getConnection(URL url) throws IOException {
+    protected HttpURLConnection getConnection(URL url) throws IOException {
         return (HttpURLConnection) url.openConnection();
     }
 
     /**
-     * Compares the 
-     * @param referenceFile
-     * @param fileAddress
-     * @throws IOException 
+     * Compares the supplied referencefile with the file found on the http server. 
+     * @param referenceFile The reference file to compare against
+     * @param fileAddress The url of the file on the server
+     * @throws IOException Didn't work.
      */
     public void assertFileEquals(File referenceFile, String fileAddress) throws IOException {
-        File serverFile = new File(tempDownloadedFilesDir, referenceFile.getName()); 
-        loadFile(serverFile, fileAddress);
+        File serverFile = loadFile(fileAddress);
         if (!serverFile.exists()) {
             Assert.fail("File " + referenceFile.getName()+ " not found on httpServer" ); 
         } else {

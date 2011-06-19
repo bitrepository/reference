@@ -40,7 +40,7 @@ public class TestFileStore {
     /** The file store already contains this file when it created. The fileID corresponds to the file ID found in the 
      * {@LINK TestMessageFactory}
      */
-    private static final String DEFAULT_EXISTING_FILE = TestMessageFactory.FILE_ID_DEFAULT;
+    public static final String DEFAULT_EXISTING_FILE = TestMessageFactory.FILE_ID_DEFAULT;
     private final String storeName;
 
     public TestFileStore(String storeName) {
@@ -53,17 +53,7 @@ public class TestFileStore {
             throw new RuntimeException(e);
         }
     }
-
-    /**
-     * Returns an inputstream to the default file.
-     * @param fileID
-     * @param outputStream
-     * @return
-     */
-    public FileInputStream readDefaultFile() {
-            return getInputstream(DEFAULT_EXISTING_FILE);
-    }
-    
+ 
     /**
      * Returns a input file to the indicated file
      * @param fileID

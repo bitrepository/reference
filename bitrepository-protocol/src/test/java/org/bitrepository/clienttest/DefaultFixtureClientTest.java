@@ -36,7 +36,7 @@ import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.bus.MessageBusWrapper;
 import org.bitrepository.protocol.configuration.MessageBusConfigurations;
-import org.bitrepository.protocol.fileexchange.HttpServer;
+import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
 import org.bitrepository.protocol.messagebus.MessageBusFactory;
 import org.testng.annotations.AfterClass;
@@ -70,7 +70,7 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     
     protected LocalActiveMQBroker broker;
     
-    protected HttpServer httpServer;
+    protected HttpServerConnector httpServer;
 
     @BeforeClass (alwaysRun = true)
     public void setupTest() throws Exception {
@@ -135,7 +135,7 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
         // additional dependencies which caused inconsistencies in the dependency model (usage of incompatible 
         // SLJ4J API 1.5 and 1.6)
         //config.setHttpServerPath("/dav/" + System.getProperty("user.name") + "/");
-        httpServer = new HttpServer(config, testEventManager);
+        httpServer = new HttpServerConnector(config, testEventManager);
     }
 
     private void defineTopics() {
