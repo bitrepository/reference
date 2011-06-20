@@ -24,7 +24,7 @@
  */
 package org.bitrepository.access.getfile;
 
-import org.bitrepository.common.bitrepositorycollection.ClientSettings;
+import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
 
 public interface GetFileClientSettings extends ClientSettings {
     /**

@@ -24,8 +24,8 @@
  */
 package org.bitrepository.access.getfile;
 
-import org.bitrepository.common.bitrepositorycollection.ClientSettings;
-import org.bitrepository.common.bitrepositorycollection.MutableClientSettings;
+import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
+import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
 
 public class MutableGetFileClientSettings extends MutableClientSettings
         implements GetFileClientSettings {
