@@ -30,46 +30,42 @@ import java.util.Set;
 
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.flow.UnexpectedResponseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public abstract class PillarSelector {
+public abstract class AbstractSinglePillarSelector implements SinglePillarSelector {
     private final Set<String> pillarsWhichShouldRespond;
     private final Set<String> pillarsWithOutstandingResponse;
     /** The ID of the selected pillar */
-    private String pillarID = null;
+    protected String pillarID = null;
     /** The topic for communication with the selected pillar */
-    private String pillarTopic = null;
-    /** The log for this class. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    protected String pillarTopic = null;
     
     /** A the information about failure to find a pillar is stored in this exception, and is throw when the 
-     * {@link PillarSelector#isFinished()} method is called.
+     * {@link AbstractSinglePillarSelector#isFinished()} method is called.
      */
     protected UnableToFinishException failureException = null;
-    private boolean finished;
+    protected boolean finished;
     
     /** 
      * Must be called by the implementing classes.
      * @param pillarsWhichShouldRespond Array containing the IDs of the pillars which should respond.
      */
-    protected PillarSelector(String[] pillarsWhichShouldRespond) {
+    protected AbstractSinglePillarSelector(String[] pillarsWhichShouldRespond) {
         this.pillarsWhichShouldRespond = new HashSet<String>(Arrays.asList(pillarsWhichShouldRespond));
         this.pillarsWithOutstandingResponse = new HashSet<String>(Arrays.asList(pillarsWhichShouldRespond));
     }
     
     /** Return the ID of the pillar chosen by this selector if finished. If unfinished null is returned */
-    public String getPillarID() {
+    public String getIDForSelectedPillar() {
         return pillarID;
     }
 
     /** If finished return the topic for sending messages to the pillar chosen by this selector. 
      * If unfinished null is returned 
      */
-    public String getPillarTopic() {
+    public String getDestinationForSelectedPillar() {
         return pillarTopic;
     }   
-    
+
     /**
      * Maintains the bookkeeping regarding which pillars have responded. When all the indicated pillars have replied, 
      * the selection process is considered finished. 
@@ -94,11 +90,6 @@ public abstract class PillarSelector {
         if (pillarsWithOutstandingResponse.size() == 0) {
             finished = true;
         }
-    }
-    
-    protected final void selectPillar(String pillarID, String pillarTopic) {
-        this.pillarID = pillarID;
-        this.pillarTopic = pillarTopic;
     }
     
     /**

@@ -208,7 +208,7 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
 
     /** Method for making the client send a request for the file to the fastest pillar. */
     private void getFileFromSelectedPillar() {
-        if (selector.getPillarID() == null) {
+        if (selector.getIDForSelectedPillar() == null) {
             failConversation("Unable to getFile, no pillar was selected");
         }
         GetFileRequest msg = new GetFileRequest();
@@ -216,11 +216,11 @@ public class SimpleGetFileConversation extends AbstractMessagebusBackedConversat
         msg.setCorrelationID(getConversationID());
         msg.setFileAddress(uploadUrl.toExternalForm());
         msg.setFileID(fileID);
-        msg.setPillarID(selector.getPillarID());
+        msg.setPillarID(selector.getIDForSelectedPillar());
         msg.setReplyTo(settings.getClientTopicID());
         msg.setMinVersion(BigInteger.valueOf(PROTOCOL_MIN_VERSION));
         msg.setVersion(BigInteger.valueOf(PROTOCOL_VERSION));
-        msg.setTo(selector.getPillarTopic());
+        msg.setTo(selector.getDestinationForSelectedPillar());
         sendMessage(msg);
     }
 

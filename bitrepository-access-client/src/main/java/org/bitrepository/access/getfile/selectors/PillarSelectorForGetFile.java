@@ -27,14 +27,14 @@ package org.bitrepository.access.getfile.selectors;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.protocol.flow.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.PillarSelector;
+import org.bitrepository.protocol.pillarselector.AbstractSinglePillarSelector;
 
 /**
  * Used to select a specific pillar and find the topic for this pillar. The selection is implemented by sending a 
  * <code>IdentifyPillarsForGetFileRequest</code> and processing the responses.
  *
  */
-public abstract class PillarSelectorForGetFile extends PillarSelector {
+public abstract class PillarSelectorForGetFile extends AbstractSinglePillarSelector {
     private TimeMeasureTYPE timeToDeliver;
     
     /**
@@ -51,7 +51,22 @@ public abstract class PillarSelectorForGetFile extends PillarSelector {
      * @throws UnexpectedResponseException The selector was unable to process the response. The selector will still be 
      * able to continue, but the supplied response is ignored.
      */
-    public abstract void processResponse(IdentifyPillarsForGetFileResponse response) throws UnexpectedResponseException;
+    public final void processResponse(IdentifyPillarsForGetFileResponse response) throws UnexpectedResponseException {
+        responseReceived(response.getPillarID());
+        if (checkIfPillarShouldBeSelected(response)) {
+            this.pillarID = response.getPillarID();
+            this.pillarTopic = response.getReplyTo();
+            this.timeToDeliver = response.getTimeToDeliver();
+        }
+    }
+    
+    /**
+     * Contains the logic to determine whether a pillar should be selected. The concrete logic is found in the 
+     * implementing classes.
+     * @param response The response to based the decision on.
+     * @return <code>true</code> if the pillar should be selected, else <code>false</code>.
+     */
+    protected abstract boolean checkIfPillarShouldBeSelected(IdentifyPillarsForGetFileResponse response);
     
     /**
      * The returned timeToDeliver for the selected pillar. May be null if no pillar has been selected.
@@ -59,13 +74,4 @@ public abstract class PillarSelectorForGetFile extends PillarSelector {
     public TimeMeasureTYPE getTimeToDeliver() {
         return timeToDeliver;
     }
-
-    /**
-     * The GetFile specific select operation.
-     */
-    protected final void selectPillar(String pillarID, String pillarTopic, TimeMeasureTYPE timeToDeliver) {
-        super.selectPillar(pillarID, pillarTopic);
-        this.timeToDeliver = timeToDeliver;
-    }
-    
 }

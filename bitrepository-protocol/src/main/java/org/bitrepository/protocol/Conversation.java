@@ -86,5 +86,8 @@ public interface Conversation<T> extends MessageListener, MessageSender {
      */
     T waitFor(long timeout) throws ConversationTimedOutException;
 
+    /**
+     * 
+     */
     void startConversion();
 }

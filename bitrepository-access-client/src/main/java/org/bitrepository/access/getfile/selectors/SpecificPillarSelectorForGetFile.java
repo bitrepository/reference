@@ -25,21 +25,35 @@
 package org.bitrepository.access.getfile.selectors;
 
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.protocol.flow.UnexpectedResponseException;
 
+/**
+ * Selects a pillar based on the supplied pillarID. 
+ * 
+ * The reason for selection a pillar when we already know the ID is that additional information provided in the 
+ * response.
+ */
 public class SpecificPillarSelectorForGetFile extends PillarSelectorForGetFile {
     private final String pillarToSelect;
 
+    /**
+     * Creates the selector based on the provided information.
+     * @param pillarToSelect
+     * @param pillarsWhichShouldRespond
+     */
     public SpecificPillarSelectorForGetFile(String pillarToSelect, String[] pillarsWhichShouldRespond) {
         super(pillarsWhichShouldRespond);
         this.pillarToSelect = pillarToSelect; 
     }
 
+    /**
+     * Selects the pillar if the ID corresponds to the one supplied in the constructor. Also marks the selector as 
+     * finished if the pillar is selected.
+     */
     @Override
-    public void processResponse(IdentifyPillarsForGetFileResponse response) throws UnexpectedResponseException {
-        responseReceived(response.getPillarID());
+    public boolean checkIfPillarShouldBeSelected(IdentifyPillarsForGetFileResponse response) {
         if (response.getPillarID().equals(pillarToSelect)) {
-            selectPillar(response.getPillarID(), response.getReplyTo(), response.getTimeToDeliver());
-        }
+            finished = true;
+            return true;
+        } else return false;
     }
 }

@@ -62,8 +62,8 @@ public class FastestPillarSelectorForGetFileTest {
 
         selector.processResponse(mediumPillar.createResponse());
         Assert.assertTrue(selector.isFinished(), "Selector didn't change to finished after 3 response");
-        Assert.assertEquals(selector.getPillarID(), fastPillar.pillarID, "Not pillarID from fastest pillar");
-        Assert.assertEquals(selector.getPillarTopic(), fastPillar.pillarTopic, "Not pillarID from fastest pillar");
+        Assert.assertEquals(selector.getIDForSelectedPillar(), fastPillar.pillarID, "Not pillarID from fastest pillar");
+        Assert.assertEquals(selector.getDestinationForSelectedPillar(), fastPillar.pillarTopic, "Not pillarID from fastest pillar");
     }
 
     @Test (groups = { "regressiontest" })
@@ -90,8 +90,8 @@ public class FastestPillarSelectorForGetFileTest {
 
         selector.processResponse(mediumPillar.createResponse());
         Assert.assertTrue(selector.isFinished(), "Selector didn't change to finished after 3 response");
-        Assert.assertEquals(selector.getPillarID(), fastPillar.pillarID, "Not pillarID from fastest pillar");
-        Assert.assertEquals(selector.getPillarTopic(), fastPillar.pillarTopic, "Not pillarID from fastest pillar");
+        Assert.assertEquals(selector.getIDForSelectedPillar(), fastPillar.pillarID, "Not pillarID from fastest pillar");
+        Assert.assertEquals(selector.getDestinationForSelectedPillar(), fastPillar.pillarTopic, "Not pillarID from fastest pillar");
     }
 
     private static class PillarStub {

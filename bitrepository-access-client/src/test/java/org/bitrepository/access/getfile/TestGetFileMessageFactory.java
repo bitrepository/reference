@@ -62,7 +62,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
      * include <code>correlationId</code>.
      * @return A reference <code>IdentifyPillarsForGetFileRequest</code> message.
      */
-    public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileIDsRequest(
+    public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileRequest(
             IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage, String toTopic) {
         IdentifyPillarsForGetFileRequest identifyPillarsForGetFileRequest = createIdentifyPillarsForGetFileRequest();
         identifyPillarsForGetFileRequest.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());

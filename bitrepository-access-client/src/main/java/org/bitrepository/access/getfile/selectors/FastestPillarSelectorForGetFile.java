@@ -24,25 +24,24 @@
  */
 package org.bitrepository.access.getfile.selectors;
 
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.protocol.flow.UnexpectedResponseException;
 import org.bitrepository.protocol.time.TimeMeasureComparator;
 
+/**
+ * Selects the pillar which have the quickest estimated delivery as indicated in the <code>timeToDelover</code> in the 
+ * response.
+ */
 public class FastestPillarSelectorForGetFile extends PillarSelectorForGetFile {
     private static final TimeMeasureComparator comparator = new TimeMeasureComparator();
-    private TimeMeasureTYPE timeToDeliver;
 
     public FastestPillarSelectorForGetFile(String[] pillarsWhichShouldRespond) {
         super(pillarsWhichShouldRespond);
     }
 
     @Override
-    public void processResponse(IdentifyPillarsForGetFileResponse response) throws UnexpectedResponseException {
-        responseReceived(response.getPillarID());
-        if (getPillarID() == null || comparator.compare(response.getTimeToDeliver(), timeToDeliver) < 0) {
-            timeToDeliver = response.getTimeToDeliver();
-            selectPillar(response.getPillarID(), response.getReplyTo(), response.getTimeToDeliver());
-        }
+    public boolean checkIfPillarShouldBeSelected(IdentifyPillarsForGetFileResponse response) {
+        return 
+        getIDForSelectedPillar() == null || 
+        comparator.compare(response.getTimeToDeliver(), getTimeToDeliver()) < 0;
     }
 }

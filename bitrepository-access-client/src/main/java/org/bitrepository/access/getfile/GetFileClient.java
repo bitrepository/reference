@@ -26,18 +26,39 @@ package org.bitrepository.access.getfile;
 
 import java.net.URL;
 
+import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.protocol.exceptions.NoPillarFoundException;
+import org.bitrepository.protocol.exceptions.OperationFailedException;
+import org.bitrepository.protocol.exceptions.OperationTimeOutException;
+
 /**
  * Interface for the external use of a GetFileClient.
  * A GetFileClient needs to inherit both this external interface and the internal interface 'GetFileClientAPI'.
  */
 public interface GetFileClient {
     /**
-     * Method for retrieving a file from the pillar able to deliver the file fastest.
+     * Method for retrieving a file from the pillar able to deliver the file fastest. 
+     * 
+     * The method will return as soon as the communication has been setup.
      *
      * @param fileId The id of the file to retrieve.
      * @param uploadUrl The url the pillar should upload the file to.
+     * @param eventHandler The handler which should receive notifications of the progress of the GetFile operation. 
      */
-    void getFileFromFastestPillar(String fileId, URL uploadUrl);
+    void getFileFromFastestPillar(String fileId, URL uploadUrl, EventHandler eventHandler);
+    
+    /**
+     * Method for retrieving a file from the pillar able to deliver the file fastest. 
+     * 
+     * The method will block until the file has been retrieved.
+     *
+     * @param fileId The id of the file to retrieve.
+     * @param uploadUrl The url the pillar should upload the file to.
+     * 
+     * @throws NoPillarFoundException The identify request didn't cause any relevant pillar responded.  
+     */
+    void getFileFromFastestPillar(String fileId, URL uploadUrl) 
+    throws NoPillarFoundException, OperationTimeOutException, OperationFailedException;
     
     /**
      * Method for retrieving a file from a specific pillar.
@@ -45,8 +66,7 @@ public interface GetFileClient {
      * @param fileId The id of the file to retrieve.
      * @param uploadUrl The url the pillar should upload the file to.
      * @param pillarId The id of pillar, where the file should be retrieved from.
+     * @throws A general error prevented this operation from finishing.  
      */
     void getFileFromSpecificPillar(String fileId, URL uploadUrl, String pillarId);
-    // ToDo This operation shouldn't need a pillarTopicId has it should be retrieved through a IdentifyPillar request
-    // prior to the actual getFileRequest.
 }

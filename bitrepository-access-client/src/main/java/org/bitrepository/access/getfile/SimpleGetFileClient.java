@@ -33,11 +33,15 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.protocol.CollectionBasedConversationMediator;
 import org.bitrepository.protocol.ConversationMediator;
 import org.bitrepository.protocol.MessageBus;
+import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The default <code>GetFileClient</code>.
+ * 
+ * This class is just a thin wrapper which creates a conversion each time a operation is started. The conversations 
+ * takes over the rest of the operation handling hereafter.
  */
 public class SimpleGetFileClient implements GetFileClient {
     /** The log for this class. */
@@ -78,5 +82,12 @@ public class SimpleGetFileClient implements GetFileClient {
         SimpleGetFileConversation conversation = new SimpleGetFileConversation(
                 messageBus, settings, selector, fileID, uploadUrl);
         conversationMediator.startConversation(conversation);
+    }
+
+    @Override
+    public void getFileFromFastestPillar(String fileId, URL uploadUrl,
+            EventHandler eventHandler) {
+        // TODO Auto-generated method stub
+        
     }
 }
