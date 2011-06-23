@@ -64,6 +64,7 @@ import org.bitrepository.protocol.MessageListener;
 import org.jaccept.TestEventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
 
 /**
  * May be added as listener to the message queue where it will store all received messages for later reading. 
@@ -107,7 +108,7 @@ public class MessageReceiver {
      * Corresponds to the {@link #waitForMessage(Class, long, TimeUnit)} method with a default timeout of 1 second.
      */
     public <T> T waitForMessage(Class<T> messageType) {
-        return waitForMessage(messageType, 100, TimeUnit.SECONDS);
+        return waitForMessage(messageType, 3, TimeUnit.SECONDS);
     }
 
     /**
@@ -133,6 +134,7 @@ public class MessageReceiver {
             log.debug("Received message in (" + waitTime + " ms): " + message);
         } else {
             log.info("Wait for " + messageType.getName() + " message timed out (" + waitTime + " ms).");
+            Assert.fail("Wait for " + messageType.getName() + " message timed out (" + waitTime + " ms).");
         }
         return message;
     }
