@@ -282,7 +282,7 @@ public class MessageBusTest extends ExtendedTestCase {
 
             synchronized(this) {
                 try {
-                    this.wait(TIME_FOR_MESSAGE_TRANSFER_WAIT);
+                    this.wait(5 * TIME_FOR_MESSAGE_TRANSFER_WAIT);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

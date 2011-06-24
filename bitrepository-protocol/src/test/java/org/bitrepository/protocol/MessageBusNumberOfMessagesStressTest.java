@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
 /**
  * Stress testing of the messagebus. 
  */
-public class MessageBusStressTest extends ExtendedTestCase {
+public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
     /** The time to wait when sending a message before it definitely should 
      * have been consumed by a listener.*/
     static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
