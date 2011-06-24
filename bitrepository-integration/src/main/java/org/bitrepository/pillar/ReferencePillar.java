@@ -42,7 +42,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.common.utils.ArgumentValidationUtils;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.slf4j.Logger;
@@ -116,7 +116,7 @@ public class ReferencePillar implements PillarAPI {
 
     @Override
     public void identifyForGetFile(IdentifyPillarsForGetFileRequest msg) {
-        ArgumentValidationUtils.checkNotNull(msg, "IdentifyPillarsForGetFileRequest msg");
+        ArgumentValidator.checkNotNull(msg, "IdentifyPillarsForGetFileRequest msg");
         if(!slaIds.contains(msg.getBitRepositoryCollectionID())) {
             // TODO is this the correct log-level? This pillar is just no part of the given SLA!
             log.warn("The SLA '{}' is not known by this reference pillar. Ignoring "
@@ -163,7 +163,7 @@ public class ReferencePillar implements PillarAPI {
 
     @Override
     public void identifyForPutFile(IdentifyPillarsForPutFileRequest msg) {
-        ArgumentValidationUtils.checkNotNull(msg, "IdentifyPillarsForPutFileRequest msg");
+        ArgumentValidator.checkNotNull(msg, "IdentifyPillarsForPutFileRequest msg");
         if(!slaIds.contains(msg.getBitRepositoryCollectionID())) {
             // TODO is this the correct log-level? This pillar is just no part of the given SLA!
             log.warn("The SLA '{}' is not known by this reference pillar. Ignoring "
@@ -191,7 +191,7 @@ public class ReferencePillar implements PillarAPI {
 
     @Override
     public void getFile(GetFileRequest msg) {
-        ArgumentValidationUtils.checkNotNull(msg, "GetFileRequest msg");
+        ArgumentValidator.checkNotNull(msg, "GetFileRequest msg");
         if(!slaIds.contains(msg.getBitRepositoryCollectionID())) {
             // TODO is this the correct log-level? This pillar is just no part of the given SLA!
             log.warn("The SLA '{}' is not known by this reference pillar. Ignoring "
@@ -274,7 +274,7 @@ public class ReferencePillar implements PillarAPI {
 
     @Override
     public void putFile(PutFileRequest msg) {
-        ArgumentValidationUtils.checkNotNull(msg, "PutFileRequest msg");
+        ArgumentValidator.checkNotNull(msg, "PutFileRequest msg");
         if(!slaIds.contains(msg.getBitRepositoryCollectionID())) {
             // TODO is this the correct log-level? This pillar is just no part of the given SLA!
             log.warn("The SLA '{}' is not known by this reference pillar. Ignoring "

@@ -26,7 +26,7 @@ package org.bitrepository.pillar;
 
 import java.io.File;
 
-import org.bitrepository.common.utils.ArgumentValidationUtils;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public class ReferenceArchive {
      * @param dir The directory
      */
     public ReferenceArchive(String dirName) {
-        ArgumentValidationUtils.checkNotNullOrEmpty(dirName, "String dirName");
+        ArgumentValidator.checkNotNullOrEmpty(dirName, "String dirName");
         
         // Instantiate the directories for this archive.
         baseDepositDir = FileUtils.retrieveDirectory(dirName);
@@ -113,9 +113,13 @@ public class ReferenceArchive {
      */
     public void archiveFile(String fileId, String slaId) {
         File oldLocation = new File(tmpDir, fileId);
-        ArgumentValidationUtils.checkIsFile(oldLocation);
+        if(!oldLocation.isFile()) {
+        	throw new IllegalArgumentException("The file '" + oldLocation + "' does not exist.");
+        }
         File newLocation = new File(getSlaDir(slaId), fileId);
-        ArgumentValidationUtils.checkFileDoesNotExist(newLocation);
+        if(!newLocation.isFile()) {
+        	throw new IllegalArgumentException("The file '" + newLocation + "' does already exist.");
+        }
         
         oldLocation.renameTo(newLocation);
     }
