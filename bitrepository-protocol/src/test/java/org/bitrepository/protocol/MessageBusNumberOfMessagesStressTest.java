@@ -1,3 +1,27 @@
+/*
+ * #%L
+ * Bitmagasin integrationstest
+ * 
+ * $Id: MessageBusTest.java 203 2011-06-24 09:44:56Z jolf $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-protocol/src/test/java/org/bitrepository/protocol/MessageBusTest.java $
+ * %%
+ * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.protocol;
 
 import java.util.Date;
@@ -17,7 +41,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
     /** The time to wait when sending a message before it definitely should 
      * have been consumed by a listener.*/
     static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
-
+    /** The name of the queue to send the messages.*/
 	private static String QUEUE = "TEST-QUEUE";
 
 	/**
