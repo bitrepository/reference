@@ -28,7 +28,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message 
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -50,7 +50,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message 
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -92,7 +92,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message 
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -135,7 +135,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message 
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -414,7 +414,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message 
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -474,7 +474,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message 
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -769,7 +769,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message 
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 
@@ -881,22 +881,22 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- ************************************************************** -->
+  <!-- *********************************************************** -->
   <!-- * Messages Get Status                                     * -->
-  <!-- ************************************************************** -->
+  <!-- *********************************************************** -->
 
   <!-- **************                                                 -->
-  <!-- *** Messages for IdentifyContributorsForGetStatus Primitive      -->
+  <!-- *** Messages for IdentifyContributorsForGetStatus Primitive    -->
 
   <xs:element name="IdentifyContributorsForGetStatusRequest">
     <xs:annotation><xs:documentation xml:lang="en">
-    REQUEST in IdentifyPillarsForGetStatus primitive
+    REQUEST in IdentifyContributorsForGetStatus primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message 
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
       </xs:sequence>
@@ -924,9 +924,9 @@
 
         <xs:element ref="bre:TimeToDeliver" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Estimated time before delivery of checksums requested
-          That means the time from receival of a GetChecksumsRequest message to the time
-          when data is uploaded.
+          Estimated time before delivery of requested status
+          That means the time from receival of a GetStatusRequest message to the time
+          status response is uploaded.
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -934,11 +934,11 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- **************                                                 -->
+  <!-- **************                                              -->
   <!-- *** Messages for GetStatus Primitive                        -->
 
-  <!-- ***  Messages for GetStatus Primitive  -->
-  <!-- ***  which corresponds to ReplyTo from IdentifyContributorsForGetStatusResponse     -->
+  <!-- ***  Messages for GetStatus Primitive are only sent to one specific contributor -->
+  <!-- ***  which corresponds to ReplyTo from IdentifyContributorsForGetStatusResponse -->
 
   <xs:element name="GetStatusRequest">
     <xs:annotation><xs:documentation xml:lang="en">
@@ -972,7 +972,7 @@
 
   <xs:element name="GetStatusProgressResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    RESPONSE in GetStatus primitive
+    PROGRESS RESPONSE in GetStatus primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -984,7 +984,7 @@
 
         <xs:element ref="bre:Contributor" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Identifier of receiving contributor, which can be used for possible checks
+          Identifier of responding contributor, which can be used for possible checks
           (otherwise it is known via CorrelationID and ReplyTo)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1007,7 +1007,7 @@
 
   <xs:element name="GetStatusFinalResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    COMPLETE in GetStatus primitive
+    FINAL RESPONSE in GetStatus primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -1019,7 +1019,7 @@
 
         <xs:element ref="bre:Contributor" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Identifier of receiving contributor, which can be used for possible checks
+          Identifier of responding contributor, which can be used for possible checks
           (otherwise it is known via CorrelationID and ReplyTo)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1122,7 +1122,7 @@
       <xs:sequence>
         <xs:group ref="bre:Core" >
           <xs:annotation><xs:documentation xml:lang="en">
-          The mandatory part of a message 
+          The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
 

@@ -157,7 +157,7 @@
         FileID for object which the audit trail concern
         </xs:documentation></xs:annotation>
       </xs:element>
-      
+
       <xs:element name="ReportingComponent" type="Component_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
         Component of the bit repository which initiated audit trail entry on FileId object.
@@ -187,6 +187,12 @@
     </xs:complexType>
   </xs:element>
 
+  <xs:element name="BitRepositoryCollectionID" type="BitRepositoryCollectionID_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    A unique identifier for bit repository collection which data belongs to.
+    </xs:documentation></xs:annotation>
+  </xs:element>
+
  <xs:element name="ChecksumDataPairs" >
    <xs:complexType>
      <xs:sequence>
@@ -203,91 +209,6 @@
            <xs:sequence>
              <xs:element name="ChecksumDataItem" type="ChecksumData_TYPE" minOccurs="0" maxOccurs="unbounded" />
            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-
-  <xs:element name="ChecksumSpecs">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          The number of checksums included
-          </xs:documentation></xs:annotation>
-        </xs:element>
-        <xs:element name="ChecksumSpecsItems">
-          <xs:annotation><xs:documentation xml:lang="en">
-          List of data for checksums
-          </xs:documentation></xs:annotation>
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="ChecksumSpecsItem"  type="ChecksumSpec_TYPE" minOccurs="0" maxOccurs="unbounded" >
-                <xs:annotation><xs:documentation xml:lang="en">
-                Optionally salt and/or type of checksum for extra checksumscheck of data object at
-                completion to of put file. The result can be given in PutFileFinalResponse
-                </xs:documentation></xs:annotation>
-              </xs:element>
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-
-  <xs:element name="ChecksumsData">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          The number of checksums included
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element name="ChecksumDataItems">
-          <xs:annotation><xs:documentation xml:lang="en">
-          List of data for checksums
-          </xs:documentation></xs:annotation>
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="ChecksumDataItem" type="ChecksumData_TYPE" minOccurs="0" maxOccurs="unbounded" />
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-
-  <xs:element name="ContributorStatus" type="ContributorStatus_TYPE">
-    <xs:annotation><xs:documentation xml:lang="en">
-    Contain status information for a componenet in the bit repository
-    </xs:documentation></xs:annotation>
-  </xs:element>
-
-  <xs:element name="ChecksumsDataPerFileID">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="ChecksumSpec" type="ChecksumSpec_TYPE" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          The type and possible salt of checksums included
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          The number of checksums included
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element name="ChecksumDataPerFileIDItems">
-          <xs:annotation><xs:documentation xml:lang="en">
-          List of data for checksums
-          </xs:documentation></xs:annotation>
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element ref="ChecksumDataPerFileIDItem" minOccurs="0" maxOccurs="unbounded" />
-            </xs:sequence>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
@@ -323,9 +244,94 @@
     </xs:complexType>
   </xs:element>
 
+  <xs:element name="ChecksumsData">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of checksums included
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element name="ChecksumDataItems">
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of data for checksums
+          </xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ChecksumDataItem" type="ChecksumData_TYPE" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ChecksumsDataPerFileID">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ChecksumSpec" type="ChecksumSpec_TYPE" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The type and possible salt of checksums included
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of checksums included
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element name="ChecksumDataPerFileIDItems">
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of data for checksums
+          </xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="ChecksumDataPerFileIDItem" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ChecksumSpecs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of checksums included
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="ChecksumSpecsItems">
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of data for checksums
+          </xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ChecksumSpecsItem"  type="ChecksumSpec_TYPE" minOccurs="0" maxOccurs="unbounded" >
+                <xs:annotation><xs:documentation xml:lang="en">
+                Optionally salt and/or type of checksum for extra checksumscheck of data object at
+                completion to of put file. The result can be given in PutFileFinalResponse
+                </xs:documentation></xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
   <xs:element name="Contributor" type="Component_TYPE" >
     <xs:annotation><xs:documentation xml:lang="en">
     Contributor to audit trails
+    </xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="ContributorStatus" type="ContributorStatus_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Contain status information for a componenet in the bit repository
     </xs:documentation></xs:annotation>
   </xs:element>
 
@@ -345,9 +351,9 @@
 
       <xs:element name="BitRepositoryCollectionID" type="BitRepositoryCollectionID_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
-        BitRepositoryCollectionID is a unique identifier for bit repository collection 
+        BitRepositoryCollectionID is a unique identifier for bit repository collection
         which data belongs to.
-        This is also the identification of decryption and keys for contents of message, 
+        This is also the identification of decryption and keys for contents of message,
         and it is part of unique identification of files together with a file id.
         </xs:documentation></xs:annotation>
       </xs:element>
@@ -371,29 +377,6 @@
     <xs:annotation><xs:documentation xml:lang="en">
     Used for parameters
     </xs:documentation></xs:annotation>
-  </xs:element>
-
-  <xs:element name="FinalResponseInfo">
-    <xs:annotation><xs:documentation xml:lang="en">
-    Information of completion
-    </xs:documentation></xs:annotation>
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="FinalResponseCode" type="FinalResponseCode_TYPE">
-          <xs:annotation><xs:documentation xml:lang="en">
-          FinalResponseCode is a code for the type of completion given
-          The actual codes are specified later, e.g. IoError, DataNotFound, AccessDenied, OK
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element name="FinalResponseText" type="xs:string">
-          <xs:annotation><xs:documentation xml:lang="en">
-          FinalResponseText is a text for logging in the completion
-          It does not have a semantic meaning, but contributes to a more readable log
-          </xs:documentation></xs:annotation>
-        </xs:element>
-      </xs:sequence>
-    </xs:complexType>
   </xs:element>
 
   <xs:element name="FileAddress" type="Address_TYPE">
@@ -553,6 +536,29 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
+  <xs:element name="FinalResponseInfo">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Information of completion
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="FinalResponseCode" type="FinalResponseCode_TYPE">
+          <xs:annotation><xs:documentation xml:lang="en">
+          FinalResponseCode is a code for the type of completion given
+          The actual codes are specified later, e.g. IoError, DataNotFound, AccessDenied, OK
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element name="FinalResponseText" type="xs:string">
+          <xs:annotation><xs:documentation xml:lang="en">
+          FinalResponseText is a text for logging in the completion
+          It does not have a semantic meaning, but contributes to a more readable log
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
   <xs:element name="NoOfItems" type="xs:nonNegativeInteger">
     <xs:annotation><xs:documentation xml:lang="en">
     The number of results given in a delivered result
@@ -631,27 +637,6 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="ResultingFileIDs">
-    <xs:annotation><xs:documentation xml:lang="en">
-    result is either given via specified address or directly
-    </xs:documentation></xs:annotation>
-    <xs:complexType>
-      <xs:choice>
-        <xs:element ref="ResultAddress" minOccurs="0" maxOccurs="1" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          Address (e.g. in form of an URL) for where result data has been delivered (if completed)
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element ref="FileIDsData">
-          <xs:annotation><xs:documentation xml:lang="en">
-          List of data for file ids in result, if given in this message instead of via data transfer
-          </xs:documentation></xs:annotation>
-        </xs:element>
-      </xs:choice>
-    </xs:complexType>
-  </xs:element>
-
   <xs:element name="ResultingChecksums">
     <xs:annotation><xs:documentation xml:lang="en">
     result is either given via specified address or directly
@@ -667,6 +652,27 @@
         <xs:element ref="ChecksumsDataPerFileID">
           <xs:annotation><xs:documentation xml:lang="en">
           List of data for checksums in result, if given in this message instead of via data transfer
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ResultingFileIDs">
+    <xs:annotation><xs:documentation xml:lang="en">
+    result is either given via specified address or directly
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="ResultAddress" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where result data has been delivered (if completed)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="FileIDsData">
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of data for file ids in result, if given in this message instead of via data transfer
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:choice>
@@ -692,12 +698,6 @@
         </xs:element>
       </xs:choice>
     </xs:complexType>
-  </xs:element>
-
-  <xs:element name="BitRepositoryCollectionID" type="BitRepositoryCollectionID_TYPE">
-    <xs:annotation><xs:documentation xml:lang="en">
-    A unique identifier for bit repository collection which data belongs to.
-    </xs:documentation></xs:annotation>
   </xs:element>
 
   <xs:element name="TimeToDeliver" type="TimeMeasure_TYPE">
@@ -993,6 +993,11 @@
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
 
+  <xs:simpleType name="BitRepositoryCollectionID_TYPE">
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:complexType name="ChecksumData_TYPE">
     <xs:sequence>
       <xs:element name="ChecksumSpec" type="ChecksumSpec_TYPE" >
@@ -1036,52 +1041,6 @@
 
   <xs:simpleType name="ChecksumValue_TYPE">
     <xs:restriction base="xs:string">
-    </xs:restriction>
-  </xs:simpleType>
-
-  <xs:complexType name="ContributorStatus_TYPE">
-    <xs:sequence>
-      <xs:element name="ContributorStatusElements">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element ref="NoOfItems" />
-            <xs:element name="ContributorStatusElement" type="ContributorStatusElement_TYPE" minOccurs="1" maxOccurs="unbounded"/>
-          </xs:sequence>        
-        </xs:complexType>
-      </xs:element>
-      
-      <xs:element name="StatusTimestamp" type="SystemDateTime_TYPE">
-        <xs:annotation><xs:documentation xml:lang="en">
-        The time when the status was calculated
-        </xs:documentation></xs:annotation>
-      </xs:element>
-    </xs:sequence>
-  </xs:complexType>
-  
-  <xs:complexType name="ContributorStatusElement_TYPE">
-    <xs:choice>
-      <xs:annotation><xs:documentation xml:lang="en">
-      TBD: extend this later e.g. with status elements for ping, water level from pillars etc.
-      </xs:documentation></xs:annotation>
-      <xs:element name="StatusPlainText" type="xs:string" />
-      <xs:element name="StatusPing" type="xs:string" />
-    </xs:choice>
-  </xs:complexType>
- 
-  <xs:simpleType name="FinalResponseCode_TYPE">
-    <xs:annotation><xs:documentation xml:lang="en">
-    Type with all final response codes for final response messages in the bit repository protocol
-    </xs:documentation></xs:annotation>
-    <xs:union memberTypes="FinalResponseCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_COMPLETE_TYPE"/>
-  </xs:simpleType>
-
-  <xs:simpleType name="FinalResponseCodePositive_TYPE">
-    <xs:restriction base="xs:positiveInteger">
-      <xs:enumeration value="480">
-        <xs:annotation><xs:documentation xml:lang="en">
-        Message request has been completed successfully
-        </xs:documentation></xs:annotation>
-      </xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
@@ -1135,29 +1094,37 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:complexType name="ContributorStatus_TYPE">
+    <xs:sequence>
+      <xs:element name="ContributorStatusElements">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="NoOfItems" />
+            <xs:element name="ContributorStatusElement" type="ContributorStatusElement_TYPE" minOccurs="1" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="StatusTimestamp" type="SystemDateTime_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+        The time when the status was calculated
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ContributorStatusElement_TYPE">
+    <xs:choice>
+      <xs:annotation><xs:documentation xml:lang="en">
+      TBD: extend this later e.g. with status elements for ping, water level from pillars etc.
+      </xs:documentation></xs:annotation>
+      <xs:element name="StatusPlainText" type="xs:string" />
+      <xs:element name="StatusPing" type="xs:string" />
+    </xs:choice>
+  </xs:complexType>
+
   <xs:simpleType name="CorrelationID_TYPE">
     <xs:restriction base="xs:string">
-    </xs:restriction>
-  </xs:simpleType>
-
-  <xs:simpleType name="ERRORCODE_TYPE">
-    <xs:annotation><xs:documentation xml:lang="en">
-    Type with all sorts of error codes in the bit repository protocol
-    </xs:documentation></xs:annotation>
-    <xs:union memberTypes="ERRORCODE_GENERAL_TYPE ERRORCODE_ALARM_TYPE ERRORCODE_COMPLETE_TYPE ERRORCODE_RESPONSE_TYPE"/>
-  </xs:simpleType>
-
-  <xs:simpleType name="ERRORCODE_COMPLETE_TYPE">
-    <xs:annotation><xs:documentation xml:lang="en">
-    Error codes that are specific for FinalResponse messages
-    Numbers may later be adjusted to fit a standard
-    </xs:documentation></xs:annotation>
-    <xs:restriction base="xs:positiveInteger">
-      <xs:enumeration value="581">
-        <xs:annotation><xs:documentation xml:lang="en">
-        Operation was not completed for unknown reason
-        </xs:documentation></xs:annotation>
-      </xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
@@ -1169,6 +1136,20 @@
       <xs:enumeration value="541">
         <xs:annotation><xs:documentation xml:lang="en">
         Unknown user access
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ERRORCODE_COMPLETE_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Error codes that are specific for FinalResponse messages
+    Numbers may later be adjusted to fit a standard
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:positiveInteger">
+      <xs:enumeration value="581">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Operation was not completed for unknown reason
         </xs:documentation></xs:annotation>
       </xs:enumeration>
     </xs:restriction>
@@ -1212,6 +1193,13 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="ERRORCODE_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Type with all sorts of error codes in the bit repository protocol
+    </xs:documentation></xs:annotation>
+    <xs:union memberTypes="ERRORCODE_GENERAL_TYPE ERRORCODE_ALARM_TYPE ERRORCODE_COMPLETE_TYPE ERRORCODE_RESPONSE_TYPE"/>
+  </xs:simpleType>
+
   <xs:simpleType name="FileID_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Unique identifiers for data in given service level agreement
@@ -1219,6 +1207,23 @@
     In a Put operation this will be the identifier the data for later request of the data
     </xs:documentation></xs:annotation>
     <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="FinalResponseCode_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Type with all final response codes for final response messages in the bit repository protocol
+    </xs:documentation></xs:annotation>
+    <xs:union memberTypes="FinalResponseCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_COMPLETE_TYPE"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="FinalResponseCodePositive_TYPE">
+    <xs:restriction base="xs:positiveInteger">
+      <xs:enumeration value="480">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Message request has been completed successfully
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
@@ -1256,11 +1261,6 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="QueueTopicName_TYPE">
-    <xs:restriction base="xs:string">
-    </xs:restriction>
-  </xs:simpleType>
-
   <xs:simpleType name="ProgressResponseCode_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Type with all progress response codes for progress response message in the bit repository protocol
@@ -1285,6 +1285,11 @@
         Data for a FileID has been found for some sort of Get request
         </xs:documentation></xs:annotation>
       </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="QueueTopicName_TYPE">
+    <xs:restriction base="xs:string">
     </xs:restriction>
   </xs:simpleType>
 
@@ -1420,11 +1425,6 @@
     An extra salt to be added in the checksum calculation
     If this parameter is given, it is also specification the checksum calculation must include the salt
     </xs:documentation></xs:annotation>
-    <xs:restriction base="xs:string">
-    </xs:restriction>
-  </xs:simpleType>
-
-  <xs:simpleType name="BitRepositoryCollectionID_TYPE">
     <xs:restriction base="xs:string">
     </xs:restriction>
   </xs:simpleType>
