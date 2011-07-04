@@ -22,23 +22,29 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.pillarselector;
+package org.bitrepository.protocol.exceptions;
 
-public abstract class AbstractSinglePillarSelector implements SinglePillarSelector {
-    /** The ID of the selected pillar */
-    protected String pillarID = null;
-    /** The topic for communication with the selected pillar */
-    protected String pillarTopic = null;    
 
-    /** Return the ID of the pillar chosen by this selector if finished. If unfinished null is returned */
-    public String getIDForSelectedPillar() {
-        return pillarID;
+/**
+ * Exception thrown when a conversation timed out.
+ */
+public class ConversationTimedOutException extends OperationFailedException {
+    /**
+     * Initiate a ConversationTimedOutException.
+     *
+     * @param message Description of problem.
+     */
+    public ConversationTimedOutException(String message) {
+        super(message);
     }
 
-    /** If finished return the topic for sending messages to the pillar chosen by this selector. 
-     * If unfinished null is returned 
+    /**
+     * Initiate a ConversationTimedOutException.
+     *
+     * @param message Description of problem.
+     * @param cause The exception that caused this exception.
      */
-    public String getDestinationForSelectedPillar() {
-        return pillarTopic;
-    }  
+    public ConversationTimedOutException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

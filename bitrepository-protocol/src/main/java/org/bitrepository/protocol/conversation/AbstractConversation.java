@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol;
+package org.bitrepository.protocol.conversation;
 
 import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
@@ -51,6 +51,9 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.protocol.exceptions.ConversationTimedOutException;
+import org.bitrepository.protocol.mediator.ConversationMediator;
+import org.bitrepository.protocol.messagebus.MessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,9 +64,9 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T> The result of this conversation.
  */
-public abstract class AbstractMessagebusBackedConversation<T> implements Conversation<T> {
+public abstract class AbstractConversation<T> implements Conversation<T> {
     /** The message bus used for sending messages. */
-    private final MessageSender messageSender;
+    protected final MessageSender messageSender;
     /** The conversation ID. */
     private final String conversationID;
     /** The conversation mediator that handles this conversation. */
@@ -72,16 +75,15 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
-     * Initialize a conversation on the given messagebus.
+     * Initialise a conversation on the given message bus.
      *
      * @param messagebus The message bus used for exchanging messages.
      * @param conversationID The conversation ID for this conversation.
      */
-    public AbstractMessagebusBackedConversation(MessageSender messageSender, String conversationID) {
+    public AbstractConversation(MessageSender messageSender, String conversationID) {
         this.messageSender = messageSender;
         this.conversationID = conversationID;
     }
-
 
     @Override
     public void setMediator(ConversationMediator mediator) {
@@ -96,7 +98,7 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
     @Override
     public T waitFor() {
         synchronized (this) {
-            while (!isEnded()) {
+            while (!hasEnded()) {
                 try {
                     wait();
                 } catch (InterruptedException e) {
@@ -109,9 +111,9 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
 
     @Override
     public T waitFor(long timeout) throws ConversationTimedOutException {
-        long time = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         synchronized (this) {
-            while (!isEnded() && time + timeout < System.currentTimeMillis()) {
+            while (!hasEnded() && startTime + timeout > System.currentTimeMillis()) {
                 try {
                     wait(timeout);
                 } catch (InterruptedException e) {
@@ -119,154 +121,10 @@ public abstract class AbstractMessagebusBackedConversation<T> implements Convers
                 }
             }
         }
-        if (!isEnded()) {
+        if (!hasEnded()) {
             throw new ConversationTimedOutException("Conversation timed out");
         }
         return getResult();
-    }
-
-    @Override
-    public void sendMessage(Alarm content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(GetChecksumsFinalResponse content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(GetChecksumsRequest content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(GetChecksumsProgressResponse content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(GetFileFinalResponse content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(GetFileIDsFinalResponse content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(GetFileIDsRequest content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(GetFileIDsProgressResponse content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(GetFileRequest content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(GetFileProgressResponse content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-    
-    @Override
-    public void sendMessage(GetStatusRequest content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(GetStatusProgressResponse content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(GetStatusFinalResponse content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForGetChecksumsResponse content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForGetChecksumsRequest content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForGetFileIDsRequest content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForGetFileIDsResponse content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForGetFileRequest content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForGetFileResponse content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForPutFileResponse content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForPutFileRequest content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(PutFileFinalResponse content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(PutFileRequest content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
-    }
-
-    @Override
-    public void sendMessage(PutFileProgressResponse content) {
-        content.setCorrelationID(getConversationID());
-        messageSender.sendMessage(content);
     }
 
     @Override

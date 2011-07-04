@@ -48,8 +48,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.protocol.MessageBus;
-import org.bitrepository.protocol.MessageListener;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageListener;
 import org.jaccept.TestEventManager;
 
 public class MessageBusWrapper implements MessageBus {

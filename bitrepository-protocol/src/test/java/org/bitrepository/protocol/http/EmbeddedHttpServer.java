@@ -40,4 +40,8 @@ public class EmbeddedHttpServer {
         server.start();
         //server.join();
     }
+    
+    public void stop() throws Exception {
+        server.stop();
+    }
 }

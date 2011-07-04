@@ -27,7 +27,7 @@
  * of the bit repository.
  * <p/>
  * The classes {@link org.bitrepository.protocol.MessageBus}
- * and {@link org.bitrepository.protocol.MessageListener} provide the
+ * and {@link org.bitrepository.protocol.messagebus.MessageListener} provide the
  * primary interface for sending asynchronous messages in the protocol.
  * {@link org.bitrepository.protocol.AbstractMessageListener} provides a
  * default implementation that throws exceptions in all instances.

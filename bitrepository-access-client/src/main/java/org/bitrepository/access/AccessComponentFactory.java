@@ -30,7 +30,7 @@ import org.bitrepository.access.getfile.SimpleGetFileClient;
 import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.messagebus.MessageBusFactory;
 
 /**
  * Factory class for the access module. 
@@ -39,7 +39,7 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 public class AccessComponentFactory {
     /** The singleton instance. */
     private static AccessComponentFactory instance;
-    
+
     /**
      * Instantiation of this singleton.
      * 
@@ -52,19 +52,19 @@ public class AccessComponentFactory {
         }
         return instance;
     }
-    
+
     /** The characteristics for this module.*/
     private ModuleCharacteristics moduleCharacter;
     /** The configuration for this module.*/
     private AccessConfiguration config;
-    
+
     /**
      * Private constructor for initialization of the singleton.
      */
     private AccessComponentFactory() { 
         moduleCharacter = new ModuleCharacteristics("access-client");
     }
-    
+
     /**
      * Method for retrieving the characteristics for this module.
      * @return The characteristics for this module.
@@ -72,7 +72,7 @@ public class AccessComponentFactory {
     public ModuleCharacteristics getModuleCharacteristics() {
         return moduleCharacter;
     }
-    
+
     /**
      * Method for extracting the configuration for the access module.
      * @return The access module configuration.
@@ -85,15 +85,15 @@ public class AccessComponentFactory {
         }
         return config;
     }
-    
+
     /**
      * Method for getting a GetFileClient as defined in the access configuration.<p>
      * 
      * @return A GetFileClient.
      */
     public GetFileClient createGetFileClient(GetFileClientSettings settings) {
-        // TODO use the configurations instead!
-        return new SimpleGetFileClient(ProtocolComponentFactory.getInstance().getMessageBus(),
-                                               settings);
+        return new SimpleGetFileClient(
+                MessageBusFactory.createMessageBus(settings.getMessageBusConfiguration()),
+                settings);
     }
 }

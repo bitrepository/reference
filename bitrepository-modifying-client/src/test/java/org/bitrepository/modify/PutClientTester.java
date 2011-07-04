@@ -24,7 +24,14 @@
  */
 package org.bitrepository.modify;
 
-import org.apache.activemq.util.ByteArrayInputStream;
+import java.beans.ExceptionListener;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.Date;
+
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
@@ -33,19 +40,11 @@ import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.modify_client.configuration.ModifyConfiguration;
-import org.bitrepository.protocol.AbstractMessageListener;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.Date;
 
 /**
  * Tester class for testing the PutClient functionality. 
@@ -248,15 +247,17 @@ public class PutClientTester extends ExtendedTestCase {
             Thread.currentThread().notifyAll();
         }
 
-        @Override
-        public void onException(JMSException e) {
-            e.printStackTrace();
-        }
         public String getMessage() {
             return message;
         }
         public Class getMessageClass() {
             return messageClass;
         }
+
+		@Override
+		public void exceptionThrown(Exception e) {
+			// TODO Auto-generated method stub
+			
+		}
     }
 }

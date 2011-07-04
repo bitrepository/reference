@@ -48,7 +48,7 @@
 package org.bitrepository.access.getfileids;
 
 import org.bitrepository.bitrepositorymessages.*;
-import org.bitrepository.protocol.AbstractMessageListener;
+import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

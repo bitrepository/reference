@@ -24,6 +24,8 @@
  */
 package org.bitrepository.protocol.bitrepositorycollection;
 
+import java.util.Arrays;
+
 import org.bitrepository.protocol.configuration.MessageBusConfigurations;
 
 /**
@@ -112,15 +114,46 @@ public class MutableClientSettings implements ClientSettings {
         return fileStorage;
     }
     /**
-     * @see #getSlaId()
+     * @see #getLocalFileStorage()
      */
     public void setLocalFileStorage(String fileStorage) {
         this.fileStorage = fileStorage;
     }
-
+    
+    /** Default value is 1 day */
+	private int conversationTimeout = 1000*60*60*24;
+    @Override
+    public int getConversationTimeout() {
+        return conversationTimeout;
+    }
+    /**
+     * @see #getConversationTimeout()
+     */
+    public void setConversationTimeout(int conversationTimeout) {
+        this.conversationTimeout = conversationTimeout;
+    }
+    
+    /** Default value is 30 seconds */
+	private int identifyPillarsTimeout = 1000*30;
+    @Override
+    public int getIdentifyPillarsTimeout() {
+        return identifyPillarsTimeout;
+    }
+    /**
+     * @see #getConversationTimeout()
+     */
+    public void setIdentifyPillarsTimeout(int identifyPillarsTimeout) {
+        this.identifyPillarsTimeout = identifyPillarsTimeout;
+    }
+    
 	@Override
 	public String toString() {
-		return "MutableClientSettings [bitRepositoryCollectionTopicID=" + bitRepositoryCollectionTopicID + ", clientTopicId=" + clientTopicId
-				+ ", pillarIDs=" + pillarIDs + "]";
+		return "MutableClientSettings [id=" + id + ", messageBusConfiguration="
+				+ messageBusConfiguration + ", bitRepositoryCollectionTopicID="
+				+ bitRepositoryCollectionTopicID + ", clientTopicId="
+				+ clientTopicId + ", pillarIDs=" + Arrays.toString(pillarIDs)
+				+ ", fileStorage=" + fileStorage + ", conversationTimeout="
+				+ conversationTimeout + ", identifyPillarsTimeout="
+				+ identifyPillarsTimeout + "]";
 	}
 }

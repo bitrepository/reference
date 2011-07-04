@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Protocol
  * 
- * $Id$
- * $HeadURL$
+ * $Id: package-info.java 124 2011-03-25 09:04:11Z kfc $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-protocol/src/main/java/org/bitrepository/protocol/package-info.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -22,28 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol;
-
 /**
- * The interface for keeping track of conversations.
- *
- * Implementations must listen for messages and delegate them to the correct started conversation, until conversations
- * are ended.
- *
- * @param <T> The type of conversation to have.
+ * Contains the functionality for modelling the messaging sequence needed to service client method calls.
  */
-public interface ConversationMediator<T extends Conversation> extends MessageListener {
-    /**
-     * Start a conversation of type T and begin delegating messages to this conversation when received.
-     *
-     * @param The new conversation.
-     */
-    void startConversation(T conversation);
-
-    /**
-     * Consider a conversation as ended and stop delegating messages for it.
-     *
-     * @param conversation The conversation to end.
-     */
-    void endConversation(T conversation);
-}
+package org.bitrepository.protocol.conversation;

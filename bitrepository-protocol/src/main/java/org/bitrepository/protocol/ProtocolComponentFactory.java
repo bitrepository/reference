@@ -29,6 +29,7 @@ import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.configuration.FileExchangeConfiguration;
 import org.bitrepository.protocol.configuration.ProtocolConfiguration;
+import org.bitrepository.protocol.messagebus.MessageBus;
 
 /**
  * Provides access to the different component in the protocol module (Spring/IOC wannabe)

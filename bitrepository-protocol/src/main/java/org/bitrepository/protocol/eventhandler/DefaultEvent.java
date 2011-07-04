@@ -19,4 +19,10 @@ public class DefaultEvent implements OperationEvent {
     public OperationEventType getType() {
         return type;
     }
+
+	@Override
+	public Object getState() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

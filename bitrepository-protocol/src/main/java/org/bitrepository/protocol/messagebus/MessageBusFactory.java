@@ -1,6 +1,5 @@
 package org.bitrepository.protocol.messagebus;
 
-import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.configuration.MessageBusConfigurations;
 

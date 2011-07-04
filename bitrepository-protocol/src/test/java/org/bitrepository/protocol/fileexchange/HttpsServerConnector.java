@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -21,7 +20,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.bitrepository.protocol.CoordinationLayerException;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.jaccept.TestEventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

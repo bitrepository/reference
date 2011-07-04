@@ -52,10 +52,10 @@ import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
-import org.bitrepository.protocol.MessageBus;
-import org.bitrepository.protocol.MessageListener;
 import org.bitrepository.protocol.configuration.MessageBusConfiguration;
 import org.bitrepository.protocol.configuration.MessageBusConfigurations;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

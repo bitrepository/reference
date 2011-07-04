@@ -27,6 +27,7 @@ package org.bitrepository.access.getfile;
 import java.io.File;
 import java.math.BigInteger;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
@@ -36,7 +37,10 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
+import org.bitrepository.clienttest.TestEventHandler;
 import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
+import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -81,6 +85,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Set the number of pillars for this SLA to 1", "");
 
         ((MutableClientSettings)getFileClientSettings).setPillarIDs(new String[] {PILLAR1_ID});
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetFileClient getFileClient = 
             new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings), 
                     testEventManager);
@@ -88,9 +93,10 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Ensure the file isn't already present on the http server", "");
         httpServer.removeFile(DEFAULT_FILE_ID);
 
-        addStep("Request the fastest delivery of a file. A callback listener should be supplied.", 
+        addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.", 
         "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
-        getFileClient.getFileFromSpecificPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), PILLAR1_ID);
+        getFileClient.getFileFromSpecificPillar(
+        		DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), PILLAR1_ID, testEventHandler);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
@@ -114,6 +120,10 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
                     testMessageFactory.createGetFileRequest(receivedGetFileRequest,PILLAR1_ID, pillar1DestinationId));
         }
 
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+
         addStep("The pillar sends a getFile response to the GetClient.", 
         "The GetClient should notify about the response through the callback interface."); 
         if (useMockupPillar()) {
@@ -121,7 +131,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
                     receivedGetFileRequest, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(getFileProgressResponse);
         }
-        // ToDo The listener call should be verified.
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
 
         addStep("The file is uploaded to the indicated url and the pillar sends a final response upload message", 
                 "The GetFileClient notifies that the file is ready through the callback listener and the uploaded " +
@@ -137,6 +147,8 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
                     receivedGetFileRequest, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(completeMsg);
         }
+
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
         // Todo Assert that the callback listener has received an 'uploadComplete' event.
         // How do we know the where the file is located. 
         File expectedUploadFile = pillar1FileStore.getFile(DEFAULT_FILE_ID);
@@ -159,13 +171,14 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
         GetFileClient getFileClient = 
             new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings), 
                     testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
 
         addStep("Defining the variables for the GetFileClient and defining them in the configuration", 
         "It should be possible to change the values of the configurations.");
 
         addStep("Make the GetClient ask for fastest pillar.", 
         "It should send message to identify which pillars.");
-        getFileClient.getFileFromFastestPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID));
+        getFileClient.getFileFromFastestPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), testEventHandler);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage = 
@@ -173,7 +186,9 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
         }
 
         addStep("Three pillars send responses. First an average timeToDeliver, then a fast timeToDeliver and last a" +
-                " slow timeToDeliver.", "The client should send a getFileRequest to the fast pillar");
+                " slow timeToDeliver.", "The client should send a getFileRequest to the fast pillar. " +
+                		"The event handler should receive the following events: " +
+                		"3 x PillarIdentified, a PillarSelected and a RequestSent");
 
         if (useMockupPillar()) {
             IdentifyPillarsForGetFileResponse averageReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
@@ -204,5 +219,73 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
             Assert.assertEquals(receivedGetFileRequest, 
                     testMessageFactory.createGetFileRequest(receivedGetFileRequest, fastPillarID, pillar1DestinationId));
         }
+        
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        PillarOperationEvent event = (PillarOperationEvent) testEventHandler.waitForEvent();
+        Assert.assertEquals(event.getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(event.getState(), fastPillarID);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+    }
+    
+    @Test(groups = {"regressiontest"})
+    public void chooseFastestPillarGetFileClientWithIdentifyTimeout() throws Exception {
+        addDescription("Verify that the FastestPillarGetFile works correct without receiving responses from all" +
+        		"pillars.");
+        addStep("Create a GetFileClient configured to use 3 pillars and a 3 second timeout for identifying pillar.", "");
+
+        String averagePillarID = "THE-AVERAGE-PILLAR";
+        String fastPillarID = "THE-FAST-PILLAR";
+        String slowPillarID = "THE-SLOW-PILLAR";
+        ((MutableClientSettings)getFileClientSettings).setPillarIDs(
+                new String[] {averagePillarID, fastPillarID, slowPillarID});
+        ((MutableClientSettings)getFileClientSettings).setIdentifyPillarsTimeout(3000);
+        GetFileClient getFileClient = 
+            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings), 
+                    testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+
+        addStep("Make the GetClient ask for fastest pillar.",  "It should send message to identify which pillars.");
+        getFileClient.getFileFromFastestPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), testEventHandler);
+        IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
+        if (useMockupPillar()) {
+            receivedIdentifyRequestMessage = 
+                bitRepositoryCollectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+        }
+
+        addStep("Two pillars send responses. First an average timeToDeliver, then a fast timeToDeliver.", 
+        		"The client should send a getFileRequest to the fast pillar after 3 seconds. " +
+                		"The event handler should receive the following events: " +
+                		"2 x PillarIdentified, a identify timeout, a PillarSelected and a RequestSent event.");
+
+        if (useMockupPillar()) {
+            IdentifyPillarsForGetFileResponse averageReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
+                    receivedIdentifyRequestMessage, averagePillarID, pillar2DestinationId);
+            TimeMeasureTYPE averageTime = new TimeMeasureTYPE();
+            averageTime.setTimeMeasureUnit("MILLISECONDS");
+            averageTime.setTimeMeasureValue(BigInteger.valueOf(100L));
+            averageReply.setTimeToDeliver(averageTime);
+            messageBus.sendMessage(averageReply);
+
+            IdentifyPillarsForGetFileResponse fastReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
+                    receivedIdentifyRequestMessage, fastPillarID, pillar1DestinationId);
+            TimeMeasureTYPE fastTime = new TimeMeasureTYPE();
+            fastTime.setTimeMeasureUnit("MILLISECONDS");
+            fastTime.setTimeMeasureValue(BigInteger.valueOf(10L));
+            fastReply.setTimeToDeliver(fastTime);
+            messageBus.sendMessage(fastReply);
+
+            GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(
+            		GetFileRequest.class, 5, TimeUnit.SECONDS );
+            Assert.assertEquals(receivedGetFileRequest, 
+                    testMessageFactory.createGetFileRequest(receivedGetFileRequest, fastPillarID, pillar1DestinationId));
+        }
+        
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarTimeout);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
     }
 }

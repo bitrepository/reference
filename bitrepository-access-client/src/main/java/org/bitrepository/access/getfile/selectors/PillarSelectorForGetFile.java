@@ -38,22 +38,14 @@ public abstract class PillarSelectorForGetFile extends AbstractSinglePillarSelec
     private TimeMeasureTYPE timeToDeliver;
     
     /**
-     * Delegates to super constructor.
-     */
-    protected PillarSelectorForGetFile(String[] pillarsWhichShouldRespond) {
-        super(pillarsWhichShouldRespond);
-    }
-
-    /**
      * Each time this method is called the selector will check the response to see whether the selected pillar should 
-     * be changed.
+     * be changed. 
      * @param response The new response from a pillar.
      * @throws UnexpectedResponseException The selector was unable to process the response. The selector will still be 
      * able to continue, but the supplied response is ignored.
      */
     public final void processResponse(IdentifyPillarsForGetFileResponse response) throws UnexpectedResponseException {
-        responseReceived(response.getPillarID());
-        if (checkIfPillarShouldBeSelected(response)) {
+        if (checkPillarResponseForSelection(response)) {
             this.pillarID = response.getPillarID();
             this.pillarTopic = response.getReplyTo();
             this.timeToDeliver = response.getTimeToDeliver();
@@ -65,8 +57,10 @@ public abstract class PillarSelectorForGetFile extends AbstractSinglePillarSelec
      * implementing classes.
      * @param response The response to based the decision on.
      * @return <code>true</code> if the pillar should be selected, else <code>false</code>.
+     * @throws UnexpectedResponseException 
      */
-    protected abstract boolean checkIfPillarShouldBeSelected(IdentifyPillarsForGetFileResponse response);
+    protected abstract boolean checkPillarResponseForSelection(IdentifyPillarsForGetFileResponse response) 
+    		throws UnexpectedResponseException;
     
     /**
      * The returned timeToDeliver for the selected pillar. May be null if no pillar has been selected.

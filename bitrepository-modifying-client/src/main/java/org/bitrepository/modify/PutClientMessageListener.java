@@ -27,7 +27,7 @@ package org.bitrepository.modify;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
-import org.bitrepository.protocol.AbstractMessageListener;
+import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

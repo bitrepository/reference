@@ -56,4 +56,14 @@ public interface ClientSettings extends BitRepositoryCollectionSettings {
      */
     public String getLocalFileStorage();
     
+    /**
+     * The general timeout to use for conversations. Concrete timeouts are normally defined for the different phases of 
+     * an operation, but this general 'last-ditch' timeout is used if the internal conversation somehow timeout 
+     * consistency breaks and the conversation freezes.
+     * 
+     * @Return The conversation timeout in milliseconds.
+     */
+    public int getConversationTimeout();
+
+	public int getIdentifyPillarsTimeout();
 }

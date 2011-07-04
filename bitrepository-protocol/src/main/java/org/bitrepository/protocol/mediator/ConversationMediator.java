@@ -22,28 +22,31 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol;
+package org.bitrepository.protocol.mediator;
+
+import org.bitrepository.protocol.conversation.Conversation;
+import org.bitrepository.protocol.messagebus.MessageListener;
 
 /**
- * Exception thrown when a conversation timed out.
+ * The interface for keeping track of conversations.
+ *
+ * Implementations must listen for messages and delegate them to the correct started conversation, until conversations
+ * are ended.
+ *
+ * @param <T> The type of conversation to have.
  */
-public class ConversationTimedOutException extends Exception {
+public interface ConversationMediator<T extends Conversation> extends MessageListener {
     /**
-     * Initiate a ConversationTimedOutException.
+     * Start a conversation of type T and begin delegating messages to this conversation when received.
      *
-     * @param message Description of problem.
+     * @param The new conversation.
      */
-    public ConversationTimedOutException(String message) {
-        super(message);
-    }
+    void addConversation(T conversation);
 
     /**
-     * Initiate a ConversationTimedOutException.
+     * Consider a conversation as ended and stop delegating messages for it.
      *
-     * @param message Description of problem.
-     * @param cause The exception that caused this exception.
+     * @param conversation The conversation to end.
      */
-    public ConversationTimedOutException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    void endConversation(T conversation);
 }

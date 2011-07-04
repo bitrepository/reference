@@ -28,13 +28,14 @@ import java.util.Date;
 
 import org.apache.activemq.broker.BrokerService;
 import org.bitrepository.bitrepositorymessages.Alarm;
-import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.configuration.MessageBusConfiguration;
 import org.bitrepository.protocol.configuration.MessageBusConfigurations;
+import org.bitrepository.protocol.messagebus.AbstractMessageListener;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;

@@ -26,14 +26,19 @@ package org.bitrepository.access.getfile;
 
 import java.net.URL;
 
+import org.bitrepository.access.getfile.conversation.SimpleGetFileConversation;
 import org.bitrepository.access.getfile.selectors.FastestPillarSelectorForGetFile;
 import org.bitrepository.access.getfile.selectors.PillarSelectorForGetFile;
 import org.bitrepository.access.getfile.selectors.SpecificPillarSelectorForGetFile;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.protocol.CollectionBasedConversationMediator;
-import org.bitrepository.protocol.ConversationMediator;
-import org.bitrepository.protocol.MessageBus;
 import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
+import org.bitrepository.protocol.exceptions.NoPillarFoundException;
+import org.bitrepository.protocol.exceptions.OperationFailedException;
+import org.bitrepository.protocol.exceptions.OperationTimeOutException;
+import org.bitrepository.protocol.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.protocol.mediator.ConversationMediator;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * The default <code>GetFileClient</code>.
  * 
  * This class is just a thin wrapper which creates a conversion each time a operation is started. The conversations 
- * takes over the rest of the operation handling hereafter.
+ * takes over the rest of the operation handling.
  */
 public class SimpleGetFileClient implements GetFileClient {
     /** The log for this class. */
@@ -50,6 +55,7 @@ public class SimpleGetFileClient implements GetFileClient {
     private final GetFileClientSettings settings;    
     private final MessageBus messageBus;
     private final ConversationMediator<SimpleGetFileConversation> conversationMediator;
+    SimpleGetFileConversation conversation;
 
     public SimpleGetFileClient(MessageBus messageBus, GetFileClientSettings settings) {
         conversationMediator = 
@@ -59,35 +65,71 @@ public class SimpleGetFileClient implements GetFileClient {
     }
 
     @Override
-    public void getFileFromFastestPillar(String fileID, URL uploadUrl) {
+    public void getFileFromFastestPillar(String fileID, URL uploadUrl, EventHandler eventHandler) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
-        
+        ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
+
         log.info("Requesting fastest retrieval of the file '" + fileID + "' which belong to the SLA '" + 
                 settings.getBitRepositoryCollectionID() + "'.");
-        startConversation(new FastestPillarSelectorForGetFile(settings.getPillarIDs()), fileID, uploadUrl);   
+        getFile(messageBus, settings, new FastestPillarSelectorForGetFile(settings.getPillarIDs()), 
+                fileID, uploadUrl, eventHandler);				
+    }
+
+
+    @Override
+    public void getFileFromFastestPillar(String fileID, URL uploadUrl) 
+    throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
+        ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
+
+        log.info("Requesting fastest retrieval of the file '" + fileID + "' which belong to the SLA '" + 
+                settings.getBitRepositoryCollectionID() + "'.");
+        getFile(messageBus, settings, new FastestPillarSelectorForGetFile(settings.getPillarIDs()), 
+                fileID, uploadUrl);				
     }
 
     @Override
-    public void getFileFromSpecificPillar(String fileID, URL uploadUrl, String pillarID) {
+    public void getFileFromSpecificPillar(String fileID, URL uploadUrl, String pillarID, EventHandler eventHandler) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
+        ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
+        ArgumentValidator.checkNotNullOrEmpty(pillarID, "pillarID");
+        ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
+
+        log.info("Requesting the file '" + fileID + "' from pillar '" + pillarID + "'.");
+        getFile(messageBus, settings, new SpecificPillarSelectorForGetFile(pillarID, settings.getPillarIDs()), 
+                fileID, uploadUrl, eventHandler);				
+    }
+
+    @Override
+    public void getFileFromSpecificPillar(String fileID, URL uploadUrl, String pillarID) 
+    throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "pillarID");
 
         log.info("Requesting the file '" + fileID + "' from pillar '" + pillarID + "'.");
-        startConversation(new SpecificPillarSelectorForGetFile(pillarID, settings.getPillarIDs()), fileID, uploadUrl);
-    }
-    
-    private void startConversation(PillarSelectorForGetFile selector, String fileID, URL uploadUrl) {
-        SimpleGetFileConversation conversation = new SimpleGetFileConversation(
-                messageBus, settings, selector, fileID, uploadUrl);
-        conversationMediator.startConversation(conversation);
+        getFile(messageBus, settings, new SpecificPillarSelectorForGetFile(pillarID, settings.getPillarIDs()), 
+                fileID, uploadUrl);				
     }
 
-    @Override
-    public void getFileFromFastestPillar(String fileId, URL uploadUrl,
-            EventHandler eventHandler) {
-        // TODO Auto-generated method stub
-        
+    private void getFile(MessageBus messageBus, GetFileClientSettings settings, PillarSelectorForGetFile selector, 
+            String fileID, URL uploadUrl, EventHandler eventHandler) {
+        conversation = new SimpleGetFileConversation(messageBus, settings, selector, fileID, uploadUrl, eventHandler);
+        conversationMediator.addConversation(conversation);  
+        try {
+            conversation.startConversion();
+        } catch (OperationFailedException e) {
+            eventHandler.handleEvent(new OperationFailedEvent("Unable to complete getFile request", e));
+        }
+    }
+
+
+    private void getFile(MessageBus messageBus, GetFileClientSettings settings, PillarSelectorForGetFile selector, 
+            String fileID, URL uploadUrl) 
+    throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
+        conversation = new SimpleGetFileConversation(messageBus, settings, selector, fileID, uploadUrl, null);
+        conversationMediator.addConversation(conversation);  
+        conversation.startConversion();
     }
 }

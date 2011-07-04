@@ -25,6 +25,9 @@
 package org.bitrepository.access.getfile.selectors;
 
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.common.exceptions.UnableToFinishException;
+import org.bitrepository.protocol.flow.UnexpectedResponseException;
+import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
 import org.bitrepository.protocol.time.TimeMeasureComparator;
 
 /**
@@ -32,16 +35,24 @@ import org.bitrepository.protocol.time.TimeMeasureComparator;
  * response.
  */
 public class FastestPillarSelectorForGetFile extends PillarSelectorForGetFile {
+	private final PillarsResponseStatus responseStatus;
     private static final TimeMeasureComparator comparator = new TimeMeasureComparator();
 
     public FastestPillarSelectorForGetFile(String[] pillarsWhichShouldRespond) {
-        super(pillarsWhichShouldRespond);
+    	responseStatus = new PillarsResponseStatus(pillarsWhichShouldRespond);
     }
 
     @Override
-    public boolean checkIfPillarShouldBeSelected(IdentifyPillarsForGetFileResponse response) {
+    public boolean checkPillarResponseForSelection(IdentifyPillarsForGetFileResponse response) 
+    		throws UnexpectedResponseException {
+    	responseStatus.responseReceived(response.getPillarID());
         return 
         getIDForSelectedPillar() == null || 
         comparator.compare(response.getTimeToDeliver(), getTimeToDeliver()) < 0;
     }
+
+	@Override
+	public boolean isFinished() throws UnableToFinishException {
+		return responseStatus.haveAllPillarResponded();
+	}
 }

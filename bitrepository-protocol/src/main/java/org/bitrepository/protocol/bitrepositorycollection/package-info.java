@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Protocol
  * 
- * $Id$
- * $HeadURL$
+ * $Id: package-info.java 124 2011-03-25 09:04:11Z kfc $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-protocol/src/main/java/org/bitrepository/protocol/package-info.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -22,19 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol;
-
-import org.bitrepository.protocol.pillarselector.AbstractSinglePillarSelector;
-
-
 /**
- * Creator of conversations.
+ * Contains the settings classes defining the configurations for BitRepositoryCollections.
  */
-public interface ConversationFactory<T extends Conversation> {
-    /**
-     * Create a conversation of type T.
-     *
-     * @return A new conversation.
-     */
-    T createConversation(AbstractSinglePillarSelector selector);
-}
+package org.bitrepository.protocol.bitrepositorycollection;

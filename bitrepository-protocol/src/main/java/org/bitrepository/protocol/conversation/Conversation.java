@@ -22,14 +22,21 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol;
+package org.bitrepository.protocol.conversation;
+
+import org.bitrepository.protocol.exceptions.ConversationTimedOutException;
+import org.bitrepository.protocol.exceptions.OperationFailedException;
+import org.bitrepository.protocol.mediator.ConversationMediator;
+import org.bitrepository.protocol.messagebus.MessageListener;
 
 /**
- * The interface for sending and receiving messages within a specific conversation.
+ * A conversation models the messaging based workflow used to accomplish a operation called on a client interface.
+ * 
+ * The interface primarily consists of sending and receiving message functionality.
  *
  * @param <T> The outcome of the conversation.
  */
-public interface Conversation<T> extends MessageListener, MessageSender {
+public interface Conversation<T> extends MessageListener {
     /**
      * Set the mediator that handles this conversation. This method should always be called by the mediator
      * that manages the conversation, immediately after the conversation is registered.
@@ -56,7 +63,7 @@ public interface Conversation<T> extends MessageListener, MessageSender {
      *
      * @return Whether this conversation has ended.
      */
-    boolean isEnded();
+    boolean hasEnded();
 
     /**
      * Get the result of this conversation. This will be null, until the conversation has ended,
@@ -80,14 +87,15 @@ public interface Conversation<T> extends MessageListener, MessageSender {
      *
      * @return The result of the conversation.
      *
-     * @throws ConversationTimedOutException On timeout. A partial result MAY be avaiable through
+     * @throws ConversationTimedOutException On timeout. A partial result MAY be available through
      * {@link #getResult()}
      *
      */
     T waitFor(long timeout) throws ConversationTimedOutException;
 
     /**
+     * @throws ConversationTimedOutException 
      * 
      */
-    void startConversion();
+    void startConversion() throws OperationFailedException;
 }

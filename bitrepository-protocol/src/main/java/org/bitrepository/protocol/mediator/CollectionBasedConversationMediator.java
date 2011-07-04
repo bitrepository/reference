@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol;
+package org.bitrepository.protocol.mediator;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,6 +55,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.protocol.conversation.Conversation;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,10 +87,9 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     }
 
     @Override
-    public void startConversation(T conversation) {
+    public void addConversation(T conversation) {
         conversation.setMediator(this);
         conversations.put(conversation.getConversationID(), conversation);
-        conversation.startConversion();
     }
 
     @Override
@@ -106,7 +107,8 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
+            		"conversation.");
         }
     }
     
@@ -117,7 +119,8 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
+            		"conversation.");
         }
     }
     
@@ -128,7 +131,8 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
+            		"conversation.");
         }
     }
     
@@ -139,7 +143,8 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
+            		"conversation.");
         }
     }
     
@@ -150,7 +155,8 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
+            		"conversation.");
         }
     }
 
@@ -161,7 +167,8 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
+            		"conversation.");
         }
     }
 
@@ -172,7 +179,8 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
+            		"conversation.");
         }
     }
 
@@ -183,7 +191,8 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
+            		"conversation.");
         }
     }
 
@@ -194,7 +203,8 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
+            		"conversation.");
         }
     }
 
@@ -205,7 +215,8 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
+            		"conversation.");
         }
     }
 
@@ -216,7 +227,8 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
+            		"conversation.");
         }
     }
 
@@ -227,7 +239,8 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
+            		"conversation.");
         }
     }
 

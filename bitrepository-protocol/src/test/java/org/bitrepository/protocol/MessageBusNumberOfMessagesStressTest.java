@@ -30,6 +30,8 @@ import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.configuration.MessageBusConfigurations;
+import org.bitrepository.protocol.messagebus.AbstractMessageListener;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;

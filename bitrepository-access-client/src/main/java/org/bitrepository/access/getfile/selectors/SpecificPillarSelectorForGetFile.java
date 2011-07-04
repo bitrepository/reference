@@ -25,6 +25,7 @@
 package org.bitrepository.access.getfile.selectors;
 
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.common.exceptions.UnableToFinishException;
 
 /**
  * Selects a pillar based on the supplied pillarID. 
@@ -41,7 +42,6 @@ public class SpecificPillarSelectorForGetFile extends PillarSelectorForGetFile {
      * @param pillarsWhichShouldRespond
      */
     public SpecificPillarSelectorForGetFile(String pillarToSelect, String[] pillarsWhichShouldRespond) {
-        super(pillarsWhichShouldRespond);
         this.pillarToSelect = pillarToSelect; 
     }
 
@@ -50,10 +50,13 @@ public class SpecificPillarSelectorForGetFile extends PillarSelectorForGetFile {
      * finished if the pillar is selected.
      */
     @Override
-    public boolean checkIfPillarShouldBeSelected(IdentifyPillarsForGetFileResponse response) {
-        if (response.getPillarID().equals(pillarToSelect)) {
-            finished = true;
-            return true;
-        } else return false;
+    public boolean checkPillarResponseForSelection(IdentifyPillarsForGetFileResponse response) {
+        return response.getPillarID().equals(pillarToSelect);
     }
+
+    /** Returns true if the indicated pillar has responded, else <code>false</code>. */
+	@Override
+	public boolean isFinished() throws UnableToFinishException {
+		return pillarToSelect != null;
+	}
 }

@@ -30,6 +30,8 @@ import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.configuration.MessageBusConfigurations;
+import org.bitrepository.protocol.messagebus.AbstractMessageListener;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -159,7 +161,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
 	}
 	
 	/**
-	 * Mehtod for sending the wanted amount of messages.
+	 * Sends the wanted amount of messages.
 	 * @param confs The configuration for the messagebus, where the messages should be sent.
 	 * @throws Exception
 	 */

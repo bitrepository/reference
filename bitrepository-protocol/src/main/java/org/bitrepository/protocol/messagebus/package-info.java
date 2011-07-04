@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Protocol
  * 
- * $Id$
- * $HeadURL$
+ * $Id: package-info.java 124 2011-03-25 09:04:11Z kfc $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-protocol/src/main/java/org/bitrepository/protocol/package-info.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -22,23 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.pillarselector;
-
-public abstract class AbstractSinglePillarSelector implements SinglePillarSelector {
-    /** The ID of the selected pillar */
-    protected String pillarID = null;
-    /** The topic for communication with the selected pillar */
-    protected String pillarTopic = null;    
-
-    /** Return the ID of the pillar chosen by this selector if finished. If unfinished null is returned */
-    public String getIDForSelectedPillar() {
-        return pillarID;
-    }
-
-    /** If finished return the topic for sending messages to the pillar chosen by this selector. 
-     * If unfinished null is returned 
-     */
-    public String getDestinationForSelectedPillar() {
-        return pillarTopic;
-    }  
-}
+/**
+ * This package contains message bus related functionality.
+ */
+package org.bitrepository.protocol.messagebus;

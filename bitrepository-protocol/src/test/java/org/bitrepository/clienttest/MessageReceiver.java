@@ -60,7 +60,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.protocol.MessageListener;
+import org.bitrepository.protocol.messagebus.MessageListener;
 import org.jaccept.TestEventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

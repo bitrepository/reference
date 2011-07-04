@@ -2,8 +2,9 @@ package org.bitrepository.protocol.eventhandler;
 
 /**
  * Container for information regarding events occurring during an operation on the Bit Repository.  
+ * @param <T> The type of specialised state for this event.
  */
-public interface OperationEvent {
+public interface OperationEvent<T> {
     /**
      * Defines the different types of events that can be received. These are:<ol>
      * <li>PillarIdentified: An identify response has been received from a pillar.
@@ -28,7 +29,8 @@ public interface OperationEvent {
         Complete, 
         Failed,
         NoPillarFound,
-        TimeOut
+        IdentifyPillarTimeout,
+        RequestTimeOut, 
     }
     
     /**
@@ -39,7 +41,12 @@ public interface OperationEvent {
     
     /**
      * Used to get the type of event.
-     * @return A <code>OperationEventType</code> categorizing this event.
+     * @return A <code>OperationEventType</code> categorising this event.
      */
     OperationEventType getType();
+    
+    /**
+     * @return Contains any additional information of the state of the operation
+     */
+    T getState();
 }

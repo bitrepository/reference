@@ -23,5 +23,6 @@ public class LocalActiveMQBroker {
 	
 	public void stop() throws Exception {
 			broker.stop();
+			Thread.sleep(1000);
 	}
 }
