@@ -32,7 +32,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReque
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.protocol.AbstractMessageListener;
+import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
