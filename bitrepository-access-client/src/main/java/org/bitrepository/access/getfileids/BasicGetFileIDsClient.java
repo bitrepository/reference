@@ -24,9 +24,7 @@
  */
 package org.bitrepository.access.getfileids;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,12 +34,10 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-
 import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getfile.GetFileClientSettings;
 import org.bitrepository.access_client.configuration.AccessConfiguration;
+import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
@@ -49,12 +45,18 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
+import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.protocol.exceptions.NoPillarFoundException;
+import org.bitrepository.protocol.exceptions.OperationFailedException;
+import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Prototype GetFileIDs Client
+ * Prototype GetFileIDs Client.
+ * TODO update to new interface
  */
 public class BasicGetFileIDsClient implements GetFileIDsClient {
 
@@ -90,6 +92,7 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
     private Map<String, GetFileIDsFinalResponse> getFileIDsFinalResponseMap;
 
     public BasicGetFileIDsClient() {
+        // TODO update (change use of messageBus and settings)
         config = AccessComponentFactory.getInstance().getConfig();
 
         // retrieve the queue from the configuration.
@@ -114,17 +117,15 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         getFileIDsFinalResponseMap = Collections.synchronizedMap(new HashMap<String, GetFileIDsFinalResponse>());
     }
 
-    // TODO BItRepositoryMessages.xsd IdentifyPillarsForGetFileIDsRequest element FileIDs
-    // uniquely identifies the data in given SLA which the file ids are requested for
-    // Given in order to be able to give possible estimate of time to deliver
-    // I think it should be possible to give a FileIDs list or address to this method
-    @Override
-    public List<IdentifyPillarsForGetFileIDsResponse> identifyPillarsForGetFileIDs(String slaID) {
+    // TODO update
+    public List<IdentifyPillarsForGetFileIDsResponse> identifyPillarsForGetFileIDs(String bitRepositoryCollectionID,
+                                                                                   FileIDs fileIDs)
+            throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         // create identifyPillarsForGetFileIDsRequest message
         String corrID = UUID.randomUUID().toString();
         log.debug("identifyPillarsForGetFileIDs new corrID " + corrID);
         IdentifyPillarsForGetFileIDsRequest identifyRequest = GetFileIDsClientMessageFactory.
-                getIdentifyPillarsForGetFileIDsRequestMessage(corrID, slaID, queue, null);
+                getIdentifyPillarsForGetFileIDsRequestMessage(corrID, bitRepositoryCollectionID, queue, null);
 
         // put correlationId and new CountDownLatch in identifyResponseCountDownLatchMap
         CountDownLatch countDownLatch = new CountDownLatch(numberOfPillars);
@@ -152,19 +153,17 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         return responses;
     }
 
-    // TODO BItRepositoryMessages.xsd GetFileIDsRequest element resultAddress
-    // we should be able to give this as a parameter
-    // TODO why do we return a File from this method?
-    // (the answer is probably that the answer can be given in a file using file exchange and resultAddress)
-    @Override
-    public File getFileIDs(String correlationID, String slaID, String queue, String pillarID) {
+    // TODO update
+    public GetFileIDsFinalResponse getFileIDs(String correlationID, String destination, String pillarID,
+                                       String bitRepositoryCollectionID, FileIDs fileIDs, URL resultAddress)
+            throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         if (correlationID == null) {
             correlationID = UUID.randomUUID().toString();
             log.debug("getFileIDs new correlationID " + correlationID);
         }
         // create getFileIdsRequest
         GetFileIDsRequest request = GetFileIDsClientMessageFactory.
-                getGetFileIDsRequestMessage(correlationID, slaID, queue, pillarID, null, null);
+                getGetFileIDsRequestMessage(correlationID, bitRepositoryCollectionID, destination, pillarID, null, null);
 
         // put correlationID and new CountDownLatches in appropriate Maps
         CountDownLatch progressResponseCountDown = new CountDownLatch(1);
@@ -191,30 +190,20 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
             log.error("getFileIDs InterruptedException",e); // TODO handle exception
         }
 
-        File file = new File("fileAddress");
-
         try {
             boolean completeOk = finalResponseCountDown.await(timeOut, TimeUnit.MILLISECONDS);
             if (completeOk) {
-                GetFileIDsFinalResponse finalResponse = getFileIDsFinalResponseMap.get(correlationID);
-                ResultingFileIDs result = finalResponse.getResultingFileIDs();
-                JAXBContext jaxbContext = JAXBContext.newInstance("org.bitrepository.bitrepositoryelements");
-                Marshaller marshaller = jaxbContext.createMarshaller();
-                marshaller.marshal(result, new FileOutputStream(file));
-                // TODO use other parts of complete message ?
+                return getFileIDsFinalResponseMap.get(correlationID);
+                // TODO use other parts of final response message ?
             } else {
                 log.info("getFileIDs time out. No GetFileIDsFinalResponse received. return null.");
                 return null;
             }
         } catch (InterruptedException e) {
             log.error("getFileIDs InterruptedException",e); // TODO handle exception
-        } catch (FileNotFoundException e) {
-            log.error("getFileIDs FileNotFoundException",e); // TODO handle exception
-        } catch (JAXBException e) {
-            log.error("getFileIDs JAXBException",e); // TODO handle exception
         }
 
-        return file;
+        return null;
     }
 
     /**
@@ -276,5 +265,35 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         if (countDownLatch != null) {
             countDownLatch.countDown();
         }
+    }
+
+    @Override
+    public ResultingFileIDs getFileIDs(String bitRepositoryCollectionID, FileIDs fileIDs) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void getFileIDs(String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void getFileIDs(String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl, EventHandler eventHandler) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public ResultingFileIDs getFileIDsFromPillar(String pillarID, String bitRepositoryCollectionID, FileIDs fileIDs) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void getFileIDsFromPillar(String pillarID, String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void getFileIDsFromPillar(String pillarID, String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl, EventHandler eventHandler) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

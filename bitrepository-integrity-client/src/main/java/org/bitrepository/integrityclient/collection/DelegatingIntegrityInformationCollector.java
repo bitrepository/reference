@@ -68,6 +68,8 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
 
     @Override
     public void getFileIDs(String slaID, String pillarID, Collection<String> fileIDs) {
+        //TODO update to new interface
+        /*
         List<IdentifyPillarsForGetFileIDsResponse> responses = getFileIDsClient.identifyPillarsForGetFileIDs(slaID);
 
         for (IdentifyPillarsForGetFileIDsResponse response: responses) {
@@ -85,6 +87,7 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
                 storage.addFileIDs(data);
             }
         }
+        */
     }
 
     @Override

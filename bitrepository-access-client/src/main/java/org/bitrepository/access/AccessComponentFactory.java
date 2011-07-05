@@ -1,7 +1,7 @@
 /*
  * #%L
  * bitrepository-access-client
- * 
+ * *
  * $Id$
  * $HeadURL$
  * %%
@@ -27,13 +27,15 @@ package org.bitrepository.access;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfile.GetFileClientSettings;
 import org.bitrepository.access.getfile.SimpleGetFileClient;
+import org.bitrepository.access.getfileids.BasicGetFileIDsClient;
+import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.protocol.messagebus.MessageBusFactory;
 
 /**
- * Factory class for the access module. 
+ * Factory class for the access module.
  * Instantiates the instances of the interfaces within this module.
  */
 public class AccessComponentFactory {
@@ -42,7 +44,7 @@ public class AccessComponentFactory {
 
     /**
      * Instantiation of this singleton.
-     * 
+     *
      * @return The singleton instance of this factory class.
      */
     public static AccessComponentFactory getInstance() {
@@ -61,7 +63,7 @@ public class AccessComponentFactory {
     /**
      * Private constructor for initialization of the singleton.
      */
-    private AccessComponentFactory() { 
+    private AccessComponentFactory() {
         moduleCharacter = new ModuleCharacteristics("access-client");
     }
 
@@ -88,7 +90,7 @@ public class AccessComponentFactory {
 
     /**
      * Method for getting a GetFileClient as defined in the access configuration.<p>
-     * 
+     *
      * @return A GetFileClient.
      */
     public GetFileClient createGetFileClient(GetFileClientSettings settings) {
@@ -96,4 +98,14 @@ public class AccessComponentFactory {
                 MessageBusFactory.createMessageBus(settings.getMessageBusConfiguration()),
                 settings);
     }
+
+    /**
+     * Method for getting a GetFileIDsClient as defined in the access configuration.<p>
+     *
+     * @return A GetFileIDsClient.
+     */
+    public GetFileIDsClient createGetFileIDsClient() {
+        return new BasicGetFileIDsClient();
+    }
+
 }
