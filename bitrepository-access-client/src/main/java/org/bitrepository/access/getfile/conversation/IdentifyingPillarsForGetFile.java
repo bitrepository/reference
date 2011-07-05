@@ -28,6 +28,8 @@ import java.math.BigInteger;
 import java.util.TimerTask;
 import java.util.UUID;
 
+import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.exceptions.UnableToFinishException;
@@ -106,6 +108,18 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
                     new NoPillarFoundException("Cannot request file, since no valid pillar could be found", e));
         }
     }
+    
+    @Override
+    public void onMessage(GetFileProgressResponse response) {
+        log.warn("(ConversationID: " + conversation.getConversationID() + ") " +
+                "Received GetFileProgressResponse from " + response.getPillarID() + " before sending GetFileRequest.");
+    }
+    
+    @Override
+    public void onMessage(GetFileFinalResponse response) {
+        log.warn("(ConversationID: " + conversation.getConversationID() + ") " +
+                "Received GetFileFinalResponse from " + response.getPillarID() + "  before sending GetFileRequest.");
+    }
 
     /**
      * The timer task class for the outstanding identify requests. When the time is reached the selected pillar should
@@ -148,6 +162,9 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
         }
     }
 
+    /**
+     * Used when a suitable pillar has been found to move on to the Getting file state.
+     */
     private void getFileFromSelectedPillar() {
         identifyTimeoutTask.cancel();
         GettingFile nextConversationState = new GettingFile(conversation);

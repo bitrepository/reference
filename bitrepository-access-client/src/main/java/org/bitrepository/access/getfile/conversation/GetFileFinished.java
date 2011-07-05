@@ -24,9 +24,45 @@
  */
 package org.bitrepository.access.getfile.conversation;
 
+import org.bitrepository.access.getfile.selectors.FastestPillarSelectorForGetFile;
+import org.bitrepository.access.getfile.selectors.SpecificPillarSelectorForGetFile;
+import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GetFileFinished extends GetFileState {
+
+    /** The log for this class. */
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public GetFileFinished(SimpleGetFileConversation conversation) {
         super(conversation);
+    }
+    
+    @Override
+    public void onMessage(IdentifyPillarsForGetFileResponse response) {
+        if (conversation.selector instanceof SpecificPillarSelectorForGetFile) {
+            log.debug("(ConversationID: " + conversation.getConversationID() +  ") " +
+                    "Received IdentifyPillarsForGetFileResponse from " + response.getPillarID() + 
+                    " after finishing conversation.");
+        } else if (conversation.selector instanceof FastestPillarSelectorForGetFile) {
+            log.warn("(ConversationID: " + conversation.getConversationID() + ") " +
+                    "Received IdentifyPillarsForGetFileResponse from " + response.getPillarID() + 
+                    " after finishing conversation.");
+        }
+    }
+    
+    @Override
+    public void onMessage(GetFileProgressResponse response) {
+        log.warn("(ConversationID: " + conversation.getConversationID() + ") " +
+                "Received GetFileProgressResponse from " + response.getPillarID() + " after finishing conversation.");
+    }
+    
+    @Override
+    public void onMessage(GetFileFinalResponse response) {
+        log.warn("(ConversationID: " + conversation.getConversationID() + ") " +
+                "Received GetFileFinalResponse from " + response.getPillarID() + " after finishing conversation.");
     }
 }
