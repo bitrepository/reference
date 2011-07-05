@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Protocol
  * 
- * $Id: package-info.java 124 2011-03-25 09:04:11Z kfc $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-protocol/src/main/java/org/bitrepository/protocol/package-info.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
