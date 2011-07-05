@@ -331,7 +331,7 @@
 
   <xs:element name="ContributorStatus" type="ContributorStatus_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    Contain status information for a componenet in the bit repository
+    Contain status information about a componenet in the bit repository
     </xs:documentation></xs:annotation>
   </xs:element>
 
@@ -360,13 +360,13 @@
 
       <xs:element name="To" type="QueueTopicName_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
-        Contains name of queue/topic which the message is send to
+        Identifies the destination which the message is sent to
         </xs:documentation></xs:annotation>
       </xs:element>
 
       <xs:element name="ReplyTo" type="QueueTopicName_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
-        Contains name of queue/topic to reply/respond to
+        Identifies the destination any responds should be sent to
         (blank if not relevant, e.g. for alarms)
         </xs:documentation></xs:annotation>
       </xs:element>
@@ -375,29 +375,25 @@
 
   <xs:element name="CorrelationID" type="CorrelationID_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    Used for parameters
+    Identifies a sequence of related messages based on a single operation, typically initiated from a client.
     </xs:documentation></xs:annotation>
   </xs:element>
 
   <xs:element name="FileAddress" type="Address_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    Address (e.g. in form of an URL) for where data can be found
-    In a Get operation this will be the address where data requested must be placed
-    In a Put operation this will be the identifier the data for later request of the data
+    Address (e.g. in form of an URL) for where a file can be found
     </xs:documentation></xs:annotation>
   </xs:element>
 
   <xs:element name="FileChecksumSpec" type="ChecksumSpec_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    Gives information about which type of checksum is used for data
+        Defines a checksum specification
     </xs:documentation></xs:annotation>
   </xs:element>
 
   <xs:element name="FileID" type="FileID_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    Unique identifiers for data in given service level agreement
-    In a Get operation this will be the identifier for data requested
-    In a Put operation this will be the identifier the data for later request of the data
+    Unique identifier for a file in a collection
     </xs:documentation></xs:annotation>
   </xs:element>
 
@@ -411,13 +407,13 @@
       <xs:choice>
         <xs:element name="FileID" type="FileID_TYPE" minOccurs="1" maxOccurs="unbounded" >
           <xs:annotation><xs:documentation xml:lang="en">
-          List of identifiers for data in given bit repository collection
+          List of file identifiers
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element name="AllFileIDs" type="xs:string">
           <xs:annotation><xs:documentation xml:lang="en">
-          Specification that all data identifiers in bit repository collection is requested
+          Specification that all data identifiers in the collection is requested
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -1312,7 +1308,7 @@
 
       <xs:element name="RiskArea" type="RiskArea_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
-          Global risk code for likelyhood for certain risks to becom reality, if alarm is not treated.
+          Global risk code for likelyhood for certain risks to become reality, if alarm is not treated.
           Known risk areas are: availability, bit safety, confidentiality
         </xs:documentation></xs:annotation>
       </xs:element>
@@ -1422,8 +1418,8 @@
 
   <xs:simpleType name="SaltParameter_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    An extra salt to be added in the checksum calculation
-    If this parameter is given, it is also specification the checksum calculation must include the salt
+    An extra salt to be added in the checksum calculation.
+    If this parameter is given, it follows that the checksum calculation must include the salt
     </xs:documentation></xs:annotation>
     <xs:restriction base="xs:string">
     </xs:restriction>

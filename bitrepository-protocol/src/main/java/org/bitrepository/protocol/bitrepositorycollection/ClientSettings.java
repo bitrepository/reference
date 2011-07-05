@@ -63,7 +63,18 @@ public interface ClientSettings extends BitRepositoryCollectionSettings {
      * 
      * @Return The conversation timeout in milliseconds.
      */
-    public int getConversationTimeout();
+    public long getConversationTimeout();
 
-	public int getIdentifyPillarsTimeout();
+    /**
+     * The general timeout to use for identifying pillars.
+     * 
+     * @Return The time to wait for identify responses before continuing.
+     */
+	public long getIdentifyPillarsTimeout();
+
+	/**
+	 * The period of time between each cleaning of obsolete conversations by the conversation mediators.
+	 * @return
+	 */
+    public long getMediatorCleanInterval();
 }

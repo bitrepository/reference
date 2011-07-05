@@ -69,8 +69,8 @@ public abstract class AbstractConversation<T> implements Conversation<T> {
     protected final MessageSender messageSender;
     /** The conversation ID. */
     private final String conversationID;
-    /** The conversation mediator that handles this conversation. */
-    protected ConversationMediator mediator;
+    /** @see Conversation#getStartTime() */
+    private final long startTime;
     /** The logger for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -83,16 +83,17 @@ public abstract class AbstractConversation<T> implements Conversation<T> {
     public AbstractConversation(MessageSender messageSender, String conversationID) {
         this.messageSender = messageSender;
         this.conversationID = conversationID;
-    }
-
-    @Override
-    public void setMediator(ConversationMediator mediator) {
-        this.mediator = mediator;
+        this.startTime = System.currentTimeMillis();
     }
 
     @Override
     public String getConversationID() {
         return conversationID;
+    }
+    
+    @Override
+    public long getStartTime() {
+        return startTime;
     }
 
     @Override

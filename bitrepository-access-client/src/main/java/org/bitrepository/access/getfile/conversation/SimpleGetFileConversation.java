@@ -34,8 +34,10 @@ import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.conversation.AbstractConversation;
+import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.exceptions.ConversationTimedOutException;
+import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageSender;
 import org.slf4j.Logger;
@@ -122,31 +124,41 @@ public class SimpleGetFileConversation extends AbstractConversation<URL> {
     }
 
     @Override
-    public void onMessage(GetFileFinalResponse message) {
+    public synchronized void onMessage(GetFileFinalResponse message) {
         conversationState.onMessage(message);
     }
 
     @Override
-    public void onMessage(GetFileProgressResponse message) {
+    public synchronized void onMessage(GetFileProgressResponse message) {
         conversationState.onMessage(message);
     }
 
     @Override
-    public void onMessage(IdentifyPillarsForGetFileResponse message) {
+    public synchronized void onMessage(IdentifyPillarsForGetFileResponse message) {
         conversationState.onMessage(message);
     }
 
     /**
      * Mark this conversation as ended, and notifies whoever waits for it to end.
      */
-    private void unBlock() {		
-        synchronized (this) {
-            notifyAll();
-        }
+    private synchronized void unBlock() {	
+        notifyAll();
     }
 
     void throwException(OperationFailedException exception) {
         operationFailedException = exception;
         unBlock();		
+    }
+
+    @Override
+    public synchronized void failConversion(String message) {
+        if (eventHandler != null) {
+            eventHandler.handleEvent(new DefaultEvent(
+                    OperationEventType.Failed, message));
+        } else {
+            throwException(new OperationFailedException(message));
+        }
+        conversationState.endConversation();
+        unBlock();
     }
 }

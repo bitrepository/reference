@@ -114,25 +114,36 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
     private class IdentifyTimerTask extends TimerTask {
         @Override
         public void run() {
-            if (conversation.selector.getIDForSelectedPillar() != null) {
-                String message = "Time has run out for selecting a pillar. Using pillar based on uncomplete set of " +
-                "responses.";
-                log.warn(message);
-                if (conversation.eventHandler != null) {
-                    conversation.eventHandler.handleEvent(new DefaultEvent(
-                            OperationEventType.IdentifyPillarTimeout, ""));
-                }
-                getFileFromSelectedPillar();
-            } else {
-                String message = "Unable to select a pillar, time has run out.";
-                log.warn(message);
-                if (conversation.eventHandler != null) {
-                    conversation.eventHandler.handleEvent(new DefaultEvent(
-                            OperationEventType.NoPillarFound, ""));
+            handleIdentificationTimeout();
+        }
+    }
+    
+    private void handleIdentificationTimeout() {
+        synchronized (conversation) {
+            if (conversation.conversationState == this) {
+                if (conversation.selector.getIDForSelectedPillar() != null) {
+                    String message = "Time has run out for selecting a pillar. Using pillar based on uncomplete set of " +
+                    "responses.";
+                    log.warn(message);
+                    if (conversation.eventHandler != null) {
+                        conversation.eventHandler.handleEvent(new DefaultEvent(
+                                OperationEventType.IdentifyPillarTimeout, ""));
+                    }
+                    getFileFromSelectedPillar();
                 } else {
-                    conversation.throwException(new NoPillarFoundException(message));
+                    String message = "Unable to select a pillar, time has run out.";
+                    log.warn(message);
+                    if (conversation.eventHandler != null) {
+                        conversation.eventHandler.handleEvent(new DefaultEvent(
+                                OperationEventType.NoPillarFound, ""));
+                    } else {
+                        conversation.throwException(new NoPillarFoundException(message));
+                    }
+                    endConversation();
                 }
-                endConversation();
+            } else {
+                log.info("Conversation(" + conversation.getConversationID() + ") identification timeout, but " +
+                		"the conversation state has already changed to " + conversation.conversationState);
             }
         }
     }

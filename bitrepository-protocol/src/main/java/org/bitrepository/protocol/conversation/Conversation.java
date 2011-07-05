@@ -26,7 +26,6 @@ package org.bitrepository.protocol.conversation;
 
 import org.bitrepository.protocol.exceptions.ConversationTimedOutException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
-import org.bitrepository.protocol.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageListener;
 
 /**
@@ -38,16 +37,6 @@ import org.bitrepository.protocol.messagebus.MessageListener;
  */
 public interface Conversation<T> extends MessageListener {
     /**
-     * Set the mediator that handles this conversation. This method should always be called by the mediator
-     * that manages the conversation, immediately after the conversation is registered.
-     *
-     * Implementations of conversations may use this mediator to end the conversation from within.
-     *
-     * @param mediator The handler that handles this conversation.
-     */
-    void setMediator(ConversationMediator mediator);
-
-    /**
      * Get the conversation ID for this conversation.
      *
      * Implementations must ensure that conversation IDs are unique, and that this ID is always used when sending
@@ -56,6 +45,12 @@ public interface Conversation<T> extends MessageListener {
      * @return The conversation ID.
      */
     String getConversationID();
+    
+    /**
+     * Returns the start time for the conversation. Main use is to timeout conversations, which have lasted too long.
+     * @return The start time of the conversation as set by the System.currentTimeMillis().
+     */
+    long getStartTime();
 
     /**
      * Return whether this conversation has ended.
@@ -98,4 +93,10 @@ public interface Conversation<T> extends MessageListener {
      * 
      */
     void startConversion() throws OperationFailedException;
+    
+    /**
+     * Can be used to fail an conversation. This might be caused by a timeout or other event.
+     * @param message Description of the cause for this failure. 
+     */
+    void failConversion(String message);
 }

@@ -71,7 +71,8 @@ public interface GetFileClient {
      *
      * @param fileId The id of the file to retrieve.
      * @param uploadUrl The url the pillar should upload the file to.
-     * @param eventHandler The handler which should receive notifications of the progress events. 
+     * @param eventHandler The handler which should receive notifications of the events occurring in connection with 
+     * the pillar communication. 
      */
     void getFileFromSpecificPillar(String fileId, URL uploadUrl, String pillarId, EventHandler eventHandler);
 

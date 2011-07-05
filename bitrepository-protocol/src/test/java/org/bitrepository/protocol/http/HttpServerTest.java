@@ -33,7 +33,6 @@ import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.bitrepository.protocol.fileexchange.HttpsServerConfiguration;
 import org.bitrepository.protocol.fileexchange.HttpsServerConnector;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -45,7 +44,7 @@ public class HttpServerTest extends IntegrationTest {
     /**
      * Tests the functionality of the default http server.
      */
-    @Test(groups = { "testfirst", "external-httpserver" })
+    @Test(groups = { "regressiontest", "external-httpserver" })
     public final void defaultHttpServerTest() throws Exception {
         addDescription("Tests whether it is possible to upload a file to the "
                 + "default http-server, and then download the same file again.");
@@ -100,21 +99,19 @@ public class HttpServerTest extends IntegrationTest {
      */
     
     private void runHttpServerCoreTest(HttpServerConnector httpServer) throws Exception {
-        URL remoteLocation = httpServer.getURL("httpTest");
+        String httpTestFile = "httpTest";
         
-    	addStep("Initially no file should be present on the server.", 
-				"Attempt to download file should fail");
+    	addStep("Remove the file if already presentalready","");
 
-        File serverFile = httpServer.loadFile(remoteLocation.toExternalForm());
-        if (!serverFile.exists()) {
-            Assert.fail("File " + remoteLocation + " not found on httpServer" ); 
-        }
+        httpServer.removeFile(httpTestFile);
           
         addStep("Uploading file", 
         		"The file can now de download from the file server."); 
-        httpServer.uploadFile(fileStore.getInputstream(TestFileStore.DEFAULT_EXISTING_FILE), remoteLocation);
+        httpServer.uploadFile(fileStore.getInputstream(
+                TestFileStore.DEFAULT_EXISTING_FILE), 
+                httpServer.getURL(httpTestFile));
         httpServer.assertFileEquals(
         		fileStore.getFile(TestFileStore.DEFAULT_EXISTING_FILE), 
-        		remoteLocation.toExternalForm());
+        		httpServer.getURL(httpTestFile).toExternalForm());
     }
 }

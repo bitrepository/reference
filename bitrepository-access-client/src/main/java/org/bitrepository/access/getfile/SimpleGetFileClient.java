@@ -59,7 +59,8 @@ public class SimpleGetFileClient implements GetFileClient {
 
     public SimpleGetFileClient(MessageBus messageBus, GetFileClientSettings settings) {
         conversationMediator = 
-            new CollectionBasedConversationMediator<SimpleGetFileConversation>(messageBus, settings.getClientTopicID());
+            new CollectionBasedConversationMediator<SimpleGetFileConversation>(
+                    settings, messageBus, settings.getClientTopicID());
         this.settings = settings;
         this.messageBus = messageBus;
     }

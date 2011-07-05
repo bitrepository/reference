@@ -42,11 +42,4 @@ public interface ConversationMediator<T extends Conversation> extends MessageLis
      * @param The new conversation.
      */
     void addConversation(T conversation);
-
-    /**
-     * Consider a conversation as ended and stop delegating messages for it.
-     *
-     * @param conversation The conversation to end.
-     */
-    void endConversation(T conversation);
 }

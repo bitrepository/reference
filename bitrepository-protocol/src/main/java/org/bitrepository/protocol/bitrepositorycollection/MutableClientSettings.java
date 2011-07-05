@@ -123,7 +123,7 @@ public class MutableClientSettings implements ClientSettings {
     /** Default value is 1 day */
 	private int conversationTimeout = 1000*60*60*24;
     @Override
-    public int getConversationTimeout() {
+    public long getConversationTimeout() {
         return conversationTimeout;
     }
     /**
@@ -136,24 +136,38 @@ public class MutableClientSettings implements ClientSettings {
     /** Default value is 30 seconds */
 	private int identifyPillarsTimeout = 1000*30;
     @Override
-    public int getIdentifyPillarsTimeout() {
+    public long getIdentifyPillarsTimeout() {
         return identifyPillarsTimeout;
     }
     /**
-     * @see #getConversationTimeout()
+     * @see #getIdentifyPillarsTimeout()
      */
     public void setIdentifyPillarsTimeout(int identifyPillarsTimeout) {
         this.identifyPillarsTimeout = identifyPillarsTimeout;
     }
     
+    /** Default value is 5 minutes */
+    private int mediatorCleanInterval = 1000*60*5;
+    @Override
+    public long getMediatorCleanInterval() {
+        return mediatorCleanInterval;
+    }
+    /**
+     * @see #getMediatorCleanInterval()
+     */
+    public void setMediatorCleanInterval(int mediatorCleanInterval) {
+        this.mediatorCleanInterval = mediatorCleanInterval;
+    }
+    
 	@Override
-	public String toString() {
-		return "MutableClientSettings [id=" + id + ", messageBusConfiguration="
-				+ messageBusConfiguration + ", bitRepositoryCollectionTopicID="
-				+ bitRepositoryCollectionTopicID + ", clientTopicId="
-				+ clientTopicId + ", pillarIDs=" + Arrays.toString(pillarIDs)
-				+ ", fileStorage=" + fileStorage + ", conversationTimeout="
-				+ conversationTimeout + ", identifyPillarsTimeout="
-				+ identifyPillarsTimeout + "]";
-	}
+    public String toString() {
+        return "MutableClientSettings [id=" + id + ", messageBusConfiguration="
+                + messageBusConfiguration + ", bitRepositoryCollectionTopicID="
+                + bitRepositoryCollectionTopicID + ", clientTopicId="
+                + clientTopicId + ", pillarIDs=" + Arrays.toString(pillarIDs)
+                + ", fileStorage=" + fileStorage + ", conversationTimeout="
+                + conversationTimeout + ", identifyPillarsTimeout="
+                + identifyPillarsTimeout + ", mediatorCleanInterval="
+                + mediatorCleanInterval + "]";
+    }
 }

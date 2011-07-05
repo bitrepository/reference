@@ -154,16 +154,18 @@ public class GettingFile extends GetFileState {
     private class GetFileTimerTask extends TimerTask {
         @Override
         public void run() {
-            log.warn("No GetFileFinalResponse received before timeout for file " + conversation.fileID + 
-                    " from pillar " + conversation.selector.getIDForSelectedPillar());
-            endConversation();
-            if (conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(
-                        new DefaultEvent(OperationEvent.OperationEventType.RequestTimeOut, 
-                        "No GetFileFinalResponse received before timeout"));
-            } else {
-                conversation.throwException(new OperationTimeOutException("No GetFileFinalResponse received before timeout"));
-            }			
+            synchronized (conversation) {
+                log.warn("No GetFileFinalResponse received before timeout for file " + conversation.fileID + 
+                        " from pillar " + conversation.selector.getIDForSelectedPillar());
+                endConversation();
+                if (conversation.eventHandler != null) {
+                    conversation.eventHandler.handleEvent(
+                            new DefaultEvent(OperationEvent.OperationEventType.RequestTimeOut, 
+                            "No GetFileFinalResponse received before timeout"));
+                } else {
+                    conversation.throwException(new OperationTimeOutException("No GetFileFinalResponse received before timeout"));
+                }		
+            }
         }
     }
 }

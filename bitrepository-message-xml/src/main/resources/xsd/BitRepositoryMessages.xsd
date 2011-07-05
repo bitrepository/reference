@@ -322,7 +322,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for data to be put for given bit repository collection
+          Unique identifier for data to be put for given collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -509,7 +509,7 @@
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bit repository collection which the checksums are requested for
+          FileIDs uniquely identifies the data in given collection which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -521,7 +521,7 @@
 
         <xs:element ref="bre:PillarID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for pillar replying
+          Unique identifier for the pillar replying
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -619,7 +619,7 @@
 
         <xs:element ref="bre:FileChecksumSpec" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Checksums type adn possible salt requested
+          Checksums type and possible salt requested
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -631,7 +631,8 @@
 
         <xs:element ref="bre:ProgressResponseInfo" >
           <xs:annotation><xs:documentation xml:lang="en">
-          ProgressResponse information telling whether GetChecksumsRequest has been received and is expected to be completed
+          ProgressResponse information telling whether GetChecksumsRequest has been received and is expected to be 
+          completed
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -739,7 +740,7 @@
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en" >
           FileIDs uniquely identifies the data in given bit repository collection which the file ids are requested for
-          only to repeat parameter from request
+          only to repeat parameter from request.
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -860,8 +861,8 @@
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bit repository collection which the file ids are requested for
-          (otherwise it is known via CorrelationID)
+          FileIDs uniquely identifies the data in given collection which the file ids are requested for. If not present
+          it means all the requested files are present on the pillar.
           </xs:documentation></xs:annotation>
         </xs:element>
 
