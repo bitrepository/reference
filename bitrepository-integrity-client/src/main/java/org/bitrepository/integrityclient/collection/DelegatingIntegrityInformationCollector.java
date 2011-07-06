@@ -8,16 +8,16 @@
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -26,11 +26,14 @@ package org.bitrepository.integrityclient.collection;
 
 import org.bitrepository.access.getfileids.BasicGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
+import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
+import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.integrityclient.IntegrityInformationRetrievalException;
 import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
+import org.bitrepository.protocol.exceptions.OperationFailedException;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -68,26 +71,36 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
 
     @Override
     public void getFileIDs(String slaID, String pillarID, Collection<String> fileIDs) {
-        //TODO update to new interface
-        /*
-        List<IdentifyPillarsForGetFileIDsResponse> responses = getFileIDsClient.identifyPillarsForGetFileIDs(slaID);
 
-        for (IdentifyPillarsForGetFileIDsResponse response: responses) {
-            if (pillarID == null || pillarID.equals(response.getPillarID())) {
-                File file = getFileIDsClient.getFileIDs(response.getCorrelationID(),
-                        slaID, response.getReplyTo(), response.getPillarID());
-                FileIDsData data;
-                try {
-                    data = JaxbHelper.loadXml(FileIDsData.class, new FileInputStream(file));
-                } catch (JAXBException e) {
-                    throw new IntegrityInformationRetrievalException("Unable to retrieve file IDs", e);
-                } catch (FileNotFoundException e) {
-                    throw new IntegrityInformationRetrievalException("Unable to retrieve file IDs", e);
-                }
-                storage.addFileIDs(data);
+        FileIDs fileIDsMessageFormat = new FileIDs();
+        if (fileIDs == null) {
+            fileIDsMessageFormat.setAllFileIDs("ALL");
+        } else {
+            for (String fileID: fileIDs) {
+                fileIDsMessageFormat.getFileID().add(fileID);
             }
         }
-        */
+
+        ResultingFileIDs resultingFileIDs = null;
+
+        if (pillarID == null) {
+            try {
+                resultingFileIDs = getFileIDsClient.getFileIDs(slaID, fileIDsMessageFormat);
+            } catch (OperationFailedException e) {
+                throw new IntegrityInformationRetrievalException("Unable to retrieve file IDs", e);
+            }
+        } else {
+            try {
+                resultingFileIDs = getFileIDsClient.getFileIDsFromPillar(pillarID, slaID, fileIDsMessageFormat);
+            } catch (OperationFailedException e) {
+                throw new IntegrityInformationRetrievalException("Unable to retrieve file IDs", e);
+            }
+        }
+
+        if (resultingFileIDs != null) {
+            FileIDsData data = resultingFileIDs.getFileIDsData();
+            storage.addFileIDs(data);
+        }
     }
 
     @Override
