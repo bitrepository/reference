@@ -305,7 +305,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
         
         addStep("Wait for at least 3 seconds", "An IdentifyPillarTimeout event should be received");
         
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.NoPillarFound);
+        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.NoPillarFound);
     }
     
 
