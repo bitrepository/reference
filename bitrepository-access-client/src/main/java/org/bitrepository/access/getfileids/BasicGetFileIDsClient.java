@@ -8,16 +8,16 @@
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -159,7 +159,7 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
             throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         if (correlationID == null) {
             correlationID = UUID.randomUUID().toString();
-            log.debug("getFileIDs new correlationID " + correlationID);
+            log.debug("getFileIDsFromFastestPillar new correlationID " + correlationID);
         }
         // create getFileIdsRequest
         GetFileIDsRequest request = GetFileIDsClientMessageFactory.
@@ -183,11 +183,11 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
                 // TODO how do we want to use the response?
                 // if ProgressResponseInfo held info on expected remaining time, it could maybe be useful...
             } else {
-                log.info("getFileIDs time out. No GetFileIDsProgressResponse received.");
+                log.info("getFileIDsFromFastestPillar time out. No GetFileIDsProgressResponse received.");
                 // TODO we did not receive a response before time out - it may still come or a complete message may come
             }
         } catch (InterruptedException e) {
-            log.error("getFileIDs InterruptedException",e); // TODO handle exception
+            log.error("getFileIDsFromFastestPillar InterruptedException",e); // TODO handle exception
         }
 
         try {
@@ -196,11 +196,11 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
                 return getFileIDsFinalResponseMap.get(correlationID);
                 // TODO use other parts of final response message ?
             } else {
-                log.info("getFileIDs time out. No GetFileIDsFinalResponse received. return null.");
+                log.info("getFileIDsFromFastestPillar time out. No GetFileIDsFinalResponse received. return null.");
                 return null;
             }
         } catch (InterruptedException e) {
-            log.error("getFileIDs InterruptedException",e); // TODO handle exception
+            log.error("getFileIDsFromFastestPillar InterruptedException",e); // TODO handle exception
         }
 
         return null;
@@ -268,32 +268,42 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
     }
 
     @Override
-    public ResultingFileIDs getFileIDs(String bitRepositoryCollectionID, FileIDs fileIDs) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
+    public ResultingFileIDs getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void getFileIDs(String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
+    public void getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs, EventHandler eventHandler) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void getFileIDs(String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl, EventHandler eventHandler) {
+    public void getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public ResultingFileIDs getFileIDsFromPillar(String pillarID, String bitRepositoryCollectionID, FileIDs fileIDs) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
+    public void getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl, EventHandler eventHandler) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public ResultingFileIDs getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID, FileIDs fileIDs) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void getFileIDsFromPillar(String pillarID, String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
+    public void getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID, FileIDs fileIDs, EventHandler eventHandler) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void getFileIDsFromPillar(String pillarID, String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl, EventHandler eventHandler) {
+    public void getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl, EventHandler eventHandler) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

@@ -29,18 +29,11 @@ import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
-import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.integrityclient.IntegrityInformationRetrievalException;
 import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 
-import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Integrity information collector that delegates collecting information to the clients.
@@ -85,13 +78,13 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
 
         if (pillarID == null) {
             try {
-                resultingFileIDs = getFileIDsClient.getFileIDs(slaID, fileIDsMessageFormat);
+                resultingFileIDs = getFileIDsClient.getFileIDsFromFastestPillar(slaID, fileIDsMessageFormat);
             } catch (OperationFailedException e) {
                 throw new IntegrityInformationRetrievalException("Unable to retrieve file IDs", e);
             }
         } else {
             try {
-                resultingFileIDs = getFileIDsClient.getFileIDsFromPillar(pillarID, slaID, fileIDsMessageFormat);
+                resultingFileIDs = getFileIDsClient.getFileIDsFromSpecificPillar(pillarID, slaID, fileIDsMessageFormat);
             } catch (OperationFailedException e) {
                 throw new IntegrityInformationRetrievalException("Unable to retrieve file IDs", e);
             }
