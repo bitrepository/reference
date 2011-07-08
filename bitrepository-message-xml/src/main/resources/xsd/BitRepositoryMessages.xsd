@@ -34,7 +34,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for requested data in given bit repository collection
+          Unique identifier for requested file in given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -56,7 +56,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for requested data in given bit repository collection
+          Unique identifier for requested file in given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -68,9 +68,9 @@
 
         <xs:element ref="bre:TimeToDeliver" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Estimated time before delivery of data requested.
-          That means the time from receival of a GetFileRequest message to the time
-          when data is uploaded.
+          Estimated time before delivery of file requested.
+          That means the time from receiving a GetFileRequest message to the time
+          when file is uploaded.
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -105,19 +105,19 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for requested data in given bit repository collection
+          Unique identifier for requested file in given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:FilePart" minOccurs="0" maxOccurs="1">
           <xs:annotation><xs:documentation xml:lang="en">
-          Specification of part of the data object, in case only a part is wanted
+          Specification of part of the file, in case only a part is wanted
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:FileAddress" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Address (e.g. in form of an URL) for where data must be delivered
+          Address (e.g. in form of an URL) for where file must be delivered
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -148,19 +148,19 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for requested data in given bit repository collection
+          Unique identifier for requested file in given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:FilePart" minOccurs="0" maxOccurs="1">
           <xs:annotation><xs:documentation xml:lang="en">
-          Specification of part of the data object, in case only a part is wanted
+          Specification of part of the file, in case only a part is wanted
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:FileAddress" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Address (e.g. in form of an URL) for where data will be delivered
+          Address (e.g. in form of an URL) for where file will be delivered
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -172,14 +172,14 @@
 
         <xs:element ref="bre:FileSize" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Expected data size of data object to be send, expressed in bytes.
+          Expected size of file to be send, expressed in bytes.
           This can be used in e.g. capacity checks
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:ChecksumsData">
           <xs:annotation><xs:documentation xml:lang="en">
-          Different Checksums of the data object to be sent.
+          Different Checksums of the file to be sent.
           This can be used in checks of correct receival.
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -209,19 +209,19 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for requested data in given bit repository collection
+          Unique identifier for requested file in given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:FilePart" minOccurs="0" maxOccurs="1">
           <xs:annotation><xs:documentation xml:lang="en">
-          Specification of part of the data object, in case only a part is wanted
+          Specification of part of the file, in case only a part is wanted
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:FileAddress" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Address (e.g. in form of an URL) for where data has been delivered (if completed)
+          Address (e.g. in form of an URL) for where file has been delivered (if completed)
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -285,9 +285,9 @@
 
         <xs:element ref="bre:TimeToDeliver" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Estimated time before data is downloaded
-          That means the time from receival of a PutFileRequest message to the time
-          when data is downloaded at least to a temporary buffer on the pillar.
+          Estimated time before file is downloaded
+          That means the time from receiving a PutFileRequest message to the time
+          when file is downloaded at least to a temporary buffer on the pillar.
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -322,33 +322,33 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for data to be put for given collection
+          Unique identifier for file to be put for given collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:FileAddress" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Address (e.g. in form of an URL) for where data must be downloaded from
+          Address (e.g. in form of an URL) for where file must be downloaded from
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:FileSize" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Expected data size of data object to be put, expressed in bytes.
+          Expected size of file to be put, expressed in bytes.
           This can be used in e.g. capacity checks
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:ChecksumsData">
           <xs:annotation><xs:documentation xml:lang="en">
-          Optionally checksums (and type and possibly salt) of data object to be put.
+          Optionally checksums (and type and possibly salt) of file to be put.
           This can be used in checks of correct receival.
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:ChecksumSpecs">
           <xs:annotation><xs:documentation xml:lang="en">
-          Optionally salt and/or type of checksum for extra checksumscheck of data object at
+          Optionally salt and/or type of checksum for extra checksumscheck of file at
           completion to of put file. The result can be given in PutFileFinalResponse
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -386,13 +386,13 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for data to be put for given bit repository collection
+          Unique identifier for file to be put for given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:FileAddress" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Address (e.g. in form of an URL) for where data is to be downloaded from
+          Address (e.g. in form of an URL) for where file is to be downloaded from
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -433,13 +433,13 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for data to be put for given bit repository collection
+          Unique identifier for file to be put for given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:FileAddress" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Address (e.g. in form of an URL) for where data has been downloaded from (if completed)
+          Address (e.g. in form of an URL) for where file has been downloaded from (if completed)
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -523,9 +523,9 @@
 
         <xs:element ref="bre:TimeToDeliver" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Estimated time before data is deleted.
-          That means the time from receival of a DeleteFileRequest message to the time
-          when data is deleted from pillar (or no longer visible).
+          Estimated time before file is deleted.
+          That means the time from receiving a DeleteFileRequest message to the time
+          when file is deleted from pillar (or no longer visible).
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -560,7 +560,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for data to be deleted from given collection
+          Unique identifier for file to be deleted from given collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -603,7 +603,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for data to be deleted from given bit repository collection
+          Unique identifier for file to be deleted from given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -639,7 +639,7 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Unique identifier for data to be put for given bit repository collection
+          Unique identifier for file that was to be deleted from given bit repository collection
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -652,6 +652,253 @@
         <xs:element ref="bre:ChecksumsData">
           <xs:annotation><xs:documentation xml:lang="en">
           Checksum calculated as specified in DeleteFileRequest, if specified
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ************************************************************** -->
+  <!-- * Messages for ReplaceFile                                       * -->
+  <!-- ************************************************************** -->
+
+  <!-- **************                                                 -->
+  <!-- *** Messages for IdentifyPillarsForReplaceFile Primitive           -->
+
+  <xs:element name="IdentifyPillarsForReplaceFileRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in IdentifyPillarsForReplaceFile primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:FileID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for file to be replaced in given bit repository collection
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="IdentifyPillarsForReplaceFileResponse">
+    <xs:annotation><xs:documentation xml:lang="en">
+    RESPONSE in IdentifyPillarsForReplaceFile primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:FileID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+            Unique identifier for file to be replaced in given bit repository collection
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:PillarID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for pillar replying
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:PillarChecksumSpec" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksum type can be given for both regular and checksum pillar.
+          The checksum type is necessary for sending correct checksum in later replace request,
+          as file (or checksum) may only be replaced after checksum check on pillar.
+          The element is not required as this information is also part of settings.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:TimeToDeliver" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Estimated time before file is replaced.
+          That means the time from receiving a ReplaceFileRequest message to the time
+          when file is replaced on pillar.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- **************                                                           -->
+  <!-- *** Messages for ReplaceFile Primitive                                       -->
+
+  <!-- ***  Messages for ReplaceFile Primitive are only sent to one specific pillar  -->
+  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForReplaceFileResponse     -->
+
+  <xs:element name="ReplaceFileRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in ReplaceFile primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving pillar, which can be used for possible checks
+          (IdentifyPillarsForReplaceFileResponse.ReplyTo should ensure that right pillar is reached)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FileID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for file to be replaced in given collection
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ChecksumsData">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums (and type and possibly salt) of file to be replaced; that is the _old_ file.
+          This should be used in checks on pillar to ensure the correct file is deleted.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FileAddress" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where file must be downloaded from
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FileSize" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Expected size of file to be put, expressed in bytes.
+          This can be used in e.g. capacity checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <!-- TODO ChecksumsData 2
+        <xs:element ref="bre:ChecksumsData">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Optionally checksums (and type and possibly salt) of new file to be put in replace operation.
+          This can be used in checks of correct receival.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        -->
+
+        <xs:element ref="bre:ChecksumSpecs">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Optionally salt and/or type of checksum for extra checksumscheck of new file at
+          completion of replace file. The result can be given in ReplaceFileFinalResponse
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ReplaceFileProgressResponse">
+    <xs:annotation><xs:documentation xml:lang="en">
+    PROGRESS RESPONSE in ReplaceFile primitive
+    Note that there can be more responses to the same ReplaceFileRequest, e.g. if a
+    DVD pillar gives running status of where it is in the replace process.
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of responding pillar, which can be used for possible checks
+          (otherwise it is known via CorrelationID and ReplyTo)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:PillarChecksumSpec" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums specification of responding checksums pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FileID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for file to be replaced in given bit repository collection
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FileAddress" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where new file is to be downloaded from
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ProgressResponseInfo" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          ProgressResponse information telling whether ReplaceFileRequest has been received and is expected to be completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ReplaceFileFinalResponse">
+    <xs:annotation><xs:documentation xml:lang="en">
+    FINAL RESPONSE in ReplaceFile primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of responding pillar, which can be used for possible checks
+          (otherwise it is known via CorrelationID and ReplyTo)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:PillarChecksumSpec" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums type of responding checksums pillar, which can be used for possible checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FileID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for file to be replaced in given bit repository collection
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FileAddress" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Address (e.g. in form of an URL) for where new file has been downloaded from (if completed)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FinalResponseInfo" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Information on how ReplaceFile has been completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ChecksumsData">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksum calculated as specified in ReplaceFileRequest, if specified
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -680,7 +927,7 @@
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bit repository collection which the checksums are requested for
+          FileIDs uniquely identifies the files in given bit repository collection which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -709,7 +956,7 @@
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given collection which the checksums are requested for
+          FileIDs uniquely identifies the files in given collection which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -735,8 +982,8 @@
         <xs:element ref="bre:TimeToDeliver" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Estimated time before delivery of checksums requested
-          That means the time from receival of a GetChecksumsRequest message to the time
-          when data is uploaded.
+          That means the time from receiving a GetChecksumsRequest message to the time
+          when checksum data is uploaded.
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -771,7 +1018,7 @@
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bit repository collection which the checksums are requested for
+          FileIDs uniquely identifies the files in given bit repository collection which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -783,7 +1030,7 @@
 
         <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Address (e.g. in form of an URL) for where checksums must be delivered via data transmission.
+          Address (e.g. in form of an URL) for where checksums must be delivered via file exchange.
           In cases where the address is not given, the result will be given in the GetChecksumsFinalResponse message
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -813,7 +1060,7 @@
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bit repository collection which the checksums are requested for
+          FileIDs uniquely identifies the files in given bit repository collection which the checksums are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -861,7 +1108,7 @@
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bit repository collection which the checksums are requested for
+          FileIDs uniquely identifies the files in given bit repository collection which the checksums are requested for
           (Also in result, and traceable via CorrelationID)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -910,7 +1157,7 @@
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bit repository collection which the file ids are requested for
+          FileIDs uniquely identifies the files in given bit repository collection which the file ids are requested for
           Given in order to be able to give possible estimate of time to deliver
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -939,15 +1186,15 @@
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en" >
-          FileIDs uniquely identifies the data in given bit repository collection which the file ids are requested for
+          FileIDs uniquely identifies the files in given bit repository collection which the file ids are requested for
           only to repeat parameter from request.
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:TimeToDeliver" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Estimated time before delivery of data requested
-          That means the time from receival of a GetFileIDsRequest message to the time
+          Estimated time before delivery of data (fileIDs) requested
+          That means the time from receiving a GetFileIDsRequest message to the time
           when data is uploaded.
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -983,13 +1230,13 @@
 
         <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bit repository collection which the file ids are requested for
+          FileIDs uniquely identifies the files in given bit repository collection which the file ids are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Address (e.g. in form of an URL) for where data ids must be delivered via data transmission
+          Address (e.g. in form of an URL) for where data (file IDs) must be delivered via file exchange
           In cases where the address is not given, the result will be given in the GetFileIdsFinalResponse message
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1019,14 +1266,14 @@
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given bit repository collection which the file ids are requested for
+          FileIDs uniquely identifies the files in given bit repository collection which the file ids are requested for
           (otherwise it is known via CorrelationID)
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Address (e.g. in form of an URL) for where data will be delivered
+          Address (e.g. in form of an URL) for where data (file IDs) will be delivered
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -1061,7 +1308,7 @@
 
         <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileIDs uniquely identifies the data in given collection which the file ids are requested for. If not present
+          FileIDs uniquely identifies the files in given collection which the file ids are requested for. If not present
           it means all the requested files are present on the pillar.
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1126,7 +1373,7 @@
         <xs:element ref="bre:TimeToDeliver" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Estimated time before delivery of requested status
-          That means the time from receival of a GetStatusRequest message to the time
+          That means the time from receiving a GetStatusRequest message to the time
           status response is uploaded.
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1162,7 +1409,7 @@
 
         <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Address (e.g. in form of an URL) for where results must be delivered via data transmission.
+          Address (e.g. in form of an URL) for where results must be delivered via file exchange.
           In cases where the address is not given, the result will be given in the GetStatusFinalResponse message
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1262,7 +1509,7 @@
 
         <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileID uniquely identifies the data in given bit repository collection which the audit trails is requested for
+          FileID uniquely identifies the files in given bit repository collection which the audit trails are requested for
           Given in order to be able to give possible estimate of time to deliver
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1291,7 +1538,7 @@
 
         <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en" >
-          FileID uniquely identifies the data in given bit repository collection which the audit trails is requested for
+          FileID uniquely identifies the files in given bit repository collection which the audit trails are requested for
           only to repeat parameter from request
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1299,7 +1546,7 @@
         <xs:element ref="bre:TimeToDeliver" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Estimated time before delivery of data requested
-          That means the time from receival of a GetAuditTrailsRequest message to the time
+          That means the time from receiving a GetAuditTrailsRequest message to the time
           when data is delivered.
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1336,13 +1583,13 @@
 
         <xs:element ref="bre:FileID" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileID uniquely identifies the data in given bit repository collection which the audit trails is requested for
+          FileID uniquely identifies the files in given bit repository collection which the audit trails are requested for
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:ResultAddress" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Address (e.g. in form of an URL) for where audit trails must be delivered via data transmission
+          Address (e.g. in form of an URL) for where audit trails must be delivered via file exchange
           In cases where the address is not given, the result will be given in the GetAuditTrailsFinalResponse message
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1372,7 +1619,7 @@
 
         <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileID uniquely identifies the data in given bit repository collection which the audit trails is requested for
+          FileID uniquely identifies the files in given bit repository collection which the audit trails are requested for
           (otherwise it is known via CorrelationID)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1414,7 +1661,7 @@
 
         <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          FileID uniquely identifies the data in given bit repository collection which the audit trailsis requested for
+          FileID uniquely identifies the files in given bit repository collection which the audit trails are requested for
           (otherwise it is known via CorrelationID)
           </xs:documentation></xs:annotation>
         </xs:element>
