@@ -127,7 +127,7 @@
 
   <xs:element name="GetFileProgressResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    RESPONSE in GetFile primitive.
+    PROGRESS RESPONSE in GetFile primitive.
     Note that there can be more responses to the same GetFileRequest, e.g. if a
     DVD pillar gives running status of where it is in the get process.
     </xs:documentation></xs:annotation>
@@ -190,7 +190,7 @@
 
   <xs:element name="GetFileFinalResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    COMPLETE in GetFile primitive
+    FINAL RESPONSE in GetFile primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -339,7 +339,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ChecksumDataPairs" >
+        <xs:element ref="bre:ChecksumsData">
           <xs:annotation><xs:documentation xml:lang="en">
           Optionally checksums (and type and possibly salt) of data object to be put.
           This can be used in checks of correct receival.
@@ -359,7 +359,7 @@
 
   <xs:element name="PutFileProgressResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    RESPONSE in PutFile primitive
+    PROGRESS RESPONSE in PutFile primitive
     Note that there can be more responses to the same PutFileRequest, e.g. if a
     DVD pillar gives running status of where it is in the put process.
     </xs:documentation></xs:annotation>
@@ -373,14 +373,14 @@
 
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Identifier of receiving pillar, which can be used for possible checks
+          Identifier of responding pillar, which can be used for possible checks
           (otherwise it is known via CorrelationID and ReplyTo)
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:PillarChecksumSpec" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Checksums specification of receiving checksums pillar, which can be used for possible checks
+          Checksums specification of responding checksums pillar, which can be used for possible checks
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -408,7 +408,7 @@
 
   <xs:element name="PutFileFinalResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    COMPLETE in PutFile primitive
+    FINAL RESPONSE in PutFile primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -420,14 +420,14 @@
 
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Identifier of receiving pillar, which can be used for possible checks
+          Identifier of responding pillar, which can be used for possible checks
           (otherwise it is known via CorrelationID and ReplyTo)
           </xs:documentation></xs:annotation>
         </xs:element>
 
         <xs:element ref="bre:PillarChecksumSpec" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Checksums type of receiving checksums pillar, which can be used for possible checks
+          Checksums type of responding checksums pillar, which can be used for possible checks
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -449,9 +449,209 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ChecksumDataPairs" >
+        <xs:element ref="bre:ChecksumsData">
           <xs:annotation><xs:documentation xml:lang="en">
           Checksum calculated as specified in PutFileRequest, if specified
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ************************************************************** -->
+  <!-- * Messages for DeleteFile                                       * -->
+  <!-- ************************************************************** -->
+
+  <!-- **************                                                 -->
+  <!-- *** Messages for IdentifyPillarsForDeleteFile Primitive           -->
+
+  <xs:element name="IdentifyPillarsForDeleteFileRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in IdentifyPillarsForDeleteFile primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:FileID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for file to be deleted from given bit repository collection
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="IdentifyPillarsForDeleteFileResponse">
+    <xs:annotation><xs:documentation xml:lang="en">
+    RESPONSE in IdentifyPillarsForDeleteFile primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:FileID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+            Unique identifier for file to be deleted from given bit repository collection
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:PillarID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for pillar replying
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:PillarChecksumSpec" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksum type can be given for both regular and checksum pillar.
+          The checksum type is necessary for sending correct checksum in later delete request,
+          as file (or checksum) may only be deleted after checksum check on pillar.
+          The element is not required as this information is also part of settings.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:TimeToDeliver" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Estimated time before data is deleted.
+          That means the time from receival of a DeleteFileRequest message to the time
+          when data is deleted from pillar (or no longer visible).
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- **************                                                           -->
+  <!-- *** Messages for DeleteFile Primitive                                       -->
+
+  <!-- ***  Messages for DeleteFile Primitive are only sent to one specific pillar  -->
+  <!-- ***  which corresponds to ReplyTo from IdentifyPillarsForDeleteFileResponse     -->
+
+  <xs:element name="DeleteFileRequest">
+    <xs:annotation><xs:documentation xml:lang="en">
+    REQUEST in DeleteFile primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of receiving pillar, which can be used for possible checks
+          (IdentifyPillarsForDeleteFileResponse.ReplyTo should ensure that right pillar is reached)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FileID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for data to be deleted from given collection
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ChecksumsData">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksums (and type and possibly salt) of file to be deleted.
+          This should be used in checks on pillar to ensure the correct file is deleted.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ChecksumSpecs">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Optionally salt and/or type of checksum for extra checksumscheck at
+          completion of delete file. The result can be given in DeleteFileFinalResponse
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="DeleteFileProgressResponse">
+    <xs:annotation><xs:documentation xml:lang="en">
+    PROGRESS RESPONSE in DeleteFile primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of responding pillar, which can be used for possible checks
+          (otherwise it is known via CorrelationID and ReplyTo)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FileID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for data to be deleted from given bit repository collection
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ProgressResponseInfo" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          ProgressResponse information telling whether DeleteFileRequest
+          has been received and is expected to be completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="bre:VersionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="DeleteFileFinalResponse">
+    <xs:annotation><xs:documentation xml:lang="en">
+    FINAL RESPONSE in DeleteFile primitive
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="bre:Core" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The mandatory part of a message
+          </xs:documentation></xs:annotation>
+        </xs:group>
+
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of responding pillar, which can be used for possible checks
+          (otherwise it is known via CorrelationID and ReplyTo)
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FileID" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for data to be put for given bit repository collection
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FinalResponseInfo" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Information on how DeleteFile has been completed
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:ChecksumsData">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Checksum calculated as specified in DeleteFileRequest, if specified
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -594,7 +794,7 @@
 
   <xs:element name="GetChecksumsProgressResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    RESPONSE in GetChecksums primitive
+    PROGRESS RESPONSE in GetChecksums primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -606,7 +806,7 @@
 
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Identifier of receiving pillar, which can be used for possible checks
+          Identifier of responding pillar, which can be used for possible checks
           (otherwise it is known via CorrelationID and ReplyTo)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -631,7 +831,7 @@
 
         <xs:element ref="bre:ProgressResponseInfo" >
           <xs:annotation><xs:documentation xml:lang="en">
-          ProgressResponse information telling whether GetChecksumsRequest has been received and is expected to be 
+          ProgressResponse information telling whether GetChecksumsRequest has been received and is expected to be
           completed
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -642,7 +842,7 @@
 
   <xs:element name="GetChecksumsFinalResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    COMPLETE in GetChecksums primitive
+    FINAL RESPONSE in GetChecksums primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -654,7 +854,7 @@
 
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Identifier of receiving pillar, which can be used for possible checks
+          Identifier of responding pillar, which can be used for possible checks
           (otherwise it is known via CorrelationID and ReplyTo)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -800,7 +1000,7 @@
 
   <xs:element name="GetFileIDsProgressResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    RESPONSE in GetFileIDs primitive
+    PROGRESS RESPONSE in GetFileIDs primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -812,7 +1012,7 @@
 
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Identifier of receiving pillar, which can be used for possible checks
+          Identifier of responding pillar, which can be used for possible checks
           (otherwise it is known via CorrelationID and ReplyTo)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -842,7 +1042,7 @@
 
   <xs:element name="GetFileIDsFinalResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    COMPLETE in GetFileIDs primitive
+    FINAL RESPONSE in GetFileIDs primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -854,7 +1054,7 @@
 
         <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Identifier of receiving pillar, which can be used for possible checks
+          Identifier of responding pillar, which can be used for possible checks
           (otherwise it is known via CorrelationID and ReplyTo)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1153,7 +1353,7 @@
 
   <xs:element name="GetAuditTrailsProgressResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    RESPONSE in GetFileIDs primitive
+    PROGRESS RESPONSE in GetFileIDs primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -1165,7 +1365,7 @@
 
         <xs:element ref="bre:Contributor" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Identifier of receiving contributor, which can be used for possible checks
+          Identifier of responding contributor, which can be used for possible checks
           (otherwise it is known via CorrelationID and ReplyTo)
           </xs:documentation></xs:annotation>
         </xs:element>
@@ -1195,7 +1395,7 @@
 
   <xs:element name="GetAuditTrailsFinalResponse">
     <xs:annotation><xs:documentation xml:lang="en">
-    COMPLETE in GetAuditTrails primitive
+    FINAL RESPONSE in GetAuditTrails primitive
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -1207,7 +1407,7 @@
 
         <xs:element ref="bre:Contributor" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
-          Identifier of receiving contributor, which can be used for possible checks
+          Identifier of responding contributor, which can be used for possible checks
           (otherwise it is known via CorrelationID and ReplyTo)
           </xs:documentation></xs:annotation>
         </xs:element>

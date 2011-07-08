@@ -193,28 +193,6 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
- <xs:element name="ChecksumDataPairs" >
-   <xs:complexType>
-     <xs:sequence>
-       <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
-         <xs:annotation><xs:documentation xml:lang="en">
-         The number of checksums included
-         </xs:documentation></xs:annotation>
-       </xs:element>
-       <xs:element name="ChecksumDataItems">
-         <xs:annotation><xs:documentation xml:lang="en">
-         List of data for checksums
-         </xs:documentation></xs:annotation>
-         <xs:complexType>
-           <xs:sequence>
-             <xs:element name="ChecksumDataItem" type="ChecksumData_TYPE" minOccurs="0" maxOccurs="unbounded" />
-           </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-
   <xs:element name="ChecksumDataPerFileIDItem">
     <xs:annotation><xs:documentation xml:lang="en">
     Includes relevant information for one checksum in a result
@@ -411,7 +389,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element name="AllFileIDs" type="xs:string">
+        <xs:element name="AllFileIDs">
           <xs:annotation><xs:documentation xml:lang="en">
           Specification that all data identifiers in the collection is requested
           </xs:documentation></xs:annotation>
@@ -1158,7 +1136,7 @@
     <xs:restriction base="xs:positiveInteger">
       <xs:enumeration value="501">
         <xs:annotation><xs:documentation xml:lang="en">
-        Data for a FileID has been NOT been found for som sort of Get request
+        Data for a FileID has NOT been found for som sort of Get request
         </xs:documentation></xs:annotation>
       </xs:enumeration>
       <xs:enumeration value="502">
