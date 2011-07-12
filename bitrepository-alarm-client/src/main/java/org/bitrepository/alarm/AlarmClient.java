@@ -24,7 +24,10 @@
  */
 package org.bitrepository.alarm;
 
+import java.net.URL;
+
 import org.bitrepository.alarm_client.alarmclientconfiguration.AlarmConfiguration;
+import org.bitrepository.protocol.conversation.AbstractConversation;
 import org.bitrepository.protocol.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 
@@ -39,7 +42,7 @@ public class AlarmClient {
     /** The configuration for the Alarm.*/
     private final AlarmConfiguration configuration;
     /** The conversation mediator to keep track of the conversations.*/
-    private final ConversationMediator<AlarmConversation> mediator;
+    private final ConversationMediator<AbstractConversation<URL>> mediator;
 
     /**
      * Constructor.
@@ -48,6 +51,6 @@ public class AlarmClient {
         messagebus = bus;
         alarmHandler = handler;
         configuration = config;
-        mediator = new ConversationReceiverMediator<AlarmConversation>(bus, config.getQueue(), handler);
+        mediator = new ConversationReceiverMediator<AbstractConversation<URL>>(bus, config.getQueue(), handler);
     }
 }

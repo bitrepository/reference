@@ -57,181 +57,165 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 
 public class ConversationReceiverMediator<T> implements ConversationMediator {
 
-	private final MessageBus messagebus;
-	private final String listenerDestination;
-	private final AlarmHandler handler;
-	
-	public ConversationReceiverMediator(MessageBus messagebus, String listenerDestination, AlarmHandler handler) {
+    /** The messagebus.*/
+    private final MessageBus messagebus;
+    /** The destination where the messages are received.*/
+    private final String listenerDestination;
+    /** The handler. Where the received messages should be handled.*/
+    private final AlarmHandler handler;
+
+    /**
+     * Constructor.
+     * Sets the parameters of this mediator, and adds itself as a listener to the given destination.
+     * @param messagebus
+     * @param listenerDestination
+     * @param handler
+     */
+    public ConversationReceiverMediator(MessageBus messagebus, String listenerDestination, AlarmHandler handler) {
         this.messagebus = messagebus;
         this.listenerDestination = listenerDestination;
         this.handler = handler;
-        
+
         messagebus.addListener(listenerDestination, this);        
-	}
-	
-	@Override
-	public void addConversation(Conversation arg0) {
-		// TODO this should not be used.
-	}
-	
-	@Override
-	public void onMessage(Alarm msg) {
-		
-	}
+    }
 
-	@Override
-	public void onMessage(GetAuditTrailsRequest arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void addConversation(Conversation msg) {
+        // TODO this should not be used.
+    }
 
-	@Override
-	public void onMessage(GetAuditTrailsProgressResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(Alarm msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(GetAuditTrailsFinalResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(GetAuditTrailsRequest msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(GetChecksumsFinalResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(GetAuditTrailsProgressResponse msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(GetChecksumsRequest arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(GetAuditTrailsFinalResponse msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(GetChecksumsProgressResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(GetChecksumsFinalResponse msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(GetFileFinalResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(GetChecksumsRequest msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(GetFileIDsFinalResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(GetChecksumsProgressResponse msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(GetFileIDsRequest arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(GetFileFinalResponse msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(GetFileIDsProgressResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(GetFileIDsFinalResponse msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(GetFileRequest arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(GetFileIDsRequest msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(GetFileProgressResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(GetFileIDsProgressResponse msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(GetStatusRequest arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(GetFileRequest msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(GetStatusProgressResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(GetFileProgressResponse msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(GetStatusFinalResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(GetStatusRequest msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(IdentifyPillarsForGetChecksumsResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(GetStatusProgressResponse msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(IdentifyPillarsForGetChecksumsRequest arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(GetStatusFinalResponse msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(IdentifyPillarsForGetFileIDsResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(IdentifyPillarsForGetChecksumsResponse msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(IdentifyPillarsForGetFileIDsRequest arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(IdentifyPillarsForGetChecksumsRequest msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(IdentifyPillarsForGetFileResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(IdentifyPillarsForGetFileIDsResponse msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(IdentifyPillarsForGetFileRequest arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(IdentifyPillarsForGetFileIDsRequest msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(IdentifyPillarsForPutFileResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(IdentifyPillarsForGetFileResponse msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(IdentifyPillarsForPutFileRequest arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(IdentifyPillarsForGetFileRequest msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(PutFileFinalResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(IdentifyPillarsForPutFileResponse msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(PutFileRequest arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(IdentifyPillarsForPutFileRequest msg) {
+        handler.notify(msg);
+    }
 
-	@Override
-	public void onMessage(PutFileProgressResponse arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onMessage(PutFileFinalResponse msg) {
+        handler.notify(msg);
+    }
+
+    @Override
+    public void onMessage(PutFileRequest msg) {
+        handler.notify(msg);
+    }
+
+    @Override
+    public void onMessage(PutFileProgressResponse msg) {
+        handler.notify(msg);
+    }
 }
