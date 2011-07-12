@@ -2,8 +2,8 @@
  * #%L
  * Bitmagasin modify client
  * 
- * $Id$
- * $HeadURL$
+ * $Id: PutClientExternalAPI.java 143 2011-04-08 09:15:13Z jolf $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-modifying-client/src/main/java/org/bitrepository/modify/PutClientExternalAPI.java $
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -22,22 +22,20 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.modify;
+package org.bitrepository.modify.put;
 
-import java.io.File;
+import java.net.URL;
 
 /**
- * This is the external interface for the put client.
- * A put client must have both the internal (PutClientAPI) and the external (PutClientExternalAPI) APIs.
+ * Interface for the put client.
  */
-interface PutClientExternalAPI {
-    /**
-     * Method for putting a file with a given ID.
-     * 
-     * @param file The file to put.
-     * @param fileId The unique identification for the file (unique within 
-     * the SLA).
-     * @param slaId The ID for the SLA which the file belongs to.
-     */
-    void putFileWithId(File file, String fileId, String slaId);
+public interface PutClient {
+	/**
+	 * Method for performing the put operation.
+	 * 
+	 * @param url The URL where the file to be put is located.
+	 * @param fileId The id of the file.
+	 * @param collectionId The BitRespositoryCollectionID where the file belongs.
+	 */
+    void putFileWithId(URL url, String fileId, String collectionId);
 }

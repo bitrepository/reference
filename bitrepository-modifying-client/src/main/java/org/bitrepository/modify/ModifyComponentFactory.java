@@ -25,9 +25,13 @@
 
 package org.bitrepository.modify;
 
-import org.bitrepository.modify_client.configuration.ModifyConfiguration;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
+import org.bitrepository.modify.put.PutClient;
+import org.bitrepository.modify.put.PutFileClientSettings;
+import org.bitrepository.modify.put.SimplePutClient;
+import org.bitrepository.modify_client.configuration.ModifyConfiguration;
+import org.bitrepository.protocol.messagebus.MessageBusFactory;
 
 /**
  * Factory class for the access module. 
@@ -88,7 +92,9 @@ public class ModifyComponentFactory {
      * TODO use the configuration instead of this default. 
      * @return The configured PutClient.
      */
-    public PutClientExternalAPI retrievePutClient() {
-        return new SimplePutClient();
+    public PutClient retrievePutClient(PutFileClientSettings settings) {
+        return new SimplePutClient(
+                MessageBusFactory.createMessageBus(settings.getMessageBusConfiguration()),
+                settings);
     }
 }
