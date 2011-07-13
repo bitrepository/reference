@@ -382,6 +382,13 @@
         (blank if not relevant, e.g. for alarms)
         </xs:documentation></xs:annotation>
       </xs:element>
+
+      <xs:element name="AuditTrailInformation" type="AuditTrailInformation_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Audit Trail Information known to sender to be added to receiver audit trail.
+        Usually used by a client who knows a system user and wants this information as part of pillar audit trail.
+        </xs:documentation></xs:annotation>
+      </xs:element>
     </xs:sequence>
   </xs:group>
 
@@ -999,6 +1006,11 @@
     Address for where data files can be found or placed
     </xs:documentation></xs:annotation>
     <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="AuditTrailInformation_TYPE">
+    <xs:restriction base="xs:string">
+    </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="BitRepositoryCollectionID_TYPE">

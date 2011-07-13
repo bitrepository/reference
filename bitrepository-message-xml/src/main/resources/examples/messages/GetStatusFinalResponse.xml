@@ -31,6 +31,7 @@
   <BitRepositoryCollectionID>MySla</BitRepositoryCollectionID>
   <To>ToQueueOrTopic</To>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
+  <AuditTrailInformation>User: Name, Institution: Place</AuditTrailInformation>
   <Contributor>
     <ComponentID>MyPillar</ComponentID>
     <ComponentType>PILLAR</ComponentType>

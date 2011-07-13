@@ -31,4 +31,5 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <BitRepositoryCollectionID>MySla</BitRepositoryCollectionID>
   <To>ToQueueOrTopic</To>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
+  <AuditTrailInformation>User: Name, Institution: Place</AuditTrailInformation>
 </bro:IdentifyPillarsForPutFileRequest>
