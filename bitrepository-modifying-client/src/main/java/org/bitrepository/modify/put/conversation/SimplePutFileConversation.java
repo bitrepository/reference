@@ -1,33 +1,30 @@
 /*
  * #%L
  * bitrepository-access-client
- * 
- * $Id: SimpleGetFileConversation.java 202 2011-06-23 14:17:46Z mss $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-access-client/src/main/java/org/bitrepository/access/getfile/SimpleGetFileConversation.java $
+ *
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 package org.bitrepository.modify.put.conversation;
 
-import java.net.URL;
-import java.util.UUID;
-
-import org.bitrepository.bitrepositoryelements.ChecksumDataTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.modify.put.PutFileClientSettings;
 import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.conversation.AbstractConversation;
@@ -36,6 +33,9 @@ import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.util.UUID;
 
 /**
  * A conversation for PutFile.
@@ -49,7 +49,7 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /** The sender to use for dispatching messages */
-    final MessageSender messageSender; 
+    final MessageSender messageSender;
     /** The configuration specific to the SLA related to this conversion. */
     final ClientSettings settings;
 
@@ -58,7 +58,7 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
     /** The ID of the file which should be downloaded from the supplied URL. */
     final String fileID;
     /** The checksum of the file, which the pillars should download.*/
-    final ChecksumDataTYPE checksum;
+    final ChecksumDataForFileTYPE checksum;
     /** The event handler to send notifications of the get file progress */
     final EventHandler eventHandler;
     /** The state of the PutFile transaction.*/
@@ -69,7 +69,7 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
     /**
      * Constructor.
      * Initializes all the variables for the conversation.
-     * 
+     *
      * @param messageSender The instance to send the messages with.
      * @param settings The settings of the client.
      * @param urlToDownload The URL where the file to be 'put' is located.
@@ -80,11 +80,11 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
 	public SimplePutFileConversation(MessageSender messageSender,
 			PutFileClientSettings settings,
 			URL urlToDownload,
-			String fileId, 
-			ChecksumDataTYPE checksum,
+			String fileId,
+			ChecksumDataForFileTYPE checksum,
 			EventHandler eventHandler) {
 		super(messageSender, UUID.randomUUID().toString());
-		
+
 		this.messageSender = messageSender;
 		this.settings = settings;
 		this.downloadUrl = urlToDownload;
@@ -96,7 +96,7 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
 	@Override
 	public void failConversion(String arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -114,6 +114,6 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
 	@Override
 	public void startConversion() throws OperationFailedException {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
