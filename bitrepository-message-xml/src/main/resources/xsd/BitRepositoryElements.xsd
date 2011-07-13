@@ -193,39 +193,100 @@
     </xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="ChecksumDataPerFileIDItem">
-    <xs:annotation><xs:documentation xml:lang="en">
-    Includes relevant information for one checksum in a result
-    </xs:documentation></xs:annotation>
+  <xs:element name="ChecksumsDataForBitRepositoryFile">
+    <!-- TODO common ChecksumsDataGroupedByFile_TYPE; two restrictions on ParameterSpecification -->
     <xs:complexType>
+    <xs:annotation><xs:documentation xml:lang="en">
+    Checksums data for one file. Multiple checksums with different specifications.
+    The file is in the bit repository.
+    </xs:documentation></xs:annotation>
       <xs:sequence>
+        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of checksums included
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
         <xs:element name="FileID" type="FileID_TYPE" >
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of data the checksum is for
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element name="ChecksumValue" type="ChecksumValue_TYPE">
+        <xs:element name="ChecksumDataItems">
           <xs:annotation><xs:documentation xml:lang="en">
-          Checksum value of data which will be based on given algorithm and include salt if specified
+          List of data for checksums
           </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element name="CalculationTimestamp" type="SystemDateTime_TYPE">
-          <xs:annotation><xs:documentation xml:lang="en">
-          The time when the checksum was last calculated
-          (especially for ordinary checksums on off-line medias, there can be long intervals between
-          calculations, - in such cases this information is crucial for alarming)
-          </xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ChecksumDataForFile"
+                          type="ChecksumDataForFile_TYPE" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType>
         </xs:element>
       </xs:sequence>
+
+      <xs:attribute name="ParameterSpecification" type="xs:string" fixed="BitRepositoryFile">
+        <xs:annotation><xs:documentation xml:lang="en">
+          File parameter specification of bit repository file
+        </xs:documentation></xs:annotation>
+      </xs:attribute>
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="ChecksumsData">
+  <xs:element name="ChecksumsDataForNewFile">
     <xs:complexType>
+    <xs:annotation><xs:documentation xml:lang="en">
+    Checksums data for one file. Multiple checksums with different specifications.
+    The file is new to the bit repository.
+    </xs:documentation></xs:annotation>
       <xs:sequence>
         <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of checksums included
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element name="FileID" type="FileID_TYPE" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Identifier of data the checksum is for
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element name="ChecksumDataItems">
+          <xs:annotation><xs:documentation xml:lang="en">
+          List of data for checksums
+          </xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ChecksumDataForFile"
+                          type="ChecksumDataForFile_TYPE" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+
+      <xs:attribute name="ParameterSpecification" type="xs:string" fixed="NewFile">
+        <xs:annotation><xs:documentation xml:lang="en">
+          File parameter specification of new file
+        </xs:documentation></xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ChecksumsDataGroupedByChecksumSpec">
+    <xs:complexType>
+      <xs:annotation><xs:documentation xml:lang="en">
+      Checksums data using the same checksum specification. Multiple file IDs.
+      </xs:documentation></xs:annotation>
+      <xs:sequence>
+        <xs:element name="ChecksumSpec" type="ChecksumSpec_TYPE">
+          <xs:annotation><xs:documentation xml:lang="en">
+          The type and possible salt for calculation of the checksums
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="NoOfItems">
           <xs:annotation><xs:documentation xml:lang="en">
           The number of checksums included
           </xs:documentation></xs:annotation>
@@ -237,40 +298,13 @@
           </xs:documentation></xs:annotation>
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="ChecksumDataItem" type="ChecksumData_TYPE" minOccurs="0" maxOccurs="unbounded" />
+              <xs:element name="ChecksumDataForChecksumSpec"
+                          type="ChecksumDataForChecksumSpec_TYPE" minOccurs="0" maxOccurs="unbounded" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
-    </xs:complexType>
-  </xs:element>
 
-  <xs:element name="ChecksumsDataPerFileID">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="ChecksumSpec" type="ChecksumSpec_TYPE" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          The type and possible salt of checksums included
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          The number of checksums included
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
-        <xs:element name="ChecksumDataPerFileIDItems">
-          <xs:annotation><xs:documentation xml:lang="en">
-          List of data for checksums
-          </xs:documentation></xs:annotation>
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element ref="ChecksumDataPerFileIDItem" minOccurs="0" maxOccurs="unbounded" />
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
     </xs:complexType>
   </xs:element>
 
@@ -623,7 +657,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="ChecksumsDataPerFileID">
+        <xs:element ref="ChecksumsDataGroupedByChecksumSpec">
           <xs:annotation><xs:documentation xml:lang="en">
           List of data for checksums in result, if given in this message instead of via data transfer
           </xs:documentation></xs:annotation>
@@ -972,7 +1006,31 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:complexType name="ChecksumData_TYPE">
+  <xs:complexType name="ChecksumDataForChecksumSpec_TYPE">
+    <xs:sequence>
+      <xs:element name="FileID" type="FileID_TYPE" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        Identifier of data the checksum is for
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element name="ChecksumValue" type="ChecksumValue_TYPE" >
+        <xs:annotation><xs:documentation xml:lang="en">
+        The value of the checksum
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element name="CalculationTimestamp" type="SystemDateTime_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+        The time when the checksum was last calculated
+        (especially for ordinary checksums on off-line medias, there can be long intervals between
+        calculations, - in such cases this information is crucial for alarming)
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ChecksumDataForFile_TYPE">
     <xs:sequence>
       <xs:element name="ChecksumSpec" type="ChecksumSpec_TYPE" >
         <xs:annotation><xs:documentation xml:lang="en">
@@ -983,6 +1041,14 @@
       <xs:element name="ChecksumValue" type="ChecksumValue_TYPE" >
         <xs:annotation><xs:documentation xml:lang="en">
         The value of the checksum
+        </xs:documentation></xs:annotation>
+      </xs:element>
+
+      <xs:element name="CalculationTimestamp" type="SystemDateTime_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+        The time when the checksum was last calculated
+        (especially for ordinary checksums on off-line medias, there can be long intervals between
+        calculations, - in such cases this information is crucial for alarming)
         </xs:documentation></xs:annotation>
       </xs:element>
     </xs:sequence>

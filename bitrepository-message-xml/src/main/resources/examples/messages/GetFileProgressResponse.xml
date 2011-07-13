@@ -3,8 +3,8 @@
   #%L
   Bitmagasin protokol
 
-  $Id: GetFileProgressResponse.xml 149 2011-04-15 11:42:09Z bam $
-  $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-message-xml/src/main/resources/examples/messages/GetFileProgressResponse.xml $
+  $Id$
+  $HeadURL$
   %%
   Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
@@ -43,23 +43,26 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
     <ProgressResponseText>Message request has been received and is expected to be met successfully</ProgressResponseText>
   </ProgressResponseInfo>
   <FileSize>90</FileSize>
-  <ChecksumsData>
+  <ChecksumsDataForBitRepositoryFile>
     <NoOfItems>2</NoOfItems>
+    <FileID>MyDataID</FileID>
     <ChecksumDataItems>
-      <ChecksumDataItem>
+      <ChecksumDataForFile>
         <ChecksumSpec>
           <ChecksumType>MD5</ChecksumType>
           <ChecksumSalt>X</ChecksumSalt>
         </ChecksumSpec>
         <ChecksumValue>ABC423789</ChecksumValue>
-      </ChecksumDataItem>
-      <ChecksumDataItem>
+        <CalculationTimestamp>2011-02-17T09:47:00</CalculationTimestamp>
+      </ChecksumDataForFile>
+      <ChecksumDataForFile>
         <ChecksumSpec>
           <ChecksumType>SHA-1</ChecksumType>
           <ChecksumSalt>X</ChecksumSalt>
         </ChecksumSpec>
         <ChecksumValue>ABCDEF1234</ChecksumValue>
-      </ChecksumDataItem>
+        <CalculationTimestamp>2011-02-17T09:47:00</CalculationTimestamp>
+      </ChecksumDataForFile>
     </ChecksumDataItems>
-  </ChecksumsData>
+  </ChecksumsDataForBitRepositoryFile>
 </bro:GetFileProgressResponse>

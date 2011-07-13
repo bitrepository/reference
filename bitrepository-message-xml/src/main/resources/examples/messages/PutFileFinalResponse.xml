@@ -42,23 +42,26 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
     <FinalResponseCode>480</FinalResponseCode>
     <FinalResponseText>successfull completion</FinalResponseText>
   </FinalResponseInfo>
-  <ChecksumsData>
+  <ChecksumsDataForNewFile>
     <NoOfItems>2</NoOfItems>
+    <FileID>MyDataID</FileID>
     <ChecksumDataItems>
-      <ChecksumDataItem>
+      <ChecksumDataForFile>
         <ChecksumSpec>
           <ChecksumType>MD5</ChecksumType>
           <ChecksumSalt>A</ChecksumSalt>
         </ChecksumSpec>
         <ChecksumValue>135F21564</ChecksumValue>
-      </ChecksumDataItem>
-      <ChecksumDataItem>
+        <CalculationTimestamp>2011-02-17T09:47:00</CalculationTimestamp>
+      </ChecksumDataForFile>
+      <ChecksumDataForFile>
         <ChecksumSpec>
           <ChecksumType>MD5</ChecksumType>
           <ChecksumSalt>A</ChecksumSalt>
         </ChecksumSpec>
         <ChecksumValue>135F21564</ChecksumValue>
-      </ChecksumDataItem>
+        <CalculationTimestamp>2011-02-17T09:47:00</CalculationTimestamp>
+      </ChecksumDataForFile>
     </ChecksumDataItems>
-  </ChecksumsData>
+  </ChecksumsDataForNewFile>
 </bro:PutFileFinalResponse>

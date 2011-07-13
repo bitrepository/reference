@@ -177,7 +177,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ChecksumsData">
+        <xs:element ref="bre:ChecksumsDataForBitRepositoryFile">
           <xs:annotation><xs:documentation xml:lang="en">
           Different Checksums of the file to be sent.
           This can be used in checks of correct receival.
@@ -339,7 +339,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ChecksumsData">
+        <xs:element ref="bre:ChecksumsDataForNewFile">
           <xs:annotation><xs:documentation xml:lang="en">
           Optionally checksums (and type and possibly salt) of file to be put.
           This can be used in checks of correct receival.
@@ -449,7 +449,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ChecksumsData">
+        <xs:element ref="bre:ChecksumsDataForNewFile">
           <xs:annotation><xs:documentation xml:lang="en">
           Checksum calculated as specified in PutFileRequest, if specified
           </xs:documentation></xs:annotation>
@@ -564,14 +564,14 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ChecksumsData">
+        <xs:element ref="bre:ChecksumsDataForBitRepositoryFile">
           <xs:annotation><xs:documentation xml:lang="en">
           Checksums (and type and possibly salt) of file to be deleted.
           This should be used in checks on pillar to ensure the correct file is deleted.
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ChecksumSpecs">
+        <xs:element ref="bre:ChecksumSpecs" minOccurs="0" maxOccurs="1">
           <xs:annotation><xs:documentation xml:lang="en">
           Optionally salt and/or type of checksum for extra checksumscheck at
           completion of delete file. The result can be given in DeleteFileFinalResponse
@@ -594,7 +594,7 @@
           </xs:documentation></xs:annotation>
         </xs:group>
 
-        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1" >
+        <xs:element ref="bre:PillarID" minOccurs="0" maxOccurs="1">
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of responding pillar, which can be used for possible checks
           (otherwise it is known via CorrelationID and ReplyTo)
@@ -649,7 +649,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ChecksumsData">
+        <xs:element ref="bre:ChecksumsDataForBitRepositoryFile" minOccurs="0" maxOccurs="1">
           <xs:annotation><xs:documentation xml:lang="en">
           Checksum calculated as specified in DeleteFileRequest, if specified
           </xs:documentation></xs:annotation>
@@ -764,7 +764,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ChecksumsData">
+        <xs:element ref="bre:ChecksumsDataForBitRepositoryFile">
           <xs:annotation><xs:documentation xml:lang="en">
           Checksums (and type and possibly salt) of file to be replaced; that is the _old_ file.
           This should be used in checks on pillar to ensure the correct file is deleted.
@@ -784,16 +784,14 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <!-- TODO ChecksumsData 2
-        <xs:element ref="bre:ChecksumsData">
+        <xs:element ref="bre:ChecksumsDataForNewFile" minOccurs="0" maxOccurs="1">
           <xs:annotation><xs:documentation xml:lang="en">
           Optionally checksums (and type and possibly salt) of new file to be put in replace operation.
           This can be used in checks of correct receival.
           </xs:documentation></xs:annotation>
         </xs:element>
-        -->
 
-        <xs:element ref="bre:ChecksumSpecs">
+        <xs:element ref="bre:ChecksumSpecs" minOccurs="0" maxOccurs="1">
           <xs:annotation><xs:documentation xml:lang="en">
           Optionally salt and/or type of checksum for extra checksumscheck of new file at
           completion of replace file. The result can be given in ReplaceFileFinalResponse
@@ -896,9 +894,9 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:ChecksumsData">
+        <xs:element ref="bre:ChecksumsDataForBitRepositoryFile" minOccurs="0" maxOccurs="1">
           <xs:annotation><xs:documentation xml:lang="en">
-          Checksum calculated as specified in ReplaceFileRequest, if specified
+          Checksum of replaced file calculated as specified in ReplaceFileRequest, if specified
           </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
