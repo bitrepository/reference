@@ -1,7 +1,7 @@
 /*
  * #%L
  * Bitrepository Integrity Client
- * 
+ * *
  * $Id$
  * $HeadURL$
  * %%
@@ -24,7 +24,7 @@
  */
 package org.bitrepository.integrityclient.cache;
 
-import org.bitrepository.bitrepositoryelements.ChecksumsData;
+import org.bitrepository.bitrepositoryelements.ChecksumsDataGroupedByChecksumSpec;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 
 /**
@@ -41,7 +41,7 @@ public interface CachedIntegrityInformationStorage {
      * Add checksum data to cache.
      * @param data The received data.
      */
-    void addChecksums(ChecksumsData data);
+    void addChecksums(ChecksumsDataGroupedByChecksumSpec data);
 
     //TODO How to access the data
 }

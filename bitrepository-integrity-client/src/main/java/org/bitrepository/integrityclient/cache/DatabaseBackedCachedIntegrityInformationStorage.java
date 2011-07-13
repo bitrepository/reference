@@ -1,7 +1,7 @@
 /*
  * #%L
  * Bitrepository Integrity Client
- * 
+ * *
  * $Id$
  * $HeadURL$
  * %%
@@ -24,7 +24,7 @@
  */
 package org.bitrepository.integrityclient.cache;
 
-import org.bitrepository.bitrepositoryelements.ChecksumsData;
+import org.bitrepository.bitrepositoryelements.ChecksumsDataGroupedByChecksumSpec;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.integrityclient.configuration.integrityclientconfiguration.StorageConfiguration;
 
@@ -46,7 +46,7 @@ public class DatabaseBackedCachedIntegrityInformationStorage implements CachedIn
     }
 
     @Override
-    public void addChecksums(ChecksumsData data) {
+    public void addChecksums(ChecksumsDataGroupedByChecksumSpec data) {
         // TODO implement
     }
 }
