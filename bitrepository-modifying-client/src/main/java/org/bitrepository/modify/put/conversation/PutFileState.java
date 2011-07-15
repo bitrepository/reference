@@ -26,10 +26,12 @@ package org.bitrepository.modify.put.conversation;
 
 import java.util.Timer;
 
+import org.bitrepository.protocol.messagebus.AbstractMessageListener;
+
 /**
  * The interface for states of the PutFile communication.
  */
-public abstract class PutFileState {
+public abstract class PutFileState extends AbstractMessageListener {
 	/** The conversation in the given state.*/
 	protected final SimplePutFileConversation conversation;
 	

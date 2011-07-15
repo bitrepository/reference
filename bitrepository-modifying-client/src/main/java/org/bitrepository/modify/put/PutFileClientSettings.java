@@ -32,7 +32,13 @@ import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
 public interface PutFileClientSettings extends ClientSettings {
     /**
      * Return the default timeout for waiting for a getFile request to finish. 
-     * The number is in milliseconds.
+     * @return The number is in milliseconds.
      */
     long getPutFileDefaultTimeout();
+    
+    /**
+     * Retrieves the audit trail information.
+     * @return A string describing the audit-trail information.
+     */
+    String getAuditTrailInformation();
 }

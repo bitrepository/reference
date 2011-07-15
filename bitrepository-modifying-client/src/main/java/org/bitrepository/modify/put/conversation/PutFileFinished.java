@@ -24,15 +24,45 @@
  */
 package org.bitrepository.modify.put.conversation;
 
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The state for the PutFile communication, where the Put is finished.
  */
 public class PutFileFinished extends PutFileState {
-	/**
-	 * Constructor.
-	 * @param conversation The conversation in this state.
-	 */
-	protected PutFileFinished(SimplePutFileConversation conversation) {
-		super(conversation);
-	}
+    /** The log for this class. */
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    
+    /**
+     * Constructor.
+     * @param conversation The conversation in this state.
+     */
+    protected PutFileFinished(SimplePutFileConversation conversation) {
+        super(conversation);
+    }
+    
+    @Override
+    public void onMessage(IdentifyPillarsForPutFileResponse response) {
+        log.warn("(ConversationID: " + conversation.getConversationID() + ") " 
+                + "Received IdentifyPillarsForPutFileResponse from '" + response.getPillarID() 
+                + "' after the PutFile has ended.");
+    }
+
+    @Override
+    public void onMessage(PutFileProgressResponse response) {
+        log.warn("(ConversationID: " + conversation.getConversationID() + ") " 
+                + "Received PutFileProgressResponse from '" + response.getPillarID() 
+                + "' after the PutFile has ended.");
+    }
+
+    @Override
+    public void onMessage(PutFileFinalResponse response) {
+        log.warn("(ConversationID: " + conversation.getConversationID() + ") " 
+                + "Received PutFileFinalResponse from '" + response.getPillarID() 
+                + "' after the PutFile has ended.");
+    }
 }

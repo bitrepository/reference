@@ -24,9 +24,13 @@
  */
 package org.bitrepository.modify.put;
 
+import java.math.BigInteger;
 import java.net.URL;
 
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.modify.put.conversation.SimplePutFileConversation;
+import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.protocol.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -42,16 +46,35 @@ public class SimplePutClient implements PutClient {
     /** The log for this class.*/
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    /** The mediator for the conversations for the PutFileClient.*/
     private final ConversationMediator<SimplePutFileConversation> conversationMediator;
+    /** The message bus for communication.*/
+    private final MessageBus bus;
+    /** The settings. */
+    private PutFileClientSettings settings;
 
+    /**
+     * Constructor.
+     * @param messageBus The messagebus for communication.
+     * @param settings The configurations and settings.
+     */
     public SimplePutClient(MessageBus messageBus, PutFileClientSettings settings) {
-    	conversationMediator = new CollectionBasedConversationMediator<SimplePutFileConversation>(settings, messageBus,
-    			settings.getClientTopicID());
+        this.conversationMediator = new CollectionBasedConversationMediator<SimplePutFileConversation>(settings, messageBus,
+                settings.getClientTopicID());
+        this.bus = messageBus;
+        this.settings = settings;
     }
 
-	@Override
-	public void putFileWithId(URL url, String fileId, String collectionId) {
-
-	}
-
+    @Override
+    public void putFileWithId(URL url, String fileId, Long sizeOfFile, EventHandler eventHandler) 
+            throws OperationFailedException {
+        ArgumentValidator.checkNotNull(url, "URL url");
+        ArgumentValidator.checkNotNull(fileId, "String fileId");
+        ArgumentValidator.checkNotNull(sizeOfFile, "Long sizeOfFile");
+        
+        SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
+                BigInteger.valueOf(sizeOfFile), eventHandler);
+        conversationMediator.addConversation(conversation);
+        conversation.startConversion();
+    }
 }

@@ -26,16 +26,22 @@ package org.bitrepository.modify.put;
 
 import java.net.URL;
 
+import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.protocol.exceptions.OperationFailedException;
+
 /**
  * Interface for the put client.
  */
 public interface PutClient {
-	/**
-	 * Method for performing the put operation.
-	 * 
-	 * @param url The URL where the file to be put is located.
-	 * @param fileId The id of the file.
-	 * @param collectionId The BitRespositoryCollectionID where the file belongs.
-	 */
-    void putFileWithId(URL url, String fileId, String collectionId);
+    /**
+     * Method for performing the put operation.
+     * 
+     * @param url The URL where the file to be put is located.
+     * @param fileId The id of the file.
+     * @param sizeOfFile The number of bytes the file requires.
+     * @param eventHandler The EventHandler for the operation.
+     * @throws OperationFailedException If the operation failed.
+     */
+    void putFileWithId(URL url, String fileId, Long sizeOfFile, EventHandler eventHandler) 
+            throws OperationFailedException;
 }
