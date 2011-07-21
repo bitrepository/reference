@@ -37,6 +37,8 @@ public interface OperationEvent<T> {
      * <li>RequestSent: A request for the operation has ben sent to the relevant pillar(s). 
      * <li>Progress: In case of longer operations (e.g. requiring file transfers) progress information might be 
      * received from the pillars.
+     * <li>PartiallyComplete: The cases when part of the operation has been completed (e.g. when the operation has been
+     * to be performed at several pillars, and it has been completed on one of them).
      * <li>Complete: The operation has finished
      * </ol>
      * The following error types exist:<ol>
@@ -50,6 +52,7 @@ public interface OperationEvent<T> {
         PillarSelected,
         RequestSent,
         Progress,
+        PartiallyComplete,
         Complete, 
         Failed,
         NoPillarFound,

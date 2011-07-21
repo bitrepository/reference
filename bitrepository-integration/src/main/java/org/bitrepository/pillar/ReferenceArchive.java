@@ -24,9 +24,18 @@
  */
 package org.bitrepository.pillar;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.FileStore;
 import org.bitrepository.common.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,18 +45,30 @@ import org.slf4j.LoggerFactory;
  * It has a very simple structure for keeping the files according to SLA.
  * Each SLA has its own subdirectory in the filedir for this pillar.
  */
-public class ReferenceArchive {
+public class ReferenceArchive implements FileStore {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    /** The directory for the files. Each SLA has its own sub-directory to this base directory, which also contains
-     * a temporary directory where files are downloaded to before they are archived in their SLA file directory.*/
+    // Constants
+    /** Constant for the temporary directory name.*/
+    public static final String TEMPORARY_DIR = "tmpDir";
+    /** Constant for the file directory name.*/
+    public static final String FILE_DIR = "fileDir";
+    /** Constant for the retain directory name.*/
+    public static final String RETAIN_DIR = "retainDir";
+    /** The maximum buffer for the stream interaction.*/
+    public static final int MAX_BUFFER_SIZE = 32 * 1024;
+
+    /** The directory for the files. Contains three sub directories: tempDir, fileDir and retainDir.*/
     private File baseDepositDir;
-    
-    /** The directory where files are being downloaded to before they are put into the directory for the
-     * corresponding SLA. */
+
+    /** The directory where files are being downloaded to before they are put into the filedir. */
     private File tmpDir;
-    
+    /** The directory where the files are being stored.*/
+    private final File fileDir;
+    /** The directory where the files are moved, when they are removed from the archive.*/
+    private final File retainDir;
+
     /** 
      * Constructor. Initialises the file directory. 
      * 
@@ -55,72 +76,84 @@ public class ReferenceArchive {
      */
     public ReferenceArchive(String dirName) {
         ArgumentValidator.checkNotNullOrEmpty(dirName, "String dirName");
-        
+
         // Instantiate the directories for this archive.
         baseDepositDir = FileUtils.retrieveDirectory(dirName);
-        tmpDir = FileUtils.retrieveSubDirectory(baseDepositDir, "tmp");
+        tmpDir = FileUtils.retrieveSubDirectory(baseDepositDir, TEMPORARY_DIR);
+        fileDir = FileUtils.retrieveSubDirectory(baseDepositDir, FILE_DIR);
+        retainDir = FileUtils.retrieveSubDirectory(baseDepositDir, RETAIN_DIR);
     }
-    
-    /**
-     * Method for retrieving a file from the file deposit area of this 
-     * reference pillar.
-     * 
-     * @param fileId The id of the file to find.
-     * @param slaId The slaId for the given file to be found.
-     * @return The file, or if the file does not exist (or is not a file) then 
-     * a null is returned.
-     */
-    public File findFile(String fileId, String slaId) {
-        File slaDir = getSlaDir(slaId);
-        File res = new File(slaDir, fileId);
+
+    @Override
+    public File getFile(String fileID) {
+        File res = new File(fileDir, fileID);
         if(!res.isFile()) {
-            log.debug("The file '" + fileId + "' belonging to the SLA '"
-                    + slaId + "' cannot be found at '" + res.getAbsolutePath()
-                    + "' where it should be located.");
-            return null;
+            throw new IllegalArgumentException("The file '" + fileID + "' is not within the archive.");
         }
         return res;
     }
-    
-    /**
-     * Method for retrieving the directory for a given SLA.
-     * 
-     * @param slaId The id for the SLA.
-     * @return The directory for the given SLA.
-     */
-    private File getSlaDir(String slaId) {
-        File slaDir = FileUtils.retrieveSubDirectory(baseDepositDir, slaId);
-        return slaDir;
+
+    @Override
+    public boolean hasFile(String fileID) {
+        return (new File(fileDir, fileID)).isFile();
     }
-    
-    /**
-     * Method for instantiating a file to be downloaded.
-     * 
-     * @param fileId The id of the file to download.
-     * @return A file for the given fileId at the temporary directory.
-     */
-    public File getNewFile(String fileId) {
-        File res = new File(tmpDir, fileId);
+
+    @Override
+    public Collection<String> getAllFileIds() {
+        String[] ids = fileDir.list();
+        List<String> res = new ArrayList<String>();
+        for(String id : ids) {
+            res.add(id);
+        }
         return res;
     }
-    
-    /**
-     * Method for archiving a file. Moves a file in the temporary directory to
-     * the directory for the given SLA. 
-     * 
-     * @param fileId The id of the file to be archives.
-     * @param slaId The id of the SLA which the file belongs to.
-     */
-    public void archiveFile(String fileId, String slaId) {
-        File oldLocation = new File(tmpDir, fileId);
-        if(!oldLocation.isFile()) {
-        	throw new IllegalArgumentException("The file '" + oldLocation + "' does not exist.");
+
+    @Override
+    public FileInputStream getFileAsInputstream(String fileID) throws Exception {
+        return new FileInputStream(getFile(fileID));
+    }
+
+    @Override
+    public void storeFile(String fileID, InputStream inputStream) throws Exception {
+        // Download the file first, then move it to the fileDir.
+        File downloadedFile = new File(tmpDir, fileID);
+        File archivedFile = new File(fileDir, fileID);
+
+        // Save InputStream to the file.
+        BufferedOutputStream bufferedOutputstream = null;
+        try {
+            bufferedOutputstream = new BufferedOutputStream(new FileOutputStream(downloadedFile));
+            byte[] buffer = new byte[MAX_BUFFER_SIZE];
+            int bytesRead = 0;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                bufferedOutputstream.write(buffer, 0, bytesRead);
+            }
         }
-        File newLocation = new File(getSlaDir(slaId), fileId);
-        if(!newLocation.isFile()) {
-        	throw new IllegalArgumentException("The file '" + newLocation + "' does already exist.");
+        finally {
+            bufferedOutputstream.close();
         }
-        
-        oldLocation.renameTo(newLocation);
+
+        // Move the file to the fileDir.
+        downloadedFile.renameTo(archivedFile);
+    }
+
+    @Override
+    public void replaceFile(String fileID, InputStream inputStream) throws Exception {
+        // delete the old file.
+        deleteFile(fileID);
+
+        // Store the new file.
+        storeFile(fileID, inputStream);
+    }
+
+    @Override
+    public void deleteFile(String fileID) throws Exception {
+        // Move old file to retain area.
+        File oldFile = new File(fileDir, fileID);
+        if(!oldFile.isFile()) {
+            throw new FileNotFoundException("Cannot locate the file to replace '" + oldFile.getAbsolutePath() + "'!");
+        }
+        File retainFile = new File(retainDir, fileID);
+        oldFile.renameTo(retainFile);
     }
 }

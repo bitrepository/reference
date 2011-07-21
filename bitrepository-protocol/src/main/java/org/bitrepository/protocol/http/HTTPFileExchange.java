@@ -78,6 +78,16 @@ public class HTTPFileExchange implements FileExchange {
     }
     
     @Override
+    public void uploadToServer(InputStream in, URL url) throws IOException {
+        performUpload(in, url);
+    }
+
+    @Override
+    public InputStream downloadFromServer(URL url) throws IOException {
+        return retrieveStream(url);
+    }
+    
+    @Override
     public URL uploadToServer(InputStream in, String filename)
             throws IOException {
         if(in == null || filename == null || filename.isEmpty()) {
@@ -157,11 +167,21 @@ public class HTTPFileExchange implements FileExchange {
             throw new IllegalArgumentException("OutputStream out: '" + out
                     + "', URL: '" + url + "'");
         }
+        InputStream is = retrieveStream(url);
+        copyInputStreamToOutputStream(is, out);
+    }
+    
+    /**
+     * Retrieves the Input stream for a given URL.
+     * @param url The URL to retrieve.
+     * @return The InputStream to the given URL.
+     * @throws IOException If any problems occurs during the retrieval.
+     */
+    protected InputStream retrieveStream(URL url) throws IOException {
         HttpURLConnection conn = getConnection(url);
         conn.setDoInput(true);
         conn.setRequestMethod("GET");
-        InputStream is = conn.getInputStream();
-        copyInputStreamToOutputStream(is, out);
+        return conn.getInputStream();
     }
     
     /**

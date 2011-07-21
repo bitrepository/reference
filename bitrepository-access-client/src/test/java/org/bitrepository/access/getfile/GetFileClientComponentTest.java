@@ -62,8 +62,8 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
 
         if (useMockupPillar()) {
             testMessageFactory = new TestGetFileMessageFactory(settings.getBitRepositoryCollectionID());
-            pillar1FileStore = new TestFileStore("Pillar1");
-            pillar2FileStore = new TestFileStore("Pillar2");
+            pillar1FileStore = new TestFileStore("Pillar1", new File("src/test/resources/test-files/", DEFAULT_FILE_ID));
+            pillar2FileStore = new TestFileStore("Pillar2", new File("src/test/resources/test-files/", DEFAULT_FILE_ID));
             // The following line is also relevant for non-mockup senarios, where the pillars needs to be initialized 
             // with content.
         }
@@ -136,7 +136,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
                 "The GetFileClient notifies that the file is ready through the callback listener and the uploaded " +
         "file is present.");
         if (useMockupPillar()) {
-            httpServer.uploadFile(pillar1FileStore.getInputstream(receivedGetFileRequest.getFileID()),
+            httpServer.uploadFile(pillar1FileStore.getFileAsInputstream(receivedGetFileRequest.getFileID()),
                     new URL(receivedGetFileRequest.getFileAddress()));
 
             GetFileFinalResponse completeMsg = testMessageFactory.createGetFileFinalResponse(

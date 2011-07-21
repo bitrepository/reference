@@ -12,15 +12,35 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
   <description>Functionality for modifying the content of a Bitrepository system. This includes PutFIle, 
   Replace and Delete functionality.</description>
   <dependencies>
-        <dependency>
-            <groupId>org.bitrepository</groupId>
-            <artifactId>bitrepository-protocol</artifactId>
-            <version>0.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bitrepository</groupId>
-            <artifactId>bitrepository-message-xml</artifactId>
-            <version>0.2-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-protocol</artifactId>
+      <version>0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-message-xml</artifactId>
+      <version>0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-common</artifactId>
+      <version>0.2-SNAPSHOT</version>
+    </dependency>
+    <!--  Test dependencies -->
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-protocol</artifactId>
+      <version>0.2-SNAPSHOT</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-common</artifactId>
+      <version>0.2-SNAPSHOT</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

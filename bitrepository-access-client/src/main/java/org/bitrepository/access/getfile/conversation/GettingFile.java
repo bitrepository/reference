@@ -102,7 +102,8 @@ public class GettingFile extends GetFileState {
      */
     @Override
     public void onMessage(GetFileProgressResponse msg) {
-        log.debug("Received progress response for retrieval of file " + msg);
+        log.debug("(ConversationID: " + conversation.getConversationID() + ") " +
+                "Received progress response for retrieval of file " + msg.getFileID() + " : \n{}", msg);
         if (conversation.eventHandler != null) {
             conversation.eventHandler.handleEvent(
                     new DefaultEvent(OperationEvent.OperationEventType.Progress, 

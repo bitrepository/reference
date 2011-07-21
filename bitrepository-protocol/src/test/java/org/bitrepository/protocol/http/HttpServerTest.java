@@ -107,7 +107,7 @@ public class HttpServerTest extends IntegrationTest {
           
         addStep("Uploading file", 
         		"The file can now de download from the file server."); 
-        httpServer.uploadFile(fileStore.getInputstream(
+        httpServer.uploadFile(fileStore.getFileAsInputstream(
                 TestFileStore.DEFAULT_EXISTING_FILE), 
                 httpServer.getURL(httpTestFile));
         httpServer.assertFileEquals(

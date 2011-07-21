@@ -1,0 +1,9 @@
+<IntegrationConfiguration xmlns="http://bitrepository.org/integration/configuration/IntegrationConfiguration.xsd" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://bitrepository.org/integration/configuration/IntegrationConfiguration.xsd" >
+    <queue>MyQueue</queue>
+    <bitrepositoryCollectionId>MyCollection</bitrepositoryCollectionId>
+    <pillarId>MyPillar</pillarId>
+    <filedir>tempDir</filedir>
+</IntegrationConfiguration>
+

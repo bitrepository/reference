@@ -85,8 +85,7 @@ public class MessageBusTest extends ExtendedTestCase {
 
         Assert.assertNotNull(listener.getMessage());
         XMLAssert.assertXMLEqual(JaxbHelper.serializeToXml(content),
-                                 JaxbHelper
-                                         .serializeToXml(listener.getMessage()));
+                JaxbHelper.serializeToXml(listener.getMessage()));
     }
 
     @Test(groups = {"test-first"})
@@ -130,55 +129,55 @@ public class MessageBusTest extends ExtendedTestCase {
     @Test(groups = { "specificationonly" })
     public final void twoMessageBusConnectionTest() throws Exception {
         addDescription("Verifies that we are switch to a second message bus. "
-                               + "Awaiting introduction of robustness issue");
+                + "Awaiting introduction of robustness issue");
         addStep("Defining constants for this test.", "Should be allowed.");
         String QUEUE = "DUAL-MESSAGEBUS-TEST-" + new Date().getTime();
-        
-    	addStep("Making the configurations for a embedded message bus.", "Should be allowed.");
-    	MessageBusConfigurations embeddedMBConfig = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
-        
+
+        addStep("Making the configurations for a embedded message bus.", "Should be allowed.");
+        MessageBusConfigurations embeddedMBConfig = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+
         addStep("Start a embedded activeMQ instance based on the configuration.", "Should be allowed.");
         LocalActiveMQBroker broker = new LocalActiveMQBroker(embeddedMBConfig.getPrimaryMessageBusConfiguration());
         try {
-        	broker.start();
+            broker.start();
 
-        	addStep("Making the configurations for the first message bus.", "Should be allowed.");
-        	MessageBusConfigurations configs1 = new MessageBusConfigurations();
-        	MessageBusConfiguration config1 = new MessageBusConfiguration();
-        	config1.setUrl("tcp://sandkasse-01.kb.dk:61616");
-        	config1.setId("kb-test-messagebus");
-        	config1.setUsername("");
-        	config1.setPassword("");
-        	configs1.setPrimaryMessageBusConfiguration(config1);
+            addStep("Making the configurations for the first message bus.", "Should be allowed.");
+            MessageBusConfigurations configs1 = new MessageBusConfigurations();
+            MessageBusConfiguration config1 = new MessageBusConfiguration();
+            config1.setUrl("tcp://sandkasse-01.kb.dk:61616");
+            config1.setId("kb-test-messagebus");
+            config1.setUsername("");
+            config1.setPassword("");
+            configs1.setPrimaryMessageBusConfiguration(config1);
 
-        	addStep("Initiating the connection to the messagebus based on the first configuration", 
-        	"This should definitly be allowed.");
-        	MessageBus bus1 = new ActiveMQMessageBus(configs1);
+            addStep("Initiating the connection to the messagebus based on the first configuration", 
+            "This should definitly be allowed.");
+            MessageBus bus1 = new ActiveMQMessageBus(configs1);
 
-        	addStep("Initiating the connection to the messagebus based on the second configuration", 
-        	"It should be possible to have several message busses at the same time.");
-        	MessageBus bus2 = new ActiveMQMessageBus(embeddedMBConfig);
+            addStep("Initiating the connection to the messagebus based on the second configuration", 
+            "It should be possible to have several message busses at the same time.");
+            MessageBus bus2 = new ActiveMQMessageBus(embeddedMBConfig);
 
-        	addStep("Creating a test message to send.", "The interface is tested elsewhere and should work.");
-        	Alarm message1 = ExampleMessageFactory.createMessage(Alarm.class);
-        	Assert.assertNotNull(message1);
-        	message1.setTo(QUEUE);
-        	message1.setCorrelationID("1");
-        	
-        	addStep("Create and add a message listener to the first message bus.", "Should be allowed.");
-        	TestMessageListener listener1 = new TestMessageListener();
-        	Assert.assertNull(listener1.getMessage());
-        	bus1.addListener(QUEUE, listener1);
-        	
-        	addStep("Create and add a message listener to the second message bus.", "Should be allowed.");
-        	TestMessageListener listener2 = new TestMessageListener();
-        	Assert.assertNull(listener2.getMessage());
-        	bus2.addListener(QUEUE, listener2);
+            addStep("Creating a test message to send.", "The interface is tested elsewhere and should work.");
+            Alarm message1 = ExampleMessageFactory.createMessage(Alarm.class);
+            Assert.assertNotNull(message1);
+            message1.setTo(QUEUE);
+            message1.setCorrelationID("1");
 
-        	addStep("Send the test message on messagebus 1.", "Should be received by listener 1.");
-        	bus1.sendMessage(message1);
-        	
-        	addStep("Wait for the message to be sent over the messagebus", "We wait.");
+            addStep("Create and add a message listener to the first message bus.", "Should be allowed.");
+            TestMessageListener listener1 = new TestMessageListener();
+            Assert.assertNull(listener1.getMessage());
+            bus1.addListener(QUEUE, listener1);
+
+            addStep("Create and add a message listener to the second message bus.", "Should be allowed.");
+            TestMessageListener listener2 = new TestMessageListener();
+            Assert.assertNull(listener2.getMessage());
+            bus2.addListener(QUEUE, listener2);
+
+            addStep("Send the test message on messagebus 1.", "Should be received by listener 1.");
+            bus1.sendMessage(message1);
+
+            addStep("Wait for the message to be sent over the messagebus", "We wait.");
             synchronized (this) {
                 try {
                     wait(TIME_FOR_MESSAGE_TRANSFER_WAIT);
@@ -186,12 +185,12 @@ public class MessageBusTest extends ExtendedTestCase {
                     e.printStackTrace();
                 }
             }
-        	
+
             addStep("Verify that the message is received by the message listener", 
-            		"It should be the same message as was sent.");
+            "It should be the same message as was sent.");
             Assert.assertNotNull(listener1.getMessage(), "The first message listener should have received a message.");
             Assert.assertEquals(listener1.getMessage().getClass(), message1.getClass());
-        	
+
             Assert.assertNull(listener2.getMessage(), "The second message listener should not have received a message.");
 
             addStep("Create a new message and send it over the other message bus.", "Should be allowed.");
@@ -200,7 +199,7 @@ public class MessageBusTest extends ExtendedTestCase {
             message2.setCorrelationID("2");
             bus2.sendMessage(message2);
 
-        	addStep("Wait for the message to be sent over the messagebus", "We wait.");
+            addStep("Wait for the message to be sent over the messagebus", "We wait.");
             synchronized (this) {
                 try {
                     wait(10 * TIME_FOR_MESSAGE_TRANSFER_WAIT);
@@ -208,20 +207,20 @@ public class MessageBusTest extends ExtendedTestCase {
                     e.printStackTrace();
                 }
             }
-        	
+
             addStep("Verify that the message is received by the message listener", 
-            		"It should be the same message as was sent.");
+            "It should be the same message as was sent.");
             Assert.assertNotNull(listener2.getMessage(), "The second message listener should have received a message.");
             Assert.assertEquals(listener2.getMessage().getClass(), message2.getClass());
 
             Assert.assertNotNull(listener1.getMessage(), "The first message listener should have received a message.");
             Assert.assertEquals(listener1.getMessage().getClass(), message1.getClass());
-        	
+
             Assert.assertEquals(((Alarm) listener1.getMessage()).getCorrelationID(), "1");
             Assert.assertEquals(((Alarm) listener2.getMessage()).getCorrelationID(), "2");
 
         } finally {
-        	broker.stop();
+            broker.stop();
         }
     }
 
@@ -276,7 +275,7 @@ public class MessageBusTest extends ExtendedTestCase {
 
             addStep("Make a listener for the messagebus and make it listen. "
                     + "Then send a message for the message listener to catch.",
-                    "several DEBUG-level logs");
+            "several DEBUG-level logs");
             TestMessageListener listener = new TestMessageListener();
             con.addListener("EmbeddedBrokerTopic", listener);
             con.sendMessage(content);
@@ -291,7 +290,7 @@ public class MessageBusTest extends ExtendedTestCase {
 
             Assert.assertNotNull(listener.getMessage(), "A message should be received.");
             XMLAssert.assertEquals(JaxbHelper.serializeToXml(content),
-                                   JaxbHelper.serializeToXml(listener.getMessage()));
+                    JaxbHelper.serializeToXml(listener.getMessage()));
 
             con.removeListener("EmbeddedBrokerTopic", listener);
         } finally {
@@ -312,9 +311,9 @@ public class MessageBusTest extends ExtendedTestCase {
         }
         @Override
         public final void onMessage(Alarm message) {
-        	this.message = message;
+            this.message = message;
         }
-        
+
         /**
          * Retrieving the last message caught by this listener.
          * @return The last received message.

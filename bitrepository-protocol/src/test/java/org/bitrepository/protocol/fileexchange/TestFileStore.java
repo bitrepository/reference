@@ -30,11 +30,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.bitrepository.common.FileStore;
 import org.bitrepository.protocol.TestMessageFactory;
 
-public class TestFileStore {    
+public class TestFileStore implements FileStore {    
     private static final String ROOT_STORE = "target/test-classes/filestorage";
     private final String storageDir;
     /** The file store already contains this file when it created. The fileID corresponds to the file ID found in the 
@@ -43,24 +47,37 @@ public class TestFileStore {
     public static final String DEFAULT_EXISTING_FILE = TestMessageFactory.FILE_ID_DEFAULT;
     private final String storeName;
 
-    public TestFileStore(String storeName) {
+    //    public TestFileStore(String storeName) {
+    //        this.storeName = storeName;
+    //        storageDir = ROOT_STORE + "/" + storeName;
+    //        File defaultFile = new File("src/test/resources/test-files/", DEFAULT_EXISTING_FILE);
+    //        try {
+    //            FileUtils.copyFileToDirectory(defaultFile, new File(storageDir));
+    //        } catch (IOException e) {
+    //            throw new RuntimeException(e);
+    //        }
+    //    }
+
+    /**
+     * Constructor, where the FileStore is initialized with some files.
+     * @param storeName The id for the FileStore.
+     * @param initialFiles The files to copy into the FileStore during initialization.
+     */
+    public TestFileStore(String storeName, File ... initialFiles) {
         this.storeName = storeName;
         storageDir = ROOT_STORE + "/" + storeName;
-        File defaultFile = new File("src/test/resources/test-files/", DEFAULT_EXISTING_FILE);
-        try {
-            FileUtils.copyFileToDirectory(defaultFile, new File(storageDir));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+        for(File initFile : initialFiles) {
+            try {
+                FileUtils.copyFileToDirectory(initFile, new File(storageDir));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
- 
-    /**
-     * Returns a input file to the indicated file
-     * @param fileID
-     * @param outputStream
-     * @return
-     */
-    public FileInputStream getInputstream(String fileID) {
+
+    @Override
+    public FileInputStream getFileAsInputstream(String fileID) {
         try {
             return new FileInputStream(new File(storageDir, fileID));
         } catch (Exception e) {
@@ -68,11 +85,7 @@ public class TestFileStore {
         } 
     }
 
-    /**
-     * Stored the indicated file from the supplied input stream
-     * @param fileID
-     * @param inputStream
-     */
+    @Override
     public void storeFile(String fileID, InputStream inputStream)  throws IOException  {
         File theFile = new File(fileID);
 
@@ -83,51 +96,57 @@ public class TestFileStore {
 
         // Create directory for the file, if requested.
         if (theFile.getParentFile() != null) {
-          theFile.getParentFile().mkdirs();
+            theFile.getParentFile().mkdirs();
         }
 
         // Save InputStream to the file.
         BufferedOutputStream bufferedOutputstream = null;
         try {
             bufferedOutputstream = new BufferedOutputStream(new FileOutputStream(theFile));
-          byte[] buffer = new byte[32 * 1024];
-          int bytesRead = 0;
-          while ((bytesRead = inputStream.read(buffer)) != -1) {
-              bufferedOutputstream.write(buffer, 0, bytesRead);
-          }
+            byte[] buffer = new byte[32 * 1024];
+            int bytesRead = 0;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                bufferedOutputstream.write(buffer, 0, bytesRead);
+            }
         }
         finally {
             bufferedOutputstream.close();
         }
     }
-    
-    /**
-     * Replaces the indicated file
-     * @param fileID
-     * @param inputStream
-     */
+
+    @Override
     public void replaceFile(String fileID, InputStream inputStream)  throws IOException  {
         deleteFile(fileID);
         storeFile(fileID, inputStream);
     }
-    
-    /**
-     * Deletes the indicated file
-     * @param fileID
-     * @param inputStream
-     */
-    public void deleteFile(String fileID)  throws IOException  {
-        throw new UnsupportedOperationException();
-    }
-    
+
     @Override
-    public String toString() {
-        return "TestFileStore [storageDir=" + storageDir + ", storeName=" + storeName
-                + "]";
+    public void deleteFile(String fileID) {
+        getFile(fileID).delete();
     }
 
+    @Override
     public File getFile(String fileID) {
         return new File(storageDir, fileID);
     }
 
+    @Override
+    public Collection<String> getAllFileIds() {
+        String[] ids = new File(storageDir).list();
+        List<String> res = new ArrayList<String>();
+        for(String id : ids) {
+            res.add(id);
+        }
+        return res;
+    }
+
+    @Override
+    public boolean hasFile(String fileID) {
+        return (getFile(fileID)).isFile();
+    }
+
+    @Override
+    public String toString() {
+        return "TestFileStore [storageDir=" + storageDir + ", storeName=" + storeName + "]";
+    }
 }

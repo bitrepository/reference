@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Protocol
  * 
- * $Id$
- * $HeadURL$
+ * $Id: DefaultFixtureClientTest.java 209 2011-07-04 19:38:34Z mss $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-protocol/src/test/java/org/bitrepository/clienttest/DefaultFixtureClientTest.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -22,10 +22,11 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.clienttest;
+package org.bitrepository.pillar;
 
 import java.util.Date;
 
+import org.bitrepository.clienttest.MessageReceiver;
 import org.bitrepository.common.IntegrationTest;
 import org.bitrepository.protocol.LocalActiveMQBroker;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -45,43 +46,29 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 
 /**
- * Contains the generic parts for tests integrating to the message bus. 
+ * Contains the generic parts for pillar tests integrating to the message bus. 
+ * Mostly copied from DefaultFixtureClientTest...
  */
-public abstract class DefaultFixtureClientTest extends IntegrationTest {
+public abstract class DefaultFixturePillarTest extends IntegrationTest {
     protected MessageBus messageBus;
     protected static final String DEFAULT_FILE_ID = TestMessageFactory.FILE_ID_DEFAULT;
 
+    protected static String pillarDestinationId;
+    protected MessageReceiver pillarTopic;
+    
     protected static String clientDestinationId;
     protected MessageReceiver clientTopic;
 
     protected static String bitRepositoryCollectionDestinationID;
     protected MessageReceiver bitRepositoryCollectionDestination; 
 
-    protected static String pillar1DestinationId;
-    protected MessageReceiver pillar1Destination; 
-    protected static final String PILLAR1_ID = "Pillar1";
-
-    protected static String pillar2DestinationId;
-    protected MessageReceiver pillar2Destination; 
-    protected static final String PILLAR2_ID = "Pillar2";
-
-    protected ClientSettings settings;
+    protected PillarSettings settings;
     protected MessageBusConfigurations messageBusConfigurations;
 
     protected LocalActiveMQBroker broker;
     private EmbeddedHttpServer server;
 
     protected HttpServerConnector httpServer;
-
-    /**
-     * Indicated whether the embedded mockup pillars are going to be used in the test (means the test is run as a client 
-     * component test, or if external pillar are going to be used. If external pillar are going to be used they need 
-     * to be started before running the test, and have the following configuration: <ul>
-     * <li>The pillar should contain one file, the {@link TestMessageFactory#FILE_ID_DEFAULT} file. The c
-     */
-    public boolean useMockupPillar() {
-        return System.getProperty("useMockupPillar", "true").equals("true");
-    }
 
     /** Indicated whether an embedded active MQ should be started and used */ 
     public boolean useEmbeddedMessageBus() {
@@ -102,9 +89,7 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     @BeforeClass (alwaysRun = true)
     public void setupTest() throws Exception {
         defineDestinations();
-        if (useMockupPillar()) {
-            initializeMessageBus();
-        }
+        initializeMessageBus();
         initializeHttpServer();
     }
 
@@ -140,14 +125,12 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
             messageBusConfigurations = MessageBusConfigurationFactory.createDefaultConfiguration();
             messageBus = new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(), testEventManager);
         }
-        clientTopic = new MessageReceiver("Client topic receiver", testEventManager);
+        pillarTopic = new MessageReceiver("pillar topic receiver", testEventManager);
         bitRepositoryCollectionDestination = new MessageReceiver("BitRepositoryCollection topic receiver", testEventManager);
-        pillar1Destination = new MessageReceiver("Pillar1 topic receiver", testEventManager);
-        pillar2Destination = new MessageReceiver("Pillar2 topic receiver", testEventManager);
+        clientTopic = new MessageReceiver("client topic receiver", testEventManager);
+        messageBus.addListener(pillarDestinationId, pillarTopic.getMessageListener());    
+        messageBus.addListener(bitRepositoryCollectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
         messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());    
-        messageBus.addListener(bitRepositoryCollectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());    
-        messageBus.addListener(pillar1DestinationId, pillar1Destination.getMessageListener());  
-        messageBus.addListener(pillar2DestinationId, pillar2Destination.getMessageListener());       
     }
 
     private void initializeHttpServer() throws Exception {
@@ -166,36 +149,35 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
 
     private void defineDestinations() {
         String topicPostfix = "-" + System.getProperty("user.name") + "-" + new Date().getTime();
-        clientDestinationId = "Client_topic" + topicPostfix;
+        pillarDestinationId = "pillar_topic" + topicPostfix;
         bitRepositoryCollectionDestinationID = "BitRepositoryCollection_topic" + topicPostfix;
-        pillar1DestinationId = "Pillar1_topic" + topicPostfix;
-        pillar2DestinationId = "Pillar2_topic" + topicPostfix;
+        clientDestinationId = "client" + topicPostfix;
     }
 
     private void configureBitRepositoryCollectionConfig(String testName) {
         String bitRepositoryCollectionID = testName + "-" + System.getProperty("user.name") + "-" + new Date().getTime();
-        MutableClientSettings clientSettings = new MutableClientSettings();
-        clientSettings.setBitRepositoryCollectionID(bitRepositoryCollectionID);
-        clientSettings.setClientTopicID(clientDestinationId);
-        clientSettings.setBitRepositoryCollectionTopicID(bitRepositoryCollectionDestinationID);
-        clientSettings.setLocalFileStorage("target/fileDir");
-        clientSettings.setMessageBusConfiguration(messageBusConfigurations);
-        settings = clientSettings;
+        MutablePillarSettings pillarSettings = new MutablePillarSettings();
+        pillarSettings.setBitRepositoryCollectionID(bitRepositoryCollectionID);
+        pillarSettings.setBitRepositoryCollectionTopicID(bitRepositoryCollectionDestinationID);
+        pillarSettings.setMessageBusConfiguration(messageBusConfigurations);
+        pillarSettings.setFileDirName("target/fileDir");
+        pillarSettings.setLocalQueue(pillarDestinationId);
+        pillarSettings.setTimeToDownloadMeasure("MILLISECONDS");
+        pillarSettings.setTimeToDownloadValue(1L);
+        pillarSettings.setTimeToUploadMeasure("MILLISECONDS");
+        pillarSettings.setTimeToUploadValue(1L);
+        settings = pillarSettings;
     }
 
     private void disconnectFromMessageBus() {
-        if (useMockupPillar()) {
-            messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
-            messageBus.removeListener(bitRepositoryCollectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
-            messageBus.removeListener(pillar1DestinationId, pillar1Destination.getMessageListener());
-            messageBus.removeListener(pillar2DestinationId, pillar2Destination.getMessageListener());
+        messageBus.removeListener(pillarDestinationId, pillarTopic.getMessageListener());
+        messageBus.removeListener(bitRepositoryCollectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
 
-            if (useEmbeddedMessageBus()) { 
-                try {
-                    broker.stop();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        if (useEmbeddedMessageBus()) { 
+            try {
+                broker.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

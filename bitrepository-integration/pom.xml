@@ -33,6 +33,18 @@
       <artifactId>bitrepository-message-xml</artifactId>
       <version>0.2-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-protocol</artifactId>
+      <version>0.2-SNAPSHOT</version>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-common</artifactId>
+      <version>0.2-SNAPSHOT</version>
+      <type>test-jar</type>
+    </dependency>
   </dependencies>
   <description>Here you can find the functionality for working with crosscutting module concerns. 
   This is mainly integration tests.</description>

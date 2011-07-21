@@ -39,6 +39,25 @@ import java.net.URL;
  * TODO Interface is extremely HTTP-centric. Should be generified. HTTP-centricity shines through to usage.
  */
 public interface FileExchange {
+    
+    /**
+     * Method for uploading to a specific URL.
+     * @param in The stream from the file to upload.
+     * @param url The URL where the stream is to be put.
+     * @throws IOException If any problems occurs during the transportation of
+     * the data.
+     */
+    void uploadToServer(InputStream in, URL url) throws IOException;
+    
+    /**
+     * Method for retrieving a specific URL as a stream.
+     * @param url The URL to retrieve.
+     * @return The InputStream for the data at the given URL.
+     * @throws IOException If any problems occurs during the transportation of
+     * the data.
+     */
+    InputStream downloadFromServer(URL url) throws IOException;
+    
     /**
      * Put a piece of data onto a http-server and returns the url for the
      * location of this data.

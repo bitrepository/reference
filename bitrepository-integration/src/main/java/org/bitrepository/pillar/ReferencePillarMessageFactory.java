@@ -41,22 +41,27 @@ import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
  * Class for generating the messages for the Reference Pillar.
  */
 public class ReferencePillarMessageFactory {
-    /** The pillar this message creator belongs to.*/
-    ReferencePillar pillar;
+    /** The settings for the pillar.*/
+    final PillarSettings settings;
+    
+    // Constants
+    /** The constant for the VERSION of the messages.*/
+    private final BigInteger VERSION = BigInteger.valueOf(1);
+    /** The constant for the MIN_VERSION of the messages.*/
+    private final BigInteger MIN_VERSION = BigInteger.valueOf(1);
     
     /**
      * Package protected constructor.
      */
-    ReferencePillarMessageFactory(ReferencePillar refPillar) {
-        pillar = refPillar;
+    ReferencePillarMessageFactory(PillarSettings pSettings) {
+        settings = pSettings;
     }
     
     /**
      * Creates a IdentifyPillarsForGetFileResponse based on a 
      * IdentifyPillarsForGetFileRequest. The following fields are not inserted:
      * <br/> - TimeToDeliver
-     * <br/> - PillarChecksumType
-     * <br/> - ReplyTo
+     * <br/> - AuditTrailInformation
      * 
      * @param msg The IdentifyPillarsForGetFileRequest to base the response on.
      * @return The response to the request.
@@ -65,12 +70,15 @@ public class ReferencePillarMessageFactory {
             IdentifyPillarsForGetFileRequest msg) {
         IdentifyPillarsForGetFileResponse res 
                 = new IdentifyPillarsForGetFileResponse();
+        res.setMinVersion(MIN_VERSION);
+        res.setVersion(VERSION);
         res.setCorrelationID(msg.getCorrelationID());
-        res.setMinVersion(BigInteger.valueOf(1L));
-        res.setVersion(BigInteger.valueOf(1L));
         res.setFileID(msg.getFileID());
-        res.setPillarID(pillar.getPillarId());
-        res.setBitRepositoryCollectionID(msg.getBitRepositoryCollectionID());
+        res.setTo(msg.getReplyTo());
+        res.setPillarID(settings.getPillarId());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setReplyTo(settings.getLocalQueue());
+        
         return res;
     }
     
@@ -78,8 +86,8 @@ public class ReferencePillarMessageFactory {
      * Creates a IdentifyPillarsForPutFileResponse based on a 
      * IdentifyPillarsForPutFileRequest. The following fields are not inserted:
      * <br/> - TimeToDeliver
-     * <br/> - ChecksumType
-     * <br/> - ReplyTo
+     * <br/> - AuditTrailInformation
+     * <br/> - PillarChecksumSpec
      * 
      * @param msg The IdentifyPillarsForPutFileRequest to base the response on.
      * @return A IdentifyPillarsForPutFileResponse from the request.
@@ -88,12 +96,13 @@ public class ReferencePillarMessageFactory {
             IdentifyPillarsForPutFileRequest msg) {
         IdentifyPillarsForPutFileResponse res
                 = new IdentifyPillarsForPutFileResponse();
+        res.setMinVersion(MIN_VERSION);
+        res.setVersion(VERSION);
         res.setCorrelationID(msg.getCorrelationID());
-        res.setMinVersion(BigInteger.valueOf(1L));
-        res.setVersion(BigInteger.valueOf(1L));
-//        res.setFileID(msg.getFileID());
-        res.setBitRepositoryCollectionID(msg.getBitRepositoryCollectionID());
-        res.setPillarID(pillar.getPillarId());
+        res.setTo(msg.getReplyTo());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setPillarID(settings.getPillarId());
+        res.setReplyTo(settings.getLocalQueue());
         
         return res;
     }
@@ -101,53 +110,50 @@ public class ReferencePillarMessageFactory {
     /**
      * Creates a GetFileResponse based on a GetFileRequest. Missing the 
      * following fields:
-     * <br/> - Cheksum
-     * <br/> - FileAddress
-     * <br/> - FileChecksumType
-     * <br/> - PartLength
-     * <br/> - PartOffSet
-     * <br/> - PillarChecksumType
-     * <br/> - ReplyTo
-     * <br/> - ExpectedFileSize
-     * <br/> - ResponseCode
-     * <br/> - ResponseText
+     * <br/> - AuditTrailInformation
+     * <br/> - ChecksumsDataForBitRepositoryFile
+     * <br/> - FileSize
+     * <br/> - ProgressResponseInfo
      * 
      * @param msg The GetFileRequest to base the progress response on.
      * @return The GetFileProgressResponse based on the request.
      */
     public GetFileProgressResponse createGetFileProgressResponse(GetFileRequest msg) {
         GetFileProgressResponse res = new GetFileProgressResponse();
+        res.setMinVersion(MIN_VERSION);
+        res.setVersion(VERSION);
         res.setCorrelationID(msg.getCorrelationID());
-        res.setMinVersion(BigInteger.valueOf(1L));
-        res.setVersion(BigInteger.valueOf(1L));
+        res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
-        res.setPillarID(pillar.getPillarId());
-        res.setBitRepositoryCollectionID(msg.getBitRepositoryCollectionID());
-        
+        res.setFilePart(msg.getFilePart());
+        res.setTo(msg.getReplyTo());
+        res.setPillarID(settings.getPillarId());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setReplyTo(settings.getLocalQueue());
+
         return res;
     }
     
     /**
      * Creates a GetFileFinalResponse based on a GetFileRequest. Missing the 
      * following fields:
-     * <br/> - FileAddress
-     * <br/> - CompleteCode
-     * <br/> - CompleteText
-     * <br/> - PartLength
-     * <br/> - PartOffSet
-     * <br/> - PillarChecksumType
+     * <br/> - AuditTrailInformation
+     * <br/> - FinalResponseInfo
      * 
      * @param msg The GetFileRequest to base the final response on.
      * @return The GetFileFinalResponse based on the request.
      */
     public GetFileFinalResponse createGetFileFinalResponse(GetFileRequest msg) {
         GetFileFinalResponse res = new GetFileFinalResponse();
+        res.setMinVersion(MIN_VERSION);
+        res.setVersion(VERSION);
         res.setCorrelationID(msg.getCorrelationID());
-        res.setMinVersion(BigInteger.valueOf(1L));
-        res.setVersion(BigInteger.valueOf(1L));
         res.setFileID(msg.getFileID());
-        res.setPillarID(pillar.getPillarId());
-        res.setBitRepositoryCollectionID(msg.getBitRepositoryCollectionID());
+        res.setFileAddress(msg.getFileAddress());
+        res.setFilePart(msg.getFilePart());
+        res.setPillarID(settings.getPillarId());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setReplyTo(settings.getLocalQueue());
 
         return res;
     }
@@ -155,22 +161,24 @@ public class ReferencePillarMessageFactory {
     /**
      * Creates a PutFileProgressResponse based on a PutFileRequest. Missing the 
      * following fields:
-     * <br/> - ResponseCode
-     * <br/> - ResponseText
-     * <br/> - FileAddress
-     * <br/> - PillarChecksumType
-     * <br/> - ReplyTo
+     * <br/> - AuditTrailInformation
+     * <br/> - PillarChecksumSpec
+     * <br/> - ProgressResponseInfo
      * 
      * @param msg The PutFileRequest to base the progress response on.
      * @return The PutFileProgressResponse based on the request.
      */
     public PutFileProgressResponse createPutFileProgressResponse(PutFileRequest msg) {
         PutFileProgressResponse res = new PutFileProgressResponse();
+        res.setMinVersion(MIN_VERSION);
+        res.setVersion(VERSION);
         res.setCorrelationID(msg.getCorrelationID());
-        res.setVersion(BigInteger.valueOf(1L));
-        res.setMinVersion(BigInteger.valueOf(1L));
-        res.setPillarID(pillar.getPillarId());
-        res.setBitRepositoryCollectionID(msg.getBitRepositoryCollectionID());
+        res.setFileAddress(msg.getFileAddress());
+        res.setFileID(msg.getFileID());
+        res.setTo(msg.getReplyTo());
+        res.setPillarID(settings.getPillarId());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setReplyTo(settings.getLocalQueue());
         
         return res;
     }
@@ -178,24 +186,25 @@ public class ReferencePillarMessageFactory {
     /**
      * Creates a PutFileFinalResponse based on a PutFileRequest. Missing the
      * following fields:
-     * <br/> - CompleteCode
-     * <br/> - CompleteText
-     * <br/> - ReplyTo
-     * <br/> - CompleteSaltChecksum
-     * <br/> - FileAddress
-     * <br/> - PillarChecksumType
+     * <br/> - AuditTrailInformation
+     * <br/> - ChecksumsDataForNewFile
+     * <br/> - FinalResponseInfo
+     * <br/> - PillarChecksumSpec
      * 
      * @param msg The PutFileRequest to base the final response message on.
      * @return The PutFileFinalResponse message based on the request.
      */
     public PutFileFinalResponse createPutFileFinalResponse(PutFileRequest msg) {
         PutFileFinalResponse res = new PutFileFinalResponse();
+        res.setMinVersion(MIN_VERSION);
+        res.setVersion(VERSION);
         res.setCorrelationID(msg.getCorrelationID());
         res.setFileID(msg.getFileID());
-        res.setMinVersion(BigInteger.valueOf(1L));
-        res.setVersion(BigInteger.valueOf(1L));
-        res.setPillarID(pillar.getPillarId());
-        res.setBitRepositoryCollectionID(msg.getBitRepositoryCollectionID());
+        res.setFileAddress(msg.getFileAddress());
+        res.setTo(msg.getReplyTo());
+        res.setPillarID(settings.getPillarId());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setReplyTo(settings.getLocalQueue());
 
         return res;
     }

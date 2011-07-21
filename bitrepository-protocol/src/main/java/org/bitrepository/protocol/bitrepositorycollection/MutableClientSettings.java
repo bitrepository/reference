@@ -33,11 +33,11 @@ import org.bitrepository.protocol.configuration.MessageBusConfigurations;
  * eg. it is mutable.
  */
 public class MutableClientSettings implements ClientSettings {	
-    
+
     public MutableClientSettings() {
         super();
     }
-    
+
     public MutableClientSettings(ClientSettings settingsToCopy) {
         setBitRepositoryCollectionID(settingsToCopy.getBitRepositoryCollectionID());
         //ToDo Shallow copy, not good.
@@ -47,10 +47,10 @@ public class MutableClientSettings implements ClientSettings {
         setPillarIDs(settingsToCopy.getPillarIDs());
         setLocalFileStorage(settingsToCopy.getLocalFileStorage());
     }
-    
+
     private String id;
     @Override
-	public String getBitRepositoryCollectionID() {
+    public String getBitRepositoryCollectionID() {
         return id;
     }
     /**
@@ -59,10 +59,10 @@ public class MutableClientSettings implements ClientSettings {
     public void setBitRepositoryCollectionID(String id) {
         this.id = id;
     }
-    
+
     private MessageBusConfigurations messageBusConfiguration;
     @Override
-	public MessageBusConfigurations getMessageBusConfiguration() {
+    public MessageBusConfigurations getMessageBusConfiguration() {
         return messageBusConfiguration;
     }
     /**
@@ -71,44 +71,44 @@ public class MutableClientSettings implements ClientSettings {
     public void setMessageBusConfiguration(MessageBusConfigurations messageBusConfiguration) {
         this.messageBusConfiguration = messageBusConfiguration;
     }
-    
+
     private String bitRepositoryCollectionTopicID;
-	@Override
-	public String getBitRepositoryCollectionTopicID() {
-		return bitRepositoryCollectionTopicID;
-	}	
-	/**
-	 * @see #getBitRepositoryCollectionTopicID()
-	 */
-	public void setBitRepositoryCollectionTopicID(String bitRepositoryCollectionTopicID) {
-		this.bitRepositoryCollectionTopicID = bitRepositoryCollectionTopicID;
-	}
+    @Override
+    public String getBitRepositoryCollectionTopicID() {
+        return bitRepositoryCollectionTopicID;
+    }	
+    /**
+     * @see #getBitRepositoryCollectionTopicID()
+     */
+    public void setBitRepositoryCollectionTopicID(String bitRepositoryCollectionTopicID) {
+        this.bitRepositoryCollectionTopicID = bitRepositoryCollectionTopicID;
+    }
 
     private String clientTopicId;
-	@Override
-	public String getClientTopicID() {
-		return clientTopicId;
-	}	
-	/**
-	 * @see #getClientTopicId()
-	 */
-	public void setClientTopicID(String clientTopicId) {
-		this.clientTopicId = clientTopicId;
-	}
+    @Override
+    public String getClientTopicID() {
+        return clientTopicId;
+    }	
+    /**
+     * @see #getClientTopicId()
+     */
+    public void setClientTopicID(String clientTopicId) {
+        this.clientTopicId = clientTopicId;
+    }
 
     private String[] pillarIDs;
-	@Override
-	public String[] getPillarIDs() {
-		return pillarIDs;
-	}
-	/**
-	 * @see #getPillarIDs()
-	 */
-	public void setPillarIDs(String[] pillarIDs) {
-		this.pillarIDs = pillarIDs;
-	}
-	
-	private String fileStorage;
+    @Override
+    public String[] getPillarIDs() {
+        return pillarIDs;
+    }
+    /**
+     * @see #getPillarIDs()
+     */
+    public void setPillarIDs(String[] pillarIDs) {
+        this.pillarIDs = pillarIDs;
+    }
+
+    private String fileStorage;
     @Override
     public String getLocalFileStorage() {
         return fileStorage;
@@ -119,9 +119,9 @@ public class MutableClientSettings implements ClientSettings {
     public void setLocalFileStorage(String fileStorage) {
         this.fileStorage = fileStorage;
     }
-    
+
     /** Default value is 1 day */
-	private int conversationTimeout = 1000*60*60*24;
+    private int conversationTimeout = 1000*60*60*24;
     @Override
     public long getConversationTimeout() {
         return conversationTimeout;
@@ -132,9 +132,9 @@ public class MutableClientSettings implements ClientSettings {
     public void setConversationTimeout(int conversationTimeout) {
         this.conversationTimeout = conversationTimeout;
     }
-    
+
     /** Default value is 30 seconds */
-	private int identifyPillarsTimeout = 1000*30;
+    private int identifyPillarsTimeout = 1000*30;
     @Override
     public long getIdentifyPillarsTimeout() {
         return identifyPillarsTimeout;
@@ -145,7 +145,7 @@ public class MutableClientSettings implements ClientSettings {
     public void setIdentifyPillarsTimeout(int identifyPillarsTimeout) {
         this.identifyPillarsTimeout = identifyPillarsTimeout;
     }
-    
+
     /** Default value is 5 minutes */
     private int mediatorCleanInterval = 1000*60*5;
     @Override
@@ -158,16 +158,16 @@ public class MutableClientSettings implements ClientSettings {
     public void setMediatorCleanInterval(int mediatorCleanInterval) {
         this.mediatorCleanInterval = mediatorCleanInterval;
     }
-    
-	@Override
+
+    @Override
     public String toString() {
         return "MutableClientSettings [id=" + id + ", messageBusConfiguration="
-                + messageBusConfiguration + ", bitRepositoryCollectionTopicID="
-                + bitRepositoryCollectionTopicID + ", clientTopicId="
-                + clientTopicId + ", pillarIDs=" + Arrays.toString(pillarIDs)
-                + ", fileStorage=" + fileStorage + ", conversationTimeout="
-                + conversationTimeout + ", identifyPillarsTimeout="
-                + identifyPillarsTimeout + ", mediatorCleanInterval="
-                + mediatorCleanInterval + "]";
+        + messageBusConfiguration + ", bitRepositoryCollectionTopicID="
+        + bitRepositoryCollectionTopicID + ", clientTopicId="
+        + clientTopicId + ", pillarIDs=" + Arrays.toString(pillarIDs)
+        + ", fileStorage=" + fileStorage + ", conversationTimeout="
+        + conversationTimeout + ", identifyPillarsTimeout="
+        + identifyPillarsTimeout + ", mediatorCleanInterval="
+        + mediatorCleanInterval + "]";
     }
 }

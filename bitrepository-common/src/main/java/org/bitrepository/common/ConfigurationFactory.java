@@ -24,6 +24,9 @@
  */
 package org.bitrepository.common;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.bind.JAXBException;
@@ -33,17 +36,25 @@ import javax.xml.bind.JAXBException;
  */
 public final class ConfigurationFactory {
 
+    /** The default system property path for the */
+    public static final String CONFIGURATION_DIR_SYSTEM_PROPERTY = "org.bitrepository.config";
+    /** The default path to the configuration files.*/
+    public static final String DEFAULT_CONFIGURATION_CLASSPATH_PATH = "configuration/xml/";
+    /** The default name of the configuration files.*/
+    public static final String DEFAULT_CONFIGURATION_CLASSPATH_NAME = "%s-configuration.xml";
+    /** The default name of the test configuration files.*/
+    public static final String DEFAULT_TEST_CONFIGURATION_CLASSPATH_NAME = "%s-test-configuration.xml";
     /**
      * This is configuration the <code>\ConfigurationFactory</code> will look for, if no test configuration is found.
      */
     public static final String DEFAULT_CONFIGURATION_CLASSPATH_LOCATION = 
-        "configuration/xml/%s-configuration.xml";
+        DEFAULT_CONFIGURATION_CLASSPATH_PATH + DEFAULT_CONFIGURATION_CLASSPATH_NAME;
     
     /**
      * This is test configuration the <code>ConfigurationFactory</code> will look for.
      */
     public static final String DEFAULT_TEST_CONFIGURATION_CLASSPATH_LOCATION = 
-        "configuration/xml/%s-test-configuration.xml";
+        DEFAULT_CONFIGURATION_CLASSPATH_PATH + DEFAULT_TEST_CONFIGURATION_CLASSPATH_NAME;
     
     /**
      * Loads the configuration for a module. 
@@ -70,7 +81,23 @@ public final class ConfigurationFactory {
         String defaultTestClassPathLocation = String.format(DEFAULT_TEST_CONFIGURATION_CLASSPATH_LOCATION, 
                         moduleCharacteristics.getLowerCaseName());
 
-        InputStream configStream = ClassLoader.getSystemResourceAsStream(defaultTestClassPathLocation);
+        InputStream configStream = null;
+        if(configStream == null) {
+            String path = System.getProperty(CONFIGURATION_DIR_SYSTEM_PROPERTY);
+            String name = String.format(DEFAULT_CONFIGURATION_CLASSPATH_NAME,
+                    moduleCharacteristics.getLowerCaseName());
+            if(path != null && !path.isEmpty()){ 
+                File configFile = new File(path, name);
+                try {
+                    configStream = new FileInputStream(configFile);
+                } catch (IOException e) {
+                    System.err.println("Couldn't find or handle config file '" + configFile.getAbsolutePath() + "'");
+                }
+            }
+        }
+        if(configStream == null) {
+            configStream = ClassLoader.getSystemResourceAsStream(defaultTestClassPathLocation);
+        }
         if (configStream == null) {
             configStream = ClassLoader.getSystemResourceAsStream(defaultClassPathLocation);
         }

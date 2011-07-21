@@ -2,7 +2,47 @@
 
 <!-- Empty schema to satisfy the requirement for a configuration definition in each module -->
 <xs:schema 
-	targetNamespace="http://bitrepository.org/protocol/configuration/IntegrationConfiguration.xsd"
+	targetNamespace="http://bitrepository.org/integration/configuration/IntegrationConfiguration.xsd"
     elementFormDefault="qualified"
-    xmlns="http://bitrepository.org/protocol/configuration/IntegrationConfiguration.xsd"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+    xmlns="http://bitrepository.org/integration/configuration/IntegrationConfiguration.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" >
+    <xs:element name="IntegrationConfiguration">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                The configuration for the reference pillar
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="pillarId" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            The id for the reference pillar
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="bitrepositoryCollectionId" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            The Id for the bitrepository collection of the reference pillar
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="queue" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            The configuration for the reference pillar
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="filedir" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            The configuration for the reference pillar
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

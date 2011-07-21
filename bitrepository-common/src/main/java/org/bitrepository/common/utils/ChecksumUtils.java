@@ -53,13 +53,14 @@ public final class ChecksumUtils {
     private ChecksumUtils() { }
 
     /**
-     * Calculates the checksum for a file based on the given checksum algorith.
+     * Calculates the checksum for a file based on the given checksum algorithm, though calculated with a given salt.
      * 
      * @param file The file to calculate the checksum for.
      * @param messageDigest The digest algorithm to use for calculating the checksum of the file.
+     * @param salt The string to add in front of the data stream before calculating the checksum.
      * @return The checksum of the file in hexadecimal.
      */
-    public static String generateChecksum(File file, MessageDigest messageDigest) {
+    public static String generateChecksum(File file, MessageDigest messageDigest, String salt) {
         byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
         int bytesRead;
         try {
@@ -67,6 +68,11 @@ public final class ChecksumUtils {
             try {
                 fis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
                 messageDigest.reset();
+                // first add the salt, if any
+                if(salt != null && !salt.isEmpty()) {
+                    messageDigest.update(salt.getBytes(), 0, salt.length());
+                }
+                // Then add the actual message.
                 while ((bytesRead = fis.read(bytes)) > 0) {
                     messageDigest.update(bytes, 0, bytesRead);
                 }
@@ -80,6 +86,33 @@ public final class ChecksumUtils {
                     + "' for file '" + file.getAbsolutePath() + "'.", e);
         }
         return toHex(messageDigest.digest());
+    }
+    
+    /**
+     * Calculates the checksum for a file based on the given checksum algorithm. This is calculated without any salt.
+     * 
+     * @param file The file to calculate the checksum for.
+     * @param messageDigest The name of the digest algorithm to use for calculating the checksum of the file.
+     * @return The checksum of the file in hexadecimal.
+     */
+    public static String generateChecksum(File file, MessageDigest messageDigest) {
+        return generateChecksum(file, messageDigest, null);
+    }
+    
+    /**
+     * Calculates the checksum for a file based on the given checksum algorith, though calculated with a given salt.
+     * 
+     * @param file The file to calculate the checksum for.
+     * @param messageDigest The digest algorithm to use for calculating the checksum of the file.
+     * @param salt The string to add in front of the data stream before calculating the checksum.
+     * @return The checksum of the file in hexadecimal.
+     */
+    public static String generateChecksum(File file, String messageDigestName, String salt) {
+        try {
+            return generateChecksum(file, MessageDigest.getInstance(messageDigestName), salt);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
     
     /**

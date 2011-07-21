@@ -36,4 +36,12 @@ public interface BitRepositoryCollectionSettings {
     /** Returns the definitions for the messagebus for this <code>BitRepositoryCollection</code>. */
     public MessageBusConfigurations getMessageBusConfiguration();
 
+    /**
+     * Return the ID for the topic used for messages with are broadcasted to all participants for a given SLA. 
+     * 
+     * See <a href="https://sbforge.org/display/BITMAG/Queues+and+topics#Queuesandtopics-TheperSLAtopic">The per-SLA topic,/a> for details.
+     * @return
+     */
+    public String getBitRepositoryCollectionTopicID();
+
 }
