@@ -2,8 +2,8 @@
  * #%L
  * bitrepository-access-client
  * *
- * $Id: AccessComponentFactory.java 212 2011-07-05 10:04:10Z bam $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-access-client/src/main/java/org/bitrepository/access/AccessComponentFactory.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -31,8 +31,6 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.util.Date;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.apache.commons.lang.NotImplementedException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -47,7 +45,6 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
@@ -55,7 +52,6 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.http.HTTPFileExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

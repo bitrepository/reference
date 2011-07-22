@@ -2,8 +2,8 @@
  * #%L
  * bitrepository-access-client
  * *
- * $Id: AccessComponentFactory.java 212 2011-07-05 10:04:10Z bam $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-access-client/src/main/java/org/bitrepository/access/AccessComponentFactory.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -85,7 +85,7 @@ public class PillarMediator implements MessageListener {
     // THE MESSAGE HANDLERS!
     /** The handler for the messages regarding access to the archive (e.g. Get operations).*/
     private final AccessMessageHandler accessHandler;
-    /** The handler for the messages regarding modification of the archive (e.g. Put, Delete, etc.). */
+    /** The handler for the messages regarding modification of the archive (e.g. Put, Delete, Replace). */
     private final ModifyMessageHandler modifyHandler;
     
     /**
@@ -114,7 +114,7 @@ public class PillarMediator implements MessageListener {
 
     public void handleException(Exception e) {
         // TODO ?? send alarm?
-        log.error("Received excepton '" + e.getMessage() + "'.", e);
+        log.error("Received exception '" + e.getMessage() + "'.", e);
     }
 
     @Override

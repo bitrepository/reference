@@ -2,8 +2,8 @@
  * #%L
  * Bitmagasin integrationstest
  * 
- * $Id: ReferencePillar.java 210 2011-07-04 19:44:03Z mss $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-integration/src/main/java/org/bitrepository/pillar/ReferencePillar.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%

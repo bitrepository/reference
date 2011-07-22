@@ -2,8 +2,8 @@
  * #%L
  * Bitmagasin modify client
  * 
- * $Id: PutClientExternalAPI.java 143 2011-04-08 09:15:13Z jolf $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-modifying-client/src/main/java/org/bitrepository/modify/PutClientExternalAPI.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%

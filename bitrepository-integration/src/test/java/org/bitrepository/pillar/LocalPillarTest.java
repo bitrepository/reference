@@ -2,8 +2,8 @@
  * #%L
  * Bitmagasin integrationstest
  * 
- * $Id$
- * $HeadURL$
+ * $Id: ReferencePillar.java 210 2011-07-04 19:44:03Z mss $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-integration/src/main/java/org/bitrepository/pillar/ReferencePillar.java $
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -35,53 +35,94 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.clienttest.TestEventHandler;
-import org.bitrepository.integration.IntegrationComponentFactory;
+import org.bitrepository.clienttest.MessageReceiver;
+import org.bitrepository.common.IntegrationTest;
+import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
+import org.bitrepository.protocol.bus.MessageBusWrapper;
+import org.bitrepository.protocol.configuration.MessageBusConfigurations;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusFactory;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 /**
- * Test class for the reference pillar.
+ * Test class for testing the pillar externally.
+ * 
+ * IMPORTANT: start the required environment locally before running this test.
+ *
+ * First a local instance of ActiveMQ has to be started. 
+ * 
+ * Then the local reference pillar start is started by the following call:
+ * java -cp $CLASSPATH -Dorg.bitrepository.config=configuration/xml org.bitrepository.pillar.ReferencePillarLauncher
+ * 
+ * Where the following libraries are in the CLASSPATH (perhaps not all, but at least most of these):
+ * activemq-all-5.3.2.jar
+ * commons-lang-2.6.jar
+ * jaxb2-basics-tools-0.6.0.jar
+ * jaxb2-basics-runtime-0.6.0.jar
+ * jaxb2-basics-jaxb-xjc-2.1.13.MR2.jar
+ * jaxb2-basics-0.6.0.jar
+ * logback-classic-0.9.27.jar
+ * logback-core-0.9.27.jar
+ * slf4j-api-1.6.1.jar
+ * bitrepository-common-0.2-SNAPSHOT.jar
+ * bitrepository-integration-0.2-SNAPSHOT.jar
+ * bitrepository-protocol-0.2-SNAPSHOT.jar
+ * bitrepository-common-0.2-SNAPSHOT.jar
+ * bitrepository-common-0.2-SNAPSHOT-tests.jar
+ * 
+ * And the configurations 'protocol-configuration.xml' and 'integrationclient-configuration.xml' is in the directory
+ * 'configuration/xml', with the wanted configurations (e.g. the local message broker)
+ * 
+ * Then change the 'initialise' method to reflect the configurations. Currently they are set to mine (JOLF).
+ * 
  */
-public class ReferencePillarTester extends DefaultFixturePillarTest {
-    /** The settings for the test.*/
-    MutablePillarSettings pillarSettings;
-    
-    PillarTestMessageFactory msgFactory;
-    
-    @BeforeMethod(alwaysRun=true)
-    public void initialise() throws Exception {
-        pillarSettings = new MutablePillarSettings(settings);
-        pillarSettings.setFileDirName("temp");
-        pillarSettings.setPillarId("TestPillar");
-        pillarSettings.setLocalQueue(pillarDestinationId);
-        pillarSettings.setTimeToDownloadMeasure("MILLISECONDS");
-        pillarSettings.setTimeToDownloadValue(1L);
-        pillarSettings.setTimeToUploadMeasure("MILLISECONDS");
-        pillarSettings.setTimeToDownloadValue(1L);
-        
-        msgFactory = new PillarTestMessageFactory(pillarSettings);
-    }
+public class LocalPillarTest extends IntegrationTest {
 
-//    @Test( groups = {"regressiontest"})
-//    public void componentFactoryTest() {
-//        addDescription("Test stuff..");
-//        addStep("Testing the component factory.", "Should work.");
-//        IntegrationComponentFactory iFactory = IntegrationComponentFactory.getInstance();
-//    }
+    protected static final String DEFAULT_FILE_ID = TestMessageFactory.FILE_ID_DEFAULT;
+
+    protected PillarSettings settings;
+    protected PillarTestMessageFactory msgFactory;
     
-    @Test( groups = {"regressiontest"})
-    public void pillarPutTest() throws Exception {
+    MessageBusConfigurations messageBusConfigurations = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+    MessageBus messageBus = new MessageBusWrapper(MessageBusFactory.createMessageBus(messageBusConfigurations), testEventManager);
+
+    /**
+     * Defines the configuration for pillar.
+     */
+    @BeforeTest(alwaysRun=true)
+    public void initialise() {
+        MutablePillarSettings pillarSettings = new MutablePillarSettings();
+        pillarSettings.setBitRepositoryCollectionID("JOLF-PILLAR-TEST");
+        pillarSettings.setBitRepositoryCollectionTopicID("JOLF-PILLAR-TESTING-TOPIC");
+        pillarSettings.setMessageBusConfiguration(messageBusConfigurations);
+        pillarSettings.setFileDirName("target/fileDir"); // irrelevant.
+        pillarSettings.setLocalQueue("LocalPillarQueue"); // irrelevant.
+        pillarSettings.setTimeToDownloadMeasure("MILLISECONDS"); // irrelevant.
+        pillarSettings.setTimeToDownloadValue(1L); // irrelevant.
+        pillarSettings.setTimeToUploadMeasure("MILLISECONDS"); // irrelevant.
+        pillarSettings.setTimeToUploadValue(1L); // irrelevant.
+        settings = pillarSettings;
+        
+        msgFactory = new PillarTestMessageFactory(settings);
+    }
+    
+    @Test( groups = { "SomeGroup" })
+    public void testLocalPillarPut() throws Exception {
         addDescription("Tests the put functionality of the reference pillar.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        ReferencePillar pillar = IntegrationComponentFactory.getInstance().getPillar(pillarSettings);
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         Long FILE_SIZE = 27L;
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String FILE_CHECKSUM = "940a51b250e7aa82d8e8ea31217ff267";
         Date startDate = new Date();
+        
+        String clientDestinationId = "JOLF-Client-id";
+        MessageReceiver clientTopic = new MessageReceiver("client topic receiver", testEventManager);
+        messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());    
+
         
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForPutFileRequest identifyRequest 
@@ -91,6 +132,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         addStep("Retrieve and validate the response from the pillar.", "The pillar should make a response.");
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
                 IdentifyPillarsForPutFileResponse.class);
+        System.out.println(receivedIdentifyResponse);
         Assert.assertEquals(receivedIdentifyResponse, 
                 msgFactory.createIdentifyPillarsForPutFileResponse(
                         receivedIdentifyResponse.getCorrelationID(),
@@ -108,6 +150,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         
         addStep("Retrieve the ProgressResponse for the put request", "The put response should be sent by the pillar.");
         PutFileProgressResponse progressResponse = clientTopic.waitForMessage(PutFileProgressResponse.class);
+        System.out.println(progressResponse);
         Assert.assertEquals(progressResponse,
                 msgFactory.createPutFileProgressResponse(
                         progressResponse.getCorrelationID(), 
@@ -121,6 +164,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
 
         addStep("Retrieve the FinalResponse for the put request", "The put response should be sent by the pillar.");
         PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        System.out.println(finalResponse);
         Assert.assertEquals(finalResponse,
                 msgFactory.createPutFileFinalResponse(
                         finalResponse.getChecksumsDataForNewFile(),
@@ -144,5 +188,6 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         Assert.assertNull(checksumdata.getChecksumSpec().getChecksumSalt(), "should be no salt");
         Assert.assertEquals(checksumdata.getChecksumSpec().getChecksumType(), "MD5");
         Assert.assertTrue(checksumdata.getCalculationTimestamp().toGregorianCalendar().getTime().getTime() > startDate.getTime());
+
     }
 }

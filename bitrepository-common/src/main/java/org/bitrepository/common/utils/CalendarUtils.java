@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Modifying Client
  * 
- * $Id: ChecksumUtils.java 135 2011-04-01 15:31:24Z jolf $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-common/src/main/java/org/bitrepository/common/utils/ChecksumUtils.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%

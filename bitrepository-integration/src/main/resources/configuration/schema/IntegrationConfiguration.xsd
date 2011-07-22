@@ -14,13 +14,6 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="pillarId" type="xs:string">
-                    <xs:annotation>
-                        <xs:documentation xml:lang="en">
-                            The id for the reference pillar
-                        </xs:documentation>
-                    </xs:annotation>
-                </xs:element>
                 <xs:element name="bitrepositoryCollectionId" type="xs:string">
                     <xs:annotation>
                         <xs:documentation xml:lang="en">
@@ -28,17 +21,31 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="queue" type="xs:string">
+                <xs:element name="bitrepositoryCollectionTopicId" type="xs:string">
                     <xs:annotation>
                         <xs:documentation xml:lang="en">
-                            The configuration for the reference pillar
+                            The Id for the general topic of the bitrepository collection of the reference pillar
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
                 <xs:element name="filedir" type="xs:string">
                     <xs:annotation>
                         <xs:documentation xml:lang="en">
-                            The configuration for the reference pillar
+                            The archive location for the reference pillar 
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="pillarId" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            The id for the reference pillar
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="queue" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            The local queue for the reference pillar
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>

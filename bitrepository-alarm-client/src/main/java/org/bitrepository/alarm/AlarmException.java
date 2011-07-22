@@ -2,8 +2,8 @@
  * #%L
  * bitrepository-access-client
  * 
- * $Id: AccessException.java 125 2011-03-25 10:26:56Z jolf $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-access-client/src/main/java/org/bitrepository/access/AccessException.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%

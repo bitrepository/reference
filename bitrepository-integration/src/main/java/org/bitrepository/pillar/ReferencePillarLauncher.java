@@ -2,8 +2,8 @@
  * #%L
  * Bitmagasin integrationstest
  * 
- * $Id: ReferencePillar.java 210 2011-07-04 19:44:03Z mss $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-integration/src/main/java/org/bitrepository/pillar/ReferencePillar.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -26,6 +26,8 @@ package org.bitrepository.pillar;
 
 import org.bitrepository.integration.IntegrationComponentFactory;
 import org.bitrepository.integration.configuration.integrationconfiguration.IntegrationConfiguration;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.configuration.ProtocolConfiguration;
 
 public class ReferencePillarLauncher {
 
@@ -33,12 +35,27 @@ public class ReferencePillarLauncher {
      * @param args
      */
     public static void main(String[] args) {
-        // TODO Auto-generated method stub
-        
-        IntegrationComponentFactory ifactory = IntegrationComponentFactory.getInstance();
-        IntegrationConfiguration iConfig = ifactory.getConfig();
+        // Retrieve the configurations.
+        IntegrationConfiguration iConf = IntegrationComponentFactory.getInstance().getConfig();
+        ProtocolConfiguration pConf = ProtocolComponentFactory.getInstance().getProtocolConfiguration();
 
-//        ifactory.
+        MutablePillarSettings settings = new MutablePillarSettings();
+        settings.setMessageBusConfiguration(pConf.getMessageBusConfigurations());
+        settings.setBitRepositoryCollectionID(iConf.getBitrepositoryCollectionId());
+        settings.setBitRepositoryCollectionTopicID(iConf.getBitrepositoryCollectionTopicId());
+        settings.setFileDirName(iConf.getFiledir());
+        settings.setLocalQueue(iConf.getPillarId());
+        settings.setPillarId(iConf.getPillarId());
+        
+        // TODO use settings instead.
+        settings.setTimeToDownloadMeasure("MILLISECONDS");
+        settings.setTimeToDownloadValue(1L);
+        settings.setTimeToUploadMeasure("MILLISECONDS");
+        settings.setTimeToUploadValue(1L);
+
+        // START THE REFERENCE PILLAR!!!!
+        IntegrationComponentFactory.getInstance().getPillar(settings);
+        
     }
 
 }

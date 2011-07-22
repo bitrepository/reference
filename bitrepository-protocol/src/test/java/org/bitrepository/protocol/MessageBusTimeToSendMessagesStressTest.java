@@ -2,8 +2,8 @@
  * #%L
  * Bitmagasin integrationstest
  * 
- * $Id: MessageBusTest.java 203 2011-06-24 09:44:56Z jolf $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-protocol/src/test/java/org/bitrepository/protocol/MessageBusTest.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%

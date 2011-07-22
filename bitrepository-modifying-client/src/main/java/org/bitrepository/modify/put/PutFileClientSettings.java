@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Access
  * 
- * $Id: GetFileClientSettings.java 199 2011-06-20 07:03:56Z mss $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-access-client/src/main/java/org/bitrepository/access/getfile/GetFileClientSettings.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%

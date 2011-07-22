@@ -2,8 +2,8 @@
  * #%L
  * bitrepository-access-client
  * *
- * $Id: AccessComponentFactory.java 212 2011-07-05 10:04:10Z bam $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-access-client/src/main/java/org/bitrepository/access/AccessComponentFactory.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -29,9 +29,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
@@ -96,8 +94,9 @@ public class ModifyMessageHandler {
 
     /**
      * Method for handling the PutFileRequest messages.
+     * If the file already exists, then a FinalResponse telling that is sent, and an exception is thrown.
      * @param msg The PutFileRequest to be handled.
-     * @throws Exception If anything bad happens.
+     * @throws Exception If the file already exists, or ??
      */
     public void handleMessage(PutFileRequest msg) throws Exception {
         // validate message
@@ -106,6 +105,15 @@ public class ModifyMessageHandler {
         
         // verify, that we already have the file
         if(mediator.archive.hasFile(msg.getFileID())) {
+            // send final response telling, that the file already exists!
+            PutFileFinalResponse fResponse = mediator.msgFactory.createPutFileFinalResponse(msg);
+            FinalResponseInfo frInfo = new FinalResponseInfo();
+            frInfo.setFinalResponseCode("409"); // HTTP for conflict.
+            frInfo.setFinalResponseText("Conflict: The file is already within the archive.");
+            fResponse.setFinalResponseInfo(frInfo);
+            mediator.messagebus.sendMessage(fResponse);
+            
+            // Then tell the mediator, that we failed.
             throw new IllegalArgumentException("Cannot perform put for a file, '" + msg.getFileID() 
                     + "', which we already have within the archive");
         }
@@ -165,6 +173,7 @@ public class ModifyMessageHandler {
             Collection<ChecksumSpecTYPE> requestedChecksumToCalculate 
                     = msg.getChecksumSpecs().getChecksumSpecsItems().getChecksumSpecsItem();
             ChecksumDataItems cdi = new ChecksumDataItems();
+            // Calculate each of the requested checksums and put them into the response message.
             for(ChecksumSpecTYPE checksumToCalculate : requestedChecksumToCalculate) {
                 String checksum = ChecksumUtils.generateChecksum(retrievedFile, 
                         checksumToCalculate.getChecksumType(),

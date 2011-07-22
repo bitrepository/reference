@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Protocol
  * 
- * $Id: TestFileStore.java 198 2011-06-19 20:08:08Z mss $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-protocol/src/test/java/org/bitrepository/protocol/fileexchange/TestFileStore.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%

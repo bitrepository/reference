@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Protocol
  * 
- * $Id: DefaultFixtureClientTest.java 209 2011-07-04 19:38:34Z mss $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-protocol/src/test/java/org/bitrepository/clienttest/DefaultFixtureClientTest.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%

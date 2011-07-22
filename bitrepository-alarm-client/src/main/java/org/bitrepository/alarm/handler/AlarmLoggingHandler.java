@@ -2,8 +2,8 @@
  * #%L
  * bitrepository-access-client
  * *
- * $Id: AccessComponentFactory.java 212 2011-07-05 10:04:10Z bam $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-access-client/src/main/java/org/bitrepository/access/AccessComponentFactory.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
