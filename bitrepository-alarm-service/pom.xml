@@ -23,6 +23,11 @@
       <artifactId>bitrepository-common</artifactId>
       <version>0.2-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4.2</version>
+    </dependency>
     <!--  Test dependencies -->
     <dependency>
       <groupId>org.bitrepository</groupId>
@@ -37,11 +42,6 @@
       <version>0.2-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
-      <version>1.4.2</version>
     </dependency>
   </dependencies>
   <description>Client for accessing alarms from the Bitrepository system</description>
