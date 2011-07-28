@@ -31,7 +31,7 @@ public class TestLogger {
     private Logger log;
 
 	public TestLogger(Class<?> logHandle) {
-		log = LoggerFactory.getLogger(logHandle);;
+		log = LoggerFactory.getLogger(logHandle);
 	}
 	
 	public void error(String msg) {

@@ -52,15 +52,25 @@ public class SimpleGetFileClient implements GetFileClient {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private final GetFileClientSettings settings;    
-    private final MessageBus messageBus;
-    private final ConversationMediator<SimpleGetFileConversation> conversationMediator;
-    SimpleGetFileConversation conversation;
+    /** The injected settings for the instance */
+    private final GetFileClientSettings settings; 
 
+    /** The injected messagebus to use */
+    private final MessageBus messageBus;
+    /** The mediator which should manage the conversations. */
+    private final ConversationMediator<SimpleGetFileConversation> conversationMediator;
+
+    /** The constructor
+     * 
+     * @param messageBus The message bus to use.
+     * @param settings The settings to use.
+     */
     public SimpleGetFileClient(MessageBus messageBus, GetFileClientSettings settings) {
         conversationMediator = 
             new CollectionBasedConversationMediator<SimpleGetFileConversation>(
                     settings, messageBus, settings.getClientTopicID());
+        ArgumentValidator.checkNotNull(messageBus, "messageBus");
+        ArgumentValidator.checkNotNull(settings, "settings");
         this.settings = settings;
         this.messageBus = messageBus;
     }
@@ -98,7 +108,7 @@ public class SimpleGetFileClient implements GetFileClient {
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
 
         log.info("Requesting the file '" + fileID + "' from pillar '" + pillarID + "'.");
-        getFile(messageBus, settings, new SpecificPillarSelectorForGetFile(pillarID, settings.getPillarIDs()), 
+        getFile(messageBus, settings, new SpecificPillarSelectorForGetFile(pillarID), 
                 fileID, uploadUrl, eventHandler);				
     }
 
@@ -110,13 +120,22 @@ public class SimpleGetFileClient implements GetFileClient {
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "pillarID");
 
         log.info("Requesting the file '" + fileID + "' from pillar '" + pillarID + "'.");
-        getFile(messageBus, settings, new SpecificPillarSelectorForGetFile(pillarID, settings.getPillarIDs()), 
+        getFile(messageBus, settings, new SpecificPillarSelectorForGetFile(pillarID), 
                 fileID, uploadUrl);				
     }
 
+    /** 
+     * 
+     * Asynchronous(Non-blocking) method for starting the getFile process get by using a new conversation.
+     * 
+     * @param selector Defines the algorithm for choosing the pillar to deliver the file.
+     * @see GetFileClient
+     */
+    
     private void getFile(MessageBus messageBus, GetFileClientSettings settings, PillarSelectorForGetFile selector, 
             String fileID, URL uploadUrl, EventHandler eventHandler) {
-        conversation = new SimpleGetFileConversation(messageBus, settings, selector, fileID, uploadUrl, eventHandler);
+        SimpleGetFileConversation conversation = 
+            new SimpleGetFileConversation(messageBus, settings, selector, fileID, uploadUrl, eventHandler);
         conversationMediator.addConversation(conversation);  
         try {
             conversation.startConversion();
@@ -125,11 +144,17 @@ public class SimpleGetFileClient implements GetFileClient {
         }
     }
 
-
+    /** 
+     * Synchronous(blocking) method for starting the getFile process get by using a new conversation.
+     * 
+     * @param selector Defines the algorithm for choosing the pillar to deliver the file.
+     * @see GetFileClient
+     */
     private void getFile(MessageBus messageBus, GetFileClientSettings settings, PillarSelectorForGetFile selector, 
             String fileID, URL uploadUrl) 
     throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
-        conversation = new SimpleGetFileConversation(messageBus, settings, selector, fileID, uploadUrl, null);
+        SimpleGetFileConversation conversation = 
+            new SimpleGetFileConversation(messageBus, settings, selector, fileID, uploadUrl, null);
         conversationMediator.addConversation(conversation);  
         conversation.startConversion();
     }

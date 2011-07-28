@@ -24,19 +24,18 @@
  */
 package org.bitrepository.access.getfile.conversation;
 
-import java.util.Timer;
-
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 
+/**
+ * Super class for the concrete GetFiles state handlers.
+ */
 public class GetFileState extends AbstractMessageListener {
     protected final SimpleGetFileConversation conversation;
 
-    /** Defines that the timer is a daemon thread. */
-    private static final Boolean TIMER_IS_DAEMON = true;
-    /** The timer. Schedules conversation timeouts for this conversation. */
-    final Timer timer = new Timer(TIMER_IS_DAEMON);
-
-
+    /** 
+     * The constructor for the indicated conversation.
+     * @param conversation The related conversation containing context information.
+     */
     public GetFileState(SimpleGetFileConversation conversation) {
         this.conversation = conversation;
     }

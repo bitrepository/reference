@@ -22,18 +22,27 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.flow;
+package org.bitrepository.protocol.exceptions;
 
 /**
- * Used to indicate that an unexpected repsonse has been received.
+ * Used to indicate that an unexpected reponse has been received.
  */
 public class UnexpectedResponseException extends Exception {
 
-    public UnexpectedResponseException(String arg0, Throwable arg1) {
-        super(arg0, arg1);
+    /**
+     * Constructor with both message and cause exception
+     * @param Description of this exception
+     * @param The throwable causing of the exception
+     */
+    public UnexpectedResponseException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public UnexpectedResponseException(String arg0) {
-        super(arg0);
+    /**
+     * Constructor with only a message 
+     * @param Description of this exception
+     */
+    public UnexpectedResponseException(String message) {
+        super(message);
     }
 }

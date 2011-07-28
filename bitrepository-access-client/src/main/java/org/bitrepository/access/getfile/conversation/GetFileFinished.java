@@ -32,11 +32,18 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Models the behavior of a GetFile conversation after the conversation has finished
+ */
 public class GetFileFinished extends GetFileState {
 
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    /** 
+     * The constructor for the indicated conversation.
+     * @param conversation The related conversation containing the context information.
+     */
     public GetFileFinished(SimpleGetFileConversation conversation) {
         super(conversation);
     }

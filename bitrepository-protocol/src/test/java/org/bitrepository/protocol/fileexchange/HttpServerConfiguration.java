@@ -24,8 +24,11 @@
  */
 package org.bitrepository.protocol.fileexchange;
 
+/**
+ * Configuration for {@link HttpServerConnector} objects.
+ */
 public class HttpServerConfiguration {
-    
+    /** The implementing class */
     private String serverClass = "HTTPServer";
     /** Protocol for URLs. */
     private String protocol = "http";
@@ -40,33 +43,39 @@ public class HttpServerConfiguration {
      * Prefix to use when working with files on the http server. The prefix is used to distinguish between different 
      * users/processes working with the server in parallel
      */
-    private String prefix = "";
     
     public String getProtocol() {
         return protocol;
     }
-    public int getPortNumber() {
-        return portNumber;
-    }
-    public String getHttpServerName() {
-        return httpServerName;
-    }
-    public String getHttpServerPath() {
-        return httpServerPath;
-    }
+    /** @see #getProtocol() */
     public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
+    
+    /** The http server port */
+    public int getPortNumber() {
+        return portNumber;
+    }
+    /** @see #getPortNumber() */
     public void setPortNumber(int portNumber) {
         this.portNumber = portNumber;
     }
+    
+    /** The name identifying the http server */
+    public String getHttpServerName() {
+        return httpServerName;
+    }
+    /** @see #getHttpServerName() */
     public void setHttpServerName(String httpServerName) {
         this.httpServerName = httpServerName;
     }
+    
+    /** The path to the location we are going to connect to as in the format ${URL}:${PORT}/${PATH} */
+    public String getHttpServerPath() {
+        return httpServerPath;
+    }
+    /** @see #getHttpServerPath() */
     public void setHttpServerPath(String httpServerPath) {
         this.httpServerPath = httpServerPath;
-    }
-    public void setFilePrefix(String prefix) {
-        this.prefix = prefix;
     }
 }

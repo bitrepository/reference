@@ -36,7 +36,7 @@ import org.bitrepository.protocol.messagebus.MessageBus;
  */
 public class ProtocolComponentFactory {
 
-    //---------------------Singleton-------------------------
+    /** The singleton instance */
     protected static ProtocolComponentFactory instance;
 
     /**
@@ -51,16 +51,19 @@ public class ProtocolComponentFactory {
     }
 
     /**
-     * The singleton constructor
+     * The singleton constructor.
      */
     protected ProtocolComponentFactory() {
     }
 
-    // --------------------- Components-----------------------
+    /** @see #getModuleCharacteristics() */
     private static final ModuleCharacteristics MODULE_CHARACTERISTICS = new ModuleCharacteristics("protocol");
+    /** @see #getProtocolConfiguration() */
     protected ProtocolConfiguration protocolConfiguration;
+    /** @see #getMessageBus() */
     protected MessageBus messagebus;
-    protected FileExchange fileexchange;
+    /** @see #getFileExchange() */
+    protected FileExchange fileExchange;
 
     /**
      * Gets you a <code>ModuleCharacteristics</code> object defining the generic characteristics of this module
@@ -71,7 +74,9 @@ public class ProtocolComponentFactory {
     }
 
     /**
-     * Gets you an <code>MessageBus</code> instance for accessing the Bitrepositorys message bus
+     * Gets you an <code>MessageBus</code> instance for accessing the Bitrepositorys message bus.
+     * @return The messagebus for this collection
+     * @deprecated Messagebuses should by created outside of the reference framework and injected.
      */
     public MessageBus getMessageBus() {
         if (messagebus == null) {
@@ -84,19 +89,20 @@ public class ProtocolComponentFactory {
      * Gets you an <code>FileExchange</code> instance for data communication. Is instantiated based on the 
      * configurations.
      * @return The FileExchange according to the configuration.
+     * @deprecated The file exchange class will be replaced by the HttpServerConnector, which isn't part of the main 
+     * code
      */
     public FileExchange getFileExchange() {
-        if (fileexchange == null) {
-        	try {
-        		FileExchangeConfiguration feConf = getProtocolConfiguration().getFileExchangeConfigurations();
-            	Class instantiation = Class.forName(feConf.getFileExchangeClass());
-            	fileexchange = (FileExchange) instantiation.newInstance();
-        	} catch (Exception e) {
-        		throw new CoordinationLayerException("Could not instantiate the fileexchange.", e);
-        	}
+        if (fileExchange == null) {
+            try {
+                FileExchangeConfiguration feConf = getProtocolConfiguration().getFileExchangeConfigurations();
+                Class instantiation = Class.forName(feConf.getFileExchangeClass());
+                fileExchange = (FileExchange) instantiation.newInstance();
+            } catch (Exception e) {
+                throw new CoordinationLayerException("Could not instantiate the fileexchange.", e);
+            }
         }
-        System.err.println(fileexchange);
-        return fileexchange;
+        return fileExchange;
     }
 
     /**

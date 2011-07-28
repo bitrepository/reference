@@ -30,42 +30,48 @@ import org.bitrepository.protocol.exceptions.OperationFailedException;
  * Indicates and operation has failed to complete
  */
 public class OperationFailedEvent implements OperationEvent<OperationFailedException> {
-	private final String info;
-	private final OperationEventType type = OperationEventType.Failed;
-	private final OperationFailedException exception;
-	
-	/**
-	 * Constructor with exception information
-	 * @param info
-	 * @param exception
-	 */
-	public OperationFailedEvent(String info, OperationFailedException exception) {
-		super();
-		this.info = info;
-		this.exception = exception;
-	}
-	/**
-	 * Plain info constructor.
-	 * @param info
-	 */
-	public OperationFailedEvent(String info) {
-		super();
-		this.info = info;
-		this.exception = null;
-	}
+    /** @see #getInfo() */
+    private final String info;
+    /** @see #getType() */
+    private final OperationEventType type = OperationEventType.Failed;
+    /** @see #getState() */
+    private final OperationFailedException exception;
 
-	@Override
-	public String getInfo() {
-		return info;
-	}
+    /**
+     * Constructor with exception information
+     * @param info
+     * @param exception
+     */
+    public OperationFailedEvent(String info, OperationFailedException exception) {
+        super();
+        this.info = info;
+        this.exception = exception;
+    }
 
-	@Override
-	public org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType getType() {
-		return type;
-	}
+    /**
+     * Plain info constructor.
+     * @param info Message describing the failure.
+     */
+    public OperationFailedEvent(String info) {
+        super();
+        this.info = info;
+        this.exception = null;
+    }
 
-	@Override
-	public OperationFailedException getState() {
-		return exception;
-	}
+    @Override
+    public String getInfo() {
+        return info;
+    }
+
+    @Override
+    public OperationEventType getType() {
+        return type;
+    }
+
+    /** Returns the exception causing this failure, if any. Might be null if the failure wasn't caused by an 
+     * exception */
+    @Override
+    public OperationFailedException getState() {
+        return exception;
+    }
 }

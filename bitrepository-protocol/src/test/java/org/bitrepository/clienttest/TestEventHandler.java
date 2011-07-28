@@ -32,33 +32,40 @@ import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.jaccept.TestEventManager;
 
+/** Used to listen for operation event and store them for later retrieval by a test. */
 public class TestEventHandler implements EventHandler {
 
-	private final TestEventManager testEventManager;
-	private final BlockingQueue<OperationEvent<?>> eventQueue = new LinkedBlockingQueue<OperationEvent<?>>();
+    /** The <code>TestEventManager</code> used to manage the event for the associated test. */
+    private final TestEventManager testEventManager;
+    /** The queue used to store the received operation events. */
+    private final BlockingQueue<OperationEvent<?>> eventQueue = new LinkedBlockingQueue<OperationEvent<?>>();
 
-	/** The default time to wait for events */
-	private static final long DEFAULT_WAIT_SECONDS = 3;  
+    /** The default time to wait for events */
+    private static final long DEFAULT_WAIT_SECONDS = 3;  
 
-	public TestEventHandler(TestEventManager testEventManager) {
-		super();
-		this.testEventManager = testEventManager;
-	}
+    /** The constructor.
+     * 
+     * @param testEventManager The <code>TestEventManager</code> used to manage the event for the associated test.
+     */
+    public TestEventHandler(TestEventManager testEventManager) {
+        super();
+        this.testEventManager = testEventManager;
+    }
 
-	@Override
-	public void handleEvent(OperationEvent event) {
-		eventQueue.add(event);
-	}
+    @Override
+    public void handleEvent(OperationEvent event) {
+        eventQueue.add(event);
+    }
 
-	/**
-	 * Wait for an event for the DEFAULT_WAIT_SECONDS amaount of time.
-	 * @return The next event if any, else null 
-	 */
-	public OperationEvent<?> waitForEvent() throws InterruptedException {
-		return waitForEvent(DEFAULT_WAIT_SECONDS, TimeUnit.SECONDS);
-	}
+    /**
+     * Wait for an event for the DEFAULT_WAIT_SECONDS amaount of time.
+     * @return The next event if any, else null 
+     */
+    public OperationEvent<?> waitForEvent() throws InterruptedException {
+        return waitForEvent(DEFAULT_WAIT_SECONDS, TimeUnit.SECONDS);
+    }
 
-	public OperationEvent<?> waitForEvent(long timeout, TimeUnit unit) throws InterruptedException {
-		return eventQueue.poll(timeout, unit);
-	}
+    public OperationEvent<?> waitForEvent(long timeout, TimeUnit unit) throws InterruptedException {
+        return eventQueue.poll(timeout, unit);
+    }
 }

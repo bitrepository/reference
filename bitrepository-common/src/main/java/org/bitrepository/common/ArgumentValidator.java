@@ -40,13 +40,13 @@ public final class ArgumentValidator {
      *
      * @param val  the value to check
      * @param name the name and type of the value being checked
-     * @throws ArgumentValidator if test fails
+     * @throws IllegalArgumentException if validation fails
      */
     public static void checkNotNullOrEmpty(String val, String name) {
         checkNotNull(val, name);
 
         if (val.isEmpty()) {
-            throw new IllegalArgumentException("The value of the variable '" + name + "' must not be an empty string.");
+            throw new IllegalArgumentException("The value of the argument '" + name + "' must not be an empty string.");
         }
     }
 
@@ -55,11 +55,11 @@ public final class ArgumentValidator {
      *
      * @param val  the value to check
      * @param name the name and type of the value being checked.
-     * @throws ArgumentValidator if test fails
+     * @throws IllegalArgumentException if validation fails
      */
     public static void checkNotNull(Object val, String name) {
         if (val == null) {
-            throw new IllegalArgumentException("The value of the variable '" + name + "' must not be null.");
+            throw new IllegalArgumentException("The value of the argument '" + name + "' must not be null.");
         }
     }
 
@@ -68,11 +68,11 @@ public final class ArgumentValidator {
      *
      * @param num  argument to check
      * @param name the name and type of the value being checked.
-     * @throws ArgumentValidator if test fails
+     * @throws IllegalArgumentException if validation fails
      */
     public static void checkNotNegative(int num, String name) {
         if (num < 0) {
-            throw new IllegalArgumentException("The value of the variable '" + name
+            throw new IllegalArgumentException("The value of the argument '" + name
                     + "' must be non-negative, but is " + num + ".");
         }
     }
@@ -82,11 +82,11 @@ public final class ArgumentValidator {
      *
      * @param num argument to check
      * @param name the name and type of the value being checked.
-     * @throws ArgumentValidator if test fails
+     * @throws IllegalArgumentException if validation fails
      */
     public static void checkNotNegative(long num, String name) {
         if (num < 0) {
-            throw new IllegalArgumentException("The value of the variable '" + name
+            throw new IllegalArgumentException("The value of the argument '" + name
                     + "' must be non-negative, but is " + num + ".");
         }
     }
@@ -96,11 +96,11 @@ public final class ArgumentValidator {
      *
      * @param num  argument to check
      * @param name the name and type of the value being checked.
-     * @throws ArgumentValidator if test fails
+     * @throws IllegalArgumentException if validation fails
      */
     public static void checkPositive(int num, String name) {
         if (num <= 0) {
-            throw new IllegalArgumentException("The value of the variable '" + name
+            throw new IllegalArgumentException("The value of the argument '" + name
                     + "' must be positive, but is " + num + ".");
         }
     }
@@ -110,11 +110,11 @@ public final class ArgumentValidator {
      *
      * @param num argument to check
      * @param name the name and type of the value being checked.
-     * @throws ArgumentValidator if test fails
+     * @throws IllegalArgumentException if validation fails
      */
     public static void checkPositive(long num, String name) {
         if (num <= 0) {
-            throw new IllegalArgumentException("The value of the variable '" + name
+            throw new IllegalArgumentException("The value of the argument '" + name
                     + "' must be positive, but is " + num + ".");
         }
     }
@@ -124,13 +124,28 @@ public final class ArgumentValidator {
      *
      * @param c argument to check
      * @param name the name and type of the value being checked.
-     * @throws ArgumentValidator if test fails
+     * @throws IllegalArgumentException if validation fails
      */
     public static void checkNotNullOrEmpty(Collection<?> c, String name) {
         checkNotNull(c, name);
 
         if (c.isEmpty()) {
-            throw new IllegalArgumentException("The contents of the variable '" + name + "' must not be empty.");
+            throw new IllegalArgumentException("The contents of the argument '" + name + "' must not be empty.");
+        }
+    }
+    
+    /**
+     * Check if a array argument is not null and the list is not empty.
+     *
+     * @param c argument to check
+     * @param name the name and type of the value being checked.
+     * @throws IllegalArgumentException if validation fails
+     */
+    public static void checkNotNullOrEmpty(Object[] array, String name) {
+        checkNotNull(array, name);
+
+        if (array.length == 0) {
+            throw new IllegalArgumentException("The contents of the argument '" + name + "' must not be empty.");
         }
     }
 
@@ -139,7 +154,7 @@ public final class ArgumentValidator {
      * ArgumentNotValid if it is false.
      * @param b the condition to check
      * @param s the error message to be reported
-     * @throws ArgumentValidator if b is false
+     * @throws IllegalArgumentException if validation fails
      */
     public static void checkTrue(boolean b, String s) {
         if (!b) {

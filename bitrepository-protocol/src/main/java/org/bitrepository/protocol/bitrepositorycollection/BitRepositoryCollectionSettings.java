@@ -26,6 +26,9 @@ package org.bitrepository.protocol.bitrepositorycollection;
 
 import org.bitrepository.protocol.configuration.MessageBusConfigurations;
 
+/** Defines the global settings for a <code>BitRepositoryCollection</code>. 
+ * 
+ * See <a {@link https://sbforge.org/display/BITMAG/BitRepositoryCollection} for details.*/
 public interface BitRepositoryCollectionSettings {
 
     /**

@@ -26,6 +26,9 @@ package org.bitrepository.protocol.pillarselector;
 
 import org.bitrepository.common.exceptions.UnableToFinishException;
 
+/** Can be used to select a single pillar to run an operation on by handling the identify responses. <p>
+ * The algorithm for selecting the pillar is implemented in the concrete classes.
+ */
 public interface SinglePillarSelector {
 
     /** Return the ID of the pillar chosen by this selector.*/

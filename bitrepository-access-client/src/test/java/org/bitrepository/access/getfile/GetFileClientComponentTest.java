@@ -26,6 +26,7 @@ package org.bitrepository.access.getfile;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
@@ -41,6 +42,9 @@ import org.bitrepository.clienttest.TestEventHandler;
 import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
+import org.bitrepository.protocol.exceptions.NoPillarFoundException;
+import org.bitrepository.protocol.exceptions.OperationFailedException;
+import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -64,9 +68,9 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
             testMessageFactory = new TestGetFileMessageFactory(settings.getBitRepositoryCollectionID());
             pillar1FileStore = new TestFileStore("Pillar1", new File("src/test/resources/test-files/", DEFAULT_FILE_ID));
             pillar2FileStore = new TestFileStore("Pillar2", new File("src/test/resources/test-files/", DEFAULT_FILE_ID));
-            // The following line is also relevant for non-mockup senarios, where the pillars needs to be initialized 
-            // with content.
         }
+        // The following line is also relevant for non-mockup senarios, where the pillars needs to be initialized 
+        // with content.
         httpServer.clearFiles();
     }
 
@@ -349,6 +353,6 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
         
         addStep("Wait for at least 3 seconds", "An failed event should be received");  
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Failed);
+        Assert.assertEquals(testEventHandler.waitForEvent(4, TimeUnit.SECONDS).getType(), OperationEventType.Failed);
     }
 }

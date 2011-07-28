@@ -25,7 +25,7 @@
 package org.bitrepository.protocol.bitrepositorycollection;
 
 /**
- * Defines the configuration parameters for a single Service Level Agreement.
+ * Defines the client side settings for a Bit Repository collection.
  */
 public interface ClientSettings extends BitRepositoryCollectionSettings {
 

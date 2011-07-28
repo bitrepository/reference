@@ -32,6 +32,21 @@ import org.bitrepository.protocol.messagebus.MessageListener;
  * A conversation models the messaging based workflow used to accomplish a operation called on a client interface.
  * 
  * The interface primarily consists of sending and receiving message functionality.
+ * 
+ * <h3>Implementation considerations</h3>
+ * 
+ * The following concerns needs to be addressed by classes implementing this interface.
+ * 
+ * <h4>Timeouts</h3>
+ * Note that conversation needs to be thread safe as multiple messages and timer event may occur in parallel. 
+ * 
+ * <h4>Timeouts</h3>
+ * The conversation implementation should include timeouts for the different conversation phases.
+ * 
+ * <h4>Error handling</h3>
+ * As conversation will normally be called in either a asynchronously manor using a callback listener or synchronous, 
+ * the error handling needs to behave differently in the two cases. This means a error handling block will typically 
+ * contain a <code>if (callbackListener == null) { ... } else {...}</code> block.  
  *
  * @param <T> The outcome of the conversation.
  */

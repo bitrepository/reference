@@ -25,7 +25,6 @@
 package org.bitrepository.protocol.http;
 
 import java.io.File;
-import java.net.URL;
 
 import org.bitrepository.common.IntegrationTest;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
@@ -48,31 +47,31 @@ public class HttpServerTest extends IntegrationTest {
     public final void defaultHttpServerTest() throws Exception {
         addDescription("Tests whether it is possible to upload a file to the "
                 + "default http-server, and then download the same file again.");
-        
+
         addStep("Initialising the http server configuration to use the default server.","");
         HttpServerConfiguration config = new HttpServerConfiguration();
         runHttpServerCoreTest(new HttpServerConnector(config, testEventManager));
     }
-    
+
     /**
      * Tests the functionality of the default https server.
      */
     @Test(groups = { "testfirst", "httpsserver" })
     public final void httpsServerTest() throws Exception {
         addDescription("Tests whether it is possible to upload a file to the "
-                + "default http-server, and then download the same file again.");
-        
-        addStep("Initialising the http server configuration to use the htpps server.","");
+                + "default https-server, and then download the same file again.");
+
+        addStep("Initialising the https server configuration to use the htpps server.","");
         HttpsServerConfiguration config = new HttpsServerConfiguration();
         config.setProtocol("https");
         config.setHttpsCertificateAlias("sandkasse");
         config.setHttpsCertificatePath("src/test/resources/cert");
-    	config.setHttpsKeystorePath(new File("target", "keystore").getPath());
-    	config.setHttpsKeyStorePassword("1234");
-        
+        config.setHttpsKeystorePath(new File("target", "keystore").getPath());
+        config.setHttpsKeyStorePassword("1234");
+
         runHttpServerCoreTest(new HttpsServerConnector(config, testEventManager));
     }
-    
+
     /**
      * Tests the functionality of the default http server.
      */
@@ -83,35 +82,34 @@ public class HttpServerTest extends IntegrationTest {
         addStep("Start the embedded http server", "");
         EmbeddedHttpServer server = new EmbeddedHttpServer();
         server.start();
-        
+
         addStep("Initialising the http server configuration to use the default server.","");
         HttpServerConfiguration config = new HttpServerConfiguration();
         config.setPortNumber(EmbeddedHttpServer.PORT_NUMBER);
         config.setHttpServerName(EmbeddedHttpServer.HTTP_SERVER_NAME);
         config.setHttpServerPath(EmbeddedHttpServer.HTTP_SERVER_PATH);
-        
+
         runHttpServerCoreTest(new HttpServerConnector(config, testEventManager));
     }
-    
+
     /**
      * Contains the configuration agnostic part of the test. The configuration is defined and injected by 
      * the concrete testcases.
      */
-    
+
     private void runHttpServerCoreTest(HttpServerConnector httpServer) throws Exception {
         String httpTestFile = "httpTest";
-        
-    	addStep("Remove the file if already presentalready","");
 
+        addStep("Remove the file if already presentalready","");
         httpServer.removeFile(httpTestFile);
-          
+
         addStep("Uploading file", 
-        		"The file can now de download from the file server."); 
+        "The file can now de download from the file server."); 
         httpServer.uploadFile(fileStore.getFileAsInputstream(
                 TestFileStore.DEFAULT_EXISTING_FILE), 
                 httpServer.getURL(httpTestFile));
         httpServer.assertFileEquals(
-        		fileStore.getFile(TestFileStore.DEFAULT_EXISTING_FILE), 
-        		httpServer.getURL(httpTestFile).toExternalForm());
+                fileStore.getFile(TestFileStore.DEFAULT_EXISTING_FILE), 
+                httpServer.getURL(httpTestFile).toExternalForm());
     }
 }

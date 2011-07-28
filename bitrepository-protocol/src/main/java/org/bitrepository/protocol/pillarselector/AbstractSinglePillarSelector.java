@@ -24,6 +24,10 @@
  */
 package org.bitrepository.protocol.pillarselector;
 
+/** Defines the implementation of an <code>SinglePillarSelector</code>
+ *  
+ * The selection algorithm itself needs to be defined in a concrete subclass.
+ */
 public abstract class AbstractSinglePillarSelector implements SinglePillarSelector {
     /** The ID of the selected pillar */
     protected String pillarID = null;
@@ -41,4 +45,10 @@ public abstract class AbstractSinglePillarSelector implements SinglePillarSelect
     public String getDestinationForSelectedPillar() {
         return pillarTopic;
     }  
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + ": pillarID=" + pillarID
+                + ", pillarTopic=" + pillarTopic;
+    }
 }

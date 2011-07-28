@@ -26,9 +26,12 @@ package org.bitrepository.access.getfile;
 
 import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
 
+/**
+ * Contains the GetFile specific settings for a client.
+ */
 public interface GetFileClientSettings extends ClientSettings {
     /**
      * Return the default timeout for waiting for a getFile request to finish. 
      */
-    int getGetFileDefaultTimeout();
+    long getGetFileDefaultTimeout();
 }

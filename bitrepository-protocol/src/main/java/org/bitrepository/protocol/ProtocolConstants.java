@@ -24,11 +24,13 @@
  */
 package org.bitrepository.protocol;
 
+/** Defines the constants for this code base. */
 public class ProtocolConstants {
     /** Protocol version used. */
     public static final long PROTOCOL_VERSION = 1L;
     /** Protocol minimum version used. */
     public static final long PROTOCOL_MIN_VERSION = 1L;
-	
-	private ProtocolConstants() {}
+
+    /** Hides the constructor, preventing instantiation */
+    private ProtocolConstants() {}
 }

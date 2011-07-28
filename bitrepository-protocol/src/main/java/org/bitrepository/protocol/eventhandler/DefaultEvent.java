@@ -24,10 +24,14 @@
  */
 package org.bitrepository.protocol.eventhandler;
 
+/** A general type of <code>OperationEvent</code> only containing a descriptive info message. */
 public class DefaultEvent implements OperationEvent {
+    /** @see #getType() */
     private final OperationEventType type;
+    /** @see #getInfo() */
     private final String info;
 
+    /** The constructor for this immutable */
     public DefaultEvent(OperationEventType type, String info) {
         super();
         this.type = type;

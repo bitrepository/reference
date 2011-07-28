@@ -38,6 +38,9 @@ import org.apache.commons.io.FileUtils;
 import org.bitrepository.common.FileStore;
 import org.bitrepository.protocol.TestMessageFactory;
 
+/** 
+ * Models the storing and retrival of files as needed in test modeling pillar behaviour.
+ */
 public class TestFileStore implements FileStore {    
     private static final String ROOT_STORE = "target/test-classes/filestorage";
     private final String storageDir;

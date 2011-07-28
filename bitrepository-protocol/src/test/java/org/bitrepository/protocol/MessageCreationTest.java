@@ -48,14 +48,14 @@ public class MessageCreationTest extends ExtendedTestCase {
 
     @Test(groups = {"regressiontest"})
     public void messageCreationTest() throws Exception {
-    	addDescription("Tests if we are able to create message objects from xml. The input XML is the example code " +
-    			"defined in the message-xml, thereby also testing whether this is valid.");
+        addDescription("Tests if we are able to create message objects from xml. The input XML is the example code " +
+        "defined in the message-xml, thereby also testing whether this is valid.");
         String[] messageNames = getMessageNames();
         for (String messageName : messageNames) {
-        	addStep("Creating " + messageName + " message" , 
-        			"The test is able to instantiate message based on the example in the message-xml modules");
-        	ExampleMessageFactory.createMessage(
-        	        Class.forName(GetChecksumsFinalResponse.class.getPackage().getName() + "." + messageName));
+            addStep("Creating " + messageName + " message" , 
+            "The test is able to instantiate message based on the example in the message-xml modules");
+            ExampleMessageFactory.createMessage(
+                    Class.forName(GetChecksumsFinalResponse.class.getPackage().getName() + "." + messageName));
         }
     }
 
@@ -80,7 +80,7 @@ public class MessageCreationTest extends ExtendedTestCase {
         String[] messageNames = new String[nodes.getLength()];
         for (int i = 0; i < nodes.getLength(); i++) {
             messageNames[i] = nodes.item(i).getAttributes().getNamedItem("name")
-                    .getNodeValue();
+            .getNodeValue();
         }
         return messageNames;
     }

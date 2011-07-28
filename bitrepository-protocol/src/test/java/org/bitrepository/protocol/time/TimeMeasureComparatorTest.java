@@ -30,6 +30,9 @@ import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+/**
+ * Tests the <code>TimeMeasureComparator</code> class.
+ */
 public class TimeMeasureComparatorTest {
     @Test (groups = { "regressiontest" })
     public void testCompareMilliSeconds() {

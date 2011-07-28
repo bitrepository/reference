@@ -24,9 +24,11 @@
  */
 package org.bitrepository.access.getfile.selectors;
 
+import java.util.Arrays;
+
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.protocol.flow.UnexpectedResponseException;
+import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.AbstractSinglePillarSelector;
 
 /**
@@ -35,6 +37,7 @@ import org.bitrepository.protocol.pillarselector.AbstractSinglePillarSelector;
  *
  */
 public abstract class PillarSelectorForGetFile extends AbstractSinglePillarSelector {
+    /** @see #getTimeToDeliver() */
     private TimeMeasureTYPE timeToDeliver;
     
     /**
@@ -63,9 +66,21 @@ public abstract class PillarSelectorForGetFile extends AbstractSinglePillarSelec
     		throws UnexpectedResponseException;
     
     /**
+     * Return an array of pillars which haven't responded, but are expected to respond.
+     * @return Return an array of pillars which haven't responded.
+     */
+    public abstract String[] getOutstandingPillars();
+    
+    /**
      * The returned timeToDeliver for the selected pillar. May be null if no pillar has been selected.
      */
     public TimeMeasureTYPE getTimeToDeliver() {
         return timeToDeliver;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ", timeToDeliver=" + timeToDeliver + ", outStandingPillars=" + 
+        Arrays.toString(getOutstandingPillars());
     }
 }

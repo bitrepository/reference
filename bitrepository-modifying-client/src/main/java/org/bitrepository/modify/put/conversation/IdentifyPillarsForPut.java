@@ -25,7 +25,6 @@
 package org.bitrepository.modify.put.conversation;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimerTask;
@@ -38,7 +37,7 @@ import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.flow.UnexpectedResponseException;
+import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

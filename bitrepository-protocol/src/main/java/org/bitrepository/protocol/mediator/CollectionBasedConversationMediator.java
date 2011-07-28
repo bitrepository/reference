@@ -73,7 +73,11 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     private final Logger log = LoggerFactory.getLogger(getClass());
     /** Registered conversations, mapping from correlation ID to conversation. */
     private final Map<String, T> conversations;
+    /** The injected settings defining the mediator behavior */
     private final ClientSettings settings;
+    /** The timer used to schedule cleaning of conversations.
+     * @see ConversationCleaner 
+     */
     private final Timer cleanTimer;
 
     /**

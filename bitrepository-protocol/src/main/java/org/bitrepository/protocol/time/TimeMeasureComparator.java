@@ -31,6 +31,7 @@ import java.util.UnknownFormatConversionException;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.common.ArgumentValidator;
 
+/** Used for comparing {@link TimeMeasureTYPE} objects.*/
 public class TimeMeasureComparator {
 
     /**
@@ -48,6 +49,12 @@ public class TimeMeasureComparator {
         return convertToMilliSeconds(time1).compareTo(convertToMilliSeconds(time2));
     }
     
+    /** Normalizes <code>TimeMeasureTYPE</code> into miliseconds.
+     * 
+     * @param timeMeasure The time measure to convert
+     * @return The time measure in miliseconds
+     * @throws UnknownFormatConversionException Unable to interprete the supplied timeMeasure.
+     */
     private BigInteger convertToMilliSeconds(TimeMeasureTYPE timeMeasure) throws UnknownFormatConversionException {
         if(timeMeasure.getTimeMeasureUnit().equals("MILLISECONDS")) {
             return timeMeasure.getTimeMeasureValue();

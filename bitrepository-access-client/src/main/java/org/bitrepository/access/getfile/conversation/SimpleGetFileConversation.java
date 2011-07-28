@@ -55,7 +55,7 @@ public class SimpleGetFileConversation extends AbstractConversation<URL> {
     /** The sender to use for dispatching messages */
     final MessageSender messageSender; 
     /** The configuration specific to the SLA related to this conversion. */
-    final ClientSettings settings;
+    final GetFileClientSettings settings;
 
     /** The url which the pillar should upload the file to. */
     final URL uploadUrl;
@@ -107,8 +107,9 @@ public class SimpleGetFileConversation extends AbstractConversation<URL> {
     }
 
     /** Will start the conversation and either:<ol>
-     * <li> If no event handler has been defined the method will block until the conversation has finished.
-     * <li> If a event handler has been defined the method will return after the conversation is started.
+     * <li> If no event handler has been defined the method will block until the conversation has finished.</li>
+     * <li> If a event handler has been defined the method will return after the conversation is started.</li>
+     * </ol>
      */
     @Override
     public void startConversion() throws OperationFailedException {
@@ -145,7 +146,12 @@ public class SimpleGetFileConversation extends AbstractConversation<URL> {
         notifyAll();
     }
 
-    void throwException(OperationFailedException exception) {
+    /**
+     * Used in case of a blocking call to the conversation, eg. no eventHandler supplied,
+     *   for throwing an exception. Will set the conversation exception and unblock the call.
+     * @param exception The exception to throw on unblock. 
+     */
+    public void throwException(OperationFailedException exception) {
         operationFailedException = exception;
         unBlock();		
     }

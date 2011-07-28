@@ -30,11 +30,13 @@ package org.bitrepository.protocol.exceptions;
 @SuppressWarnings("serial")
 public class NoPillarFoundException extends OperationFailedException {
 
-	public NoPillarFoundException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    /** Constructor including causing exception */
+    public NoPillarFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public NoPillarFoundException(String message) {
-		super(message);
-	}
+    /** Constructor without causing exception */
+    public NoPillarFoundException(String message) {
+        super(message);
+    }
 }

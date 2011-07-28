@@ -29,18 +29,20 @@ import java.util.Arrays;
 import org.bitrepository.protocol.configuration.MessageBusConfigurations;
 
 /**
- * The concrete implementation of the SLAConfiguration interface. Contains set operations for all attributes,
- * eg. it is mutable.
+ * The concrete implementation of the ClientSettings interface. 
+ * 
+ * Contains set operations for all attributes, eg. it is mutable.
  */
 public class MutableClientSettings implements ClientSettings {	
 
+    /** Default constructor */
     public MutableClientSettings() {
         super();
     }
 
     public MutableClientSettings(ClientSettings settingsToCopy) {
         setBitRepositoryCollectionID(settingsToCopy.getBitRepositoryCollectionID());
-        //ToDo Shallow copy, not good.
+        //ToDo shallow copy, not good.
         setMessageBusConfiguration(settingsToCopy.getMessageBusConfiguration());
         setBitRepositoryCollectionTopicID(settingsToCopy.getBitRepositoryCollectionTopicID());
         setClientTopicID(settingsToCopy.getClientTopicID());
@@ -48,6 +50,7 @@ public class MutableClientSettings implements ClientSettings {
         setLocalFileStorage(settingsToCopy.getLocalFileStorage());
     }
 
+    /** @see #getBitRepositoryCollectionID() */
     private String id;
     @Override
     public String getBitRepositoryCollectionID() {
@@ -60,101 +63,90 @@ public class MutableClientSettings implements ClientSettings {
         this.id = id;
     }
 
+    /** @see #getMessageBusConfiguration() */
     private MessageBusConfigurations messageBusConfiguration;
     @Override
     public MessageBusConfigurations getMessageBusConfiguration() {
         return messageBusConfiguration;
     }
-    /**
-     * @see #getMessageBusConfiguration()
-     */
+    /** @see #getMessageBusConfiguration() */
     public void setMessageBusConfiguration(MessageBusConfigurations messageBusConfiguration) {
         this.messageBusConfiguration = messageBusConfiguration;
     }
 
+    /** @see #getBitRepositoryCollectionTopicID() */
     private String bitRepositoryCollectionTopicID;
     @Override
     public String getBitRepositoryCollectionTopicID() {
         return bitRepositoryCollectionTopicID;
-    }	
-    /**
-     * @see #getBitRepositoryCollectionTopicID()
-     */
+    }
+    /** @see #getBitRepositoryCollectionTopicID() */
     public void setBitRepositoryCollectionTopicID(String bitRepositoryCollectionTopicID) {
         this.bitRepositoryCollectionTopicID = bitRepositoryCollectionTopicID;
     }
 
+    /** @see #getClientTopicId() */
     private String clientTopicId;
     @Override
     public String getClientTopicID() {
         return clientTopicId;
-    }	
-    /**
-     * @see #getClientTopicId()
-     */
+    }
+    /** @see #getClientTopicId() */
     public void setClientTopicID(String clientTopicId) {
         this.clientTopicId = clientTopicId;
     }
 
+    /** @see #getPillarIDs() */
     private String[] pillarIDs;
     @Override
     public String[] getPillarIDs() {
         return pillarIDs;
     }
-    /**
-     * @see #getPillarIDs()
-     */
+    /** @see #getPillarIDs() */
     public void setPillarIDs(String[] pillarIDs) {
         this.pillarIDs = pillarIDs;
     }
 
+    /** @see #getLocalFileStorage() */
     private String fileStorage;
     @Override
     public String getLocalFileStorage() {
         return fileStorage;
     }
-    /**
-     * @see #getLocalFileStorage()
-     */
+    /** @see #getLocalFileStorage() */
     public void setLocalFileStorage(String fileStorage) {
         this.fileStorage = fileStorage;
     }
 
     /** Default value is 1 day */
-    private int conversationTimeout = 1000*60*60*24;
+    private long conversationTimeout = 1000*60*60*24;
     @Override
     public long getConversationTimeout() {
         return conversationTimeout;
     }
-    /**
-     * @see #getConversationTimeout()
-     */
+    /** @see #getConversationTimeout() */
     public void setConversationTimeout(int conversationTimeout) {
         this.conversationTimeout = conversationTimeout;
     }
 
     /** Default value is 30 seconds */
-    private int identifyPillarsTimeout = 1000*30;
+    private long identifyPillarsTimeout = 1000*30;
     @Override
     public long getIdentifyPillarsTimeout() {
         return identifyPillarsTimeout;
     }
-    /**
-     * @see #getIdentifyPillarsTimeout()
-     */
+    /** @see #getIdentifyPillarsTimeout() */
     public void setIdentifyPillarsTimeout(int identifyPillarsTimeout) {
         this.identifyPillarsTimeout = identifyPillarsTimeout;
     }
 
     /** Default value is 5 minutes */
-    private int mediatorCleanInterval = 1000*60*5;
+    private long mediatorCleanInterval = 1000*60*5;
     @Override
     public long getMediatorCleanInterval() {
         return mediatorCleanInterval;
     }
-    /**
-     * @see #getMediatorCleanInterval()
-     */
+    /** @see #getMediatorCleanInterval() */
     public void setMediatorCleanInterval(int mediatorCleanInterval) {
         this.mediatorCleanInterval = mediatorCleanInterval;
     }

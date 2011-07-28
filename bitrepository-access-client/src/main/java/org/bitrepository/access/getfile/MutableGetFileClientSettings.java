@@ -34,12 +34,12 @@ public class MutableGetFileClientSettings extends MutableClientSettings
         super(settings);
     }
 
-    private int getFileDefaultTimeout;
+    private long getFileDefaultTimeout;
     @Override
-    public int getGetFileDefaultTimeout() {
+    public long getGetFileDefaultTimeout() {
         return getFileDefaultTimeout;
     }
-    public void setGetFileDefaultTimeout(int getFileDefaultTimeout) {
+    public void setGetFileDefaultTimeout(long getFileDefaultTimeout) {
         this.getFileDefaultTimeout = getFileDefaultTimeout;
     }
 }

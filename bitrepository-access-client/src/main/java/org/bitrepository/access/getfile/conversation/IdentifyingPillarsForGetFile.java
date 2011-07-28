@@ -25,6 +25,8 @@
 package org.bitrepository.access.getfile.conversation;
 
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
@@ -38,7 +40,7 @@ import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.exceptions.NoPillarFoundException;
-import org.bitrepository.protocol.flow.UnexpectedResponseException;
+import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,10 +50,15 @@ import org.slf4j.LoggerFactory;
 public class IdentifyingPillarsForGetFile extends GetFileState {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
-    /** The amount of milliseconds to wait before executing the timertask when waiting for identify responses. */
+    /** The timer used for timeout checks. */
+    final Timer timer = new Timer();
     /** The timer task for timeout of identify in this conversation. */
     final TimerTask identifyTimeoutTask = new IdentifyTimerTask();
 
+    /** 
+     * The constructor for the indicated conversation.
+     * @param conversation The related conversation containing context information.
+     */
     public IdentifyingPillarsForGetFile(
             SimpleGetFileConversation conversation) {
         super(conversation);
@@ -132,20 +139,28 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
         }
     }
     
+    /**
+     * Encapsulates the functionality for handling a identification request timeout. An attempt will be made to continue 
+     * based on the partial result. If this isn't possible the conversation will fail. 
+     */
     private void handleIdentificationTimeout() {
         synchronized (conversation) {
             if (conversation.conversationState == this) {
                 if (conversation.selector.getIDForSelectedPillar() != null) {
-                    String message = "Time has run out for selecting a pillar. Using pillar based on uncomplete set of " +
-                    "responses.";
+                    String message = "Time has run out for selecting a pillar. The following pillars did't respond: " + 
+                    Arrays.toString(conversation.selector.getOutstandingPillars()) + 
+                    ". Using pillar based on uncomplete set of responses.";
                     log.warn(message);
                     if (conversation.eventHandler != null) {
                         conversation.eventHandler.handleEvent(new DefaultEvent(
-                                OperationEventType.IdentifyPillarTimeout, ""));
+                                OperationEventType.IdentifyPillarTimeout, 
+                                message));
                     }
                     getFileFromSelectedPillar();
                 } else {
-                    String message = "Unable to select a pillar, time has run out.";
+                    String message = "Unable to select a pillar, time has run out. " +
+                    		"The following pillars did't respond: " + 
+                    		Arrays.toString(conversation.selector.getOutstandingPillars());
                     log.warn(message);
                     if (conversation.eventHandler != null) {
                         conversation.eventHandler.handleEvent(new DefaultEvent(

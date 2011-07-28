@@ -28,17 +28,21 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bitrepository.protocol.flow.UnexpectedResponseException;
-
+import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
+/** Models the response state for a given set of pillars */
 public class PillarsResponseStatus {
     private final Set<String> pillarsWhichShouldRespond;
     private final Set<String> pillarsWithOutstandingResponse;
-    
+
+    /**
+     * Constructor.
+     * @param pillarsWhichShouldRespond An array of pillar IDs specifying which pillars are expected to respond 
+     */
     public PillarsResponseStatus(String[] pillarsWhichShouldRespond) {
         this.pillarsWhichShouldRespond = new HashSet<String>(Arrays.asList(pillarsWhichShouldRespond));
         this.pillarsWithOutstandingResponse = new HashSet<String>(Arrays.asList(pillarsWhichShouldRespond));
     }
-    
+
     /**
      * Maintains the bookkeeping regarding which pillars have responded. 
      * 
@@ -55,21 +59,21 @@ public class PillarsResponseStatus {
         } else if (pillarsWithOutstandingResponse.contains(pillarId)) {
             pillarsWithOutstandingResponse.remove(pillarId);
         } else if (pillarsWhichShouldRespond.contains(pillarId)) {
-                throw new UnexpectedResponseException("Received more than one response from pillar " + pillarId);
+            throw new UnexpectedResponseException("Received more than one response from pillar " + pillarId);
         } else {
             throw new UnexpectedResponseException("Received response from unknown pillar " + pillarId);  
         }
     }
-    
+
     /** Returns a list of pillars where a identify response hasen't been received. */ 
     public String[] getOutstandPillars() {
-    	return pillarsWithOutstandingResponse.toArray(new String[0]);
+        return pillarsWithOutstandingResponse.toArray(new String[pillarsWithOutstandingResponse.size()]);
     }
-    
+
     /**
      * Return true all pillars have responded.
      */
     public final boolean haveAllPillarResponded() {
-    	return pillarsWithOutstandingResponse.size() == 0;
+        return pillarsWithOutstandingResponse.isEmpty();
     }
 }

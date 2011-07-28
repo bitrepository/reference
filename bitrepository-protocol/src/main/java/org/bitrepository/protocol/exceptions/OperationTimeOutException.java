@@ -30,11 +30,13 @@ package org.bitrepository.protocol.exceptions;
 @SuppressWarnings("serial")
 public class OperationTimeOutException extends OperationFailedException {
 
-	public OperationTimeOutException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    /** Constructor including causing exception */
+    public OperationTimeOutException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public OperationTimeOutException(String message) {
-		super(message);
-	}
+    /** Constructor without causing exception */
+    public OperationTimeOutException(String message) {
+        super(message);
+    }
 }

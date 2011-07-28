@@ -33,38 +33,46 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 
+/**
+ * May be use to programmatically start an embedded http server, replacing the need for an already running server. 
+ * 
+ * The implementations used an embedded Jetty server.
+ * 
+ * Note that this doesn't currently work, because of lack of put support. It should be possible to exten the Jetty 
+ * server with this functionality
+ */
 public class EmbeddedHttpServer {
     public static final String PROTOCOL = "http";
     public static final int PORT_NUMBER = 16789;
     public static final String HTTP_SERVER_NAME = "localhost";
     public static final String HTTP_SERVER_PATH = "/dav/";
-    
-	private final Server server = new Server();
-    
+
+    private final Server server = new Server();
+
     public EmbeddedHttpServer() {
-         SelectChannelConnector connector = new SelectChannelConnector();
-         connector.setPort(PORT_NUMBER);
-         server.addConnector(connector);
-  
-         ResourceHandler resource_handler = new ResourceHandler();
-         resource_handler.setDirectoriesListed(true);
-         resource_handler.setWelcomeFiles(new String[]{ "index.html" });
-         
-         File httpServerDir = new File("target/httpserver/dav/");
-         httpServerDir.mkdirs();
-         
-         resource_handler.setResourceBase(httpServerDir.getPath());
-  
-         HandlerList handlers = new HandlerList();
-         handlers.setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
-         server.setHandler(handlers);
+        SelectChannelConnector connector = new SelectChannelConnector();
+        connector.setPort(PORT_NUMBER);
+        server.addConnector(connector);
+
+        ResourceHandler resource_handler = new ResourceHandler();
+        resource_handler.setDirectoriesListed(true);
+        resource_handler.setWelcomeFiles(new String[]{ "index.html" });
+
+        File httpServerDir = new File("target/httpserver/dav/");
+        httpServerDir.mkdirs();
+
+        resource_handler.setResourceBase(httpServerDir.getPath());
+
+        HandlerList handlers = new HandlerList();
+        handlers.setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
+        server.setHandler(handlers);
     }
-    
+
     public void start() throws Exception {
         server.start();
         //server.join();
     }
-    
+
     public void stop() throws Exception {
         server.stop();
     }

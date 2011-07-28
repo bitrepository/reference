@@ -25,8 +25,9 @@
 package org.bitrepository.access.getfile.selectors;
 
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.exceptions.UnableToFinishException;
-import org.bitrepository.protocol.flow.UnexpectedResponseException;
+import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
 import org.bitrepository.protocol.time.TimeMeasureComparator;
 
@@ -35,24 +36,36 @@ import org.bitrepository.protocol.time.TimeMeasureComparator;
  * response.
  */
 public class FastestPillarSelectorForGetFile extends PillarSelectorForGetFile {
-	private final PillarsResponseStatus responseStatus;
+    private final PillarsResponseStatus responseStatus;
     private static final TimeMeasureComparator comparator = new TimeMeasureComparator();
 
+    /** The constructor
+     * 
+     * @param pillarsWhichShouldRespond List of pillars which should respond. Used by the selector to determine when all
+     * relevant pillars has responded, which indicated the fastest pillar can be chosen.
+     */
     public FastestPillarSelectorForGetFile(String[] pillarsWhichShouldRespond) {
-    	responseStatus = new PillarsResponseStatus(pillarsWhichShouldRespond);
+        ArgumentValidator.checkNotNullOrEmpty(pillarsWhichShouldRespond, "pillarsWhichShouldRespond");
+        responseStatus = new PillarsResponseStatus(pillarsWhichShouldRespond);
     }
 
     @Override
     public boolean checkPillarResponseForSelection(IdentifyPillarsForGetFileResponse response) 
-    		throws UnexpectedResponseException {
-    	responseStatus.responseReceived(response.getPillarID());
-        return 
-        getIDForSelectedPillar() == null || 
-        comparator.compare(response.getTimeToDeliver(), getTimeToDeliver()) < 0;
+    throws UnexpectedResponseException {
+        responseStatus.responseReceived(response.getPillarID());
+        if (getIDForSelectedPillar() == null || 
+            comparator.compare(response.getTimeToDeliver(), getTimeToDeliver()) < 0) {
+            return true;
+        } else return false;
     }
 
-	@Override
-	public boolean isFinished() throws UnableToFinishException {
-		return responseStatus.haveAllPillarResponded();
-	}
+    @Override
+    public String[] getOutstandingPillars() {
+        return responseStatus.getOutstandPillars();
+    }
+
+    @Override
+    public boolean isFinished() throws UnableToFinishException {
+        return responseStatus.haveAllPillarResponded();
+    }
 }

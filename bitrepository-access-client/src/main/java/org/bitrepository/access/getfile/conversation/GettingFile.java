@@ -25,11 +25,11 @@
 package org.bitrepository.access.getfile.conversation;
 
 import java.math.BigInteger;
+import java.util.Timer;
 import java.util.TimerTask;
 
 import org.bitrepository.access.getfile.selectors.FastestPillarSelectorForGetFile;
 import org.bitrepository.access.getfile.selectors.SpecificPillarSelectorForGetFile;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
@@ -43,15 +43,29 @@ import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-public class GettingFile extends GetFileState {
+/**
+ * Models the behavior of a GetFile conversation during the file exchange phase. That is, it begins with the sending of
+ * a <code>GetFileRequest</code> and finishes with on the reception of a <code>GetFileFinalResponse</code> message.
+ * 
+ * Note that this is only used by the GetFileConversation in the same package, therefore the visibility is package 
+ * protected.
+ */
+class GettingFile extends GetFileState {
 
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    /** 
+     * The timer for the getFileTimeout. It is run as a daemon thread, eg. it will not prevent the application from 
+     * exiting */
+    final Timer timer = new Timer(true);
     /** The timer task for timeout of getFile in this conversation. */
     final TimerTask getFileTimeoutTask = new GetFileTimerTask();
 
+    /** 
+     * The constructor for the indicated conversation.
+     * @param conversation The related conversation containing context information.
+     */
     public GettingFile(SimpleGetFileConversation conversation) {
         super(conversation);
     }
@@ -60,8 +74,7 @@ public class GettingFile extends GetFileState {
      * 
      * Also sets up a timer task to avoid waiting to long for the request to complete.
      */
-    void start() {
-
+    public void start() {
         if (conversation.selector.getIDForSelectedPillar() == null) {
             conversation.throwException(new NoPillarFoundException("Unable to getFile, no pillar was selected"));
         } else {
@@ -85,7 +98,7 @@ public class GettingFile extends GetFileState {
         getFileRequest.setTo(conversation.selector.getDestinationForSelectedPillar());
 
         conversation.messageSender.sendMessage(getFileRequest); 
-        timer.schedule(getFileTimeoutTask, getMaxTimeToWaitForGetFileToComplete(conversation.selector.getTimeToDeliver()));
+        timer.schedule(getFileTimeoutTask, getMaxTimeToWaitForGetFileToComplete());
         if (conversation.eventHandler != null) {
             conversation.eventHandler.handleEvent(
                     new PillarOperationEvent(OperationEvent.OperationEventType.RequestSent, 
@@ -126,7 +139,6 @@ public class GettingFile extends GetFileState {
         }
         log.debug("(ConversationID: " + conversation.getConversationID() +  ") " +
                 "Finished getting file " + msg.getFileID() + " from " + msg.getPillarID());
-        // TODO: Race condition, what if timeout task already triggered this just before now
         endConversation();
     }
 
@@ -143,9 +155,11 @@ public class GettingFile extends GetFileState {
         }
     }
 
-    private long getMaxTimeToWaitForGetFileToComplete(TimeMeasureTYPE estimatedTimeToDeliver) {
-        //ToDo What to do
-        return 10000;
+    /**
+     * @return Returns the maximum time to wait for a GetFile primitive to complete.
+     */
+    private long getMaxTimeToWaitForGetFileToComplete() {
+        return conversation.settings.getGetFileDefaultTimeout();
     }
 
     /**
@@ -156,16 +170,18 @@ public class GettingFile extends GetFileState {
         @Override
         public void run() {
             synchronized (conversation) {
-                log.warn("No GetFileFinalResponse received before timeout for file " + conversation.fileID + 
-                        " from pillar " + conversation.selector.getIDForSelectedPillar());
-                endConversation();
-                if (conversation.eventHandler != null) {
-                    conversation.eventHandler.handleEvent(
-                            new DefaultEvent(OperationEvent.OperationEventType.RequestTimeOut, 
-                            "No GetFileFinalResponse received before timeout"));
-                } else {
-                    conversation.throwException(new OperationTimeOutException("No GetFileFinalResponse received before timeout"));
-                }		
+                if (!conversation.hasEnded()) { 
+                    log.warn("No GetFileFinalResponse received before timeout for file " + conversation.fileID + 
+                            " from pillar " + conversation.selector.getIDForSelectedPillar());
+                    endConversation();
+                    if (conversation.eventHandler != null) {
+                        conversation.eventHandler.handleEvent(
+                                new DefaultEvent(OperationEvent.OperationEventType.RequestTimeOut, 
+                                "No GetFileFinalResponse received before timeout"));
+                    } else {
+                        conversation.throwException(new OperationTimeOutException("No GetFileFinalResponse received before timeout"));
+                    }		
+                }
             }
         }
     }

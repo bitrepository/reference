@@ -24,40 +24,61 @@
  */
 package org.bitrepository.protocol.fileexchange;
 
+/** Configuration for <code>HttpsServerConector</code> objects. */
 public class HttpsServerConfiguration extends HttpServerConfiguration {
-	protected String fileExchangeClass;
-    protected String httpsKeystorePath;
-    protected String httpsKeyStorePassword;
-    protected String httpsCertificatePath;
-    protected String httpsCertificateAlias;
+
+    /** @see #getFileExchangeClass() */
+    protected String fileExchangeClass;
+    /** The concrete fileexchange class to use */
     public String getFileExchangeClass() {
-		return fileExchangeClass;
-	}
-	public void setFileExchangeClass(String fileExchangeClass) {
-		this.fileExchangeClass = fileExchangeClass;
-	}
-	public String getHttpsKeystorePath() {
-		return httpsKeystorePath;
-	}
-	public void setHttpsKeystorePath(String httpsKeystorePath) {
-		this.httpsKeystorePath = httpsKeystorePath;
-	}
-	public String getHttpsKeyStorePassword() {
-		return httpsKeyStorePassword;
-	}
-	public void setHttpsKeyStorePassword(String httpsKeyStorePassword) {
-		this.httpsKeyStorePassword = httpsKeyStorePassword;
-	}
-	public String getHttpsCertificatePath() {
-		return httpsCertificatePath;
-	}
-	public void setHttpsCertificatePath(String httpsCertificatePath) {
-		this.httpsCertificatePath = httpsCertificatePath;
-	}
-	public String getHttpsCertificateAlias() {
-		return httpsCertificateAlias;
-	}
-	public void setHttpsCertificateAlias(String httpsCertificateAlias) {
-		this.httpsCertificateAlias = httpsCertificateAlias;
-	}
+        return fileExchangeClass;
+    }
+    /** @see #getFileExchangeClass() */
+    public void setFileExchangeClass(String fileExchangeClass) {
+        this.fileExchangeClass = fileExchangeClass;
+    }
+
+    /** @see #getHttpsKeystorePath() */
+    protected String httpsKeystorePath;
+    /** Returns the location of the https keystore */
+    public String getHttpsKeystorePath() {
+        return httpsKeystorePath;
+    }
+    /** @see #getHttpsKeystorePath() */
+    public void setHttpsKeystorePath(String httpsKeystorePath) {
+        this.httpsKeystorePath = httpsKeystorePath;
+    }
+
+    /** @see #getHttpsKeyStorePassword() */
+    protected String httpsKeyStorePassword;
+    /** Returns the https keystore password*/
+    public String getHttpsKeyStorePassword() {
+        return httpsKeyStorePassword;
+    }
+    /** @see #getHttpsKeyStorePassword() */
+    public void setHttpsKeyStorePassword(String httpsKeyStorePassword) {
+        this.httpsKeyStorePassword = httpsKeyStorePassword;
+    }
+
+    /** @see #getHttpsCertificatePath() */
+    protected String httpsCertificatePath;
+    /** Returns the location of the https certificates.*/
+    public String getHttpsCertificatePath() {
+        return httpsCertificatePath;
+    }
+    /** @see #getHttpsCertificatePath() */
+    public void setHttpsCertificatePath(String httpsCertificatePath) {
+        this.httpsCertificatePath = httpsCertificatePath;
+    }
+
+    /** @see #getHttpsCertificateAlias() */
+    protected String httpsCertificateAlias;
+    /** Returns the certificate alias */
+    public String getHttpsCertificateAlias() {
+        return httpsCertificateAlias;
+    }
+    /** @see #getHttpsCertificateAlias() */
+    public void setHttpsCertificateAlias(String httpsCertificateAlias) {
+        this.httpsCertificateAlias = httpsCertificateAlias;
+    }
 }
