@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.modify.put;
+package org.bitrepository.modify.putfile;
 
 import java.net.URL;
 

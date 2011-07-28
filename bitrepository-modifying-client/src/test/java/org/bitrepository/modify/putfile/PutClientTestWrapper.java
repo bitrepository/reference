@@ -26,7 +26,7 @@ package org.bitrepository.modify.putfile;
 
 import java.net.URL;
 
-import org.bitrepository.modify.put.PutClient;
+import org.bitrepository.modify.putfile.PutClient;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.jaccept.TestEventManager;

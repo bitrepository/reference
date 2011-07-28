@@ -27,9 +27,9 @@ package org.bitrepository.modify;
 
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
-import org.bitrepository.modify.put.PutClient;
-import org.bitrepository.modify.put.PutFileClientSettings;
-import org.bitrepository.modify.put.SimplePutClient;
+import org.bitrepository.modify.putfile.PutClient;
+import org.bitrepository.modify.putfile.PutFileClientSettings;
+import org.bitrepository.modify.putfile.SimplePutClient;
 import org.bitrepository.modify_client.configuration.ModifyConfiguration;
 import org.bitrepository.protocol.messagebus.MessageBusFactory;
 

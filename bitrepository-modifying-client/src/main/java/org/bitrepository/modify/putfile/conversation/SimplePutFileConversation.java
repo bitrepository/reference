@@ -22,13 +22,13 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.modify.put.conversation;
+package org.bitrepository.modify.putfile.conversation;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
-import org.bitrepository.modify.put.PutFileClientSettings;
+import org.bitrepository.modify.putfile.PutFileClientSettings;
 import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.conversation.AbstractConversation;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;

@@ -22,13 +22,13 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.modify.put;
+package org.bitrepository.modify.putfile;
 
 import java.math.BigInteger;
 import java.net.URL;
 
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.modify.put.conversation.SimplePutFileConversation;
+import org.bitrepository.modify.putfile.conversation.SimplePutFileConversation;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.mediator.CollectionBasedConversationMediator;
