@@ -22,8 +22,8 @@
     <module>bitrepository-protocol</module>
     <module>bitrepository-access-client</module>
     <module>bitrepository-modifying-client</module>
-    <module>bitrepository-alarm-client</module>
     <module>bitrepository-integrity-client</module>
+    <module>bitrepository-alarm-service</module>
     <module>bitrepository-monitoring-service</module>
     <module>bitrepository-integration</module>
   </modules>

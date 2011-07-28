@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Empty schema to satisfy the requirement for a configuration definition in each module -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+  xmlns:tns="http://bitrepository.org/alarm-service/AlarmConfiguration.xsd"
+  targetNamespace="http://bitrepository.org/alarm-service/AlarmConfiguration.xsd"
+  elementFormDefault="qualified">
+    
+  <element name="AlarmConfiguration">
+    <annotation>
+      <documentation xml:lang="en"> </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="queue" type="string">
+          <annotation>
+            <documentation xml:lang="en">
+              The queue where to receive all the Alarm messages.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="handlerClass" type="string">
+          <annotation>
+            <documentation xml:lang="en">
+              The class for the AlarmHandler.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="MailingConfiguration">
+          <complexType>
+            <sequence>
+              <element name="MailReceiver" type="string">
+                <annotation>
+                  <documentation xml:lang="en">
+                    The receiver of the mail. Several receiver will be split by a comma: ','.
+                  </documentation>
+                </annotation>
+              </element>
+              <element name="MailSender" type="string">
+                <annotation>
+                  <documentation xml:lang="en">
+                    The sender of the mail.
+                  </documentation>
+                </annotation>
+              </element>
+              <element name="MailServer" type="string">
+                <annotation>
+                  <documentation xml:lang="en">
+                    The server where the mail is sent from.
+                  </documentation>
+                </annotation>
+              </element>
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+</schema>
