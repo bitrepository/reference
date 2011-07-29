@@ -112,7 +112,7 @@ public class SimpleGetFileConversation extends AbstractConversation<URL> {
      * </ol>
      */
     @Override
-    public void startConversion() throws OperationFailedException {
+    public void startConversation() throws OperationFailedException {
         IdentifyingPillarsForGetFile initialConversationState = new IdentifyingPillarsForGetFile(this);
         conversationState = initialConversationState;
         initialConversationState.start();		
@@ -157,7 +157,7 @@ public class SimpleGetFileConversation extends AbstractConversation<URL> {
     }
 
     @Override
-    public synchronized void failConversion(String message) {
+    public synchronized void failConversation(String message) {
         if (eventHandler != null) {
             eventHandler.handleEvent(new DefaultEvent(
                     OperationEventType.Failed, message));

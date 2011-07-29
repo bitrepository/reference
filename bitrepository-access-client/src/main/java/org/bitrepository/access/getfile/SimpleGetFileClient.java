@@ -138,7 +138,7 @@ public class SimpleGetFileClient implements GetFileClient {
             new SimpleGetFileConversation(messageBus, settings, selector, fileID, uploadUrl, eventHandler);
         conversationMediator.addConversation(conversation);  
         try {
-            conversation.startConversion();
+            conversation.startConversation();
         } catch (OperationFailedException e) {
             eventHandler.handleEvent(new OperationFailedEvent("Unable to complete getFile request", e));
         }
@@ -156,6 +156,6 @@ public class SimpleGetFileClient implements GetFileClient {
         SimpleGetFileConversation conversation = 
             new SimpleGetFileConversation(messageBus, settings, selector, fileID, uploadUrl, null);
         conversationMediator.addConversation(conversation);  
-        conversation.startConversion();
+        conversation.startConversation();
     }
 }
