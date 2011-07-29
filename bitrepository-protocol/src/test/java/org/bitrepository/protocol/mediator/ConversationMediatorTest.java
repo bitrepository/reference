@@ -104,12 +104,12 @@ public abstract class ConversationMediatorTest {
         }
 
         @Override
-        public void startConversion() throws OperationFailedException {
+        public void startConversation() throws OperationFailedException {
             hasStarted = true;
         }
 
         @Override
-        public void failConversion(String message) {
+        public void failConversation(String message) {
             hasFailed = true;
         }
     }

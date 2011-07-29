@@ -27,6 +27,9 @@ package org.bitrepository.modify.putfile;
 import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
 
+/**
+ * The instantiateable PutFileSettings. Can set all the variables in the PutFileClientSettings.
+ */
 public class MutablePutFileClientSettings extends MutableClientSettings implements PutFileClientSettings {
     /**
      * Constructor.

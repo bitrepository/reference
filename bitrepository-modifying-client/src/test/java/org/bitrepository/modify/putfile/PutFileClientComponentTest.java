@@ -25,13 +25,8 @@
 package org.bitrepository.modify.putfile;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.net.URL;
 
-import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
@@ -40,26 +35,18 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.clienttest.TestEventHandler;
 import org.bitrepository.modify.ModifyComponentFactory;
-import org.bitrepository.modify.putfile.MutablePutFileClientSettings;
-import org.bitrepository.modify.putfile.PutClient;
-import org.bitrepository.modify.putfile.SimplePutClient;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
  * Tests for the components of the PutFileClient.
+ * TODO need more test-cases, e.g. the User-Stories...
  */
 public class PutFileClientComponentTest extends DefaultFixtureClientTest {
-    /** The constant for the pillar id.*/
-//    private static final String PILLAR_ID = "PutStore";
-    
     /** The settings. */
     MutablePutFileClientSettings putSettings;
-    /** The instance to store the test files.*/
-    private TestFileStore filestore;
     
     private TestPutFileMessageFactory messageFactory;
     
@@ -74,7 +61,6 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         
         if(useMockupPillar()) {
             messageFactory = new TestPutFileMessageFactory(putSettings.getBitRepositoryCollectionID());
-            filestore = new TestFileStore(PILLAR1_ID);
         }
 
         testFile = new File("src/test/resources/test-files/", DEFAULT_FILE_ID);
@@ -85,9 +71,9 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Testing the initialization through the ModifyComponentFactory.");
         addStep("Use the ModifyComponentFactory to instantiate a PutFileClient.", 
                 "It should be an instance of SimplePutFileClient");
-        PutClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(putSettings);
-        Assert.assertTrue(pfc instanceof SimplePutClient, "The PutFileClient '" + pfc + "' should be instance of '" 
-                + SimplePutClient.class.getName() + "'");
+        PutFileClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(putSettings);
+        Assert.assertTrue(pfc instanceof ConversationBasedPutFileClient, "The PutFileClient '" + pfc + "' should be instance of '" 
+                + ConversationBasedPutFileClient.class.getName() + "'");
     }
     
     @Test(groups={"regressiontest"})
@@ -98,7 +84,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         
         putSettings.setPillarIDs(new String[]{PILLAR1_ID});
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        PutClient putClient = new PutClientTestWrapper(
+        PutFileClient putClient = new PutClientTestWrapper(
                 ModifyComponentFactory.getInstance().retrievePutClient(putSettings), 
                 testEventManager);
 

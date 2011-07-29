@@ -31,8 +31,9 @@ import org.bitrepository.protocol.exceptions.OperationFailedException;
 
 /**
  * Interface for the put client.
+ * TODO handle the cases with validation checksums (pillar-side, client-side and both?).
  */
-public interface PutClient {
+public interface PutFileClient {
     /**
      * Method for performing the put operation.
      * 
@@ -42,6 +43,15 @@ public interface PutClient {
      * @param eventHandler The EventHandler for the operation.
      * @throws OperationFailedException If the operation failed.
      */
-    void putFileWithId(URL url, String fileId, Long sizeOfFile, EventHandler eventHandler) 
-            throws OperationFailedException;
+    void putFileWithId(URL url, String fileId, long sizeOfFile, EventHandler eventHandler);
+
+    /**
+     * Method for performing the put operation.
+     * 
+     * @param url The URL where the file to be put is located.
+     * @param fileId The id of the file.
+     * @param sizeOfFile The number of bytes the file requires.
+     * @throws OperationFailedException If the operation failed.
+     */
+    void putFileWithId(URL url, String fileId, long sizeOfFile) throws OperationFailedException;
 }

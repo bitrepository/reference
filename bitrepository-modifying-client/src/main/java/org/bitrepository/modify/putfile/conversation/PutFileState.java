@@ -24,28 +24,21 @@
  */
 package org.bitrepository.modify.putfile.conversation;
 
-import java.util.Timer;
-
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 
 /**
  * The interface for states of the PutFile communication.
  */
 public abstract class PutFileState extends AbstractMessageListener {
-	/** The conversation in the given state.*/
-	protected final SimplePutFileConversation conversation;
-	
-    /** Defines that the timer is a daemon thread. */
-    private static final Boolean TIMER_IS_DAEMON = true;
-    /** The timer. Schedules conversation timeouts for this conversation. */
-    final Timer timer = new Timer(TIMER_IS_DAEMON);
-
+    /** The conversation in the given state.*/
+    protected final SimplePutFileConversation conversation;
+    
     /**
      * Constructor.
      * @param conversation The conversation in the given state.
      */
     protected PutFileState(SimplePutFileConversation conversation) {
-    	this.conversation = conversation;
+        this.conversation = conversation;
     }
     
     /**

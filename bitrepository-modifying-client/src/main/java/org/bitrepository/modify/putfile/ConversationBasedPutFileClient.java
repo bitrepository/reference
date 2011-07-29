@@ -29,7 +29,9 @@ import java.net.URL;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.modify.putfile.conversation.SimplePutFileConversation;
+import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.protocol.mediator.ConversationMediator;
@@ -39,10 +41,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A simple implementation of the PutClient.
- *
- * TODO perhaps merge the 'outstanding' and the 'FileIdForPut'?
  */
-public class SimplePutClient implements PutClient {
+public class ConversationBasedPutFileClient implements PutFileClient {
     /** The log for this class.*/
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -58,7 +58,7 @@ public class SimplePutClient implements PutClient {
      * @param messageBus The messagebus for communication.
      * @param settings The configurations and settings.
      */
-    public SimplePutClient(MessageBus messageBus, PutFileClientSettings settings) {
+    public ConversationBasedPutFileClient(MessageBus messageBus, PutFileClientSettings settings) {
         this.conversationMediator = new CollectionBasedConversationMediator<SimplePutFileConversation>(settings, messageBus,
                 settings.getClientTopicID());
         this.bus = messageBus;
@@ -66,15 +66,31 @@ public class SimplePutClient implements PutClient {
     }
 
     @Override
-    public void putFileWithId(URL url, String fileId, Long sizeOfFile, EventHandler eventHandler) 
-            throws OperationFailedException {
+    public void putFileWithId(URL url, String fileId, long sizeOfFile, EventHandler eventHandler) {
         ArgumentValidator.checkNotNull(url, "URL url");
         ArgumentValidator.checkNotNull(fileId, "String fileId");
-        ArgumentValidator.checkNotNull(sizeOfFile, "Long sizeOfFile");
+        
+        try {
+            SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
+                    BigInteger.valueOf(sizeOfFile), null, null, eventHandler);
+            conversationMediator.addConversation(conversation);
+            conversation.startConversation();
+        } catch (OperationFailedException e) {
+            String msg = "Couldn't perform put for '" + fileId + "' at '" + url + "' due to the following error: '"
+                    + e.getMessage() + "'.";
+            log.error(msg, e);
+            eventHandler.handleEvent(new DefaultEvent(OperationEventType.Failed, msg));
+        }
+    }
+    
+    @Override
+    public void putFileWithId(URL url, String fileId, long sizeOfFile) throws OperationFailedException {
+        ArgumentValidator.checkNotNull(url, "URL url");
+        ArgumentValidator.checkNotNull(fileId, "String fileId");
         
         SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
-                BigInteger.valueOf(sizeOfFile), eventHandler);
+                BigInteger.valueOf(sizeOfFile), null, null, null);
         conversationMediator.addConversation(conversation);
-        conversation.startConversion();
+        conversation.startConversation();
     }
 }

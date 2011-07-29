@@ -26,7 +26,7 @@ package org.bitrepository.modify.putfile;
 
 import java.net.URL;
 
-import org.bitrepository.modify.putfile.PutClient;
+import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.jaccept.TestEventManager;
@@ -34,9 +34,9 @@ import org.jaccept.TestEventManager;
 /**
  * Wrapper class for a PutFileClient.
  */
-public class PutClientTestWrapper implements PutClient {
+public class PutClientTestWrapper implements PutFileClient {
     /** The PutClient to wrap. */
-    private PutClient wrappedPutClient;
+    private PutFileClient wrappedPutClient;
     /** The manager to monitor the operations.*/
     private TestEventManager testEventManager;
 
@@ -45,15 +45,21 @@ public class PutClientTestWrapper implements PutClient {
      * @param putClientInstance The instance to wrap and monitor.
      * @param eventManager The manager to monitor the operations.
      */
-    public PutClientTestWrapper(PutClient putClientInstance, TestEventManager eventManager) {
+    public PutClientTestWrapper(PutFileClient putClientInstance, TestEventManager eventManager) {
         this.wrappedPutClient = putClientInstance;
         this.testEventManager = eventManager;
     }
 
     @Override
-    public void putFileWithId(URL url, String fileId, Long fileSize, EventHandler eventHandler) 
-            throws OperationFailedException {
+    public void putFileWithId(URL url, String fileId, long fileSize, EventHandler eventHandler) {
         testEventManager.addStimuli("Calling PutFileWithId(" + url + ", " + fileId + ", " + fileSize + ", eventHandler)");
         wrappedPutClient.putFileWithId(url, fileId, fileSize, eventHandler);
     }
+    
+    @Override
+    public void putFileWithId(URL url, String fileId, long fileSize) throws OperationFailedException {
+        testEventManager.addStimuli("Calling PutFileWithId(" + url + ", " + fileId + ", " + fileSize + ", eventHandler)");
+        wrappedPutClient.putFileWithId(url, fileId, fileSize);
+    }
+
 }

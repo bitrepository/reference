@@ -24,12 +24,16 @@
  */
 package org.bitrepository.modify.putfile.conversation;
 
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.UUID;
+
+import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
+import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.modify.putfile.PutFileClientSettings;
-import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.conversation.AbstractConversation;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
@@ -39,10 +43,6 @@ import org.bitrepository.protocol.messagebus.MessageSender;
 import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.UUID;
 
 /**
  * A conversation for PutFile.
@@ -54,12 +54,12 @@ import java.util.UUID;
 public class SimplePutFileConversation extends AbstractConversation<URL> {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
-
+    
     /** The sender to use for dispatching messages */
     final MessageSender messageSender;
     /** The configuration specific to the SLA related to this conversion. */
     final PutFileClientSettings settings;
-
+    
     /** The URL which the pillar should download the file from. */
     final URL downloadUrl;
     /** The ID of the file which should be downloaded from the supplied URL. */
@@ -68,19 +68,16 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
     final BigInteger fileSize;
     /** The event handler to send notifications of the get file progress */
     final EventHandler eventHandler;
-    /** The response status for the identification of the pillars.*/
-    final PillarsResponseStatus identifyResponseStatus;
-    /** The response status for the actual put to the pillars.*/
-    final PillarsResponseStatus putResponseStatus;
     /** The state of the PutFile transaction.*/
     PutFileState conversationState;
     /** The exception if the operation failed.*/
     OperationFailedException operationFailedException;
     
-    // TODO handle the checksum
-    /** The checksum of the file, which the pillars should download.*/
-//  final ChecksumDataForFileTYPE checksum;
-
+    /** The checksum of the file, which the pillars should download. Used for validation at pillar-side.*/
+    final ChecksumsDataForNewFile validationChecksums;
+    /** The checksums to request from the pillar.*/
+    final ChecksumSpecs requestChecksums;
+    
     /**
      * Constructor.
      * Initializes all the variables for the conversation.
@@ -90,7 +87,10 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
      * @param urlToDownload The URL where the file to be 'put' is located.
      * @param fileId The id of the file.
      * @param sizeOfFile The size of the file.
-     * @param checksum The checksum of the file to upload.
+     * @param checksumForValidationAtPillar The checksum of the file to upload. Used at pillar-side for validation.
+     * Can be null, if no pillar-side validation is wanted.
+     * @param checksumRequestsForValidation The checksum requested for client-side validation of correct put.
+     * Can be null, if no client-side validation is wanted.
      * @param eventHandler The event handler.
      */
     public SimplePutFileConversation(MessageSender messageSender,
@@ -98,32 +98,34 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
             URL urlToDownload,
             String fileId,
             BigInteger sizeOfFile,
+            ChecksumsDataForNewFile checksumForValidationAtPillar,
+            ChecksumSpecs checksumRequestsForValidation,
             EventHandler eventHandler) {
         super(messageSender, UUID.randomUUID().toString());
-
+        
         this.messageSender = messageSender;
         this.settings = settings;
         this.downloadUrl = urlToDownload;
         this.fileID = fileId;
         this.fileSize = sizeOfFile;
         this.eventHandler = eventHandler;
-        this.identifyResponseStatus = new PillarsResponseStatus(settings.getPillarIDs());
-        this.putResponseStatus = new PillarsResponseStatus(settings.getPillarIDs());
+        this.validationChecksums = checksumForValidationAtPillar;
+        this.requestChecksums = checksumRequestsForValidation;
     }
-
+    
     @Override
     public boolean hasEnded() {
         return conversationState instanceof PutFileFinished;
     }
-
+    
     @Override
     public URL getResult() {
         return downloadUrl;
     }
-
+    
     @Override
-    public void startConversion() throws OperationFailedException {
-        IdentifyPillarsForPut initialState = new IdentifyPillarsForPut(this);
+    public void startConversation() throws OperationFailedException {
+        IdentifyPillarsForPutFile initialState = new IdentifyPillarsForPutFile(this);
         conversationState = initialState;
         initialState.start();
         if (eventHandler == null) {
@@ -133,29 +135,29 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
             throw operationFailedException;
         }
     }
-
+    
     @Override
     public synchronized void onMessage(PutFileFinalResponse message) {
         conversationState.onMessage(message);
     }
-
+    
     @Override
     public synchronized void onMessage(PutFileProgressResponse message) {
         conversationState.onMessage(message);
     }
-
+    
     @Override
     public synchronized void onMessage(IdentifyPillarsForPutFileResponse message) {
         conversationState.onMessage(message);
     }
-
+    
     /**
      * Mark this conversation as ended, and notifies whoever waits for it to end.
      */
     private synchronized void unBlock() {	
         notifyAll();
     }
-
+    
     /**
      * Method for throwing an exception.
      * @param exception The exception to throw.
@@ -164,9 +166,11 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
         operationFailedException = exception;
         unBlock();		
     }
-
+    
     @Override
-    public void failConversion(String message) {
+    public void failConversation(String message) {
+        // TODO how to handle the case, when the file has been put at some pillars but not all?
+        log.warn("Conversation failed: " + message);
         if (eventHandler != null) {
             eventHandler.handleEvent(new DefaultEvent(
                     OperationEventType.Failed, message));
@@ -176,5 +180,5 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
         conversationState.endConversation();
         unBlock();
     }
-
+    
 }

@@ -27,9 +27,9 @@ package org.bitrepository.modify;
 
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
-import org.bitrepository.modify.putfile.PutClient;
+import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.modify.putfile.PutFileClientSettings;
-import org.bitrepository.modify.putfile.SimplePutClient;
+import org.bitrepository.modify.putfile.ConversationBasedPutFileClient;
 import org.bitrepository.modify_client.configuration.ModifyConfiguration;
 import org.bitrepository.protocol.messagebus.MessageBusFactory;
 
@@ -92,8 +92,8 @@ public class ModifyComponentFactory {
      * TODO use the configuration instead of this default. 
      * @return The configured PutClient.
      */
-    public PutClient retrievePutClient(PutFileClientSettings settings) {
-        return new SimplePutClient(
+    public PutFileClient retrievePutClient(PutFileClientSettings settings) {
+        return new ConversationBasedPutFileClient(
                 MessageBusFactory.createMessageBus(settings.getMessageBusConfiguration()),
                 settings);
     }

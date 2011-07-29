@@ -120,7 +120,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    conversation.failConversion(message);
+                    conversation.failConversation(message);
                 }
             });
             t.start();

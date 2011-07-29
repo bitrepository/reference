@@ -107,11 +107,11 @@ public interface Conversation<T> extends MessageListener {
      * @throws ConversationTimedOutException 
      * 
      */
-    void startConversion() throws OperationFailedException;
+    void startConversation() throws OperationFailedException;
     
     /**
      * Can be used to fail an conversation. This might be caused by a timeout or other event.
      * @param message Description of the cause for this failure. 
      */
-    void failConversion(String message);
+    void failConversation(String message);
 }
