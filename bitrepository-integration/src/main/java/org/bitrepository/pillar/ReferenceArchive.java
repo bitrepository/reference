@@ -41,15 +41,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for managing the files for the reference pillar.
- * It has a very simple structure for keeping the files according to SLA.
- * Each SLA has its own subdirectory in the filedir for this pillar.
+ * Class for managing the files for the reference pillar. This supports a single BitRespositoryCollectionID.
  */
 public class ReferenceArchive implements FileStore {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    // Constants
+    // TODO replace these constants with settings.
     /** Constant for the temporary directory name.*/
     public static final String TEMPORARY_DIR = "tmpDir";
     /** Constant for the file directory name.*/
@@ -114,10 +112,9 @@ public class ReferenceArchive implements FileStore {
     }
 
     @Override
-    public void storeFile(String fileID, InputStream inputStream) throws Exception {
+    public File downloadFileForValidation(String fileID, InputStream inputStream) throws Exception {
         // Download the file first, then move it to the fileDir.
         File downloadedFile = new File(tmpDir, fileID);
-        File archivedFile = new File(fileDir, fileID);
 
         // Save InputStream to the file.
         BufferedOutputStream bufferedOutputstream = null;
@@ -133,6 +130,21 @@ public class ReferenceArchive implements FileStore {
             bufferedOutputstream.close();
         }
 
+        return downloadedFile;
+    }
+    
+    @Override
+    public void moveToArchive(String fileID) throws Exception {
+        File downloadedFile = new File(tmpDir, fileID);
+        File archivedFile = new File(fileDir, fileID);
+        
+        if(!downloadedFile.isFile()) {
+            throw new IllegalArgumentException("No downloaded file to archive '" + fileID + "'");
+        }
+        if(archivedFile.exists()) {
+            throw new IllegalArgumentException("The file already exists within the archive. Cannot archive again!");
+        }
+        
         // Move the file to the fileDir.
         downloadedFile.renameTo(archivedFile);
     }
@@ -143,7 +155,8 @@ public class ReferenceArchive implements FileStore {
         deleteFile(fileID);
 
         // Store the new file.
-        storeFile(fileID, inputStream);
+        downloadFileForValidation(fileID, inputStream);
+        moveToArchive(fileID);
     }
 
     @Override
@@ -154,6 +167,12 @@ public class ReferenceArchive implements FileStore {
             throw new FileNotFoundException("Cannot locate the file to replace '" + oldFile.getAbsolutePath() + "'!");
         }
         File retainFile = new File(retainDir, fileID);
+        
+        // If a version of the file already has been retained, then it should be deprecated.
+        if(retainFile.exists()) {
+            FileUtils.deprecateFile(retainFile);
+        }
+        
         oldFile.renameTo(retainFile);
     }
 }

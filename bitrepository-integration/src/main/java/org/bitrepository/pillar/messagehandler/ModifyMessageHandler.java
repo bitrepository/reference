@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.conversation;
+package org.bitrepository.pillar.messagehandler;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -134,7 +134,7 @@ public class ModifyMessageHandler {
         
         log.debug("Retrieving the data to be stored from URL: '" + msg.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
-        mediator.archive.storeFile(msg.getFileID(), fe.downloadFromServer(new URL(msg.getFileAddress())));
+        mediator.archive.downloadFileForValidation(msg.getFileID(), fe.downloadFromServer(new URL(msg.getFileAddress())));
         
         // validating the file. If invalid, then delete it again!
         File retrievedFile = mediator.archive.getFile(msg.getFileID());
@@ -151,8 +151,9 @@ public class ModifyMessageHandler {
             }
         } catch (Exception e) {
             log.error("The retrieved file did not validate! Removing it from archive.", e);
-            mediator.archive.deleteFile(msg.getFileID());
         }
+        // TODO verify that this operation is successful.
+        mediator.archive.moveToArchive(msg.getFileID());
         
         PutFileFinalResponse fResponse = mediator.msgFactory.createPutFileFinalResponse(msg);
 

@@ -89,13 +89,9 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
                 }
             }
 
-            //            addStep("Stopped sending at '" + new Date() + "'", "Should have send more than '" + messagePerSec 
-            //            		+ "' messages per sec.");
-            addStep("Validating the number of messages sent.", "Should be OK");
+            addStep("Validating messages have been sent.", "Should be OK");
             int count = listener.getCount();
-            //            Assert.assertTrue(count > (messagePerSec * timeFrame/1000), "There where send '" + count 
-            //            		+ "' messages in '" + timeFrame/1000 + "' seconds, but it is required to handle at least '" 
-            //            		+ messagePerSec + "' per second!");
+            Assert.assertTrue(count > 0, "Some message should have been sent.");
             System.out.println("Sent '" + count + "' messages in '" + TIME_FRAME/1000 + "' seconds.");
         } finally {
             if(listener != null) {

@@ -27,6 +27,7 @@ package org.bitrepository.pillar;
 import java.util.Collection;
 import java.util.Date;
 
+import org.bitrepository.pillar.audit.MemorybasedAuditTrailManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -48,11 +49,11 @@ public class AuditTrailHandlerTester extends ExtendedTestCase {
         addDescription("Tests for the audit trail handler. Inserts some audits with given dates, and tests that they "
                 + "can be extracted correct.");
         addStep("Initializing the variables.", "Should not be able to fail here.");
-        AuditTrailHandler audits = new AuditTrailHandler();
+        MemorybasedAuditTrailManager audits = new MemorybasedAuditTrailManager();
         Date now = new Date();
 
         addStep("Inserting three messages with one minute difference.", "Should work.");
-        audits.insertAudit(CURRENT_MESSAGE);
+        audits.addMessageReceivedAudit(CURRENT_MESSAGE);
         audits.insertAudit(new Date(now.getTime() + MINUTE_IN_MILLIS) , MESSAGE_IN_ONE_MIN);
         audits.insertAudit(new Date(now.getTime() - MINUTE_IN_MILLIS) , MESSAGE_ONE_MIN_AGO);
 

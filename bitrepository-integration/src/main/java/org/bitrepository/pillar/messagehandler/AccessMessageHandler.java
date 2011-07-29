@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.conversation;
+package org.bitrepository.pillar.messagehandler;
 
 import java.io.File;
 import java.io.FileInputStream;

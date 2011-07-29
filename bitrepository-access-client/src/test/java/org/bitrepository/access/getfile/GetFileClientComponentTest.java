@@ -66,8 +66,8 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
 
         if (useMockupPillar()) {
             testMessageFactory = new TestGetFileMessageFactory(settings.getBitRepositoryCollectionID());
-            pillar1FileStore = new TestFileStore("Pillar1", new File("src/test/resources/test-files/", DEFAULT_FILE_ID));
-            pillar2FileStore = new TestFileStore("Pillar2", new File("src/test/resources/test-files/", DEFAULT_FILE_ID));
+            pillar1FileStore = new TestFileStore("Pillar1", TestFileStore.DEFAULT_TEST_FILE);
+            pillar2FileStore = new TestFileStore("Pillar2", TestFileStore.DEFAULT_TEST_FILE);
         }
         // The following line is also relevant for non-mockup senarios, where the pillars needs to be initialized 
         // with content.

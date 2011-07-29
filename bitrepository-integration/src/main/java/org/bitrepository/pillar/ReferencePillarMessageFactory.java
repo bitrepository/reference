@@ -36,6 +36,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.protocol.ProtocolConstants;
 
 /**
  * Class for generating the messages for the Reference Pillar.
@@ -46,9 +47,9 @@ public class ReferencePillarMessageFactory {
     
     // Constants
     /** The constant for the VERSION of the messages.*/
-    private final BigInteger VERSION = BigInteger.valueOf(1);
+    private final BigInteger VERSION = BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION);
     /** The constant for the MIN_VERSION of the messages.*/
-    private final BigInteger MIN_VERSION = BigInteger.valueOf(1);
+    private final BigInteger MIN_VERSION = BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION);
     
     /**
      * Package protected constructor.

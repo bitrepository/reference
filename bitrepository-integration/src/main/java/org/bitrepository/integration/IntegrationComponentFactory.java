@@ -61,7 +61,7 @@ public class IntegrationComponentFactory {
      * Private constructor for initialization of the singleton.
      */
     private IntegrationComponentFactory() {
-        moduleCharacter = new ModuleCharacteristics("integration-client");
+        moduleCharacter = new ModuleCharacteristics("integration");
     }
 
     /**

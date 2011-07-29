@@ -31,10 +31,15 @@ import java.io.InputStream;
 
 import javax.xml.bind.JAXBException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * General class for instantiating configurations based on xml files
  */
 public final class ConfigurationFactory {
+    /** The log for this class. */
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     /** The default system property path for the */
     public static final String CONFIGURATION_DIR_SYSTEM_PROPERTY = "org.bitrepository.config";
@@ -75,7 +80,7 @@ public final class ConfigurationFactory {
      * @return Returns a new instance of the indicated configuration loaded from file
      */
     public <T> T loadConfiguration(ModuleCharacteristics moduleCharacteristics, Class<T> configurationClass) {
-
+        log.debug("Loading configuration for '" + moduleCharacteristics + "'.");
         String defaultClassPathLocation = String.format(DEFAULT_CONFIGURATION_CLASSPATH_LOCATION, 
                 moduleCharacteristics.getLowerCaseName());
         String defaultTestClassPathLocation = String.format(DEFAULT_TEST_CONFIGURATION_CLASSPATH_LOCATION, 
@@ -86,26 +91,30 @@ public final class ConfigurationFactory {
             String path = System.getProperty(CONFIGURATION_DIR_SYSTEM_PROPERTY);
             String name = String.format(DEFAULT_CONFIGURATION_CLASSPATH_NAME,
                     moduleCharacteristics.getLowerCaseName());
-            if(path != null && !path.isEmpty()){ 
+            if(path != null && !path.isEmpty()){
                 File configFile = new File(path, name);
+                log.trace("Trying to retrieve configuration from '" + configFile.getAbsolutePath() + "'.");
                 try {
                     configStream = new FileInputStream(configFile);
                 } catch (IOException e) {
-                    System.err.println("Couldn't find or handle config file '" + configFile.getAbsolutePath() + "'");
+                    log.warn("Couldn't find or handle config file '" + configFile.getAbsolutePath() + "'");
                 }
             }
         }
-        if(configStream == null) {
-            configStream = ClassLoader.getSystemResourceAsStream(defaultTestClassPathLocation);
-        }
         if (configStream == null) {
+            log.trace("Trying to retrieve configuration from classpath '" + defaultClassPathLocation + "'");
             configStream = ClassLoader.getSystemResourceAsStream(defaultClassPathLocation);
+        }
+        if(configStream == null) {
+            log.trace("Trying to retrieve configuration from classpath '" + defaultTestClassPathLocation + "'");
+            configStream = ClassLoader.getSystemResourceAsStream(defaultTestClassPathLocation);
         }
         if (configStream == null) {
             throw new ConfigurationException("Failed to find " + defaultTestClassPathLocation + " or " + 
                     defaultClassPathLocation + " in classpath");
         }
         try {
+            log.debug("Loading the configuration '" + configurationClass.getCanonicalName() + "'.");
             return (T) JaxbHelper.loadXml(configurationClass, configStream);
         } catch (JAXBException e) {
             throw new ConfigurationException("Failed to load the configuration from " + configStream, 

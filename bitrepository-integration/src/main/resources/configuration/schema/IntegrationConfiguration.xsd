@@ -42,10 +42,10 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="queue" type="xs:string">
+                <xs:element name="pillarTopic" type="xs:string">
                     <xs:annotation>
                         <xs:documentation xml:lang="en">
-                            The local queue for the reference pillar
+                            The local topic for the reference pillar
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>

@@ -26,7 +26,6 @@ package org.bitrepository.alarm;
 
 /**
  * Exception for the alarm module. Is thrown whenever a alarm cannot be handled.
- * Needs to be caught at the fault-barriers.
  */
 public class AlarmException extends RuntimeException {
     /**

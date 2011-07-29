@@ -41,7 +41,7 @@ import org.bitrepository.protocol.messagebus.MessageBusFactory;
 public class AccessComponentFactory {
     /** The singleton instance. */
     private static AccessComponentFactory instance;
-
+    
     /**
      * Instantiation of this singleton.
      *

@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.conversation;
+package org.bitrepository.pillar.messagehandler;
 
 import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
@@ -51,10 +51,10 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.pillar.AuditTrailHandler;
 import org.bitrepository.pillar.PillarSettings;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.ReferencePillarMessageFactory;
+import org.bitrepository.pillar.audit.MemorybasedAuditTrailManager;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.slf4j.Logger;
@@ -80,7 +80,7 @@ public class PillarMediator implements MessageListener {
     /** The message factory. Package protected on purpose.*/
     final ReferencePillarMessageFactory msgFactory;
     /** The handler of the audits. Package protected on purpose.*/
-    private final AuditTrailHandler audits;
+    private final MemorybasedAuditTrailManager audits;
 
     // THE MESSAGE HANDLERS!
     /** The handler for the messages regarding access to the archive (e.g. Get operations).*/
@@ -103,7 +103,7 @@ public class PillarMediator implements MessageListener {
         this.archive = refArchive;
         this.msgFactory = messageFactory;
         this.settings = pSettings;
-        this.audits = new AuditTrailHandler();
+        this.audits = new MemorybasedAuditTrailManager();
         this.accessHandler = new AccessMessageHandler(this);
         this.modifyHandler = new ModifyMessageHandler(this);
         
@@ -120,38 +120,38 @@ public class PillarMediator implements MessageListener {
     @Override
     public void onMessage(Alarm message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(GetAuditTrailsRequest message) {
         log.info("Received: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
         // TODO Auto-generated method stub
     }
 
     @Override
     public void onMessage(GetAuditTrailsProgressResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(GetAuditTrailsFinalResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(GetChecksumsFinalResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(GetChecksumsRequest message) {
         log.info("Received: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
         
         try {
             accessHandler.handleMessage(message);
@@ -163,25 +163,25 @@ public class PillarMediator implements MessageListener {
     @Override
     public void onMessage(GetChecksumsProgressResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(GetFileFinalResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(GetFileIDsFinalResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(GetFileIDsRequest message) {
         log.info("Received: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
         
         try {
             accessHandler.handleMessage(message);
@@ -193,13 +193,13 @@ public class PillarMediator implements MessageListener {
     @Override
     public void onMessage(GetFileIDsProgressResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(GetFileRequest message) {
         log.info("Received: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
         
         try {
             accessHandler.handleMessage(message);
@@ -211,13 +211,13 @@ public class PillarMediator implements MessageListener {
     @Override
     public void onMessage(GetFileProgressResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(GetStatusRequest message) {
         log.info("Received: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
         // TODO Auto-generated method stub
         
     }
@@ -225,25 +225,25 @@ public class PillarMediator implements MessageListener {
     @Override
     public void onMessage(GetStatusProgressResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(GetStatusFinalResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsRequest message) {
         log.info("Received: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
         
         try {
             accessHandler.handleMessage(message);
@@ -255,13 +255,13 @@ public class PillarMediator implements MessageListener {
     @Override
     public void onMessage(IdentifyPillarsForGetFileIDsResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
         log.info("Received: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
         
         try {
             accessHandler.handleMessage(message);
@@ -273,13 +273,13 @@ public class PillarMediator implements MessageListener {
     @Override
     public void onMessage(IdentifyPillarsForGetFileResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetFileRequest message) {
         log.info("Received: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
         
         try {
             accessHandler.handleMessage(message);
@@ -291,13 +291,13 @@ public class PillarMediator implements MessageListener {
     @Override
     public void onMessage(IdentifyPillarsForPutFileResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForPutFileRequest message) {
         log.info("Received: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
         
         try {
             modifyHandler.handleMessage(message);
@@ -309,13 +309,13 @@ public class PillarMediator implements MessageListener {
     @Override
     public void onMessage(PutFileFinalResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 
     @Override
     public void onMessage(PutFileRequest message) {
         log.info("Received: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
         
         try {
             modifyHandler.handleMessage(message);
@@ -327,6 +327,6 @@ public class PillarMediator implements MessageListener {
     @Override
     public void onMessage(PutFileProgressResponse message) {
         log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.insertAudit(message);
+        audits.addMessageReceivedAudit(message);
     }
 }

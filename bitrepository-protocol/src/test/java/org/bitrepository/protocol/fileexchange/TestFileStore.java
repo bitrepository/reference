@@ -47,19 +47,11 @@ public class TestFileStore implements FileStore {
     /** The file store already contains this file when it created. The fileID corresponds to the file ID found in the 
      * {@LINK TestMessageFactory}
      */
-    public static final String DEFAULT_EXISTING_FILE = TestMessageFactory.FILE_ID_DEFAULT;
+    public static final String DEFAULT_FILE_ID = TestMessageFactory.FILE_ID_DEFAULT;
     private final String storeName;
-
-    //    public TestFileStore(String storeName) {
-    //        this.storeName = storeName;
-    //        storageDir = ROOT_STORE + "/" + storeName;
-    //        File defaultFile = new File("src/test/resources/test-files/", DEFAULT_EXISTING_FILE);
-    //        try {
-    //            FileUtils.copyFileToDirectory(defaultFile, new File(storageDir));
-    //        } catch (IOException e) {
-    //            throw new RuntimeException(e);
-    //        }
-    //    }
+    
+    /** The default test file.*/
+    public static final File DEFAULT_TEST_FILE = new File("src/test/resources/test-files/", DEFAULT_FILE_ID);
 
     /**
      * Constructor, where the FileStore is initialized with some files.
@@ -89,7 +81,7 @@ public class TestFileStore implements FileStore {
     }
 
     @Override
-    public void storeFile(String fileID, InputStream inputStream)  throws IOException  {
+    public File downloadFileForValidation(String fileID, InputStream inputStream) throws IOException  {
         File theFile = new File(fileID);
 
         // Check if a file exists.
@@ -115,6 +107,14 @@ public class TestFileStore implements FileStore {
         finally {
             bufferedOutputstream.close();
         }
+        
+        return theFile;
+    }
+    
+    @Override
+    public void moveToArchive(String fileID) {
+        // This does nothing.
+        return;
     }
 
     @Override
@@ -151,5 +151,10 @@ public class TestFileStore implements FileStore {
     @Override
     public String toString() {
         return "TestFileStore [storageDir=" + storageDir + ", storeName=" + storeName + "]";
+    }
+
+    public void storeFile(String fileID, InputStream in) throws IOException {
+        downloadFileForValidation(fileID, in);
+        moveToArchive(fileID);
     }
 }

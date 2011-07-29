@@ -29,7 +29,7 @@ import java.io.File;
 import org.bitrepository.common.ConfigurationException;
 
 public final class FileUtils {
-
+    
     /**
      * Private constructor. To prevent instantiation of this utility class.
      */
@@ -91,7 +91,7 @@ public final class FileUtils {
             throw new ConfigurationException("The file directory '" + directory.getAbsolutePath() 
                     + "' already exists as a file, and not as a directory, which is required.");
         }
-
+        
         // Create the directory if it does not exist, and validate that it is a directory afterwards.
         if(!directory.exists() || !directory.isDirectory()) {
             directory.mkdirs();
@@ -108,14 +108,31 @@ public final class FileUtils {
      * @param f The file to remove.
      */
     public static void delete(File f) {
-    	if(!f.exists()) {
-    		throw new IllegalArgumentException("The file '" + f + "' does not exist.");
-    	}
-    	if(f.isDirectory()) {
-    		for(File sub : f.listFiles()) {
-    			delete(sub);
-    		}
-    	}
-    	f.delete();
+        if(!f.exists()) {
+            throw new IllegalArgumentException("The file '" + f + "' does not exist.");
+        }
+        if(f.isDirectory()) {
+            for(File sub : f.listFiles()) {
+                delete(sub);
+            }
+        }
+        f.delete();
+    }
+    
+    /**
+     * Method for deprecating a file by moving it to '*.old'. If a deprecated file already exists, then it is performed
+     * recursively, thus creating '*.old.old', '*.old.old.old*... 
+     * @param f The file to deprecate.
+     */
+    public static void deprecateFile(File f) {
+        if(!f.exists()) {
+            throw new IllegalArgumentException("The file '" + f + "' does not exist.");
+        }
+        File deprecatedLocation = new File(f.getAbsolutePath() + ".old");
+        if(deprecatedLocation.exists()) {
+            deprecateFile(deprecatedLocation);
+        }
+        
+        f.renameTo(deprecatedLocation);
     }
 }

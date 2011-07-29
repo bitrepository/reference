@@ -63,12 +63,23 @@ public interface FileStore {
     public Collection<String> getAllFileIds() throws Exception;
 
     /**
-     * Stores a file given through a InputStream.
+     * Stores a file given through an InputStream. The file is only intended to be stored in a temporary zone until it 
+     * has been validated. Then it should be archived through the 'modeToArchive' method.
      * @param fileID The id of the file to store.
      * @param inputStream The InputStream with the content of the file.
+     * @return The downloaded file, which should be validated before it is moved to the archive.
      * @throws Exception If anything unexpected occurs (e.g. file already exists, not enough space, etc.)
+     * @see #moveToArchive(String)
      */
-    public void storeFile(String fileID, InputStream inputStream) throws Exception;
+    public File downloadFileForValidation(String fileID, InputStream inputStream) throws Exception;
+    
+    /**
+     * Moves a file from the temporary file zone to the archive.
+     * @param fileID The id of the file to move to archive.
+     * @throws Exception If anything unexpected occurs (e.g. file already exists, not enough space, etc.)
+     * @see #downloadFileForValidation(String, InputStream)
+     */
+    public void moveToArchive(String fileID) throws Exception;
     
     /**
      * Replaces a file with another.

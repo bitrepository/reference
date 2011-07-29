@@ -31,12 +31,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.ConfigurationException;
 
 /**
  * Utility class for handling checksum calculations.
- * 
- * TODO perhaps move to Common, so it also can be used elsewhere.
  */
 public final class ChecksumUtils {
 
@@ -57,10 +56,14 @@ public final class ChecksumUtils {
      * 
      * @param file The file to calculate the checksum for.
      * @param messageDigest The digest algorithm to use for calculating the checksum of the file.
-     * @param salt The string to add in front of the data stream before calculating the checksum.
+     * @param salt The string to add in front of the data stream before calculating the checksum. Null or the empty 
+     * string means no salt. 
      * @return The checksum of the file in hexadecimal.
      */
     public static String generateChecksum(File file, MessageDigest messageDigest, String salt) {
+        ArgumentValidator.checkNotNull(messageDigest, "MessageDigest messageDigest");
+        ArgumentValidator.checkNotNull(file, "File file");
+        
         byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
         int bytesRead;
         try {
@@ -104,7 +107,8 @@ public final class ChecksumUtils {
      * 
      * @param file The file to calculate the checksum for.
      * @param messageDigest The digest algorithm to use for calculating the checksum of the file.
-     * @param salt The string to add in front of the data stream before calculating the checksum.
+     * @param salt The string to add in front of the data stream before calculating the checksum. Null or the empty 
+     * string means no salt.
      * @return The checksum of the file in hexadecimal.
      */
     public static String generateChecksum(File file, String messageDigestName, String salt) {

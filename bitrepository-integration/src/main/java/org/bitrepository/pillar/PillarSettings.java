@@ -26,6 +26,9 @@ package org.bitrepository.pillar;
 
 import org.bitrepository.protocol.bitrepositorycollection.BitRepositoryCollectionSettings;
 
+/**
+ * Settings for the ReferencePillar. TODO javadoc!!! or wait for the StandardCollection settings have been implemented.
+ */
 public interface PillarSettings extends BitRepositoryCollectionSettings {
 
     public String getPillarId();

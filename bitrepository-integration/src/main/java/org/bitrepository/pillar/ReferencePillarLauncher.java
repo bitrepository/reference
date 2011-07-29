@@ -29,6 +29,10 @@ import org.bitrepository.integration.configuration.integrationconfiguration.Inte
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.configuration.ProtocolConfiguration;
 
+/**
+ * Method for launching the ReferencePillar. 
+ * It just loads the configurations and uses them to create the PillarSettings needed for starting the ReferencePillar.
+ */
 public class ReferencePillarLauncher {
 
     /**

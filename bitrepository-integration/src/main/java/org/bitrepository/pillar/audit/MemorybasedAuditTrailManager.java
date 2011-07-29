@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar;
+package org.bitrepository.pillar.audit;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -30,13 +30,14 @@ import java.util.Date;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.bitrepository.pillar.AuditTrailManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Method for the ReferencePillar to keep track of audits.
  */
-public class AuditTrailHandler {
+public class MemorybasedAuditTrailManager implements AuditTrailManager {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -44,51 +45,43 @@ public class AuditTrailHandler {
     private SortedMap<Date, String> auditTrails = Collections.synchronizedSortedMap(new TreeMap<Date, String>());
 
     /** Constructor.*/
-    public AuditTrailHandler() {}
+    public MemorybasedAuditTrailManager() {}
 
-    /**
-     * Inserts an audit trail into the map with the date 'now'. 
-     * @param msg The audit trail to insert.
-     */
-    public synchronized void insertAudit(Object msg) {
+    @Override
+    public synchronized void addMessageReceivedAudit(Object msg) {
         Date now = new Date();
         log.info("At '" + now + "' inserted audit: " + msg.toString());
         auditTrails.put(now, msg.toString());
     }
     
     /**
-     * Inserts an audit trail into the map with the given date.
-     * @param date The date of the audit trail.
-     * @param msg The message to insert into the map.
+     * Inserts a audit at a given time. 
+     * TODO this method is currently only for tests.
+     * @param date The date for the audit.
+     * @param msg The audit to insert.
      */
     public synchronized void insertAudit(Date date, Object msg) {
         log.info("At '" + date + "' inserted audit: " + msg.toString());
         auditTrails.put(date, msg.toString());
     }
 
-    /**
-     * Method for extracting all the audit trails.
-     * @return The all audit trails.
-     */
+    @Override
     public Collection<String> getAllAudits() {
         return auditTrails.values();
     }
 
-    /**
-     * Retrieves all the audit trails after a given date.
-     * @param date The earliest date for the audit trails.
-     * @return The list of audit trails after the date.
-     */
+    @Override
     public Collection<String> getAuditsAfterDate(Date date) {
         return auditTrails.tailMap(date).values();
     }
 
-    /**
-     * Retrieves all the audit trails before a given date.
-     * @param date The latest date for the audit trails.
-     * @return The list of audit trails prior to the date.
-     */
+    @Override
     public Collection<String> getAuditsBeforeDate(Date date) {
         return auditTrails.headMap(date).values();
+    }
+    
+    @Override
+    public Collection<String> getAuditsBetweenDates(Date start, Date end) {
+        return auditTrails.tailMap(start).headMap(end).values();
     }
 }

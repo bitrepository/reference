@@ -34,6 +34,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.bitrepository.common.utils.StreamUtils;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -50,9 +51,7 @@ import org.slf4j.LoggerFactory;
 public class HTTPFileExchange implements FileExchange {
     /** The log. */
     private final Logger log = LoggerFactory.getLogger(getClass());
-
-    /** The size of the IO buffer.*/
-    private static final int IO_BUFFER_SIZE = 1024;
+    
     /** Protocol for URLs. */
     private static final String PROTOCOL = "http";
     /** The default port for the HTTP communication.*/
@@ -74,14 +73,14 @@ public class HTTPFileExchange implements FileExchange {
      * @param configuration The configuration for file exchange.
      */
     public HTTPFileExchange() {
-    	config = ProtocolComponentFactory.getInstance().getProtocolConfiguration().getFileExchangeConfigurations();
+        config = ProtocolComponentFactory.getInstance().getProtocolConfiguration().getFileExchangeConfigurations();
     }
     
     @Override
     public void uploadToServer(InputStream in, URL url) throws IOException {
         performUpload(in, url);
     }
-
+    
     @Override
     public InputStream downloadFromServer(URL url) throws IOException {
         return retrieveStream(url);
@@ -112,7 +111,7 @@ public class HTTPFileExchange implements FileExchange {
         try {
             // generate the URL for the file.
             URL url = getURL(dataFile.getName());
-
+            
             FileInputStream fis = null;
             try {
                 fis = new FileInputStream(dataFile);
@@ -168,7 +167,7 @@ public class HTTPFileExchange implements FileExchange {
                     + "', URL: '" + url + "'");
         }
         InputStream is = retrieveStream(url);
-        copyInputStreamToOutputStream(is, out);
+        StreamUtils.copyInputStreamToOutputStream(is, out);
     }
     
     /**
@@ -204,9 +203,9 @@ public class HTTPFileExchange implements FileExchange {
             conn.setDoOutput(true);
             conn.setRequestMethod("PUT");
             out = conn.getOutputStream();
-            copyInputStreamToOutputStream(in, out);
+            StreamUtils.copyInputStreamToOutputStream(in, out);
             out.flush();
-
+            
             // HTTP code >= 300 means error!
             if(conn.getResponseCode() >= HTTP_ERROR_CODE_BARRIER) {
                 throw new IOException("Could not upload file, got "
@@ -227,7 +226,7 @@ public class HTTPFileExchange implements FileExchange {
             }
         }
     }
-
+    
     @Override
     public URL getURL(String filename) throws MalformedURLException {
         // create the URL based on hardcoded values (change to using settings!)
@@ -235,35 +234,8 @@ public class HTTPFileExchange implements FileExchange {
                 HTTP_SERVER_PATH + "/" + filename);
         return res;
     }
-
-    /**
-     * Utility function for moving data from an inputstream to an outputstream.
-     * TODO move to a utility class.
-     * 
-     * @param in The input stream to copy to the output stream.
-     * @param out The output stream where the input stream should be copied.
-     * @throws IOException If anything problems occur with transferring the 
-     * data between the streams.
-     */
-    private void copyInputStreamToOutputStream(InputStream in,
-            OutputStream out) throws IOException {
-        if(in == null || out == null) {
-            throw new IllegalArgumentException("InputStream: " + in 
-                    + ", OutputStream: " + out);
-        }
-
-        try {
-            byte[] buf = new byte[IO_BUFFER_SIZE];
-            int bytesRead;
-            while ((bytesRead = in.read(buf)) != -1) {
-                out.write(buf, 0, bytesRead);
-            }
-            out.flush();
-        } finally {
-            in.close();
-        }
-    }
     
+
     /**
      * Method for opening a HTTP connection to the given URL.
      * 
@@ -271,10 +243,10 @@ public class HTTPFileExchange implements FileExchange {
      * @return The HTTP connection to the given URL.
      */
     protected HttpURLConnection getConnection(URL url) {
-    	try {
-    		return (HttpURLConnection) url.openConnection();
-    	} catch (IOException e) {
-    		throw new CoordinationLayerException("Could not open the connection to the url '" + url + "'", e);
-    	}
+        try {
+            return (HttpURLConnection) url.openConnection();
+        } catch (IOException e) {
+            throw new CoordinationLayerException("Could not open the connection to the url '" + url + "'", e);
+        }
     }
 }
