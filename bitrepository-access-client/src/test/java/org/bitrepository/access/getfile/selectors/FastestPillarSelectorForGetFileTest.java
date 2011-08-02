@@ -36,11 +36,14 @@ import org.testng.annotations.Test;
 
 public class FastestPillarSelectorForGetFileTest {
     private static final PillarStub slowPillar = 
-        new PillarStub("slowPillar", "slowPillarTopic", new BigInteger("1"), "HOURS");
+        new PillarStub("slowPillar", "slowPillarTopic", new BigInteger("1"), 
+                TimeMeasureTYPE.TimeMeasureUnit.HOURS);
     private static final PillarStub fastPillar = 
-        new PillarStub("fastPillar", "fastPillarTopic", new BigInteger("2"), "MILLISECONDS");
+        new PillarStub("fastPillar", "fastPillarTopic", new BigInteger("2"), 
+                TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
     private static final PillarStub mediumPillar = 
-        new PillarStub("mediumPillar", "mediumPillarTopic", new BigInteger("1000"), "MILLISECONDS");
+        new PillarStub("mediumPillar", "mediumPillarTopic", new BigInteger("1000"), 
+                TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
     private static final String[] PILLAR_IDS = 
         new String[] { slowPillar.pillarID, fastPillar.pillarID, mediumPillar.pillarID};
     private FastestPillarSelectorForGetFile selector;
@@ -63,7 +66,8 @@ public class FastestPillarSelectorForGetFileTest {
         selector.processResponse(mediumPillar.createResponse());
         Assert.assertTrue(selector.isFinished(), "Selector didn't change to finished after 3 response");
         Assert.assertEquals(selector.getIDForSelectedPillar(), fastPillar.pillarID, "Not pillarID from fastest pillar");
-        Assert.assertEquals(selector.getDestinationForSelectedPillar(), fastPillar.pillarTopic, "Not pillarID from fastest pillar");
+        Assert.assertEquals(selector.getDestinationForSelectedPillar(), 
+                fastPillar.pillarTopic, "Not pillarID from fastest pillar");
     }
 
     @Test (groups = { "regressiontest" })
@@ -91,20 +95,22 @@ public class FastestPillarSelectorForGetFileTest {
         selector.processResponse(mediumPillar.createResponse());
         Assert.assertTrue(selector.isFinished(), "Selector didn't change to finished after 3 response");
         Assert.assertEquals(selector.getIDForSelectedPillar(), fastPillar.pillarID, "Not pillarID from fastest pillar");
-        Assert.assertEquals(selector.getDestinationForSelectedPillar(), fastPillar.pillarTopic, "Not pillarID from fastest pillar");
+        Assert.assertEquals(selector.getDestinationForSelectedPillar(), 
+                fastPillar.pillarTopic, "Not pillarID from fastest pillar");
     }
 
     private static class PillarStub {
         private final String pillarID;
         private final String pillarTopic;
         private final BigInteger timeToDeliverValue;
-        private final String timeToDeliverUnit;
+        private final TimeMeasureTYPE.TimeMeasureUnit timeToDeliverUnit;
 
         private static final TestGetFileMessageFactory messageFactory = 
             new TestGetFileMessageFactory("FastestPillarSelectorForGetFileTest");
 
         public PillarStub(String pillarID, String pillarTopic,
-                BigInteger timeToDeliverValue, String timeToDeliverUnit) {
+                BigInteger timeToDeliverValue, 
+                TimeMeasureTYPE.TimeMeasureUnit timeToDeliverUnit) {
             this.pillarID = pillarID;
             this.pillarTopic = pillarTopic;
             this.timeToDeliverValue = timeToDeliverValue;

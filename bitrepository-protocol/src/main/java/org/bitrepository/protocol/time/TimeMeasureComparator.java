@@ -56,7 +56,7 @@ public class TimeMeasureComparator {
      * @throws UnknownFormatConversionException Unable to interprete the supplied timeMeasure.
      */
     private BigInteger convertToMilliSeconds(TimeMeasureTYPE timeMeasure) throws UnknownFormatConversionException {
-        if(timeMeasure.getTimeMeasureUnit().equals("MILLISECONDS")) {
+        if(timeMeasure.getTimeMeasureUnit().equals(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS)) {
             return timeMeasure.getTimeMeasureValue();
         } else if (timeMeasure.getTimeMeasureUnit().equals("SECONDS")) {
             return timeMeasure.getTimeMeasureValue().multiply(new BigInteger("1000"));

@@ -24,6 +24,7 @@
  */
 package org.bitrepository.pillar;
 
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.integration.IntegrationComponentFactory;
 import org.bitrepository.integration.configuration.integrationconfiguration.IntegrationConfiguration;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -52,9 +53,9 @@ public class ReferencePillarLauncher {
         settings.setPillarId(iConf.getPillarId());
         
         // TODO use settings instead.
-        settings.setTimeToDownloadMeasure("MILLISECONDS");
+        settings.setTimeToDownloadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
         settings.setTimeToDownloadValue(1L);
-        settings.setTimeToUploadMeasure("MILLISECONDS");
+        settings.setTimeToUploadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
         settings.setTimeToUploadValue(1L);
 
         // START THE REFERENCE PILLAR!!!!

@@ -1187,6 +1187,11 @@
     <xs:restriction base="xs:positiveInteger">
       <xs:enumeration value="541">
         <xs:annotation><xs:documentation xml:lang="en">
+        General alarm
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="542">
+        <xs:annotation><xs:documentation xml:lang="en">
         Unknown user access
         </xs:documentation></xs:annotation>
       </xs:enumeration>

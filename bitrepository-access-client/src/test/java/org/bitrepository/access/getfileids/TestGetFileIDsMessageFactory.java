@@ -96,7 +96,7 @@ public class TestGetFileIDsMessageFactory extends TestMessageFactory {
      */
     public IdentifyPillarsForGetFileIDsResponse getIdentifyPillarsForGetFileIDsResponseTestMessage(
             String correlationID, String slaID, String replyTo, String pillarID, FileIDs fileIDs,
-            String timeMeasureUnit, BigInteger timeMeasureValue) {
+            TimeMeasureTYPE.TimeMeasureUnit timeMeasureUnit, BigInteger timeMeasureValue) {
         IdentifyPillarsForGetFileIDsResponse response = new IdentifyPillarsForGetFileIDsResponse();
         response.setCorrelationID(correlationID);
         response.setBitRepositoryCollectionID(slaID);

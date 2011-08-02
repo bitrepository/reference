@@ -24,6 +24,7 @@
  */
 package org.bitrepository.pillar;
 
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.protocol.configuration.MessageBusConfigurations;
 
 /**
@@ -93,13 +94,13 @@ public class MutablePillarSettings implements PillarSettings {
     }
 
     /** @see PillarSettings#getTimeToUploadMeasure() */
-    private String timeToUploadMeasure;
+    private TimeMeasureTYPE.TimeMeasureUnit timeToUploadMeasure;
     @Override
-    public String getTimeToUploadMeasure() {
+    public TimeMeasureTYPE.TimeMeasureUnit getTimeToUploadMeasure() {
         return timeToUploadMeasure;
     }
     /** @see PillarSettings#getTimeToUploadMeasure() */
-    public void setTimeToUploadMeasure(String measure) {
+    public void setTimeToUploadMeasure(TimeMeasureTYPE.TimeMeasureUnit measure) {
         this.timeToUploadMeasure = measure;
     }
     
@@ -115,13 +116,13 @@ public class MutablePillarSettings implements PillarSettings {
     }
 
     /** @see PillarSettings#getTimeToDownloadMeasure() */
-    private String timeToDownloadMeasure;
+    private TimeMeasureTYPE.TimeMeasureUnit timeToDownloadMeasure;
     @Override
-    public String getTimeToDownloadMeasure() {
+    public TimeMeasureTYPE.TimeMeasureUnit getTimeToDownloadMeasure() {
         return timeToDownloadMeasure;
     }
     /** @see PillarSettings#getTimeToDownloadMeasure() */
-    public void setTimeToDownloadMeasure(String measure) {
+    public void setTimeToDownloadMeasure(TimeMeasureTYPE.TimeMeasureUnit measure) {
         this.timeToDownloadMeasure = measure;
     }
 

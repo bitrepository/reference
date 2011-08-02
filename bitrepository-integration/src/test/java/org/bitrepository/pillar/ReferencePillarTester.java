@@ -29,6 +29,7 @@ import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile.ChecksumDataItems;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
@@ -57,9 +58,9 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         pillarSettings.setFileDirName("temp");
         pillarSettings.setPillarId("TestPillar");
         pillarSettings.setLocalQueue(pillarDestinationId);
-        pillarSettings.setTimeToDownloadMeasure("MILLISECONDS");
+        pillarSettings.setTimeToDownloadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
         pillarSettings.setTimeToDownloadValue(1L);
-        pillarSettings.setTimeToUploadMeasure("MILLISECONDS");
+        pillarSettings.setTimeToUploadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
         pillarSettings.setTimeToDownloadValue(1L);
         
         msgFactory = new PillarTestMessageFactory(pillarSettings);

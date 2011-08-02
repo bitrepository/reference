@@ -170,7 +170,6 @@ public class ModifyMessageHandler {
             // Calculate the requested checksum data.
             checksumForValidation.setFileID(msg.getFileID());
             checksumForValidation.setNoOfItems(msg.getChecksumSpecs().getNoOfItems());
-            checksumForValidation.setParameterSpecification("NOT FOUND IN EXAMPLES!");
             Collection<ChecksumSpecTYPE> requestedChecksumToCalculate 
                     = msg.getChecksumSpecs().getChecksumSpecsItems().getChecksumSpecsItem();
             ChecksumDataItems cdi = new ChecksumDataItems();

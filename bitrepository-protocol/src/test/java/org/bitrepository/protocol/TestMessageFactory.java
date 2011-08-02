@@ -42,7 +42,8 @@ public abstract class TestMessageFactory {
     public static final String FILE_ID_DEFAULT = "default-test-file.txt";
     protected static final BigInteger VERSION_DEFAULT = BigInteger.valueOf(1L);
 
-    protected static final String TIME_MEASURE_UNIT_DEFAULT = "MILLISECONDS";
+    protected static final TimeMeasureTYPE.TimeMeasureUnit TIME_MEASURE_UNIT_DEFAULT = 
+        TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS;
     protected static final BigInteger TIME_MEASURE_VALUE_DEFAULT = BigInteger.valueOf(1000L);
     protected static final String RESPONSE_CODE_DEFAULT = "460";
     protected static final String RESPONSE_TEXT_DEFAULT = "Message request has been received and is expected to be met successfully";

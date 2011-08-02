@@ -192,7 +192,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
             IdentifyPillarsForGetFileResponse averageReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
                     receivedIdentifyRequestMessage, averagePillarID, pillar2DestinationId);
             TimeMeasureTYPE averageTime = new TimeMeasureTYPE();
-            averageTime.setTimeMeasureUnit("MILLISECONDS");
+            averageTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
             averageTime.setTimeMeasureValue(BigInteger.valueOf(100L));
             averageReply.setTimeToDeliver(averageTime);
             messageBus.sendMessage(averageReply);
@@ -200,7 +200,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
             IdentifyPillarsForGetFileResponse fastReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
                     receivedIdentifyRequestMessage, fastPillarID, pillar1DestinationId);
             TimeMeasureTYPE fastTime = new TimeMeasureTYPE();
-            fastTime.setTimeMeasureUnit("MILLISECONDS");
+            fastTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
             fastTime.setTimeMeasureValue(BigInteger.valueOf(10L));
             fastReply.setTimeToDeliver(fastTime);
             messageBus.sendMessage(fastReply);
@@ -209,7 +209,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
                     receivedIdentifyRequestMessage, slowPillarID, pillar2DestinationId);
             TimeMeasureTYPE slowTime = new TimeMeasureTYPE();
             slowTime.setTimeMeasureValue(BigInteger.valueOf(1L));
-            slowTime.setTimeMeasureUnit("HOURS");
+            slowTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.HOURS);
             slowReply.setTimeToDeliver(slowTime);
             messageBus.sendMessage(slowReply);
 
@@ -262,7 +262,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
             IdentifyPillarsForGetFileResponse averageReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
                     receivedIdentifyRequestMessage, averagePillarID, pillar2DestinationId);
             TimeMeasureTYPE averageTime = new TimeMeasureTYPE();
-            averageTime.setTimeMeasureUnit("MILLISECONDS");
+            averageTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
             averageTime.setTimeMeasureValue(BigInteger.valueOf(100L));
             averageReply.setTimeToDeliver(averageTime);
             messageBus.sendMessage(averageReply);
@@ -270,7 +270,7 @@ public class GetFileClientComponentTest extends DefaultFixtureClientTest {
             IdentifyPillarsForGetFileResponse fastReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
                     receivedIdentifyRequestMessage, fastPillarID, pillar1DestinationId);
             TimeMeasureTYPE fastTime = new TimeMeasureTYPE();
-            fastTime.setTimeMeasureUnit("MILLISECONDS");
+            fastTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
             fastTime.setTimeMeasureValue(BigInteger.valueOf(10L));
             fastReply.setTimeToDeliver(fastTime);
             messageBus.sendMessage(fastReply);

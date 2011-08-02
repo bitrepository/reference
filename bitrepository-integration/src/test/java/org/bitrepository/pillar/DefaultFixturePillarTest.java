@@ -26,6 +26,7 @@ package org.bitrepository.pillar;
 
 import java.util.Date;
 
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.clienttest.MessageReceiver;
 import org.bitrepository.common.IntegrationTest;
 import org.bitrepository.protocol.LocalActiveMQBroker;
@@ -162,9 +163,9 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
         pillarSettings.setMessageBusConfiguration(messageBusConfigurations);
         pillarSettings.setFileDirName("target/fileDir");
         pillarSettings.setLocalQueue(pillarDestinationId);
-        pillarSettings.setTimeToDownloadMeasure("MILLISECONDS");
+        pillarSettings.setTimeToDownloadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
         pillarSettings.setTimeToDownloadValue(1L);
-        pillarSettings.setTimeToUploadMeasure("MILLISECONDS");
+        pillarSettings.setTimeToUploadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
         pillarSettings.setTimeToUploadValue(1L);
         settings = pillarSettings;
     }

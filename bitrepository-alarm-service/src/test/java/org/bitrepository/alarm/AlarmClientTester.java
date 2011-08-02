@@ -34,6 +34,7 @@ import org.bitrepository.alarm.handler.MailingAlarmHandler;
 import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration;
 import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration.MailingConfiguration;
 import org.bitrepository.bitrepositoryelements.AlarmDescription;
+import org.bitrepository.bitrepositoryelements.ErrorcodeAlarmType;
 import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
@@ -118,14 +119,13 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
             Alarm alarmMsg = ExampleMessageFactory.createMessage(Alarm.class);
 
             String ALARM_MESSAGE = "REGRESSION-TEST";
-            String ALARM_CODE = "123456";
             String EXCEPTION_MESSAGE = "Can you handle this??";
             String IDENTIFY_ID = "Identification_identifier";
 
             addStep("Insert description of ALARM_CODE and ALARM_MESSAGE in message send to handler", 
             "Should sent to log.");
             AlarmDescription desc = new AlarmDescription();
-            desc.setAlarmCode(new BigInteger(ALARM_CODE));
+            desc.setAlarmCode(ErrorcodeAlarmType.GENERAL);
             desc.setAlarmText(ALARM_MESSAGE);
             alarmMsg.setAlarmDescription(desc);
             handler.handleAlarm(alarmMsg);
@@ -134,8 +134,8 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
             String logwrittenOutput = new String(out.toByteArray());
             Assert.assertTrue(logwrittenOutput.contains(ALARM_MESSAGE), 
 	     "The message should contain '" + ALARM_MESSAGE + "' but was: '" + logwrittenOutput);
-            Assert.assertTrue(logwrittenOutput.contains(ALARM_CODE), 
-	     "The message should contain '" + ALARM_CODE + "' but was: '" + logwrittenOutput);
+            Assert.assertTrue(logwrittenOutput.contains(ErrorcodeAlarmType.GENERAL.name()), 
+	     "The message should contain '" + ErrorcodeAlarmType.GENERAL + "' but was: '" + logwrittenOutput);
             Assert.assertTrue(logwrittenOutput.contains(alarmMsg.getClass().getName()), 
 	     "The message should contain '" + alarmMsg.getClass().getName() + "' but was: '" + logwrittenOutput);
             defaultOut.print(logwrittenOutput);
@@ -191,7 +191,7 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
         addStep("Insert description of ALARM_CODE and ALARM_MESSAGE in message send to handler", 
         "Should sent to log.");
         AlarmDescription desc = new AlarmDescription();
-        desc.setAlarmCode(new BigInteger(ALARM_CODE));
+        desc.setAlarmCode(ErrorcodeAlarmType.GENERAL);
         desc.setAlarmText(ALARM_MESSAGE);
         msg.setAlarmDescription(desc);
         handler.handleAlarm(msg);

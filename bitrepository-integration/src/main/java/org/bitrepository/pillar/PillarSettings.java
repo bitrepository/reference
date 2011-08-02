@@ -24,6 +24,7 @@
  */
 package org.bitrepository.pillar;
 
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.protocol.bitrepositorycollection.BitRepositoryCollectionSettings;
 
 /**
@@ -39,9 +40,9 @@ public interface PillarSettings extends BitRepositoryCollectionSettings {
     
     public Long getTimeToUploadValue();
     
-    public String getTimeToUploadMeasure();
+    public TimeMeasureTYPE.TimeMeasureUnit getTimeToUploadMeasure();
     
     public Long getTimeToDownloadValue();
     
-    public String getTimeToDownloadMeasure();
+    public TimeMeasureTYPE.TimeMeasureUnit getTimeToDownloadMeasure();
 }

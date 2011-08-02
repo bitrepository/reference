@@ -197,7 +197,6 @@ public class AccessMessageHandler {
             checksumCollection.setChecksumDataItems(checksumData);
             checksumCollection.setFileID(message.getFileID());
             checksumCollection.setNoOfItems(BigInteger.valueOf(1L));
-            checksumCollection.setParameterSpecification(null);
             pResponse.setChecksumsDataForBitRepositoryFile(checksumCollection);
         }
 

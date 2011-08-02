@@ -93,7 +93,6 @@ public class PillarTestMessageFactory extends TestMessageFactory {
             ChecksumDataItems cdi = new ChecksumDataItems();
             csdataForNewFile.setChecksumDataItems(cdi);
             csdataForNewFile.setNoOfItems(BigInteger.valueOf(0L));
-            csdataForNewFile.setParameterSpecification(null);
         }
         res.setChecksumsDataForNewFile(csdataForNewFile);
         ChecksumSpecs csSpecs = new ChecksumSpecs();
