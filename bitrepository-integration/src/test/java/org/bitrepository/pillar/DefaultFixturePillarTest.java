@@ -24,8 +24,6 @@
  */
 package org.bitrepository.pillar;
 
-import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.clienttest.MessageReceiver;
 import org.bitrepository.common.IntegrationTest;
@@ -147,14 +145,14 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
     }
 
     private void defineDestinations() {
-        String topicPostfix = "-" + System.getProperty("user.name") + "-" + new Date().getTime();
+        String topicPostfix = "-" + System.getProperty("user.name");
         pillarDestinationId = "pillar_topic" + topicPostfix;
         bitRepositoryCollectionDestinationID = "BitRepositoryCollection_topic" + topicPostfix;
         clientDestinationId = "client" + topicPostfix;
     }
 
     private void configureBitRepositoryCollectionConfig(String testName) {
-        String bitRepositoryCollectionID = testName + "-" + System.getProperty("user.name") + "-" + new Date().getTime();
+        String bitRepositoryCollectionID = testName + "-" + System.getProperty("user.name");
         MutablePillarSettings pillarSettings = new MutablePillarSettings();
         pillarSettings.setBitRepositoryCollectionID(bitRepositoryCollectionID);
         pillarSettings.setBitRepositoryCollectionTopicID(bitRepositoryCollectionDestinationID);

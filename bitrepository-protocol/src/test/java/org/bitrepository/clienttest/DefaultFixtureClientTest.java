@@ -24,8 +24,6 @@
  */
 package org.bitrepository.clienttest;
 
-import java.util.Date;
-
 import org.bitrepository.common.IntegrationTest;
 import org.bitrepository.protocol.LocalActiveMQBroker;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -165,7 +163,7 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     }
 
     private void defineDestinations() {
-        String topicPostfix = "-" + System.getProperty("user.name") + "-" + new Date().getTime();
+        String topicPostfix = "-" + System.getProperty("user.name");
         clientDestinationId = "Client_topic" + topicPostfix;
         bitRepositoryCollectionDestinationID = "BitRepositoryCollection_topic" + topicPostfix;
         pillar1DestinationId = "Pillar1_topic" + topicPostfix;
@@ -173,7 +171,7 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     }
 
     private void configureBitRepositoryCollectionConfig(String testName) {
-        String bitRepositoryCollectionID = testName + "-" + System.getProperty("user.name") + "-" + new Date().getTime();
+        String bitRepositoryCollectionID = testName + "-" + System.getProperty("user.name");
         MutableClientSettings clientSettings = new MutableClientSettings();
         clientSettings.setBitRepositoryCollectionID(bitRepositoryCollectionID);
         clientSettings.setClientTopicID(clientDestinationId);
