@@ -24,17 +24,16 @@
  */
 package org.bitrepository.access.getfileids;
 
+import javax.xml.bind.JAXBException;
+
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
-import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import javax.xml.bind.JAXBException;
 
 /**
  * Test class for the 'GetFileIDsClient'.

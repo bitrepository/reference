@@ -28,7 +28,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;

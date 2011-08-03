@@ -166,7 +166,6 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
      * @throws Exception
      */
     private void sendAllTheMessages(MessageBusConfigurations confs) throws Exception {
-        MessageBus bus = new ActiveMQMessageBus(confs);
         for(int i = 0; i < NUMBER_OF_SENDERS; i++) {
             Thread t = new MessageSenderThread(confs, NUMBER_OF_MESSAGES / NUMBER_OF_SENDERS, "#" + i);
             t.start();

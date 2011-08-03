@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+        <xs:schema targetNamespace="http://bitrepository.org/collection/settings/StandardCollectionSettings.xsd"
+  attributeFormDefault="unqualified" elementFormDefault="qualified"
+
+  xmlns="http://bitrepository.org/collection/settings/StandardCollectionSettings.xsd" 
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bre="http://bitrepository.org/BitRepositoryElements.xsd">
+  
+  <!-- Requires the BitRepositoryElements.xsd file to be placed alongside this file, both in development and when using
+  the xsd outside of the modile -->
+  <xs:import schemaLocation="BitRepositoryElements.xsd" 
+             namespace="http://bitrepository.org/BitRepositoryElements.xsd" />
+
+  <xs:element name="StandardSettings">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        The Standard settings for a Bit Repository Collection system
+            </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="BitRepositoryCollectionID" type="bre:BitRepositoryCollectionID_TYPE">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The unique identifier for the collection.
+          </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="MessageBusConfiguration" type="MessageBusConfiguration">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The configurations for the message bus
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="CollectionDestination" type="bre:QueueTopicName_TYPE">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The destination (topic/queue) to use for exchanging general message, like IdentifyPillarForXXX.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="AlarmDestination" type="bre:QueueTopicName_TYPE">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The destination (topic/queue) for exchanging alarms.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="Certificates" type="xs:string">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The set of certificates to use for this collection. Format definition pending.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="MessageBusConfiguration">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        The configuration for
+        a message bus (may consist of several brokers)
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="url" type="xs:string">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            This is where the message bus can be found
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

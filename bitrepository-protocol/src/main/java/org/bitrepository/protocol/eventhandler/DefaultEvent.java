@@ -25,7 +25,7 @@
 package org.bitrepository.protocol.eventhandler;
 
 /** A general type of <code>OperationEvent</code> only containing a descriptive info message. */
-public class DefaultEvent implements OperationEvent {
+public class DefaultEvent implements OperationEvent<Object> {
     /** @see #getType() */
     private final OperationEventType type;
     /** @see #getInfo() */

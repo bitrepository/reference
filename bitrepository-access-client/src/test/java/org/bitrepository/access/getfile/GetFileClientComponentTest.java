@@ -26,7 +26,6 @@ package org.bitrepository.access.getfile;
 
 import java.io.File;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
@@ -42,9 +41,6 @@ import org.bitrepository.clienttest.TestEventHandler;
 import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
-import org.bitrepository.protocol.exceptions.NoPillarFoundException;
-import org.bitrepository.protocol.exceptions.OperationFailedException;
-import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;

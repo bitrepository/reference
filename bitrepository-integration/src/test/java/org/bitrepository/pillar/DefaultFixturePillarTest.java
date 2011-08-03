@@ -32,8 +32,6 @@ import org.bitrepository.common.IntegrationTest;
 import org.bitrepository.protocol.LocalActiveMQBroker;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.TestMessageFactory;
-import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
-import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.bus.MessageBusWrapper;
 import org.bitrepository.protocol.configuration.MessageBusConfigurations;

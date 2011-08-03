@@ -19,6 +19,11 @@
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-collection-settings</artifactId>
+      <version>0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-common</artifactId>
       <version>0.2-SNAPSHOT</version>
     </dependency>
@@ -56,7 +61,7 @@
         <version>2.3</version>
         <executions>
           <execution>
-            <id>unpack</id>
+            <id>unpack-xsds</id>
             <phase>generate-sources</phase>
             <goals>
               <goal>unpack</goal>
@@ -72,13 +77,33 @@
                 </artifactItem>
               </artifactItems>
               <includes>examples/messages/*.xml,xsd/*.xsd</includes>
-              <outputDirectory>${project.build.directory}/message-xml</outputDirectory>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-setting-definitions</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.bitrepository</groupId>
+                  <artifactId>bitrepository-collection-settings</artifactId>
+                  <type>jar</type>
+                  <excludes>**/classes</excludes>
+                  <overWrite>true</overWrite>
+                </artifactItem>
+              </artifactItems>
+              <includes>xsd/*.xsd</includes>
+              <outputDirectory>${project.build.directory}</outputDirectory>
             </configuration>
           </execution>
         </executions>
       </plugin>
       <plugin>
-        <!--  Copies the jaxb bindings definition to the message xsd dir, in preperation for the xsd -> java class file
+        <!--  Copies the jaxb bindings definition to the message xsd dir, in preparation for the xsd -> java class file
         generation -->
         <artifactId>maven-resources-plugin</artifactId>
         <version>2.5</version>
@@ -90,7 +115,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/message-xml/xsd</outputDirectory>
+              <outputDirectory>${project.build.directory}/xsd</outputDirectory>
               <resources>
                 <resource>
                   <directory>src/main/resources/xjb-bindings</directory>
@@ -107,14 +132,14 @@
         <version>0.8.0</version>
         <executions>
           <execution>
-            <id>generate-message-classes</id>
+            <id>generate-classes-from-xsds</id>
             <goals>
               <goal>generate</goal>
             </goals>
             <phase>process-sources</phase>
             <configuration>
-              <schemaDirectory>${project.build.directory}/message-xml/xsd</schemaDirectory>
-              <generateDirectory>${project.build.directory}/generated-sources/messages</generateDirectory>
+              <schemaDirectory>${project.build.directory}/xsd</schemaDirectory>
+              <generateDirectory>${project.build.directory}/generated-sources/external</generateDirectory>
               <extension>true</extension>
               <args>
                 <arg>-XtoString</arg>

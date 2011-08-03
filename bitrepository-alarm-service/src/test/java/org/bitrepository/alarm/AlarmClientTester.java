@@ -25,7 +25,6 @@
 package org.bitrepository.alarm;
 
 import java.io.PrintStream;
-import java.math.BigInteger;
 import java.util.Date;
 
 import org.apache.kahadb.util.ByteArrayOutputStream;
@@ -39,11 +38,6 @@ import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.protocol.ExampleMessageFactory;
-import org.bitrepository.protocol.LocalActiveMQBroker;
-import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
-import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
-import org.bitrepository.protocol.configuration.MessageBusConfigurations;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -185,7 +179,6 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
         Alarm msg = ExampleMessageFactory.createMessage(Alarm.class);
 
         String ALARM_MESSAGE = "REGRESSION-TEST";
-        String ALARM_CODE = "123456";
         String EXCEPTION_MESSAGE = "Can you handle this??";
 
         addStep("Insert description of ALARM_CODE and ALARM_MESSAGE in message send to handler", 

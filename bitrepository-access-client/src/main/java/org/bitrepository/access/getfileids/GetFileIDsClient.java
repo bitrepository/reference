@@ -24,18 +24,14 @@
  */
 package org.bitrepository.access.getfileids;
 
+import java.net.URL;
+
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
-import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.exceptions.OperationTimeOutException;
-
-import java.io.File;
-import java.net.URL;
-import java.util.List;
 
 /**
  * Interface for GetFileIDs client exposing the bit repository protocol GetFileIDs functionality.

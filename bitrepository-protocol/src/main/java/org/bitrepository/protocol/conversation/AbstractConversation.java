@@ -52,7 +52,6 @@ import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.protocol.exceptions.ConversationTimedOutException;
-import org.bitrepository.protocol.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

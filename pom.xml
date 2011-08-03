@@ -18,6 +18,7 @@
 
   <modules>
     <module>bitrepository-message-xml</module>
+    <module>bitrepository-collection-settings</module>
     <module>bitrepository-common</module>
     <module>bitrepository-protocol</module>
     <module>bitrepository-access-client</module>

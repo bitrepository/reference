@@ -47,7 +47,6 @@
  */
 package org.bitrepository.protocol.eventhandler;
 
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 
 /**

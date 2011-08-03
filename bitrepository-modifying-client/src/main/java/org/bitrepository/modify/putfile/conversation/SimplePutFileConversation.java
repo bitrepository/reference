@@ -40,7 +40,6 @@ import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageSender;
-import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

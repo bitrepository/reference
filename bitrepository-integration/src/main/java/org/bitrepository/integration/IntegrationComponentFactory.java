@@ -29,7 +29,6 @@ import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.integration.configuration.integrationconfiguration.IntegrationConfiguration;
 import org.bitrepository.pillar.PillarSettings;
 import org.bitrepository.pillar.ReferencePillar;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusFactory;
 
 /**
