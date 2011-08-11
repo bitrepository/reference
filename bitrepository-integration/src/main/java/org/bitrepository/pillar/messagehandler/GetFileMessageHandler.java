@@ -2,8 +2,8 @@
  * #%L
  * bitrepository-access-client
  * *
- * $Id$
- * $HeadURL$
+ * $Id: AccessMessageHandler.java 249 2011-08-02 11:05:51Z mss $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-integration/src/main/java/org/bitrepository/pillar/messagehandler/AccessMessageHandler.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -31,23 +31,15 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.util.Date;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForBitRepositoryFile;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForBitRepositoryFile.ChecksumDataItems;
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
 import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.protocol.FileExchange;
@@ -56,115 +48,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for handling the messages regarding access (e.g. Get operations).
+ * Class for performing the GetFile operation.
+ * TODO handle error scenarios.
  */
-public class AccessMessageHandler {
+public class GetFileMessageHandler extends PillarMessageHandler<GetFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    /** The mediator to handle all the information.*/
-    private final PillarMediator mediator;
-    /**
-     * TODO use a setting, or something else.
-     */
-    private static Boolean USE_CHECKSUM = false;
+
+    /** Constant for identifying this.*/
+    private static boolean USE_CHECKSUM = false;
     private static String CHECKSUM_DIGESTER = "MD5";
+
     
     /**
      * Constructor.
-     * @param pm The mediator.
+     * @param mediator The mediator for this pillar.
      */
-    public AccessMessageHandler(PillarMediator pm) {
-        this.mediator = pm;
+    public GetFileMessageHandler(PillarMediator mediator) {
+        super(mediator);
     }
     
     /**
-     * Method for handling IdentifyPillarsForGetChecksumsRequest messages.
-     * @param message The IdentifyPillarsForGetChecksumsRequest message to be handled.
+     * Performs the GetFile operation.
+     * TODO perhaps synchronisation?
+     * @param message The GetFileRequest message to handle.
      */
-    public void handleMessage(IdentifyPillarsForGetChecksumsRequest message) {
-        // Validate the message.
-        validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
-        
-//        IdentifyPillarsForGetChecksumsResponse reply = mediator.msgFactory.
-        
-        // TODO implement this!
-        throw new NotImplementedException("TODO implement this!");
-    }
-
-    /**
-     * Method for handling GetChecksumsRequest messages.
-     * @param message The GetChecksumsRequest message to be handled.
-     */
-    public void handleMessage(GetChecksumsRequest message) {
-        // Validate the message.
-        validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
-        validatePillarId(message.getPillarID());
-        
-        // TODO implement this!
-        throw new NotImplementedException("TODO implement this!");
-    }
-    
-    /**
-     * Method for handling IdentifyPillarsForGetFileIDsRequest messages.
-     * @param message The IdentifyPillarsForGetFileIDsRequest message to be handled.
-     */
-    public void handleMessage(IdentifyPillarsForGetFileIDsRequest message) {
-        // Validate the message.
-        validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
-
-        // TODO implement this!
-        throw new NotImplementedException("TODO implement this!");
-    }
-    
-    /**
-     * Method for handling GetFileIDsRequest messages.
-     * @param message The GetFileIDsRequest message to be handled.
-     */
-    public void handleMessage(GetFileIDsRequest message) {
-        // Validate the message.
-        validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
-        validatePillarId(message.getPillarID());
-
-        // TODO implement this!
-        throw new NotImplementedException("TODO implement this!");
-    }
-
-    /**
-     * Method for handling IdentifyPillarsForGetFileRequest messages.
-     * @param message The IdentifyPillarsForGetFileRequest message to be handled.
-     */
-    public void handleMessage(IdentifyPillarsForGetFileRequest message) {
-        // Validate the message.
-        validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
-        
-        // Validate, that we have the requested file.
-        File requestedFile = mediator.archive.getFile(message.getFileID());
-        if(!requestedFile.isFile()) {
-            // HANDLE?
-            throw new IllegalStateException("The file '" + message.getFileID() + "' has been requested, but we do "
-                    + "not have that file!");
-        }
-
-        // Create the response.
-        IdentifyPillarsForGetFileResponse reply = mediator.msgFactory.createIdentifyPillarsForGetFileResponse(message);
-        
-        // set the missing variables in the reply:
-        // TimeToDeliver, AuditTrailInformation
-        TimeMeasureTYPE timeToDeliver = new TimeMeasureTYPE();
-        timeToDeliver.setTimeMeasureUnit(mediator.settings.getTimeToUploadMeasure());
-        timeToDeliver.setTimeMeasureValue(BigInteger.valueOf(mediator.settings.getTimeToUploadValue()));
-        reply.setTimeToDeliver(timeToDeliver);
-        reply.setAuditTrailInformation(null);
-        
-        // Send resulting file.
-        mediator.messagebus.sendMessage(reply);
-    }
-
-    /**
-     * Method for handling GetFileRequest messages.
-     * @param message The GetFileRequest message to be handled.
-     */
-    public void handleMessage(GetFileRequest message) throws Exception {
+    @Override
+    public void handleMessage(GetFileRequest message) {
         // Validate the message.
         validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
         validatePillarId(message.getPillarID());
@@ -204,10 +114,15 @@ public class AccessMessageHandler {
         log.info("Sending GetFileProgressResponse: " + pResponse);
         mediator.messagebus.sendMessage(pResponse);
 
-        // Upload the file.
-        log.info("Uploading file: " + requestedFile.getName() + " to " + message.getFileAddress());
-        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
-        fe.uploadToServer(new FileInputStream(requestedFile), new URL(message.getFileAddress()));
+        // TODO handle!!!!
+        try {
+            // Upload the file.
+            log.info("Uploading file: " + requestedFile.getName() + " to " + message.getFileAddress());
+            FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
+            fe.uploadToServer(new FileInputStream(requestedFile), new URL(message.getFileAddress()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         // make ProgressResponse to tell that we are handling this.
         GetFileFinalResponse fResponse = mediator.msgFactory.createGetFileFinalResponse(message);
@@ -245,30 +160,6 @@ public class AccessMessageHandler {
         } catch (Exception e) {
             log.warn("Could not calculate the checksum of the requested file.", e);
             return null;
-        }
-    }
-
-    /**
-     * Validates that it is the correct BitrepositoryCollectionId.
-     * @param bitrepositoryCollectionId The collection id to validate.
-     */
-    private void validateBitrepositoryCollectionId(String bitrepositoryCollectionId) {
-        if(!bitrepositoryCollectionId.equals(mediator.settings.getBitRepositoryCollectionID())) {
-            throw new IllegalArgumentException("The message had a wrong BitRepositoryIdCollection: "
-                    + "Expected '" + mediator.settings.getBitRepositoryCollectionID() + "' but was '" 
-                    + bitrepositoryCollectionId + "'.");
-        }
-    }
-
-    /**
-     * Validates that it is the correct pillar id.
-     * @param pillarId The pillar id.
-     */
-    private void validatePillarId(String pillarId) {
-        if(!pillarId.equals(mediator.settings.getPillarId())) {
-            throw new IllegalArgumentException("The message had a wrong PillarId: "
-                    + "Expected '" + mediator.settings.getPillarId() + "' but was '" 
-                    + pillarId + "'.");
         }
     }
 }

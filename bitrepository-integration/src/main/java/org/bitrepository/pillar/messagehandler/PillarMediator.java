@@ -24,6 +24,9 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
@@ -83,11 +86,8 @@ public class PillarMediator implements MessageListener {
     private final MemorybasedAuditTrailManager audits;
 
     // THE MESSAGE HANDLERS!
-    /** The handler for the messages regarding access to the archive (e.g. Get operations).*/
-    private final AccessMessageHandler accessHandler;
-    /** The handler for the messages regarding modification of the archive (e.g. Put, Delete, Replace). */
-    private final ModifyMessageHandler modifyHandler;
-    
+    private Map<String, PillarMessageHandler> handlers = new HashMap<String, PillarMessageHandler>();
+
     /**
      * Constructor.
      * Sets the parameters of this mediator, and adds itself as a listener to the destinations.
@@ -104,9 +104,18 @@ public class PillarMediator implements MessageListener {
         this.msgFactory = messageFactory;
         this.settings = pSettings;
         this.audits = new MemorybasedAuditTrailManager();
-        this.accessHandler = new AccessMessageHandler(this);
-        this.modifyHandler = new ModifyMessageHandler(this);
+
+        // Initialise the messagehandlers.
+        this.handlers.put(IdentifyPillarsForGetFileRequest.class.getName(), new GetFileIdentificationMessageHandler(this));
+        this.handlers.put(GetFileRequest.class.getName(), new GetFileMessageHandler(this));
+        this.handlers.put(IdentifyPillarsForGetFileIDsRequest.class.getName(), new GetFileIDsIdentificationMessageHandler(this));
+        this.handlers.put(GetFileIDsRequest.class.getName(), new GetFileIDsMessageHandler(this));
+        this.handlers.put(IdentifyPillarsForGetChecksumsRequest.class.getName(), new GetChecksumsIdentificationMessageHandler(this));
+        this.handlers.put(GetChecksumsRequest.class.getName(), new GetChecksumsMessageHandler(this));
         
+        this.handlers.put(IdentifyPillarsForPutFileRequest.class.getName(), new PutFileIdentificationMessageHandler(this));
+        this.handlers.put(PutFileRequest.class.getName(), new PutFileMessageHandler(this));
+
         // add to both the general topic and the local queue.
         messagebus.addListener(settings.getBitRepositoryCollectionTopicID(), this);
         messagebus.addListener(settings.getLocalQueue(), this);
@@ -127,7 +136,11 @@ public class PillarMediator implements MessageListener {
     public void onMessage(GetAuditTrailsRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit(message);
-        // TODO Auto-generated method stub
+
+        PillarMessageHandler<GetAuditTrailsRequest> handler = handlers.get(message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        }
     }
 
     @Override
@@ -152,11 +165,10 @@ public class PillarMediator implements MessageListener {
     public void onMessage(GetChecksumsRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit(message);
-        
-        try {
-            accessHandler.handleMessage(message);
-        } catch (Exception e) {
-            handleException(e);
+
+        PillarMessageHandler<GetChecksumsRequest> handler = handlers.get(message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
         }
     }
 
@@ -182,12 +194,11 @@ public class PillarMediator implements MessageListener {
     public void onMessage(GetFileIDsRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit(message);
-        
-        try {
-            accessHandler.handleMessage(message);
-        } catch (Exception e) {
-            handleException(e);
-        }
+
+        PillarMessageHandler<GetFileIDsRequest> handler = handlers.get(message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        }    
     }
 
     @Override
@@ -200,12 +211,11 @@ public class PillarMediator implements MessageListener {
     public void onMessage(GetFileRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit(message);
-        
-        try {
-            accessHandler.handleMessage(message);
-        } catch (Exception e) {
-            handleException(e);
-        }
+
+        PillarMessageHandler<GetFileRequest> handler = handlers.get(message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        }    
     }
 
     @Override
@@ -218,8 +228,11 @@ public class PillarMediator implements MessageListener {
     public void onMessage(GetStatusRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit(message);
-        // TODO Auto-generated method stub
-        
+
+        PillarMessageHandler<GetStatusRequest> handler = handlers.get(message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        }    
     }
 
     @Override
@@ -244,12 +257,11 @@ public class PillarMediator implements MessageListener {
     public void onMessage(IdentifyPillarsForGetChecksumsRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit(message);
-        
-        try {
-            accessHandler.handleMessage(message);
-        } catch (Exception e) {
-            handleException(e);
-        }
+
+        PillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> handler = handlers.get(message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        }    
     }
 
     @Override
@@ -262,12 +274,11 @@ public class PillarMediator implements MessageListener {
     public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit(message);
-        
-        try {
-            accessHandler.handleMessage(message);
-        } catch (Exception e) {
-            handleException(e);
-        }
+
+        PillarMessageHandler<IdentifyPillarsForGetFileIDsRequest> handler = handlers.get(message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        }    
     }
 
     @Override
@@ -280,12 +291,11 @@ public class PillarMediator implements MessageListener {
     public void onMessage(IdentifyPillarsForGetFileRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit(message);
-        
-        try {
-            accessHandler.handleMessage(message);
-        } catch (Exception e) {
-            handleException(e);
-        }
+
+        PillarMessageHandler<IdentifyPillarsForGetFileRequest> handler = handlers.get(message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        }    
     }
 
     @Override
@@ -298,11 +308,12 @@ public class PillarMediator implements MessageListener {
     public void onMessage(IdentifyPillarsForPutFileRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit(message);
-        
-        try {
-            modifyHandler.handleMessage(message);
-        } catch (Exception e) {
-            handleException(e);
+
+        PillarMessageHandler<IdentifyPillarsForPutFileRequest> handler = handlers.get(message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        } else {
+            
         }
     }
 
@@ -316,11 +327,10 @@ public class PillarMediator implements MessageListener {
     public void onMessage(PutFileRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit(message);
-        
-        try {
-            modifyHandler.handleMessage(message);
-        } catch (Exception e) {
-            handleException(e);
+
+        PillarMessageHandler<PutFileRequest> handler = handlers.get(message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
         }
     }
 
