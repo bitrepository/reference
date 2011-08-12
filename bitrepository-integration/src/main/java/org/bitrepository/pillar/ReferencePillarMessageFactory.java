@@ -152,6 +152,7 @@ public class ReferencePillarMessageFactory {
         res.setFileID(msg.getFileID());
         res.setFileAddress(msg.getFileAddress());
         res.setFilePart(msg.getFilePart());
+        res.setTo(msg.getReplyTo());
         res.setPillarID(settings.getPillarId());
         res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
         res.setReplyTo(settings.getLocalQueue());
