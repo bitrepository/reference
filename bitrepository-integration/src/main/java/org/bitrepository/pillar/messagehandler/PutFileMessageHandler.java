@@ -25,6 +25,7 @@
 package org.bitrepository.pillar.messagehandler;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
@@ -110,19 +111,30 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
             throw new RuntimeException(e);
         }
 
-        try {
+        if(message.getChecksumsDataForNewFile() != null 
+                && message.getChecksumsDataForNewFile().getChecksumDataItems() != null
+                && message.getChecksumsDataForNewFile().getChecksumDataItems().getChecksumDataForFile() != null) {
             Collection<ChecksumDataForFileTYPE> validationChecksums 
                     = message.getChecksumsDataForNewFile().getChecksumDataItems().getChecksumDataForFile();
-            for(ChecksumDataForFileTYPE csType : validationChecksums) {
-                String checksum = ChecksumUtils.generateChecksum(fileForValidation, 
-                        csType.getChecksumSpec().getChecksumType(), csType.getChecksumSpec().getChecksumSalt());
-                if(!checksum.equals(csType.getChecksumValue())) {
-                    throw new IllegalStateException("Wrong checksum! Expected: [" + csType.getChecksumValue() 
-                            + "], but calculated: [" + checksum + "]");
+            try {
+                for(ChecksumDataForFileTYPE csType : validationChecksums) {
+                    String checksum = ChecksumUtils.generateChecksum(fileForValidation, 
+                            csType.getChecksumSpec().getChecksumType(), 
+                            csType.getChecksumSpec().getChecksumSalt());
+                    if(!checksum.equals(csType.getChecksumValue())) {
+                        log.error("Expected checksums '" + csType.getChecksumValue() + "' but the checksum was '" 
+                                + checksum + "'.");
+                        throw new IllegalStateException("Wrong checksum! Expected: [" + csType.getChecksumValue() 
+                                + "], but calculated: [" + checksum + "]");
+                    }
                 }
+            } catch (Exception e) {
+                log.error("The retrieved file did not validate! Removing it from archive.", e);
+                throw new RuntimeException(e);
             }
-        } catch (Exception e) {
-            log.error("The retrieved file did not validate! Removing it from archive.", e);
+        } else {
+            // TODO is such a checksum required?
+            log.warn("No checksums for validating the retrieved file.");
         }
 
         try {
@@ -145,7 +157,7 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
         fResponse.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
 
         ChecksumsDataForNewFile checksumForValidation = new ChecksumsDataForNewFile();
-        {
+        if(message.getChecksumSpecs() != null && message.getChecksumSpecs().getNoOfItems().equals(BigInteger.ZERO)) {
             // Calculate the requested checksum data.
             checksumForValidation.setFileID(message.getFileID());
             checksumForValidation.setNoOfItems(message.getChecksumSpecs().getNoOfItems());
@@ -164,6 +176,9 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
                 cdi.getChecksumDataForFile().add(resultingChecksum);
             }
             checksumForValidation.setChecksumDataItems(cdi);
+        } else {
+            // TODO is such a request required?
+            log.info("No checksum validation requested.");
         }
         fResponse.setChecksumsDataForNewFile(checksumForValidation);
 
