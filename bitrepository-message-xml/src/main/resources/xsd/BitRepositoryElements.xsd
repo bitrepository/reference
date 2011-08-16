@@ -574,6 +574,31 @@
     </xs:complexType>
   </xs:element>
 
+  <xs:element name="IdentifyResponseInfo">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Response information telling that the Identify request has been received and
+    if an operation request can be met. This response info can be used to send 'negative' Identify responses.
+    </xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="IdentifyResponseCode" type="IdentifyResponseCode_TYPE">
+          <xs:annotation><xs:documentation xml:lang="en">
+          IdentifyResponseCode is a code for the type of identify response given, such as AccessDenied or OK.
+          Note that if the file is not on the pillar or the pillar does not know this collection ID,
+            no identify response should be sent.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element name="IdentifyResponseText" type="xs:string">
+          <xs:annotation><xs:documentation xml:lang="en">
+          IdentifyResponseText is a text for logging the type of identify response given.
+          It does not have a semantic meaning, but contributes to a more readable log.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
   <xs:element name="NoOfItems" type="xs:nonNegativeInteger">
     <xs:annotation><xs:documentation xml:lang="en">
     The number of results given in a delivered result
@@ -1289,6 +1314,23 @@
       <xs:enumeration value="480">
         <xs:annotation><xs:documentation xml:lang="en">
         Message request has been completed successfully
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="IdentifyResponseCode_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Type of all codes for Identify Response messages.
+    </xs:documentation></xs:annotation>
+    <xs:union memberTypes="IdentifyResponseCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_RESPONSE_TYPE"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="IdentifyResponseCodePositive_TYPE">
+    <xs:restriction base="xs:positiveInteger">
+      <xs:enumeration value="480">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Message request has been received and operation request is expected to be successful
         </xs:documentation></xs:annotation>
       </xs:enumeration>
     </xs:restriction>

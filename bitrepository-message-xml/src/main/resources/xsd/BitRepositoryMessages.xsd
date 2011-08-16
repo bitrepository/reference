@@ -66,6 +66,13 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
+        <xs:element ref="bre:IdentifyResponseInfo" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response information telling that the Identify request has been received and
+          if an operation request can be met. This response info can be used to send 'negative' Identify responses.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
         <xs:element ref="bre:TimeToDeliver" >
           <xs:annotation><xs:documentation xml:lang="en">
           Estimated time before delivery of file requested.
