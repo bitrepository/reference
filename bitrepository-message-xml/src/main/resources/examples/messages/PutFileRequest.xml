@@ -37,8 +37,8 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
   <FileSize>10000</FileSize>
   <ChecksumsDataForNewFile>
-    <NoOfItems>2</NoOfItems>
     <FileID>MyDataID</FileID>
+    <NoOfItems>2</NoOfItems>
     <ChecksumDataItems>
       <ChecksumDataForFile>
         <ChecksumSpec>

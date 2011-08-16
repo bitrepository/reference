@@ -56,4 +56,12 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
       </ChecksumDataForFile>
     </ChecksumDataItems>
   </ChecksumsDataForBitRepositoryFile>
+  <ChecksumSpecs>
+    <NoOfItems>1</NoOfItems>
+    <ChecksumSpecsItems>
+      <ChecksumSpecsItem>
+        <ChecksumType>MD5</ChecksumType>
+      </ChecksumSpecsItem>
+    </ChecksumSpecsItems>
+  </ChecksumSpecs>
 </bro:DeleteFileRequest>

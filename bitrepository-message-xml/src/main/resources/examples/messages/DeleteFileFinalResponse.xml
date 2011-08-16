@@ -31,11 +31,23 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <BitRepositoryCollectionID>MySla</BitRepositoryCollectionID>
   <To>ToQueueOrTopic</To>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <AuditTrailInformation>User: Name, Institution: Place</AuditTrailInformation>
+  <AuditTrailInformation/>
   <PillarID>MyPillar</PillarID>
   <FileID>MyDataID</FileID>
   <FinalResponseInfo>
     <FinalResponseCode>480</FinalResponseCode>
     <FinalResponseText>successfull completion</FinalResponseText>
   </FinalResponseInfo>
+  <ChecksumsDataForBitRepositoryFile>
+    <FileID>MyDataID</FileID>
+    <ChecksumDataItems>
+      <ChecksumDataForFile>
+        <ChecksumSpec>
+          <ChecksumType>MD5</ChecksumType>
+        </ChecksumSpec>
+        <ChecksumValue>6f78ed9c9dd86fe9d</ChecksumValue>
+        <CalculationTimestamp>2011-08-16T11:17:00</CalculationTimestamp>
+      </ChecksumDataForFile>
+    </ChecksumDataItems>
+  </ChecksumsDataForBitRepositoryFile>
 </bro:DeleteFileFinalResponse>

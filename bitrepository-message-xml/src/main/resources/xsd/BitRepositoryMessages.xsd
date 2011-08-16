@@ -1505,7 +1505,7 @@
           </xs:documentation></xs:annotation>
         </xs:group>
 
-        <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
+        <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           FileID uniquely identifies the files in given bit repository collection which the audit trails are requested for
           Given in order to be able to give possible estimate of time to deliver
@@ -1534,7 +1534,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
+        <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en" >
           FileID uniquely identifies the files in given bit repository collection which the audit trails are requested for
           only to repeat parameter from request
@@ -1579,7 +1579,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:FileID" >
+        <xs:element ref="bre:FileIDs" >
           <xs:annotation><xs:documentation xml:lang="en">
           FileID uniquely identifies the files in given bit repository collection which the audit trails are requested for
           </xs:documentation></xs:annotation>
@@ -1615,7 +1615,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
+        <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           FileID uniquely identifies the files in given bit repository collection which the audit trails are requested for
           (otherwise it is known via CorrelationID)
@@ -1657,7 +1657,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1" >
+        <xs:element ref="bre:FileIDs" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           FileID uniquely identifies the files in given bit repository collection which the audit trails are requested for
           (otherwise it is known via CorrelationID)

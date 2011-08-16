@@ -201,15 +201,15 @@
     The file is in the bit repository.
     </xs:documentation></xs:annotation>
       <xs:sequence>
-        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          The number of checksums included
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
         <xs:element name="FileID" type="FileID_TYPE" >
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of data the checksum is for
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of checksums included
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -241,15 +241,15 @@
     The file is new to the bit repository.
     </xs:documentation></xs:annotation>
       <xs:sequence>
-        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
-          <xs:annotation><xs:documentation xml:lang="en">
-          The number of checksums included
-          </xs:documentation></xs:annotation>
-        </xs:element>
-
         <xs:element name="FileID" type="FileID_TYPE" >
           <xs:annotation><xs:documentation xml:lang="en">
           Identifier of data the checksum is for
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="NoOfItems" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          The number of checksums included
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -1009,16 +1009,23 @@
   </xs:simpleType>
 
   <xs:simpleType name="AuditTrailInformation_TYPE">
-    <xs:restriction base="xs:string">
-    </xs:restriction>
+    <xs:annotation><xs:documentation xml:lang="en">
+    Audit Trail Information known to sender to be added to receiver audit trail.
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string"/>
   </xs:simpleType>
 
   <xs:simpleType name="BitRepositoryCollectionID_TYPE">
-    <xs:restriction base="xs:string">
-    </xs:restriction>
+    <xs:annotation><xs:documentation xml:lang="en">
+    A unique identifier for bit repository collection which data belongs to.
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string"/>
   </xs:simpleType>
 
   <xs:complexType name="ChecksumDataForChecksumSpec_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Checksum data belonging to certain checksum specification.
+    </xs:documentation></xs:annotation>
     <xs:sequence>
       <xs:element name="FileID" type="FileID_TYPE" >
         <xs:annotation><xs:documentation xml:lang="en">
@@ -1043,6 +1050,9 @@
   </xs:complexType>
 
   <xs:complexType name="ChecksumDataForFile_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Checksum data belonging to a certain file ID.
+    </xs:documentation></xs:annotation>
     <xs:sequence>
       <xs:element name="ChecksumSpec" type="ChecksumSpec_TYPE" >
         <xs:annotation><xs:documentation xml:lang="en">

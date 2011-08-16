@@ -31,12 +31,12 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <BitRepositoryCollectionID>MySla</BitRepositoryCollectionID>
   <To>ToQueueOrTopic</To>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
-  <AuditTrailInformation>User: Name, Institution: Place</AuditTrailInformation>
+  <AuditTrailInformation/>
   <PillarID>MyPillar</PillarID>
   <FileID>MyDataID</FileID>
   <ChecksumsDataForBitRepositoryFile ParameterSpecification="BitRepositoryFile">
-    <NoOfItems>2</NoOfItems>
     <FileID>MyDataID</FileID>
+    <NoOfItems>2</NoOfItems>
     <ChecksumDataItems>
       <ChecksumDataForFile>
         <ChecksumSpec>
@@ -57,4 +57,38 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
     </ChecksumDataItems>
   </ChecksumsDataForBitRepositoryFile>
   <FileAddress>http://myServer/myPlace/Myfile</FileAddress>
+  <FileSize>1000</FileSize>
+  <ChecksumsDataForNewFile>
+    <FileID>MyDataID</FileID>
+    <NoOfItems>2</NoOfItems>
+    <ChecksumDataItems>
+      <ChecksumDataForFile>
+        <ChecksumSpec>
+          <ChecksumType>MD5</ChecksumType>
+        </ChecksumSpec>
+        <ChecksumValue>6f78ed9c9dd86fe9d</ChecksumValue>
+        <CalculationTimestamp>2011-08-16T11:17:00</CalculationTimestamp>
+      </ChecksumDataForFile>
+      <ChecksumDataForFile>
+        <ChecksumSpec>
+          <ChecksumType>MD5</ChecksumType>
+          <ChecksumSalt>A</ChecksumSalt>
+        </ChecksumSpec>
+        <ChecksumValue>6f78ce7d941ed9c9d9d</ChecksumValue>
+        <CalculationTimestamp>2011-08-16T11:51:00</CalculationTimestamp>
+      </ChecksumDataForFile>
+    </ChecksumDataItems>
+  </ChecksumsDataForNewFile>
+  <ChecksumSpecs>
+    <NoOfItems>2</NoOfItems>
+    <ChecksumSpecsItems>
+      <ChecksumSpecsItem>
+        <ChecksumType>MD5</ChecksumType>
+      </ChecksumSpecsItem>
+      <ChecksumSpecsItem>
+        <ChecksumType>MD5</ChecksumType>
+        <ChecksumSalt>A</ChecksumSalt>
+      </ChecksumSpecsItem>
+    </ChecksumSpecsItems>
+  </ChecksumSpecs>
 </bro:ReplaceFileRequest>
