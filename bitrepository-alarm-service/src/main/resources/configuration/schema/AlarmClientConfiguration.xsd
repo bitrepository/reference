@@ -19,10 +19,17 @@
             </documentation>
           </annotation>
         </element>
-        <element name="handlerClass" type="string">
+        <element name="bitrepositoryCollectionId" type="string">
           <annotation>
             <documentation xml:lang="en">
-              The class for the AlarmHandler.
+              The Id for the bitrepository collection of the reference pillar
+            </documentation>
+          </annotation>
+        </element>
+        <element name="bitrepositoryCollectionTopicId" type="string">
+          <annotation>
+            <documentation xml:lang="en">
+              The Id for the general topic of the bitrepository collection of the reference pillar
             </documentation>
           </annotation>
         </element>

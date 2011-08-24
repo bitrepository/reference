@@ -44,14 +44,14 @@ public class AlarmComponentFactory {
 
     /** Constructor. Private to avoid instantiation of this utility class.*/
     private AlarmComponentFactory() { 
-        moduleCharacter = new ModuleCharacteristics("alarm-client");
+        moduleCharacter = new ModuleCharacteristics("alarm-service");
     }
 
     /**
      * Method for retrieving the singleton instance of this factory.
      * @return The singleton instance.
      */
-    public AlarmComponentFactory getInstance() {
+    public static AlarmComponentFactory getInstance() {
         if(instance == null) {
             instance = new AlarmComponentFactory();
         }
@@ -86,13 +86,9 @@ public class AlarmComponentFactory {
      */
     public AlarmService getAlarmService(AlarmSettings settings) {
         try {
-            AlarmConfiguration conf = getConfig();
             MessageBus bus = MessageBusFactory.createMessageBus(settings.getMessageBusConfiguration());
             AlarmService service = new BasicAlarmService(bus);
             
-            // TODO make a list of handlers and queue in the configuration.
-            AlarmHandler handler = (AlarmHandler) Class.forName(conf.getHandlerClass()).newInstance();
-            service.addHandler(handler, settings.getClientTopicID());
             return service;
         } catch (Exception e) {
             throw new AlarmException("Cannot instantiate the AlarmClient.", e); 
