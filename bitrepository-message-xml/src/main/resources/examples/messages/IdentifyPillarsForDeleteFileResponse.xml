@@ -38,6 +38,10 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
     <ChecksumType>MD5</ChecksumType>
     <ChecksumSalt>X</ChecksumSalt>
   </PillarChecksumSpec>
+  <IdentifyResponseInfo>
+    <IdentifyResponseCode>480</IdentifyResponseCode>
+    <IdentifyResponseText>Request message received and operation request expected to be successful</IdentifyResponseText>
+  </IdentifyResponseInfo>
   <TimeToDeliver>
     <TimeMeasureUnit>MILLISECONDS</TimeMeasureUnit>
     <TimeMeasureValue>1000</TimeMeasureValue>

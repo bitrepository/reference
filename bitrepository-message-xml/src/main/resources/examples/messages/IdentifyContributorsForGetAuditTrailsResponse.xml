@@ -36,7 +36,13 @@
       <ComponentID>MyPillar</ComponentID>
       <ComponentType>PILLAR</ComponentType>
   </Contributor>
-  <FileID>MyFile</FileID>
+  <FileIDs>
+    <AllFileIDs/>
+  </FileIDs>
+  <IdentifyResponseInfo>
+    <IdentifyResponseCode>480</IdentifyResponseCode>
+    <IdentifyResponseText>Request message received and operation request expected to be successful</IdentifyResponseText>
+  </IdentifyResponseInfo>
   <TimeToDeliver>
     <TimeMeasureUnit>MILLISECONDS</TimeMeasureUnit>
     <TimeMeasureValue>1000</TimeMeasureValue>

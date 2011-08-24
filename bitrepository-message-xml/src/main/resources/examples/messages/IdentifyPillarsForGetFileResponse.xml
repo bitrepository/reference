@@ -34,6 +34,10 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <AuditTrailInformation>User: Name, Institution: Place</AuditTrailInformation>
   <FileID>MyFile</FileID>
   <PillarID>MyPillar</PillarID>
+  <IdentifyResponseInfo>
+    <IdentifyResponseCode>480</IdentifyResponseCode>
+    <IdentifyResponseText>Request message received and operation request expected to be successful</IdentifyResponseText>
+  </IdentifyResponseInfo>
   <TimeToDeliver>
     <TimeMeasureUnit>MILLISECONDS</TimeMeasureUnit>
     <TimeMeasureValue>1000</TimeMeasureValue>

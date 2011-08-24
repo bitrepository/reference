@@ -66,7 +66,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:IdentifyResponseInfo" >
+        <xs:element ref="bre:IdentifyResponseInfo" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Response information telling that the Identify request has been received and
           if an operation request can be met. This response info can be used to send 'negative' Identify responses.
@@ -287,6 +287,13 @@
           <xs:annotation><xs:documentation xml:lang="en">
           Checksums type in case it is a checksum pillar replying
           It is only informative for possible later checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:IdentifyResponseInfo" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response information telling that the Identify request has been received and
+          if an operation request can be met. This response info can be used to send 'negative' Identify responses.
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -528,6 +535,13 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
+        <xs:element ref="bre:IdentifyResponseInfo" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response information telling that the Identify request has been received and
+          if an operation request can be met. This response info can be used to send 'negative' Identify responses.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
         <xs:element ref="bre:TimeToDeliver" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Estimated time before file is deleted.
@@ -725,6 +739,13 @@
           The checksum type is necessary for sending correct checksum in later replace request,
           as file (or checksum) may only be replaced after checksum check on pillar.
           The element is not required as this information is also part of settings.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:IdentifyResponseInfo" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response information telling that the Identify request has been received and
+          if an operation request can be met. This response info can be used to send 'negative' Identify responses.
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -984,6 +1005,13 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
+        <xs:element ref="bre:IdentifyResponseInfo" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response information telling that the Identify request has been received and
+          if an operation request can be met. This response info can be used to send 'negative' Identify responses.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
         <xs:element ref="bre:TimeToDeliver" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Estimated time before delivery of checksums requested
@@ -1196,6 +1224,13 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
+        <xs:element ref="bre:IdentifyResponseInfo" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response information telling that the Identify request has been received and
+          if an operation request can be met. This response info can be used to send 'negative' Identify responses.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
         <xs:element ref="bre:TimeToDeliver" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Estimated time before delivery of data (fileIDs) requested
@@ -1375,6 +1410,13 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
+        <xs:element ref="bre:IdentifyResponseInfo" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response information telling that the Identify request has been received and
+          if an operation request can be met. This response info can be used to send 'negative' Identify responses.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
         <xs:element ref="bre:TimeToDeliver" minOccurs="0" maxOccurs="1" >
           <xs:annotation><xs:documentation xml:lang="en">
           Estimated time before delivery of requested status
@@ -1545,6 +1587,13 @@
           <xs:annotation><xs:documentation xml:lang="en" >
           FileID uniquely identifies the files in given bit repository collection which the audit trails are requested for
           only to repeat parameter from request
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:IdentifyResponseInfo" minOccurs="0" maxOccurs="1" >
+          <xs:annotation><xs:documentation xml:lang="en">
+          Response information telling that the Identify request has been received and
+          if an operation request can be met. This response info can be used to send 'negative' Identify responses.
           </xs:documentation></xs:annotation>
         </xs:element>
 

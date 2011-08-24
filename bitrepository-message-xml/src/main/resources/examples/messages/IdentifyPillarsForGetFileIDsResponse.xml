@@ -37,6 +37,10 @@
     <FileID>MyDataID1</FileID>
     <FileID>MyDataID2</FileID>
   </FileIDs>
+  <IdentifyResponseInfo>
+    <IdentifyResponseCode>480</IdentifyResponseCode>
+    <IdentifyResponseText>Request message received and operation request expected to be successful</IdentifyResponseText>
+  </IdentifyResponseInfo>
   <TimeToDeliver>
     <TimeMeasureUnit>MILLISECONDS</TimeMeasureUnit>
     <TimeMeasureValue>1000</TimeMeasureValue>
