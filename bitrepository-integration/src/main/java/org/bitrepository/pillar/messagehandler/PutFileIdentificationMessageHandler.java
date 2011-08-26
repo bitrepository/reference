@@ -54,22 +54,28 @@ public class PutFileIdentificationMessageHandler extends PillarMessageHandler<Id
      * @param message The IdentifyPillarsForPutFileRequest message to handle.
      */
     public void handleMessage(IdentifyPillarsForPutFileRequest message) {
-        // validate message
-        validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
-        
-        log.info("Creating reply for '" + message + "'");
-        IdentifyPillarsForPutFileResponse reply = mediator.msgFactory.createIdentifyPillarsForPutFileResponse(message);
+        try {
+            // validate message
+            validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
 
-        // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
-        reply.setReplyTo(mediator.settings.getLocalQueue());
-        TimeMeasureTYPE timeToDeliver = new TimeMeasureTYPE();
-        timeToDeliver.setTimeMeasureValue(BigInteger.valueOf(mediator.settings.getTimeToDownloadValue()));
-        timeToDeliver.setTimeMeasureUnit(mediator.settings.getTimeToDownloadMeasure());
-        reply.setTimeToDeliver(timeToDeliver);
-        reply.setAuditTrailInformation(null);
-        reply.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
-        
-        log.info("Sending IdentifyPillarsForPutfileResponse: " + reply);
-        mediator.messagebus.sendMessage(reply);
+            log.info("Creating reply for '" + message + "'");
+            IdentifyPillarsForPutFileResponse reply 
+                    = mediator.msgFactory.createIdentifyPillarsForPutFileResponse(message);
+
+            // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
+            reply.setReplyTo(mediator.settings.getLocalQueue());
+            TimeMeasureTYPE timeToDeliver = new TimeMeasureTYPE();
+            timeToDeliver.setTimeMeasureValue(BigInteger.valueOf(mediator.settings.getTimeToDownloadValue()));
+            timeToDeliver.setTimeMeasureUnit(mediator.settings.getTimeToDownloadMeasure());
+            reply.setTimeToDeliver(timeToDeliver);
+            reply.setAuditTrailInformation(null);
+            reply.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
+
+            log.info("Sending IdentifyPillarsForPutfileResponse: " + reply);
+            mediator.messagebus.sendMessage(reply);
+        } catch (IllegalArgumentException e) {
+            log.warn("Caught IllegalArgumentException", e);
+            alarmIllegalArgument(e);
+        }
     }
 }

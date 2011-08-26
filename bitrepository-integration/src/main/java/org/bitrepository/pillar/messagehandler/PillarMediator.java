@@ -24,9 +24,24 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
+import java.math.BigInteger;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
+import org.bitrepository.bitrepositoryelements.AlarmConcerning;
+import org.bitrepository.bitrepositoryelements.AlarmConcerning.BitRepositoryCollections;
+import org.bitrepository.bitrepositoryelements.AlarmConcerning.Components;
+import org.bitrepository.bitrepositoryelements.AlarmDescription;
+import org.bitrepository.bitrepositoryelements.ComponentTYPE;
+import org.bitrepository.bitrepositoryelements.ComponentTYPE.ComponentType;
+import org.bitrepository.bitrepositoryelements.ErrorcodeAlarmType;
+import org.bitrepository.bitrepositoryelements.PriorityCodeType;
+import org.bitrepository.bitrepositoryelements.RiskAreaType;
+import org.bitrepository.bitrepositoryelements.RiskImpactScoreType;
+import org.bitrepository.bitrepositoryelements.RiskProbabilityScoreType;
+import org.bitrepository.bitrepositoryelements.RiskTYPE;
 import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
@@ -54,10 +69,12 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.PillarSettings;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.ReferencePillarMessageFactory;
 import org.bitrepository.pillar.audit.MemorybasedAuditTrailManager;
+import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.slf4j.Logger;
@@ -125,218 +142,304 @@ public class PillarMediator implements MessageListener {
         // TODO ?? send alarm?
         log.error("Received exception '" + e.getMessage() + "'.", e);
     }
-
+    
+    /**
+     * Method for sending an Alarm when something bad happens.
+     * @param alarmConcerning What the alarm is concerning.
+     * @param alarmDescription The description of the alarm, e.g. What caused the alarm.
+     */
+    public void sendAlarm(AlarmConcerning alarmConcerning, AlarmDescription alarmDescription) {
+        Alarm alarm = new Alarm();
+        
+        ComponentTYPE ct = new ComponentTYPE();
+        ct.setComponentComment("ReferencePillar");
+        ct.setComponentID(settings.getPillarId());
+        ct.setComponentType(ComponentType.PILLAR);
+        alarm.setAlarmRaiser(ct);
+        
+        alarm.setAlarmConcerning(alarmConcerning);
+        alarm.setAlarmDescription(alarmDescription);
+        
+        alarm.setAuditTrailInformation("ReferencePillar: " + settings.getPillarId());
+        alarm.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        alarm.setCorrelationID(UUID.randomUUID().toString());
+        alarm.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
+        alarm.setReplyTo(settings.getLocalQueue());
+        alarm.setTo(settings.getBitRepositoryCollectionTopicID() + "-ALARM");
+        alarm.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
+        
+        messagebus.sendMessage(alarm);
+    }
+    
+    /**
+     * Method for sending an alarm when a received message does not have a handler.
+     * 
+     * @param message The message which does not have a handler.
+     */
+    private void noHandlerAlarm(Object message) {
+        String msg = "Cannot handle message of type '" + message.getClass().getCanonicalName() + "'";
+        log.warn(msg + ": " + message.toString());
+        
+        // create the Concerning part of the alarm.
+        AlarmConcerning ac = new AlarmConcerning();
+        BitRepositoryCollections brcs = new BitRepositoryCollections();
+        brcs.getBitRepositoryCollectionID().add(settings.getBitRepositoryCollectionID());
+        ac.setBitRepositoryCollections(brcs);
+        ac.setMessages(msg);
+        ac.setFileInformation(null);
+        Components comps = new Components();
+        ComponentTYPE compType = new ComponentTYPE();
+        compType.setComponentComment("ReferencePillar");
+        compType.setComponentID(settings.getPillarId());
+        compType.setComponentType(ComponentType.PILLAR);
+        comps.getContributor().add(compType);
+        comps.getDataTransmission().add(settings.getMessageBusConfiguration().toString());
+        ac.setComponents(comps);
+        
+        // create a descriptor.
+        AlarmDescription ad = new AlarmDescription();
+        ad.setAlarmCode(ErrorcodeAlarmType.GENERAL);
+        ad.setAlarmText(msg);
+        ad.setOrigDateTime(CalendarUtils.getXmlGregorianCalendar(new Date()));
+        ad.setPriority(PriorityCodeType.OTHER);
+        RiskTYPE rt = new RiskTYPE();
+        rt.setRiskArea(RiskAreaType.AVAILABILITY);
+        rt.setRiskImpactScore(RiskImpactScoreType.HIGH_IMPACT);
+        rt.setRiskProbabilityScore(RiskProbabilityScoreType.MEDIUM_PROPABILITY);
+        ad.setRisk(rt);
+        
+        sendAlarm(ac, ad);
+    }
+    
     @Override
     public void onMessage(Alarm message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(GetAuditTrailsRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         PillarMessageHandler<GetAuditTrailsRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
+        } else {
+            noHandlerAlarm(message);
         }
     }
 
     @Override
     public void onMessage(GetAuditTrailsProgressResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(GetAuditTrailsFinalResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(GetChecksumsFinalResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(GetChecksumsRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         PillarMessageHandler<GetChecksumsRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
+        } else {
+            noHandlerAlarm(message);
         }
     }
 
     @Override
     public void onMessage(GetChecksumsProgressResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(GetFileFinalResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(GetFileIDsFinalResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(GetFileIDsRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         PillarMessageHandler<GetFileIDsRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
+        } else {
+            noHandlerAlarm(message);
         }    
     }
 
     @Override
     public void onMessage(GetFileIDsProgressResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(GetFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         PillarMessageHandler<GetFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
+        } else {
+            noHandlerAlarm(message);
         }    
     }
 
     @Override
     public void onMessage(GetFileProgressResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(GetStatusRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         PillarMessageHandler<GetStatusRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
+        } else {
+            noHandlerAlarm(message);
         }    
     }
 
     @Override
     public void onMessage(GetStatusProgressResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(GetStatusFinalResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         PillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
+        } else {
+            noHandlerAlarm(message.getClass());
         }    
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetFileIDsResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         PillarMessageHandler<IdentifyPillarsForGetFileIDsRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
+        } else {
+            noHandlerAlarm(message.getClass());
         }    
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetFileResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         PillarMessageHandler<IdentifyPillarsForGetFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
+        } else {
+            noHandlerAlarm(message.getClass());
         }    
     }
 
     @Override
     public void onMessage(IdentifyPillarsForPutFileResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForPutFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         PillarMessageHandler<IdentifyPillarsForPutFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
-            
+            noHandlerAlarm(message.getClass());
         }
     }
 
     @Override
     public void onMessage(PutFileFinalResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 
     @Override
     public void onMessage(PutFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         PillarMessageHandler<PutFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
+        } else {
+            noHandlerAlarm(message.getClass());
         }
     }
 
     @Override
     public void onMessage(PutFileProgressResponse message) {
-        log.warn("Should not have received a '" + message.getClass().getName() + "' message. Content: " + message);
-        audits.addMessageReceivedAudit(message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        noHandlerAlarm(message);
     }
 }

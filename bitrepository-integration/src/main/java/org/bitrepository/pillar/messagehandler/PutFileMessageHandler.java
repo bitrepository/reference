@@ -64,29 +64,59 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
 
     /**
      * Handles the identification messages for the PutFile operation.
-     * TODO perhaps synchronisation?
+     * TODO perhaps synchronisation for all these methods?
      * @param message The IdentifyPillarsForPutFileRequest message to handle.
      */
     public void handleMessage(PutFileRequest message) {
+        try {
+            if(!validateMessage(message)) {
+                return;
+            }
+            
+            tellAboutProgress(message);
+            retrieveFile(message);
+            sendFinalRequest(message);
+        } catch (IllegalArgumentException e) {
+            log.warn("Caught IllegalArgumentException. Possible intruder -> Sending alarm! ", e);
+            alarmIllegalArgument(e);
+        } catch (RuntimeException e) {
+            log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
+            FinalResponseInfo fri = new FinalResponseInfo();
+            fri.setFinalResponseCode("500");
+            fri.setFinalResponseText("Error: " + e.getMessage());
+            sendFailedResponse(message, fri);
+        }
+    }
+    
+    /**
+     * Validates the message.
+     * @param message The message to validate.
+     */
+    private boolean validateMessage(PutFileRequest message) {
         // validate message
         validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
         validatePillarId(message.getPillarID());
 
         // verify, that we already have the file
         if(mediator.archive.hasFile(message.getFileID())) {
-            // send final response telling, that the file already exists!
-            PutFileFinalResponse fResponse = mediator.msgFactory.createPutFileFinalResponse(message);
-            FinalResponseInfo frInfo = new FinalResponseInfo();
-            frInfo.setFinalResponseCode("409"); // HTTP for conflict.
-            frInfo.setFinalResponseText("Conflict: The file is already within the archive.");
-            fResponse.setFinalResponseInfo(frInfo);
-            mediator.messagebus.sendMessage(fResponse);
-
-            // Then tell the mediator, that we failed.
-            throw new IllegalArgumentException("Cannot perform put for a file, '" + message.getFileID() 
+            log.warn("Cannot perform put for a file, '" + message.getFileID() 
                     + "', which we already have within the archive");
-        }
+            // Then tell the mediator, that we failed.
+            FinalResponseInfo fri = new FinalResponseInfo();
+            fri.setFinalResponseCode("409");
+            fri.setFinalResponseText("File is already within archive.");
+            sendFailedResponse(message, fri);
 
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Method for sending a progress response.
+     * @param message The message to base the response upon.
+     */
+    private void tellAboutProgress(PutFileRequest message) {
         log.info("Respond that we are starting to retrieve the file.");
         PutFileProgressResponse pResponse = mediator.msgFactory.createPutFileProgressResponse(message);
 
@@ -100,17 +130,24 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
 
         log.info("Sending ProgressResponseInfo: " + prInfo);
         mediator.messagebus.sendMessage(pResponse);
-
+    }
+    
+    /**
+     * Retrieves the actual data, validates it and stores it.
+     * @param message The request to for the file to put.
+     */
+    private void retrieveFile(PutFileRequest message) {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
 
         File fileForValidation;
         try {
-            fileForValidation = mediator.archive.downloadFileForValidation(message.getFileID(), fe.downloadFromServer(new URL(message.getFileAddress())));
+            fileForValidation = mediator.archive.downloadFileForValidation(message.getFileID(), 
+                    fe.downloadFromServer(new URL(message.getFileAddress())));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
+        
         if(message.getChecksumsDataForNewFile() != null 
                 && message.getChecksumsDataForNewFile().getChecksumDataItems() != null
                 && message.getChecksumsDataForNewFile().getChecksumDataItems().getChecksumDataForFile() != null) {
@@ -143,6 +180,9 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+    
+    private void sendFinalRequest(PutFileRequest message) {
 
         File retrievedFile = mediator.archive.getFile(message.getFileID());
 
@@ -184,6 +224,13 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
 
         // Finish by sending final response.
         log.info("Sending PutFileFinalResponse: " + fResponse);
+        mediator.messagebus.sendMessage(fResponse);
+    }
+    
+    private void sendFailedResponse(PutFileRequest message, FinalResponseInfo frInfo) {
+        // send final response telling, that the file already exists!
+        PutFileFinalResponse fResponse = mediator.msgFactory.createPutFileFinalResponse(message);
+        fResponse.setFinalResponseInfo(frInfo);
         mediator.messagebus.sendMessage(fResponse);
     }
 }

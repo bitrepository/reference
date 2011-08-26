@@ -24,6 +24,22 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
+import java.util.Date;
+
+import org.bitrepository.bitrepositoryelements.AlarmConcerning;
+import org.bitrepository.bitrepositoryelements.AlarmConcerning.BitRepositoryCollections;
+import org.bitrepository.bitrepositoryelements.AlarmConcerning.Components;
+import org.bitrepository.bitrepositoryelements.AlarmDescription;
+import org.bitrepository.bitrepositoryelements.ComponentTYPE;
+import org.bitrepository.bitrepositoryelements.ComponentTYPE.ComponentType;
+import org.bitrepository.bitrepositoryelements.ErrorcodeAlarmType;
+import org.bitrepository.bitrepositoryelements.PriorityCodeType;
+import org.bitrepository.bitrepositoryelements.RiskAreaType;
+import org.bitrepository.bitrepositoryelements.RiskImpactScoreType;
+import org.bitrepository.bitrepositoryelements.RiskProbabilityScoreType;
+import org.bitrepository.bitrepositoryelements.RiskTYPE;
+import org.bitrepository.common.utils.CalendarUtils;
+
 /**
  * Abstract level for message handling. 
  */
@@ -65,5 +81,40 @@ public abstract class PillarMessageHandler<T> {
                     + pillarId + "'.");
         }
     }
-
+    
+    /**
+     * Method for sending an alarm based on an IllegalArgumentException.
+     * @param exception The exception to base the alarm upon.
+     */
+    public void alarmIllegalArgument(IllegalArgumentException exception) {
+        // create the Concerning part of the alarm.
+        AlarmConcerning ac = new AlarmConcerning();
+        BitRepositoryCollections brcs = new BitRepositoryCollections();
+        brcs.getBitRepositoryCollectionID().add(mediator.settings.getBitRepositoryCollectionID());
+        ac.setBitRepositoryCollections(brcs);
+        ac.setMessages(exception.getMessage());
+        ac.setFileInformation(null);
+        Components comps = new Components();
+        ComponentTYPE compType = new ComponentTYPE();
+        compType.setComponentComment("ReferencePillar");
+        compType.setComponentID(mediator.settings.getPillarId());
+        compType.setComponentType(ComponentType.PILLAR);
+        comps.getContributor().add(compType);
+        comps.getDataTransmission().add(mediator.settings.getMessageBusConfiguration().toString());
+        ac.setComponents(comps);
+        
+        // create a descriptor.
+        AlarmDescription ad = new AlarmDescription();
+        ad.setAlarmCode(ErrorcodeAlarmType.UNKNOWN_USER);
+        ad.setAlarmText(exception.getMessage());
+        ad.setOrigDateTime(CalendarUtils.getXmlGregorianCalendar(new Date()));
+        ad.setPriority(PriorityCodeType.OTHER);
+        RiskTYPE rt = new RiskTYPE();
+        rt.setRiskArea(RiskAreaType.CONFIDENTIALITY);
+        rt.setRiskImpactScore(RiskImpactScoreType.CRITICAL_IMPACT);
+        rt.setRiskProbabilityScore(RiskProbabilityScoreType.HIGH_PROPABILITY);
+        ad.setRisk(rt);
+        
+        mediator.sendAlarm(ac, ad);
+    }
 }

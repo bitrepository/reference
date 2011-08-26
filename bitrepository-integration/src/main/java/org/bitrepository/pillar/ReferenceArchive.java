@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +38,7 @@ import java.util.List;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.FileStore;
 import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.protocol.CoordinationLayerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,22 +114,27 @@ public class ReferenceArchive implements FileStore {
     }
 
     @Override
-    public File downloadFileForValidation(String fileID, InputStream inputStream) throws Exception {
+    public File downloadFileForValidation(String fileID, InputStream inputStream) {
         // Download the file first, then move it to the fileDir.
         File downloadedFile = new File(tmpDir, fileID);
 
         // Save InputStream to the file.
         BufferedOutputStream bufferedOutputstream = null;
         try {
-            bufferedOutputstream = new BufferedOutputStream(new FileOutputStream(downloadedFile));
-            byte[] buffer = new byte[MAX_BUFFER_SIZE];
-            int bytesRead = 0;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                bufferedOutputstream.write(buffer, 0, bytesRead);
+            try {
+                bufferedOutputstream = new BufferedOutputStream(new FileOutputStream(downloadedFile));
+                byte[] buffer = new byte[MAX_BUFFER_SIZE];
+                int bytesRead = 0;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    bufferedOutputstream.write(buffer, 0, bytesRead);
+                }
+            } finally {
+                if(bufferedOutputstream != null) {
+                    bufferedOutputstream.close();
+                }
             }
-        }
-        finally {
-            bufferedOutputstream.close();
+        } catch (IOException e) {
+            throw new CoordinationLayerException("Could not retrieve file '" + fileID + "'", e);
         }
 
         return downloadedFile;
