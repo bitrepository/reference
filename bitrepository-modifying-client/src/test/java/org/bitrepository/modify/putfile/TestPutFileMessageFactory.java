@@ -130,7 +130,7 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
      * @return The requested PutFileRequest.
      */
     public PutFileRequest createPutFileRequest(String pillarId, String toTopic, String replyTo, String correlationId,
-            String fileAddress, BigInteger filesize) {
+            String fileAddress, BigInteger filesize, String fileId) {
         PutFileRequest putFileRequest = createPutFileRequest();
         putFileRequest.setPillarID(pillarId);
         putFileRequest.setTo(toTopic);
@@ -138,6 +138,7 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
         putFileRequest.setCorrelationID(correlationId);
         putFileRequest.setFileAddress(fileAddress);
         putFileRequest.setFileSize(filesize);
+        putFileRequest.setFileID(fileId);
         
         putFileRequest.setAuditTrailInformation(null);
         putFileRequest.setChecksumsDataForNewFile(null);

@@ -137,19 +137,18 @@ public class PuttingFile extends PutFileState {
      */
     @Override
     public void onMessage(PutFileProgressResponse response) {
-        log.debug("(ConversationID: " + conversation.getConversationID() + ") " +
+        log.info("(ConversationID: " + conversation.getConversationID() + ") " +
                 "Received PutFileProgressResponse from " + response.getPillarID() + " : \n{}", response);
         if (conversation.eventHandler != null) {
-            conversation.eventHandler.handleEvent(
-                    new DefaultEvent(OperationEvent.OperationEventType.Progress, 
-                            "Received progress report from '" + response.getPillarID() + "': "
-                            + response));
+            conversation.eventHandler.handleEvent(new PillarOperationEvent(OperationEventType.Progress, 
+                    "Request to put file has been sent to pillars in collection '" 
+                    + conversation.settings.getBitRepositoryCollectionID() + "'.", response.getPillarID()));
         }
     }
 
     @Override
     public void onMessage(PutFileFinalResponse response) {
-        log.debug("(ConversationID: " + conversation.getConversationID() + ") " + "Received PutFileFinalResponse from " 
+        log.info("(ConversationID: " + conversation.getConversationID() + ") " + "Received PutFileFinalResponse from " 
                 + response.getPillarID() + "'.");
         
         // validate the response info.
@@ -161,8 +160,18 @@ public class PuttingFile extends PutFileState {
                 conversation.eventHandler.handleEvent(new PillarOperationEvent(
                         OperationEvent.OperationEventType.Failed, msg, response.getPillarID()));
             }
+        } else {
+            // TODO validate the actual values of the response info. Was it success or failure?
+            if(frInfo.getFinalResponseText().contains("Error")) {
+                log.warn("The Final Response Info contain an error: '" + frInfo.getFinalResponseCode() + " : " 
+                        + frInfo.getFinalResponseText() + "'");
+                if(conversation.eventHandler != null) {
+                    conversation.eventHandler.handleEvent(new PillarOperationEvent(
+                            OperationEvent.OperationEventType.Failed, frInfo.toString(), 
+                            response.getPillarID()));
+                }
+            }
         }
-        // TODO validate the actual values of the response info. Was it success or failure?
         
         try {
             putResponseStatus.responseReceived(response.getPillarID());
