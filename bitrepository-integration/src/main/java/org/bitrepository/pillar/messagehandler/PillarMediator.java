@@ -149,6 +149,8 @@ public class PillarMediator implements MessageListener {
      * @param alarmDescription The description of the alarm, e.g. What caused the alarm.
      */
     public void sendAlarm(AlarmConcerning alarmConcerning, AlarmDescription alarmDescription) {
+        log.warn("Sending alarm, concerning: '" + alarmConcerning + "', with description: '" + alarmDescription + "'");
+        
         Alarm alarm = new Alarm();
         
         ComponentTYPE ct = new ComponentTYPE();

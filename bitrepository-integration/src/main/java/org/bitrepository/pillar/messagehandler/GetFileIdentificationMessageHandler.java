@@ -24,10 +24,11 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import java.io.File;
 import java.math.BigInteger;
 
+import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 
@@ -51,22 +52,18 @@ public class GetFileIdentificationMessageHandler extends PillarMessageHandler<Id
      * @param message The IdentifyPillarsForGetFileRequest message to handle.
      */
     public void handleMessage(IdentifyPillarsForGetFileRequest message) {
-        // Validate the message.
-        validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
-        
-        if(!mediator.archive.hasFile(message.getFileID())) {
-            // TODO handle this error scenario.            
+        try {
+            // Validate the message.
+            validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
+
+            if(!mediator.archive.hasFile(message.getFileID())) {
+                respondBadIdentification(message, "The file does not exist within the archive.");
+            } else {
+                respondSuccesfullIdentification(message);
+            }
+        } catch (IllegalArgumentException e) {
+            alarmIllegalArgument(e);
         }
-        
-        // Validate, that we have the requested file. 
-        File requestedFile = mediator.archive.getFile(message.getFileID());
-        if(!requestedFile.isFile()) {
-            // TODO handle this error scenario.
-            throw new IllegalStateException("The file '" + message.getFileID() + "' has been requested, but we do "
-                    + "not have that file!");
-        }
-        
-        respondSuccesfullIdentification(message);
     }
     
     /**
@@ -91,4 +88,30 @@ public class GetFileIdentificationMessageHandler extends PillarMessageHandler<Id
         mediator.messagebus.sendMessage(reply);
         
     }
+    
+    /**
+     * Method for sending a bad response.
+     * @param message The identification request to respond to.
+     */
+    private void respondBadIdentification(IdentifyPillarsForGetFileRequest message, String cause) {
+        // Create the response.
+        IdentifyPillarsForGetFileResponse reply = mediator.msgFactory.createIdentifyPillarsForGetFileResponse(message);
+        
+        // set the missing variables in the reply:
+        // TimeToDeliver, AuditTrailInformation, IdentifyResponseInfo
+        TimeMeasureTYPE timeToDeliver = new TimeMeasureTYPE();
+        timeToDeliver.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
+        timeToDeliver.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
+        reply.setTimeToDeliver(timeToDeliver);
+        IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
+        irInfo.setIdentifyResponseCode("500");
+        irInfo.setIdentifyResponseText("ERROR: " + cause);
+        reply.setIdentifyResponseInfo(irInfo);
+        // TODO handle audit trails!!!
+        reply.setAuditTrailInformation(null);
+        
+        // Send resulting file.
+        mediator.messagebus.sendMessage(reply);
+    }
+
 }

@@ -75,17 +75,57 @@ public class GetFileMessageHandler extends PillarMessageHandler<GetFileRequest> 
      */
     @Override
     public void handleMessage(GetFileRequest message) {
+        try {
+            if(!validateMessage(message)) {
+                return;
+            }
+            
+            sendingProgress(message);
+            performOperation(message);
+            sendFinalResponse(message);
+        } catch (IllegalArgumentException e) {
+            log.warn("Caught IllegalArgumentException. Possible intruder -> Sending alarm! ", e);
+            alarmIllegalArgument(e);
+        } catch (RuntimeException e) {
+            log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
+            FinalResponseInfo fri = new FinalResponseInfo();
+            fri.setFinalResponseCode("500");
+            fri.setFinalResponseText("Error: " + e.getMessage());
+            sendFailedResponse(message, fri);
+        }
+    }
+    
+    /**
+     * Method for validating the content of the message.
+     * @param message The message requesting the operation, which should be validated.
+     * @return Whether it was valid.
+     */
+    protected boolean validateMessage(GetFileRequest message) {
         // Validate the message.
         validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
         validatePillarId(message.getPillarID());
 
         // Validate, that we have the requested file.
-        File requestedFile = mediator.archive.getFile(message.getFileID());
-        if(!requestedFile.isFile()) {
-            // HANDLE?
-            throw new IllegalStateException("The file '" + message.getFileID() + "' has been requested, but we do "
+        if(!mediator.archive.hasFile(message.getFileID())) {
+            log.warn("The file '" + message.getFileID() + "' has been requested, but we do not have that file!");
+            // Then tell the mediator, that we failed.
+            FinalResponseInfo fri = new FinalResponseInfo();
+            fri.setFinalResponseCode("409");
+            fri.setFinalResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
                     + "not have that file!");
+            sendFailedResponse(message, fri);
+
+            return false;
         }
+        return true;
+    }
+    
+    /**
+     * The method for sending a progress response telling, that the operation is about to be performed.
+     * @param message The request for the GetFile operation.
+     */
+    protected void sendingProgress(GetFileRequest message) {
+        File requestedFile = mediator.archive.getFile(message.getFileID());
         
         // make ProgressResponse to tell that we are handling this.
         GetFileProgressResponse pResponse = mediator.msgFactory.createGetFileProgressResponse(message);
@@ -113,8 +153,15 @@ public class GetFileMessageHandler extends PillarMessageHandler<GetFileRequest> 
         // Send the ProgressResponse
         log.info("Sending GetFileProgressResponse: " + pResponse);
         mediator.messagebus.sendMessage(pResponse);
+    } 
 
-        // TODO handle!!!!
+    /**
+     * Method for uploading the file to the requested location.
+     * @param message The message requesting the GetFile operation.
+     */
+    protected void performOperation(GetFileRequest message) {
+        File requestedFile = mediator.archive.getFile(message.getFileID());
+
         try {
             // Upload the file.
             log.info("Uploading file: " + requestedFile.getName() + " to " + message.getFileAddress());
@@ -123,7 +170,13 @@ public class GetFileMessageHandler extends PillarMessageHandler<GetFileRequest> 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
+    }
+    
+    /**
+     * Method for sending the final response.
+     * @param message The message to respond to.
+     */
+    protected void sendFinalResponse(GetFileRequest message) {
         // make ProgressResponse to tell that we are handling this.
         GetFileFinalResponse fResponse = mediator.msgFactory.createGetFileFinalResponse(message);
         // set missing variables in the message: AuditTrailInformation, FinalResponseInfo
@@ -139,13 +192,25 @@ public class GetFileMessageHandler extends PillarMessageHandler<GetFileRequest> 
     }
     
     /**
+     * Method for sending a response telling that the operation has failed.
+     * @param message The message requesting the operation.
+     * @param frInfo The information about what went wrong.
+     */
+    protected void sendFailedResponse(GetFileRequest message, FinalResponseInfo frInfo) {
+        log.info("Sending bad GetFileFinalResponse: " + frInfo);
+        GetFileFinalResponse fResponse = mediator.msgFactory.createGetFileFinalResponse(message);
+        fResponse.setFinalResponseInfo(frInfo);
+        mediator.messagebus.sendMessage(fResponse);
+    }
+    
+    /**
      * Method for calculating the checksum for a given file. The checksum is calculated with 
      * @param file The file to calculate the checksum for.
      * @param salt The salt of for the checksum.
      * @param digester The name of the digester for calculating the checksum (e.g. MD5 or SHA1).
      * @return The requested ChecksumDataForFileTYPE, or null if any bad stuff happens.
      */
-    private ChecksumDataForFileTYPE calculateChecksum(File file, String salt, String digester) {
+    protected ChecksumDataForFileTYPE calculateChecksum(File file, String salt, String digester) {
         try {
             ChecksumDataForFileTYPE checksumType = new ChecksumDataForFileTYPE();
             ChecksumSpecTYPE csType = new ChecksumSpecTYPE();

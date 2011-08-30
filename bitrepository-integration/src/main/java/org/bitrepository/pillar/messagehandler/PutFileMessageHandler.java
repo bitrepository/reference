@@ -75,7 +75,7 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
             
             tellAboutProgress(message);
             retrieveFile(message);
-            sendFinalRequest(message);
+            sendFinalResponse(message);
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Possible intruder -> Sending alarm! ", e);
             alarmIllegalArgument(e);
@@ -182,7 +182,11 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
         }
     }
     
-    private void sendFinalRequest(PutFileRequest message) {
+    /**
+     * Method for sending the final response for the requested put operation.
+     * @param message The message requesting the put operation.
+     */
+    private void sendFinalResponse(PutFileRequest message) {
 
         File retrievedFile = mediator.archive.getFile(message.getFileID());
 
@@ -227,6 +231,11 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
         mediator.messagebus.sendMessage(fResponse);
     }
     
+    /**
+     * Method for sending a response telling, that the operation has failed.
+     * @param message The message requesting the put operation.
+     * @param frInfo The information about why it has failed.
+     */
     private void sendFailedResponse(PutFileRequest message, FinalResponseInfo frInfo) {
         // send final response telling, that the file already exists!
         PutFileFinalResponse fResponse = mediator.msgFactory.createPutFileFinalResponse(message);
