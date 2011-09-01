@@ -82,7 +82,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element name="AlarmCode" type="ERRORCODE_ALARM_TYPE">
+        <xs:element name="AlarmCode" type="ALARMCODE_TYPE">
           <xs:annotation><xs:documentation xml:lang="en">
             Global alarm code for the system which describes what the alarm consist of
             The actual codes are specified later, e.g. IoError, DataNotFound, AccessDenied, OK
@@ -584,8 +584,7 @@
         <xs:element name="IdentifyResponseCode" type="IdentifyResponseCode_TYPE">
           <xs:annotation><xs:documentation xml:lang="en">
           IdentifyResponseCode is a code for the type of identify response given, such as AccessDenied or OK.
-          Note that if the file is not on the pillar or the pillar does not know this collection ID,
-            no identify response should be sent.
+          Note that if the pillar does not know this collection ID, no identify response should be sent.
           </xs:documentation></xs:annotation>
         </xs:element>
 
@@ -1033,6 +1032,24 @@
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
 
+  <xs:simpleType name="ALARMCODE_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+    Error codes that are specific for Alarm messages
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:positiveInteger">
+      <xs:enumeration value="541">
+        <xs:annotation><xs:documentation xml:lang="en">
+        General alarm
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="542">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Unknown user access
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:simpleType name="AuditTrailInformation_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Audit Trail Information known to sender to be added to receiver audit trail.
@@ -1215,30 +1232,17 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="ERRORCODE_ALARM_TYPE">
-    <xs:annotation><xs:documentation xml:lang="en">
-    Error codes that are specific for Alarm messages
-    </xs:documentation></xs:annotation>
-    <xs:restriction base="xs:positiveInteger">
-      <xs:enumeration value="541">
-        <xs:annotation><xs:documentation xml:lang="en">
-        General alarm
-        </xs:documentation></xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="542">
-        <xs:annotation><xs:documentation xml:lang="en">
-        Unknown user access
-        </xs:documentation></xs:annotation>
-      </xs:enumeration>
-    </xs:restriction>
-  </xs:simpleType>
-
-  <xs:simpleType name="ERRORCODE_COMPLETE_TYPE">
+  <xs:simpleType name="ERRORCODE_FINALRESPONSE_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Error codes that are specific for FinalResponse messages
     Numbers may later be adjusted to fit a standard
     </xs:documentation></xs:annotation>
     <xs:restriction base="xs:positiveInteger">
+      <xs:enumeration value="561">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Request was not understood
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
       <xs:enumeration value="581">
         <xs:annotation><xs:documentation xml:lang="en">
         Operation was not completed for unknown reason
@@ -1249,12 +1253,12 @@
 
   <xs:simpleType name="ERRORCODE_GENERAL_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
-    General error codes
+    General error codes for response messages
     </xs:documentation></xs:annotation>
     <xs:restriction base="xs:positiveInteger">
       <xs:enumeration value="501">
         <xs:annotation><xs:documentation xml:lang="en">
-        Data for a FileID has NOT been found for som sort of Get request
+        File with given FileID has NOT been found for a read request
         </xs:documentation></xs:annotation>
       </xs:enumeration>
       <xs:enumeration value="502">
@@ -1272,26 +1276,6 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="ERRORCODE_RESPONSE_TYPE">
-    <xs:annotation><xs:documentation xml:lang="en">
-    Error codes that are specific for ProgressResponse messages
-    </xs:documentation></xs:annotation>
-    <xs:restriction base="xs:positiveInteger">
-      <xs:enumeration value="561">
-        <xs:annotation><xs:documentation xml:lang="en">
-        Request was not understood
-        </xs:documentation></xs:annotation>
-      </xs:enumeration>
-    </xs:restriction>
-  </xs:simpleType>
-
-  <xs:simpleType name="ERRORCODE_TYPE">
-    <xs:annotation><xs:documentation xml:lang="en">
-    Type with all sorts of error codes in the bit repository protocol
-    </xs:documentation></xs:annotation>
-    <xs:union memberTypes="ERRORCODE_GENERAL_TYPE ERRORCODE_ALARM_TYPE ERRORCODE_COMPLETE_TYPE ERRORCODE_RESPONSE_TYPE"/>
-  </xs:simpleType>
-
   <xs:simpleType name="FileID_TYPE">
     <xs:annotation><xs:documentation xml:lang="en">
     Unique identifiers for data in given service level agreement
@@ -1306,7 +1290,7 @@
     <xs:annotation><xs:documentation xml:lang="en">
     Type with all final response codes for final response messages in the bit repository protocol
     </xs:documentation></xs:annotation>
-    <xs:union memberTypes="FinalResponseCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_COMPLETE_TYPE"/>
+    <xs:union memberTypes="FinalResponseCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_FINALRESPONSE_TYPE"/>
   </xs:simpleType>
 
   <xs:simpleType name="FinalResponseCodePositive_TYPE">
@@ -1323,12 +1307,12 @@
     <xs:annotation><xs:documentation xml:lang="en">
     Type of all codes for Identify Response messages.
     </xs:documentation></xs:annotation>
-    <xs:union memberTypes="IdentifyResponseCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_RESPONSE_TYPE"/>
+    <xs:union memberTypes="IdentifyResponseCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_FINALRESPONSE_TYPE"/>
   </xs:simpleType>
 
   <xs:simpleType name="IdentifyResponseCodePositive_TYPE">
     <xs:restriction base="xs:positiveInteger">
-      <xs:enumeration value="480">
+      <xs:enumeration value="440">
         <xs:annotation><xs:documentation xml:lang="en">
         Message request has been received and operation request is expected to be successful
         </xs:documentation></xs:annotation>
@@ -1374,10 +1358,6 @@
     <xs:annotation><xs:documentation xml:lang="en">
     Type with all progress response codes for progress response message in the bit repository protocol
     </xs:documentation></xs:annotation>
-    <xs:union memberTypes="ProgressResponseCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_RESPONSE_TYPE"/>
-  </xs:simpleType>
-
-  <xs:simpleType name="ProgressResponseCodePositive_TYPE">
     <xs:restriction base="xs:positiveInteger">
       <xs:enumeration value="460">
         <xs:annotation><xs:documentation xml:lang="en">

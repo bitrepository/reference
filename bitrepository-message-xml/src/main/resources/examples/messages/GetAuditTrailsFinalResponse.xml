@@ -36,7 +36,9 @@
     <ComponentID>MyPillar</ComponentID>
     <ComponentType>PILLAR</ComponentType>
   </Contributor>
-  <FileID>MyFile</FileID>
+  <FileIDs>
+    <FileID>MyFile</FileID>
+  </FileIDs>
   <FinalResponseInfo>
     <FinalResponseCode>480</FinalResponseCode>
     <FinalResponseText>successfull completion</FinalResponseText>

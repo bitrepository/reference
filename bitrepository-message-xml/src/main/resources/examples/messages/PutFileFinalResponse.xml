@@ -44,8 +44,8 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
     <FinalResponseText>successfull completion</FinalResponseText>
   </FinalResponseInfo>
   <ChecksumsDataForNewFile>
-    <NoOfItems>2</NoOfItems>
     <FileID>MyDataID</FileID>
+    <NoOfItems>2</NoOfItems>
     <ChecksumDataItems>
       <ChecksumDataForFile>
         <ChecksumSpec>

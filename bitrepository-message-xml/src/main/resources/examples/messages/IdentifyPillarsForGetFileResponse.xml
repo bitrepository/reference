@@ -35,7 +35,7 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <FileID>MyFile</FileID>
   <PillarID>MyPillar</PillarID>
   <IdentifyResponseInfo>
-    <IdentifyResponseCode>480</IdentifyResponseCode>
+    <IdentifyResponseCode>440</IdentifyResponseCode>
     <IdentifyResponseText>Request message received and operation request expected to be successful</IdentifyResponseText>
   </IdentifyResponseInfo>
   <TimeToDeliver>

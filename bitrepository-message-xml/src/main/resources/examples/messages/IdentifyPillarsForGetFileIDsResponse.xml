@@ -38,7 +38,7 @@
     <FileID>MyDataID2</FileID>
   </FileIDs>
   <IdentifyResponseInfo>
-    <IdentifyResponseCode>480</IdentifyResponseCode>
+    <IdentifyResponseCode>440</IdentifyResponseCode>
     <IdentifyResponseText>Request message received and operation request expected to be successful</IdentifyResponseText>
   </IdentifyResponseInfo>
   <TimeToDeliver>

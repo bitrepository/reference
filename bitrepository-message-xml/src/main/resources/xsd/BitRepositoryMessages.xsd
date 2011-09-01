@@ -260,6 +260,19 @@
           The mandatory part of a message
           </xs:documentation></xs:annotation>
         </xs:group>
+
+        <xs:element ref="bre:FileID" minOccurs="0" maxOccurs="1">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Unique identifier for file to be put for given collection
+          </xs:documentation></xs:annotation>
+        </xs:element>
+
+        <xs:element ref="bre:FileSize" minOccurs="0" maxOccurs="1">
+          <xs:annotation><xs:documentation xml:lang="en">
+          Expected size of file to be put, expressed in bytes.
+          This can be used in e.g. capacity checks
+          </xs:documentation></xs:annotation>
+        </xs:element>
       </xs:sequence>
       <xs:attributeGroup ref="bre:VersionAttributes"/>
     </xs:complexType>
@@ -346,7 +359,7 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element ref="bre:FileSize" minOccurs="0" maxOccurs="1" >
+        <xs:element ref="bre:FileSize">
           <xs:annotation><xs:documentation xml:lang="en">
           Expected size of file to be put, expressed in bytes.
           This can be used in e.g. capacity checks
