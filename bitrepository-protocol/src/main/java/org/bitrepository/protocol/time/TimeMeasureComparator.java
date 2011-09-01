@@ -27,8 +27,10 @@ package org.bitrepository.protocol.time;
 import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.UnknownFormatConversionException;
+import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
 import org.bitrepository.common.ArgumentValidator;
 
 /** Used for comparing {@link TimeMeasureTYPE} objects.*/
@@ -62,7 +64,8 @@ public class TimeMeasureComparator {
             return timeMeasure.getTimeMeasureValue().multiply(new BigInteger("1000"));
         } else if (timeMeasure.getTimeMeasureUnit().equals("MINUTES")) {
             return timeMeasure.getTimeMeasureValue().multiply(new BigInteger("60000"));
-        } else if (timeMeasure.getTimeMeasureUnit().equals("HOURS")) {
+        } else if ((timeMeasure.getTimeMeasureUnit().equals(TimeMeasureUnit.HOURS)) 
+                || (timeMeasure.getTimeMeasureUnit().equals("HOURS"))) {
             return timeMeasure.getTimeMeasureValue().multiply(new BigInteger("3600000"));     
         } else {
             throw new UnknownFormatConversionException ("Unable to compare times, unknown unit " + 
