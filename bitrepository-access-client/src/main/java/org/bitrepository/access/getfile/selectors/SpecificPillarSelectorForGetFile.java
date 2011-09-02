@@ -65,8 +65,8 @@ public class SpecificPillarSelectorForGetFile extends PillarSelectorForGetFile {
     }
 
     /** Returns true if the indicated pillar has responded, else <code>false</code>. */
-	@Override
-	public boolean isFinished() throws UnableToFinishException {
-		return pillarToSelect != null;
-	}
+    @Override
+    public boolean isFinished() throws UnableToFinishException {
+        return pillarToSelect != null;
+    }
 }

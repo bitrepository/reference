@@ -24,6 +24,9 @@
  */
 package org.bitrepository.access;
 
+import org.bitrepository.access.getchecksums.BasicGetChecksumsClient;
+import org.bitrepository.access.getchecksums.GetChecksumsClient;
+import org.bitrepository.access.getchecksums.GetChecksumsClientSettings;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfile.GetFileClientSettings;
 import org.bitrepository.access.getfile.SimpleGetFileClient;
@@ -91,10 +94,22 @@ public class AccessComponentFactory {
     /**
      * Method for getting a GetFileClient as defined in the access configuration.<p>
      *
+     * @param settings The settings for the GetFileClient.
      * @return A GetFileClient.
      */
     public GetFileClient createGetFileClient(GetFileClientSettings settings) {
         return new SimpleGetFileClient(
+                MessageBusFactory.createMessageBus(settings.getMessageBusConfiguration()),
+                settings);
+    }
+    
+    /**
+     * Method for instantiating a GetChecksumsClient as defined in the access configurations.
+     * @param settings The settings for the GetChecksumsClient.
+     * @return The GetChecksumsClient
+     */
+    public GetChecksumsClient createGetChecksumsClient(GetChecksumsClientSettings settings) {
+        return new BasicGetChecksumsClient(
                 MessageBusFactory.createMessageBus(settings.getMessageBusConfiguration()),
                 settings);
     }

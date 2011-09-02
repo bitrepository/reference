@@ -87,7 +87,6 @@ public class SimpleGetFileClient implements GetFileClient {
                 fileID, uploadUrl, eventHandler);				
     }
 
-
     @Override
     public void getFileFromFastestPillar(String fileID, URL uploadUrl) 
     throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
@@ -131,7 +130,6 @@ public class SimpleGetFileClient implements GetFileClient {
      * @param selector Defines the algorithm for choosing the pillar to deliver the file.
      * @see GetFileClient
      */
-    
     private void getFile(MessageBus messageBus, GetFileClientSettings settings, PillarSelectorForGetFile selector, 
             String fileID, URL uploadUrl, EventHandler eventHandler) {
         SimpleGetFileConversation conversation = 

@@ -27,6 +27,7 @@ package org.bitrepository.access.getchecksums;
 import java.net.URL;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.protocol.eventhandler.EventHandler;
@@ -34,27 +35,30 @@ import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 
-public interface GetCheckSumsClient {
+/**
+ * The <code>GetChecksumsClient</code> is used as a handle for the Bit Repository getChecksums operation.
+ */
+public interface GetChecksumsClient {
 
     /**
      * Method for retrieving a checksums for a set of files from a specific pillar. The progress of the operation can be 
      * followed though the supplied event handler.
      *
-     * @param pillarId The id of pillar, where the file should be retrieved from.
+     * @param pillarIDs The list of IDs for the pillars, where the checksum should be retrieved from.
      * @param fileIDs Defines the set of files.
      * @param checksumSpec Specification of how the checksums should be calculated.
      * @param eventHandler The handler which should receive notifications of the events occurring in connection with 
      * the pillar communication. The result of this operation can be retrieved from the last complete event, which will 
      * be of type <code>GetChecksumsCompleteEvent</code>.
      */
-    public void getChecksums(String pillarID, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
+    public void getChecksums(String[] pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, 
             EventHandler eventHandler);
     
     /**
      * Method for retrieving a checksums for a set of files from a specific pillar. The method will block until the 
      * result has been returned by the pillar or a timeout has occurred.
      *
-     * @param pillarId The id of pillar, where the file should be retrieved from.
+     * @param pillarIDs The list of IDs for the pillars, where the checksum should be retrieved from.
      * @param fileIDs Defines the set of files.
      * @param checksumSpec Specification of how the checksums should be calculated.
      * 
@@ -62,28 +66,28 @@ public interface GetCheckSumsClient {
      * @throws OperationTimeOutException The get checksum request timeout.  
      * @throws OperationFailedException The operation failed.
      */
-    public ResultingChecksums getChecksums(String pillarID, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec)
+    public ResultingChecksums getChecksums(String[] pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec)
     throws NoPillarFoundException, OperationTimeOutException, OperationFailedException;
     
     /**
      * Method for retrieving a checksums for a set of files from a specific pillar. The progress of the operation can be 
      * followed though the supplied event handler.
      *
-     * @param pillarId The id of pillar, where the file should be retrieved from.
+     * @param pillarIDs The list of IDs for the pillars, where the checksum should be retrieved from.
      * @param fileIDs Defines the set of files.
      * @param checksumSpec Specification of how the checksums should be calculated.
      * @param addressForResult The address to upload the calculated checksums to.
      * @param eventHandler The handler which should receive notifications of the events occurring in connection with 
      * the pillar communication. 
      */
-    public void getChecksums(String pillarID, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
+    public void getChecksums(String[] pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, 
             URL addressForResult, EventHandler eventHandler);
     
     /**
      * Method for retrieving a checksums for a set of files from a specific pillar. The method will block until the 
      * result has been uploaded by the pillar or a timeout has occurred.
      *
-     * @param pillarId The id of pillar, where the file should be retrieved from.
+     * @param pillarIDs The list of IDs for the pillars, where the checksum should be retrieved from.
      * @param fileIDs Defines the set of files.
      * @param checksumSpec Specification of how the checksums should be calculated.
      * @param addressForResult The address to upload the calculated checksums to.
@@ -92,7 +96,7 @@ public interface GetCheckSumsClient {
      * @throws OperationTimeOutException The get checksum request timeout.  
      * @throws OperationFailedException The operation failed.
      */
-    public void getChecksums(String pillarID, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
+    public void getChecksums(String[] pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, 
             URL addressForResult)
     throws NoPillarFoundException, OperationTimeOutException, OperationFailedException;
 }

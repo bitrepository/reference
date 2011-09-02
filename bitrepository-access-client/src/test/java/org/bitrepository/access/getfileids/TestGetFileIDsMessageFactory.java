@@ -170,7 +170,7 @@ public class TestGetFileIDsMessageFactory extends TestMessageFactory {
      */
     public GetFileIDsProgressResponse getGetFileIDsResponseTestMessage(
             String correlationID, String slaID, String replyTo, String pillarID, FileIDs fileIDs,
-            String responseCode, String responseText) {
+            ProgressResponseCodeType responseCode, String responseText) {
         GetFileIDsProgressResponse response = new GetFileIDsProgressResponse();
         response.setCorrelationID(correlationID);
         response.setBitRepositoryCollectionID(slaID);
