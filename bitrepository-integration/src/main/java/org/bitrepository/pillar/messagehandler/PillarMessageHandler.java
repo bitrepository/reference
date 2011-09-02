@@ -30,9 +30,9 @@ import org.bitrepository.bitrepositoryelements.AlarmConcerning;
 import org.bitrepository.bitrepositoryelements.AlarmConcerning.BitRepositoryCollections;
 import org.bitrepository.bitrepositoryelements.AlarmConcerning.Components;
 import org.bitrepository.bitrepositoryelements.AlarmDescription;
+import org.bitrepository.bitrepositoryelements.AlarmcodeType;
 import org.bitrepository.bitrepositoryelements.ComponentTYPE;
 import org.bitrepository.bitrepositoryelements.ComponentTYPE.ComponentType;
-import org.bitrepository.bitrepositoryelements.ErrorcodeAlarmType;
 import org.bitrepository.bitrepositoryelements.PriorityCodeType;
 import org.bitrepository.bitrepositoryelements.RiskAreaType;
 import org.bitrepository.bitrepositoryelements.RiskImpactScoreType;
@@ -105,7 +105,7 @@ public abstract class PillarMessageHandler<T> {
         
         // create a descriptor.
         AlarmDescription ad = new AlarmDescription();
-        ad.setAlarmCode(ErrorcodeAlarmType.UNKNOWN_USER);
+        ad.setAlarmCode(AlarmcodeType.UNKNOWN_USER);
         ad.setAlarmText(exception.getMessage());
         ad.setOrigDateTime(CalendarUtils.getXmlGregorianCalendar(new Date()));
         ad.setPriority(PriorityCodeType.OTHER);

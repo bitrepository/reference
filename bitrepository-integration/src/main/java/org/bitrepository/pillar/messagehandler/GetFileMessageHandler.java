@@ -34,6 +34,7 @@ import java.util.Date;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForBitRepositoryFile;
+import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForBitRepositoryFile.ChecksumDataItems;
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
 import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
@@ -134,7 +135,7 @@ public class GetFileMessageHandler extends PillarMessageHandler<GetFileRequest> 
         // AuditTrailInformation, ChecksumsDataForBitRepositoryFile, FileSize, ProgressResponseInfo
         pResponse.setFileSize(BigInteger.valueOf(requestedFile.length()));
         ProgressResponseInfo prInfo = new ProgressResponseInfo();
-        prInfo.setProgressResponseCode("202"); // HTTP for accepted!
+        prInfo.setProgressResponseCode(ProgressResponseCodeType.REQUEST_ACCEPTED);
         prInfo.setProgressResponseText("Started to retrieve data.");
         pResponse.setProgressResponseInfo(prInfo);
         pResponse.setAuditTrailInformation(null);

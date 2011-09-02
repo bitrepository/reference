@@ -33,6 +33,7 @@ import java.util.Date;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
+import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile.ChecksumDataItems;
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
 import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
@@ -124,7 +125,7 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
         pResponse.setAuditTrailInformation(null);
         pResponse.setPillarChecksumSpec(null);
         ProgressResponseInfo prInfo = new ProgressResponseInfo();
-        prInfo.setProgressResponseCode("202"); // HTTP for accepted.
+        prInfo.setProgressResponseCode(ProgressResponseCodeType.REQUEST_ACCEPTED);
         prInfo.setProgressResponseText("Started to receive date.");  
         pResponse.setProgressResponseInfo(prInfo);
 
