@@ -38,7 +38,7 @@ import org.testng.annotations.Test;
  * Tests the functionality of the different HttpServers. 
  */
 public class HttpServerTest extends IntegrationTest {
-    private TestFileStore fileStore = new TestFileStore("HttpServerTest");;
+    private TestFileStore fileStore = new TestFileStore("HttpServerTest", TestFileStore.DEFAULT_TEST_FILE);;
 
     /**
      * Tests the functionality of the default http server.

@@ -81,7 +81,7 @@ public class TestFileStore implements FileStore {
     }
 
     @Override
-    public File downloadFileForValidation(String fileID, InputStream inputStream) throws IOException  {
+    public File downloadFileForValidation(String fileID, InputStream inputStream) {
         File theFile = new File(fileID);
 
         // Check if a file exists.
@@ -95,8 +95,9 @@ public class TestFileStore implements FileStore {
         }
 
         // Save InputStream to the file.
-        BufferedOutputStream bufferedOutputstream = null;
         try {
+            BufferedOutputStream bufferedOutputstream = null;
+            try {
             bufferedOutputstream = new BufferedOutputStream(new FileOutputStream(theFile));
             byte[] buffer = new byte[32 * 1024];
             int bytesRead = 0;
@@ -106,6 +107,9 @@ public class TestFileStore implements FileStore {
         }
         finally {
             bufferedOutputstream.close();
+        }
+        } catch (IOException e) {
+            throw new RuntimeException("Could not download file for validation.", e);
         }
         
         return theFile;
