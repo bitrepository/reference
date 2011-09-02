@@ -33,7 +33,7 @@ import org.bitrepository.alarm.handler.MailingAlarmHandler;
 import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration;
 import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration.MailingConfiguration;
 import org.bitrepository.bitrepositoryelements.AlarmDescription;
-import org.bitrepository.bitrepositoryelements.ErrorcodeAlarmType;
+import org.bitrepository.bitrepositoryelements.AlarmcodeType;
 import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
@@ -48,7 +48,7 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
     private static final Long DEFAULT_WAIT_TIME = 500L;
 
     @Test( groups={"regressiontest"})
-    public void defaultTest() throws Exception {
+    public void defaultAlarmHandlingTest() throws Exception {
         addDescription("Tests the instantiation of a AlarmClient by using a local broker and a TestAlarmHandler.");
         addStep("Defining constants for the test.", "Should not be able to fail here.");
         String QUEUE = "ALARM-" + new Date().getTime();
@@ -119,7 +119,7 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
             addStep("Insert description of ALARM_CODE and ALARM_MESSAGE in message send to handler", 
             "Should sent to log.");
             AlarmDescription desc = new AlarmDescription();
-            desc.setAlarmCode(ErrorcodeAlarmType.GENERAL);
+            desc.setAlarmCode(AlarmcodeType.GENERAL);
             desc.setAlarmText(ALARM_MESSAGE);
             alarmMsg.setAlarmDescription(desc);
             handler.handleAlarm(alarmMsg);
@@ -128,8 +128,8 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
             String logwrittenOutput = new String(out.toByteArray());
             Assert.assertTrue(logwrittenOutput.contains(ALARM_MESSAGE), 
 	     "The message should contain '" + ALARM_MESSAGE + "' but was: '" + logwrittenOutput);
-            Assert.assertTrue(logwrittenOutput.contains(ErrorcodeAlarmType.GENERAL.name()), 
-	     "The message should contain '" + ErrorcodeAlarmType.GENERAL + "' but was: '" + logwrittenOutput);
+            Assert.assertTrue(logwrittenOutput.contains(AlarmcodeType.GENERAL.name()), 
+	     "The message should contain '" + AlarmcodeType.GENERAL + "' but was: '" + logwrittenOutput);
             Assert.assertTrue(logwrittenOutput.contains(alarmMsg.getClass().getName()), 
 	     "The message should contain '" + alarmMsg.getClass().getName() + "' but was: '" + logwrittenOutput);
             defaultOut.print(logwrittenOutput);
@@ -184,7 +184,7 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
         addStep("Insert description of ALARM_CODE and ALARM_MESSAGE in message send to handler", 
         "Should sent to log.");
         AlarmDescription desc = new AlarmDescription();
-        desc.setAlarmCode(ErrorcodeAlarmType.GENERAL);
+        desc.setAlarmCode(AlarmcodeType.GENERAL);
         desc.setAlarmText(ALARM_MESSAGE);
         msg.setAlarmDescription(desc);
         handler.handleAlarm(msg);
