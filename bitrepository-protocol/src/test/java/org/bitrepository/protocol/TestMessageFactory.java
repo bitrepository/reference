@@ -46,7 +46,7 @@ public abstract class TestMessageFactory {
     protected static final TimeMeasureTYPE.TimeMeasureUnit TIME_MEASURE_UNIT_DEFAULT =
         TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS;
     protected static final BigInteger TIME_MEASURE_VALUE_DEFAULT = BigInteger.valueOf(1000L);
-    protected static final String RESPONSE_CODE_DEFAULT = "460";
+    protected static final ProgressResponseCodeType RESPONSE_CODE_DEFAULT = ProgressResponseCodeType.REQUEST_ACCEPTED;
     protected static final String RESPONSE_TEXT_DEFAULT = "Message request has been received and is expected to be met successfully";
     protected static final String COMPLETE_CODE_DEFAULT = "480";
     protected static final String COMPLETE_TEXT_DEFAULT = "successful completion";
@@ -59,7 +59,7 @@ public abstract class TestMessageFactory {
 
     protected static final ProgressResponseInfo PROGRESS_INFO_DEFAULT = new ProgressResponseInfo();
     static {
-        PROGRESS_INFO_DEFAULT.setProgressResponseCode(ProgressResponseCodeType.REQUEST_ACCEPTED);
+        PROGRESS_INFO_DEFAULT.setProgressResponseCode(RESPONSE_CODE_DEFAULT);
         PROGRESS_INFO_DEFAULT.setProgressResponseText("First test progress response message");
     }
 
