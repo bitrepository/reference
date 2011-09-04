@@ -38,6 +38,7 @@ import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.protocol.ExampleMessageFactory;
+import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -191,5 +192,14 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
 
         addStep("Tests the handling of other objects, in this case an exception", "Should be written to the log.");
         handler.handleOther(new NullPointerException(EXCEPTION_MESSAGE));
+    }
+
+    @Override
+    protected MutableClientSettings getClientSettings() {
+        return getAlarmSettings();
+    }
+    
+    private MutableClientSettings getAlarmSettings() {
+        return null;
     }
 }

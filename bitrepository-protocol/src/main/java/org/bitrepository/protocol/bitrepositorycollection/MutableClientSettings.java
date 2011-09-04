@@ -26,65 +26,27 @@ package org.bitrepository.protocol.bitrepositorycollection;
 
 import java.util.Arrays;
 
-import org.bitrepository.protocol.configuration.MessageBusConfigurations;
+import org.bitrepository.collection.settings.standardsettings.StandardClientSettings;
 
 /**
  * The concrete implementation of the ClientSettings interface. 
  * 
  * Contains set operations for all attributes, eg. it is mutable.
  */
-public class MutableClientSettings implements ClientSettings {	
-
-    /** Default constructor */
-    public MutableClientSettings() {
-        super();
-    }
-
-    public MutableClientSettings(ClientSettings settingsToCopy) {
-        setBitRepositoryCollectionID(settingsToCopy.getBitRepositoryCollectionID());
-        //ToDo shallow copy, not good.
-        setMessageBusConfiguration(settingsToCopy.getMessageBusConfiguration());
-        setBitRepositoryCollectionTopicID(settingsToCopy.getBitRepositoryCollectionTopicID());
-        setClientTopicID(settingsToCopy.getClientTopicID());
-        setPillarIDs(settingsToCopy.getPillarIDs());
-        setLocalFileStorage(settingsToCopy.getLocalFileStorage());
-    }
-
-    /** @see #getBitRepositoryCollectionID() */
-    private String id;
+public class MutableClientSettings 
+extends MutableCollectionSettings 
+implements ClientSettings {
+ 
+    private StandardClientSettings standardClientSettings;
     @Override
-    public String getBitRepositoryCollectionID() {
-        return id;
+    public StandardClientSettings getStandardClientSettings() {
+        return standardClientSettings;
     }
-    /**
-     * @see #getBitRepositoryCollectionID()
-     */
-    public void setBitRepositoryCollectionID(String id) {
-        this.id = id;
+    /** @see #getStandardSettings() */
+    public void setStandardClientSettings(StandardClientSettings standardClientSettings) {
+        this.standardClientSettings = standardClientSettings;
     }
-
-    /** @see #getMessageBusConfiguration() */
-    private MessageBusConfigurations messageBusConfiguration;
-    @Override
-    public MessageBusConfigurations getMessageBusConfiguration() {
-        return messageBusConfiguration;
-    }
-    /** @see #getMessageBusConfiguration() */
-    public void setMessageBusConfiguration(MessageBusConfigurations messageBusConfiguration) {
-        this.messageBusConfiguration = messageBusConfiguration;
-    }
-
-    /** @see #getBitRepositoryCollectionTopicID() */
-    private String bitRepositoryCollectionTopicID;
-    @Override
-    public String getBitRepositoryCollectionTopicID() {
-        return bitRepositoryCollectionTopicID;
-    }
-    /** @see #getBitRepositoryCollectionTopicID() */
-    public void setBitRepositoryCollectionTopicID(String bitRepositoryCollectionTopicID) {
-        this.bitRepositoryCollectionTopicID = bitRepositoryCollectionTopicID;
-    }
-
+    
     /** @see #getClientTopicId() */
     private String clientTopicId;
     @Override
@@ -153,13 +115,13 @@ public class MutableClientSettings implements ClientSettings {
 
     @Override
     public String toString() {
-        return "MutableClientSettings [id=" + id + ", messageBusConfiguration="
-        + messageBusConfiguration + ", bitRepositoryCollectionTopicID="
-        + bitRepositoryCollectionTopicID + ", clientTopicId="
-        + clientTopicId + ", pillarIDs=" + Arrays.toString(pillarIDs)
-        + ", fileStorage=" + fileStorage + ", conversationTimeout="
-        + conversationTimeout + ", identifyPillarsTimeout="
-        + identifyPillarsTimeout + ", mediatorCleanInterval="
-        + mediatorCleanInterval + "]";
+        return "MutableClientSettings [standardClientSettings="
+                + standardClientSettings + ", clientTopicId=" + clientTopicId
+                + ", pillarIDs=" + Arrays.toString(pillarIDs)
+                + ", fileStorage=" + fileStorage + ", conversationTimeout="
+                + conversationTimeout + ", identifyPillarsTimeout="
+                + identifyPillarsTimeout + ", mediatorCleanInterval="
+                + mediatorCleanInterval + ", getStandardSettings()="
+                + getStandardSettings() + "]";
     }
 }

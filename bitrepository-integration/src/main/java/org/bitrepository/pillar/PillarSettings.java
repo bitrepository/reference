@@ -25,12 +25,12 @@
 package org.bitrepository.pillar;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.protocol.bitrepositorycollection.BitRepositoryCollectionSettings;
+import org.bitrepository.protocol.bitrepositorycollection.CollectionSettings;
 
 /**
  * Settings for the ReferencePillar. TODO javadoc!!! or wait for the StandardCollection settings have been implemented.
  */
-public interface PillarSettings extends BitRepositoryCollectionSettings {
+public interface PillarSettings extends CollectionSettings {
 
     public String getPillarId();
     

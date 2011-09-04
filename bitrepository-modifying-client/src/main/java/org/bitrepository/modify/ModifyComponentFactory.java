@@ -94,7 +94,8 @@ public class ModifyComponentFactory {
      */
     public PutFileClient retrievePutClient(PutFileClientSettings settings) {
         return new ConversationBasedPutFileClient(
-                MessageBusFactory.createMessageBus(settings.getMessageBusConfiguration()),
+                MessageBusFactory.createMessageBus(
+                        settings.getStandardSettings().getMessageBusConfiguration()),
                 settings);
     }
 }

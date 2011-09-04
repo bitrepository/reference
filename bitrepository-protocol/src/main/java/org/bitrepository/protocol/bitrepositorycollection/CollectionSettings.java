@@ -24,27 +24,27 @@
  */
 package org.bitrepository.protocol.bitrepositorycollection;
 
-import org.bitrepository.protocol.configuration.MessageBusConfigurations;
+import org.bitrepository.collection.settings.standardsettings.StandardCollectionSettings;
+import org.bitrepository.protocol.settings.specificsettings.SpecificCollectionSettings;
 
 /** Defines the global settings for a <code>BitRepositoryCollection</code>. 
  * 
  * See <a {@link https://sbforge.org/display/BITMAG/BitRepositoryCollection} for details.*/
-public interface BitRepositoryCollectionSettings {
+public interface CollectionSettings {
 
-    /**
-     * Returns the ID for this BitRepositoryCollection
-     */
-    public String getBitRepositoryCollectionID();
-    
-    /** Returns the definitions for the messagebus for this <code>BitRepositoryCollection</code>. */
-    public MessageBusConfigurations getMessageBusConfiguration();
-
-    /**
-     * Return the ID for the topic used for messages with are broadcasted to all participants for a given SLA. 
+    /** 
+     * Returns the standard settings (shared across the collection) for the collection defined by these settings.
      * 
-     * See <a href="https://sbforge.org/display/BITMAG/Queues+and+topics#Queuesandtopics-TheperSLAtopic">The per-SLA topic,/a> for details.
-     * @return
+     * See {@link https://sbforge.org/display/BITMAG/BitRepositoryCollection} for details.
+     * @return The standard settings.
      */
-    public String getBitRepositoryCollectionTopicID();
+    public StandardCollectionSettings getStandardSettings();
+    
+    /** 
+     * Returns the collection settings specific to this implementation.
+     * 
+     * @return The specific settings.
+     */
+    public SpecificCollectionSettings getSpecificSettings();
 
 }

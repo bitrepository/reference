@@ -95,7 +95,7 @@
     </jaxb:bindings>
     <jaxb:bindings node="//xs:simpleType[@name='RiskImpactScore_TYPE']">
       <jaxb:typesafeEnumClass name="RiskImpactScoreType">
-        <jaxb:typesafeEnumMember value="0" name="MINIMAL_PROPBILITY" />
+        <jaxb:typesafeEnumMember value="0" name="MINIMAL_PROPABILITY" />
         <jaxb:typesafeEnumMember value="1" name="NEGLIGIBLE_IMPACT" />
         <jaxb:typesafeEnumMember value="2" name="SUPERFICIAL_IMPACT" />
         <jaxb:typesafeEnumMember value="3" name="MEDIUM_IMPACT" />

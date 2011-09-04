@@ -27,7 +27,6 @@ package org.bitrepository.protocol.time;
 import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.UnknownFormatConversionException;
-import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;

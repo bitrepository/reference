@@ -26,18 +26,19 @@ package org.bitrepository.protocol.http;
 
 import java.io.File;
 
-import org.bitrepository.common.IntegrationTest;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
 import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.bitrepository.protocol.fileexchange.HttpsServerConfiguration;
 import org.bitrepository.protocol.fileexchange.HttpsServerConnector;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
+import org.jaccept.TestEventManager;
+import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
 
 /**
  * Tests the functionality of the different HttpServers. 
  */
-public class HttpServerTest extends IntegrationTest {
+public class HttpServerTest extends ExtendedTestCase {
     private TestFileStore fileStore = new TestFileStore("HttpServerTest", TestFileStore.DEFAULT_TEST_FILE);;
 
     /**
@@ -50,7 +51,7 @@ public class HttpServerTest extends IntegrationTest {
 
         addStep("Initialising the http server configuration to use the default server.","");
         HttpServerConfiguration config = new HttpServerConfiguration();
-        runHttpServerCoreTest(new HttpServerConnector(config, testEventManager));
+        runHttpServerCoreTest(new HttpServerConnector(config, TestEventManager.getInstance()));
     }
 
     /**
@@ -69,7 +70,7 @@ public class HttpServerTest extends IntegrationTest {
         config.setHttpsKeystorePath(new File("target", "keystore").getPath());
         config.setHttpsKeyStorePassword("1234");
 
-        runHttpServerCoreTest(new HttpsServerConnector(config, testEventManager));
+        runHttpServerCoreTest(new HttpsServerConnector(config, TestEventManager.getInstance()));
     }
 
     /**
@@ -89,7 +90,7 @@ public class HttpServerTest extends IntegrationTest {
         config.setHttpServerName(EmbeddedHttpServer.HTTP_SERVER_NAME);
         config.setHttpServerPath(EmbeddedHttpServer.HTTP_SERVER_PATH);
 
-        runHttpServerCoreTest(new HttpServerConnector(config, testEventManager));
+        runHttpServerCoreTest(new HttpServerConnector(config, TestEventManager.getInstance()));
     }
 
     /**

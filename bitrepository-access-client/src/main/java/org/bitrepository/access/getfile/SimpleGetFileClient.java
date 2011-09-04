@@ -82,7 +82,7 @@ public class SimpleGetFileClient implements GetFileClient {
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
 
         log.info("Requesting fastest retrieval of the file '" + fileID + "' which belong to the SLA '" + 
-                settings.getBitRepositoryCollectionID() + "'.");
+                settings.getStandardSettings().getBitRepositoryCollectionID() + "'.");
         getFile(messageBus, settings, new FastestPillarSelectorForGetFile(settings.getPillarIDs()), 
                 fileID, uploadUrl, eventHandler);				
     }
@@ -94,7 +94,7 @@ public class SimpleGetFileClient implements GetFileClient {
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
 
         log.info("Requesting fastest retrieval of the file '" + fileID + "' which belong to the SLA '" + 
-                settings.getBitRepositoryCollectionID() + "'.");
+                settings.getStandardSettings().getBitRepositoryCollectionID() + "'.");
         getFile(messageBus, settings, new FastestPillarSelectorForGetFile(settings.getPillarIDs()), 
                 fileID, uploadUrl);				
     }

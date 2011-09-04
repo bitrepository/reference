@@ -87,7 +87,7 @@ class GettingFile extends GetFileState {
         }
 
         GetFileRequest getFileRequest = new GetFileRequest();
-        getFileRequest.setBitRepositoryCollectionID(conversation.settings.getBitRepositoryCollectionID());
+        getFileRequest.setBitRepositoryCollectionID(conversation.settings.getStandardSettings().getBitRepositoryCollectionID());
         getFileRequest.setCorrelationID(conversation.getConversationID());
         getFileRequest.setFileAddress(conversation.uploadUrl.toExternalForm());
         getFileRequest.setFileID(conversation.fileID);

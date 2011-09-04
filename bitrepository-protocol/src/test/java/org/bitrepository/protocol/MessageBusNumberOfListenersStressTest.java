@@ -31,9 +31,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.collection.settings.standardsettings.MessageBusConfiguration;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
-import org.bitrepository.protocol.configuration.MessageBusConfigurations;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.jaccept.structure.ExtendedTestCase;
@@ -106,16 +106,16 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         alarmMessage.setTo(QUEUE);
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
-        MessageBusConfigurations confs = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
-        LocalActiveMQBroker broker = new LocalActiveMQBroker(confs.getPrimaryMessageBusConfiguration());
+        MessageBusConfiguration conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+        LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
 
         try {
             addStep("Start the broker and initialise the listeners.", 
             "Connections should be established.");
             broker.start();
-            bus = new ActiveMQMessageBus(confs);
+            bus = new ActiveMQMessageBus(conf);
 
-            testListeners(confs);
+            testListeners(conf);
         } finally {
             if(broker != null) {
                 broker.stop();
@@ -139,23 +139,23 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         alarmMessage.setTo(QUEUE);
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
-        MessageBusConfigurations confs = MessageBusConfigurationFactory.createDefaultConfiguration();
+        MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
 
         addStep("Start the broker and initialise the listeners.", 
         "Connections should be established.");
-        bus = new ActiveMQMessageBus(confs);
+        bus = new ActiveMQMessageBus(conf);
 
-        testListeners(confs);
+        testListeners(conf);
     }
 
 
-    public void testListeners(MessageBusConfigurations confs) throws Exception {
+    public void testListeners(MessageBusConfiguration conf) throws Exception {
         List<NotificationMessageListener> listeners = new ArrayList<NotificationMessageListener>(NUMBER_OF_LISTENERS);
 
         try {
             addStep("Initialise the message listeners.", "Should be created and connected to the message bus.");
             for(int i = 0; i < NUMBER_OF_LISTENERS; i++) {
-                listeners.add(new NotificationMessageListener(confs));
+                listeners.add(new NotificationMessageListener(conf));
             }
 
             addStep("Wait for setup", "We wait!");
@@ -211,7 +211,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
                 FileOutputStream out = new FileOutputStream(new File(OUTPUT_FILE_NAME), true);
                 out.write(new String("idReached: " + idReached + ", NumberOfListeners: " + NUMBER_OF_LISTENERS 
                         + ", messagesReceived: " + messageReceived + " on bus " 
-                        + confs.getPrimaryMessageBusConfiguration().getUrl() + "\n").getBytes());
+                        + conf.getURL() + "\n").getBytes());
                 out.flush();
                 out.close();
             } 
@@ -273,17 +273,17 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
         /**
          * Constructor.
-         * @param confs The configurations for declaring the messagebus.
+         * @param confs The configurations for declaring the message bus.
          */
-        public NotificationMessageListener(MessageBusConfigurations confs) {
-            this.bus = new ActiveMQMessageBus(confs);
+        public NotificationMessageListener(MessageBusConfiguration conf) {
+            this.bus = new ActiveMQMessageBus(conf);
             this.count = 0;
 
             bus.addListener(QUEUE, this);
         }
 
         /**
-         * Method for stopping interaction with the messagelistener.
+         * Method for stopping interaction with the message listener.
          */
         public void stop() {
             bus.removeListener(QUEUE, this);

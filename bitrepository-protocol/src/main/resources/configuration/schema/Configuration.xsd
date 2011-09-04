@@ -15,13 +15,6 @@
         </annotation>
         <complexType>
             <sequence>
-                <element name="messageBusConfigurations" type="tns:MessageBusConfigurations">
-                    <annotation>
-                        <documentation xml:lang="en">
-                            The configurations for the message buses
-                        </documentation>
-                    </annotation>
-                </element>
                 <element name="fileExchangeConfigurations" type="tns:FileExchangeConfiguration">
                     <annotation>
                         <documentation xml:lang="en">
@@ -32,62 +25,7 @@
             </sequence>
         </complexType>
     </element>
-
-    <complexType name="MessageBusConfigurations">
-        <annotation>
-            <documentation xml:lang="en">
-                The configurations for the message busses
-            </documentation>
-        </annotation>
-        <sequence>
-            <element name="primaryMessageBusConfiguration" type="tns:MessageBusConfiguration">
-                <annotation>
-                    <documentation xml:lang="en">
-                        The configuration for the primary message bus
-                    </documentation>
-                </annotation>
-            </element>
-        </sequence>
-    </complexType>
-
-    <complexType name="MessageBusConfiguration">
-        <annotation>
-            <documentation xml:lang="en">
-                The configuration for a single message bus instance (may be a cluster)
-            </documentation>
-        </annotation>
-        <sequence>
-            <element name="id" type="string">
-                <annotation>
-                    <documentation xml:lang="en">
-                        The ID for this message bus
-                    </documentation>
-                </annotation>
-            </element>
-            <element name="url" type="string">
-                <annotation>
-                    <documentation xml:lang="en">
-                        This is where the message bus can be found
-                    </documentation>
-                </annotation>
-            </element>
-            <element name="username" type="string">
-                <annotation>
-                    <documentation xml:lang="en">
-                        The user to user for logging into the message bus
-                    </documentation>
-                </annotation>
-            </element>
-            <element name="password" type="string">
-                <annotation>
-                    <documentation xml:lang="en">
-                        The password for logging into the message bus
-                    </documentation>
-                </annotation>
-            </element>
-        </sequence>
-    </complexType>
-
+    
     <complexType name="FileExchangeConfiguration">
         <annotation>
             <documentation xml:lang="en">

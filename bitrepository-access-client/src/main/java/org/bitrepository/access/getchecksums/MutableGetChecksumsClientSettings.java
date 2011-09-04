@@ -24,7 +24,6 @@
  */
 package org.bitrepository.access.getchecksums;
 
-import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
 
 /**
@@ -32,14 +31,6 @@ import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
  */
 public class MutableGetChecksumsClientSettings extends MutableClientSettings
         implements GetChecksumsClientSettings {
-   
-    /**
-     * Constructor.
-     * @param settings The client settings.
-     */
-    public MutableGetChecksumsClientSettings(ClientSettings settings) {
-        super(settings);
-    }
 
     /** @see GetChecksumsClientSettings#getGetChecksumsDefaultTimeout() */
     private long getChecksumsDefaultTimeout;

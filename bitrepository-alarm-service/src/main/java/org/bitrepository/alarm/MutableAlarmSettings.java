@@ -30,9 +30,4 @@ import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
  * Mutable instance of the AlarmSettings.
  */
 public class MutableAlarmSettings extends MutableClientSettings implements AlarmSettings {
-
-    /** 
-     * Constructor. 
-     */
-    public MutableAlarmSettings() {}
 }

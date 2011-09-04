@@ -27,6 +27,7 @@ package org.bitrepository.protocol;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
+import org.bitrepository.protocol.bitrepositorycollection.CollectionSettings;
 import org.bitrepository.protocol.configuration.FileExchangeConfiguration;
 import org.bitrepository.protocol.configuration.ProtocolConfiguration;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -76,11 +77,10 @@ public class ProtocolComponentFactory {
     /**
      * Gets you an <code>MessageBus</code> instance for accessing the Bitrepositorys message bus.
      * @return The messagebus for this collection
-     * @deprecated Messagebuses should by created outside of the reference framework and injected.
      */
-    public MessageBus getMessageBus() {
+    public MessageBus getMessageBus(CollectionSettings settings) {
         if (messagebus == null) {
-            messagebus = new ActiveMQMessageBus(getProtocolConfiguration().getMessageBusConfigurations());
+            messagebus = new ActiveMQMessageBus(settings.getStandardSettings().getMessageBusConfiguration());
         }
         return messagebus;
     }
@@ -89,8 +89,7 @@ public class ProtocolComponentFactory {
      * Gets you an <code>FileExchange</code> instance for data communication. Is instantiated based on the 
      * configurations.
      * @return The FileExchange according to the configuration.
-     * @deprecated The file exchange class will be replaced by the HttpServerConnector, which isn't part of the main 
-     * code
+     * @deprecated The file exchange class will be replaced by the HttpServerConnector.
      */
     public FileExchange getFileExchange() {
         if (fileExchange == null) {

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<StandardCollectionSettings xmlns="http://bitrepository.org/collection/settings/StandardSettings.xsd">
+
+  <BitRepositoryCollectionID>bitrepository-devel</BitRepositoryCollectionID>
+  <MessageBusConfiguration>
+    <Name>kb-test-messagebus</Name>
+    <URL>failover://tcp://sandkasse-01.kb.dk:61616</URL>
+    <Login></Login>
+    <Password></Password>
+  </MessageBusConfiguration>
+  <CollectionDestination>bitrepository-devel-topic</CollectionDestination>
+  <AlarmDestination>bitrepository-devel-alarm-topic</AlarmDestination>
+  <Certificates></Certificates>
+</StandardCollectionSettings>

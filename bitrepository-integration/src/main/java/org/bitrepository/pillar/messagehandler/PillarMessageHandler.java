@@ -63,9 +63,9 @@ public abstract class PillarMessageHandler<T> {
      * @param bitrepositoryCollectionId The collection id to validate.
      */
     protected void validateBitrepositoryCollectionId(String bitrepositoryCollectionId) {
-        if(!bitrepositoryCollectionId.equals(mediator.settings.getBitRepositoryCollectionID())) {
+        if(!bitrepositoryCollectionId.equals(mediator.settings.getStandardSettings().getBitRepositoryCollectionID())) {
             throw new IllegalArgumentException("The message had a wrong BitRepositoryIdCollection: "
-                    + "Expected '" + mediator.settings.getBitRepositoryCollectionID() + "' but was '" 
+                    + "Expected '" + mediator.settings.getStandardSettings().getBitRepositoryCollectionID() + "' but was '" 
                     + bitrepositoryCollectionId + "'.");
         }
     }
@@ -90,7 +90,7 @@ public abstract class PillarMessageHandler<T> {
         // create the Concerning part of the alarm.
         AlarmConcerning ac = new AlarmConcerning();
         BitRepositoryCollections brcs = new BitRepositoryCollections();
-        brcs.getBitRepositoryCollectionID().add(mediator.settings.getBitRepositoryCollectionID());
+        brcs.getBitRepositoryCollectionID().add(mediator.settings.getStandardSettings().getBitRepositoryCollectionID());
         ac.setBitRepositoryCollections(brcs);
         ac.setMessages(exception.getMessage());
         ac.setFileInformation(null);
@@ -100,7 +100,7 @@ public abstract class PillarMessageHandler<T> {
         compType.setComponentID(mediator.settings.getPillarId());
         compType.setComponentType(ComponentType.PILLAR);
         comps.getContributor().add(compType);
-        comps.getDataTransmission().add(mediator.settings.getMessageBusConfiguration().toString());
+        comps.getDataTransmission().add(mediator.settings.getStandardSettings().getMessageBusConfiguration().toString());
         ac.setComponents(comps);
         
         // create a descriptor.

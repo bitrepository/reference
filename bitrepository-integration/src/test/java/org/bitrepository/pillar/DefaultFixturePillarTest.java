@@ -26,28 +26,15 @@ package org.bitrepository.pillar;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.clienttest.MessageReceiver;
-import org.bitrepository.common.IntegrationTest;
-import org.bitrepository.protocol.LocalActiveMQBroker;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.TestMessageFactory;
-import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
-import org.bitrepository.protocol.bus.MessageBusWrapper;
-import org.bitrepository.protocol.configuration.MessageBusConfigurations;
-import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
-import org.bitrepository.protocol.fileexchange.HttpServerConnector;
-import org.bitrepository.protocol.http.EmbeddedHttpServer;
-import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.messagebus.MessageBusFactory;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 
 /**
  * Contains the generic parts for pillar tests integrating to the message bus. 
  * Mostly copied from DefaultFixtureClientTest...
  */
 public abstract class DefaultFixturePillarTest extends IntegrationTest {
-    protected MessageBus messageBus;
     protected static final String DEFAULT_FILE_ID = TestMessageFactory.FILE_ID_DEFAULT;
 
     protected static String pillarDestinationId;
@@ -56,47 +43,12 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
     protected static String clientDestinationId;
     protected MessageReceiver clientTopic;
 
-    protected static String bitRepositoryCollectionDestinationID;
-    protected MessageReceiver bitRepositoryCollectionDestination; 
-
     protected PillarSettings settings;
-    protected MessageBusConfigurations messageBusConfigurations;
-
-    protected LocalActiveMQBroker broker;
-    private EmbeddedHttpServer server;
-
-    protected HttpServerConnector httpServer;
-
-    /** Indicated whether an embedded active MQ should be started and used */ 
-    public boolean useEmbeddedMessageBus() {
-        return System.getProperty("useEmbeddedMessageBus", "false").equals("true");
-    }
-
-    /** Indicated whether an embedded http server should be started and used */ 
-    public boolean useEmbeddedHttpServer() {
-        return System.getProperty("useEmbeddedHttpServer", "false").equals("true");
-    }
 
     /** Indicated whether reference pillars should be started should be started and used. Note that mockup pillars 
      * should be used in this case, e.g. the useMockupPillar() call should return false. */ 
     public boolean useEmbeddedReferencePillars() {
         return System.getProperty("useEmbeddedReferencePillars", "false").equals("true");
-    }
-
-    @BeforeClass (alwaysRun = true)
-    public void setupTest() throws Exception {
-        defineDestinations();
-        initializeMessageBus();
-        initializeHttpServer();
-    }
-
-    /**
-     * Defines the standard BitRepositoryCollection configuration
-     * @param testMethod Used to grap the name of the test method used for naming.
-     */
-    @BeforeMethod (alwaysRun = true)
-    public void beforeMethodSetup(java.lang.reflect.Method testMethod) {
-        configureBitRepositoryCollectionConfig(testMethod.getName());
     }
 
     /**
@@ -105,83 +57,48 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
      */
     @AfterClass (alwaysRun = true)
     public void teardownTest() throws Exception {
-        disconnectFromMessageBus(); 
-        shutdownHttpServer();
+        teardownMessageBus(); 
+        teardownHttpServer();
     }
 
-    /**
-     * 
-     */
-    private void initializeMessageBus() throws Exception {
-        if (useEmbeddedMessageBus()) { 
-            messageBusConfigurations = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
-            broker = new LocalActiveMQBroker(messageBusConfigurations.getPrimaryMessageBusConfiguration());
-            broker.start();
-            messageBus = new MessageBusWrapper(MessageBusFactory.createMessageBus(messageBusConfigurations), testEventManager);
-        } else {
-            messageBusConfigurations = MessageBusConfigurationFactory.createDefaultConfiguration();
-            messageBus = new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(), testEventManager);
-        }
+    @Override
+    protected void setupMessageBus() throws Exception {
         pillarTopic = new MessageReceiver("pillar topic receiver", testEventManager);
-        bitRepositoryCollectionDestination = new MessageReceiver("BitRepositoryCollection topic receiver", testEventManager);
         clientTopic = new MessageReceiver("client topic receiver", testEventManager);
         messageBus.addListener(pillarDestinationId, pillarTopic.getMessageListener());    
         messageBus.addListener(bitRepositoryCollectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
         messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());    
     }
 
-    private void initializeHttpServer() throws Exception {
-        HttpServerConfiguration config = new HttpServerConfiguration();
-        if (useEmbeddedHttpServer()) { // Note that the embedded server isn't fully functional yet
-            server = new EmbeddedHttpServer();
-            server.start();
-        }
-        // The commented line below is meant to separate different test runs into separate folders on the server. 
-        // The current challenge is how to do this programatically. MSS tried Apache JackRabbit, but this involved a 
-        // lot of additional dependencies which caused inconsistencies in the dependency model (usage of incompatible 
-        // SLJ4J API 1.5 and 1.6)
-        //config.setHttpServerPath("/dav/" + System.getProperty("user.name") + "/");
-        httpServer = new HttpServerConnector(config, testEventManager);
+    @Override
+    protected void defineDestinations() {
+        pillarDestinationId = "pillar_topic" + getTopicPostfix();
+        clientDestinationId = "client" + getTopicPostfix();
     }
 
-    private void defineDestinations() {
-        String topicPostfix = "-" + System.getProperty("user.name");
-        pillarDestinationId = "pillar_topic" + topicPostfix;
-        bitRepositoryCollectionDestinationID = "BitRepositoryCollection_topic" + topicPostfix;
-        clientDestinationId = "client" + topicPostfix;
-    }
-
-    private void configureBitRepositoryCollectionConfig(String testName) {
-        String bitRepositoryCollectionID = testName + "-" + System.getProperty("user.name");
-        MutablePillarSettings pillarSettings = new MutablePillarSettings();
-        pillarSettings.setBitRepositoryCollectionID(bitRepositoryCollectionID);
-        pillarSettings.setBitRepositoryCollectionTopicID(bitRepositoryCollectionDestinationID);
-        pillarSettings.setMessageBusConfiguration(messageBusConfigurations);
+    @Override
+    protected void setupSettings() {
+        MutablePillarSettings pillarSettings = getPillarSettings();
         pillarSettings.setFileDirName("target/fileDir");
         pillarSettings.setLocalQueue(pillarDestinationId);
         pillarSettings.setTimeToDownloadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
         pillarSettings.setTimeToDownloadValue(1L);
         pillarSettings.setTimeToUploadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
         pillarSettings.setTimeToUploadValue(1L);
-        settings = pillarSettings;
+        super.setupSettings();
     }
 
-    private void disconnectFromMessageBus() {
+    @Override
+    protected void teardownMessageBus() {
         messageBus.removeListener(pillarDestinationId, pillarTopic.getMessageListener());
-        messageBus.removeListener(bitRepositoryCollectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
 
-        if (useEmbeddedMessageBus()) { 
-            try {
-                broker.stop();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        super.teardownMessageBus();
     }
 
-    private void shutdownHttpServer() throws Exception {
-        if (useEmbeddedHttpServer()) {
-            server.stop();
-        }
+    @Override
+    protected MutablePillarSettings getCollectionSettings() {
+        return getPillarSettings();
     }
+    
+    protected abstract MutablePillarSettings getPillarSettings();
 }

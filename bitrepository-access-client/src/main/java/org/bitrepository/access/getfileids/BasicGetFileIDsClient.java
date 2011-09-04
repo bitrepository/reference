@@ -34,8 +34,6 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
@@ -43,7 +41,7 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
@@ -68,12 +66,6 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
     /** The GetClientServer, which receives the messages.*/
     private final GetFileIDsClientMessageListener messageListener;
 
-    /** The configuration for the access module.*/
-    private final AccessConfiguration config;
-
-    private final long timeOut;
-    private final int numberOfPillars;
-
     /** Map from correlationID to CountDownLatch counting down the identify responses we are waiting for. */
     private Map<String, CountDownLatch> identifyResponseCountDownLatchMap;
     /** Map from correlationID to List of IdentifyPillarsForGetFileIDsResponses. */
@@ -88,23 +80,18 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
     private Map<String, CountDownLatch> getFileIDsFinalResponseCountDownLatchMap;
     /** Map from correlationID to List of GetFileIDsFinalResponse messages. */
     private Map<String, GetFileIDsFinalResponse> getFileIDsFinalResponseMap;
+    private final ClientSettings settings;
 
-    public BasicGetFileIDsClient() {
-        // TODO update (change use of messageBus and settings)
-        config = AccessComponentFactory.getInstance().getConfig();
-
+    public BasicGetFileIDsClient(MessageBus messageBus, ClientSettings settings) {
+        this.settings = settings;
+        this.messageBus = messageBus;
         // retrieve the queue from the configuration.
-        queue = config.getGetFileIDsClientQueue();
+        queue = settings.getClientTopicID();
 
         messageListener = new GetFileIDsClientMessageListener(this);
 
         // Add the messageListener to the messagebus for listening to the queue.
-        messageBus = ProtocolComponentFactory.getInstance().getMessageBus();
         messageBus.addListener(queue, messageListener);
-
-        // retrieve time out and expected number of pillars from configuration
-        timeOut = Long.parseLong(config.getGetFileIDsClientTimeOut());
-        numberOfPillars = Integer.parseInt(config.getGetFileIDsClientNumberOfPillars());
 
         identifyResponseCountDownLatchMap = Collections.synchronizedMap(new HashMap<String, CountDownLatch>());
         identifyPillarsForGetFileIDsResponseMap =
@@ -126,7 +113,7 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
                 getIdentifyPillarsForGetFileIDsRequestMessage(corrID, bitRepositoryCollectionID, queue, null);
 
         // put correlationId and new CountDownLatch in identifyResponseCountDownLatchMap
-        CountDownLatch countDownLatch = new CountDownLatch(numberOfPillars);
+        CountDownLatch countDownLatch = new CountDownLatch(settings.getPillarIDs().length);
         identifyResponseCountDownLatchMap.put(corrID, countDownLatch);
         // put correlationId and new empty List in identifyPillarsForGetFileIDsResponseMap
         List<IdentifyPillarsForGetFileIDsResponse> responses = new ArrayList<IdentifyPillarsForGetFileIDsResponse>();
@@ -137,7 +124,7 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
 
         // wait for messages (or until specified waiting time elapses)
         try {
-            boolean allPillarsResponded = countDownLatch.await(timeOut, TimeUnit.MILLISECONDS);
+            boolean allPillarsResponded = countDownLatch.await(settings.getIdentifyPillarsTimeout(), TimeUnit.MILLISECONDS);
             if (!allPillarsResponded) {
                 log.info("identifyPillarsForGetFileIDs time out. Not all pillars responded.");
             }
@@ -175,7 +162,7 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
 
         // wait for messages (or until specified waiting time elapses)
         try {
-            boolean responseOk = progressResponseCountDown.await(timeOut, TimeUnit.MILLISECONDS);
+            boolean responseOk = progressResponseCountDown.await(settings.getConversationTimeout(), TimeUnit.MILLISECONDS);
             if (responseOk) {
                 GetFileIDsProgressResponse response = getFileIDsProgressResponseMap.get(correlationID);
                 // TODO how do we want to use the response?
@@ -189,7 +176,7 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         }
 
         try {
-            boolean completeOk = finalResponseCountDown.await(timeOut, TimeUnit.MILLISECONDS);
+            boolean completeOk = finalResponseCountDown.await(settings.getConversationTimeout(), TimeUnit.MILLISECONDS);
             if (completeOk) {
                 return getFileIDsFinalResponseMap.get(correlationID);
                 // TODO use other parts of final response message ?

@@ -46,13 +46,18 @@ import org.testng.annotations.Test;
  */
 public class ReferencePillarTester extends DefaultFixturePillarTest {
     /** The settings for the test.*/
-    MutablePillarSettings pillarSettings;
+    private MutablePillarSettings pillarSettings  = new MutablePillarSettings();
     
     PillarTestMessageFactory msgFactory;
     
     @BeforeMethod(alwaysRun=true)
     public void initialise() throws Exception {
-        pillarSettings = new MutablePillarSettings(settings);
+        msgFactory = new PillarTestMessageFactory(pillarSettings);
+    }
+    
+    @Override
+    protected void setupSettings() {
+        pillarSettings  = new MutablePillarSettings();
         pillarSettings.setFileDirName("temp");
         pillarSettings.setPillarId("TestPillar");
         pillarSettings.setLocalQueue(pillarDestinationId);
@@ -60,17 +65,9 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         pillarSettings.setTimeToDownloadValue(1L);
         pillarSettings.setTimeToUploadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
         pillarSettings.setTimeToDownloadValue(1L);
-        
-        msgFactory = new PillarTestMessageFactory(pillarSettings);
-    }
+        super.setupSettings();
+    };
 
-//    @Test( groups = {"regressiontest"})
-//    public void componentFactoryTest() {
-//        addDescription("Test stuff..");
-//        addStep("Testing the component factory.", "Should work.");
-//        IntegrationComponentFactory iFactory = IntegrationComponentFactory.getInstance();
-//    }
-    
     @Test( groups = {"regressiontest"})
     public void pillarPutTest() throws Exception {
         addDescription("Tests the put functionality of the reference pillar.");
@@ -143,5 +140,10 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         Assert.assertNull(checksumdata.getChecksumSpec().getChecksumSalt(), "should be no salt");
         Assert.assertEquals(checksumdata.getChecksumSpec().getChecksumType(), "MD5");
         Assert.assertTrue(checksumdata.getCalculationTimestamp().toGregorianCalendar().getTime().getTime() > startDate.getTime());
+    }
+
+    @Override
+    protected MutablePillarSettings getPillarSettings() {
+        return pillarSettings;
     }
 }

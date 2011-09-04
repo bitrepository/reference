@@ -91,6 +91,7 @@ public class IntegrationComponentFactory {
      */
     public ReferencePillar getPillar(PillarSettings settings) {
         return new ReferencePillar(
-                MessageBusFactory.createMessageBus(settings.getMessageBusConfiguration()), settings);
+                MessageBusFactory.createMessageBus(
+                        settings.getStandardSettings().getMessageBusConfiguration()), settings);
     }
 }

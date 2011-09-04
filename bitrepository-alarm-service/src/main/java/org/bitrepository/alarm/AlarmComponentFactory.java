@@ -86,7 +86,8 @@ public class AlarmComponentFactory {
      */
     public AlarmService getAlarmService(AlarmSettings settings) {
         try {
-            MessageBus bus = MessageBusFactory.createMessageBus(settings.getMessageBusConfiguration());
+            MessageBus bus = MessageBusFactory.createMessageBus(
+                    settings.getStandardSettings().getMessageBusConfiguration());
             AlarmService service = new BasicAlarmService(bus);
             
             return service;

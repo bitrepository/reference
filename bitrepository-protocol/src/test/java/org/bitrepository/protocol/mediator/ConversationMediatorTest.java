@@ -24,6 +24,8 @@
  */
 package org.bitrepository.protocol.mediator;
 
+import static org.mockito.Mockito.mock;
+
 import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
@@ -56,7 +58,6 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.messagebus.MessageSender;
 import org.testng.annotations.Test;
-import static org.mockito.Mockito.*;
 
 /**
  * Test the general ConversationMediator functionality.

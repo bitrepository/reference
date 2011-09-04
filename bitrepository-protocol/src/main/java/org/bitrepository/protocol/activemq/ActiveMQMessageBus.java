@@ -24,6 +24,22 @@
  */
 package org.bitrepository.protocol.activemq;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.jms.Connection;
+import javax.jms.DeliveryMode;
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import javax.jms.Topic;
+import javax.xml.bind.JAXBException;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.Alarm;
@@ -50,29 +66,13 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.collection.settings.standardsettings.MessageBusConfiguration;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
-import org.bitrepository.protocol.configuration.MessageBusConfiguration;
-import org.bitrepository.protocol.configuration.MessageBusConfigurations;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.jms.Connection;
-import javax.jms.DeliveryMode;
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.jms.Topic;
-import javax.xml.bind.JAXBException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Contains the basic functionality for connection and communicating with the
@@ -120,14 +120,14 @@ public class ActiveMQMessageBus implements MessageBus {
      *
      * @param messageBusConfigurations The properties for the connection.
      */
-    public ActiveMQMessageBus(MessageBusConfigurations messageBusConfigurations) {
-        log.debug("Initializing ActiveMQConnection to '" + messageBusConfigurations + "'.");
-        this.configuration = messageBusConfigurations.getPrimaryMessageBusConfiguration();
+    public ActiveMQMessageBus(MessageBusConfiguration messageBusConfiguration) {
+        log.debug("Initializing ActiveMQConnection to '" + messageBusConfiguration + "'.");
+        this.configuration = messageBusConfiguration;
 
         // Retrieve factory for connection
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getUsername(),
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getLogin(),
                                                                                     configuration.getPassword(),
-                                                                                    configuration.getUrl());
+                                                                                    configuration.getURL());
 
         try {
             // create and start the connection
@@ -146,7 +146,7 @@ public class ActiveMQMessageBus implements MessageBus {
     @Override
     public synchronized void addListener(String destinationID, final MessageListener listener) {
         log.debug("Adding listener '{}' to destination: '{}' on message-bus '{}'.", 
-                new Object[] {listener, destinationID, configuration.getId()});
+                new Object[] {listener, destinationID, configuration.getName()});
         MessageConsumer consumer = getMessageConsumer(destinationID, listener);
         try {
             consumer.setMessageListener(new ActiveMQMessageListener(listener));
@@ -158,8 +158,8 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public synchronized void removeListener(String destinationID, MessageListener listener) {
-        log.debug("Removing listener '{}' from destination: '{}' on message-bus '{}'.", 
-                          new Object[] {listener, destinationID, configuration.getId()});
+        log.debug("Removing listener '" + listener + "' from destination: '" + destinationID + "' " +
+        		"on message-bus '" + configuration + "'.");
         MessageConsumer consumer = getMessageConsumer(destinationID, listener);
         try {
             consumer.close();
@@ -328,7 +328,7 @@ public class ActiveMQMessageBus implements MessageBus {
         try {
             String xmlContent = JaxbHelper.serializeToXml(content);
             log.debug("The following message is sent to the destination '" + destinationID + "'" + " on message-bus '"
-                              + configuration.getId() + "': \n{}", xmlContent);
+                              + configuration.getName() + "': \n{}", xmlContent);
             MessageProducer producer = addTopicMessageProducer(destinationID);
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 

@@ -24,15 +24,10 @@
  */
 package org.bitrepository.access.getfile;
 
-import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
 
 public class MutableGetFileClientSettings extends MutableClientSettings
         implements GetFileClientSettings {
-    
-    public MutableGetFileClientSettings(ClientSettings settings) {
-        super(settings);
-    }
 
     private long getFileDefaultTimeout;
     @Override

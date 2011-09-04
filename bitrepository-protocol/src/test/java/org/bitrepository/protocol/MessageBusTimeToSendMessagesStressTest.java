@@ -27,9 +27,9 @@ package org.bitrepository.protocol;
 import java.util.Date;
 
 import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.collection.settings.standardsettings.MessageBusConfiguration;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
-import org.bitrepository.protocol.configuration.MessageBusConfigurations;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.jaccept.structure.ExtendedTestCase;
@@ -65,16 +65,16 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
-        MessageBusConfigurations confs = MessageBusConfigurationFactory.createDefaultConfiguration();
+        MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
         CountMessagesListener listener = null;
 
         try {
             addStep("Initialise the messagelistener", "Should be allowed.");
-            listener = new CountMessagesListener(confs);
+            listener = new CountMessagesListener(conf);
 
             startSending = new Date();
             addStep("Start sending at '" + startSending + "'", "Should just be waiting.");
-            sendAllTheMessages(confs);
+            sendAllTheMessages(conf);
 
             addStep("Sleept untill the listerner has received all the messages.", "Should be sleeping.");
             while(!listener.isFinished()) {
@@ -114,9 +114,9 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus and define the local broker.", "Both should be created.");
-        MessageBusConfigurations confs = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
-        Assert.assertNotNull(confs);
-        LocalActiveMQBroker broker = new LocalActiveMQBroker(confs.getPrimaryMessageBusConfiguration());
+        MessageBusConfiguration conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+        Assert.assertNotNull(conf);
+        LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
         Assert.assertNotNull(broker);
 
         CountMessagesListener listener = null;
@@ -126,11 +126,11 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
             broker.start();
 
             addStep("Initialise the messagelistener", "Should be allowed.");
-            listener = new CountMessagesListener(confs);
+            listener = new CountMessagesListener(conf);
 
             startSending = new Date();
             addStep("Start sending at '" + startSending + "'", "Should just be waiting.");
-            sendAllTheMessages(confs);
+            sendAllTheMessages(conf);
 
             addStep("Sleept untill the listerner has received all the messages.", "Should be sleeping.");
             while(!listener.isFinished()) {
@@ -165,9 +165,9 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
      * @param confs The configuration for the messagebus, where the messages should be sent.
      * @throws Exception
      */
-    private void sendAllTheMessages(MessageBusConfigurations confs) throws Exception {
+    private void sendAllTheMessages(MessageBusConfiguration conf) throws Exception {
         for(int i = 0; i < NUMBER_OF_SENDERS; i++) {
-            Thread t = new MessageSenderThread(confs, NUMBER_OF_MESSAGES / NUMBER_OF_SENDERS, "#" + i);
+            Thread t = new MessageSenderThread(conf, NUMBER_OF_MESSAGES / NUMBER_OF_SENDERS, "#" + i);
             t.start();
         }
     }
@@ -177,8 +177,8 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         private final int numberOfMessages;
         private final String id;
 
-        public MessageSenderThread(MessageBusConfigurations confs, int numberOfMessages, String id) {
-            this.bus = new ActiveMQMessageBus(confs);
+        public MessageSenderThread(MessageBusConfiguration conf, int numberOfMessages, String id) {
+            this.bus = new ActiveMQMessageBus(conf);
             this.numberOfMessages = numberOfMessages;
             this.id = id;
         }
@@ -218,8 +218,8 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
          * Constructor.
          * @param confs The configurations for declaring the messagebus.
          */
-        public CountMessagesListener(MessageBusConfigurations confs) {
-            this.bus = new ActiveMQMessageBus(confs);
+        public CountMessagesListener(MessageBusConfiguration conf) {
+            this.bus = new ActiveMQMessageBus(conf);
             this.count = 0;
 
             bus.addListener(QUEUE, this);

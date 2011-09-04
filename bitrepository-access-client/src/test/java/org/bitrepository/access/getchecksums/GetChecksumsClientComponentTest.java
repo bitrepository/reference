@@ -28,6 +28,7 @@ import java.math.BigInteger;
 import java.net.URL;
 
 import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getfile.MutableGetFileClientSettings;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs.ChecksumSpecsItems;
@@ -39,6 +40,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReq
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.clienttest.TestEventHandler;
+import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.testng.Assert;
@@ -56,7 +58,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
     
     @BeforeMethod (alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
-        getChecksumsClientSettings = new MutableGetChecksumsClientSettings(settings);
+        getChecksumsClientSettings = new MutableGetChecksumsClientSettings();
         getChecksumsClientSettings.setGetChecksumsDefaultTimeout(1000);
 
         getChecksumsClientSettings.setPillarIDs(new String[]{PILLAR1_ID});
@@ -71,10 +73,9 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 //        busConf.setUrl("failover:(tcp://sandkasse-01.kb.dk:60001,tcp://sandkasse-01.kb.dk:60002,tcp://sandkasse-01.kb.dk:60003)");
 //        messageBusConfigurations.setPrimaryMessageBusConfiguration(busConf);
 
-        getChecksumsClientSettings.setMessageBusConfiguration(messageBusConfigurations);
-
         if (useMockupPillar()) {
-            testMessageFactory = new TestGetChecksumsMessageFactory(settings.getBitRepositoryCollectionID());
+            testMessageFactory = new TestGetChecksumsMessageFactory(
+                    getChecksumsClientSettings.getStandardSettings().getBitRepositoryCollectionID());
             pillar1FileStore = new TestFileStore("Pillar1", TestFileStore.DEFAULT_TEST_FILE);
             pillar2FileStore = new TestFileStore("Pillar2", TestFileStore.DEFAULT_TEST_FILE);
         }
@@ -401,5 +402,14 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 //        gfc.getFileFromFastestPillar(fileName, url, testEventHandler);
 //        
 //        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Failed);
+    }
+
+    @Override
+    protected MutableClientSettings getClientSettings() {
+        return getFileClientSettings();
+    }
+    
+    protected MutableGetChecksumsClientSettings getFileClientSettings() {
+        return getChecksumsClientSettings;
     }
 }

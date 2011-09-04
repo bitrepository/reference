@@ -24,20 +24,12 @@
  */
 package org.bitrepository.modify.putfile;
 
-import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
 
 /**
  * The instantiateable PutFileSettings. Can set all the variables in the PutFileClientSettings.
  */
 public class MutablePutFileClientSettings extends MutableClientSettings implements PutFileClientSettings {
-    /**
-     * Constructor.
-     * @param settings The client settings.
-     */
-    public MutablePutFileClientSettings(ClientSettings settings) {
-        super(settings);
-    }
 
     /** The settings for the default timeout for the put operation.*/
     private long putFileDefaultTimeout = 0;

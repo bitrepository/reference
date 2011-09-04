@@ -31,7 +31,6 @@ import org.apache.activemq.util.ByteArrayInputStream;
 
 /** Used to create message objects based on the example xml found in the message-xml module. */
 public class ExampleMessageFactory {
-//    public static final String XML_MESSAGE_DIR = "target/message-xml/";
     public static final String XML_MESSAGE_DIR = "target/";
     
     public static <T> T createMessage(Class<T> messageType) throws Exception {

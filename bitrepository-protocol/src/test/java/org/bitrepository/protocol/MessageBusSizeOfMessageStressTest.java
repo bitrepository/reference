@@ -28,9 +28,9 @@ import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.AlarmDescription;
 import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.collection.settings.standardsettings.MessageBusConfiguration;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
-import org.bitrepository.protocol.configuration.MessageBusConfigurations;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.jaccept.structure.ExtendedTestCase;
@@ -70,12 +70,12 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
         QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
-        MessageBusConfigurations confs = MessageBusConfigurationFactory.createDefaultConfiguration();
+        MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
         ResendMessageListener listener = null;
 
         try {
             addStep("Initialise the messagelistener", "Should be allowed.");
-            listener = new ResendMessageListener(confs);
+            listener = new ResendMessageListener(conf);
 
             Alarm message = getTestMessage();
 
@@ -113,9 +113,9 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
         QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus and define the local broker.", "Both should be created.");
-        MessageBusConfigurations confs = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
-        Assert.assertNotNull(confs);
-        LocalActiveMQBroker broker = new LocalActiveMQBroker(confs.getPrimaryMessageBusConfiguration());
+        MessageBusConfiguration conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+        Assert.assertNotNull(conf);
+        LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
         Assert.assertNotNull(broker);
 
         ResendMessageListener listener = null;
@@ -125,7 +125,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
             broker.start();
 
             addStep("Initialise the messagelistener", "Should be allowed.");
-            listener = new ResendMessageListener(confs);
+            listener = new ResendMessageListener(conf);
 
             Alarm message = getTestMessage();
 
@@ -190,8 +190,8 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
          * Constructor.
          * @param confs The configurations for declaring the messagebus.
          */
-        public ResendMessageListener(MessageBusConfigurations confs) {
-            this.bus = new ActiveMQMessageBus(confs);
+        public ResendMessageListener(MessageBusConfiguration conf) {
+            this.bus = new ActiveMQMessageBus(conf);
             this.count = 0;
 
             bus.addListener(QUEUE, this);

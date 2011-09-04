@@ -92,7 +92,8 @@ public class GettingChecksums extends GetChecksumsState {
         }
 
         GetChecksumsRequest getChecksumsRequest = new GetChecksumsRequest();
-        getChecksumsRequest.setBitRepositoryCollectionID(conversation.settings.getBitRepositoryCollectionID());
+        getChecksumsRequest.setBitRepositoryCollectionID(
+                conversation.settings.getStandardSettings().getBitRepositoryCollectionID());
         getChecksumsRequest.setCorrelationID(conversation.getConversationID());
         getChecksumsRequest.setFileIDs(conversation.fileIDs);
         getChecksumsRequest.setReplyTo(conversation.settings.getClientTopicID());

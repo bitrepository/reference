@@ -90,7 +90,7 @@ public class PuttingFile extends PutFileState {
         putMsg.setCorrelationID(conversation.getConversationID());
         putMsg.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         putMsg.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        putMsg.setBitRepositoryCollectionID(conversation.settings.getBitRepositoryCollectionID());
+        putMsg.setBitRepositoryCollectionID(conversation.settings.getStandardSettings().getBitRepositoryCollectionID());
         putMsg.setReplyTo(conversation.settings.getClientTopicID());
         putMsg.setFileAddress(conversation.downloadUrl.toExternalForm());
         putMsg.setFileID(conversation.fileID);
@@ -110,7 +110,7 @@ public class PuttingFile extends PutFileState {
         if(conversation.eventHandler != null) {
             conversation.eventHandler.handleEvent(new DefaultEvent(OperationEventType.RequestSent, 
                     "Request to put file has been sent to pillars in collection '" 
-                    + conversation.settings.getBitRepositoryCollectionID() + "'."));
+                    + conversation.settings.getStandardSettings().getBitRepositoryCollectionID() + "'."));
         }
         
         // Set timeout.
@@ -142,7 +142,7 @@ public class PuttingFile extends PutFileState {
         if (conversation.eventHandler != null) {
             conversation.eventHandler.handleEvent(new PillarOperationEvent(OperationEventType.Progress, 
                     "Request to put file has been sent to pillars in collection '" 
-                    + conversation.settings.getBitRepositoryCollectionID() + "'.", response.getPillarID()));
+                    + conversation.settings.getStandardSettings().getBitRepositoryCollectionID() + "'.", response.getPillarID()));
         }
     }
 

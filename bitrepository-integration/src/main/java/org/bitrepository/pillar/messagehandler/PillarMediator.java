@@ -134,7 +134,7 @@ public class PillarMediator implements MessageListener {
         this.handlers.put(PutFileRequest.class.getName(), new PutFileMessageHandler(this));
 
         // add to both the general topic and the local queue.
-        messagebus.addListener(settings.getBitRepositoryCollectionTopicID(), this);
+        messagebus.addListener(settings.getStandardSettings().getCollectionDestination(), this);
         messagebus.addListener(settings.getLocalQueue(), this);
     }
 
@@ -163,11 +163,11 @@ public class PillarMediator implements MessageListener {
         alarm.setAlarmDescription(alarmDescription);
         
         alarm.setAuditTrailInformation("ReferencePillar: " + settings.getPillarId());
-        alarm.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        alarm.setBitRepositoryCollectionID(settings.getStandardSettings().getBitRepositoryCollectionID());
         alarm.setCorrelationID(UUID.randomUUID().toString());
         alarm.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         alarm.setReplyTo(settings.getLocalQueue());
-        alarm.setTo(settings.getBitRepositoryCollectionTopicID() + "-ALARM");
+        alarm.setTo(settings.getStandardSettings().getCollectionDestination() + "-ALARM");
         alarm.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         
         messagebus.sendMessage(alarm);
@@ -185,7 +185,7 @@ public class PillarMediator implements MessageListener {
         // create the Concerning part of the alarm.
         AlarmConcerning ac = new AlarmConcerning();
         BitRepositoryCollections brcs = new BitRepositoryCollections();
-        brcs.getBitRepositoryCollectionID().add(settings.getBitRepositoryCollectionID());
+        brcs.getBitRepositoryCollectionID().add(settings.getStandardSettings().getBitRepositoryCollectionID());
         ac.setBitRepositoryCollections(brcs);
         ac.setMessages(msg);
         ac.setFileInformation(null);
@@ -195,7 +195,7 @@ public class PillarMediator implements MessageListener {
         compType.setComponentID(settings.getPillarId());
         compType.setComponentType(ComponentType.PILLAR);
         comps.getContributor().add(compType);
-        comps.getDataTransmission().add(settings.getMessageBusConfiguration().toString());
+        comps.getDataTransmission().add(settings.getStandardSettings().getMessageBusConfiguration().toString());
         ac.setComponents(comps);
         
         // create a descriptor.

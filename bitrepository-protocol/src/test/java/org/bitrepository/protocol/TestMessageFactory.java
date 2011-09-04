@@ -24,12 +24,12 @@
  */
 package org.bitrepository.protocol;
 
+import java.math.BigInteger;
+
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
 import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
 import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-
-import java.math.BigInteger;
 
 /**
  * Abstract message factory for use in tests, which are suppose to be subclasses by functionality specific factories.

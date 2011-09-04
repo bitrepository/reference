@@ -35,6 +35,8 @@ import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.access_client.configuration.AccessConfiguration;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
+import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusFactory;
 
 /**
@@ -99,7 +101,8 @@ public class AccessComponentFactory {
      */
     public GetFileClient createGetFileClient(GetFileClientSettings settings) {
         return new SimpleGetFileClient(
-                MessageBusFactory.createMessageBus(settings.getMessageBusConfiguration()),
+                MessageBusFactory.createMessageBus(
+                        settings.getStandardSettings().getMessageBusConfiguration()),
                 settings);
     }
     
@@ -110,7 +113,7 @@ public class AccessComponentFactory {
      */
     public GetChecksumsClient createGetChecksumsClient(GetChecksumsClientSettings settings) {
         return new BasicGetChecksumsClient(
-                MessageBusFactory.createMessageBus(settings.getMessageBusConfiguration()),
+                MessageBusFactory.createMessageBus(settings.getStandardSettings().getMessageBusConfiguration()),
                 settings);
     }
 
@@ -119,8 +122,8 @@ public class AccessComponentFactory {
      *
      * @return A GetFileIDsClient.
      */
-    public GetFileIDsClient createGetFileIDsClient() {
-        return new BasicGetFileIDsClient();
+    public GetFileIDsClient createGetFileIDsClient(MessageBus messageBus, ClientSettings settings) {
+        return new BasicGetFileIDsClient(messageBus, settings);
     }
 
 }

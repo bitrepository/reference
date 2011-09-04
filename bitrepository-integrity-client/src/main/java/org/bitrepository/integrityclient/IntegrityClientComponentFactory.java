@@ -34,9 +34,11 @@ import org.bitrepository.integrityclient.collection.IntegrityInformationCollecto
 import org.bitrepository.integrityclient.collection.IntegrityInformationScheduler;
 import org.bitrepository.integrityclient.collection.TimerIntegrityInformationScheduler;
 import org.bitrepository.integrityclient.configuration.integrityclientconfiguration.IntegrityClientConfiguration;
+import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
+import org.bitrepository.protocol.messagebus.MessageBus;
 
 /**
- * Provides access to the different component in the protocol module (Spring/IOC wannabe)
+ * Provides access to the different component in the integrity module (Spring/IOC wannabe)
  */
 public final class IntegrityClientComponentFactory {
 
@@ -96,12 +98,12 @@ public final class IntegrityClientComponentFactory {
      * Gets you an <code>IntegrityInformationCollector</code> that collects integrity information.
      * @return an <code>IntegrityInformationCollector</code> that collects integrity information.
      */
-    public IntegrityInformationCollector getIntegrityInformationCollector() {
+    public IntegrityInformationCollector getIntegrityInformationCollector(MessageBus messageBus, ClientSettings settings) {
         if (integrityInformationCollector == null) {
             integrityInformationCollector = new DelegatingIntegrityInformationCollector(
                     getCachedIntegrityInformationStorage(),
                     // TODO: Hardcoded implementation
-                    new BasicGetFileIDsClient(),
+                    new BasicGetFileIDsClient(messageBus, settings),
                     // TODO: No implementation
                     null);
         }

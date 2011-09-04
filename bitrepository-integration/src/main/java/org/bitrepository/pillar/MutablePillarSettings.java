@@ -25,30 +25,13 @@
 package org.bitrepository.pillar;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.protocol.configuration.MessageBusConfigurations;
+import org.bitrepository.protocol.bitrepositorycollection.MutableCollectionSettings;
 
 /**
  * Instantiable class for the PillarSettings.
  */
-public class MutablePillarSettings implements PillarSettings {
+public class MutablePillarSettings extends MutableCollectionSettings implements PillarSettings {
 
-    public MutablePillarSettings() {
-        super();
-    }
-    
-    public MutablePillarSettings(PillarSettings settings) {
-        this.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
-        this.setBitRepositoryCollectionTopicID(settings.getBitRepositoryCollectionTopicID());
-        this.setFileDirName(settings.getFileDirName());
-        this.setLocalQueue(settings.getLocalQueue());
-        this.setMessageBusConfiguration(settings.getMessageBusConfiguration());
-        this.setPillarId(settings.getPillarId());
-        this.setTimeToDownloadMeasure(settings.getTimeToDownloadMeasure());
-        this.setTimeToDownloadValue(settings.getTimeToDownloadValue());
-        this.setTimeToUploadMeasure(settings.getTimeToUploadMeasure());
-        this.setTimeToUploadValue(settings.getTimeToUploadValue());
-    }
-    
     /** @see PillarSettings#getPillarId() */
     private String pillarId;
     @Override
@@ -125,38 +108,4 @@ public class MutablePillarSettings implements PillarSettings {
     public void setTimeToDownloadMeasure(TimeMeasureTYPE.TimeMeasureUnit measure) {
         this.timeToDownloadMeasure = measure;
     }
-
-    /** @see PillarSettings#getBitRepositoryCollectionID() */
-    private String bitRepositoryCollectionID;
-    @Override
-    public String getBitRepositoryCollectionID() {
-        return bitRepositoryCollectionID;
-    }
-    /** @see PillarSettings#getBitRepositoryCollectionID() */
-    public void setBitRepositoryCollectionID(String brCollectinID) {
-        this.bitRepositoryCollectionID = brCollectinID;
-    }
-    
-    /** @see PillarSettings#getMessageBusConfiguration() */
-    private MessageBusConfigurations messagebusConfigs;
-    @Override
-    public MessageBusConfigurations getMessageBusConfiguration() {
-        return messagebusConfigs;
-    }
-    /** @see PillarSettings#getMessageBusConfiguration() */
-    public void setMessageBusConfiguration(MessageBusConfigurations messagebusConfigurations) {
-        this.messagebusConfigs = messagebusConfigurations;
-    }
-
-    /** @see PillarSettings#getBitRepositoryCollectionTopicID() */
-    private String bitrepositoryCollectionTopicID;
-    @Override
-    public String getBitRepositoryCollectionTopicID() {
-        return bitrepositoryCollectionTopicID;
-    }
-    /** @see PillarSettings#getBitRepositoryCollectionTopicID() */
-    public void setBitRepositoryCollectionTopicID(String brcTopicID) {
-        this.bitrepositoryCollectionTopicID = brcTopicID;
-    }
-
 }

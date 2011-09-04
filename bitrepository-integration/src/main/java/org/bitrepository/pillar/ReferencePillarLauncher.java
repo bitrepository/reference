@@ -29,6 +29,7 @@ import org.bitrepository.integration.IntegrationComponentFactory;
 import org.bitrepository.integration.configuration.integrationconfiguration.IntegrationConfiguration;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.configuration.ProtocolConfiguration;
+import org.bitrepository.protocol.settings.XMLFileSettingsLoader;
 
 /**
  * Method for launching the ReferencePillar. 
@@ -37,22 +38,21 @@ import org.bitrepository.protocol.configuration.ProtocolConfiguration;
 public class ReferencePillarLauncher {
 
     /**
-     * @param args
+     * @param args <ol>
+     * <li> The path to the directory containing the settings. See {@link XMLFileSettingsLoader} for details.</li>
+     * <li> The collection ID to load the settings for.</li>
+     * </ol>
      */
-    public static void main(String[] args) {
-        // Retrieve the configurations.
+    public static void main(String[] args) throws Exception {
+        PillarSettingsLoader settingsProvider = new PillarSettingsLoader(new XMLFileSettingsLoader(args[0]));
+
         IntegrationConfiguration iConf = IntegrationComponentFactory.getInstance().getConfig();
         ProtocolConfiguration pConf = ProtocolComponentFactory.getInstance().getProtocolConfiguration();
 
-        MutablePillarSettings settings = new MutablePillarSettings();
-        settings.setMessageBusConfiguration(pConf.getMessageBusConfigurations());
-        settings.setBitRepositoryCollectionID(iConf.getBitrepositoryCollectionId());
-        settings.setBitRepositoryCollectionTopicID(iConf.getBitrepositoryCollectionTopicId());
+        MutablePillarSettings settings = settingsProvider.loadPillarSettings(args[0]);
         settings.setFileDirName(iConf.getFiledir());
         settings.setLocalQueue(iConf.getPillarId());
-        settings.setPillarId(iConf.getPillarId());
-        
-        // TODO use settings instead.
+        settings.setPillarId(iConf.getPillarId());        
         settings.setTimeToDownloadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
         settings.setTimeToDownloadValue(1L);
         settings.setTimeToUploadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
@@ -60,7 +60,5 @@ public class ReferencePillarLauncher {
 
         // START THE REFERENCE PILLAR!!!!
         IntegrationComponentFactory.getInstance().getPillar(settings);
-        
     }
-
 }

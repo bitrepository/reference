@@ -86,9 +86,9 @@ public class IdentifyPillarsForPutFile extends PutFileState {
         identifyRequest.setCorrelationID(conversation.getConversationID());
         identifyRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         identifyRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        identifyRequest.setBitRepositoryCollectionID(conversation.settings.getBitRepositoryCollectionID());
+        identifyRequest.setBitRepositoryCollectionID(conversation.settings.getStandardSettings().getBitRepositoryCollectionID());
         identifyRequest.setReplyTo(conversation.settings.getClientTopicID());
-        identifyRequest.setTo(conversation.settings.getBitRepositoryCollectionTopicID());
+        identifyRequest.setTo(conversation.settings.getStandardSettings().getCollectionDestination());
 
         conversation.messageSender.sendMessage(identifyRequest);
         timer.schedule(timerTask, conversation.settings.getIdentifyPillarsTimeout());

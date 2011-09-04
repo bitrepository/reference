@@ -30,6 +30,7 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
+import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -43,7 +44,7 @@ public class GetFileIDsClientTest extends DefaultFixtureClientTest {
 
     private TestGetFileIDsMessageFactory testMessageFactory;
     private TestFileStore pillar1FileStore;
-    private TestFileStore pillar2FileStore;
+    private MutableGetFileIDsClientSettings settings;
 
     /**
      * Set up the test scenario before running the tests in this class.
@@ -53,9 +54,9 @@ public class GetFileIDsClientTest extends DefaultFixtureClientTest {
     public void setUp() throws JAXBException {
         // TODO getFileIDsFromFastestPillar settings
         if (useMockupPillar()) {
-            testMessageFactory = new TestGetFileIDsMessageFactory(settings.getBitRepositoryCollectionID());
+            testMessageFactory = new TestGetFileIDsMessageFactory(
+                    getClientSettings().getStandardSettings().getBitRepositoryCollectionID());
             pillar1FileStore = new TestFileStore("Pillar1");
-            pillar2FileStore = new TestFileStore("Pillar2");
         }
         httpServer.clearFiles();
     }
@@ -76,12 +77,14 @@ public class GetFileIDsClientTest extends DefaultFixtureClientTest {
                         "Assertion result received.");
 
         GetFileIDsClient getFileIDsClient = new GetFileIDsClientTestWrapper(
-                AccessComponentFactory.getInstance().createGetFileIDsClient(), testEventManager);
+                AccessComponentFactory.getInstance().createGetFileIDsClient(
+                        messageBus, getGetFileIDsClientSettings()), testEventManager);
 
         FileIDs fileIDs = new FileIDs();
         fileIDs.setAllFileIDs("ALL");
         ResultingFileIDs resultingFileIDs =
-                getFileIDsClient.getFileIDsFromFastestPillar(settings.getBitRepositoryCollectionID(), fileIDs);
+                getFileIDsClient.getFileIDsFromFastestPillar(
+                        getClientSettings().getStandardSettings().getBitRepositoryCollectionID(), fileIDs);
         Assert.assertNotNull(resultingFileIDs, "resultingFileIDs should not be null");
 
         addStep("Testing getFileIDsFromFastestPillar(bitRepositoryCollectionID, fileIDs, uploadUrl) method.",
@@ -142,4 +145,13 @@ public class GetFileIDsClientTest extends DefaultFixtureClientTest {
                 "The returned list of FileIDs should NOT contain the ID of the file just removed.");
     }
 
+    @Override
+    protected MutableClientSettings getClientSettings() {
+        return getGetFileIDsClientSettings();
+    }
+
+    /** Returns the GetFileIDsClientSettings specific test settings */
+    protected MutableGetFileIDsClientSettings getGetFileIDsClientSettings() {
+        return settings;
+    }
 }

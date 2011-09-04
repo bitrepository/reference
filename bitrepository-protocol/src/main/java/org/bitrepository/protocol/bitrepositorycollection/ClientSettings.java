@@ -24,10 +24,20 @@
  */
 package org.bitrepository.protocol.bitrepositorycollection;
 
+import org.bitrepository.collection.settings.standardsettings.StandardClientSettings;
+
 /**
  * Defines the client side settings for a Bit Repository collection.
  */
-public interface ClientSettings extends BitRepositoryCollectionSettings {
+public interface ClientSettings extends CollectionSettings {
+    
+    /** 
+     * Returns the standard client settings (shared across the collection) .
+     * 
+     * See {@link https://sbforge.org/display/BITMAG/BitRepositoryCollection} for details.
+     * @return The standard client settings.
+     */
+    public StandardClientSettings getStandardClientSettings();
 
     /**
      * Return the Id for the topic used for messages with are broadcasted to all clients for a given SLA. 
@@ -58,7 +68,7 @@ public interface ClientSettings extends BitRepositoryCollectionSettings {
     public long getConversationTimeout();
 
     /**
-     * The general timeout to use for identifying pillars.
+     * The general timeout to use for identifying pillars in milliseconds.
      * 
      * @Return The time to wait for identify responses before continuing.
      */

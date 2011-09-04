@@ -47,6 +47,8 @@ public final class JaxbHelper {
      * @throws JAXBException The attempt to load the xml into a new object representation failed
      */
     public static <T> T loadXml(Class<T> xmlroot, InputStream inputStream) throws JAXBException {
+        ArgumentValidator.checkNotNull(xmlroot, "xmlroot");
+        ArgumentValidator.checkNotNull(inputStream, "inputStream");
         JAXBContext context = JAXBContext.newInstance(xmlroot);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         return xmlroot.cast(unmarshaller.unmarshal(inputStream));
