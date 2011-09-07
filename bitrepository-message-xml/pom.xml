@@ -7,6 +7,7 @@
 		<version>0.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>bitrepository-message-xml</artifactId>
+                <version>0.3-SNAPSHOT</version>
 
 	<name>Bitrepository message xml definitions</name>
 	<description>Contains the definitions for the Bitrepository message content</description>
