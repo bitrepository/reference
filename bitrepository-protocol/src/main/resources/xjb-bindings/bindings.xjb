@@ -42,7 +42,7 @@
     </jaxb:bindings>
 
     <jaxb:bindings node="//xs:simpleType[@name='ERRORCODE_FINALRESPONSE_TYPE']">
-      <jaxb:typesafeEnumClass name="ErrorcodeCompleteType">
+      <jaxb:typesafeEnumClass name="ErrorcodeFinalresponseType">
         <jaxb:typesafeEnumMember value="581" name="OPERATION_FAILED" />
       </jaxb:typesafeEnumClass>
     </jaxb:bindings>
