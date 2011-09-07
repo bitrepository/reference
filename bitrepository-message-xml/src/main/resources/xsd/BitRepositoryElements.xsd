@@ -1238,11 +1238,6 @@
     Numbers may later be adjusted to fit a standard
     </xs:documentation></xs:annotation>
     <xs:restriction base="xs:positiveInteger">
-      <xs:enumeration value="561">
-        <xs:annotation><xs:documentation xml:lang="en">
-        Request was not understood
-        </xs:documentation></xs:annotation>
-      </xs:enumeration>
       <xs:enumeration value="581">
         <xs:annotation><xs:documentation xml:lang="en">
         Operation was not completed for unknown reason
@@ -1263,7 +1258,12 @@
       </xs:enumeration>
       <xs:enumeration value="502">
         <xs:annotation><xs:documentation xml:lang="en">
-        Duplicate FileID
+        Duplicate FileID in write request
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="561">
+        <xs:annotation><xs:documentation xml:lang="en">
+        Request was not understood
         </xs:documentation></xs:annotation>
       </xs:enumeration>
       <xs:enumeration value="500">
@@ -1307,7 +1307,7 @@
     <xs:annotation><xs:documentation xml:lang="en">
     Type of all codes for Identify Response messages.
     </xs:documentation></xs:annotation>
-    <xs:union memberTypes="IdentifyResponseCodePositive_TYPE ERRORCODE_GENERAL_TYPE ERRORCODE_FINALRESPONSE_TYPE"/>
+    <xs:union memberTypes="IdentifyResponseCodePositive_TYPE ERRORCODE_GENERAL_TYPE"/>
   </xs:simpleType>
 
   <xs:simpleType name="IdentifyResponseCodePositive_TYPE">

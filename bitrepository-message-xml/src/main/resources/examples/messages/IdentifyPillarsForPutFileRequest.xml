@@ -32,4 +32,6 @@ xmlns="http://bitrepository.org/BitRepositoryElements.xsd">
   <To>ToQueueOrTopic</To>
   <ReplyTo>MyQueueOrTopic</ReplyTo>
   <AuditTrailInformation>User: Name, Institution: Place</AuditTrailInformation>
+  <FileID>MyDataID</FileID>
+  <FileSize>10000</FileSize>
 </bro:IdentifyPillarsForPutFileRequest>

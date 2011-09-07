@@ -43,14 +43,14 @@
 
     <jaxb:bindings node="//xs:simpleType[@name='ERRORCODE_FINALRESPONSE_TYPE']">
       <jaxb:typesafeEnumClass name="ErrorcodeCompleteType">
-        <jaxb:typesafeEnumMember value="561" name="REQUEST_NOT_UNDERSTOOD" />
         <jaxb:typesafeEnumMember value="581" name="OPERATION_FAILED" />
       </jaxb:typesafeEnumClass>
     </jaxb:bindings>
     <jaxb:bindings node="//xs:simpleType[@name='ERRORCODE_GENERAL_TYPE']">
       <jaxb:typesafeEnumClass name="ErrorcodeGeneralType">
         <jaxb:typesafeEnumMember value="501" name="FILE_NOT_FOUND" />
-        <jaxb:typesafeEnumMember value="502" name="DUBLICATE_FILE" />
+        <jaxb:typesafeEnumMember value="502" name="DUPLICATE_FILE" />
+        <jaxb:typesafeEnumMember value="561" name="REQUEST_NOT_UNDERSTOOD" />
         <jaxb:typesafeEnumMember value="500" name="FAILURE" />
       </jaxb:typesafeEnumClass>
     </jaxb:bindings>
@@ -65,7 +65,7 @@
 
     <jaxb:bindings node="//xs:simpleType[@name='IdentifyResponseCodePositive_TYPE']">
       <jaxb:typesafeEnumClass name="IdentifyResponseCodePositiveType">
-        <jaxb:typesafeEnumMember value="440" name="EXPECT_SUCCESS" />
+        <jaxb:typesafeEnumMember value="440" name="IDENTIFICATION_POSITIVE" />
       </jaxb:typesafeEnumClass>
     </jaxb:bindings>
 
