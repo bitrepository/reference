@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Settings xmlns="http://bitrepository.org/collection/settings/StandardSettings.xsd" xmlns:bre="http://bitrepository.org/BitRepositoryElements.xsd">
+  <BitRepositoryCollectionID>TEST</BitRepositoryCollectionID>
+  <Protocol>
+    <LocalDestination>TEST-TOPIC-LOCAL</LocalDestination>
+    <CollectionDestination>TEST-TOPIC</CollectionDestination>
+    <AlarmDestination>TEST-TOPIC</AlarmDestination>
+    <MessageBusConfiguration>
+      <Name>kb-test-bus</Name>
+      <URL>tcp://sandkasse-01.kb.dk:61616</URL>
+      <Login></Login>
+      <Password></Password>
+    </MessageBusConfiguration>
+    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
+    <ConversationTimeout>
+      <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
+      <bre:TimeMeasureValue>3600000</bre:TimeMeasureValue>
+    </ConversationTimeout>
+  </Protocol>
+  <Pillar>
+    <ProgressResponseMandatory>true</ProgressResponseMandatory>
+    <AuditTrailLevel>HIGH</AuditTrailLevel>
+    <AlarmLevel>ERROR</AlarmLevel>
+  </Pillar>
+</Settings>

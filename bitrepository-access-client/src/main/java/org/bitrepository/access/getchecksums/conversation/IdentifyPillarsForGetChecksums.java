@@ -38,6 +38,7 @@ import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.exceptions.NoPillarFoundException;
+import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,17 +65,19 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
         identifyRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         identifyRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         identifyRequest.setBitRepositoryCollectionID(
-                conversation.settings.getStandardSettings().getBitRepositoryCollectionID());
+                conversation.settings.getBitRepositoryCollectionID());
         identifyRequest.setFileIDs(conversation.fileIDs);
-        identifyRequest.setReplyTo(conversation.settings.getClientTopicID());
-        identifyRequest.setTo(conversation.settings.getStandardSettings().getCollectionDestination());
+        identifyRequest.setReplyTo(conversation.settings.getProtocol().getLocalDestination());
+        identifyRequest.setTo(conversation.settings.getProtocol().getCollectionDestination());
         
         // TODO insert these variables?
         identifyRequest.setAuditTrailInformation(null);
         identifyRequest.setFileChecksumSpec(null);
 
         conversation.messageSender.sendMessage(identifyRequest);
-        timer.schedule(identifyTimeoutTask, conversation.settings.getIdentifyPillarsTimeout());
+        timer.schedule(identifyTimeoutTask, 
+                TimeMeasureComparator.getTimeMeasureInLong(
+                        conversation.settings.getGetChecksums().getIdentificationTimeout()));
     }
 
     /**

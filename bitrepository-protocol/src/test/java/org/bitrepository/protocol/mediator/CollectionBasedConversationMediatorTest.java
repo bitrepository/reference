@@ -24,7 +24,7 @@
  */
 package org.bitrepository.protocol.mediator;
 
-import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.testng.annotations.Test;
 
@@ -33,7 +33,7 @@ public class CollectionBasedConversationMediatorTest extends ConversationMediato
 
     @Override
     ConversationMediator<?> createMediator(
-            ClientSettings settings, 
+            Settings settings, 
             MessageBus messagebus,
             String listenerDestination) {
         return new CollectionBasedConversationMediator(settings, messagebus, listenerDestination);

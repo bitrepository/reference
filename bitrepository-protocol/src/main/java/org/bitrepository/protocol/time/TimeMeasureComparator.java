@@ -44,7 +44,7 @@ public class TimeMeasureComparator {
      * greater than the second.
      * @see Comparator
      */
-    public int compare(TimeMeasureTYPE time1, TimeMeasureTYPE time2) {
+    public static int compare(TimeMeasureTYPE time1, TimeMeasureTYPE time2) {
         ArgumentValidator.checkNotNull(time1, "time1");
         ArgumentValidator.checkNotNull(time2, "time2");
         return convertToMilliSeconds(time1).compareTo(convertToMilliSeconds(time2));
@@ -56,7 +56,7 @@ public class TimeMeasureComparator {
      * @return The time measure in miliseconds
      * @throws UnknownFormatConversionException Unable to interprete the supplied timeMeasure.
      */
-    private BigInteger convertToMilliSeconds(TimeMeasureTYPE timeMeasure) throws UnknownFormatConversionException {
+    private static BigInteger convertToMilliSeconds(TimeMeasureTYPE timeMeasure) throws UnknownFormatConversionException {
         if(timeMeasure.getTimeMeasureUnit().equals(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS)) {
             return timeMeasure.getTimeMeasureValue();
         } else if (timeMeasure.getTimeMeasureUnit().equals("SECONDS")) {
@@ -70,5 +70,24 @@ public class TimeMeasureComparator {
             throw new UnknownFormatConversionException ("Unable to compare times, unknown unit " + 
                     timeMeasure.getTimeMeasureUnit());
         }
+    }
+    
+    /**
+     * Compares a TimeMeasure to a long representation in milliseconds.
+     * @param time1 The TimeMeasure to compare.
+     * @param time2 The time in milliseconds to compare.
+     * @return -1 if time2 is larger, 0 if they are equals, or 1 if time1 is larger.
+     */
+    public static int compare(TimeMeasureTYPE time1, long time2) {
+        return convertToMilliSeconds(time1).compareTo(BigInteger.valueOf(time2));
+    }
+    
+    /**
+     * Method for converting a TimeMeasure into a long.
+     * @param time1 The TimeMeasure to convert.
+     * @return The value of the TimeMeasure as a long.
+     */
+    public static long getTimeMeasureInLong(TimeMeasureTYPE time1) {
+        return convertToMilliSeconds(time1).longValue();
     }
 }

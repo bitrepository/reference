@@ -51,7 +51,7 @@ public class PillarSelectorForGetChecksums {
      * Constructor.
      * @param pillars The IDs of the pillars to be selected.
      */
-    public PillarSelectorForGetChecksums(String ... pillars) {
+    public PillarSelectorForGetChecksums(Collection<String> pillars) {
         for(String p : pillars) {
             outstandingPillarsToSelect.add(p);
         }

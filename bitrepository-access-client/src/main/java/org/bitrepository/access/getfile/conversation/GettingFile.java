@@ -41,6 +41,7 @@ import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationTimeOutException;
+import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
@@ -87,12 +88,12 @@ class GettingFile extends GetFileState {
         }
 
         GetFileRequest getFileRequest = new GetFileRequest();
-        getFileRequest.setBitRepositoryCollectionID(conversation.settings.getStandardSettings().getBitRepositoryCollectionID());
+        getFileRequest.setBitRepositoryCollectionID(conversation.settings.getBitRepositoryCollectionID());
         getFileRequest.setCorrelationID(conversation.getConversationID());
         getFileRequest.setFileAddress(conversation.uploadUrl.toExternalForm());
         getFileRequest.setFileID(conversation.fileID);
         getFileRequest.setPillarID(conversation.selector.getIDForSelectedPillar());
-        getFileRequest.setReplyTo(conversation.settings.getClientTopicID());
+        getFileRequest.setReplyTo(conversation.settings.getProtocol().getLocalDestination());
         getFileRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         getFileRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         getFileRequest.setTo(conversation.selector.getDestinationForSelectedPillar());
@@ -159,7 +160,7 @@ class GettingFile extends GetFileState {
      * @return Returns the maximum time to wait for a GetFile primitive to complete.
      */
     private long getMaxTimeToWaitForGetFileToComplete() {
-        return conversation.settings.getGetFileDefaultTimeout();
+        return TimeMeasureComparator.getTimeMeasureInLong(conversation.settings.getGetFile().getOperationTimeout());
     }
 
     /**

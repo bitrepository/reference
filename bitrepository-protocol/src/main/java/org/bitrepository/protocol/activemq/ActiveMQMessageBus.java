@@ -66,7 +66,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.collection.settings.standardsettings.MessageBusConfiguration;
+import org.bitrepository.collection.settings.standardsettings.MessageBusConfigurationTYPE;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -111,7 +111,7 @@ public class ActiveMQMessageBus implements MessageBus {
     /** Map of topics, mapping from ID to topic. */
     private final Map<String, Topic> topics = new HashMap<String, Topic>();
     /** The configuration for the connection to the activeMQ. */
-    private final MessageBusConfiguration configuration;
+    private final MessageBusConfigurationTYPE configuration;
 
     /**
      * Use the {@link org.bitrepository.protocol.ProtocolComponentFactory} to get a handle on a instance of
@@ -120,7 +120,7 @@ public class ActiveMQMessageBus implements MessageBus {
      *
      * @param messageBusConfigurations The properties for the connection.
      */
-    public ActiveMQMessageBus(MessageBusConfiguration messageBusConfiguration) {
+    public ActiveMQMessageBus(MessageBusConfigurationTYPE messageBusConfiguration) {
         log.debug("Initializing ActiveMQConnection to '" + messageBusConfiguration + "'.");
         this.configuration = messageBusConfiguration;
 

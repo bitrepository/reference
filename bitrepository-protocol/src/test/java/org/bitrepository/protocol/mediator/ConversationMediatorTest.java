@@ -50,8 +50,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
-import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
+import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.protocol.bitrepositorycollection.MutableCollectionSettings;
 import org.bitrepository.protocol.conversation.AbstractConversation;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -64,7 +64,7 @@ import org.testng.annotations.Test;
  */
 @Test
 public abstract class ConversationMediatorTest {
-    protected MutableClientSettings settings = new MutableClientSettings(); 
+    protected MutableCollectionSettings settings = new MutableCollectionSettings(); 
 
     /**
      * Validates the core mediator functionality of delegating messages from the message bus to the relevant 
@@ -74,13 +74,13 @@ public abstract class ConversationMediatorTest {
     public void messagedelegationTest() {
         MessageBus messagebus = new MessageBusMock();
         String listenerDestination = "testDestination";
-        ConversationMediator mediator = createMediator(settings, messagebus, listenerDestination);
+        ConversationMediator mediator = createMediator(settings.getSettings(), messagebus, listenerDestination);
 
         mediator.addConversation(new ConversationStub(messagebus, "testConversation"));
     }
 
     abstract ConversationMediator<?> createMediator(
-            ClientSettings settings, 
+            Settings settings, 
             MessageBus messagebus,
             String listenerDestination);
 

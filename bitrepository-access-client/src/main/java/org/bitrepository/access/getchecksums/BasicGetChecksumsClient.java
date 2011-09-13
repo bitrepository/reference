@@ -26,15 +26,14 @@ package org.bitrepository.access.getchecksums;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collection;
 
 import org.bitrepository.access.getchecksums.conversation.SimpleGetChecksumsConversation;
-import org.bitrepository.access.getfile.conversation.SimpleGetFileConversation;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
@@ -44,7 +43,6 @@ import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 import org.bitrepository.protocol.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.protocol.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.messagebus.MessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +57,7 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /** The settings for this instance.*/
-    private final GetChecksumsClientSettings settings;
+    private final Settings settings;
     /** The messagebus for communication.*/
     private final MessageBus bus;
     
@@ -71,15 +69,15 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
      * @param messageBus The messagebus for communication.
      * @param settings The settings for this instance.
      */
-    public BasicGetChecksumsClient(MessageBus messageBus, GetChecksumsClientSettings settings) {
+    public BasicGetChecksumsClient(MessageBus messageBus, Settings settings) {
         this.bus = messageBus;
         this.settings = settings;
         conversationMediator = new CollectionBasedConversationMediator<SimpleGetChecksumsConversation>(settings, 
-                bus, settings.getClientTopicID());
+                bus, settings.getProtocol().getLocalDestination());
     }
     
     @Override
-    public void getChecksums(String[] pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, 
+    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, 
             EventHandler eventHandler) {
         ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "String[] pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
@@ -91,7 +89,7 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
     }
 
     @Override
-    public ResultingChecksums getChecksums(String[] pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec) 
+    public ResultingChecksums getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec) 
             throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "String[] pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
@@ -104,7 +102,7 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
     }
 
     @Override
-    public void getChecksums(String[] pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, URL addressForResult,
+    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, URL addressForResult,
             EventHandler eventHandler) {
         ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "String[] pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
@@ -126,7 +124,7 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
     }
 
     @Override
-    public void getChecksums(String[] pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, URL addressForResult)
+    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, URL addressForResult)
             throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "String[] pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");

@@ -24,7 +24,7 @@
  */
 package org.bitrepository.protocol.bus;
 
-import org.bitrepository.collection.settings.standardsettings.MessageBusConfiguration;
+import org.bitrepository.collection.settings.standardsettings.MessageBusConfigurationTYPE;
 
 /**
  * 
@@ -32,18 +32,18 @@ import org.bitrepository.collection.settings.standardsettings.MessageBusConfigur
  * Consider moving definitions to disk
  */
 public class MessageBusConfigurationFactory {
-
-	private MessageBusConfigurationFactory() {}
-
-	public static MessageBusConfiguration createDefaultConfiguration() {
-        MessageBusConfiguration config = new MessageBusConfiguration();
+    
+    private MessageBusConfigurationFactory() {}
+    
+    public static MessageBusConfigurationTYPE createDefaultConfiguration() {
+        MessageBusConfigurationTYPE config = new MessageBusConfigurationTYPE();
         config.setURL("failover://tcp://sandkasse-01.kb.dk:61616");
         return config;
-	}
-
-	public static MessageBusConfiguration createEmbeddedMessageBusConfiguration() {
-		MessageBusConfiguration config = new MessageBusConfiguration();
-		config.setURL("tcp://localhost:61616");
-		return config;
-	}
+    }
+    
+    public static MessageBusConfigurationTYPE createEmbeddedMessageBusConfiguration() {
+        MessageBusConfigurationTYPE config = new MessageBusConfigurationTYPE();
+        config.setURL("tcp://localhost:61616");
+        return config;
+    }
 }

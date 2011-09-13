@@ -30,6 +30,8 @@ import org.bitrepository.access.getfile.conversation.SimpleGetFileConversation;
 import org.bitrepository.access.getfile.selectors.FastestPillarSelectorForGetFile;
 import org.bitrepository.access.getfile.selectors.PillarSelectorForGetFile;
 import org.bitrepository.access.getfile.selectors.SpecificPillarSelectorForGetFile;
+import org.bitrepository.collection.settings.standardsettings.GetFileTYPE;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
@@ -53,7 +55,9 @@ public class SimpleGetFileClient implements GetFileClient {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /** The injected settings for the instance */
-    private final GetFileClientSettings settings; 
+    private final Settings settings;
+    /** The specific settings for the GetFileClient.*/
+    private final GetFileTYPE getfileSettings;
 
     /** The injected messagebus to use */
     private final MessageBus messageBus;
@@ -65,13 +69,14 @@ public class SimpleGetFileClient implements GetFileClient {
      * @param messageBus The message bus to use.
      * @param settings The settings to use.
      */
-    public SimpleGetFileClient(MessageBus messageBus, GetFileClientSettings settings) {
+    public SimpleGetFileClient(MessageBus messageBus, Settings settings) {
         conversationMediator = 
             new CollectionBasedConversationMediator<SimpleGetFileConversation>(
-                    settings, messageBus, settings.getClientTopicID());
+                    settings, messageBus, settings.getProtocol().getLocalDestination());
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         this.settings = settings;
+        this.getfileSettings = settings.getGetFile();
         this.messageBus = messageBus;
     }
 
@@ -82,9 +87,9 @@ public class SimpleGetFileClient implements GetFileClient {
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
 
         log.info("Requesting fastest retrieval of the file '" + fileID + "' which belong to the SLA '" + 
-                settings.getStandardSettings().getBitRepositoryCollectionID() + "'.");
-        getFile(messageBus, settings, new FastestPillarSelectorForGetFile(settings.getPillarIDs()), 
-                fileID, uploadUrl, eventHandler);				
+                settings.getBitRepositoryCollectionID() + "'.");
+        getFile(messageBus, settings, new FastestPillarSelectorForGetFile(settings.getGetFile().getPillarIDs()), 
+                fileID, uploadUrl, eventHandler);		
     }
 
     @Override
@@ -94,8 +99,8 @@ public class SimpleGetFileClient implements GetFileClient {
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
 
         log.info("Requesting fastest retrieval of the file '" + fileID + "' which belong to the SLA '" + 
-                settings.getStandardSettings().getBitRepositoryCollectionID() + "'.");
-        getFile(messageBus, settings, new FastestPillarSelectorForGetFile(settings.getPillarIDs()), 
+                settings.getBitRepositoryCollectionID() + "'.");
+        getFile(messageBus, settings, new FastestPillarSelectorForGetFile(settings.getGetFile().getPillarIDs()), 
                 fileID, uploadUrl);				
     }
 
@@ -130,7 +135,7 @@ public class SimpleGetFileClient implements GetFileClient {
      * @param selector Defines the algorithm for choosing the pillar to deliver the file.
      * @see GetFileClient
      */
-    private void getFile(MessageBus messageBus, GetFileClientSettings settings, PillarSelectorForGetFile selector, 
+    private void getFile(MessageBus messageBus, Settings settings, PillarSelectorForGetFile selector, 
             String fileID, URL uploadUrl, EventHandler eventHandler) {
         SimpleGetFileConversation conversation = 
             new SimpleGetFileConversation(messageBus, settings, selector, fileID, uploadUrl, eventHandler);
@@ -148,7 +153,7 @@ public class SimpleGetFileClient implements GetFileClient {
      * @param selector Defines the algorithm for choosing the pillar to deliver the file.
      * @see GetFileClient
      */
-    private void getFile(MessageBus messageBus, GetFileClientSettings settings, PillarSelectorForGetFile selector, 
+    private void getFile(MessageBus messageBus, Settings settings, PillarSelectorForGetFile selector, 
             String fileID, URL uploadUrl) 
     throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         SimpleGetFileConversation conversation = 

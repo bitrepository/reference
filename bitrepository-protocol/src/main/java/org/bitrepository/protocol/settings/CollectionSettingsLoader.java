@@ -1,8 +1,7 @@
 package org.bitrepository.protocol.settings;
 
-import org.bitrepository.collection.settings.standardsettings.StandardCollectionSettings;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.protocol.bitrepositorycollection.MutableCollectionSettings;
-import org.bitrepository.protocol.settings.specificsettings.SpecificCollectionSettings;
 
 public class CollectionSettingsLoader {
     protected final SettingsReader settingsReader;
@@ -18,7 +17,6 @@ public class CollectionSettingsLoader {
     }
     
     protected final void addCollectionSettings(String collectionID, MutableCollectionSettings settings) throws Exception {
-        settings.setStandardSettings(settingsReader.loadSettings(collectionID, StandardCollectionSettings.class));
-        settings.setSpecificSettings(settingsReader.loadSettings(collectionID, SpecificCollectionSettings.class));
+        settings.setSettings(settingsReader.loadSettings(collectionID, Settings.class));
     }
 }

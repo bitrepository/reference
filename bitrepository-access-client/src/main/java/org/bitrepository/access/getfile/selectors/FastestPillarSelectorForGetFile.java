@@ -24,6 +24,8 @@
  */
 package org.bitrepository.access.getfile.selectors;
 
+import java.util.Collection;
+
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.exceptions.UnableToFinishException;
@@ -44,7 +46,7 @@ public class FastestPillarSelectorForGetFile extends PillarSelectorForGetFile {
      * @param pillarsWhichShouldRespond List of pillars which should respond. Used by the selector to determine when all
      * relevant pillars has responded, which indicated the fastest pillar can be chosen.
      */
-    public FastestPillarSelectorForGetFile(String[] pillarsWhichShouldRespond) {
+    public FastestPillarSelectorForGetFile(Collection<String> pillarsWhichShouldRespond) {
         ArgumentValidator.checkNotNullOrEmpty(pillarsWhichShouldRespond, "pillarsWhichShouldRespond");
         responseStatus = new PillarsResponseStatus(pillarsWhichShouldRespond);
     }

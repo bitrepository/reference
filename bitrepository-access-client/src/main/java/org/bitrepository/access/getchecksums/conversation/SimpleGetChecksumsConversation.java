@@ -25,21 +25,23 @@
 package org.bitrepository.access.getchecksums.conversation;
 
 import java.net.URL;
+import java.util.Collection;
 import java.util.UUID;
 
-import org.bitrepository.access.getchecksums.GetChecksumsClientSettings;
 import org.bitrepository.access.getchecksums.selector.PillarSelectorForGetChecksums;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.protocol.conversation.AbstractConversation;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +58,7 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<URL> {
     /** The sender to use for dispatching messages */
     final MessageSender messageSender; 
     /** The configuration specific to the BitRepositoryCollection related to this conversion. */
-    final GetChecksumsClientSettings settings;
+    final Settings settings;
 
     /** The url which the pillar should upload the file to. */
     final URL uploadUrl;
@@ -83,8 +85,8 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<URL> {
      * @param pillars The pillars to retrieve the checksums from.
      * @param eventHandler The handler of events.
      */
-    public SimpleGetChecksumsConversation(MessageSender messageSender, GetChecksumsClientSettings settings, URL url,
-            FileIDs fileIds, ChecksumSpecs checksumsSpecs, String[] pillars, EventHandler eventHandler) {
+    public SimpleGetChecksumsConversation(MessageSender messageSender, Settings settings, URL url,
+            FileIDs fileIds, ChecksumSpecs checksumsSpecs, Collection<String> pillars, EventHandler eventHandler) {
         super(messageSender, UUID.randomUUID().toString());
         
         this.messageSender = messageSender;
@@ -116,7 +118,7 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<URL> {
         conversationState = initialConversationState;
         initialConversationState.start();                   
         if (eventHandler == null) {
-            waitFor(settings.getConversationTimeout());
+            waitFor(TimeMeasureComparator.getTimeMeasureInLong(settings.getProtocol().getConversationTimeout()));
         }
         if (operationFailedException != null) {
             throw operationFailedException;

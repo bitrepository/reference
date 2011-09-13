@@ -27,7 +27,7 @@ package org.bitrepository.protocol;
 import java.util.Date;
 
 import org.bitrepository.bitrepositorymessages.Alarm;
-import org.bitrepository.collection.settings.standardsettings.MessageBusConfiguration;
+import org.bitrepository.collection.settings.standardsettings.MessageBusConfigurationTYPE;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
@@ -60,7 +60,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
         QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
-        MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
+        MessageBusConfigurationTYPE conf = MessageBusConfigurationFactory.createDefaultConfiguration();
         ResendMessageListener listener = null;
 
         try {
@@ -102,11 +102,11 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
         long timeFrame = 60000L; // one minute in millis
-        long messagePerSec = 20;
+        long messagePerSec = 10;
         QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus and define the local broker.", "Both should be created.");
-        MessageBusConfiguration conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+        MessageBusConfigurationTYPE conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
         Assert.assertNotNull(conf);
         LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
         Assert.assertNotNull(broker);
@@ -164,7 +164,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
          * Constructor.
          * @param confs The configurations for declaring the message bus.
          */
-        public ResendMessageListener(MessageBusConfiguration conf) {
+        public ResendMessageListener(MessageBusConfigurationTYPE conf) {
             this.bus = new ActiveMQMessageBus(conf);
             this.count = 0;
 

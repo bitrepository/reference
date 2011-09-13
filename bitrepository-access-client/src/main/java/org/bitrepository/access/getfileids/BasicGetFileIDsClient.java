@@ -41,12 +41,13 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
-import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,13 +81,13 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
     private Map<String, CountDownLatch> getFileIDsFinalResponseCountDownLatchMap;
     /** Map from correlationID to List of GetFileIDsFinalResponse messages. */
     private Map<String, GetFileIDsFinalResponse> getFileIDsFinalResponseMap;
-    private final ClientSettings settings;
+    private final Settings settings;
 
-    public BasicGetFileIDsClient(MessageBus messageBus, ClientSettings settings) {
+    public BasicGetFileIDsClient(MessageBus messageBus, Settings settings) {
         this.settings = settings;
         this.messageBus = messageBus;
         // retrieve the queue from the configuration.
-        queue = settings.getClientTopicID();
+        queue = settings.getProtocol().getLocalDestination();
 
         messageListener = new GetFileIDsClientMessageListener(this);
 
@@ -109,11 +110,12 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         // create identifyPillarsForGetFileIDsRequest message
         String corrID = UUID.randomUUID().toString();
         log.debug("identifyPillarsForGetFileIDs new corrID " + corrID);
-        IdentifyPillarsForGetFileIDsRequest identifyRequest = GetFileIDsClientMessageFactory.
-                getIdentifyPillarsForGetFileIDsRequestMessage(corrID, bitRepositoryCollectionID, queue, null);
+        IdentifyPillarsForGetFileIDsRequest identifyRequest 
+                = GetFileIDsClientMessageFactory.getIdentifyPillarsForGetFileIDsRequestMessage(
+                        corrID, bitRepositoryCollectionID, queue, null);
 
         // put correlationId and new CountDownLatch in identifyResponseCountDownLatchMap
-        CountDownLatch countDownLatch = new CountDownLatch(settings.getPillarIDs().length);
+        CountDownLatch countDownLatch = new CountDownLatch(settings.getGetFileIDs().getPillarIDs().size());
         identifyResponseCountDownLatchMap.put(corrID, countDownLatch);
         // put correlationId and new empty List in identifyPillarsForGetFileIDsResponseMap
         List<IdentifyPillarsForGetFileIDsResponse> responses = new ArrayList<IdentifyPillarsForGetFileIDsResponse>();
@@ -124,7 +126,8 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
 
         // wait for messages (or until specified waiting time elapses)
         try {
-            boolean allPillarsResponded = countDownLatch.await(settings.getIdentifyPillarsTimeout(), TimeUnit.MILLISECONDS);
+            boolean allPillarsResponded = countDownLatch.await(
+                    TimeMeasureComparator.getTimeMeasureInLong(settings.getGetFileIDs().getIdentificationTimeout()), TimeUnit.MILLISECONDS);
             if (!allPillarsResponded) {
                 log.info("identifyPillarsForGetFileIDs time out. Not all pillars responded.");
             }
@@ -147,8 +150,8 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
             log.debug("getFileIDsFromFastestPillar new correlationID " + correlationID);
         }
         // create getFileIdsRequest
-        GetFileIDsRequest request = GetFileIDsClientMessageFactory.
-                getGetFileIDsRequestMessage(correlationID, bitRepositoryCollectionID, destination, pillarID, null, null);
+        GetFileIDsRequest request = GetFileIDsClientMessageFactory.getGetFileIDsRequestMessage(correlationID, 
+                bitRepositoryCollectionID, destination, pillarID, null, null);
 
         // put correlationID and new CountDownLatches in appropriate Maps
         CountDownLatch progressResponseCountDown = new CountDownLatch(1);
@@ -162,7 +165,9 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
 
         // wait for messages (or until specified waiting time elapses)
         try {
-            boolean responseOk = progressResponseCountDown.await(settings.getConversationTimeout(), TimeUnit.MILLISECONDS);
+            boolean responseOk = progressResponseCountDown.await(
+                    TimeMeasureComparator.getTimeMeasureInLong(settings.getGetFileIDs().getOperationTimeout()), 
+                    TimeUnit.MILLISECONDS);
             if (responseOk) {
                 GetFileIDsProgressResponse response = getFileIDsProgressResponseMap.get(correlationID);
                 // TODO how do we want to use the response?
@@ -176,7 +181,8 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         }
 
         try {
-            boolean completeOk = finalResponseCountDown.await(settings.getConversationTimeout(), TimeUnit.MILLISECONDS);
+            boolean completeOk = finalResponseCountDown.await(
+                    TimeMeasureComparator.getTimeMeasureInLong(settings.getGetFileIDs().getOperationTimeout()), TimeUnit.MILLISECONDS);
             if (completeOk) {
                 return getFileIDsFinalResponseMap.get(correlationID);
                 // TODO use other parts of final response message ?
@@ -252,42 +258,42 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         }
     }
 
-    @Override
+//    @Override
     public ResultingFileIDs getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
+//    @Override
     public void getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs, EventHandler eventHandler) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
+//    @Override
     public void getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
+//    @Override
     public void getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl, EventHandler eventHandler) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
+//    @Override
     public ResultingFileIDs getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID, FileIDs fileIDs) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
+//    @Override
     public void getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID, FileIDs fileIDs, EventHandler eventHandler) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
+//    @Override
     public void getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl) throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
+//    @Override
     public void getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl, EventHandler eventHandler) {
         //To change body of implemented methods use File | Settings | File Templates.
     }

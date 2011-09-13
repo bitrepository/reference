@@ -26,16 +26,12 @@ package org.bitrepository.access;
 
 import org.bitrepository.access.getchecksums.BasicGetChecksumsClient;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
-import org.bitrepository.access.getchecksums.GetChecksumsClientSettings;
 import org.bitrepository.access.getfile.GetFileClient;
-import org.bitrepository.access.getfile.GetFileClientSettings;
 import org.bitrepository.access.getfile.SimpleGetFileClient;
 import org.bitrepository.access.getfileids.BasicGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
-import org.bitrepository.access_client.configuration.AccessConfiguration;
-import org.bitrepository.common.ConfigurationFactory;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.ModuleCharacteristics;
-import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusFactory;
 
@@ -62,8 +58,6 @@ public class AccessComponentFactory {
 
     /** The characteristics for this module.*/
     private ModuleCharacteristics moduleCharacter;
-    /** The configuration for this module.*/
-    private AccessConfiguration config;
 
     /**
      * Private constructor for initialization of the singleton.
@@ -81,28 +75,15 @@ public class AccessComponentFactory {
     }
 
     /**
-     * Method for extracting the configuration for the access module.
-     * @return The access module configuration.
-     */
-    public AccessConfiguration getConfig() {
-        if (config == null) {
-            ConfigurationFactory configurationFactory = new ConfigurationFactory();
-            config =
-                configurationFactory.loadConfiguration(getModuleCharacteristics(), AccessConfiguration.class);
-        }
-        return config;
-    }
-
-    /**
      * Method for getting a GetFileClient as defined in the access configuration.<p>
      *
      * @param settings The settings for the GetFileClient.
      * @return A GetFileClient.
      */
-    public GetFileClient createGetFileClient(GetFileClientSettings settings) {
+    public GetFileClient createGetFileClient(Settings settings) {
         return new SimpleGetFileClient(
                 MessageBusFactory.createMessageBus(
-                        settings.getStandardSettings().getMessageBusConfiguration()),
+                        settings.getProtocol().getMessageBusConfiguration()),
                 settings);
     }
     
@@ -111,9 +92,9 @@ public class AccessComponentFactory {
      * @param settings The settings for the GetChecksumsClient.
      * @return The GetChecksumsClient
      */
-    public GetChecksumsClient createGetChecksumsClient(GetChecksumsClientSettings settings) {
+    public GetChecksumsClient createGetChecksumsClient(Settings settings) {
         return new BasicGetChecksumsClient(
-                MessageBusFactory.createMessageBus(settings.getStandardSettings().getMessageBusConfiguration()),
+                MessageBusFactory.createMessageBus(settings.getProtocol().getMessageBusConfiguration()),
                 settings);
     }
 
@@ -122,7 +103,7 @@ public class AccessComponentFactory {
      *
      * @return A GetFileIDsClient.
      */
-    public GetFileIDsClient createGetFileIDsClient(MessageBus messageBus, ClientSettings settings) {
+    public GetFileIDsClient createGetFileIDsClient(MessageBus messageBus, Settings settings) {
         return new BasicGetFileIDsClient(messageBus, settings);
     }
 

@@ -24,7 +24,7 @@
  */
 package org.bitrepository.protocol.messagebus;
 
-import org.bitrepository.collection.settings.standardsettings.MessageBusConfiguration;
+import org.bitrepository.collection.settings.standardsettings.MessageBusConfigurationTYPE;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 
 /**
@@ -39,7 +39,7 @@ public class MessageBusFactory {
      * @param configuration
      * @return
      */
-    public static MessageBus createMessageBus(MessageBusConfiguration configuration) {
+    public static MessageBus createMessageBus(MessageBusConfigurationTYPE configuration) {
         return new ActiveMQMessageBus(configuration);
     }
 }

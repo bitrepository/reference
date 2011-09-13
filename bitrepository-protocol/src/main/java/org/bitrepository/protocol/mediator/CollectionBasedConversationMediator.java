@@ -57,9 +57,10 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.protocol.conversation.Conversation;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +75,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     /** Registered conversations, mapping from correlation ID to conversation. */
     private final Map<String, T> conversations;
     /** The injected settings defining the mediator behavior */
-    private final ClientSettings settings;
+    private final Settings settings;
     /** The timer used to schedule cleaning of conversations.
      * @see ConversationCleaner 
      */
@@ -89,7 +90,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
      * @param listenerDestination The destinations to mediate messages for.
      */
     public CollectionBasedConversationMediator(
-            ClientSettings settings, 
+            Settings settings, 
             MessageBus messagebus,
             String listenerDestination) {
         log.debug("Initializing the CollectionBasedConversationMediator");
@@ -97,7 +98,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         messagebus.addListener(listenerDestination, this);
         this.settings = settings;
         cleanTimer = new Timer(true);
-        cleanTimer.scheduleAtFixedRate(new ConversationCleaner(), 0, settings.getMediatorCleanInterval());
+        cleanTimer.scheduleAtFixedRate(new ConversationCleaner(), 0, settings.getProtocol().getMediatorCleanupInterval());
     }
 
     @Override
@@ -460,7 +461,8 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
             for (Conversation conversation: conversationArray) {
                 if (conversation.hasEnded()) { 
                     conversations.remove(conversation.getConversationID());
-                } else if (currentTime - conversation.getStartTime() > settings.getConversationTimeout()) {
+                } else if (TimeMeasureComparator.compare(settings.getProtocol().getConversationTimeout(), 
+                        currentTime - conversation.getStartTime()) < 0) {
                     log.warn("Failing timed out conversation " + conversation.getConversationID());
                     failConversation(conversation, 
                             "Failing timed out conversation " + conversation.getConversationID());

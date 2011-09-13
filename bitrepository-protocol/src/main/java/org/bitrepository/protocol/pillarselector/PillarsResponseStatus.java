@@ -25,6 +25,7 @@
 package org.bitrepository.protocol.pillarselector;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,9 +39,9 @@ public class PillarsResponseStatus {
      * Constructor.
      * @param pillarsWhichShouldRespond An array of pillar IDs specifying which pillars are expected to respond 
      */
-    public PillarsResponseStatus(String[] pillarsWhichShouldRespond) {
-        this.pillarsWhichShouldRespond = new HashSet<String>(Arrays.asList(pillarsWhichShouldRespond));
-        this.pillarsWithOutstandingResponse = new HashSet<String>(Arrays.asList(pillarsWhichShouldRespond));
+    public PillarsResponseStatus(Collection<String> pillarsWhichShouldRespond) {
+        this.pillarsWhichShouldRespond = new HashSet<String>(pillarsWhichShouldRespond);
+        this.pillarsWithOutstandingResponse = new HashSet<String>(pillarsWhichShouldRespond);
     }
 
     /**

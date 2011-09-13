@@ -1,5 +1,6 @@
 package org.bitrepository.protocol.settings;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.bitrepository.common.JaxbHelper;
@@ -39,8 +40,11 @@ public class XMLFileSettingsLoader implements SettingsReader {
         String fileLocation = pathToSettingsFiles + "/" + collectionID + "/" + settingsClass.getSimpleName() + ".xml";
         InputStream configStream = ClassLoader.getSystemResourceAsStream(fileLocation);
         if (configStream == null) {
-            throw new IllegalArgumentException("Unable to find settings from " + fileLocation + " in classpath");
+            configStream = new FileInputStream(fileLocation);
         }
+//        if (configStream == null) {
+//            throw new IllegalArgumentException("Unable to find settings from " + fileLocation + " in classpath");
+//        }
         log.debug("Loading the settings file '" + fileLocation + "'.");
         return (T) JaxbHelper.loadXml(settingsClass, configStream);
     }

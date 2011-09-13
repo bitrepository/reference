@@ -25,6 +25,7 @@
 package org.bitrepository.access.getfile.selectors;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 import org.bitrepository.access.getfile.TestGetFileMessageFactory;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
@@ -50,7 +51,7 @@ public class FastestPillarSelectorForGetFileTest {
     
     @BeforeMethod (alwaysRun=true)
     public void setup() {
-        selector = new FastestPillarSelectorForGetFile(PILLAR_IDS);
+        selector = new FastestPillarSelectorForGetFile(Arrays.asList(PILLAR_IDS));
     }
 
     @Test (groups = { "regressiontest" })

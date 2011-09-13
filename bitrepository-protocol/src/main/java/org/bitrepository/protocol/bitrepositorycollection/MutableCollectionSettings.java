@@ -1,7 +1,7 @@
 package org.bitrepository.protocol.bitrepositorycollection;
 
-import org.bitrepository.collection.settings.standardsettings.StandardCollectionSettings;
-import org.bitrepository.protocol.settings.specificsettings.SpecificCollectionSettings;
+import org.bitrepository.collection.settings.specificsettings.SpecificCollectionSettings;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 
 /**
  * Modifiable implementation of the <code>CollectionSettings</code> interface.
@@ -9,24 +9,24 @@ import org.bitrepository.protocol.settings.specificsettings.SpecificCollectionSe
 public class MutableCollectionSettings implements CollectionSettings {
 
     /** @see #getStandardSettings()  */
-    private StandardCollectionSettings standardSettings;
+    private Settings settings;
     @Override
-    public StandardCollectionSettings getStandardSettings() {
-        return standardSettings;
+    public Settings getSettings() {
+        return settings;
     }
     /** @see #getStandardSettings()  */
-    public void setStandardSettings(StandardCollectionSettings standardSettings) {
-        this.standardSettings = standardSettings;
+    public void setSettings(Settings settings) {
+        this.settings = settings;
     }
     
-    /** @see #getStandardSettings()  */
-    private SpecificCollectionSettings specificSettings;
-    @Override
-    public SpecificCollectionSettings getSpecificSettings() {
-        return specificSettings;
-    }
-    /** @see #getSpecificSettings()  */
-    public void setSpecificSettings(SpecificCollectionSettings specificSettings) {
-        this.specificSettings = specificSettings;
-    }
+//    /** @see #getStandardSettings()  */
+//    private SpecificCollectionSettings specificSettings;
+//    @Override
+//    public SpecificCollectionSettings getSpecificSettings() {
+//        return specificSettings;
+//    }
+//    /** @see #getSpecificSettings()  */
+//    public void setSpecificSettings(SpecificCollectionSettings specificSettings) {
+//        this.specificSettings = specificSettings;
+//    }
 }

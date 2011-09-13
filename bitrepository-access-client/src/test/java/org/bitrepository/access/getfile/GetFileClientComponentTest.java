@@ -48,7 +48,7 @@ import org.testng.annotations.Test;
 public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     //    @Test(groups = {"regressiontest"})
     public void verifyGetFileClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings()) 
+        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(settings) 
                 instanceof SimpleGetFileClient, 
                 "The default GetFileClient from the Access factory should be of the type '" + 
                 SimpleGetFileClient.class.getName() + "'.");
@@ -60,10 +60,12 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         "participates");
         addStep("Set the number of pillars for this SLA to 1", "");
 
-        getFileClientSettings().setPillarIDs(new String[] {PILLAR1_ID});
+        System.out.println(settings);
+        settings.getGetFile().getPillarIDs().clear();
+        settings.getGetFile().getPillarIDs().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetFileClient getFileClient = 
-            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings()), 
+            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(settings), 
                     testEventManager);
 
         addStep("Ensure the file isn't already present on the http server", "");
@@ -96,7 +98,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                     testMessageFactory.createGetFileRequest(receivedGetFileRequest,PILLAR1_ID, pillar1DestinationId));
         }
 
-        for(int i = 0; i < getFileClientSettings().getPillarIDs().length; i++) {
+        for(int i = 0; i < settings.getGetFile().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
@@ -140,10 +142,13 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         String averagePillarID = "THE-AVERAGE-PILLAR";
         String fastPillarID = "THE-FAST-PILLAR";
         String slowPillarID = "THE-SLOW-PILLAR";
-        getFileClientSettings().setPillarIDs(new String[] {averagePillarID, fastPillarID, slowPillarID});
+        settings.getGetFile().getPillarIDs().clear();
+        settings.getGetFile().getPillarIDs().add(averagePillarID);
+        settings.getGetFile().getPillarIDs().add(fastPillarID);
+        settings.getGetFile().getPillarIDs().add(slowPillarID);
         GetFileClient getFileClient = 
             new GetFileClientTestWrapper(
-                    AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings()), 
+                    AccessComponentFactory.getInstance().createGetFileClient(settings), 
                     testEventManager);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
 
@@ -212,11 +217,12 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         String averagePillarID = "THE-AVERAGE-PILLAR";
         String fastPillarID = "THE-FAST-PILLAR";
         String slowPillarID = "THE-SLOW-PILLAR";
-        getFileClientSettings().setPillarIDs(
-                new String[] {averagePillarID, fastPillarID, slowPillarID});
-        getFileClientSettings().setIdentifyPillarsTimeout(3000);
+        settings.getGetFile().getPillarIDs().clear();
+        settings.getGetFile().getPillarIDs().add(averagePillarID);
+        settings.getGetFile().getPillarIDs().add(fastPillarID);
+        settings.getGetFile().getPillarIDs().add(slowPillarID);
         GetFileClient getFileClient = 
-            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings()), 
+            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(settings), 
                     testEventManager);
 
         addStep("Make the GetClient ask for fastest pillar.",  
@@ -269,14 +275,13 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addDescription("Tests the th eGetFileClient handles lack of IdentifyPillarResponses gracefully  ");
         addStep("Set the number of pillars for this SLA to 1 and a 3 second timeout for identifying pillar.", "");
 
-        getFileClientSettings().setPillarIDs(new String[] {PILLAR1_ID});
-        getFileClientSettings().setIdentifyPillarsTimeout(3000);
+        settings.getGetFile().getPillarIDs().clear();
+        settings.getGetFile().getPillarIDs().add(PILLAR1_ID);
         GetFileClient getFileClient = 
                 new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(
-                        getFileClientSettings()), 
-                        testEventManager);
+                        settings), testEventManager);
         
-            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings()), 
+            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(settings), 
                     testEventManager);
         addStep("Make the GetClient ask for fastest pillar.",  
         "It should send message to identify which pillar can respond fastest.");
@@ -297,13 +302,12 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addDescription("Tests the th eGetFileClient handles lack of IdentifyPillarResponses gracefully  ");
         addStep("Set the number of pillars for this SLA to 1 and a 3 second timeout for the conversation.", "");
 
-        getFileClientSettings().setPillarIDs(new String[] {PILLAR1_ID});
-        getFileClientSettings().setConversationTimeout(3000);
+        settings.getGetFile().getPillarIDs().clear();
+        settings.getGetFile().getPillarIDs().add(PILLAR1_ID);
         GetFileClient getFileClient = 
                 new GetFileClientTestWrapper(
-                        AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings()), 
-                        testEventManager);
-            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings()), 
+                        AccessComponentFactory.getInstance().createGetFileClient(settings), testEventManager);
+            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(settings), 
                     testEventManager);
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.", 
         "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
@@ -344,7 +348,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addStep("Setting up variables and such.", "Should be OK.");
         
         String fileName = "ERROR-NO-SUCH-FILE-ERROR";
-        GetFileClient gfc = new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings()), 
+        GetFileClient gfc = new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(settings), 
                 testEventManager);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         URL url = httpServer.getURL(DEFAULT_FILE_ID);

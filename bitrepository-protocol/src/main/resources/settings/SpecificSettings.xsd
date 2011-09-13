@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <xs:schema 
-  targetNamespace="http://bitrepository.org/protocol/settings/SpecificSettings.xsd"
+  targetNamespace="http://bitrepository.org/collection/settings/SpecificSettings.xsd"
   attributeFormDefault="unqualified" elementFormDefault="qualified"
 
-  xmlns="http://bitrepository.org/protocol/settings/SpecificSettings.xsd" 
+  xmlns="http://bitrepository.org/collection/settings/SpecificSettings.xsd" 
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bre="http://bitrepository.org/BitRepositoryElements.xsd">
 

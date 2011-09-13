@@ -13,184 +13,426 @@
     xsd outside of the module -->
   <xs:import schemaLocation="BitRepositoryElements.xsd" namespace="http://bitrepository.org/BitRepositoryElements.xsd" />
 
-  <xs:element name="StandardCollectionSettings">
-    <xs:annotation>
-      <xs:documentation xml:lang="en">
-        The Standard settings for a Bit Repository Collection system
-      </xs:documentation>
-    </xs:annotation>
+  <xs:element name="Settings">
+    <xs:annotation><xs:documentation xml:lang="en">
+      The settings for the BitRepository
+    </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="BitRepositoryCollectionID" type="bre:BitRepositoryCollectionID_TYPE">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The unique identifier for the collection.
-          </xs:documentation>
-          </xs:annotation>
+        <xs:element name="BitRepositoryCollectionID" type="xs:string" minOccurs="1" maxOccurs="1">
+          <xs:annotation><xs:documentation xml:lang="en">
+            The ID for the BitRepositoryCollection
+          </xs:documentation></xs:annotation>
         </xs:element>
-        <xs:element ref="MessageBusConfiguration">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The configurations for the message bus
-            </xs:documentation>
-          </xs:annotation>
+        <xs:element name="Protocol" type="Protocol_TYPE" minOccurs="1" maxOccurs="1">
+          <xs:annotation><xs:documentation xml:lang="en">
+            The protocol settings
+          </xs:documentation></xs:annotation>
         </xs:element>
-        <xs:element name="CollectionDestination" type="bre:QueueTopicName_TYPE">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The destination (topic/queue) to use for exchanging general messages, like IdentifyPillarForXXXRequests.
-            </xs:documentation>
-          </xs:annotation>
+        <xs:element name="Pillar" type="Pillar_TYPE" minOccurs="0" maxOccurs="1">
+          <xs:annotation><xs:documentation xml:lang="en">
+            The settings for the pillar
+          </xs:documentation></xs:annotation>
         </xs:element>
-        <xs:element name="AlarmDestination" type="bre:QueueTopicName_TYPE">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The destination (topic/queue) for exchanging alarms.
-            </xs:documentation>
-          </xs:annotation>
+        <xs:element name="AlarmService" type="AlarmService_TYPE" minOccurs="0" maxOccurs="1">
+          <xs:annotation><xs:documentation xml:lang="en">
+            The settings for the Alarm service.
+          </xs:documentation></xs:annotation>
         </xs:element>
-        <xs:element name="Certificates" type="xs:string">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The set of certificates to use for this collection. Format
-              definition pending.
-            </xs:documentation>
-          </xs:annotation>
+        <xs:element name="DeleteFile" type="DeleteFile_TYPE" minOccurs="0" maxOccurs="1">
+          <xs:annotation><xs:documentation xml:lang="en">
+            The settings for the DeleteClient
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="GetAuditTrail" type="GetAuditTrail_TYPE" minOccurs="0" maxOccurs="1">
+          <xs:annotation><xs:documentation xml:lang="en">
+            The settings for the GetAuditTrailClient
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="GetChecksums" type="GetChecksums_TYPE" minOccurs="0" maxOccurs="1">
+          <xs:annotation><xs:documentation xml:lang="en">
+            The settings for the GetChecksumsClient
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="GetFile" type="GetFile_TYPE" minOccurs="0" maxOccurs="1">
+          <xs:annotation><xs:documentation xml:lang="en">
+            The settings for the GetFileClient
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="GetFileIDs" type="GetFileIDs_TYPE" minOccurs="0" maxOccurs="1">
+          <xs:annotation><xs:documentation xml:lang="en">
+            The settings for the GetFileIDsClient
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="GetStatus" type="GetStatus_TYPE" minOccurs="0" maxOccurs="1">
+          <xs:annotation><xs:documentation xml:lang="en">
+            The settings for the GetStatusClient.
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="PutFile" type="PutFile_TYPE" minOccurs="0" maxOccurs="1">
+          <xs:annotation><xs:documentation xml:lang="en">
+            The settings for the PutFileClient
+          </xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="ReplaceFile" type="ReplaceFile_TYPE" minOccurs="0" maxOccurs="1">
+          <xs:annotation><xs:documentation xml:lang="en">
+            The settings for the ReplaceClient.
+          </xs:documentation></xs:annotation>
         </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="StandardClientSettings">
-    <xs:annotation>
-      <xs:documentation xml:lang="en">
-        The Standard settings for a Bit Repository Collection system
-      </xs:documentation>
-    </xs:annotation>
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="ProgressResponseMandatory" type="xs:boolean">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              Defines whether progress responds should be set after receiving
-              a operation request.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="ChecksumTypes" type="Checksum_TYPES">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              Checksumstype to use in verifications.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element ref="AuditTrailSettings">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              Defines the general audit trail settings for the collection.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+<!-- PROTOCOL SETTINGS BEGIN -->
 
-  <xs:element name="MessageBusConfiguration">
-    <xs:annotation>
-      <xs:documentation xml:lang="en">
-        The configuration for
-        a message bus (may consist of several brokers)
-      </xs:documentation>
-    </xs:annotation>
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="Name" type="xs:string">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The name of the message bus
-          </xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="URL" type="xs:string">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              This is where the message bus can be found
-          </xs:documentation>
-          </xs:annotation>
-        </xs:element> 
-        <xs:element name="Login" type="xs:string">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The login name
-          </xs:documentation>
-          </xs:annotation>
-        </xs:element> 
-        <xs:element name="Password" type="xs:string">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The login password
-          </xs:documentation>
-          </xs:annotation>
-        </xs:element>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-
-  <xs:complexType name="Checksum_TYPES">
+  <xs:complexType name="Protocol_TYPE">
+    <xs:annotation><xs:documentation>The settings for the protocol</xs:documentation></xs:annotation>
     <xs:sequence>
-      <xs:element name="ChecksumType" type="bre:ChecksumType_TYPE">
-        <xs:annotation>
-          <xs:documentation xml:lang="en">
-            The checksum type
-        </xs:documentation>
-        </xs:annotation>
+      <xs:element name="LocalDestination" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation><xs:documentation xml:lang="en">
+          The destination for this client, service or pillar.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="CollectionDestination" type="bre:QueueTopicName_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+          The destination for the BitRepository participants to communicate upon.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="AlarmDestination" type="bre:QueueTopicName_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+          The destination (topic/queue) for exchanging alarms.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="Certificates" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation><xs:documentation xml:lang="en">
+          The set of certificates to use for this collection. Format definition pending.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="MessageBusConfiguration" type="MessageBusConfiguration_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+          The configuration for the MessageBus.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="MediatorCleanupInterval" type="xs:long">
+        <xs:annotation><xs:documentation xml:lang="en">
+          The amount of milliseconds between the cleanups in the ConversationMediator.
+          <!-- TODO should be moved to specific settings. --> 
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="ConversationTimeout" type="bre:TimeMeasure_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+          The timeout for a conversation. 
+          <!-- TODO should be moved to specific settings. --> 
+        </xs:documentation></xs:annotation>
       </xs:element>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:element name="AuditTrailSettings">
-    <xs:annotation>
-      <xs:documentation xml:lang="en">
-        Definition of audit trail information to maintain in the system
-        components.
-    </xs:documentation>
-    </xs:annotation>
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="AuditTrailLevel">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              Definition of the level of audit trail information to maintain
-              in the system components.
-          </xs:documentation>
-          </xs:annotation>
-          <xs:simpleType>
-            <xs:restriction base="xs:string">
-              <xs:enumeration value="LOW">
-                <xs:annotation>
-                  <xs:documentation xml:lang="en">
-                    Minimum level of of audit trail information
-                </xs:documentation>
-                </xs:annotation>
-              </xs:enumeration>
-              <xs:enumeration value="MEDIUM">
-                <xs:annotation>
-                  <xs:documentation xml:lang="en">
-                    Standard level of of audit trail information
-                </xs:documentation>
-                </xs:annotation>
-              </xs:enumeration>
-              <xs:enumeration value="HIGH">
-                <xs:annotation>
-                  <xs:documentation xml:lang="en">
-                    Lots of audit trail information
-                </xs:documentation>
-                </xs:annotation>
-              </xs:enumeration>
-            </xs:restriction>
-          </xs:simpleType>
-        </xs:element>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+  <xs:complexType name="MessageBusConfiguration_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+        The configuration for a message bus (may consist of several brokers)
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="Name" type="xs:string">
+        <xs:annotation><xs:documentation xml:lang="en">
+          The name of the message bus
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="URL" type="xs:string">
+        <xs:annotation><xs:documentation xml:lang="en">
+          This is where the message bus can be found
+        </xs:documentation></xs:annotation>
+      </xs:element> 
+      <xs:element name="Login" type="xs:string">
+        <xs:annotation><xs:documentation xml:lang="en">
+          The login name
+        </xs:documentation></xs:annotation>
+      </xs:element> 
+      <xs:element name="Password" type="xs:string">
+        <xs:annotation><xs:documentation xml:lang="en">
+          The login password
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+<!-- PROTOCOL SETTINGS END -->
+
+<!-- PILLAR SETTINGS BEGIN -->
+
+  <xs:complexType name="Pillar_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+      The settings for the protocol
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="ProgressResponseMandatory" type="xs:boolean">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Defines whether progress responds should be set after receiving a operation request.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="AuditTrailLevel" type="AuditTrailLevel_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+          The level for keeping AuditTrails.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="AlarmLevel" type="AlarmLevel_TYPE">
+        <xs:annotation><xs:documentation xml:lang="en">
+          The level for raising Alarms.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+<!-- PILLAR SETTINGS END -->
+
+<!-- ALARM SERVICE SETTINGS BEGIN -->
+
+  <xs:complexType name="AlarmService_TYPE">
+    <xs:annotation><xs:documentation>
+      The settings for the Alarm service.
+    </xs:documentation></xs:annotation>
+  </xs:complexType>
+  
+<!-- ALARM SERVICE SETTINGS END -->
+
+<!-- DELETE FILE SETTINGS BEGIN -->
+
+  <xs:complexType name="DeleteFile_TYPE">
+    <xs:annotation><xs:documentation>
+      The settings for the DeleteFileClient
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="IdentificationTimeout" type="bre:TimeMeasure_TYPE">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  
+<!-- DELETE FILE SETTINGS END -->
+
+<!-- GETAUDITTRAIL SETTINGS BEGIN -->
+
+  <xs:complexType name="GetAuditTrail_TYPE">
+    <xs:annotation><xs:documentation>
+      The settings for the GetAuditTrailClient.
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="IdentificationTimeout" type="bre:TimeMeasure_TYPE">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  
+<!-- GETAUDITTRAIL SETTINGS END -->
+
+<!-- GETCHECKSUMS SETTINGS BEGIN -->
+
+  <xs:complexType name="GetChecksums_TYPE">
+    <xs:annotation><xs:documentation>
+      The settings for the GetChecksumsClient.
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="IdentificationTimeout" type="bre:TimeMeasure_TYPE">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="OperationTimeout" type="bre:TimeMeasure_TYPE">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="PillarIDs" type="xs:string" minOccurs="1" maxOccurs="unbounded">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  
+<!-- GETCHECKSUMS SETTINGS END -->
+
+<!-- GETFILE SETTINGS BEGIN -->
+
+  <xs:complexType name="GetFile_TYPE">
+    <xs:annotation><xs:documentation>
+      The settings for the GetFileClient.
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="IdentificationTimeout" type="bre:TimeMeasure_TYPE">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="OperationTimeout" type="bre:TimeMeasure_TYPE">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="PillarIDs" type="xs:string" minOccurs="1" maxOccurs="unbounded">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  
+<!-- GETFILE SETTINGS END -->
+
+<!-- GETFILEIDS SETTINGS BEGIN -->
+
+  <xs:complexType name="GetFileIDs_TYPE">
+    <xs:annotation><xs:documentation>
+      The settings for the GetFileIDsClient.
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="IdentificationTimeout" type="bre:TimeMeasure_TYPE">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="OperationTimeout" type="bre:TimeMeasure_TYPE">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="PillarIDs" type="xs:string" minOccurs="1" maxOccurs="unbounded">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  
+<!-- GETFILEIDS SETTINGS END -->
+
+<!-- GETSTATUS SETTINGS BEGIN -->
+
+  <xs:complexType name="GetStatus_TYPE">
+    <xs:annotation><xs:documentation>
+      The settings for the GetStatusClient.
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="IdentificationTimeout" type="bre:TimeMeasure_TYPE">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="OperationTimeout" type="bre:TimeMeasure_TYPE">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="PillarIDs" type="xs:string" minOccurs="1" maxOccurs="unbounded">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  
+<!-- GETSTATUS SETTINGS END -->
+
+<!-- PUTFILE SETTINGS BEGIN -->
+
+  <xs:complexType name="PutFile_TYPE">
+    <xs:annotation><xs:documentation>
+      The settings for the PutFileClient.
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="IdentificationTimeout" type="bre:TimeMeasure_TYPE">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="OperationTimeout" type="bre:TimeMeasure_TYPE">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="PillarIDs" type="xs:string" minOccurs="1" maxOccurs="unbounded">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  
+<!-- PUTFILE SETTINGS END -->
+
+<!-- REPLACE FILE SETTINGS BEGIN -->
+
+  <xs:complexType name="ReplaceFile_TYPE">
+    <xs:annotation><xs:documentation>
+      The settings for the ReplaceFileClient
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="IdentificationTimeout" type="bre:TimeMeasure_TYPE">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  
+<!-- REPLACE FILE SETTINGS END -->
+
+<!-- COMMON ELEMENTS BEGIN -->
+<!-- Elements to be used in the settings of both clients, services and pillars. -->
+
+  <xs:simpleType name="AuditTrailLevel_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+      Definition of the level of audit trail information to maintain in the system components.
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="LOW">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Minimum level of of audit trail information
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="MEDIUM">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Standard level of of audit trail information
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="HIGH">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Lots of audit trail information
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="AlarmLevel_TYPE">
+    <xs:annotation><xs:documentation xml:lang="en">
+      Define the severeness of an incident before raising an Alarm.
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="EMERGENCY">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Only the most critical incidents can cause an Alarm to be raised.
+          E.g. all the files at a Pillar is missing.
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="ERROR">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Raise an Alarm when an operation goes bad.
+          E.g. a file is only put on two out of three pillars.
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="WARNING">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Raise an Alarm in every possible event.
+          E.g. not all expected pillars reply to an Identify request.
+        </xs:documentation></xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <!-- COMMON ELEMENTS END -->
+  
 </xs:schema>

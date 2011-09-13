@@ -27,17 +27,18 @@ package org.bitrepository.access.getfile.conversation;
 import java.net.URL;
 import java.util.UUID;
 
-import org.bitrepository.access.getfile.GetFileClientSettings;
 import org.bitrepository.access.getfile.selectors.PillarSelectorForGetFile;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.protocol.conversation.AbstractConversation;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,7 @@ public class SimpleGetFileConversation extends AbstractConversation<URL> {
     /** The sender to use for dispatching messages */
     final MessageSender messageSender; 
     /** The configuration specific to the SLA related to this conversion. */
-    final GetFileClientSettings settings;
+    final Settings settings;
 
     /** The url which the pillar should upload the file to. */
     final URL uploadUrl;
@@ -79,7 +80,7 @@ public class SimpleGetFileConversation extends AbstractConversation<URL> {
      */
     public SimpleGetFileConversation(
             MessageSender messageSender, 
-            GetFileClientSettings settings,
+            Settings settings,
             PillarSelectorForGetFile selector,
             String fileID,
             URL uploadUrl,
@@ -115,7 +116,7 @@ public class SimpleGetFileConversation extends AbstractConversation<URL> {
         conversationState = initialConversationState;
         initialConversationState.start();		
         if (eventHandler == null) {
-            waitFor(settings.getConversationTimeout());
+            waitFor(TimeMeasureComparator.getTimeMeasureInLong(settings.getProtocol().getConversationTimeout()));
         }
         if (operationFailedException != null) {
             throw operationFailedException;

@@ -20,9 +20,10 @@ public class GetFileClientBlockingTest extends AbstractGetFileClientTest  {
         addStep("Request a file from a specific non-existing pillar using the blocking get method", 
                 "The method should block until a identify timeout occures, causing a TimeoutException to be thrown");
         
-        getFileClientSettings().setIdentifyPillarsTimeout(3000);
+        System.out.println(settings);
+        settings.getGetFile().setIdentificationTimeout(defaultTime);
         GetFileClient getFileClient = 
-            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings()), 
+            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(settings), 
                     testEventManager);
         try {
             getFileClient.getFileFromSpecificPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), "Invalid pillar");

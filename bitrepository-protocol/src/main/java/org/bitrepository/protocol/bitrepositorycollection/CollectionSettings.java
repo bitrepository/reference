@@ -24,8 +24,7 @@
  */
 package org.bitrepository.protocol.bitrepositorycollection;
 
-import org.bitrepository.collection.settings.standardsettings.StandardCollectionSettings;
-import org.bitrepository.protocol.settings.specificsettings.SpecificCollectionSettings;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 
 /** Defines the global settings for a <code>BitRepositoryCollection</code>. 
  * 
@@ -38,13 +37,5 @@ public interface CollectionSettings {
      * See {@link https://sbforge.org/display/BITMAG/BitRepositoryCollection} for details.
      * @return The standard settings.
      */
-    public StandardCollectionSettings getStandardSettings();
-    
-    /** 
-     * Returns the collection settings specific to this implementation.
-     * 
-     * @return The specific settings.
-     */
-    public SpecificCollectionSettings getSpecificSettings();
-
+    public Settings getSettings();
 }

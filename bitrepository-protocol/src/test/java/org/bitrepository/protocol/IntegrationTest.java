@@ -27,8 +27,8 @@ package org.bitrepository.protocol;
 import javax.swing.JFrame;
 
 import org.bitrepository.clienttest.MessageReceiver;
-import org.bitrepository.collection.settings.standardsettings.MessageBusConfiguration;
-import org.bitrepository.protocol.bitrepositorycollection.MutableCollectionSettings;
+import org.bitrepository.collection.settings.standardsettings.MessageBusConfigurationTYPE;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.bus.MessageBusWrapper;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
@@ -53,7 +53,6 @@ import ch.qos.logback.core.util.StatusPrinter;
  */
 public abstract class IntegrationTest extends ExtendedTestCase {
     protected TestEventManager testEventManager = TestEventManager.getInstance();
-    protected MessageBusConfiguration messageBusConfiguration;
     public LocalActiveMQBroker broker;
     public EmbeddedHttpServer server;
     public HttpServerConnector httpServer;
@@ -61,17 +60,21 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     protected static String bitRepositoryCollectionDestinationID;
     protected MessageReceiver bitRepositoryCollectionDestination; 
+    
+    protected Settings settings;
 
     @BeforeClass (alwaysRun = true)
     public void setupTest() throws Exception {
+        System.out.println("SetupSettings");
+        setupSettings();
+        System.out.println("SetupMessageBus");
+        setupMessageBus();
+        System.out.println("DefineDestination");
         defineDestinations();
-        if (useEmbeddedMessageBus()) {
-            setupMessageBus();
-        }
+        System.out.println("SetupHttpServer");
         setupHttpServer();
     }
     
-
     /**
      * Defines the standard BitRepositoryCollection configuration
      * @param testMethod Used to grap the name of the test method used for naming.
@@ -114,14 +117,16 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      */
     protected void setupMessageBus() throws Exception {
         if (useEmbeddedMessageBus()) { 
-            messageBusConfiguration = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+            MessageBusConfigurationTYPE messageBusConfiguration = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+            settings.getProtocol().setMessageBusConfiguration(messageBusConfiguration);
             broker = new LocalActiveMQBroker(messageBusConfiguration);
             broker.start();
             messageBus = new MessageBusWrapper(MessageBusFactory.createMessageBus(messageBusConfiguration), testEventManager);
         } else {
-            messageBusConfiguration = MessageBusConfigurationFactory.createDefaultConfiguration();
+            MessageBusConfigurationTYPE messageBusConfiguration = MessageBusConfigurationFactory.createDefaultConfiguration();
+            settings.getProtocol().setMessageBusConfiguration(messageBusConfiguration);
             messageBus = new MessageBusWrapper(
-                    ProtocolComponentFactory.getInstance().getMessageBus(getCollectionSettings()), testEventManager);
+                    ProtocolComponentFactory.getInstance().getMessageBus(settings), testEventManager);
         }
     }
 
@@ -144,11 +149,10 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * implementing classes, which might also add extra settings or override the values set from here.
      */
     protected void setupSettings() {
-        MutableCollectionSettings settings = getCollectionSettings();
+        initCollectionSettings();
         String bitRepositoryCollectionID = System.getProperty("user.name") + "-test-collection";
-        settings.getStandardSettings().setBitRepositoryCollectionID(bitRepositoryCollectionID);
-        settings.getStandardSettings().setCollectionDestination(bitRepositoryCollectionDestinationID);
-        settings.getStandardSettings().setMessageBusConfiguration(messageBusConfiguration);
+        settings.setBitRepositoryCollectionID(bitRepositoryCollectionID);
+        settings.getProtocol().setCollectionDestination(bitRepositoryCollectionDestinationID);
     }
     
     protected void defineDestinations() {
@@ -194,5 +198,5 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     /**
      * Defines the method for retrieving the the collections settings as implemented by the concrete test case.
      */
-    protected abstract MutableCollectionSettings getCollectionSettings();
+    protected abstract void initCollectionSettings();
 }

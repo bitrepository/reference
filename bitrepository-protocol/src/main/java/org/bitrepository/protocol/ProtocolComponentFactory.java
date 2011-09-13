@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol;
 
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
@@ -78,9 +79,9 @@ public class ProtocolComponentFactory {
      * Gets you an <code>MessageBus</code> instance for accessing the Bitrepositorys message bus.
      * @return The messagebus for this collection
      */
-    public MessageBus getMessageBus(CollectionSettings settings) {
+    public MessageBus getMessageBus(Settings settings) {
         if (messagebus == null) {
-            messagebus = new ActiveMQMessageBus(settings.getStandardSettings().getMessageBusConfiguration());
+            messagebus = new ActiveMQMessageBus(settings.getProtocol().getMessageBusConfiguration());
         }
         return messagebus;
     }

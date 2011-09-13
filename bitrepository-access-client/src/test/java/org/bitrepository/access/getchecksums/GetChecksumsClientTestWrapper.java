@@ -26,6 +26,7 @@ package org.bitrepository.access.getchecksums;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collection;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -50,7 +51,7 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
     }
 
     @Override
-    public void getChecksums(String[] pillarIDs, FileIDs fileIDs,
+    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs,
             ChecksumSpecs checksumSpec, EventHandler eventHandler) {
         testEventManager.addStimuli("Calling getChecksums(" + Arrays.asList(pillarIDs) + ", " + fileIDs.getFileID() 
                 + ", " + checksumSpec + ")");
@@ -58,7 +59,7 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
     }
 
     @Override
-    public ResultingChecksums getChecksums(String[] pillarIDs, FileIDs fileIDs,
+    public ResultingChecksums getChecksums(Collection<String> pillarIDs, FileIDs fileIDs,
             ChecksumSpecs checksumSpec) throws NoPillarFoundException,
             OperationTimeOutException, OperationFailedException {
         testEventManager.addStimuli("Calling getChecksums(" + Arrays.asList(pillarIDs) + ", " + fileIDs.getFileID() 
@@ -67,7 +68,7 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
     }
 
     @Override
-    public void getChecksums(String[] pillarIDs, FileIDs fileIDs,
+    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs,
             ChecksumSpecs checksumSpec, URL addressForResult,
             EventHandler eventHandler) {
         testEventManager.addStimuli("Calling getChecksums(" + Arrays.asList(pillarIDs) + ", " + fileIDs.getFileID() 
@@ -76,7 +77,7 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
     }
 
     @Override
-    public void getChecksums(String[] pillarIDs, FileIDs fileIDs,
+    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs,
             ChecksumSpecs checksumSpec, URL addressForResult)
             throws NoPillarFoundException, OperationTimeOutException,
             OperationFailedException {

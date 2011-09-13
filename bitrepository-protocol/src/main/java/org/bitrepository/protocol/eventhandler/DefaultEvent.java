@@ -30,27 +30,27 @@ public class DefaultEvent implements OperationEvent<Object> {
     private final OperationEventType type;
     /** @see #getInfo() */
     private final String info;
-
+    
     /** The constructor for this immutable */
     public DefaultEvent(OperationEventType type, String info) {
         super();
         this.type = type;
         this.info = info;
     }
-
+    
     @Override
     public String getInfo() {
         return info;
     }
-
+    
     @Override
     public OperationEventType getType() {
         return type;
     }
-
-	@Override
-	public Object getState() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    
+    @Override
+    public Object getState() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
