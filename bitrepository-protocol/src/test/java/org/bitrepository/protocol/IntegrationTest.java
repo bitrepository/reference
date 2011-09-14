@@ -65,13 +65,9 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     @BeforeClass (alwaysRun = true)
     public void setupTest() throws Exception {
-        System.out.println("SetupSettings");
         setupSettings();
-        System.out.println("SetupMessageBus");
         setupMessageBus();
-        System.out.println("DefineDestination");
         defineDestinations();
-        System.out.println("SetupHttpServer");
         setupHttpServer();
     }
     
@@ -152,13 +148,13 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         initCollectionSettings();
         String bitRepositoryCollectionID = System.getProperty("user.name") + "-test-collection";
         settings.setBitRepositoryCollectionID(bitRepositoryCollectionID);
-        settings.getProtocol().setCollectionDestination(bitRepositoryCollectionDestinationID);
     }
     
     protected void defineDestinations() {
         bitRepositoryCollectionDestinationID = "BitRepositoryCollection_topic" + getTopicPostfix();
         bitRepositoryCollectionDestination = new MessageReceiver("BitRepositoryCollection topic receiver", testEventManager);
         messageBus.addListener(bitRepositoryCollectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
+        settings.getProtocol().setCollectionDestination(bitRepositoryCollectionDestinationID);
     }
 
     protected void teardownMessageBus() {

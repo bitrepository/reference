@@ -147,7 +147,6 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         if (useMockupPillar()) {
             IdentifyPillarsForGetChecksumsResponse identifyResponse = testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
                     receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
-            System.out.println(receivedIdentifyRequestMessage);
             messageBus.sendMessage(identifyResponse);
             receivedGetChecksumsRequest = pillar1Destination.waitForMessage(GetChecksumsRequest.class);
             Assert.assertEquals(receivedGetChecksumsRequest, 

@@ -24,10 +24,9 @@
  */
 package org.bitrepository.protocol.settings;
 
-import java.io.File;
-
 import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.jaccept.structure.ExtendedTestCase;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class XMLFileSettingsLoaderTest extends ExtendedTestCase{
@@ -37,10 +36,11 @@ public class XMLFileSettingsLoaderTest extends ExtendedTestCase{
     
     @Test
     public void testCollectionSettingsLoading() throws Exception {
-        System.out.println((new File(".")).getAbsolutePath());
         SettingsReader settingsLoader = new XMLFileSettingsLoader(PATH_TO_SETTINGS);
         
         Settings collectionSettings = settingsLoader.loadSettings(
                 COLLECTION_ID, Settings.class);
+        
+        Assert.assertNotNull(collectionSettings, "CollectionSettings");
     }
 }

@@ -55,8 +55,5 @@ public abstract class AbstractGetFileClientTest extends DefaultFixtureClientTest
         getfileSettings.setOperationTimeout(defaultTime);
         getfileSettings.getPillarIDs().add(PILLAR1_ID);
         settings.setGetFile(getfileSettings);
-        
-        System.out.println(getfileSettings);
-        System.out.println(settings);
     };
 }

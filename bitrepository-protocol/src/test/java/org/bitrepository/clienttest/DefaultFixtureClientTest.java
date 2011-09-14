@@ -117,7 +117,7 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
                 CollectionSettingsLoader settingsLoader = new CollectionSettingsLoader(new XMLFileSettingsLoader("src/test/resources/settings/xml"));
                 settings = settingsLoader.loadSettings("bitrepository-devel").getSettings();
             } catch(Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException("Could not load settings.", e);
             }
         }
     }
