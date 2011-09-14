@@ -165,6 +165,16 @@
       The settings for the protocol
     </xs:documentation></xs:annotation>
     <xs:sequence>
+      <xs:element name="PillarID" type="xs:string">
+        <xs:annotation><xs:documentation xml:lang="en">
+          The ID for this pillar.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="FileDir" type="xs:string">
+        <xs:annotation><xs:documentation xml:lang="en">
+          Location for the base directory for storing the files.
+        </xs:documentation></xs:annotation>
+      </xs:element>
       <xs:element name="ProgressResponseMandatory" type="xs:boolean">
         <xs:annotation><xs:documentation xml:lang="en">
           Defines whether progress responds should be set after receiving a operation request.
@@ -178,6 +188,11 @@
       <xs:element name="AlarmLevel" type="AlarmLevel_TYPE">
         <xs:annotation><xs:documentation xml:lang="en">
           The level for raising Alarms.
+        </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="TimeToDeliver" type="bre:TimeMeasure_TYPE">
+        <xs:annotation><xs:documentation>
+          The timeout for the identification.
         </xs:documentation></xs:annotation>
       </xs:element>
     </xs:sequence>
