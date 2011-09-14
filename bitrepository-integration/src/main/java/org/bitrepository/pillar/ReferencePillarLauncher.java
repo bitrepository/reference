@@ -25,10 +25,12 @@
 package org.bitrepository.pillar;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.integration.IntegrationComponentFactory;
 import org.bitrepository.integration.configuration.integrationconfiguration.IntegrationConfiguration;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.configuration.ProtocolConfiguration;
+import org.bitrepository.protocol.settings.CollectionSettingsLoader;
 import org.bitrepository.protocol.settings.XMLFileSettingsLoader;
 
 /**
@@ -36,6 +38,8 @@ import org.bitrepository.protocol.settings.XMLFileSettingsLoader;
  * It just loads the configurations and uses them to create the PillarSettings needed for starting the ReferencePillar.
  */
 public class ReferencePillarLauncher {
+    private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
+    private static final String DEFAULT_PATH_TO_SETTINGS = "src/test/resources/settings/xml";
 
     /**
      * @param args <ol>
@@ -44,21 +48,24 @@ public class ReferencePillarLauncher {
      * </ol>
      */
     public static void main(String[] args) throws Exception {
-        PillarSettingsLoader settingsProvider = new PillarSettingsLoader(new XMLFileSettingsLoader(args[0]));
-
-        IntegrationConfiguration iConf = IntegrationComponentFactory.getInstance().getConfig();
-        ProtocolConfiguration pConf = ProtocolComponentFactory.getInstance().getProtocolConfiguration();
-
-        MutablePillarSettings settings = settingsProvider.loadPillarSettings(args[0]);
-        settings.setFileDirName(iConf.getFiledir());
-        settings.setLocalQueue(iConf.getPillarId());
-        settings.setPillarId(iConf.getPillarId());        
-        settings.setTimeToDownloadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
-        settings.setTimeToDownloadValue(1L);
-        settings.setTimeToUploadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
-        settings.setTimeToUploadValue(1L);
-
-        // START THE REFERENCE PILLAR!!!!
-        IntegrationComponentFactory.getInstance().getPillar(settings);
+        String collectionId;
+        String pathToSettings;
+        if(args.length >= 2) {
+            collectionId = args[0];
+            pathToSettings = args[1];
+        } else {
+            collectionId = DEFAULT_COLLECTION_ID;
+            pathToSettings = DEFAULT_PATH_TO_SETTINGS;
+        }
+        
+        CollectionSettingsLoader settingsLoader = new CollectionSettingsLoader(
+                new XMLFileSettingsLoader(pathToSettings));
+        try {
+            Settings settings = settingsLoader.loadSettings(collectionId).getSettings();
+            IntegrationComponentFactory.getInstance().getPillar(settings);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
     }
 }

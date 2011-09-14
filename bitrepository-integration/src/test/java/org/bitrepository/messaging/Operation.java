@@ -25,8 +25,8 @@
 package org.bitrepository.messaging;
 
 public class Operation {
-
-	public static final String GET = null;
-
-
+    
+    public static final String GET = null;
+    
+    
 }

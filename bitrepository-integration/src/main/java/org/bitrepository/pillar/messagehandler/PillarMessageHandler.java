@@ -63,9 +63,9 @@ public abstract class PillarMessageHandler<T> {
      * @param bitrepositoryCollectionId The collection id to validate.
      */
     protected void validateBitrepositoryCollectionId(String bitrepositoryCollectionId) {
-        if(!bitrepositoryCollectionId.equals(mediator.settings.getStandardSettings().getBitRepositoryCollectionID())) {
+        if(!bitrepositoryCollectionId.equals(mediator.settings.getBitRepositoryCollectionID())) {
             throw new IllegalArgumentException("The message had a wrong BitRepositoryIdCollection: "
-                    + "Expected '" + mediator.settings.getStandardSettings().getBitRepositoryCollectionID() + "' but was '" 
+                    + "Expected '" + mediator.settings.getBitRepositoryCollectionID() + "' but was '" 
                     + bitrepositoryCollectionId + "'.");
         }
     }
@@ -75,9 +75,9 @@ public abstract class PillarMessageHandler<T> {
      * @param pillarId The pillar id.
      */
     protected void validatePillarId(String pillarId) {
-        if(!pillarId.equals(mediator.settings.getPillarId())) {
+        if(!pillarId.equals(mediator.settings.getPillar().getPillarID())) {
             throw new IllegalArgumentException("The message had a wrong PillarId: "
-                    + "Expected '" + mediator.settings.getPillarId() + "' but was '" 
+                    + "Expected '" + mediator.settings.getPillar().getPillarID() + "' but was '" 
                     + pillarId + "'.");
         }
     }
@@ -90,17 +90,17 @@ public abstract class PillarMessageHandler<T> {
         // create the Concerning part of the alarm.
         AlarmConcerning ac = new AlarmConcerning();
         BitRepositoryCollections brcs = new BitRepositoryCollections();
-        brcs.getBitRepositoryCollectionID().add(mediator.settings.getStandardSettings().getBitRepositoryCollectionID());
+        brcs.getBitRepositoryCollectionID().add(mediator.settings.getBitRepositoryCollectionID());
         ac.setBitRepositoryCollections(brcs);
         ac.setMessages(exception.getMessage());
         ac.setFileInformation(null);
         Components comps = new Components();
         ComponentTYPE compType = new ComponentTYPE();
         compType.setComponentComment("ReferencePillar");
-        compType.setComponentID(mediator.settings.getPillarId());
+        compType.setComponentID(mediator.settings.getPillar().getPillarID());
         compType.setComponentType(ComponentType.PILLAR);
         comps.getContributor().add(compType);
-        comps.getDataTransmission().add(mediator.settings.getStandardSettings().getMessageBusConfiguration().toString());
+        comps.getDataTransmission().add(mediator.settings.getProtocol().getMessageBusConfiguration().toString());
         ac.setComponents(comps);
         
         // create a descriptor.

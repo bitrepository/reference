@@ -69,8 +69,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.pillar.PillarSettings;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.ReferencePillarMessageFactory;
 import org.bitrepository.pillar.audit.MemorybasedAuditTrailManager;
@@ -92,7 +92,7 @@ public class PillarMediator implements MessageListener {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /** The settings.*/
-    final PillarSettings settings;
+    final Settings settings;
     /** The messagebus. Package protected on purpose.*/
     final MessageBus messagebus;
     /** The archive. Package protected on purpose.*/
@@ -114,8 +114,8 @@ public class PillarMediator implements MessageListener {
      * @param refArchive The archive for the reference pillar.
      * @param messageFactory The message factory.
      */
-    public PillarMediator(MessageBus messagebus, PillarSettings pSettings, 
-            ReferenceArchive refArchive, ReferencePillarMessageFactory messageFactory) {
+    public PillarMediator(MessageBus messagebus, Settings pSettings, ReferenceArchive refArchive, 
+            ReferencePillarMessageFactory messageFactory) {
         this.messagebus = messagebus;
         this.archive = refArchive;
         this.msgFactory = messageFactory;
@@ -134,8 +134,8 @@ public class PillarMediator implements MessageListener {
         this.handlers.put(PutFileRequest.class.getName(), new PutFileMessageHandler(this));
 
         // add to both the general topic and the local queue.
-        messagebus.addListener(settings.getStandardSettings().getCollectionDestination(), this);
-        messagebus.addListener(settings.getLocalQueue(), this);
+        messagebus.addListener(settings.getProtocol().getCollectionDestination(), this);
+        messagebus.addListener(settings.getProtocol().getLocalDestination(), this);
     }
 
     public void handleException(Exception e) {
@@ -155,19 +155,19 @@ public class PillarMediator implements MessageListener {
         
         ComponentTYPE ct = new ComponentTYPE();
         ct.setComponentComment("ReferencePillar");
-        ct.setComponentID(settings.getPillarId());
+        ct.setComponentID(settings.getPillar().getPillarID());
         ct.setComponentType(ComponentType.PILLAR);
         alarm.setAlarmRaiser(ct);
         
         alarm.setAlarmConcerning(alarmConcerning);
         alarm.setAlarmDescription(alarmDescription);
         
-        alarm.setAuditTrailInformation("ReferencePillar: " + settings.getPillarId());
-        alarm.setBitRepositoryCollectionID(settings.getStandardSettings().getBitRepositoryCollectionID());
+        alarm.setAuditTrailInformation("ReferencePillar: " + settings.getPillar().getPillarID());
+        alarm.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
         alarm.setCorrelationID(UUID.randomUUID().toString());
         alarm.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        alarm.setReplyTo(settings.getLocalQueue());
-        alarm.setTo(settings.getStandardSettings().getCollectionDestination() + "-ALARM");
+        alarm.setReplyTo(settings.getProtocol().getLocalDestination());
+        alarm.setTo(settings.getProtocol().getCollectionDestination() + "-ALARM");
         alarm.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         
         messagebus.sendMessage(alarm);
@@ -185,17 +185,17 @@ public class PillarMediator implements MessageListener {
         // create the Concerning part of the alarm.
         AlarmConcerning ac = new AlarmConcerning();
         BitRepositoryCollections brcs = new BitRepositoryCollections();
-        brcs.getBitRepositoryCollectionID().add(settings.getStandardSettings().getBitRepositoryCollectionID());
+        brcs.getBitRepositoryCollectionID().add(settings.getBitRepositoryCollectionID());
         ac.setBitRepositoryCollections(brcs);
         ac.setMessages(msg);
         ac.setFileInformation(null);
         Components comps = new Components();
         ComponentTYPE compType = new ComponentTYPE();
         compType.setComponentComment("ReferencePillar");
-        compType.setComponentID(settings.getPillarId());
+        compType.setComponentID(settings.getPillar().getPillarID());
         compType.setComponentType(ComponentType.PILLAR);
         comps.getContributor().add(compType);
-        comps.getDataTransmission().add(settings.getStandardSettings().getMessageBusConfiguration().toString());
+        comps.getDataTransmission().add(settings.getProtocol().getMessageBusConfiguration().toString());
         ac.setComponents(comps);
         
         // create a descriptor.

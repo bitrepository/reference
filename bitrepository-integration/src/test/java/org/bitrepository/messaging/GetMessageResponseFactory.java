@@ -25,9 +25,9 @@
 package org.bitrepository.messaging;
 
 public class GetMessageResponseFactory {
-
-	public static GetTimeResponseMessage createMessage(String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    
+    public static GetTimeResponseMessage createMessage(String string) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

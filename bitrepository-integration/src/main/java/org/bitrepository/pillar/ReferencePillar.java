@@ -24,6 +24,7 @@
  */
 package org.bitrepository.pillar;
 
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.pillar.messagehandler.PillarMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
@@ -36,11 +37,11 @@ public class ReferencePillar {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    public ReferencePillar(MessageBus mBus, PillarSettings settings) {
+    public ReferencePillar(MessageBus mBus, Settings settings) {
         log.info("Starting the reference pillar!");
         
         ReferencePillarMessageFactory msgFactory = new ReferencePillarMessageFactory(settings);
-        ReferenceArchive archive = new ReferenceArchive(settings.getFileDirName());
+        ReferenceArchive archive = new ReferenceArchive(settings.getPillar().getFileDir());
         PillarMediator mediator = new PillarMediator(mBus, settings, archive, msgFactory);
         log.info("ReferencePillar started!");
     }

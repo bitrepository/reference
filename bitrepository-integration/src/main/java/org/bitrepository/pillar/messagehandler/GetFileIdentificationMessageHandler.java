@@ -77,10 +77,7 @@ public class GetFileIdentificationMessageHandler extends PillarMessageHandler<Id
         
         // set the missing variables in the reply:
         // TimeToDeliver, AuditTrailInformation
-        TimeMeasureTYPE timeToDeliver = new TimeMeasureTYPE();
-        timeToDeliver.setTimeMeasureUnit(mediator.settings.getTimeToUploadMeasure());
-        timeToDeliver.setTimeMeasureValue(BigInteger.valueOf(mediator.settings.getTimeToUploadValue()));
-        reply.setTimeToDeliver(timeToDeliver);
+        reply.setTimeToDeliver(mediator.settings.getPillar().getTimeToDeliver());
         // TODO handle audit trails!!!
         reply.setAuditTrailInformation(null);
         

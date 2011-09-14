@@ -63,11 +63,8 @@ public class PutFileIdentificationMessageHandler extends PillarMessageHandler<Id
                     = mediator.msgFactory.createIdentifyPillarsForPutFileResponse(message);
 
             // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
-            reply.setReplyTo(mediator.settings.getLocalQueue());
-            TimeMeasureTYPE timeToDeliver = new TimeMeasureTYPE();
-            timeToDeliver.setTimeMeasureValue(BigInteger.valueOf(mediator.settings.getTimeToDownloadValue()));
-            timeToDeliver.setTimeMeasureUnit(mediator.settings.getTimeToDownloadMeasure());
-            reply.setTimeToDeliver(timeToDeliver);
+            reply.setReplyTo(mediator.settings.getProtocol().getLocalDestination());
+            reply.setTimeToDeliver(mediator.settings.getPillar().getTimeToDeliver());
             reply.setAuditTrailInformation(null);
             reply.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
 

@@ -24,10 +24,11 @@
  */
 package org.bitrepository.pillar;
 
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.clienttest.MessageReceiver;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.settings.CollectionSettingsLoader;
+import org.bitrepository.protocol.settings.XMLFileSettingsLoader;
 import org.testng.annotations.AfterClass;
 
 /**
@@ -42,8 +43,6 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
     
     protected static String clientDestinationId;
     protected MessageReceiver clientTopic;
-
-    protected PillarSettings settings;
 
     /** Indicated whether reference pillars should be started should be started and used. Note that mockup pillars 
      * should be used in this case, e.g. the useMockupPillar() call should return false. */ 
@@ -63,28 +62,23 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
 
     @Override
     protected void setupMessageBus() throws Exception {
+        super.setupMessageBus();
         pillarTopic = new MessageReceiver("pillar topic receiver", testEventManager);
         clientTopic = new MessageReceiver("client topic receiver", testEventManager);
+    }
+
+    @Override
+    protected void defineDestinations() {
+        super.defineDestinations();
+        pillarDestinationId = "pillar_topic" + getTopicPostfix();
+        clientDestinationId = "client" + getTopicPostfix();
         messageBus.addListener(pillarDestinationId, pillarTopic.getMessageListener());    
         messageBus.addListener(bitRepositoryCollectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
         messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());    
     }
 
     @Override
-    protected void defineDestinations() {
-        pillarDestinationId = "pillar_topic" + getTopicPostfix();
-        clientDestinationId = "client" + getTopicPostfix();
-    }
-
-    @Override
     protected void setupSettings() {
-        MutablePillarSettings pillarSettings = getPillarSettings();
-        pillarSettings.setFileDirName("target/fileDir");
-        pillarSettings.setLocalQueue(pillarDestinationId);
-        pillarSettings.setTimeToDownloadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
-        pillarSettings.setTimeToDownloadValue(1L);
-        pillarSettings.setTimeToUploadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
-        pillarSettings.setTimeToUploadValue(1L);
         super.setupSettings();
     }
 
@@ -94,11 +88,16 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
 
         super.teardownMessageBus();
     }
-
-    @Override
-    protected MutablePillarSettings getCollectionSettings() {
-        return getPillarSettings();
-    }
     
-    protected abstract MutablePillarSettings getPillarSettings();
+    @Override
+    public void initCollectionSettings() {
+        if(settings == null) {
+            try {
+                CollectionSettingsLoader settingsLoader = new CollectionSettingsLoader(new XMLFileSettingsLoader("src/test/resources/settings/xml"));
+                settings = settingsLoader.loadSettings("bitrepository-devel").getSettings();
+            } catch(Exception e) {
+                throw new RuntimeException("Could not load settings.", e);
+            }
+        }
+    }
 }

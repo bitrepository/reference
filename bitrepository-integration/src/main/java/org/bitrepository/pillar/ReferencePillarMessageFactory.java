@@ -36,6 +36,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.protocol.ProtocolConstants;
 
 /**
@@ -43,7 +44,7 @@ import org.bitrepository.protocol.ProtocolConstants;
  */
 public class ReferencePillarMessageFactory {
     /** The settings for the pillar.*/
-    final PillarSettings settings;
+    final Settings settings;
     
     // Constants
     /** The constant for the VERSION of the messages.*/
@@ -54,7 +55,7 @@ public class ReferencePillarMessageFactory {
     /**
      * Package protected constructor.
      */
-    ReferencePillarMessageFactory(PillarSettings pSettings) {
+    ReferencePillarMessageFactory(Settings pSettings) {
         settings = pSettings;
     }
     
@@ -76,9 +77,9 @@ public class ReferencePillarMessageFactory {
         res.setCorrelationID(msg.getCorrelationID());
         res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getPillarId());
-        res.setBitRepositoryCollectionID(settings.getStandardSettings().getBitRepositoryCollectionID());
-        res.setReplyTo(settings.getLocalQueue());
+        res.setPillarID(settings.getPillar().getPillarID());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setReplyTo(settings.getProtocol().getLocalDestination());
         
         return res;
     }
@@ -101,9 +102,9 @@ public class ReferencePillarMessageFactory {
         res.setVersion(VERSION);
         res.setCorrelationID(msg.getCorrelationID());
         res.setTo(msg.getReplyTo());
-        res.setBitRepositoryCollectionID(settings.getStandardSettings().getBitRepositoryCollectionID());
-        res.setPillarID(settings.getPillarId());
-        res.setReplyTo(settings.getLocalQueue());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setPillarID(settings.getPillar().getPillarID());
+        res.setReplyTo(settings.getProtocol().getLocalDestination());
         
         return res;
     }
@@ -128,9 +129,9 @@ public class ReferencePillarMessageFactory {
         res.setFileID(msg.getFileID());
         res.setFilePart(msg.getFilePart());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getPillarId());
-        res.setBitRepositoryCollectionID(settings.getStandardSettings().getBitRepositoryCollectionID());
-        res.setReplyTo(settings.getLocalQueue());
+        res.setPillarID(settings.getPillar().getPillarID());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setReplyTo(settings.getProtocol().getLocalDestination());
 
         return res;
     }
@@ -153,9 +154,9 @@ public class ReferencePillarMessageFactory {
         res.setFileAddress(msg.getFileAddress());
         res.setFilePart(msg.getFilePart());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getPillarId());
-        res.setBitRepositoryCollectionID(settings.getStandardSettings().getBitRepositoryCollectionID());
-        res.setReplyTo(settings.getLocalQueue());
+        res.setPillarID(settings.getPillar().getPillarID());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setReplyTo(settings.getProtocol().getLocalDestination());
 
         return res;
     }
@@ -178,9 +179,9 @@ public class ReferencePillarMessageFactory {
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getPillarId());
-        res.setBitRepositoryCollectionID(settings.getStandardSettings().getBitRepositoryCollectionID());
-        res.setReplyTo(settings.getLocalQueue());
+        res.setPillarID(settings.getPillar().getPillarID());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setReplyTo(settings.getProtocol().getLocalDestination());
         
         return res;
     }
@@ -204,9 +205,9 @@ public class ReferencePillarMessageFactory {
         res.setFileID(msg.getFileID());
         res.setFileAddress(msg.getFileAddress());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getPillarId());
-        res.setBitRepositoryCollectionID(settings.getStandardSettings().getBitRepositoryCollectionID());
-        res.setReplyTo(settings.getLocalQueue());
+        res.setPillarID(settings.getPillar().getPillarID());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setReplyTo(settings.getProtocol().getLocalDestination());
 
         return res;
     }

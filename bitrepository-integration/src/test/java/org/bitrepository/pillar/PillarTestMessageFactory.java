@@ -40,24 +40,25 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.protocol.TestMessageFactory;
 
 public class PillarTestMessageFactory extends TestMessageFactory {
 
-    final PillarSettings settings;
+    final Settings settings;
     
-    public PillarTestMessageFactory(PillarSettings pSettings) {
+    public PillarTestMessageFactory(Settings pSettings) {
         this.settings = pSettings;
     }
     
     public IdentifyPillarsForPutFileRequest createIdentifyPillarsForPutFileRequest(String replyTo) {
         IdentifyPillarsForPutFileRequest res = new IdentifyPillarsForPutFileRequest();
         res.setAuditTrailInformation(null);
-        res.setBitRepositoryCollectionID(settings.getStandardSettings().getBitRepositoryCollectionID());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setMinVersion(VERSION_DEFAULT);
         res.setVersion(VERSION_DEFAULT);
-        res.setTo(settings.getStandardSettings().getCollectionDestination());
+        res.setTo(settings.getProtocol().getCollectionDestination());
         res.setReplyTo(replyTo);
         
         return res;
@@ -68,7 +69,7 @@ public class PillarTestMessageFactory extends TestMessageFactory {
             TimeMeasureTYPE timeToDeliver, String toTopic) {
         IdentifyPillarsForPutFileResponse res = new IdentifyPillarsForPutFileResponse();
         res.setAuditTrailInformation(null);
-        res.setBitRepositoryCollectionID(settings.getStandardSettings().getBitRepositoryCollectionID());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarChecksumSpec(null);
         res.setVersion(VERSION_DEFAULT);
@@ -86,7 +87,7 @@ public class PillarTestMessageFactory extends TestMessageFactory {
             String pillarId, String replyTo, String toTopic) {
         PutFileRequest res = new PutFileRequest();
         res.setAuditTrailInformation(null);
-        res.setBitRepositoryCollectionID(settings.getStandardSettings().getBitRepositoryCollectionID());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
         ChecksumsDataForNewFile csdataForNewFile = new ChecksumsDataForNewFile();
         {
             csdataForNewFile.setFileID(fileId);
@@ -125,7 +126,7 @@ public class PillarTestMessageFactory extends TestMessageFactory {
             String toTopic) {
         PutFileProgressResponse res = new PutFileProgressResponse();
         res.setAuditTrailInformation(null);
-        res.setBitRepositoryCollectionID(settings.getStandardSettings().getBitRepositoryCollectionID());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);
@@ -145,7 +146,7 @@ public class PillarTestMessageFactory extends TestMessageFactory {
             ChecksumSpecTYPE checksumSpec, String replyTo, String toTopic) {
         PutFileFinalResponse res = new PutFileFinalResponse();
         res.setAuditTrailInformation(null);
-        res.setBitRepositoryCollectionID(settings.getStandardSettings().getBitRepositoryCollectionID());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
         res.setChecksumsDataForNewFile(checksumNewFile);
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);

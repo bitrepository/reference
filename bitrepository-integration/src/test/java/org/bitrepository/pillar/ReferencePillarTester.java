@@ -45,34 +45,31 @@ import org.testng.annotations.Test;
  * Test class for the reference pillar.
  */
 public class ReferencePillarTester extends DefaultFixturePillarTest {
-    /** The settings for the test.*/
-    private MutablePillarSettings pillarSettings  = new MutablePillarSettings();
-    
     PillarTestMessageFactory msgFactory;
     
     @BeforeMethod(alwaysRun=true)
     public void initialise() throws Exception {
-        msgFactory = new PillarTestMessageFactory(pillarSettings);
+        msgFactory = new PillarTestMessageFactory(settings);
     }
     
     @Override
     protected void setupSettings() {
-        pillarSettings  = new MutablePillarSettings();
-        pillarSettings.setFileDirName("temp");
-        pillarSettings.setPillarId("TestPillar");
-        pillarSettings.setLocalQueue(pillarDestinationId);
-        pillarSettings.setTimeToDownloadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
-        pillarSettings.setTimeToDownloadValue(1L);
-        pillarSettings.setTimeToUploadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
-        pillarSettings.setTimeToDownloadValue(1L);
         super.setupSettings();
+//        pillarSettings  = new MutablePillarSettings();
+//        pillarSettings.setFileDirName("temp");
+//        pillarSettings.setPillarId("TestPillar");
+//        pillarSettings.setLocalQueue(pillarDestinationId);
+//        pillarSettings.setTimeToDownloadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
+//        pillarSettings.setTimeToDownloadValue(1L);
+//        pillarSettings.setTimeToUploadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
+//        pillarSettings.setTimeToDownloadValue(1L);
     };
 
     @Test( groups = {"regressiontest"})
     public void pillarPutTest() throws Exception {
         addDescription("Tests the put functionality of the reference pillar.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        ReferencePillar pillar = IntegrationComponentFactory.getInstance().getPillar(pillarSettings);
+        ReferencePillar pillar = IntegrationComponentFactory.getInstance().getPillar(settings);
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         Long FILE_SIZE = 27L;
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
@@ -131,7 +128,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         
         // validating the checksum
         ChecksumsDataForNewFile receivedChecksums = finalResponse.getChecksumsDataForNewFile();
-        Assert.assertEquals(receivedChecksums.getFileID(), FILE_ID);
+        Assert.assertEquals(receivedChecksums.getFileID(), FILE_ID, receivedChecksums.toString());
         Assert.assertEquals(receivedChecksums.getNoOfItems(), BigInteger.valueOf(1L));
         ChecksumDataItems checksumItems = receivedChecksums.getChecksumDataItems();
         Assert.assertEquals(checksumItems.getChecksumDataForFile().size(), 1);
@@ -140,10 +137,5 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         Assert.assertNull(checksumdata.getChecksumSpec().getChecksumSalt(), "should be no salt");
         Assert.assertEquals(checksumdata.getChecksumSpec().getChecksumType(), "MD5");
         Assert.assertTrue(checksumdata.getCalculationTimestamp().toGregorianCalendar().getTime().getTime() > startDate.getTime());
-    }
-
-    @Override
-    protected MutablePillarSettings getPillarSettings() {
-        return pillarSettings;
     }
 }

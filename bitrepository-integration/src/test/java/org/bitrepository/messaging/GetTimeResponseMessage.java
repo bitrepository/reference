@@ -25,10 +25,10 @@
 package org.bitrepository.messaging;
 
 public class GetTimeResponseMessage {
-
-	public String getXml() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+    
+    public String getXml() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
 }
