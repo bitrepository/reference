@@ -2,8 +2,8 @@
  * #%L
  * bitrepository-access-client
  * 
- * $Id: GetFileClientComponentTest.java 250 2011-08-03 08:44:19Z mss $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-access-client/src/test/java/org/bitrepository/access/getfile/GetFileClientComponentTest.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%

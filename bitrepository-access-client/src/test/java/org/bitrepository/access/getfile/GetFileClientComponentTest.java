@@ -39,13 +39,38 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse
 import org.bitrepository.clienttest.TestEventHandler;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
+import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
  * Test class for the 'GetFileClient'.
  */
 public class GetFileClientComponentTest extends AbstractGetFileClientTest {
+    
+    @BeforeMethod (alwaysRun=true)
+    @Override
+    public void beforeMethodSetup() throws Exception {
+        
+//        System.setProperty("useMockupPillar", "false");
+
+        super.beforeMethodSetup();
+
+//        settings.setBitRepositoryCollectionID("JOLF-TEST");
+//        settings.getProtocol().setCollectionDestination("JOLF-TEST");
+//        settings.getProtocol().setAlarmDestination("JOLF-TEST-ALARM");
+//        settings.getProtocol().getMessageBusConfiguration().setName("distributed-message-bus");
+//        settings.getProtocol().getMessageBusConfiguration().setURL("failover:(tcp://sandkasse-01.kb.dk:60001,tcp://sandkasse-01.kb.dk:60002,tcp://sandkasse-01.kb.dk:60003)");
+//        settings.getProtocol().getMessageBusConfiguration().setLogin("");
+//        settings.getProtocol().getMessageBusConfiguration().setPassword("");
+//        
+//        settings.getGetFile().getPillarIDs().clear();
+//        settings.getGetFile().getPillarIDs().add("ReferencePillar1");
+//        settings.getGetFile().getPillarIDs().add("ReferencePillar2");
+
+    }
+
     //    @Test(groups = {"regressiontest"})
     public void verifyGetFileClientFromFactory() throws Exception {
         Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(settings) 
@@ -60,13 +85,12 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         "participates");
         addStep("Set the number of pillars for this SLA to 1", "");
 
-        System.out.println(settings);
-        settings.getGetFile().getPillarIDs().clear();
-        settings.getGetFile().getPillarIDs().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetFileClient getFileClient = 
             new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(settings), 
                     testEventManager);
+        
+        String chosenPillar = settings.getGetFile().getPillarIDs().get(0);
 
         addStep("Ensure the file isn't already present on the http server", "");
         httpServer.removeFile(DEFAULT_FILE_ID);
@@ -75,7 +99,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.", 
         "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
         getFileClient.getFileFromSpecificPillar(
-        		DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), PILLAR1_ID, testEventHandler);
+        		DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), chosenPillar, testEventHandler);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
@@ -91,11 +115,11 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         GetFileRequest receivedGetFileRequest = null;
         if (useMockupPillar()) {
             IdentifyPillarsForGetFileResponse identifyResponse = testMessageFactory.createIdentifyPillarsForGetFileResponse(
-                    receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+                    receivedIdentifyRequestMessage, chosenPillar, pillar1DestinationId);
             messageBus.sendMessage(identifyResponse);
             receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
             Assert.assertEquals(receivedGetFileRequest, 
-                    testMessageFactory.createGetFileRequest(receivedGetFileRequest,PILLAR1_ID, pillar1DestinationId));
+                    testMessageFactory.createGetFileRequest(receivedGetFileRequest,chosenPillar, pillar1DestinationId));
         }
 
         for(int i = 0; i < settings.getGetFile().getPillarIDs().size(); i++) {
@@ -108,7 +132,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         "The GetClient should notify about the response through the callback interface."); 
         if (useMockupPillar()) {
             GetFileProgressResponse getFileProgressResponse = testMessageFactory.createGetFileProgressResponse(
-                    receivedGetFileRequest, PILLAR1_ID, pillar1DestinationId);
+                    receivedGetFileRequest, chosenPillar, pillar1DestinationId);
             messageBus.sendMessage(getFileProgressResponse);
         }
         
@@ -122,13 +146,18 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                     new URL(receivedGetFileRequest.getFileAddress()));
 
             GetFileFinalResponse completeMsg = testMessageFactory.createGetFileFinalResponse(
-                    receivedGetFileRequest, PILLAR1_ID, pillar1DestinationId);
+                    receivedGetFileRequest, chosenPillar, pillar1DestinationId);
             messageBus.sendMessage(completeMsg);
         }
 
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
-        File expectedUploadFile = pillar1FileStore.getFile(DEFAULT_FILE_ID);
-        httpServer.assertFileEquals(expectedUploadFile, receivedGetFileRequest.getFileAddress());
+        if(useMockupPillar()) {
+            File expectedUploadFile = pillar1FileStore.getFile(DEFAULT_FILE_ID);
+            httpServer.assertFileEquals(expectedUploadFile, receivedGetFileRequest.getFileAddress());
+        } else {
+            httpServer.assertFileEquals(TestFileStore.DEFAULT_TEST_FILE, url.toExternalForm());
+        }
+
     }
     
     //    @Test(groups = {"regressiontest"})

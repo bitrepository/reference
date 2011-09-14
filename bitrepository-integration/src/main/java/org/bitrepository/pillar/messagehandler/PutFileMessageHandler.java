@@ -2,8 +2,8 @@
  * #%L
  * bitrepository-access-client
  * *
- * $Id: AccessMessageHandler.java 249 2011-08-02 11:05:51Z mss $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-integration/src/main/java/org/bitrepository/pillar/messagehandler/AccessMessageHandler.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -33,6 +33,9 @@ import java.util.Date;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
+import org.bitrepository.bitrepositoryelements.ErrorcodeFinalresponseType;
+import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
+import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
 import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile.ChecksumDataItems;
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
@@ -83,7 +86,7 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             FinalResponseInfo fri = new FinalResponseInfo();
-            fri.setFinalResponseCode("500");
+            fri.setFinalResponseCode(ErrorcodeFinalresponseType.OPERATION_FAILED.value().toString());
             fri.setFinalResponseText("Error: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
@@ -104,7 +107,7 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
                     + "', which we already have within the archive");
             // Then tell the mediator, that we failed.
             FinalResponseInfo fri = new FinalResponseInfo();
-            fri.setFinalResponseCode("409");
+            fri.setFinalResponseCode(ErrorcodeGeneralType.DUPLICATE_FILE.value().toString());
             fri.setFinalResponseText("File is already within archive.");
             sendFailedResponse(message, fri);
 
@@ -196,7 +199,7 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
         // insert: AuditTrailInformation, ChecksumsDataForNewFile, FinalResponseInfo, PillarChecksumSpec
         fResponse.setAuditTrailInformation(null);
         FinalResponseInfo frInfo = new FinalResponseInfo();
-        frInfo.setFinalResponseCode("200"); // HTTP for OK!
+        frInfo.setFinalResponseCode(FinalResponseCodePositiveType.SUCCESS.value().toString());
         frInfo.setFinalResponseText("The put has be finished.");
         fResponse.setFinalResponseInfo(frInfo);
         fResponse.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR

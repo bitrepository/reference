@@ -69,12 +69,14 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.collection.settings.standardsettings.AlarmLevelTYPE;
 import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.ReferencePillarMessageFactory;
 import org.bitrepository.pillar.audit.MemorybasedAuditTrailManager;
 import org.bitrepository.protocol.ProtocolConstants;
+import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.slf4j.Logger;
@@ -87,7 +89,7 @@ import org.slf4j.LoggerFactory;
  * All other messages than requests are considered garbage.
  * Every message (even garbage) is put into the audit trails.
  */
-public class PillarMediator implements MessageListener {
+public class PillarMediator extends AbstractMessageListener {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -123,6 +125,17 @@ public class PillarMediator implements MessageListener {
         this.audits = new MemorybasedAuditTrailManager();
 
         // Initialise the messagehandlers.
+        initialiseHandlers();
+
+        // add to both the general topic and the local queue.
+        messagebus.addListener(settings.getProtocol().getCollectionDestination(), this);
+        messagebus.addListener(settings.getProtocol().getLocalDestination(), this);
+    }
+    
+    /**
+     * Method for instantiating the handlers.
+     */
+    protected void initialiseHandlers() {
         this.handlers.put(IdentifyPillarsForGetFileRequest.class.getName(), new GetFileIdentificationMessageHandler(this));
         this.handlers.put(GetFileRequest.class.getName(), new GetFileMessageHandler(this));
         this.handlers.put(IdentifyPillarsForGetFileIDsRequest.class.getName(), new GetFileIDsIdentificationMessageHandler(this));
@@ -132,17 +145,8 @@ public class PillarMediator implements MessageListener {
         
         this.handlers.put(IdentifyPillarsForPutFileRequest.class.getName(), new PutFileIdentificationMessageHandler(this));
         this.handlers.put(PutFileRequest.class.getName(), new PutFileMessageHandler(this));
-
-        // add to both the general topic and the local queue.
-        messagebus.addListener(settings.getProtocol().getCollectionDestination(), this);
-        messagebus.addListener(settings.getProtocol().getLocalDestination(), this);
     }
 
-    public void handleException(Exception e) {
-        // TODO ?? send alarm?
-        log.error("Received exception '" + e.getMessage() + "'.", e);
-    }
-    
     /**
      * Method for sending an Alarm when something bad happens.
      * @param alarmConcerning What the alarm is concerning.
@@ -214,11 +218,13 @@ public class PillarMediator implements MessageListener {
     }
     
     @Override
-    public void onMessage(Alarm message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
+    protected void reportUnsupported(Object message) {
+        audits.addMessageReceivedAudit("Received unsupported: " + message.getClass());
+        if(AlarmLevelTYPE.WARNING.equals(settings.getPillar().getAlarmLevel())) {
+            noHandlerAlarm(message);
+        }
     }
-
+    
     @Override
     public void onMessage(GetAuditTrailsRequest message) {
         log.info("Received: " + message);
@@ -230,24 +236,6 @@ public class PillarMediator implements MessageListener {
         } else {
             noHandlerAlarm(message);
         }
-    }
-
-    @Override
-    public void onMessage(GetAuditTrailsProgressResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
-    }
-
-    @Override
-    public void onMessage(GetAuditTrailsFinalResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
-    }
-
-    @Override
-    public void onMessage(GetChecksumsFinalResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
     }
 
     @Override
@@ -264,24 +252,6 @@ public class PillarMediator implements MessageListener {
     }
 
     @Override
-    public void onMessage(GetChecksumsProgressResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
-    }
-
-    @Override
-    public void onMessage(GetFileFinalResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
-    }
-
-    @Override
-    public void onMessage(GetFileIDsFinalResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
-    }
-
-    @Override
     public void onMessage(GetFileIDsRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
@@ -292,12 +262,6 @@ public class PillarMediator implements MessageListener {
         } else {
             noHandlerAlarm(message);
         }    
-    }
-
-    @Override
-    public void onMessage(GetFileIDsProgressResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
     }
 
     @Override
@@ -314,12 +278,6 @@ public class PillarMediator implements MessageListener {
     }
 
     @Override
-    public void onMessage(GetFileProgressResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
-    }
-
-    @Override
     public void onMessage(GetStatusRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
@@ -330,24 +288,6 @@ public class PillarMediator implements MessageListener {
         } else {
             noHandlerAlarm(message);
         }    
-    }
-
-    @Override
-    public void onMessage(GetStatusProgressResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
-    }
-
-    @Override
-    public void onMessage(GetStatusFinalResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForGetChecksumsResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
     }
 
     @Override
@@ -364,12 +304,6 @@ public class PillarMediator implements MessageListener {
     }
 
     @Override
-    public void onMessage(IdentifyPillarsForGetFileIDsResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
-    }
-
-    @Override
     public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
@@ -380,12 +314,6 @@ public class PillarMediator implements MessageListener {
         } else {
             noHandlerAlarm(message.getClass());
         }    
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForGetFileResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
     }
 
     @Override
@@ -402,12 +330,6 @@ public class PillarMediator implements MessageListener {
     }
 
     @Override
-    public void onMessage(IdentifyPillarsForPutFileResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
-    }
-
-    @Override
     public void onMessage(IdentifyPillarsForPutFileRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
@@ -421,12 +343,6 @@ public class PillarMediator implements MessageListener {
     }
 
     @Override
-    public void onMessage(PutFileFinalResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
-    }
-
-    @Override
     public void onMessage(PutFileRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
@@ -437,11 +353,5 @@ public class PillarMediator implements MessageListener {
         } else {
             noHandlerAlarm(message.getClass());
         }
-    }
-
-    @Override
-    public void onMessage(PutFileProgressResponse message) {
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
-        noHandlerAlarm(message);
     }
 }

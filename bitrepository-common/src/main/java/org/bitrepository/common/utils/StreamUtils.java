@@ -2,8 +2,8 @@
  * #%L
  * Bitmagasin Protocol
  * 
- * $Id: HTTPFileExchange.java 238 2011-07-21 17:28:54Z jolf $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-protocol/src/main/java/org/bitrepository/protocol/http/HTTPFileExchange.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%

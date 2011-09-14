@@ -2,8 +2,8 @@
  * #%L
  * bitrepository-access-client
  * *
- * $Id: AlarmClientTester.java 239 2011-07-22 13:51:09Z jolf $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-alarm-client/src/test/java/org/bitrepository/alarm/AlarmClientTester.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%

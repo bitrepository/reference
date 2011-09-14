@@ -2,8 +2,8 @@
  * #%L
  * bitrepository-access-client
  * *
- * $Id: AccessMessageHandler.java 249 2011-08-02 11:05:51Z mss $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-integration/src/main/java/org/bitrepository/pillar/messagehandler/AccessMessageHandler.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -26,6 +26,9 @@ package org.bitrepository.pillar.messagehandler;
 
 import java.math.BigInteger;
 
+import org.bitrepository.bitrepositoryelements.AlarmcodeType;
+import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
+import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
 import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
@@ -81,9 +84,13 @@ public class GetFileIdentificationMessageHandler extends PillarMessageHandler<Id
         // TODO handle audit trails!!!
         reply.setAuditTrailInformation(null);
         
+        IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
+        irInfo.setIdentifyResponseCode(IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().toString());
+        irInfo.setIdentifyResponseText("Operation acknowledged and accepted.");
+        reply.setIdentifyResponseInfo(irInfo);
+        
         // Send resulting file.
         mediator.messagebus.sendMessage(reply);
-        
     }
     
     /**
@@ -101,7 +108,7 @@ public class GetFileIdentificationMessageHandler extends PillarMessageHandler<Id
         timeToDeliver.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
         reply.setTimeToDeliver(timeToDeliver);
         IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-        irInfo.setIdentifyResponseCode("500");
+        irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.DUPLICATE_FILE.value().toString());
         irInfo.setIdentifyResponseText("ERROR: " + cause);
         reply.setIdentifyResponseInfo(irInfo);
         // TODO handle audit trails!!!
@@ -110,5 +117,4 @@ public class GetFileIdentificationMessageHandler extends PillarMessageHandler<Id
         // Send resulting file.
         mediator.messagebus.sendMessage(reply);
     }
-
 }

@@ -72,7 +72,7 @@ public abstract class AbstractMessageListener implements MessageListener {
      *
      * @param message The unsupported message received.
      */
-    private void reportUnsupported(Object message) {
+    protected void reportUnsupported(Object message) {
         try {
             log.warn("Received unsupported message '{}'", JaxbHelper.serializeToXml(message));
         } catch (JAXBException e) {

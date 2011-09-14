@@ -100,7 +100,7 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
                         OperationEventType.PillarIdentified, response.getPillarID(), response.getPillarID()));
             }
         } catch (UnexpectedResponseException e) {
-            throw new IllegalArgumentException("Invalid IdentifyPillarsForGetFileResponse.");
+            throw new IllegalArgumentException("Invalid IdentifyPillarsForGetFileResponse.", e);
         }
 
         try {

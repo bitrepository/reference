@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Access Client
  * 
- * $Id: TestGetFileMessageFactory.java 202 2011-06-23 14:17:46Z mss $
- * $HeadURL: https://sbforge.org/svn/bitrepository/trunk/bitrepository-access-client/src/test/java/org/bitrepository/access/getfile/TestGetFileMessageFactory.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
