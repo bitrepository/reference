@@ -38,7 +38,6 @@ import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.protocol.ExampleMessageFactory;
-import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -48,7 +47,7 @@ import org.testng.annotations.Test;
 public class AlarmClientTester extends DefaultFixtureClientTest {
     private static final Long DEFAULT_WAIT_TIME = 500L;
 
-    @Test( groups={"regressiontest"})
+    @Test(groups = {"regressiontest"})
     public void defaultAlarmHandlingTest() throws Exception {
         addDescription("Tests the instantiation of a AlarmClient by using a local broker and a TestAlarmHandler.");
         addStep("Defining constants for the test.", "Should not be able to fail here.");
@@ -192,14 +191,5 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
 
         addStep("Tests the handling of other objects, in this case an exception", "Should be written to the log.");
         handler.handleOther(new NullPointerException(EXCEPTION_MESSAGE));
-    }
-
-    @Override
-    protected MutableClientSettings getClientSettings() {
-        return getAlarmSettings();
-    }
-    
-    private MutableClientSettings getAlarmSettings() {
-        return null;
     }
 }

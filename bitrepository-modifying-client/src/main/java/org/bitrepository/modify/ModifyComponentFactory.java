@@ -25,11 +25,11 @@
 
 package org.bitrepository.modify;
 
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
-import org.bitrepository.modify.putfile.PutFileClient;
-import org.bitrepository.modify.putfile.PutFileClientSettings;
 import org.bitrepository.modify.putfile.ConversationBasedPutFileClient;
+import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.modify_client.configuration.ModifyConfiguration;
 import org.bitrepository.protocol.messagebus.MessageBusFactory;
 
@@ -56,8 +56,6 @@ public class ModifyComponentFactory {
 
     /** The characteristics for this module.*/
     private ModuleCharacteristics moduleCharacter;
-    /** The configuration for this module.*/
-    private ModifyConfiguration config;
 
     /**
      * Private constructor for initialisation of the singleton.
@@ -75,27 +73,14 @@ public class ModifyComponentFactory {
     }
 
     /**
-     * Method for extracting the configuration for the access module.
-     * @return The access module configuration.
-     */
-    public ModifyConfiguration getConfig() {
-        if (config == null) {
-            ConfigurationFactory configurationFactory = new ConfigurationFactory();
-            config =
-                configurationFactory.loadConfiguration(getModuleCharacteristics(), ModifyConfiguration.class);
-        }
-        return config;
-    }
-    
-    /**
      * Method for initialising the PutClient in the configuration.
      * TODO use the configuration instead of this default. 
      * @return The configured PutClient.
      */
-    public PutFileClient retrievePutClient(PutFileClientSettings settings) {
+    public PutFileClient retrievePutClient(Settings settings) {
         return new ConversationBasedPutFileClient(
                 MessageBusFactory.createMessageBus(
-                        settings.getStandardSettings().getMessageBusConfiguration()),
+                        settings.getProtocol().getMessageBusConfiguration()),
                 settings);
     }
 }

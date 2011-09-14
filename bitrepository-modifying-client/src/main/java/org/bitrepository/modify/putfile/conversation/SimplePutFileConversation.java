@@ -33,13 +33,14 @@ import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
-import org.bitrepository.modify.putfile.PutFileClientSettings;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.protocol.conversation.AbstractConversation;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +58,7 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
     /** The sender to use for dispatching messages */
     final MessageSender messageSender;
     /** The configuration specific to the SLA related to this conversion. */
-    final PutFileClientSettings settings;
+    final Settings settings;
     
     /** The URL which the pillar should download the file from. */
     final URL downloadUrl;
@@ -93,7 +94,7 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
      * @param eventHandler The event handler.
      */
     public SimplePutFileConversation(MessageSender messageSender,
-            PutFileClientSettings settings,
+            Settings settings,
             URL urlToDownload,
             String fileId,
             BigInteger sizeOfFile,
@@ -128,7 +129,7 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
         conversationState = initialState;
         initialState.start();
         if (eventHandler == null) {
-            waitFor(settings.getConversationTimeout());
+            waitFor(TimeMeasureComparator.getTimeMeasureInLong(settings.getProtocol().getConversationTimeout()));
         }
         if (operationFailedException != null) {
             throw operationFailedException;

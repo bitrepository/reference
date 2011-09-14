@@ -35,8 +35,8 @@ import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.clienttest.TestEventHandler;
+import org.bitrepository.collection.settings.standardsettings.PutFileTYPE;
 import org.bitrepository.modify.ModifyComponentFactory;
-import org.bitrepository.protocol.bitrepositorycollection.MutableClientSettings;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -47,8 +47,6 @@ import org.testng.annotations.Test;
  * TODO need more test-cases, e.g. the User-Stories...
  */
 public class PutFileClientComponentTest extends DefaultFixtureClientTest {
-    /** The settings. */
-    private MutablePutFileClientSettings putClientSettings;
     
     private TestPutFileMessageFactory messageFactory;
     
@@ -65,17 +63,22 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         
         if(useMockupPillar()) {
             messageFactory = new TestPutFileMessageFactory(
-                    getPutFileClientSettings().getStandardSettings().getBitRepositoryCollectionID());
+                    settings.getBitRepositoryCollectionID());
         }
 
         testFile = new File("src/test/resources/test-files/", fileId);
     }
     
     @Override
-    protected void setupSettings(String testName) {
-        super.setupSettings(testName);
-        putClientSettings = new MutablePutFileClientSettings();
-        putClientSettings.setPutFileDefaultTimeout(1000L);
+    public void initCollectionSettings() {
+        super.initCollectionSettings();
+        
+        PutFileTYPE putfileSettings = new PutFileTYPE();
+        putfileSettings.setIdentificationTimeout(defaultTime);
+        putfileSettings.setOperationTimeout(defaultTime);
+        putfileSettings.getPillarIDs().add(PILLAR1_ID);
+        
+        settings.setPutFile(putfileSettings);
     };
 
     @Test(groups={"regressiontest"})
@@ -83,7 +86,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Testing the initialization through the ModifyComponentFactory.");
         addStep("Use the ModifyComponentFactory to instantiate a PutFileClient.", 
                 "It should be an instance of SimplePutFileClient");
-        PutFileClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(getPutFileClientSettings());
+        PutFileClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(settings);
         Assert.assertTrue(pfc instanceof ConversationBasedPutFileClient, "The PutFileClient '" + pfc + "' should be instance of '" 
                 + ConversationBasedPutFileClient.class.getName() + "'");
     }
@@ -93,10 +96,12 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the PutClient. Makes a whole conversation for the put client for a 'good' scenario.");
         addStep("Initialise the number of pillars and the PutClient.", "Should be OK.");
         
-        getPutFileClientSettings().setPillarIDs(new String[]{PILLAR1_ID});
+        settings.getPutFile().getPillarIDs().clear();
+        settings.getPutFile().getPillarIDs().add(PILLAR1_ID);
+        
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = new PutClientTestWrapper(
-                ModifyComponentFactory.getInstance().retrievePutClient(getPutFileClientSettings()), 
+                ModifyComponentFactory.getInstance().retrievePutClient(settings), 
                 testEventManager);
 
         addStep("Ensure that the test-file is placed on the HTTP server.", "Should be removed an reuploaded.");
@@ -139,7 +144,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         
         addStep("Validate the steps of the PutClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
-        for(String s : getPutFileClientSettings().getPillarIDs()) {
+        for(String s : settings.getPutFile().getPillarIDs()) {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
@@ -160,7 +165,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                     receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(putFileFinalResponse);
         }
-        for(int i = 1; i < 2* getPutFileClientSettings().getPillarIDs().length; i++) {
+        for(int i = 1; i < 2* settings.getPutFile().getPillarIDs().size(); i++) {
             OperationEventType eventType = testEventHandler.waitForEvent().getType();
             Assert.assertTrue( (eventType == OperationEventType.PartiallyComplete)
                     || (eventType == OperationEventType.Progress),
@@ -180,7 +185,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = new PutClientTestWrapper(
-                ModifyComponentFactory.getInstance().retrievePutClient(getPutFileClientSettings()), 
+                ModifyComponentFactory.getInstance().retrievePutClient(settings), 
                 testEventManager);
 
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.", 
@@ -221,7 +226,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         
         addStep("Validate the steps of the PutClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
-        for(String s : getPutFileClientSettings().getPillarIDs()) {
+        for(String s : settings.getPutFile().getPillarIDs()) {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
@@ -249,7 +254,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(putFileFinalResponse);
         }
         
-        for(int i = 1; i < 3* getPutFileClientSettings().getPillarIDs().length; i++) {
+        for(int i = 1; i < 3* settings.getPutFile().getPillarIDs().size(); i++) {
             OperationEventType eventType = testEventHandler.waitForEvent().getType();
             Assert.assertTrue( (eventType == OperationEventType.Failed)
                     || (eventType == OperationEventType.Progress) 
@@ -257,14 +262,5 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                     "Expected either Failed, Progress or PartiallyComplete, but was: " + eventType);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
-    }
-    
-    @Override
-    public MutableClientSettings getClientSettings() {
-        return getPutFileClientSettings();
-    };
-    
-    private MutablePutFileClientSettings getPutFileClientSettings() {
-        return putClientSettings;
     }
 }

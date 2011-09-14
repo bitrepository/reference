@@ -41,6 +41,7 @@ import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +76,7 @@ public class IdentifyPillarsForPutFile extends PutFileState {
      */
     public IdentifyPillarsForPutFile(SimplePutFileConversation conversation) {
         super(conversation);
-        this.identifyResponseStatus = new PillarsResponseStatus(conversation.settings.getPillarIDs());
+        this.identifyResponseStatus = new PillarsResponseStatus(conversation.settings.getPutFile().getPillarIDs());
     }
 
     /**
@@ -86,12 +87,13 @@ public class IdentifyPillarsForPutFile extends PutFileState {
         identifyRequest.setCorrelationID(conversation.getConversationID());
         identifyRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         identifyRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        identifyRequest.setBitRepositoryCollectionID(conversation.settings.getStandardSettings().getBitRepositoryCollectionID());
-        identifyRequest.setReplyTo(conversation.settings.getClientTopicID());
-        identifyRequest.setTo(conversation.settings.getStandardSettings().getCollectionDestination());
+        identifyRequest.setBitRepositoryCollectionID(conversation.settings.getBitRepositoryCollectionID());
+        identifyRequest.setReplyTo(conversation.settings.getProtocol().getLocalDestination());
+        identifyRequest.setTo(conversation.settings.getProtocol().getCollectionDestination());
 
         conversation.messageSender.sendMessage(identifyRequest);
-        timer.schedule(timerTask, conversation.settings.getIdentifyPillarsTimeout());
+        timer.schedule(timerTask, TimeMeasureComparator.getTimeMeasureInLong(
+                conversation.settings.getPutFile().getIdentificationTimeout()));
     }
 
     @Override

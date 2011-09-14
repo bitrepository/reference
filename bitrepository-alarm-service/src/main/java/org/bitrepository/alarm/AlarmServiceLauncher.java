@@ -26,33 +26,40 @@ package org.bitrepository.alarm;
 
 import org.bitrepository.alarm.handler.AlarmLoggingHandler;
 import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.configuration.ProtocolConfiguration;
+import org.bitrepository.protocol.settings.CollectionSettingsLoader;
 import org.bitrepository.protocol.settings.XMLFileSettingsLoader;
 
 /**
  * Class for launching an alarm service.
  */
 public class AlarmServiceLauncher {
-    private static final String COLLECTION_ID = "bitrepository-devel";
-    private static final String PATH_TO_SETTINGS = "settings/xml";
+    private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
+    private static final String DEFAULT_PATH_TO_SETTINGS = "src/test/resources/settings/xml";
 
     /**
      * @param args
      */
     public static void main(String[] args) {
-        ProtocolConfiguration pConf = ProtocolComponentFactory.getInstance().getProtocolConfiguration();
-        AlarmConfiguration aConf = AlarmComponentFactory.getInstance().getConfig();
-
-        AlarmSettingsLoader settingsLoader = 
-            new AlarmSettingsLoader(new XMLFileSettingsLoader(PATH_TO_SETTINGS));
-
-        MutableAlarmSettings settings;
+        String collectionId;
+        String pathToSettings;
+        if(args.length >= 2) {
+            collectionId = args[0];
+            pathToSettings = args[1];
+        } else {
+            collectionId = DEFAULT_COLLECTION_ID;
+            pathToSettings = DEFAULT_PATH_TO_SETTINGS;
+        }
+        
+        CollectionSettingsLoader settingsLoader = new CollectionSettingsLoader(
+                new XMLFileSettingsLoader(pathToSettings));
         try {
-            settings = settingsLoader.loadSettings(COLLECTION_ID);
+            Settings settings = settingsLoader.loadSettings(collectionId).getSettings();
             // Instantiate the AlarmService.
             AlarmService alarm = AlarmComponentFactory.getInstance().getAlarmService(settings);
-            alarm.addHandler(new AlarmLoggingHandler(), aConf.getQueue());
+            alarm.addHandler(new AlarmLoggingHandler(), settings.getProtocol().getAlarmDestination());
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);

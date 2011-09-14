@@ -41,6 +41,7 @@ import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +78,7 @@ public class PuttingFile extends PutFileState {
     public PuttingFile(SimplePutFileConversation conversation, Map<String, String> pillarsDests) {
         super(conversation);
         this.pillarDestinations = pillarsDests;
-        putResponseStatus = new PillarsResponseStatus(conversation.settings.getPillarIDs());
+        putResponseStatus = new PillarsResponseStatus(conversation.settings.getPutFile().getPillarIDs());
     }
 
     /**
@@ -90,12 +91,13 @@ public class PuttingFile extends PutFileState {
         putMsg.setCorrelationID(conversation.getConversationID());
         putMsg.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         putMsg.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        putMsg.setBitRepositoryCollectionID(conversation.settings.getStandardSettings().getBitRepositoryCollectionID());
-        putMsg.setReplyTo(conversation.settings.getClientTopicID());
+        putMsg.setBitRepositoryCollectionID(conversation.settings.getBitRepositoryCollectionID());
+        putMsg.setReplyTo(conversation.settings.getProtocol().getLocalDestination());
         putMsg.setFileAddress(conversation.downloadUrl.toExternalForm());
         putMsg.setFileID(conversation.fileID);
         putMsg.setFileSize(conversation.fileSize);
-        putMsg.setAuditTrailInformation(conversation.settings.getAuditTrailInformation());
+        // TODO
+//        putMsg.setAuditTrailInformation(conversation.settings);
         putMsg.setChecksumsDataForNewFile(conversation.validationChecksums);
         putMsg.setChecksumSpecs(conversation.requestChecksums);
         
@@ -110,11 +112,12 @@ public class PuttingFile extends PutFileState {
         if(conversation.eventHandler != null) {
             conversation.eventHandler.handleEvent(new DefaultEvent(OperationEventType.RequestSent, 
                     "Request to put file has been sent to pillars in collection '" 
-                    + conversation.settings.getStandardSettings().getBitRepositoryCollectionID() + "'."));
+                    + conversation.settings.getBitRepositoryCollectionID() + "'."));
         }
         
         // Set timeout.
-        timer.schedule(timerTask, conversation.settings.getConversationTimeout());
+        timer.schedule(timerTask, TimeMeasureComparator.getTimeMeasureInLong(
+                conversation.settings.getProtocol().getConversationTimeout()));
     }
 
     /**
@@ -142,7 +145,7 @@ public class PuttingFile extends PutFileState {
         if (conversation.eventHandler != null) {
             conversation.eventHandler.handleEvent(new PillarOperationEvent(OperationEventType.Progress, 
                     "Request to put file has been sent to pillars in collection '" 
-                    + conversation.settings.getStandardSettings().getBitRepositoryCollectionID() + "'.", response.getPillarID()));
+                    + conversation.settings.getBitRepositoryCollectionID() + "'.", response.getPillarID()));
         }
     }
 
