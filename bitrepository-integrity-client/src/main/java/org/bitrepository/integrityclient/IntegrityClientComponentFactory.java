@@ -25,6 +25,7 @@
 package org.bitrepository.integrityclient;
 
 import org.bitrepository.access.getfileids.BasicGetFileIDsClient;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
@@ -34,7 +35,6 @@ import org.bitrepository.integrityclient.collection.IntegrityInformationCollecto
 import org.bitrepository.integrityclient.collection.IntegrityInformationScheduler;
 import org.bitrepository.integrityclient.collection.TimerIntegrityInformationScheduler;
 import org.bitrepository.integrityclient.configuration.integrityclientconfiguration.IntegrityClientConfiguration;
-import org.bitrepository.protocol.bitrepositorycollection.ClientSettings;
 import org.bitrepository.protocol.messagebus.MessageBus;
 
 /**
@@ -98,7 +98,7 @@ public final class IntegrityClientComponentFactory {
      * Gets you an <code>IntegrityInformationCollector</code> that collects integrity information.
      * @return an <code>IntegrityInformationCollector</code> that collects integrity information.
      */
-    public IntegrityInformationCollector getIntegrityInformationCollector(MessageBus messageBus, ClientSettings settings) {
+    public IntegrityInformationCollector getIntegrityInformationCollector(MessageBus messageBus, Settings settings) {
         if (integrityInformationCollector == null) {
             integrityInformationCollector = new DelegatingIntegrityInformationCollector(
                     getCachedIntegrityInformationStorage(),
