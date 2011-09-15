@@ -24,11 +24,8 @@
  */
 package org.bitrepository.alarm;
 
-import org.bitrepository.alarm.handler.AlarmLoggingHandler;
-import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration;
+import org.bitrepository.alarm.handler.AlarmLogger;
 import org.bitrepository.collection.settings.standardsettings.Settings;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.configuration.ProtocolConfiguration;
 import org.bitrepository.protocol.settings.CollectionSettingsLoader;
 import org.bitrepository.protocol.settings.XMLFileSettingsLoader;
 
@@ -36,11 +33,13 @@ import org.bitrepository.protocol.settings.XMLFileSettingsLoader;
  * Class for launching an alarm service.
  */
 public class AlarmServiceLauncher {
+    /** The default bitrepository collection id. Used if no arguments.*/
     private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
+    /** The default the settings directory. Used if no arguments.*/
     private static final String DEFAULT_PATH_TO_SETTINGS = "src/test/resources/settings/xml";
 
     /**
-     * @param args
+     * @param args 
      */
     public static void main(String[] args) {
         String collectionId;
@@ -59,9 +58,12 @@ public class AlarmServiceLauncher {
             Settings settings = settingsLoader.loadSettings(collectionId).getSettings();
             // Instantiate the AlarmService.
             AlarmService alarm = AlarmComponentFactory.getInstance().getAlarmService(settings);
-            alarm.addHandler(new AlarmLoggingHandler(), settings.getProtocol().getAlarmDestination());
+            alarm.addHandler(new AlarmLogger(), settings.getProtocol().getAlarmDestination());
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println();
+            System.out.println("Use with two arguments: AlarmServiceLauncher 'pathToSettings' "
+                    + "'bitrepository collection id'");
             System.exit(0);
         }
     }

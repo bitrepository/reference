@@ -25,7 +25,6 @@
 package org.bitrepository.alarm.handler;
 
 import org.bitrepository.alarm.AlarmHandler;
-import org.bitrepository.bitrepositoryelements.AlarmDescription;
 import org.bitrepository.bitrepositorymessages.Alarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,19 +32,17 @@ import org.slf4j.LoggerFactory;
 /**
  * Very simple AlarmHandler, which just logs the alarms received.
  */
-public class AlarmLoggingHandler implements AlarmHandler {
+public class AlarmLogger implements AlarmHandler {
     
     /** The logger to log the Alarms.*/
     private Logger log = LoggerFactory.getLogger(this.getClass());
     
     /** Constructor. Nothing to initialize. */
-    public AlarmLoggingHandler() { }
+    public AlarmLogger() { }
     
     @Override
     public void handleAlarm(Alarm msg) {
-        AlarmDescription description = msg.getAlarmDescription();
-        log.info("Received alarm with code '" + description.getAlarmCode() + "' and text '" 
-                + description.getAlarmText() + "':\n{}", msg.toString());
+        log.warn("ALARM: {}", msg.toString());
     }
     
     @Override

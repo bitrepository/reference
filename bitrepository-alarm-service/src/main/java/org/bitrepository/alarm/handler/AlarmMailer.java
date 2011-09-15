@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * A quite simple AlarmHandler, which sends an mail with the Alarm.
  * TODO have a setting for how often, a mail should be send.
  */
-public class MailingAlarmHandler implements AlarmHandler {
+public class AlarmMailer implements AlarmHandler {
     
     /** The logger to log the Alarms.*/
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -73,7 +73,7 @@ public class MailingAlarmHandler implements AlarmHandler {
     /**
      * Constructor.
      */
-    public MailingAlarmHandler(AlarmConfiguration conf) {
+    public AlarmMailer(AlarmConfiguration conf) {
         this.config = conf.getMailingConfiguration();
         this.messageReceiver = config.getMailReceiver();
         this.messageSender = config.getMailSender();
@@ -82,11 +82,8 @@ public class MailingAlarmHandler implements AlarmHandler {
     
     @Override
     public void handleAlarm(Alarm msg) {
-        AlarmDescription description = msg.getAlarmDescription();
-        String subject = "Received alarm with code '" + description.getAlarmCode() + "' and text '" 
-                + description.getAlarmText() + "'";
+        String subject = "Received alarm '" + msg.getAlarmDescription() + "'";
         log.info(subject + ":\n{}", msg.toString());
-        
         sendMail(subject, msg.toString());
     }
     
@@ -94,12 +91,11 @@ public class MailingAlarmHandler implements AlarmHandler {
     public void handleOther(Object msg) {
         String subject = "Received unexpected object of type '" + msg.getClass() + "'";
         log.info(subject + ":\n{}", msg.toString());
-        
         sendMail(subject, msg.toString());
     }
     
     /**
-     * Method fore sending a mail.
+     * Method for sending a mail.
      * 
      * TODO: put into utility class?
      * 
@@ -107,38 +103,78 @@ public class MailingAlarmHandler implements AlarmHandler {
      * @param content The content of the mail.
      */
     private void sendMail(String subject, String content) {
+        Properties props = makeMailProperties();
+        Session session = Session.getDefaultInstance(props);
+        Message msg = new MimeMessage(session);
+        
+        addMailBody(content, msg);
+        addMailHeader(subject, msg);
+        sendMessage(msg);
+    }
+
+    /**
+     * Method for generating the properties of the mail.
+     * @return The properties for the mail.
+     */
+    private Properties makeMailProperties() {
+        Properties props = new Properties();
+        props.put(MAIL_FROM_PROPERTY_KEY, messageSender);
+        props.put(MAIL_HOST_PROPERTY_KEY, mailServer);
+        
+        return props;
+    }
+    
+    /**
+     * Method for generating the body of the mail.
+     * @param content The content of the body.
+     * @param msg The message which should have the body.
+     * @return The body of the mail.
+     */
+    private void addMailBody(String content, Message msg) {
         StringBuffer body = new StringBuffer();
         try {
             // Make the body of the mail.
             body.append("Host: " + InetAddress.getLocalHost().getCanonicalHostName() + "\n");
             body.append("Date: " + new Date().toString() + "\n");
             body.append(content + "\n");
+            msg.setContent(body.toString(), MIMETYPE);
         } catch (Exception e) {
-            throw new AlarmException("");
+            throw new AlarmException("Could not create mail body.", e);
         }
-        
-        Properties props = new Properties();
+    }
+    
+    /**
+     * Method for generating and adding the header to the mail. 
+     * @param subject The subject of 
+     * @param msg
+     */
+    private void addMailHeader(String subject, Message msg) {
         try {
-            props.put(MAIL_FROM_PROPERTY_KEY, messageSender);
-            props.put(MAIL_HOST_PROPERTY_KEY, mailServer);
-        } catch (Exception e) {
-            throw new AlarmException("");
+            msg.setSubject(subject);
+            msg.setSentDate(new Date());
+            msg.setFrom(new InternetAddress(messageSender));
+            
+            addReceiversToMessage(msg);
+        } catch (MessagingException e) {
+            throw new AlarmException("Could not create header.");
         }
-        
-        Session session = Session.getDefaultInstance(props);
-        Message msg = new MimeMessage(session);
-        
+    }
+    
+    /**
+     * Method for adding the message receivers to the message.
+     * @param msg The message which should be have the receivers added.
+     */
+    private void addReceiversToMessage(Message msg) {
         // to might contain more than one e-mail address
         for (String toAddressS : messageReceiver.split(",")) {
             try {
                 InternetAddress toAddress = new InternetAddress(toAddressS.trim());
                 msg.addRecipient(Message.RecipientType.TO, toAddress);
             } catch (Exception e) {
-                throw new AlarmException("To address '" + toAddressS
-                        + "' is not a valid email "
-                        + "address", e);
+                throw new AlarmException("To address '" + toAddressS + "' is not a valid email address", e);
             }
         }
+        
         try {
             if (msg.getAllRecipients().length == 0) {
                 throw new AlarmException("No valid recipients in '" + messageReceiver + "'");
@@ -146,23 +182,17 @@ public class MailingAlarmHandler implements AlarmHandler {
         } catch (MessagingException e) {
             throw new AlarmException("Cannot handle recipients of the message '" + msg + "'", e);
         }
-        
+    }
+
+    /**
+     * Method for sending the message.
+     * @param msg The message to send.
+     */
+    private void sendMessage(Message msg) {
         try {
-            InternetAddress fromAddress = null;
-            fromAddress = new InternetAddress(messageSender);
-            msg.setFrom(fromAddress);
-        } catch (Exception e) {
-            throw new AlarmException("Cannot add the messageSender '" + messageSender + "' to the mail.", e);
-        }
-        
-        try {
-            msg.setSubject(subject);
-            msg.setContent(body, MIMETYPE);
-            msg.setSentDate(new Date());
             Transport.send(msg);
-        } catch (Exception e) {
-            throw new AlarmException("Could not send email with subject '" + subject +  "' from '" + messageSender 
-                    + "' to '" + messageReceiver + "'. Body:\n" + body, e);
+        } catch (MessagingException e) {
+            throw new AlarmException("Could not send email: " + msg, e);
         }
     }
 }

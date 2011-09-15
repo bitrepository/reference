@@ -24,11 +24,9 @@
  */
 package org.bitrepository.alarm;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bitrepository.protocol.conversation.AbstractConversation;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,20 +41,20 @@ public class BasicAlarmService implements AlarmService {
     /** The messagebus for the communication.*/
     private final MessageBus messagebus;
     /** The conversation mediator to keep track of the conversations.*/
-    private List<ConversationReceiverMediator<AbstractConversation<URL>>> mediator;
+    private List<AlarmMessageReceiver> mediator;
 
     /**
      * Constructor.
      */
     public BasicAlarmService(MessageBus bus) {
         messagebus = bus;
-        mediator = new ArrayList<ConversationReceiverMediator<AbstractConversation<URL>>>();
+        mediator = new ArrayList<AlarmMessageReceiver>();
     }
 
     @Override
     public void addHandler(AlarmHandler handler, String queue) {
         log.info("Adding handler '" + handler.getClass().getName() + "' for alarms on the queue '"
                 + queue + "'.");
-        mediator.add(new ConversationReceiverMediator<AbstractConversation<URL>>(messagebus, queue, handler));
+        mediator.add(new AlarmMessageReceiver(messagebus, queue, handler));
     }
 }

@@ -28,8 +28,8 @@ import java.io.PrintStream;
 import java.util.Date;
 
 import org.apache.kahadb.util.ByteArrayOutputStream;
-import org.bitrepository.alarm.handler.AlarmLoggingHandler;
-import org.bitrepository.alarm.handler.MailingAlarmHandler;
+import org.bitrepository.alarm.handler.AlarmLogger;
+import org.bitrepository.alarm.handler.AlarmMailer;
 import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration;
 import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration.MailingConfiguration;
 import org.bitrepository.bitrepositoryelements.AlarmDescription;
@@ -47,7 +47,8 @@ import org.testng.annotations.Test;
 public class AlarmClientTester extends DefaultFixtureClientTest {
     private static final Long DEFAULT_WAIT_TIME = 500L;
 
-    @Test(groups = {"regressiontest"})
+//    @Test(groups = {"regressiontest"})
+    @Test(groups = {"other-test"})
     public void defaultAlarmHandlingTest() throws Exception {
         addDescription("Tests the instantiation of a AlarmClient by using a local broker and a TestAlarmHandler.");
         addStep("Defining constants for the test.", "Should not be able to fail here.");
@@ -109,7 +110,7 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
             System.setOut(new PrintStream(out));
 
             addStep("Initalise handler, AlarmMessage and constants", "Should not be problematic.");
-            AlarmHandler handler = new AlarmLoggingHandler();
+            AlarmHandler handler = new AlarmLogger();
             Alarm alarmMsg = ExampleMessageFactory.createMessage(Alarm.class);
 
             String ALARM_MESSAGE = "REGRESSION-TEST";
@@ -175,7 +176,7 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
         conf.setMailSender("error@sbforge.org");
         conf.setMailServer("sbforge.org");
         aconf.setMailingConfiguration(conf);
-        AlarmHandler handler = new MailingAlarmHandler(aconf);
+        AlarmHandler handler = new AlarmMailer(aconf);
         Alarm msg = ExampleMessageFactory.createMessage(Alarm.class);
 
         String ALARM_MESSAGE = "REGRESSION-TEST";
