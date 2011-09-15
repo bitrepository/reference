@@ -43,10 +43,13 @@ import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,16 +57,20 @@ import org.slf4j.LoggerFactory;
  * Class for performing the PutFile operation.
  * TODO handle error scenarios.
  */
-public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> {
+public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
      * Constructor.
-     * @param mediator The mediator for this pillar.
+     * @param settings The settings for handling the message.
+     * @param messageBus The bus for communication.
+     * @param alarmDispatcher The dispatcher of alarms.
+     * @param referenceArchive The archive for the data.
      */
-    public PutFileMessageHandler(PillarMediator mediator) {
-        super(mediator);
+    public PutFileRequestHandler(Settings settings, MessageBus messageBus,
+            AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
+        super(settings, messageBus, alarmDispatcher, referenceArchive);
     }
 
     /**
@@ -82,7 +89,7 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
             sendFinalResponse(message);
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Possible intruder -> Sending alarm! ", e);
-            alarmIllegalArgument(e);
+            alarmDispatcher.alarmIllegalArgument(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             FinalResponseInfo fri = new FinalResponseInfo();
@@ -102,7 +109,7 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
         validatePillarId(message.getPillarID());
 
         // verify, that we already have the file
-        if(mediator.archive.hasFile(message.getFileID())) {
+        if(archive.hasFile(message.getFileID())) {
             log.warn("Cannot perform put for a file, '" + message.getFileID() 
                     + "', which we already have within the archive");
             // Then tell the mediator, that we failed.
@@ -122,7 +129,7 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
      */
     private void tellAboutProgress(PutFileRequest message) {
         log.info("Respond that we are starting to retrieve the file.");
-        PutFileProgressResponse pResponse = mediator.msgFactory.createPutFileProgressResponse(message);
+        PutFileProgressResponse pResponse = createPutFileProgressResponse(message);
 
         // Needs to fill in: AuditTrailInformation, PillarChecksumSpec, ProgressResponseInfo
         pResponse.setAuditTrailInformation(null);
@@ -133,7 +140,7 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
         pResponse.setProgressResponseInfo(prInfo);
 
         log.info("Sending ProgressResponseInfo: " + prInfo);
-        mediator.messagebus.sendMessage(pResponse);
+        messagebus.sendMessage(pResponse);
     }
     
     /**
@@ -146,7 +153,7 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
 
         File fileForValidation;
         try {
-            fileForValidation = mediator.archive.downloadFileForValidation(message.getFileID(), 
+            fileForValidation = archive.downloadFileForValidation(message.getFileID(), 
                     fe.downloadFromServer(new URL(message.getFileAddress())));
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -180,7 +187,7 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
 
         try {
             // TODO verify that this operation is successful.
-            mediator.archive.moveToArchive(message.getFileID());
+            archive.moveToArchive(message.getFileID());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -192,9 +199,9 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
      */
     private void sendFinalResponse(PutFileRequest message) {
 
-        File retrievedFile = mediator.archive.getFile(message.getFileID());
+        File retrievedFile = archive.getFile(message.getFileID());
 
-        PutFileFinalResponse fResponse = mediator.msgFactory.createPutFileFinalResponse(message);
+        PutFileFinalResponse fResponse = createPutFileFinalResponse(message);
 
         // insert: AuditTrailInformation, ChecksumsDataForNewFile, FinalResponseInfo, PillarChecksumSpec
         fResponse.setAuditTrailInformation(null);
@@ -232,7 +239,7 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
 
         // Finish by sending final response.
         log.info("Sending PutFileFinalResponse: " + fResponse);
-        mediator.messagebus.sendMessage(fResponse);
+        messagebus.sendMessage(fResponse);
     }
     
     /**
@@ -242,8 +249,59 @@ public class PutFileMessageHandler extends PillarMessageHandler<PutFileRequest> 
      */
     private void sendFailedResponse(PutFileRequest message, FinalResponseInfo frInfo) {
         // send final response telling, that the file already exists!
-        PutFileFinalResponse fResponse = mediator.msgFactory.createPutFileFinalResponse(message);
+        PutFileFinalResponse fResponse = createPutFileFinalResponse(message);
         fResponse.setFinalResponseInfo(frInfo);
-        mediator.messagebus.sendMessage(fResponse);
+        messagebus.sendMessage(fResponse);
+    }
+    
+    /**
+     * Creates a PutFileProgressResponse based on a PutFileRequest. Missing the 
+     * following fields:
+     * <br/> - AuditTrailInformation
+     * <br/> - PillarChecksumSpec
+     * <br/> - ProgressResponseInfo
+     * 
+     * @param msg The PutFileRequest to base the progress response on.
+     * @return The PutFileProgressResponse based on the request.
+     */
+    private PutFileProgressResponse createPutFileProgressResponse(PutFileRequest msg) {
+        PutFileProgressResponse res = new PutFileProgressResponse();
+        res.setMinVersion(MIN_VERSION);
+        res.setVersion(VERSION);
+        res.setCorrelationID(msg.getCorrelationID());
+        res.setFileAddress(msg.getFileAddress());
+        res.setFileID(msg.getFileID());
+        res.setTo(msg.getReplyTo());
+        res.setPillarID(settings.getPillar().getPillarID());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setReplyTo(settings.getProtocol().getLocalDestination());
+        
+        return res;
+    }
+
+    /**
+     * Creates a PutFileFinalResponse based on a PutFileRequest. Missing the
+     * following fields:
+     * <br/> - AuditTrailInformation
+     * <br/> - ChecksumsDataForNewFile
+     * <br/> - FinalResponseInfo
+     * <br/> - PillarChecksumSpec
+     * 
+     * @param msg The PutFileRequest to base the final response message on.
+     * @return The PutFileFinalResponse message based on the request.
+     */
+    private PutFileFinalResponse createPutFileFinalResponse(PutFileRequest msg) {
+        PutFileFinalResponse res = new PutFileFinalResponse();
+        res.setMinVersion(MIN_VERSION);
+        res.setVersion(VERSION);
+        res.setCorrelationID(msg.getCorrelationID());
+        res.setFileAddress(msg.getFileAddress());
+        res.setFileID(msg.getFileID());
+        res.setTo(msg.getReplyTo());
+        res.setPillarID(settings.getPillar().getPillarID());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setReplyTo(settings.getProtocol().getLocalDestination());
+
+        return res;
     }
 }

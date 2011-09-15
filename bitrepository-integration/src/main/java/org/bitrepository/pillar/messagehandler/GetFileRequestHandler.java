@@ -44,37 +44,42 @@ import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Class for performing the GetFile operation.
- * TODO handle error scenarios.
  */
-public class GetFileMessageHandler extends PillarMessageHandler<GetFileRequest> {
+public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /** Constant for identifying this.*/
     private static boolean USE_CHECKSUM = false;
+    /** The default checksum digester.*/
     private static String CHECKSUM_DIGESTER = "MD5";
-
     
     /**
      * Constructor.
-     * @param mediator The mediator for this pillar.
+     * @param settings The settings for handling the message.
+     * @param messageBus The bus for communication.
+     * @param alarmDispatcher The dispatcher of alarms.
+     * @param referenceArchive The archive for the data.
      */
-    public GetFileMessageHandler(PillarMediator mediator) {
-        super(mediator);
+    public GetFileRequestHandler(Settings settings, MessageBus messageBus,
+            AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
+        super(settings, messageBus, alarmDispatcher, referenceArchive);
     }
     
     /**
      * Performs the GetFile operation.
-     * TODO perhaps synchronisation?
      * @param message The GetFileRequest message to handle.
      */
     @Override
@@ -84,12 +89,12 @@ public class GetFileMessageHandler extends PillarMessageHandler<GetFileRequest> 
                 return;
             }
             
-            sendingProgress(message);
-            performOperation(message);
+            sendProgressMessage(message);
+            uploadToClient(message);
             sendFinalResponse(message);
         } catch (IllegalArgumentException e) {
-            log.warn("Caught IllegalArgumentException. Possible intruder -> Sending alarm! ", e);
-            alarmIllegalArgument(e);
+            log.warn("Caught IllegalArgumentException. Message ", e);
+            alarmDispatcher.alarmIllegalArgument(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             FinalResponseInfo fri = new FinalResponseInfo();
@@ -110,7 +115,7 @@ public class GetFileMessageHandler extends PillarMessageHandler<GetFileRequest> 
         validatePillarId(message.getPillarID());
 
         // Validate, that we have the requested file.
-        if(!mediator.archive.hasFile(message.getFileID())) {
+        if(!archive.hasFile(message.getFileID())) {
             log.warn("The file '" + message.getFileID() + "' has been requested, but we do not have that file!");
             // Then tell the mediator, that we failed.
             FinalResponseInfo fri = new FinalResponseInfo();
@@ -128,11 +133,11 @@ public class GetFileMessageHandler extends PillarMessageHandler<GetFileRequest> 
      * The method for sending a progress response telling, that the operation is about to be performed.
      * @param message The request for the GetFile operation.
      */
-    protected void sendingProgress(GetFileRequest message) {
-        File requestedFile = mediator.archive.getFile(message.getFileID());
+    protected void sendProgressMessage(GetFileRequest message) {
+        File requestedFile = archive.getFile(message.getFileID());
         
         // make ProgressResponse to tell that we are handling this.
-        GetFileProgressResponse pResponse = mediator.msgFactory.createGetFileProgressResponse(message);
+        GetFileProgressResponse pResponse = createGetFileProgressResponse(message);
         
         // set missing variables in the message:
         // AuditTrailInformation, ChecksumsDataForBitRepositoryFile, FileSize, ProgressResponseInfo
@@ -156,15 +161,15 @@ public class GetFileMessageHandler extends PillarMessageHandler<GetFileRequest> 
 
         // Send the ProgressResponse
         log.info("Sending GetFileProgressResponse: " + pResponse);
-        mediator.messagebus.sendMessage(pResponse);
+        messagebus.sendMessage(pResponse);
     } 
 
     /**
      * Method for uploading the file to the requested location.
      * @param message The message requesting the GetFile operation.
      */
-    protected void performOperation(GetFileRequest message) {
-        File requestedFile = mediator.archive.getFile(message.getFileID());
+    protected void uploadToClient(GetFileRequest message) {
+        File requestedFile = archive.getFile(message.getFileID());
 
         try {
             // Upload the file.
@@ -182,7 +187,7 @@ public class GetFileMessageHandler extends PillarMessageHandler<GetFileRequest> 
      */
     protected void sendFinalResponse(GetFileRequest message) {
         // make ProgressResponse to tell that we are handling this.
-        GetFileFinalResponse fResponse = mediator.msgFactory.createGetFileFinalResponse(message);
+        GetFileFinalResponse fResponse = createGetFileFinalResponse(message);
         // set missing variables in the message: AuditTrailInformation, FinalResponseInfo
         fResponse.setAuditTrailInformation(null);
         FinalResponseInfo frInfo = new FinalResponseInfo();
@@ -192,7 +197,7 @@ public class GetFileMessageHandler extends PillarMessageHandler<GetFileRequest> 
 
         // send the FinalResponse.
         log.info("Sending GetFileFinalResponse: " + fResponse);
-        mediator.messagebus.sendMessage(fResponse);
+        messagebus.sendMessage(fResponse);
     }
     
     /**
@@ -202,9 +207,9 @@ public class GetFileMessageHandler extends PillarMessageHandler<GetFileRequest> 
      */
     protected void sendFailedResponse(GetFileRequest message, FinalResponseInfo frInfo) {
         log.info("Sending bad GetFileFinalResponse: " + frInfo);
-        GetFileFinalResponse fResponse = mediator.msgFactory.createGetFileFinalResponse(message);
+        GetFileFinalResponse fResponse = createGetFileFinalResponse(message);
         fResponse.setFinalResponseInfo(frInfo);
-        mediator.messagebus.sendMessage(fResponse);
+        messagebus.sendMessage(fResponse);
     }
     
     /**
@@ -230,5 +235,57 @@ public class GetFileMessageHandler extends PillarMessageHandler<GetFileRequest> 
             log.warn("Could not calculate the checksum of the requested file.", e);
             return null;
         }
+    }
+    
+    /**
+     * Creates a GetFileResponse based on a GetFileRequest. Missing the 
+     * following fields:
+     * <br/> - AuditTrailInformation
+     * <br/> - ChecksumsDataForBitRepositoryFile
+     * <br/> - FileSize
+     * <br/> - ProgressResponseInfo
+     * 
+     * @param msg The GetFileRequest to base the progress response on.
+     * @return The GetFileProgressResponse based on the request.
+     */
+    private GetFileProgressResponse createGetFileProgressResponse(GetFileRequest msg) {
+        GetFileProgressResponse res = new GetFileProgressResponse();
+        res.setMinVersion(MIN_VERSION);
+        res.setVersion(VERSION);
+        res.setCorrelationID(msg.getCorrelationID());
+        res.setFileAddress(msg.getFileAddress());
+        res.setFileID(msg.getFileID());
+        res.setFilePart(msg.getFilePart());
+        res.setTo(msg.getReplyTo());
+        res.setPillarID(settings.getPillar().getPillarID());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setReplyTo(settings.getProtocol().getLocalDestination());
+
+        return res;
+    }
+    
+    /**
+     * Creates a GetFileFinalResponse based on a GetFileRequest. Missing the 
+     * following fields:
+     * <br/> - AuditTrailInformation
+     * <br/> - FinalResponseInfo
+     * 
+     * @param msg The GetFileRequest to base the final response on.
+     * @return The GetFileFinalResponse based on the request.
+     */
+    private GetFileFinalResponse createGetFileFinalResponse(GetFileRequest msg) {
+        GetFileFinalResponse res = new GetFileFinalResponse();
+        res.setMinVersion(MIN_VERSION);
+        res.setVersion(VERSION);
+        res.setCorrelationID(msg.getCorrelationID());
+        res.setFileAddress(msg.getFileAddress());
+        res.setFileID(msg.getFileID());
+        res.setFilePart(msg.getFilePart());
+        res.setTo(msg.getReplyTo());
+        res.setPillarID(settings.getPillar().getPillarID());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setReplyTo(settings.getProtocol().getLocalDestination());
+
+        return res;
     }
 }

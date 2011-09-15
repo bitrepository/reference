@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
 public class CollectionSettingsLoaderTest extends ExtendedTestCase{
     private static final String PATH_TO_SETTINGS = "settings/xml";
 
-    @Test
+//    @Test(groups = { "regressiontest" })
     public void testLocalCollectionSettingsLoading() throws Exception {
         CollectionSettingsLoader settingsLoader = 
             new CollectionSettingsLoader(new XMLFileSettingsLoader(PATH_TO_SETTINGS));
@@ -41,7 +41,7 @@ public class CollectionSettingsLoaderTest extends ExtendedTestCase{
         settingsLoader.addCollectionSettings("bitrepository-local", collectionSettings);
     }
     
-    @Test
+    @Test(groups = { "regressiontest" })
     public void testDevelCollectionSettingsLoading() throws Exception {
         CollectionSettingsLoader settingsLoader = 
             new CollectionSettingsLoader(new XMLFileSettingsLoader(PATH_TO_SETTINGS));
@@ -51,7 +51,7 @@ public class CollectionSettingsLoaderTest extends ExtendedTestCase{
         settingsLoader.addCollectionSettings("bitrepository-devel", collectionSettings);
     }
     
-    @Test
+//    @Test(groups = { "regressiontest" })
     public void testIntegrationCollectionSettingsLoading() throws Exception {
         CollectionSettingsLoader settingsLoader = 
             new CollectionSettingsLoader(new XMLFileSettingsLoader(PATH_TO_SETTINGS));

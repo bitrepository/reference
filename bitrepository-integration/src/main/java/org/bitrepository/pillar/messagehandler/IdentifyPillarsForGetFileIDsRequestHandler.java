@@ -25,19 +25,25 @@
 package org.bitrepository.pillar.messagehandler;
 
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
+import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.pillar.ReferenceArchive;
+import org.bitrepository.protocol.messagebus.MessageBus;
 
 /**
  * Class for handling the identification of this pillar for the purpose of performing the GetFileIDs operation.
  * TODO handle error scenarios.
  */
-public class GetFileIDsMessageHandler extends PillarMessageHandler<IdentifyPillarsForGetFileIDsRequest> {
-
+public class IdentifyPillarsForGetFileIDsRequestHandler extends PillarMessageHandler<IdentifyPillarsForGetFileIDsRequest> {
     /**
      * Constructor.
-     * @param mediator The mediator for this pillar.
+     * @param settings The settings for handling the message.
+     * @param messageBus The bus for communication.
+     * @param alarmDispatcher The dispatcher of alarms.
+     * @param referenceArchive The archive for the data.
      */
-    public GetFileIDsMessageHandler(PillarMediator mediator) {
-        super(mediator);
+    public IdentifyPillarsForGetFileIDsRequestHandler(Settings settings, MessageBus messageBus,
+            AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
+        super(settings, messageBus, alarmDispatcher, referenceArchive);
     }
     
     /**

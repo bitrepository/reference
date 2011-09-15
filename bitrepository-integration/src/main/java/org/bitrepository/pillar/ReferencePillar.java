@@ -40,9 +40,8 @@ public class ReferencePillar {
     public ReferencePillar(MessageBus mBus, Settings settings) {
         log.info("Starting the reference pillar!");
         
-        ReferencePillarMessageFactory msgFactory = new ReferencePillarMessageFactory(settings);
         ReferenceArchive archive = new ReferenceArchive(settings.getPillar().getFileDir());
-        PillarMediator mediator = new PillarMediator(mBus, settings, archive, msgFactory);
+        PillarMediator mediator = new PillarMediator(mBus, settings, archive);
         log.info("ReferencePillar started!");
     }
 }

@@ -24,38 +24,51 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import java.util.Date;
+import java.math.BigInteger;
 
-import org.bitrepository.bitrepositoryelements.AlarmConcerning;
-import org.bitrepository.bitrepositoryelements.AlarmConcerning.BitRepositoryCollections;
-import org.bitrepository.bitrepositoryelements.AlarmConcerning.Components;
-import org.bitrepository.bitrepositoryelements.AlarmDescription;
-import org.bitrepository.bitrepositoryelements.AlarmcodeType;
-import org.bitrepository.bitrepositoryelements.ComponentTYPE;
-import org.bitrepository.bitrepositoryelements.ComponentTYPE.ComponentType;
-import org.bitrepository.bitrepositoryelements.PriorityCodeType;
-import org.bitrepository.bitrepositoryelements.RiskAreaType;
-import org.bitrepository.bitrepositoryelements.RiskImpactScoreType;
-import org.bitrepository.bitrepositoryelements.RiskProbabilityScoreType;
-import org.bitrepository.bitrepositoryelements.RiskTYPE;
-import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.pillar.ReferenceArchive;
+import org.bitrepository.protocol.ProtocolConstants;
+import org.bitrepository.protocol.messagebus.MessageBus;
 
 /**
  * Abstract level for message handling. 
  */
 public abstract class PillarMessageHandler<T> {
 
-    /** The mediator.*/
-    protected final PillarMediator mediator;
+    /** The constant for the VERSION of the messages.*/
+    protected final BigInteger VERSION = BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION);
+    /** The constant for the MIN_VERSION of the messages.*/
+    protected final BigInteger MIN_VERSION = BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION);
+    
+    /** The dispatcher for sending alarm messages.*/
+    protected final AlarmDispatcher alarmDispatcher;
+    /** The settings for this setup.*/
+    protected final Settings settings;
+    /** The messagebus for communication.*/ 
+    protected final MessageBus messagebus;
+    /** The reference archive.*/
+    protected final ReferenceArchive archive;
     
     /**
-     * Constructor. Only accessible by inheritors of this interface.
-     * @param mediator
+     * Constructor. 
+     * @param settings The settings for handling the message.
+     * @param messageBus The bus for communication.
+     * @param alarmDispatcher The dispatcher of alarms.
+     * @param referenceArchive The archive for the data.
      */
-    protected PillarMessageHandler(PillarMediator mediator) {
-        this.mediator = mediator;
+    protected PillarMessageHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher, 
+            ReferenceArchive referenceArchive) {
+        this.settings = settings;
+        this.messagebus = messageBus;
+        this.alarmDispatcher = alarmDispatcher;
+        this.archive = referenceArchive;
     }
     
+    /** 
+     * The method for handling the message connected to the specific handler.
+     * @param message The message to handle.
+     */
     abstract void handleMessage(T message);
     
     /**
@@ -63,9 +76,9 @@ public abstract class PillarMessageHandler<T> {
      * @param bitrepositoryCollectionId The collection id to validate.
      */
     protected void validateBitrepositoryCollectionId(String bitrepositoryCollectionId) {
-        if(!bitrepositoryCollectionId.equals(mediator.settings.getBitRepositoryCollectionID())) {
+        if(!bitrepositoryCollectionId.equals(settings.getBitRepositoryCollectionID())) {
             throw new IllegalArgumentException("The message had a wrong BitRepositoryIdCollection: "
-                    + "Expected '" + mediator.settings.getBitRepositoryCollectionID() + "' but was '" 
+                    + "Expected '" + settings.getBitRepositoryCollectionID() + "' but was '" 
                     + bitrepositoryCollectionId + "'.");
         }
     }
@@ -75,46 +88,10 @@ public abstract class PillarMessageHandler<T> {
      * @param pillarId The pillar id.
      */
     protected void validatePillarId(String pillarId) {
-        if(!pillarId.equals(mediator.settings.getPillar().getPillarID())) {
+        if(!pillarId.equals(settings.getPillar().getPillarID())) {
             throw new IllegalArgumentException("The message had a wrong PillarId: "
-                    + "Expected '" + mediator.settings.getPillar().getPillarID() + "' but was '" 
+                    + "Expected '" + settings.getPillar().getPillarID() + "' but was '" 
                     + pillarId + "'.");
         }
-    }
-    
-    /**
-     * Method for sending an alarm based on an IllegalArgumentException.
-     * @param exception The exception to base the alarm upon.
-     */
-    public void alarmIllegalArgument(IllegalArgumentException exception) {
-        // create the Concerning part of the alarm.
-        AlarmConcerning ac = new AlarmConcerning();
-        BitRepositoryCollections brcs = new BitRepositoryCollections();
-        brcs.getBitRepositoryCollectionID().add(mediator.settings.getBitRepositoryCollectionID());
-        ac.setBitRepositoryCollections(brcs);
-        ac.setMessages(exception.getMessage());
-        ac.setFileInformation(null);
-        Components comps = new Components();
-        ComponentTYPE compType = new ComponentTYPE();
-        compType.setComponentComment("ReferencePillar");
-        compType.setComponentID(mediator.settings.getPillar().getPillarID());
-        compType.setComponentType(ComponentType.PILLAR);
-        comps.getContributor().add(compType);
-        comps.getDataTransmission().add(mediator.settings.getProtocol().getMessageBusConfiguration().toString());
-        ac.setComponents(comps);
-        
-        // create a descriptor.
-        AlarmDescription ad = new AlarmDescription();
-        ad.setAlarmCode(AlarmcodeType.UNKNOWN_USER);
-        ad.setAlarmText(exception.getMessage());
-        ad.setOrigDateTime(CalendarUtils.getXmlGregorianCalendar(new Date()));
-        ad.setPriority(PriorityCodeType.OTHER);
-        RiskTYPE rt = new RiskTYPE();
-        rt.setRiskArea(RiskAreaType.CONFIDENTIALITY);
-        rt.setRiskImpactScore(RiskImpactScoreType.CRITICAL_IMPACT);
-        rt.setRiskProbabilityScore(RiskProbabilityScoreType.HIGH_PROPABILITY);
-        ad.setRisk(rt);
-        
-        mediator.sendAlarm(ac, ad);
     }
 }

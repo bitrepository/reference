@@ -32,8 +32,8 @@
     <CollectionDestination>TEST-TOPIC</CollectionDestination>
     <AlarmDestination>TEST-TOPIC</AlarmDestination>
     <MessageBusConfiguration>
-      <Name>kb-test-bus</Name>
-      <URL>tcp://sandkasse-01.kb.dk:61616</URL>
+      <Name>MyMessageBus</Name>
+      <URL>failover://tcp://sandkasse-01.kb.dk:61616</URL>
       <Login></Login>
       <Password></Password>
     </MessageBusConfiguration>
@@ -44,8 +44,89 @@
     </ConversationTimeout>
   </Protocol>
   <Pillar>
+    <PillarID>test-pillar</PillarID>
+    <FileDir>test-archive</FileDir>
+    <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <ProgressResponseMandatory>true</ProgressResponseMandatory>
     <AuditTrailLevel>HIGH</AuditTrailLevel>
     <AlarmLevel>ERROR</AlarmLevel>
+    <TimeToStartDeliver>
+      <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
+      <bre:TimeMeasureValue>1000</bre:TimeMeasureValue>
+    </TimeToStartDeliver>
   </Pillar>
+  <AlarmService />
+  <DeleteFile>
+    <IdentificationTimeout>
+      <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
+      <bre:TimeMeasureValue>60000</bre:TimeMeasureValue>
+    </IdentificationTimeout>
+  </DeleteFile>
+  <GetAuditTrail>
+    <IdentificationTimeout>
+      <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
+      <bre:TimeMeasureValue>60000</bre:TimeMeasureValue>
+    </IdentificationTimeout>
+  </GetAuditTrail>
+  <GetChecksums>
+    <IdentificationTimeout>
+      <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
+      <bre:TimeMeasureValue>60000</bre:TimeMeasureValue>
+    </IdentificationTimeout>
+    <OperationTimeout>
+      <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
+      <bre:TimeMeasureValue>60000</bre:TimeMeasureValue>
+    </OperationTimeout>
+    <PillarIDs />
+  </GetChecksums>
+  <GetFile>
+    <IdentificationTimeout>
+      <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
+      <bre:TimeMeasureValue>60000</bre:TimeMeasureValue>
+    </IdentificationTimeout>
+    <OperationTimeout>
+      <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
+      <bre:TimeMeasureValue>60000</bre:TimeMeasureValue>
+    </OperationTimeout>
+    <PillarIDs />
+  </GetFile>
+  <GetFileIDs>
+    <IdentificationTimeout>
+      <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
+      <bre:TimeMeasureValue>60000</bre:TimeMeasureValue>
+    </IdentificationTimeout>
+    <OperationTimeout>
+      <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
+      <bre:TimeMeasureValue>60000</bre:TimeMeasureValue>
+    </OperationTimeout>
+    <PillarIDs />
+  </GetFileIDs>
+  <GetStatus>
+    <IdentificationTimeout>
+      <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
+      <bre:TimeMeasureValue>60000</bre:TimeMeasureValue>
+    </IdentificationTimeout>
+    <OperationTimeout>
+      <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
+      <bre:TimeMeasureValue>60000</bre:TimeMeasureValue>
+    </OperationTimeout>
+    <PillarIDs />
+  </GetStatus>
+  <PutFile>
+    <IdentificationTimeout>
+      <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
+      <bre:TimeMeasureValue>60000</bre:TimeMeasureValue>
+    </IdentificationTimeout>
+    <OperationTimeout>
+      <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
+      <bre:TimeMeasureValue>60000</bre:TimeMeasureValue>
+    </OperationTimeout>
+    <PillarIDs />
+  </PutFile>
+  <ReplaceFile>
+    <IdentificationTimeout>
+      <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
+      <bre:TimeMeasureValue>60000</bre:TimeMeasureValue>
+    </IdentificationTimeout>
+  </ReplaceFile>
 </Settings>

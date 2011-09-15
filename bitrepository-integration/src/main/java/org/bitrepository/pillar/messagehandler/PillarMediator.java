@@ -24,11 +24,9 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.bitrepository.bitrepositoryelements.AlarmConcerning;
 import org.bitrepository.bitrepositoryelements.AlarmConcerning.BitRepositoryCollections;
@@ -42,43 +40,23 @@ import org.bitrepository.bitrepositoryelements.RiskAreaType;
 import org.bitrepository.bitrepositoryelements.RiskImpactScoreType;
 import org.bitrepository.bitrepositoryelements.RiskProbabilityScoreType;
 import org.bitrepository.bitrepositoryelements.RiskTYPE;
-import org.bitrepository.bitrepositorymessages.Alarm;
-import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
-import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.collection.settings.standardsettings.AlarmLevelTYPE;
 import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.ReferenceArchive;
-import org.bitrepository.pillar.ReferencePillarMessageFactory;
 import org.bitrepository.pillar.audit.MemorybasedAuditTrailManager;
-import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.messagebus.MessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,10 +77,10 @@ public class PillarMediator extends AbstractMessageListener {
     final MessageBus messagebus;
     /** The archive. Package protected on purpose.*/
     final ReferenceArchive archive;
-    /** The message factory. Package protected on purpose.*/
-    final ReferencePillarMessageFactory msgFactory;
     /** The handler of the audits. Package protected on purpose.*/
     private final MemorybasedAuditTrailManager audits;
+    /** The dispatcher of alarms. Package protected on purpose.*/
+    final AlarmDispatcher alarmDispatcher;
 
     // THE MESSAGE HANDLERS!
     private Map<String, PillarMessageHandler> handlers = new HashMap<String, PillarMessageHandler>();
@@ -116,13 +94,12 @@ public class PillarMediator extends AbstractMessageListener {
      * @param refArchive The archive for the reference pillar.
      * @param messageFactory The message factory.
      */
-    public PillarMediator(MessageBus messagebus, Settings pSettings, ReferenceArchive refArchive, 
-            ReferencePillarMessageFactory messageFactory) {
+    public PillarMediator(MessageBus messagebus, Settings pSettings, ReferenceArchive refArchive) {
         this.messagebus = messagebus;
         this.archive = refArchive;
-        this.msgFactory = messageFactory;
         this.settings = pSettings;
         this.audits = new MemorybasedAuditTrailManager();
+        this.alarmDispatcher = new AlarmDispatcher(settings, messagebus);
 
         // Initialise the messagehandlers.
         initialiseHandlers();
@@ -136,46 +113,25 @@ public class PillarMediator extends AbstractMessageListener {
      * Method for instantiating the handlers.
      */
     protected void initialiseHandlers() {
-        this.handlers.put(IdentifyPillarsForGetFileRequest.class.getName(), new GetFileIdentificationMessageHandler(this));
-        this.handlers.put(GetFileRequest.class.getName(), new GetFileMessageHandler(this));
-        this.handlers.put(IdentifyPillarsForGetFileIDsRequest.class.getName(), new GetFileIDsIdentificationMessageHandler(this));
-        this.handlers.put(GetFileIDsRequest.class.getName(), new GetFileIDsMessageHandler(this));
-        this.handlers.put(IdentifyPillarsForGetChecksumsRequest.class.getName(), new GetChecksumsIdentificationMessageHandler(this));
-        this.handlers.put(GetChecksumsRequest.class.getName(), new GetChecksumsMessageHandler(this));
+        this.handlers.put(IdentifyPillarsForGetFileRequest.class.getName(), 
+                new IdentifyPillarsForGetFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+        this.handlers.put(GetFileRequest.class.getName(), 
+                new GetFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+        this.handlers.put(IdentifyPillarsForGetFileIDsRequest.class.getName(), 
+                new IdentifyPillarsForGetFileIDsRequestHandler(settings, messagebus, alarmDispatcher, archive));
+        this.handlers.put(GetFileIDsRequest.class.getName(), 
+                new GetFileIDsRequestHandler(settings, messagebus, alarmDispatcher, archive));
+        this.handlers.put(IdentifyPillarsForGetChecksumsRequest.class.getName(), 
+                new IdentifyPillarsForGetChecksumsRequestHandler(settings, messagebus, alarmDispatcher, archive));
+        this.handlers.put(GetChecksumsRequest.class.getName(), 
+                new GetChecksumsRequestHandler(settings, messagebus, alarmDispatcher, archive));
         
-        this.handlers.put(IdentifyPillarsForPutFileRequest.class.getName(), new PutFileIdentificationMessageHandler(this));
-        this.handlers.put(PutFileRequest.class.getName(), new PutFileMessageHandler(this));
+        this.handlers.put(IdentifyPillarsForPutFileRequest.class.getName(), 
+                new IdentifyPillarsForPutFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+        this.handlers.put(PutFileRequest.class.getName(), 
+                new PutFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
     }
 
-    /**
-     * Method for sending an Alarm when something bad happens.
-     * @param alarmConcerning What the alarm is concerning.
-     * @param alarmDescription The description of the alarm, e.g. What caused the alarm.
-     */
-    public void sendAlarm(AlarmConcerning alarmConcerning, AlarmDescription alarmDescription) {
-        log.warn("Sending alarm, concerning: '" + alarmConcerning + "', with description: '" + alarmDescription + "'");
-        
-        Alarm alarm = new Alarm();
-        
-        ComponentTYPE ct = new ComponentTYPE();
-        ct.setComponentComment("ReferencePillar");
-        ct.setComponentID(settings.getPillar().getPillarID());
-        ct.setComponentType(ComponentType.PILLAR);
-        alarm.setAlarmRaiser(ct);
-        
-        alarm.setAlarmConcerning(alarmConcerning);
-        alarm.setAlarmDescription(alarmDescription);
-        
-        alarm.setAuditTrailInformation("ReferencePillar: " + settings.getPillar().getPillarID());
-        alarm.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
-        alarm.setCorrelationID(UUID.randomUUID().toString());
-        alarm.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        alarm.setReplyTo(settings.getProtocol().getLocalDestination());
-        alarm.setTo(settings.getProtocol().getCollectionDestination() + "-ALARM");
-        alarm.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        
-        messagebus.sendMessage(alarm);
-    }
     
     /**
      * Method for sending an alarm when a received message does not have a handler.
@@ -214,7 +170,7 @@ public class PillarMediator extends AbstractMessageListener {
         rt.setRiskProbabilityScore(RiskProbabilityScoreType.MEDIUM_PROPABILITY);
         ad.setRisk(rt);
         
-        sendAlarm(ac, ad);
+        alarmDispatcher.sendAlarm(ac, ad);
     }
     
     @Override

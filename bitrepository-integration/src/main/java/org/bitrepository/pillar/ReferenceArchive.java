@@ -182,4 +182,12 @@ public class ReferenceArchive implements FileStore {
         
         oldFile.renameTo(retainFile);
     }
+    
+    /**
+     * For retrieval of the size left in this archive.
+     * @return The number of bytes left in the archive.
+     */
+    public long sizeLeftInArchive() {
+        return baseDepositDir.getFreeSpace();
+    }
 }

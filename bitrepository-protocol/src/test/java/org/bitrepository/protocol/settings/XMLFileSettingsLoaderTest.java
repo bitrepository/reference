@@ -34,7 +34,7 @@ public class XMLFileSettingsLoaderTest extends ExtendedTestCase{
 //    private static final String PATH_TO_SETTINGS = "settings/xml";
     private static final String PATH_TO_SETTINGS = "src/test/resources/settings/xml";
     
-    @Test
+    @Test(groups = { "regressiontest" })
     public void testCollectionSettingsLoading() throws Exception {
         SettingsReader settingsLoader = new XMLFileSettingsLoader(PATH_TO_SETTINGS);
         

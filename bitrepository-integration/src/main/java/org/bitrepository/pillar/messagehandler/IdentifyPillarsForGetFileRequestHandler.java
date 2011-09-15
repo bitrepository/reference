@@ -26,7 +26,6 @@ package org.bitrepository.pillar.messagehandler;
 
 import java.math.BigInteger;
 
-import org.bitrepository.bitrepositoryelements.AlarmcodeType;
 import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
 import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
@@ -34,24 +33,35 @@ import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.collection.settings.standardsettings.AlarmLevelTYPE;
+import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.pillar.ReferenceArchive;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for handling the identification of this pillar for the purpose of performing the GetFile operation.
- * TODO handle error scenarios.
  */
-public class GetFileIdentificationMessageHandler extends PillarMessageHandler<IdentifyPillarsForGetFileRequest> {
+public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandler<IdentifyPillarsForGetFileRequest> {
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
      * Constructor.
-     * @param mediator The mediator for this pillar.
+     * @param settings The settings for handling the message.
+     * @param messageBus The bus for communication.
+     * @param alarmDispatcher The dispatcher of alarms.
+     * @param referenceArchive The archive for the data.
      */
-    public GetFileIdentificationMessageHandler(PillarMediator mediator) {
-        super(mediator);
+    public IdentifyPillarsForGetFileRequestHandler(Settings settings, MessageBus messageBus,
+            AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
+        super(settings, messageBus, alarmDispatcher, referenceArchive);
     }
+
     
     /**
      * Handles the identification messages for the GetFile operation.
-     * TODO perhaps synchronisation?
      * @param message The IdentifyPillarsForGetFileRequest message to handle.
      */
     public void handleMessage(IdentifyPillarsForGetFileRequest message) {
@@ -59,29 +69,32 @@ public class GetFileIdentificationMessageHandler extends PillarMessageHandler<Id
             // Validate the message.
             validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
 
-            if(!mediator.archive.hasFile(message.getFileID())) {
-                respondBadIdentification(message, "The file does not exist within the archive.");
+            if(!archive.hasFile(message.getFileID())) {
+                respondMissingFileIdentification(message, "The file does not exist within the archive.");
             } else {
                 respondSuccesfullIdentification(message);
             }
         } catch (IllegalArgumentException e) {
-            alarmIllegalArgument(e);
+            // Only send this message if the alarm level is 'WARNING'.
+            if(settings.getPillar().getAlarmLevel() == AlarmLevelTYPE.WARNING) {
+                alarmDispatcher.alarmIllegalArgument(e);
+            } else {
+                log.warn("Caught illegal argument exception", e);
+            }
         }
     }
     
     /**
      * Method for making a successfull response to the identification.
-     * TODO perhaps synchronisation?
      * @param message The request message to respond to.
      */
     private void respondSuccesfullIdentification(IdentifyPillarsForGetFileRequest message) {
         // Create the response.
-        IdentifyPillarsForGetFileResponse reply = mediator.msgFactory.createIdentifyPillarsForGetFileResponse(message);
+        IdentifyPillarsForGetFileResponse reply = createIdentifyPillarsForGetFileResponse(message);
         
         // set the missing variables in the reply:
-        // TimeToDeliver, AuditTrailInformation
-        reply.setTimeToDeliver(mediator.settings.getPillar().getTimeToDeliver());
-        // TODO handle audit trails!!!
+        // TimeToDeliver, AuditTrailInformation, IdentifyResponseInfo
+        reply.setTimeToDeliver(settings.getPillar().getTimeToStartDeliver());
         reply.setAuditTrailInformation(null);
         
         IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
@@ -90,31 +103,58 @@ public class GetFileIdentificationMessageHandler extends PillarMessageHandler<Id
         reply.setIdentifyResponseInfo(irInfo);
         
         // Send resulting file.
-        mediator.messagebus.sendMessage(reply);
+        messagebus.sendMessage(reply);
     }
     
     /**
      * Method for sending a bad response.
      * @param message The identification request to respond to.
      */
-    private void respondBadIdentification(IdentifyPillarsForGetFileRequest message, String cause) {
+    private void respondMissingFileIdentification(IdentifyPillarsForGetFileRequest message, String cause) {
         // Create the response.
-        IdentifyPillarsForGetFileResponse reply = mediator.msgFactory.createIdentifyPillarsForGetFileResponse(message);
+        IdentifyPillarsForGetFileResponse reply = createIdentifyPillarsForGetFileResponse(message);
         
         // set the missing variables in the reply:
         // TimeToDeliver, AuditTrailInformation, IdentifyResponseInfo
-        TimeMeasureTYPE timeToDeliver = new TimeMeasureTYPE();
-        timeToDeliver.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
-        timeToDeliver.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
-        reply.setTimeToDeliver(timeToDeliver);
+        TimeMeasureTYPE timeToStartDeliver = new TimeMeasureTYPE();
+        timeToStartDeliver.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
+        timeToStartDeliver.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
+        reply.setTimeToDeliver(timeToStartDeliver);
+        reply.setAuditTrailInformation(null);
+        
         IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
         irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.DUPLICATE_FILE.value().toString());
         irInfo.setIdentifyResponseText("ERROR: " + cause);
         reply.setIdentifyResponseInfo(irInfo);
-        // TODO handle audit trails!!!
-        reply.setAuditTrailInformation(null);
         
         // Send resulting file.
-        mediator.messagebus.sendMessage(reply);
+        messagebus.sendMessage(reply);
     }
+    
+    /**
+     * Creates a IdentifyPillarsForGetFileResponse based on a 
+     * IdentifyPillarsForGetFileRequest. The following fields are not inserted:
+     * <br/> - TimeToDeliver
+     * <br/> - AuditTrailInformation
+     * <br/> - IdentifyResponseInfo
+     * 
+     * @param msg The IdentifyPillarsForGetFileRequest to base the response on.
+     * @return The response to the request.
+     */
+    private IdentifyPillarsForGetFileResponse createIdentifyPillarsForGetFileResponse(
+            IdentifyPillarsForGetFileRequest msg) {
+        IdentifyPillarsForGetFileResponse res 
+                = new IdentifyPillarsForGetFileResponse();
+        res.setMinVersion(MIN_VERSION);
+        res.setVersion(VERSION);
+        res.setCorrelationID(msg.getCorrelationID());
+        res.setFileID(msg.getFileID());
+        res.setTo(msg.getReplyTo());
+        res.setPillarID(settings.getPillar().getPillarID());
+        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        res.setReplyTo(settings.getProtocol().getLocalDestination());
+        
+        return res;
+    }
+
 }

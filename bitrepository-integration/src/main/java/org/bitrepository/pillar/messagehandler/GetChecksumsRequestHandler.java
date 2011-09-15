@@ -25,19 +25,27 @@
 package org.bitrepository.pillar.messagehandler;
 
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
+import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.pillar.ReferenceArchive;
+import org.bitrepository.protocol.messagebus.MessageBus;
 
 /**
  * Class for performing the GetChecksums operation for this pillar.
  * TODO handle error scenarios.
  */
-public class GetChecksumsMessageHandler extends PillarMessageHandler<GetChecksumsRequest> {
+public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksumsRequest> {
     /**
      * Constructor.
-     * @param mediator The mediator for this pillar.
+     * @param settings The settings for handling the message.
+     * @param messageBus The bus for communication.
+     * @param alarmDispatcher The dispatcher of alarms.
+     * @param referenceArchive The archive for the data.
      */
-    public GetChecksumsMessageHandler(PillarMediator mediator) {
-        super(mediator);
+    public GetChecksumsRequestHandler(Settings settings, MessageBus messageBus,
+            AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
+        super(settings, messageBus, alarmDispatcher, referenceArchive);
     }
+
     
     /**
      * Handles the messages for the GetChecksums operation.

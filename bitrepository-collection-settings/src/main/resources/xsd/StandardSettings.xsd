@@ -175,6 +175,11 @@
           Location for the base directory for storing the files.
         </xs:documentation></xs:annotation>
       </xs:element>
+      <xs:element name="MinimumSizeLeft" type="xs:long">
+        <xs:annotation><xs:documentation xml:lang="en">
+          The minimum amount of bytes left in the archive, when storing a file.
+        </xs:documentation></xs:annotation>
+      </xs:element>
       <xs:element name="ProgressResponseMandatory" type="xs:boolean">
         <xs:annotation><xs:documentation xml:lang="en">
           Defines whether progress responds should be set after receiving a operation request.
@@ -190,7 +195,7 @@
           The level for raising Alarms.
         </xs:documentation></xs:annotation>
       </xs:element>
-      <xs:element name="TimeToDeliver" type="bre:TimeMeasure_TYPE">
+      <xs:element name="TimeToStartDeliver" type="bre:TimeMeasure_TYPE">
         <xs:annotation><xs:documentation>
           The timeout for the identification.
         </xs:documentation></xs:annotation>

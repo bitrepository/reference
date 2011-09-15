@@ -33,7 +33,7 @@
     <AlarmDestination>TEST-TOPIC</AlarmDestination>
     <MessageBusConfiguration>
       <Name>MyMessageBus</Name>
-      <URL></URL>
+      <URL>failover://tcp://sandkasse-01.kb.dk:61616</URL>
       <Login></Login>
       <Password></Password>
     </MessageBusConfiguration>
@@ -46,13 +46,14 @@
   <Pillar>
     <PillarID>test-pillar</PillarID>
     <FileDir>test-archive</FileDir>
+    <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <ProgressResponseMandatory>true</ProgressResponseMandatory>
     <AuditTrailLevel>HIGH</AuditTrailLevel>
     <AlarmLevel>ERROR</AlarmLevel>
-    <TimeToDeliver>
+    <TimeToStartDeliver>
       <bre:TimeMeasureUnit>MILLISECONDS</bre:TimeMeasureUnit>
       <bre:TimeMeasureValue>1000</bre:TimeMeasureValue>
-    </TimeToDeliver>
+    </TimeToStartDeliver>
   </Pillar>
   <AlarmService />
   <DeleteFile>
