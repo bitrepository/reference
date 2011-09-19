@@ -27,6 +27,8 @@ package org.bitrepository.protocol;
 import java.math.BigInteger;
 
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
+import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
+import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
 import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
 import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
@@ -47,6 +49,8 @@ public abstract class TestMessageFactory {
         TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS;
     protected static final BigInteger TIME_MEASURE_VALUE_DEFAULT = BigInteger.valueOf(1000L);
     protected static final ProgressResponseCodeType RESPONSE_CODE_DEFAULT = ProgressResponseCodeType.REQUEST_ACCEPTED;
+    protected static final IdentifyResponseCodePositiveType IDENTIFY_RESPONSE_CODE_DEFAULT 
+            = IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE;
     protected static final String RESPONSE_TEXT_DEFAULT = "Message request has been received and is expected to be met successfully";
     protected static final String COMPLETE_CODE_DEFAULT = "480";
     protected static final String COMPLETE_TEXT_DEFAULT = "successful completion";
@@ -57,6 +61,12 @@ public abstract class TestMessageFactory {
         TIME_TO_DELIVER_DEFAULT.setTimeMeasureValue(TIME_MEASURE_VALUE_DEFAULT);
     }
 
+    protected static final IdentifyResponseInfo IDENTIFY_INFO_DEFAULT = new IdentifyResponseInfo();
+    static {
+        IDENTIFY_INFO_DEFAULT.setIdentifyResponseCode(IDENTIFY_RESPONSE_CODE_DEFAULT.value().toString());
+        IDENTIFY_INFO_DEFAULT.setIdentifyResponseText("Positive identification");
+    }
+    
     protected static final ProgressResponseInfo PROGRESS_INFO_DEFAULT = new ProgressResponseInfo();
     static {
         PROGRESS_INFO_DEFAULT.setProgressResponseCode(RESPONSE_CODE_DEFAULT);
