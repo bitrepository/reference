@@ -27,6 +27,7 @@ package org.bitrepository.access.getchecksums;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 
 import org.bitrepository.access.getchecksums.conversation.SimpleGetChecksumsConversation;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
@@ -77,40 +78,67 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
     }
     
     @Override
-    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, 
-            EventHandler eventHandler) {
-        ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "String[] pillarIDs");
+    public Map<String, ResultingChecksums> getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, 
+            ChecksumSpecs checksumSpec, EventHandler eventHandler) {
+        ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "Collection<String> pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
         ArgumentValidator.checkNotNull(checksumSpec, "ChecksumSpecTYPE checksumSpec");
         
         log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"
-                + Arrays.asList(pillarIDs) + "' with the specifications '" + checksumSpec + "'");
-        // TODO Auto-generated method stub
+                + pillarIDs + "' with the specifications '" + checksumSpec + "'");
+        SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(bus, settings, 
+                null, fileIDs, checksumSpec, pillarIDs, eventHandler);
+        
+        try {
+            conversationMediator.addConversation(conversation);
+            conversation.startConversation();
+            
+            while(conversation.hasEnded()) {
+                try {
+                    wait(500);
+                } catch(InterruptedException e) {
+                    log.debug("Interrupted!", e);
+                }
+            }
+            
+            return conversation.getResult();
+            
+        } catch (OperationFailedException e) {
+            eventHandler.handleEvent(new DefaultEvent(OperationEventType.Failed, e.getMessage()));
+            return null;
+        }
     }
 
     @Override
-    public ResultingChecksums getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec) 
-            throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
-        ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "String[] pillarIDs");
+    public Map<String, ResultingChecksums> getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, 
+            ChecksumSpecs checksumSpec) throws NoPillarFoundException, OperationTimeOutException, 
+            OperationFailedException {
+        ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "Collection<String> pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
         ArgumentValidator.checkNotNull(checksumSpec, "ChecksumSpecTYPE checksumSpec");
         
         log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"
-                + Arrays.asList(pillarIDs) + "' with the specifications '" + checksumSpec + "'");
+                + pillarIDs + "' with the specifications '" + checksumSpec + "'");
         // TODO Auto-generated method stub
+        SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(bus, settings, 
+                null, fileIDs, checksumSpec, pillarIDs, null);
+        conversationMediator.addConversation(conversation);
+        conversation.startConversation();
+
+        
         return null;
     }
 
     @Override
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, URL addressForResult,
             EventHandler eventHandler) {
-        ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "String[] pillarIDs");
+        ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "Collection<String> pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
         ArgumentValidator.checkNotNull(checksumSpec, "ChecksumSpecTYPE checksumSpec");
         ArgumentValidator.checkNotNull(addressForResult, "URL addressForResult");
         
         log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"
-                + Arrays.asList(pillarIDs) + "' with the specifications '" + checksumSpec + "'. "
+                + pillarIDs + "' with the specifications '" + checksumSpec + "'. "
                 + "The result should be uploaded to '" + addressForResult + "'.");
 
         SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(bus, settings, 
@@ -126,13 +154,13 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
     @Override
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, URL addressForResult)
             throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
-        ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "String[] pillarIDs");
+        ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "Collection<String> pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
         ArgumentValidator.checkNotNull(checksumSpec, "ChecksumSpecTYPE checksumSpec");
         ArgumentValidator.checkNotNull(addressForResult, "URL addressForResult");
         
         log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"
-                + Arrays.asList(pillarIDs) + "' with the specifications '" + checksumSpec + "'. "
+                + pillarIDs + "' with the specifications '" + checksumSpec + "'. "
                 + "The result should be uploaded to '" + addressForResult + "'.");
         SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(bus, settings, 
                 addressForResult, fileIDs, checksumSpec, pillarIDs, null);

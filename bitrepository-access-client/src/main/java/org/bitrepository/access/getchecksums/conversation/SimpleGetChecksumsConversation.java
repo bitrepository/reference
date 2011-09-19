@@ -26,11 +26,13 @@ package org.bitrepository.access.getchecksums.conversation;
 
 import java.net.URL;
 import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bitrepository.access.getchecksums.selector.PillarSelectorForGetChecksums;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
@@ -50,7 +52,7 @@ import org.slf4j.LoggerFactory;
  *
  * Logic for behaving sanely in GetChecksums conversations.
  */
-public class SimpleGetChecksumsConversation extends AbstractConversation<URL> {
+public class SimpleGetChecksumsConversation extends AbstractConversation<Map<String,ResultingChecksums>> {
 
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -104,9 +106,9 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<URL> {
     }
 
     @Override
-    public URL getResult() {
+    public Map<String,ResultingChecksums> getResult() {
         if(hasEnded()) {
-            return uploadUrl;
+            return ((GetChecksumsFinished) conversationState).getResults();
         } else {
             return null;
         }
@@ -114,6 +116,7 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<URL> {
 
     @Override
     public void startConversation() throws OperationFailedException {
+        log.debug("Starting GetChecksum conversation: '" + getConversationID() + "'");
         IdentifyPillarsForGetChecksums initialConversationState = new IdentifyPillarsForGetChecksums(this);
         conversationState = initialConversationState;
         initialConversationState.start();                   
@@ -159,6 +162,7 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<URL> {
 
     @Override
     public synchronized void failConversation(String message) {
+        log.warn("Conversation failed: '" + getConversationID() + "'.");
         if (eventHandler != null) {
             eventHandler.handleEvent(new DefaultEvent(
                     OperationEventType.Failed, message));

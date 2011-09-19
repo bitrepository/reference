@@ -25,6 +25,7 @@
 package org.bitrepository.access.getchecksums.conversation;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -32,6 +33,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -70,6 +72,9 @@ public class GettingChecksums extends GetChecksumsState {
     final Timer timer = new Timer(true);
     /** The timer task for timeout of getFile in this conversation. */
     final TimerTask getChecksumsTimeoutTask = new GetChecksumsTimerTask();
+    
+    /** The results of the checksums calculations. A map between the pillar and its calculated checksums.*/
+    private Map<String, ResultingChecksums> results = new HashMap<String, ResultingChecksums>();
 
     /**
      * Constructor.
@@ -81,6 +86,9 @@ public class GettingChecksums extends GetChecksumsState {
         outstandingPillars = pillarDestinations.keySet();
     }
 
+    /**
+     * Method for initiating this part of the conversation. Sending the GetChecksumsRequest.
+     */
     public void start() {
         if (pillarDestinations == null || pillarDestinations.isEmpty()) {
             conversation.throwException(new NoPillarFoundException("Unable to getChecksums, no pillars were selected"));
@@ -98,6 +106,8 @@ public class GettingChecksums extends GetChecksumsState {
         getChecksumsRequest.setCorrelationID(conversation.getConversationID());
         getChecksumsRequest.setFileIDs(conversation.fileIDs);
         getChecksumsRequest.setReplyTo(conversation.settings.getProtocol().getLocalDestination());
+        // TODO
+//        getChecksumsRequest.setFileChecksumSpec(conversation.checksumSpecifications);
         getChecksumsRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         getChecksumsRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         
@@ -150,7 +160,7 @@ public class GettingChecksums extends GetChecksumsState {
     
     @Override
     public void onMessage(GetChecksumsFinalResponse response) {
-        log.debug("(ConversationID: " + conversation.getConversationID() + ") "
+        log.info("(ConversationID: " + conversation.getConversationID() + ") "
                 + "Received GetChecksumsFinalResponse from " + response.getPillarID() + ": \n{}", response);
         
         // Remove pillar from outstanding, if it has not yet replied.
@@ -168,6 +178,11 @@ public class GettingChecksums extends GetChecksumsState {
                         new DefaultEvent(OperationEvent.OperationEventType.PartiallyComplete, 
                                 response.getFinalResponseInfo().toString()));
             }
+            
+            // If calculations in message, then put them into the results map.
+            if(response.getResultingChecksums() != null) {
+                results.put(response.getPillarID(), response.getResultingChecksums());
+            }
         } else {
             if (conversation.eventHandler != null) {
                 conversation.eventHandler.handleEvent(
@@ -182,7 +197,7 @@ public class GettingChecksums extends GetChecksumsState {
                         new DefaultEvent(OperationEvent.OperationEventType.Complete, 
                                 "All pillars have delivered their checksums."));
             }
-            endConversation();
+            conversation.conversationState = new GetChecksumsFinished(conversation, results);
         }
     }
     

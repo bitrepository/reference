@@ -24,9 +24,23 @@
  */
 package org.bitrepository.access.getchecksums.conversation;
 
+import java.util.Map;
+
+import org.bitrepository.bitrepositoryelements.ResultingChecksums;
+
+/**
+ * State for telling, that the conversation has finished.
+ */
 public class GetChecksumsFinished extends GetChecksumsState {
 
-    public GetChecksumsFinished(SimpleGetChecksumsConversation conversation) {
+    private final Map<String, ResultingChecksums> res;
+    
+    public GetChecksumsFinished(SimpleGetChecksumsConversation conversation, Map<String, ResultingChecksums> results) {
         super(conversation);
+        this.res = results;
+    }
+    
+    public Map<String, ResultingChecksums> getResults() {
+        return res;
     }
 }

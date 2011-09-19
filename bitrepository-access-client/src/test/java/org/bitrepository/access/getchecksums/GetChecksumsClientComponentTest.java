@@ -26,14 +26,18 @@ package org.bitrepository.access.getchecksums;
 
 import java.math.BigInteger;
 import java.net.URL;
+import java.util.Date;
+import java.util.Map;
 
 import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs.ChecksumSpecsItems;
+import org.bitrepository.bitrepositoryelements.ChecksumsDataGroupedByChecksumSpec;
+import org.bitrepository.bitrepositoryelements.ChecksumsDataGroupedByChecksumSpec.ChecksumDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
+import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -42,6 +46,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRes
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.clienttest.TestEventHandler;
 import org.bitrepository.collection.settings.standardsettings.GetChecksumsTYPE;
+import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.testng.Assert;
@@ -88,7 +94,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         httpServer.clearFiles();
     }
 
-    @Test(groups = {"regressiontest"})
+//    @Test(groups = {"regressiontest"})
     public void verifyGetChecksumsClientFromFactory() throws Exception {
         Assert.assertTrue(AccessComponentFactory.getInstance().createGetChecksumsClient(settings) 
                 instanceof BasicGetChecksumsClient, 
@@ -114,7 +120,6 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         csItems.getChecksumSpecsItem().add(csType);
         checksumSpecs.setChecksumSpecsItems(csItems);
 
-        //        ((MutableClientSettings)getFileClientSettings).setPillarIDs(new String[] {PILLAR1_ID});
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetChecksumsClient getChecksumsClient = new GetChecksumsClientTestWrapper(
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settings), 
@@ -177,6 +182,11 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
             GetChecksumsFinalResponse completeMsg = testMessageFactory.createGetChecksumsFinalResponse(
                     receivedGetChecksumsRequest, PILLAR1_ID, pillar1DestinationId);
+            
+            ResultingChecksums res = new ResultingChecksums();
+            res.setResultAddress(receivedGetChecksumsRequest.getResultAddress());
+            completeMsg.setResultingChecksums(res);
+            
             messageBus.sendMessage(completeMsg);
         }
 
@@ -186,141 +196,104 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 //        httpServer.assertFileEquals(TestFileStore.DEFAULT_TEST_FILE, url.toExternalForm());
     }
     
-    //    @Test(groups = {"regressiontest"})
-    public void chooseFastestPillarGetFileClient() throws Exception {
-        addDescription("Set the GetClient to retrieve a file as fast as "
-                + "possible, where it has to choose between to pillars with "
-                + "different times. The messages should be delivered at the "
-                + "same time.");
-        addStep("Create a GetFileClient configured to use a fast and a slow pillar.", "");
+//    @Test(groups = {"regressiontest"})
+    public void checksumsDeliveredThroughMessage() throws Exception {
+        addDescription("Tests that the GetChecksumsClient can deliver the results of a checksums operation through "
+                + "the messages.");
+        addStep("Initialise the variables.", "");
+        
+        FileIDs fileIDs = new FileIDs();
+        fileIDs.getFileID().add(DEFAULT_FILE_ID);
+        ChecksumSpecs checksumSpecs = new ChecksumSpecs();
+        checksumSpecs.setNoOfItems(BigInteger.ONE);
+        ChecksumSpecsItems csItems = new ChecksumSpecsItems();
+        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
+        csType.setChecksumSalt(null);
+        csType.setChecksumType("MD5");
+        csItems.getChecksumSpecsItem().add(csType);
+        checksumSpecs.setChecksumSpecsItems(csItems);
 
-//        String averagePillarID = "THE-AVERAGE-PILLAR";
-//        String fastPillarID = "THE-FAST-PILLAR";
-//        String slowPillarID = "THE-SLOW-PILLAR";
-//        ((MutableClientSettings)getFileClientSettings).setPillarIDs(
-//                new String[] {averagePillarID, fastPillarID, slowPillarID});
-//        GetFileClient getFileClient = 
-//            new GetChecksumsClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings), 
-//                    testEventManager);
-//        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-//
-//        addStep("Defining the variables for the GetFileClient and defining them in the configuration", 
-//        "It should be possible to change the values of the configurations.");
-//
-//        addStep("Make the GetClient ask for fastest pillar.", 
-//        "It should send message to identify which pillars.");
-//        getFileClient.getFileFromFastestPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), testEventHandler);
-//        IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
-//        if (useMockupPillar()) {
-//            receivedIdentifyRequestMessage = 
-//                bitRepositoryCollectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
-//        }
-//
-//        addStep("Three pillars send responses. First an average timeToDeliver, then a fast timeToDeliver and last a" +
-//                " slow timeToDeliver.", "The client should send a getFileRequest to the fast pillar. " +
-//                "The event handler should receive the following events: " +
-//        "3 x PillarIdentified, a PillarSelected and a RequestSent");
-//
-//        if (useMockupPillar()) {
-//            IdentifyPillarsForGetFileResponse averageReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
-//                    receivedIdentifyRequestMessage, averagePillarID, pillar2DestinationId);
-//            TimeMeasureTYPE averageTime = new TimeMeasureTYPE();
-//            averageTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
-//            averageTime.setTimeMeasureValue(BigInteger.valueOf(100L));
-//            averageReply.setTimeToDeliver(averageTime);
-//            messageBus.sendMessage(averageReply);
-//
-//            IdentifyPillarsForGetFileResponse fastReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
-//                    receivedIdentifyRequestMessage, fastPillarID, pillar1DestinationId);
-//            TimeMeasureTYPE fastTime = new TimeMeasureTYPE();
-//            fastTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
-//            fastTime.setTimeMeasureValue(BigInteger.valueOf(10L));
-//            fastReply.setTimeToDeliver(fastTime);
-//            messageBus.sendMessage(fastReply);
-//
-//            IdentifyPillarsForGetFileResponse slowReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
-//                    receivedIdentifyRequestMessage, slowPillarID, pillar2DestinationId);
-//            TimeMeasureTYPE slowTime = new TimeMeasureTYPE();
-//            slowTime.setTimeMeasureValue(BigInteger.valueOf(1L));
-//            slowTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.HOURS);
-//            slowReply.setTimeToDeliver(slowTime);
-//            messageBus.sendMessage(slowReply);
-//
-//            GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
-//            Assert.assertEquals(receivedGetFileRequest, 
-//                    testMessageFactory.createGetFileRequest(receivedGetFileRequest, fastPillarID, pillar1DestinationId));
-//        }
-//
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
-//        PillarOperationEvent event = (PillarOperationEvent) testEventHandler.waitForEvent();
-//        Assert.assertEquals(event.getType(), OperationEventType.PillarSelected);
-//        Assert.assertEquals(event.getState(), fastPillarID);
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        
+        addStep("Create a separate thread for handling the receival of the results of the conversation.", 
+                "There should be no problems in creating the new thread.");
+        Thread callChecksum = new ChecksumCallThread(fileIDs, checksumSpecs, testEventHandler);
+        
+        addStep("Starting the conversation.", 
+                "Should be handled in the separate thread, along with the receival of the results.");
+        callChecksum.start();
+        
+        addStep("Receiving the identification for the pillar.", 
+                "Should be sent by the GetCheckumsClient");
+        IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
+        if (useMockupPillar()) {
+            receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(
+                    IdentifyPillarsForGetChecksumsRequest.class);
+            Assert.assertEquals(receivedIdentifyRequestMessage, 
+                    testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
+                            bitRepositoryCollectionDestinationID));
+        }
+
+        addStep("The pillar sends a response to the identify message.", 
+                "The callback listener should notify of the response and the client should send a GetChecksumsRequest "
+                + "message to the pillar"); 
+
+        GetChecksumsRequest receivedGetChecksumsRequest = null;
+        if (useMockupPillar()) {
+            IdentifyPillarsForGetChecksumsResponse identifyResponse = testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                    receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+            messageBus.sendMessage(identifyResponse);
+            receivedGetChecksumsRequest = pillar1Destination.waitForMessage(GetChecksumsRequest.class);
+            Assert.assertEquals(receivedGetChecksumsRequest, 
+                    testMessageFactory.createGetChecksumsRequest(receivedGetChecksumsRequest,PILLAR1_ID, pillar1DestinationId));
+        }
+
+        for(int i = 0; i < settings.getGetChecksums().getPillarIDs().size(); i++) {
+            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+
+        addStep("The pillar sends a getChecksumsProgressResponse to the GetChecksumsClient.", 
+                "The GetChecksumsClient should notify about the response through the callback interface."); 
+        if (useMockupPillar()) {
+            GetChecksumsProgressResponse getChecksumsProgressResponse = testMessageFactory.createGetChecksumsProgressResponse(
+                    receivedGetChecksumsRequest, PILLAR1_ID, pillar1DestinationId);
+            messageBus.sendMessage(getChecksumsProgressResponse);
+        }
+        
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
+
+        addStep("The resulting file is uploaded to the indicated url and the pillar sends a final response upload message", 
+                "The GetChecksumsClient notifies that the file is ready through the callback listener and the uploaded file is present.");
+        if (useMockupPillar()) {
+            GetChecksumsFinalResponse completeMsg = testMessageFactory.createGetChecksumsFinalResponse(
+                    receivedGetChecksumsRequest, PILLAR1_ID, pillar1DestinationId);
+            
+            ResultingChecksums res = new ResultingChecksums();
+            res.setResultAddress(null);
+            ChecksumsDataGroupedByChecksumSpec checksums = new ChecksumsDataGroupedByChecksumSpec();
+            
+            checksums.setNoOfItems(BigInteger.ONE);
+            ChecksumSpecTYPE checksumSpecification = receivedGetChecksumsRequest.getFileChecksumSpec();
+            checksums.setChecksumSpec(checksumSpecification);
+
+            ChecksumDataItems checksumdata = new ChecksumDataItems();
+            ChecksumDataForChecksumSpecTYPE specificChecksum = new ChecksumDataForChecksumSpecTYPE();
+            specificChecksum.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+            specificChecksum.setChecksumValue(ChecksumUtils.generateChecksum(TestFileStore.DEFAULT_TEST_FILE, 
+                    checksumSpecification.getChecksumType(), checksumSpecification.getChecksumSalt()));
+            checksumdata.getChecksumDataForChecksumSpec().add(specificChecksum);
+            
+            checksums.setChecksumDataItems(checksumdata);
+            res.setChecksumsDataGroupedByChecksumSpec(checksums);
+            completeMsg.setResultingChecksums(res);
+            
+            messageBus.sendMessage(completeMsg);
+        }
+
     }
-
-    //    @Test(groups = {"regressiontest"})
-    public void chooseFastestPillarGetFileClientWithIdentifyTimeout() throws Exception {
-        addDescription("Verify that the FastestPillarGetFile works correct without receiving responses from all" +
-        "pillars.");
-        addStep("Create a GetFileClient configured to use 3 pillars and a 3 second timeout for identifying pillar.", "");
-
-//        String averagePillarID = "THE-AVERAGE-PILLAR";
-//        String fastPillarID = "THE-FAST-PILLAR";
-//        String slowPillarID = "THE-SLOW-PILLAR";
-//        ((MutableClientSettings)getFileClientSettings).setPillarIDs(
-//                new String[] {averagePillarID, fastPillarID, slowPillarID});
-//        ((MutableClientSettings)getFileClientSettings).setIdentifyPillarsTimeout(3000);
-//        GetFileClient getFileClient = 
-//            new GetChecksumsClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings), 
-//                    testEventManager);
-//
-//        addStep("Make the GetClient ask for fastest pillar.",  
-//        "It should send message to identify which pillar can respond fastest.");
-//        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-//        getFileClient.getFileFromFastestPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), testEventHandler);
-//        IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
-//        if (useMockupPillar()) {
-//            receivedIdentifyRequestMessage = 
-//                bitRepositoryCollectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
-//        }
-//
-//        addStep("Two pillars send responses. First an average timeToDeliver, then a fast timeToDeliver.", 
-//                "The client should send a getFileRequest to the fast pillar after 3 seconds. " +
-//                "The event handler should receive the following events: " +
-//        "2 x PillarIdentified, a identify timeout, a PillarSelected and a RequestSent event.");
-//
-//        if (useMockupPillar()) {
-//            IdentifyPillarsForGetFileResponse averageReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
-//                    receivedIdentifyRequestMessage, averagePillarID, pillar2DestinationId);
-//            TimeMeasureTYPE averageTime = new TimeMeasureTYPE();
-//            averageTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
-//            averageTime.setTimeMeasureValue(BigInteger.valueOf(100L));
-//            averageReply.setTimeToDeliver(averageTime);
-//            messageBus.sendMessage(averageReply);
-//
-//            IdentifyPillarsForGetFileResponse fastReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
-//                    receivedIdentifyRequestMessage, fastPillarID, pillar1DestinationId);
-//            TimeMeasureTYPE fastTime = new TimeMeasureTYPE();
-//            fastTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
-//            fastTime.setTimeMeasureValue(BigInteger.valueOf(10L));
-//            fastReply.setTimeToDeliver(fastTime);
-//            messageBus.sendMessage(fastReply);
-//
-//            GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(
-//                    GetFileRequest.class, 5, TimeUnit.SECONDS );
-//            Assert.assertEquals(receivedGetFileRequest, 
-//                    testMessageFactory.createGetFileRequest(receivedGetFileRequest, fastPillarID, pillar1DestinationId));
-//        }
-//
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarTimeout);
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
-    }
-
+    
     //    @Test(groups = {"regressiontest"})
     public void noIdentifyResponses() throws Exception {
         addDescription("Tests the th eGetFileClient handles lack of IdentifyPillarResponses gracefully  ");
@@ -406,4 +379,29 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 //        
 //        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Failed);
     }
+    
+    private class ChecksumCallThread extends Thread {
+            
+        private GetChecksumsClient getChecksumsClient;
+        FileIDs fileIDs;
+        ChecksumSpecs csSpecs;
+        TestEventHandler eventHandler;
+        public ChecksumCallThread(FileIDs fileIDs, ChecksumSpecs csSpecs, TestEventHandler eventHandler) {
+            this.fileIDs = fileIDs;
+            this.csSpecs = csSpecs;
+            this.eventHandler = eventHandler;
+             getChecksumsClient = new GetChecksumsClientTestWrapper(
+                    AccessComponentFactory.getInstance().createGetChecksumsClient(settings), 
+                    testEventManager);
+        }
+        
+        public Map<String, ResultingChecksums> stuff = null;
+        
+        @Override
+        public void run() {
+            stuff = getChecksumsClient.getChecksums(settings.getGetChecksums().getPillarIDs(), fileIDs, 
+                    csSpecs, eventHandler);
+        }
+    };
+
 }

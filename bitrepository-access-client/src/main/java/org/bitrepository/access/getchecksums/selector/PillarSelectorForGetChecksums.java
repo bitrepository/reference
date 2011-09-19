@@ -24,14 +24,16 @@
  */
 package org.bitrepository.access.getchecksums.selector;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
+import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
-import org.bitrepository.protocol.pillarselector.AbstractSinglePillarSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,10 +67,12 @@ public class PillarSelectorForGetChecksums {
     public void processResponse(IdentifyPillarsForGetChecksumsResponse response) {
         log.info("Processing response for '" + response.getPillarID() + "'.");
         if(outstandingPillarsToSelect.contains(response.getPillarID())) {
-            
-            // TODO validate the content of the response (e.g. the IdentifyResponseInfo)
-            
-            selectedPillars.put(response.getPillarID(), response.getReplyTo());
+            if(validateResponse(response.getIdentifyResponseInfo())) {
+                selectedPillars.put(response.getPillarID(), response.getReplyTo());
+            } else {
+                log.warn("Pillar '" + response.getPillarID() + "' unable to perform operation. Response info: '" 
+                    + response.getIdentifyResponseInfo() + "'");
+            }
             outstandingPillarsToSelect.remove(response.getPillarID());
         } else {
             // handle case when the response has be received twice.
@@ -88,6 +92,33 @@ public class PillarSelectorForGetChecksums {
         }
     }
     
+    /**
+     * Method for validating the response.
+     * @param irInfo The IdentifyResponseInfo to validate.
+     */
+    private boolean validateResponse(IdentifyResponseInfo irInfo) {
+        if(irInfo == null) {
+            return false;
+        }
+        
+        String responseCode = irInfo.getIdentifyResponseCode();
+        if(responseCode == null) {
+            return false;
+        }
+        
+        try {
+            return IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().compareTo(
+                    new BigInteger(responseCode)) == 0;
+        } catch (NumberFormatException e) {
+            log.warn("Cannot decode response code: " + responseCode, e);
+            return false;
+        }
+    }
+    
+    /**
+     * Tells whether the selection is finished.
+     * @return Whether any pillars are outstanding.
+     */
     public boolean isFinished() {
         return outstandingPillarsToSelect.isEmpty();
     }

@@ -26,8 +26,8 @@ package org.bitrepository.access.getchecksums;
 
 import java.net.URL;
 import java.util.Collection;
+import java.util.Map;
 
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
@@ -52,8 +52,8 @@ public interface GetChecksumsClient {
      * the pillar communication. The result of this operation can be retrieved from the last complete event, which will 
      * be of type <code>GetChecksumsCompleteEvent</code>.
      */
-    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, 
-            EventHandler eventHandler);
+    public Map<String, ResultingChecksums> getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, 
+            ChecksumSpecs checksumSpec, EventHandler eventHandler);
     
     /**
      * Method for retrieving a checksums for a set of files from a specific pillar. The method will block until the 
@@ -67,8 +67,9 @@ public interface GetChecksumsClient {
      * @throws OperationTimeOutException The get checksum request timeout.  
      * @throws OperationFailedException The operation failed.
      */
-    public ResultingChecksums getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec)
-    throws NoPillarFoundException, OperationTimeOutException, OperationFailedException;
+    public Map<String, ResultingChecksums> getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, 
+            ChecksumSpecs checksumSpec) throws NoPillarFoundException, OperationTimeOutException, 
+            OperationFailedException;
     
     /**
      * Method for retrieving a checksums for a set of files from a specific pillar. The progress of the operation can be 

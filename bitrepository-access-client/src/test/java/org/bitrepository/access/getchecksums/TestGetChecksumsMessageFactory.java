@@ -96,6 +96,7 @@ public class TestGetChecksumsMessageFactory extends TestMessageFactory {
         identifyPillarsForGetChecksumsRequest.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
         identifyPillarsForGetChecksumsRequest.setVersion(VERSION_DEFAULT);
         identifyPillarsForGetChecksumsRequest.setMinVersion(VERSION_DEFAULT);
+        identifyPillarsForGetChecksumsRequest.setIdentifyResponseInfo(IDENTIFY_INFO_DEFAULT);
         return identifyPillarsForGetChecksumsRequest;
     }
   
@@ -138,6 +139,18 @@ public class TestGetChecksumsMessageFactory extends TestMessageFactory {
         return getChecksumsProgressResponse;
     }
 
+    /**
+     * MISSING:
+     * 
+     * - getChecksumsFinalResponse.setAuditTrailInformation(null);
+     * - getChecksumsFinalResponse.setFileChecksumSpec(null);
+     * - getChecksumsFinalResponse.setResultingChecksums(null);
+     *  
+     * @param receivedGetChecksumsRequest
+     * @param pillarId
+     * @param pillarDestinationId
+     * @return
+     */
     public GetChecksumsFinalResponse createGetChecksumsFinalResponse(
             GetChecksumsRequest receivedGetChecksumsRequest, String pillarId, String pillarDestinationId) {
         GetChecksumsFinalResponse getChecksumsFinalResponse = new GetChecksumsFinalResponse();
@@ -150,6 +163,7 @@ public class TestGetChecksumsMessageFactory extends TestMessageFactory {
         getChecksumsFinalResponse.setFinalResponseInfo(FINAL_INFO_DEFAULT);
         getChecksumsFinalResponse.setVersion(VERSION_DEFAULT);
         getChecksumsFinalResponse.setMinVersion(VERSION_DEFAULT);
+        
         
         return getChecksumsFinalResponse;
     }

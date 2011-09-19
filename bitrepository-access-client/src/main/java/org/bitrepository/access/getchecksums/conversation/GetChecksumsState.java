@@ -44,6 +44,6 @@ public abstract class GetChecksumsState extends AbstractMessageListener {
      * Mark this conversation as ended, and notifies whoever waits for it to end.
      */
     protected void endConversation() {
-        conversation.conversationState = new GetChecksumsFinished(conversation);
+        conversation.conversationState = new GetChecksumsFinished(conversation, null);
     }
 }
