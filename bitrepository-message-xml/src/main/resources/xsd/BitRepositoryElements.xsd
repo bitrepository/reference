@@ -97,13 +97,13 @@
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element name="Priority" type="PriorityCode_TYPE">
+        <xs:element name="Priority" type="PriorityCode_TYPE" minOccurs="0" maxOccurs="1">
           <xs:annotation><xs:documentation xml:lang="en">
             Global priority code for the system, which indicates e.g. how and how fast the alarm must be treated
           </xs:documentation></xs:annotation>
         </xs:element>
 
-        <xs:element name="Risk" type="Risk_TYPE">
+        <xs:element name="Risk" type="Risk_TYPE" minOccurs="0" maxOccurs="1">
           <xs:annotation><xs:documentation xml:lang="en">
             Risk of specified scenario becoming reality, if alarm is not treated.
           </xs:documentation></xs:annotation>
