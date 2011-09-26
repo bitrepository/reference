@@ -2,7 +2,6 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.bitrepository</groupId>
   <version>0.2-SNAPSHOT</version>
   <artifactId>bitrepository</artifactId>
 
@@ -17,8 +16,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>bitrepository-message-xml</module>
-    <module>bitrepository-collection-settings</module>
     <module>bitrepository-common</module>
     <module>bitrepository-protocol</module>
     <module>bitrepository-access-client</module>
