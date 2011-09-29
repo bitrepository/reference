@@ -1,25 +1,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
   <parent>
     <groupId>org.bitrepository</groupId>
     <artifactId>bitrepository</artifactId>
     <version>0.2-SNAPSHOT</version>
   </parent>
+  
   <modelVersion>4.0.0</modelVersion>
   <artifactId>bitrepository-modifying-client</artifactId>
   <name>Bitrepository Modifying Client</name>
   <description>Functionality for modifying the content of a Bitrepository system. This includes PutFIle, 
   Replace and Delete functionality.</description>
+  
   <dependencies>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-protocol</artifactId>
-      <version>0.2-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bitrepository</groupId>
-      <artifactId>bitrepository-message-xml</artifactId>
       <version>0.2-SNAPSHOT</version>
     </dependency>
     <dependency>

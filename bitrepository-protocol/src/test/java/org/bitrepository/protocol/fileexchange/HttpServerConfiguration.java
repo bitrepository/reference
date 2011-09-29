@@ -36,8 +36,7 @@ public class HttpServerConfiguration {
     private int portNumber = 80;
     /** The default name of the HTTP server. TODO retrieve from settings.*/
     private String httpServerName = "sandkasse-01.kb.dk";
-    /** The path on the HTTP server to the location, where the data can be 
-     * uploaded.*/
+    /** The path on the HTTP server to the location, where the data can be uploaded.*/
     private String httpServerPath = "/dav/";
     /**
      * Prefix to use when working with files on the http server. The prefix is used to distinguish between different 
