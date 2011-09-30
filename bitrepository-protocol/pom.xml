@@ -58,53 +58,27 @@
   <build>
     <plugins>
       <plugin>
-        <!--  Unpacks the xsd's from the message-xml module in preperation for the JAXB xsd -> java class file
-        generation -->
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.3</version>
+        <!-- Include remote resources -->
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <version>1.2.1</version>
         <executions>
           <execution>
-            <id>unpack-xsds</id>
+            <id>process-remote-resources</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>unpack</goal>
+              <goal>process</goal>
             </goals>
             <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.bitrepository</groupId>
-                  <artifactId>bitrepository-message-xml</artifactId>
-                  <type>jar</type>
-                  <excludes>**/classes</excludes>
-                  <overWrite>true</overWrite>
-                </artifactItem>
-              </artifactItems>
-              <includes>examples/messages/*.xml,xsd/*.xsd</includes>
               <outputDirectory>${project.build.directory}</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>unpack-setting-definitions</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.bitrepository</groupId>
-                  <artifactId>bitrepository-collection-settings</artifactId>
-                  <type>jar</type>
-                  <excludes>**/classes</excludes>
-                  <overWrite>true</overWrite>
-                </artifactItem>
-              </artifactItems>
-              <includes>xsd/*.xsd</includes>
-              <outputDirectory>${project.build.directory}</outputDirectory>
+              <attached>false</attached> <!-- If attached is true (the default) the copy-resources step below will re-include the resources from the last build in the current.  -->              
+              <resourceBundles>
+                <resourceBundle>org.bitrepository:bitrepository-message-xml:0.3-SNAPSHOT</resourceBundle>
+                <resourceBundle>org.bitrepository:bitrepository-collection-settings:0.2-SNAPSHOT</resourceBundle>
+              </resourceBundles>
             </configuration>
           </execution>
         </executions>
-      </plugin>
+      </plugin>  
       <plugin>
         <!--  Copies the jaxb bindings definition to the message xsd dir, in preparation for the xsd -> java class file
         generation -->
@@ -176,5 +150,41 @@
         <directory>src/main/resources/configurations/xml</directory>
       </resource>
     </resources>
+	    <pluginManagement>
+	    	<plugins>
+	    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+	    		<plugin>
+	    			<groupId>org.eclipse.m2e</groupId>
+	    			<artifactId>lifecycle-mapping</artifactId>
+	    			<version>1.0.0</version>
+	    			<configuration>
+	    				<lifecycleMappingMetadata>
+	    					<pluginExecutions>
+	    						<pluginExecution>
+	    							<pluginExecutionFilter>
+	    								<groupId>
+	    									org.apache.maven.plugins
+	    								</groupId>
+	    								<artifactId>
+	    									maven-remote-resources-plugin
+	    								</artifactId>
+	    								<versionRange>
+	    									[1.2.1,)
+	    								</versionRange>
+	    								<goals>
+	    									<goal>process</goal>
+	    								</goals>
+	    							</pluginExecutionFilter>
+	    							<action>
+	    								<execute />
+	    							</action>
+	    						</pluginExecution>
+	    					</pluginExecutions>
+	    				</lifecycleMappingMetadata>
+	    			</configuration>
+	    		</plugin>
+	    	</plugins>
+	    </pluginManagement>
+    
   </build>
 </project>
