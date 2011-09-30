@@ -15,12 +15,12 @@
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-message-xml</artifactId>
-      <version>0.3-SNAPSHOT</version>
+      <version>0.3.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-collection-settings</artifactId>
-      <version>0.2-SNAPSHOT</version>
+      <version>0.2.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
@@ -72,8 +72,8 @@
               <outputDirectory>${project.build.directory}</outputDirectory>
               <attached>false</attached> <!-- If attached is true (the default) the copy-resources step below will re-include the resources from the last build in the current.  -->              
               <resourceBundles>
-                <resourceBundle>org.bitrepository:bitrepository-message-xml:0.3-SNAPSHOT</resourceBundle>
-                <resourceBundle>org.bitrepository:bitrepository-collection-settings:0.2-SNAPSHOT</resourceBundle>
+                <resourceBundle>org.bitrepository:bitrepository-message-xml:0.3.1-SNAPSHOT</resourceBundle>
+                <resourceBundle>org.bitrepository:bitrepository-collection-settings:0.2.1-SNAPSHOT</resourceBundle>
               </resourceBundles>
             </configuration>
           </execution>
