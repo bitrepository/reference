@@ -473,7 +473,7 @@ public class ActiveMQMessageBus implements MessageBus {
                 text = ((TextMessage) message).getText();
                 content = JaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
                                              new ByteArrayInputStream(text.getBytes()));
-
+                log.debug("Received message: " + text);
                 if(content.getClass().equals(Alarm.class)){
                 	listener.onMessage((Alarm) content);
                 	return;

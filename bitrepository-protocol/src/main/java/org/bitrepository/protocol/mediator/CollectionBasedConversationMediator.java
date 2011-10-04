@@ -66,8 +66,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Conversation handler that delegates messages to registered conversations.
- *
- * TODO: There is no persistence in this implementation. Should there be?
  */
 public class CollectionBasedConversationMediator<T extends Conversation> implements ConversationMediator<T> {
     /** Logger for this class. */

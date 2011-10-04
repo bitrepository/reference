@@ -50,7 +50,6 @@ public class DefaultEvent implements OperationEvent<Object> {
     
     @Override
     public Object getState() {
-        // TODO Auto-generated method stub
         return null;
     }
 }

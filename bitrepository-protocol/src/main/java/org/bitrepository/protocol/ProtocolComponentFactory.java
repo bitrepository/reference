@@ -24,11 +24,14 @@
  */
 package org.bitrepository.protocol;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
-import org.bitrepository.protocol.bitrepositorycollection.CollectionSettings;
 import org.bitrepository.protocol.configuration.FileExchangeConfiguration;
 import org.bitrepository.protocol.configuration.ProtocolConfiguration;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -40,6 +43,8 @@ public class ProtocolComponentFactory {
 
     /** The singleton instance */
     protected static ProtocolComponentFactory instance;
+    
+    private Map<String, MessageBus> buses;
 
     /**
      * The singletonic access to the instance of this class
@@ -56,14 +61,13 @@ public class ProtocolComponentFactory {
      * The singleton constructor.
      */
     protected ProtocolComponentFactory() {
+        buses = Collections.synchronizedMap(new HashMap<String, MessageBus>());
     }
 
     /** @see #getModuleCharacteristics() */
     private static final ModuleCharacteristics MODULE_CHARACTERISTICS = new ModuleCharacteristics("protocol");
     /** @see #getProtocolConfiguration() */
     protected ProtocolConfiguration protocolConfiguration;
-    /** @see #getMessageBus() */
-    protected MessageBus messagebus;
     /** @see #getFileExchange() */
     protected FileExchange fileExchange;
 
@@ -76,14 +80,17 @@ public class ProtocolComponentFactory {
     }
 
     /**
-     * Gets you an <code>MessageBus</code> instance for accessing the Bitrepositorys message bus.
+     * Gets you an <code>MessageBus</code> instance for accessing the Bitrepositorys message bus. If a messagebus 
+     * already exists for the collection ID defined in the settings, the existing instance is returned.
      * @return The messagebus for this collection
      */
     public MessageBus getMessageBus(Settings settings) {
-        if (messagebus == null) {
-            messagebus = new ActiveMQMessageBus(settings.getProtocol().getMessageBusConfiguration());
+        MessageBus bus = buses.get(settings.getBitRepositoryCollectionID());
+        if (bus == null) {
+            bus = new ActiveMQMessageBus(settings.getProtocol().getMessageBusConfiguration());
+            buses.put(settings.getBitRepositoryCollectionID(), bus);
         }
-        return messagebus;
+        return bus;
     }
 
     /**
