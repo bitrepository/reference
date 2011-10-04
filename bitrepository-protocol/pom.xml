@@ -10,17 +10,22 @@
   <name>Bitrepository Protocol</name>
   <description>General functionality for communication with the Bitrepository protocol. 
   This includes message bus integration and file exchange.</description>
+  
+  <properties>
+    <message.xml.version>0.3.1-SNAPSHOT</message.xml.version>
+    <collection.settings.version>0.2.1-SNAPSHOT</collection.settings.version>
+  </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-message-xml</artifactId>
-      <version>0.3.1-SNAPSHOT</version>
+      <version>${message.xml.version}</version>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-collection-settings</artifactId>
-      <version>0.2.1-SNAPSHOT</version>
+      <version>${collection.settings.version}</version>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
@@ -70,10 +75,14 @@
             </goals>
             <configuration>
               <outputDirectory>${project.build.directory}</outputDirectory>
-              <attached>false</attached> <!-- If attached is true (the default) the copy-resources step below will re-include the resources from the last build in the current.  -->              
+              <!-- 
+                If attached is true (the default) the copy-resources step below will 
+                re-include the resources from the last build in the current.
+              -->
+              <attached>false</attached>              
               <resourceBundles>
-                <resourceBundle>org.bitrepository:bitrepository-message-xml:0.3.1-SNAPSHOT</resourceBundle>
-                <resourceBundle>org.bitrepository:bitrepository-collection-settings:0.2.1-SNAPSHOT</resourceBundle>
+                <resourceBundle>org.bitrepository:bitrepository-message-xml:${message.xml.version}</resourceBundle>
+                <resourceBundle>org.bitrepository:bitrepository-collection-settings:${collection.settings.version}</resourceBundle>
               </resourceBundles>
             </configuration>
           </execution>
@@ -150,41 +159,5 @@
         <directory>src/main/resources/configurations/xml</directory>
       </resource>
     </resources>
-	    <pluginManagement>
-	    	<plugins>
-	    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-	    		<plugin>
-	    			<groupId>org.eclipse.m2e</groupId>
-	    			<artifactId>lifecycle-mapping</artifactId>
-	    			<version>1.0.0</version>
-	    			<configuration>
-	    				<lifecycleMappingMetadata>
-	    					<pluginExecutions>
-	    						<pluginExecution>
-	    							<pluginExecutionFilter>
-	    								<groupId>
-	    									org.apache.maven.plugins
-	    								</groupId>
-	    								<artifactId>
-	    									maven-remote-resources-plugin
-	    								</artifactId>
-	    								<versionRange>
-	    									[1.2.1,)
-	    								</versionRange>
-	    								<goals>
-	    									<goal>process</goal>
-	    								</goals>
-	    							</pluginExecutionFilter>
-	    							<action>
-	    								<execute />
-	    							</action>
-	    						</pluginExecution>
-	    					</pluginExecutions>
-	    				</lifecycleMappingMetadata>
-	    			</configuration>
-	    		</plugin>
-	    	</plugins>
-	    </pluginManagement>
-    
   </build>
 </project>
