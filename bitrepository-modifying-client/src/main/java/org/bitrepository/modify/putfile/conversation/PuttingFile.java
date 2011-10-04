@@ -144,8 +144,7 @@ public class PuttingFile extends PutFileState {
                 "Received PutFileProgressResponse from " + response.getPillarID() + " : \n{}", response);
         if (conversation.eventHandler != null) {
             conversation.eventHandler.handleEvent(new PillarOperationEvent(OperationEventType.Progress, 
-                    "Request to put file has been sent to pillars in collection '" 
-                    + conversation.settings.getBitRepositoryCollectionID() + "'.", response.getPillarID()));
+                    "Progress received from pillar: " + response.getProgressResponseInfo(), response.getPillarID()));
         }
     }
 
