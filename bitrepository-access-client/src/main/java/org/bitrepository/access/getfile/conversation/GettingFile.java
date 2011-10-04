@@ -76,13 +76,15 @@ class GettingFile extends GetFileState {
      * Also sets up a timer task to avoid waiting to long for the request to complete.
      */
     public void start() {
+        String info = "Getting file " + conversation.fileID + " from pillar " + 
+    conversation.selector.getIDForSelectedPillar();
         if (conversation.selector.getIDForSelectedPillar() == null) {
             conversation.throwException(new NoPillarFoundException("Unable to getFile, no pillar was selected"));
         } else {
             if (conversation.eventHandler != null) {
                 conversation.eventHandler.handleEvent(
                         new PillarOperationEvent(OperationEvent.OperationEventType.PillarSelected, 
-                                conversation.selector.getIDForSelectedPillar(),
+                                info,
                                 conversation.selector.getIDForSelectedPillar()));
             }
         }
@@ -116,12 +118,12 @@ class GettingFile extends GetFileState {
      */
     @Override
     public void onMessage(GetFileProgressResponse msg) {
-        log.debug("(ConversationID: " + conversation.getConversationID() + ") " +
-                "Received progress response for retrieval of file " + msg.getFileID() + " : \n{}", msg);
+        String info = "Received progress response for retrieval of file " + msg.getFileID() + " : \n{}";
+        log.debug("(ConversationID: " + conversation.getConversationID() + ") " + info, msg);
         if (conversation.eventHandler != null) {
             conversation.eventHandler.handleEvent(
                     new DefaultEvent(OperationEvent.OperationEventType.Progress, 
-                            msg.getProgressResponseInfo().toString()));
+                            info + msg.getProgressResponseInfo()));
         }
     }
 
@@ -134,12 +136,12 @@ class GettingFile extends GetFileState {
     public void onMessage(GetFileFinalResponse msg) {
         ArgumentValidator.checkNotNull(msg, "GetFileFinalResponse");
         getFileTimeoutTask.cancel();
+        String message =  "Finished getting file " + msg.getFileID() + " from " + msg.getPillarID();
         if (conversation.eventHandler != null) {
             conversation.eventHandler.handleEvent(
-                    new DefaultEvent(OperationEvent.OperationEventType.Complete, ""));
+                    new DefaultEvent(OperationEvent.OperationEventType.Complete, message));
         }
-        log.debug("(ConversationID: " + conversation.getConversationID() +  ") " +
-                "Finished getting file " + msg.getFileID() + " from " + msg.getPillarID());
+        log.debug("(ConversationID: " + conversation.getConversationID() +  ") " + message);
         endConversation();
     }
 

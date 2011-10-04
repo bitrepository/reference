@@ -87,12 +87,12 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
      */
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsResponse response) {
-        log.info("(ConversationID: " + conversation.getConversationID() + ") "
-                + "Received IdentifyPillarsForGetChecksumsResponse from " + response.getPillarID() + "");
+        String message = "Received IdentifyPillarsForGetChecksumsResponse " + response;
+        log.info("(ConversationID: " + conversation.getConversationID() + ") " + message);
         conversation.selector.processResponse(response);
         if (conversation.eventHandler != null) {
             conversation.eventHandler.handleEvent(new PillarOperationEvent(
-                    OperationEventType.PillarIdentified, response.getPillarID(), response.getPillarID()));
+                    OperationEventType.PillarIdentified, message, response.getPillarID()));
         }
 
         if (conversation.selector.isFinished()) {

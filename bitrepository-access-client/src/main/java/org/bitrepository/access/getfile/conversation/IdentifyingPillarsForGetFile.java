@@ -95,6 +95,8 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
     public void onMessage(IdentifyPillarsForGetFileResponse response) {
         try {
             conversation.selector.processResponse(response);
+            String info = "Received IdentifyPillarsForGetFileResponse for file " + conversation.fileID + 
+                    " from " + response.getPillarID();
             if (conversation.eventHandler != null) {
                 conversation.eventHandler.handleEvent(new PillarOperationEvent(
                         OperationEventType.PillarIdentified, response.getPillarID(), response.getPillarID()));
@@ -165,7 +167,7 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
                     log.warn(message);
                     if (conversation.eventHandler != null) {
                         conversation.eventHandler.handleEvent(new DefaultEvent(
-                                OperationEventType.NoPillarFound, ""));
+                                OperationEventType.NoPillarFound, message));
                     } else {
                         conversation.throwException(new NoPillarFoundException(message));
                     }

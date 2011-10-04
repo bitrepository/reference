@@ -106,5 +106,4 @@ public class AccessComponentFactory {
     public GetFileIDsClient createGetFileIDsClient(MessageBus messageBus, Settings settings) {
         return new BasicGetFileIDsClient(messageBus, settings);
     }
-
 }
