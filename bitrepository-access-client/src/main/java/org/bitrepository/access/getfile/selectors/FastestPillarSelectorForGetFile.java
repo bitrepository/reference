@@ -26,6 +26,7 @@ package org.bitrepository.access.getfile.selectors;
 
 import java.util.Collection;
 
+import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.exceptions.UnableToFinishException;
@@ -39,7 +40,6 @@ import org.bitrepository.protocol.time.TimeMeasureComparator;
  */
 public class FastestPillarSelectorForGetFile extends PillarSelectorForGetFile {
     private final PillarsResponseStatus responseStatus;
-    private static final TimeMeasureComparator comparator = new TimeMeasureComparator();
 
     /** The constructor
      * 
@@ -55,8 +55,11 @@ public class FastestPillarSelectorForGetFile extends PillarSelectorForGetFile {
     public boolean checkPillarResponseForSelection(IdentifyPillarsForGetFileResponse response) 
     throws UnexpectedResponseException {
         responseStatus.responseReceived(response.getPillarID());
-        if (getIDForSelectedPillar() == null || 
-            comparator.compare(response.getTimeToDeliver(), getTimeToDeliver()) < 0) {
+        if (!IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.name().equals(
+                response.getIdentifyResponseInfo().getIdentifyResponseCode())) {
+            return false;
+        } else if (getIDForSelectedPillar() == null || 
+                TimeMeasureComparator.compare(response.getTimeToDeliver(), getTimeToDeliver()) < 0) {
             return true;
         } else return false;
     }
@@ -68,6 +71,15 @@ public class FastestPillarSelectorForGetFile extends PillarSelectorForGetFile {
 
     @Override
     public boolean isFinished() throws UnableToFinishException {
-        return responseStatus.haveAllPillarResponded();
+        if (responseStatus.haveAllPillarResponded()) {
+            if (getIDForSelectedPillar() != null) {
+                return true;
+            } else {
+                throw new UnableToFinishException("All pillars have responded on the identify request, but suitable " +
+                		"pillar was found ");
+            }
+        } else {
+            return false;
+        }
     }
 }

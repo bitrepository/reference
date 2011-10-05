@@ -112,7 +112,7 @@
   <distributionManagement>
     <site>
       <id>sbforge-nexus</id>
-      <url>dav:https://sbforge.org/maven/bitrepository/sites/${project.version}</url>
+      <url>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</url>
     </site>
   </distributionManagement>
 

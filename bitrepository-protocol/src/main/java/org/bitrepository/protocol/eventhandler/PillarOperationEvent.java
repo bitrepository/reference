@@ -27,11 +27,7 @@ package org.bitrepository.protocol.eventhandler;
 /**
  * Event for a specific pillar.
  */
-public class PillarOperationEvent implements OperationEvent<String> {
-    /** @see #getInfo() */
-    private final String info;
-    /** @see #getType() */
-    private final OperationEventType type;
+public class PillarOperationEvent extends AbstractOperationEvent<String> {
     /** @see #getState() */
     private final String pillarID;
 
@@ -42,20 +38,8 @@ public class PillarOperationEvent implements OperationEvent<String> {
      * @param pillarID The ID of the pillar this event relates to
      */
     public PillarOperationEvent(OperationEventType type, String info, String pillarID) {
-        super();
-        this.type = type;
-        this.info = info;
+        super(type, info);
         this.pillarID = pillarID;
-    }
-
-    @Override
-    public String getInfo() {
-        return info;
-    }
-
-    @Override
-    public OperationEventType getType() {
-        return type;
     }
 
     /**

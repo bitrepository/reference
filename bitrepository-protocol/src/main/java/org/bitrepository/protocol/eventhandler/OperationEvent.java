@@ -48,6 +48,7 @@ public interface OperationEvent<T> {
      * </ol>
      */
     public enum OperationEventType {
+        IdentifyPillarsRequestSent,
         PillarIdentified,
         PillarSelected,
         RequestSent,
@@ -56,8 +57,7 @@ public interface OperationEvent<T> {
         Complete, 
         Failed,
         NoPillarFound,
-        IdentifyPillarTimeout,
-        RequestTimeOut, 
+        IdentifyPillarTimeout 
     }
     
     /**
@@ -68,7 +68,7 @@ public interface OperationEvent<T> {
     
     /**
      * Used to get the type of event.
-     * @return A <code>OperationEventType</code> categorising this event.
+     * @return A <code>OperationEventType</code> categorizing this event.
      */
     OperationEventType getType();
     

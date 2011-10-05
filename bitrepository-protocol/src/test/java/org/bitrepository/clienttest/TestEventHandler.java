@@ -54,6 +54,7 @@ public class TestEventHandler implements EventHandler {
 
     @Override
     public void handleEvent(OperationEvent event) {
+        testEventManager.addStimuli("Received event "+ event);
         eventQueue.add(event);
     }
 

@@ -26,6 +26,7 @@ package org.bitrepository.access.getfile.selectors;
 
 import java.util.Arrays;
 
+import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;

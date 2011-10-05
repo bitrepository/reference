@@ -39,6 +39,7 @@ import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.exceptions.NoPillarFoundException;
+import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
@@ -80,6 +81,12 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
         identifyRequest.setTo(conversation.settings.getProtocol().getCollectionDestination());
 
         conversation.messageSender.sendMessage(identifyRequest);
+
+        if (conversation.eventHandler != null) {
+            conversation.eventHandler.handleEvent(new DefaultEvent(
+                    OperationEventType.IdentifyPillarsRequestSent, "Identifying pillars for getting file " + 
+            conversation.fileID));
+        }
         timer.schedule(identifyTimeoutTask, TimeMeasureComparator.getTimeMeasureInLong(
                 conversation.settings.getGetFile().getIdentificationTimeout()));
     }
@@ -99,7 +106,7 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
                     " from " + response.getPillarID();
             if (conversation.eventHandler != null) {
                 conversation.eventHandler.handleEvent(new PillarOperationEvent(
-                        OperationEventType.PillarIdentified, response.getPillarID(), response.getPillarID()));
+                        OperationEventType.PillarIdentified, info, response.getPillarID()));
             }
         } catch (UnexpectedResponseException e) {
             throw new IllegalArgumentException("Invalid IdentifyPillarsForGetFileResponse.", e);
@@ -107,15 +114,17 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
 
         try {
             if (conversation.selector.isFinished()) {
-                // stop the timer task for this outstanding instance, and then get the file from the selected pillar
                 identifyTimeoutTask.cancel();
-                // TODO: Race condition, what if timeout task already triggered this just before now
-
                 getFileFromSelectedPillar();
             }
         } catch (UnableToFinishException e) {
+            if (conversation.eventHandler != null) {
+                conversation.eventHandler.handleEvent(new DefaultEvent(
+                        OperationEventType.Failed, e.getMessage()));
+            } else {
             conversation.throwException(
-                    new NoPillarFoundException("Cannot request file, since no valid pillar could be found", e));
+                    new OperationFailedException("Could not find a pillar able to return the requested file.", e));
+            }
         }
     }
     

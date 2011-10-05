@@ -28,7 +28,6 @@ import java.math.BigInteger;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
-import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.TestMessageFactory;
 import org.bitrepository.protocol.settings.CollectionSettingsLoader;
@@ -101,11 +100,9 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
         pillar2DestinationId = "Pillar2_topic" + getTopicPostfix();
         
         clientTopic = new MessageReceiver("Client topic receiver", testEventManager);
-        bitRepositoryCollectionDestination = new MessageReceiver("BitRepositoryCollection topic receiver", testEventManager);
         pillar1Destination = new MessageReceiver("Pillar1 topic receiver", testEventManager);
         pillar2Destination = new MessageReceiver("Pillar2 topic receiver", testEventManager);
         messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());    
-        messageBus.addListener(bitRepositoryCollectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());    
         messageBus.addListener(pillar1DestinationId, pillar1Destination.getMessageListener());  
         messageBus.addListener(pillar2DestinationId, pillar2Destination.getMessageListener());       
     }
@@ -114,7 +111,8 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     public void initCollectionSettings() {
         if(settings == null) {
             try {
-                CollectionSettingsLoader settingsLoader = new CollectionSettingsLoader(new XMLFileSettingsLoader("src/test/resources/settings/xml"));
+                CollectionSettingsLoader settingsLoader = new CollectionSettingsLoader(
+                        new XMLFileSettingsLoader("src/test/resources/settings/xml"));
                 settings = settingsLoader.loadSettings("bitrepository-devel").getSettings();
             } catch(Exception e) {
                 throw new RuntimeException("Could not load settings.", e);

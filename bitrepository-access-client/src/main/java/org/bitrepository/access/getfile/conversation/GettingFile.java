@@ -179,7 +179,7 @@ class GettingFile extends GetFileState {
                     endConversation();
                     if (conversation.eventHandler != null) {
                         conversation.eventHandler.handleEvent(
-                                new DefaultEvent(OperationEvent.OperationEventType.RequestTimeOut, 
+                                new DefaultEvent(OperationEvent.OperationEventType.Failed, 
                                 "No GetFileFinalResponse received before timeout"));
                     } else {
                         conversation.throwException(new OperationTimeOutException("No GetFileFinalResponse received before timeout"));

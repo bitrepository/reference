@@ -207,7 +207,7 @@ public class GettingChecksums extends GetChecksumsState {
      * @return Whether the FinalRepsonseInfo tells that the operation has been a success or a failure.
      */
     private boolean validateFinalResponse(FinalResponseInfo frInfo) {
-        // TODO perform this valdiation.
+        // TODO perform this validation.
         return true;
     }
     
@@ -220,7 +220,7 @@ public class GettingChecksums extends GetChecksumsState {
             endConversation();
             if (conversation.eventHandler != null) {
                 conversation.eventHandler.handleEvent(
-                        new DefaultEvent(OperationEvent.OperationEventType.RequestTimeOut, 
+                        new DefaultEvent(OperationEvent.OperationEventType.Failed, 
                         "No GetFileFinalResponse received before timeout"));
             } else {
                 conversation.throwException(new OperationTimeOutException("No GetChecksumsFinalResponse "

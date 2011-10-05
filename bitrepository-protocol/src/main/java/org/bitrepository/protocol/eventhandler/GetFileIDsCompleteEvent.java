@@ -52,9 +52,7 @@ import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 /**
  * Event for successful completion of a GetFileIDs operation.
  */
-public class GetFileIDsCompleteEvent implements OperationEvent<ResultingFileIDs>  {
-    private final OperationEventType type;
-    private final String info;
+public class GetFileIDsCompleteEvent extends AbstractOperationEvent<ResultingFileIDs>  {
     private final ResultingFileIDs result;
 
     /**
@@ -64,20 +62,8 @@ public class GetFileIDsCompleteEvent implements OperationEvent<ResultingFileIDs>
      * @param result The result of the GetFileIDs operation this event relates to
      */
     public GetFileIDsCompleteEvent(OperationEventType type, String info, ResultingFileIDs result) {
-        super();
-        this.type = type;
-        this.info = info;
+        super(type, info);
         this.result = result;
-    }
-
-    @Override
-    public String getInfo() {
-        return info;
-    }
-
-    @Override
-    public OperationEventType getType() {
-        return type;
     }
 
     /**

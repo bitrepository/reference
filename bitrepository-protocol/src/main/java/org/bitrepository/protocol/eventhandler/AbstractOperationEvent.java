@@ -1,7 +1,7 @@
 /*
  * #%L
  * Bitrepository Protocol
- * *
+ * 
  * $Id$
  * $HeadURL$
  * %%
@@ -24,31 +24,32 @@
  */
 package org.bitrepository.protocol.eventhandler;
 
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
+/** A abstract implementation of <code>OperationEvent</code> . 
+ * @param <T>*/
+public abstract class AbstractOperationEvent<T> implements OperationEvent<T> {
+    /** @see #getType() */
+    protected final OperationEventType type;
+    /** @see #getInfo() */
+    protected final String info;
 
+    /** The constructor for this immutable */
+    public AbstractOperationEvent(OperationEventType type, String info) {
+        this.type = type;
+        this.info = info;
+    }
 
-/**
- * Event for successful completion of a GetChecksums operation.
- */
-public class GetChecksumsCompleteEvent extends AbstractOperationEvent<ResultingChecksums> {
-	private final ResultingChecksums result;
+    @Override
+    public String getInfo() {
+        return info;
+    }
 
-	/**
-	 * Constructor with result information.
-	 * @param type The event type
-	 * @param info Free text description of the event
-	 * @param result The result of the GetChecksums operation this event relates to
-	 */
-	public GetChecksumsCompleteEvent(OperationEventType type, String info, ResultingChecksums result) {
-        super(type, info);
-		this.result = result;
-	}
+    @Override
+    public OperationEventType getType() {
+        return type;
+    }
 
-	/**
-	 * Returns the result of the GetChecksums operation this event relates to.
-	 */
-	@Override
-	public ResultingChecksums getState() {
-		return result;
-	}
+    @Override 
+    public String toString() {
+        return "Event " + type +": " + getInfo();
+    }
 }

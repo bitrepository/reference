@@ -24,6 +24,7 @@
  */
 package org.bitrepository.access.getfile.selectors;
 
+import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.exceptions.UnableToFinishException;
@@ -36,6 +37,11 @@ import org.bitrepository.common.exceptions.UnableToFinishException;
  */
 public class SpecificPillarSelectorForGetFile extends PillarSelectorForGetFile {
     private final String pillarToSelect;
+    private boolean finished = false;
+    /**
+     * Used for storing error information from the pillar
+     */
+    private String pillarMessage;
 
     /**
      * Creates the selector based on the provided information.
@@ -52,12 +58,23 @@ public class SpecificPillarSelectorForGetFile extends PillarSelectorForGetFile {
      */
     @Override
     public boolean checkPillarResponseForSelection(IdentifyPillarsForGetFileResponse response) {
-        return pillarToSelect.equals(response.getPillarID() );
+        boolean selectPillar = false;
+        if (pillarToSelect.equals(response.getPillarID() )) {
+            if (IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.name().equals(
+                    response.getIdentifyResponseInfo().getIdentifyResponseCode())) {
+                selectPillar = true;
+            } else {      
+                pillarMessage = response.getIdentifyResponseInfo().getIdentifyResponseText();          
+                selectPillar = false;
+            }
+            finished = true;
+        } 
+        return selectPillar;
     }    
 
     @Override
     public String[] getOutstandingPillars() {
-        if (pillarID == null) {
+        if (finished) {
             return new String[] {pillarToSelect};
         } else {
             return new String[0];
@@ -67,6 +84,12 @@ public class SpecificPillarSelectorForGetFile extends PillarSelectorForGetFile {
     /** Returns true if the indicated pillar has responded, else <code>false</code>. */
     @Override
     public boolean isFinished() throws UnableToFinishException {
-        return pillarToSelect != null;
+        if (finished && getIDForSelectedPillar() != null) {
+            return true ;
+        } else if (!finished) {
+            return false;
+        } else {
+            throw new UnableToFinishException("Unable to get file from pillar " + pillarToSelect + ", " + pillarMessage);
+        }
     }
 }
