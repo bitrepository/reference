@@ -286,7 +286,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             checksumdata.getChecksumDataForChecksumSpec().add(specificChecksum);
             
             checksums.setChecksumDataItems(checksumdata);
-            res.setChecksumsDataGroupedByChecksumSpec(checksums);
+            //res.setChecksumsDataGroupedByChecksumSpec(checksums);
             completeMsg.setResultingChecksums(res);
             
             messageBus.sendMessage(completeMsg);

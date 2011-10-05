@@ -27,10 +27,8 @@ package org.bitrepository.pillar;
 import java.math.BigInteger;
 import java.util.UUID;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecs.ChecksumSpecsItems;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile.ChecksumDataItems;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
 import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
@@ -88,27 +86,16 @@ public class PillarTestMessageFactory extends TestMessageFactory {
         PutFileRequest res = new PutFileRequest();
         res.setAuditTrailInformation(null);
         res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        
         ChecksumsDataForNewFile csdataForNewFile = new ChecksumsDataForNewFile();
-        {
-            csdataForNewFile.setFileID(fileId);
-            ChecksumDataItems cdi = new ChecksumDataItems();
-            csdataForNewFile.setChecksumDataItems(cdi);
-            csdataForNewFile.setNoOfItems(BigInteger.valueOf(0L));
-        }
+        ChecksumDataForFileTYPE checksumDataForFile = new ChecksumDataForFileTYPE();
+        
+        ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
+        csSpec.setChecksumType("MD5");
+        checksumDataForFile.setChecksumSpec(csSpec);       
+        csdataForNewFile.setChecksumDataItem(checksumDataForFile);
+        
         res.setChecksumsDataForNewFile(csdataForNewFile);
-        ChecksumSpecs csSpecs = new ChecksumSpecs();
-        {
-            // Add a single MD5 checksum check with no salt. 
-            ChecksumSpecsItems csi = new ChecksumSpecsItems();
-            ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
-            {
-                csSpec.setChecksumType("MD5");
-            }
-            csi.getChecksumSpecsItem().add(csSpec);
-            csSpecs.setChecksumSpecsItems(csi);
-            csSpecs.setNoOfItems(BigInteger.valueOf((long) csi.getChecksumSpecsItem().size()));
-        }
-        res.setChecksumSpecs(csSpecs);
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);

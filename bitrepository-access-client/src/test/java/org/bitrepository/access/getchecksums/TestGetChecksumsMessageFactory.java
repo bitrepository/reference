@@ -159,7 +159,7 @@ public class TestGetChecksumsMessageFactory extends TestMessageFactory {
         getChecksumsFinalResponse.setBitRepositoryCollectionID(receivedGetChecksumsRequest.getBitRepositoryCollectionID());
         getChecksumsFinalResponse.setReplyTo(pillarDestinationId);
         getChecksumsFinalResponse.setPillarID(pillarId);
-        getChecksumsFinalResponse.setFileIDs(receivedGetChecksumsRequest.getFileIDs());
+        //getChecksumsFinalResponse.setFileIDs(receivedGetChecksumsRequest.getFileIDs());
         getChecksumsFinalResponse.setFinalResponseInfo(FINAL_INFO_DEFAULT);
         getChecksumsFinalResponse.setVersion(VERSION_DEFAULT);
         getChecksumsFinalResponse.setMinVersion(VERSION_DEFAULT);

@@ -25,26 +25,21 @@
 package org.bitrepository.pillar.messagehandler;
 
 import java.io.File;
-import java.math.BigInteger;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
 import org.bitrepository.bitrepositoryelements.ErrorcodeFinalresponseType;
 import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
-import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile.ChecksumDataItems;
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
+import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
 import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.collection.settings.standardsettings.Settings;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
@@ -159,31 +154,31 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             throw new RuntimeException(e);
         }
         
-        if(message.getChecksumsDataForNewFile() != null 
-                && message.getChecksumsDataForNewFile().getChecksumDataItems() != null
-                && message.getChecksumsDataForNewFile().getChecksumDataItems().getChecksumDataForFile() != null) {
-            Collection<ChecksumDataForFileTYPE> validationChecksums 
-                    = message.getChecksumsDataForNewFile().getChecksumDataItems().getChecksumDataForFile();
-            try {
-                for(ChecksumDataForFileTYPE csType : validationChecksums) {
-                    String checksum = ChecksumUtils.generateChecksum(fileForValidation, 
-                            csType.getChecksumSpec().getChecksumType(), 
-                            csType.getChecksumSpec().getChecksumSalt());
-                    if(!checksum.equals(csType.getChecksumValue())) {
-                        log.error("Expected checksums '" + csType.getChecksumValue() + "' but the checksum was '" 
-                                + checksum + "'.");
-                        throw new IllegalStateException("Wrong checksum! Expected: [" + csType.getChecksumValue() 
-                                + "], but calculated: [" + checksum + "]");
-                    }
-                }
-            } catch (Exception e) {
-                log.error("The retrieved file did not validate! Removing it from archive.", e);
-                throw new RuntimeException(e);
-            }
-        } else {
-            // TODO is such a checksum required?
-            log.warn("No checksums for validating the retrieved file.");
-        }
+//        if(message.getChecksumsDataForNewFile() != null 
+//                && message.getChecksumsDataForNewFile().getChecksumDataItems() != null
+//                && message.getChecksumsDataForNewFile().getChecksumDataItems().getChecksumDataForFile() != null) {
+//            Collection<ChecksumDataForFileTYPE> validationChecksums 
+//                    = message.getChecksumsDataForNewFile().getChecksumDataItems().getChecksumDataForFile();
+//            try {
+//                for(ChecksumDataForFileTYPE csType : validationChecksums) {
+//                    String checksum = ChecksumUtils.generateChecksum(fileForValidation, 
+//                            csType.getChecksumSpec().getChecksumType(), 
+//                            csType.getChecksumSpec().getChecksumSalt());
+//                    if(!checksum.equals(csType.getChecksumValue())) {
+//                        log.error("Expected checksums '" + csType.getChecksumValue() + "' but the checksum was '" 
+//                                + checksum + "'.");
+//                        throw new IllegalStateException("Wrong checksum! Expected: [" + csType.getChecksumValue() 
+//                                + "], but calculated: [" + checksum + "]");
+//                    }
+//                }
+//            } catch (Exception e) {
+//                log.error("The retrieved file did not validate! Removing it from archive.", e);
+//                throw new RuntimeException(e);
+//            }
+//        } else {
+//            // TODO is such a checksum required?
+//            log.warn("No checksums for validating the retrieved file.");
+//        }
 
         try {
             // TODO verify that this operation is successful.
@@ -212,29 +207,29 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         fResponse.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
 
         ChecksumsDataForNewFile checksumForValidation = new ChecksumsDataForNewFile();
-        if(message.getChecksumSpecs() != null && message.getChecksumSpecs().getNoOfItems().equals(BigInteger.ZERO)) {
-            // Calculate the requested checksum data.
-            checksumForValidation.setFileID(message.getFileID());
-            checksumForValidation.setNoOfItems(message.getChecksumSpecs().getNoOfItems());
-            Collection<ChecksumSpecTYPE> requestedChecksumToCalculate 
-                    = message.getChecksumSpecs().getChecksumSpecsItems().getChecksumSpecsItem();
-            ChecksumDataItems cdi = new ChecksumDataItems();
-            // Calculate each of the requested checksums and put them into the response message.
-            for(ChecksumSpecTYPE checksumToCalculate : requestedChecksumToCalculate) {
-                String checksum = ChecksumUtils.generateChecksum(retrievedFile, 
-                        checksumToCalculate.getChecksumType(),
-                        checksumToCalculate.getChecksumSalt());
-                ChecksumDataForFileTYPE resultingChecksum = new ChecksumDataForFileTYPE();
-                resultingChecksum.setChecksumSpec(checksumToCalculate);
-                resultingChecksum.setChecksumValue(checksum);
-                resultingChecksum.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
-                cdi.getChecksumDataForFile().add(resultingChecksum);
-            }
-            checksumForValidation.setChecksumDataItems(cdi);
-        } else {
-            // TODO is such a request required?
-            log.info("No checksum validation requested.");
-        }
+//        if(message.getChecksumSpecs() != null && message.getChecksumSpecs().getNoOfItems().equals(BigInteger.ZERO)) {
+//            // Calculate the requested checksum data.
+//            checksumForValidation.setFileID(message.getFileID());
+//            checksumForValidation.setNoOfItems(message.getChecksumSpecs().getNoOfItems());
+//            Collection<ChecksumSpecTYPE> requestedChecksumToCalculate 
+//                    = message.getChecksumSpecs().getChecksumSpecsItems().getChecksumSpecsItem();
+//            ChecksumDataItems cdi = new ChecksumDataItems();
+//            // Calculate each of the requested checksums and put them into the response message.
+//            for(ChecksumSpecTYPE checksumToCalculate : requestedChecksumToCalculate) {
+//                String checksum = ChecksumUtils.generateChecksum(retrievedFile, 
+//                        checksumToCalculate.getChecksumType(),
+//                        checksumToCalculate.getChecksumSalt());
+//                ChecksumDataForFileTYPE resultingChecksum = new ChecksumDataForFileTYPE();
+//                resultingChecksum.setChecksumSpec(checksumToCalculate);
+//                resultingChecksum.setChecksumValue(checksum);
+//                resultingChecksum.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+//                cdi.getChecksumDataForFile().add(resultingChecksum);
+//            }
+//            checksumForValidation.setChecksumDataItems(cdi);
+//        } else {
+//            // TODO is such a request required?
+//            log.info("No checksum validation requested.");
+//        }
         fResponse.setChecksumsDataForNewFile(checksumForValidation);
 
         // Finish by sending final response.

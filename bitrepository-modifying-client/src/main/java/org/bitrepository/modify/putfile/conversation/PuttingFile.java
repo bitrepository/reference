@@ -99,7 +99,7 @@ public class PuttingFile extends PutFileState {
         // TODO
 //        putMsg.setAuditTrailInformation(conversation.settings);
         putMsg.setChecksumsDataForNewFile(conversation.validationChecksums);
-        putMsg.setChecksumSpecs(conversation.requestChecksums);
+//        putMsg.setChecksumSpecs(conversation.requestChecksums);
         
         // Send the message to each pillar.
         for(Map.Entry<String, String> pillarDest : pillarDestinations.entrySet()) {
