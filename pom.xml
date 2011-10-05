@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.bitrepository</groupId>
   <artifactId>bitrepository</artifactId>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.2</version>
 
   <parent>
     <groupId>org.sbforge</groupId>
@@ -104,9 +103,9 @@
   </organization>
 
   <scm>
-    <url>https://sbforge.org/fisheye/browse/Bitmagasinet/bitrepository-reference/trunk/</url>
-    <connection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk</connection>
-    <developerConnection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk</developerConnection>
+    <url>https://sbforge.org/fisheye/browse/Bitmagasinet/bitrepository-reference/tags/bitrepository-0.2</url>
+    <connection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-reference/tags/bitrepository-0.2</connection>
+    <developerConnection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-reference/tags/bitrepository-0.2</developerConnection>
   </scm>
 
   <distributionManagement>
