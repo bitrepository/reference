@@ -78,7 +78,7 @@ public class PuttingFile extends PutFileState {
     public PuttingFile(SimplePutFileConversation conversation, Map<String, String> pillarsDests) {
         super(conversation);
         this.pillarDestinations = pillarsDests;
-        putResponseStatus = new PillarsResponseStatus(conversation.settings.getPutFile().getPillarIDs());
+        putResponseStatus = new PillarsResponseStatus(conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs());
     }
 
     /**
@@ -91,8 +91,8 @@ public class PuttingFile extends PutFileState {
         putMsg.setCorrelationID(conversation.getConversationID());
         putMsg.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         putMsg.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        putMsg.setBitRepositoryCollectionID(conversation.settings.getBitRepositoryCollectionID());
-        putMsg.setReplyTo(conversation.settings.getProtocol().getLocalDestination());
+        putMsg.setBitRepositoryCollectionID(conversation.settings.getCollectionID());
+        putMsg.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         putMsg.setFileAddress(conversation.downloadUrl.toExternalForm());
         putMsg.setFileID(conversation.fileID);
         putMsg.setFileSize(conversation.fileSize);
@@ -112,12 +112,12 @@ public class PuttingFile extends PutFileState {
         if(conversation.eventHandler != null) {
             conversation.eventHandler.handleEvent(new DefaultEvent(OperationEventType.RequestSent, 
                     "Request to put file has been sent to pillars in collection '" 
-                    + conversation.settings.getBitRepositoryCollectionID() + "'."));
+                    + conversation.settings.getCollectionID() + "'."));
         }
         
         // Set timeout.
-        timer.schedule(timerTask, TimeMeasureComparator.getTimeMeasureInLong(
-                conversation.settings.getProtocol().getConversationTimeout()));
+        timer.schedule(timerTask, 
+                conversation.settings.getReferenceSettings().getClientSettings().getConversationTimeout().longValue());
     }
 
     /**

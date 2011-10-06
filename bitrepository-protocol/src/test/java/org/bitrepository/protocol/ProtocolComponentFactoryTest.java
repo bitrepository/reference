@@ -1,14 +1,14 @@
 package org.bitrepository.protocol;
 
-import org.bitrepository.protocol.bitrepositorycollection.MutableCollectionSettings;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.SettingsProvider;
+import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.settings.CollectionSettingsLoader;
-import org.bitrepository.protocol.settings.XMLFileSettingsLoader;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class ProtocolComponentFactoryTest {
-    private MutableCollectionSettings settings;
+    private Settings settings;
     
     @BeforeMethod(alwaysRun = true)
     public void beforeMethodSetup() throws Exception {
@@ -16,8 +16,8 @@ public class ProtocolComponentFactoryTest {
     }
     
     protected void setupSettings() throws Exception {
-        CollectionSettingsLoader settingsLoader = new CollectionSettingsLoader(new XMLFileSettingsLoader("src/test/resources/settings/xml"));
-        settings = settingsLoader.loadSettings("bitrepository-devel");
+        SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader("src/test/resources/settings/xml"));
+        settings = settingsLoader.getSettings("bitrepository-devel");
     }
     
     @Test(groups = { "regressiontest" })    
@@ -26,6 +26,6 @@ public class ProtocolComponentFactoryTest {
      */
     public void getMessageTest() throws Exception {
         MessageBus bus =
-            ProtocolComponentFactory.getInstance().getMessageBus(settings.getSettings());
+            ProtocolComponentFactory.getInstance().getMessageBus(settings);
     }
 }

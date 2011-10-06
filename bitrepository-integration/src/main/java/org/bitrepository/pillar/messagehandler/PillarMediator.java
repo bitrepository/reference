@@ -50,13 +50,13 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReque
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.collection.settings.standardsettings.AlarmLevelTYPE;
-import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.audit.MemorybasedAuditTrailManager;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,8 +105,8 @@ public class PillarMediator extends AbstractMessageListener {
         initialiseHandlers();
 
         // add to both the general topic and the local queue.
-        messagebus.addListener(settings.getProtocol().getCollectionDestination(), this);
-        messagebus.addListener(settings.getProtocol().getLocalDestination(), this);
+        messagebus.addListener(settings.getCollectionDestination(), this);
+        messagebus.addListener(settings.getReferenceSettings().getClientSettings().getReceiverDestination(), this);
     }
     
     /**
@@ -145,17 +145,17 @@ public class PillarMediator extends AbstractMessageListener {
         // create the Concerning part of the alarm.
         AlarmConcerning ac = new AlarmConcerning();
         BitRepositoryCollections brcs = new BitRepositoryCollections();
-        brcs.getBitRepositoryCollectionID().add(settings.getBitRepositoryCollectionID());
+        brcs.getBitRepositoryCollectionID().add(settings.getCollectionID());
         ac.setBitRepositoryCollections(brcs);
         ac.setMessages(msg);
         ac.setFileInformation(null);
         Components comps = new Components();
         ComponentTYPE compType = new ComponentTYPE();
         compType.setComponentComment("ReferencePillar");
-        compType.setComponentID(settings.getPillar().getPillarID());
+        compType.setComponentID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         compType.setComponentType(ComponentType.PILLAR);
         comps.getContributor().add(compType);
-        comps.getDataTransmission().add(settings.getProtocol().getMessageBusConfiguration().toString());
+        comps.getDataTransmission().add(settings.getMessageBusConfiguration().toString());
         ac.setComponents(comps);
         
         // create a descriptor.
@@ -176,7 +176,7 @@ public class PillarMediator extends AbstractMessageListener {
     @Override
     protected void reportUnsupported(Object message) {
         audits.addMessageReceivedAudit("Received unsupported: " + message.getClass());
-        if(AlarmLevelTYPE.WARNING.equals(settings.getPillar().getAlarmLevel())) {
+        if(AlarmLevel.WARNING.equals(settings.getCollectionSettings().getPillarSettings().getAlarmLevel())) {
             noHandlerAlarm(message);
         }
     }

@@ -27,13 +27,13 @@ package org.bitrepository.protocol.performancetest;
 import java.util.Date;
 
 import org.bitrepository.bitrepositorymessages.Alarm;
-import org.bitrepository.collection.settings.standardsettings.MessageBusConfigurationTYPE;
 import org.bitrepository.protocol.ExampleMessageFactory;
 import org.bitrepository.protocol.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -67,7 +67,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
-        MessageBusConfigurationTYPE conf = MessageBusConfigurationFactory.createDefaultConfiguration();
+        MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
         CountMessagesListener listener = null;
 
         try {
@@ -116,7 +116,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus and define the local broker.", "Both should be created.");
-        MessageBusConfigurationTYPE conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+        MessageBusConfiguration conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
         Assert.assertNotNull(conf);
         LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
         Assert.assertNotNull(broker);
@@ -169,7 +169,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
      * @param confs The configuration for the messagebus, where the messages should be sent.
      * @throws Exception
      */
-    private void sendAllTheMessages(MessageBusConfigurationTYPE conf) throws Exception {
+    private void sendAllTheMessages(MessageBusConfiguration conf) throws Exception {
         for(int i = 0; i < NUMBER_OF_SENDERS; i++) {
             Thread t = new MessageSenderThread(conf, NUMBER_OF_MESSAGES / NUMBER_OF_SENDERS, "#" + i);
             t.start();
@@ -181,7 +181,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         private final int numberOfMessages;
         private final String id;
 
-        public MessageSenderThread(MessageBusConfigurationTYPE conf, int numberOfMessages, String id) {
+        public MessageSenderThread(MessageBusConfiguration conf, int numberOfMessages, String id) {
             this.bus = new ActiveMQMessageBus(conf);
             this.numberOfMessages = numberOfMessages;
             this.id = id;
@@ -222,7 +222,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
          * Constructor.
          * @param confs The configurations for declaring the messagebus.
          */
-        public CountMessagesListener(MessageBusConfigurationTYPE conf) {
+        public CountMessagesListener(MessageBusConfiguration conf) {
             this.bus = new ActiveMQMessageBus(conf);
             this.count = 0;
 

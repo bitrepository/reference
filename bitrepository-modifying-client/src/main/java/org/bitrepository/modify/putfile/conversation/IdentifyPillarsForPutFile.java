@@ -76,7 +76,8 @@ public class IdentifyPillarsForPutFile extends PutFileState {
      */
     public IdentifyPillarsForPutFile(SimplePutFileConversation conversation) {
         super(conversation);
-        this.identifyResponseStatus = new PillarsResponseStatus(conversation.settings.getPutFile().getPillarIDs());
+        this.identifyResponseStatus = new PillarsResponseStatus(
+                conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs());
     }
 
     /**
@@ -87,13 +88,13 @@ public class IdentifyPillarsForPutFile extends PutFileState {
         identifyRequest.setCorrelationID(conversation.getConversationID());
         identifyRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         identifyRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        identifyRequest.setBitRepositoryCollectionID(conversation.settings.getBitRepositoryCollectionID());
-        identifyRequest.setReplyTo(conversation.settings.getProtocol().getLocalDestination());
-        identifyRequest.setTo(conversation.settings.getProtocol().getCollectionDestination());
+        identifyRequest.setBitRepositoryCollectionID(conversation.settings.getCollectionID());
+        identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        identifyRequest.setTo(conversation.settings.getCollectionDestination());
 
         conversation.messageSender.sendMessage(identifyRequest);
-        timer.schedule(timerTask, TimeMeasureComparator.getTimeMeasureInLong(
-                conversation.settings.getPutFile().getIdentificationTimeout()));
+        timer.schedule(timerTask, 
+                conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());
     }
 
     @Override

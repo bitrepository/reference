@@ -31,13 +31,13 @@ import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositorymessages.Alarm;
-import org.bitrepository.collection.settings.standardsettings.MessageBusConfigurationTYPE;
 import org.bitrepository.protocol.ExampleMessageFactory;
 import org.bitrepository.protocol.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -108,7 +108,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         alarmMessage.setTo(QUEUE);
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
-        MessageBusConfigurationTYPE conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+        MessageBusConfiguration conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
         LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
 
         try {
@@ -141,7 +141,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         alarmMessage.setTo(QUEUE);
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
-        MessageBusConfigurationTYPE conf = MessageBusConfigurationFactory.createDefaultConfiguration();
+        MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
 
         addStep("Start the broker and initialise the listeners.", 
         "Connections should be established.");
@@ -151,7 +151,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
     }
 
 
-    public void testListeners(MessageBusConfigurationTYPE conf) throws Exception {
+    public void testListeners(MessageBusConfiguration conf) throws Exception {
         List<NotificationMessageListener> listeners = new ArrayList<NotificationMessageListener>(NUMBER_OF_LISTENERS);
 
         try {
@@ -277,7 +277,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
          * Constructor.
          * @param confs The configurations for declaring the message bus.
          */
-        public NotificationMessageListener(MessageBusConfigurationTYPE conf) {
+        public NotificationMessageListener(MessageBusConfiguration conf) {
             this.bus = new ActiveMQMessageBus(conf);
             this.count = 0;
 

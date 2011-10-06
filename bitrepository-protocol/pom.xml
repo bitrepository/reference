@@ -10,22 +10,7 @@
   <description>General functionality for communication with the Bitrepository protocol. 
   This includes message bus integration and file exchange.</description>
   
-  <properties>
-    <message.xml.version>0.3.2</message.xml.version>
-    <collection.settings.version>0.2.1</collection.settings.version>
-  </properties>
-
   <dependencies>
-    <dependency>
-      <groupId>org.bitrepository</groupId>
-      <artifactId>bitrepository-message-xml</artifactId>
-      <version>${message.xml.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bitrepository</groupId>
-      <artifactId>bitrepository-collection-settings</artifactId>
-      <version>${collection.settings.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-common</artifactId>
@@ -80,7 +65,6 @@
               <attached>false</attached>     
               <resourceBundles>
                 <resourceBundle>org.bitrepository:bitrepository-message-xml:${message.xml.version}</resourceBundle>
-                <resourceBundle>org.bitrepository:bitrepository-collection-settings:${collection.settings.version}</resourceBundle>
               </resourceBundles>
             </configuration>
           </execution>

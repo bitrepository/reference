@@ -30,23 +30,23 @@ import org.slf4j.LoggerFactory;
 public class TestLogger {	
     private Logger log;
 
-	public TestLogger(Class<?> logHandle) {
-		log = LoggerFactory.getLogger(logHandle);
-	}
-	
-	public void error(String msg) {
-		log.error(msg);
-	}
+    public TestLogger(Class<?> logHandle) {
+        log = LoggerFactory.getLogger(logHandle);
+    }
 
-	public void debug(String string) {
-		log.debug(string);
-	}
+    public void error(String msg) {
+        log.error(msg);
+    }
 
-	public void warn(String msg) {
-		log.warn(msg);
-	}
+    public void debug(String string) {
+        log.debug(string);
+    }
 
-	public void info(String msg) {
-		log.info(msg);
-	}	
+    public void warn(String msg) {
+        log.warn(msg);
+    }
+
+    public void info(String msg) {
+        log.info(msg);
+    }	
 }

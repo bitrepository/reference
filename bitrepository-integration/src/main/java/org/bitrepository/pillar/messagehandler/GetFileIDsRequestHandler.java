@@ -25,7 +25,7 @@
 package org.bitrepository.pillar.messagehandler;
 
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.MessageBus;
 

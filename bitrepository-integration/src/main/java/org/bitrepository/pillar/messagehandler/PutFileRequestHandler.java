@@ -26,9 +26,7 @@ package org.bitrepository.pillar.messagehandler;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Collection;
 
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
 import org.bitrepository.bitrepositoryelements.ErrorcodeFinalresponseType;
 import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
@@ -39,8 +37,7 @@ import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.collection.settings.standardsettings.Settings;
-import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -267,9 +264,9 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getPillar().getPillarID());
-        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
-        res.setReplyTo(settings.getProtocol().getLocalDestination());
+        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
+        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         
         return res;
     }
@@ -293,9 +290,9 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getPillar().getPillarID());
-        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
-        res.setReplyTo(settings.getProtocol().getLocalDestination());
+        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
+        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
 
         return res;
     }

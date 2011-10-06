@@ -22,7 +22,17 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+package org.bitrepository.common.settings;
+
 /**
- * Contains the settings classes defining the configurations for BitRepositoryCollections.
+ * Used for reading collection settings, including specialized version of these (Client, pillar, getFile etc.).
  */
-package org.bitrepository.protocol.bitrepositorycollection;
+public interface SettingsLoader {
+    /**
+     * Loads the settings for the indicated collection
+     * @param collectionID The collection to load the settings for.
+     * @param configurationClass Specifies the type of settings to load.
+     * @return The loaded settings.
+     */
+    public <T> T loadSettings(String collectionID, Class<T> configurationClass);
+}

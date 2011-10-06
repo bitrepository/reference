@@ -22,10 +22,13 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.settings;
+package org.bitrepository.common.settings;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+
+import javax.xml.bind.JAXBException;
 
 import org.bitrepository.common.JaxbHelper;
 import org.slf4j.Logger;
@@ -35,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * Loads settings as xml from the classpath.
  *
  */
-public class XMLFileSettingsLoader implements SettingsReader {
+public class XMLFileSettingsLoader implements SettingsLoader {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -60,16 +63,21 @@ public class XMLFileSettingsLoader implements SettingsReader {
      * @param settingsClass The settings class identifying the type of settings requested.
      * @return The loaded settings.
      */
-    public <T> T loadSettings(String collectionID, Class<T> settingsClass) throws Exception {
+    public <T> T loadSettings(String collectionID, Class<T> settingsClass) {
         String fileLocation = pathToSettingsFiles + "/" + collectionID + "/" + settingsClass.getSimpleName() + ".xml";
         InputStream configStream = ClassLoader.getSystemResourceAsStream(fileLocation);
         if (configStream == null) {
-            configStream = new FileInputStream(fileLocation);
+            try {
+                configStream = new FileInputStream(fileLocation);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException("Unable to load settings from " + fileLocation, e);
+            }
         }
-//        if (configStream == null) {
-//            throw new IllegalArgumentException("Unable to find settings from " + fileLocation + " in classpath");
-//        }
         log.debug("Loading the settings file '" + fileLocation + "'.");
-        return (T) JaxbHelper.loadXml(settingsClass, configStream);
+        try {
+            return (T) JaxbHelper.loadXml(settingsClass, configStream);
+        } catch (JAXBException e) {
+            throw new RuntimeException("Unable to load settings from " + fileLocation, e);
+        }
     }
 }

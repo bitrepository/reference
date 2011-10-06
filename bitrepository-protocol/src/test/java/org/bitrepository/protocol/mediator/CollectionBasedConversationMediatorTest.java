@@ -24,7 +24,7 @@
  */
 package org.bitrepository.protocol.mediator;
 
-import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.testng.annotations.Test;
 

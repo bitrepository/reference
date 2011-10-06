@@ -31,7 +31,7 @@ import org.bitrepository.access.getfile.selectors.PillarSelectorForGetFile;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.conversation.AbstractConversation;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
@@ -116,7 +116,7 @@ public class SimpleGetFileConversation extends AbstractConversation<URL> {
         conversationState = initialConversationState;
         initialConversationState.start();		
         if (eventHandler == null) {
-            waitFor(TimeMeasureComparator.getTimeMeasureInLong(settings.getProtocol().getConversationTimeout()));
+            waitFor(settings.getReferenceSettings().getClientSettings().getConversationTimeout().longValue());
         }
         if (operationFailedException != null) {
             throw operationFailedException;

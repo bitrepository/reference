@@ -25,7 +25,7 @@
 package org.bitrepository.protocol;
 
 import org.apache.activemq.broker.BrokerService;
-import org.bitrepository.collection.settings.standardsettings.MessageBusConfigurationTYPE;
+import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ public class LocalActiveMQBroker {
     
     private BrokerService broker;
     
-    public LocalActiveMQBroker(MessageBusConfigurationTYPE configuration) throws Exception {
+    public LocalActiveMQBroker(MessageBusConfiguration configuration) throws Exception {
         broker = new BrokerService();
         broker.addConnector(configuration.getURL());
         log.info("Created embedded broker " + LoggerFactory.getLogger(getClass()));

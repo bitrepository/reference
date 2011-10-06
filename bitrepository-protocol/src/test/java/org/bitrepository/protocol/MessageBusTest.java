@@ -26,20 +26,17 @@ package org.bitrepository.protocol;
 
 import java.util.Date;
 
-import org.apache.activemq.broker.BrokerService;
 import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.clienttest.MessageReceiver;
-import org.bitrepository.collection.settings.standardsettings.MessageBusConfigurationTYPE;
 import org.bitrepository.common.JaxbHelper;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
-import org.bitrepository.protocol.bitrepositorycollection.MutableCollectionSettings;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
-import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.settings.CollectionSettingsLoader;
-import org.bitrepository.protocol.settings.XMLFileSettingsLoader;
+import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.jaccept.TestEventManager;
 import org.jaccept.structure.ExtendedTestCase;
@@ -56,7 +53,7 @@ public class MessageBusTest extends ExtendedTestCase {
     static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
     
     /** The settings to use for this test */
-    private MutableCollectionSettings settings;
+    private Settings settings;
     
     /**
      * Defines the standard BitRepositoryCollection configuration
@@ -69,8 +66,7 @@ public class MessageBusTest extends ExtendedTestCase {
     }
     
     protected void setupSettings() throws Exception {
-        CollectionSettingsLoader settingsLoader = new CollectionSettingsLoader(new XMLFileSettingsLoader("src/test/resources/settings/xml"));
-        settings = settingsLoader.loadSettings("bitrepository-devel");
+        settings = TestSettingsProvider.getSettings(); 
     }
 
     @Test(groups = { "regressiontest" })
@@ -79,7 +75,7 @@ public class MessageBusTest extends ExtendedTestCase {
         addStep("Get a connection to the message bus from the "
                 + "<i>MessageBusConnection</i> connection class",
         "No exceptions should be thrown");
-        Assert.assertNotNull(ProtocolComponentFactory.getInstance().getMessageBus(settings.getSettings()));
+        Assert.assertNotNull(ProtocolComponentFactory.getInstance().getMessageBus(settings));
     }
 
     @Test(groups = { "regressiontest" })
@@ -92,7 +88,7 @@ public class MessageBusTest extends ExtendedTestCase {
         IdentifyPillarsForGetFileRequest content = 
             ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);
         TestMessageListener listener = new TestMessageListener();
-        MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settings.getSettings());
+        MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settings);
         Assert.assertNotNull(con);
         con.addListener("BusActivityTest", listener);
         content.setTo("BusActivityTest");
@@ -123,7 +119,7 @@ public class MessageBusTest extends ExtendedTestCase {
             ExampleMessageFactory.createMessage(Alarm.class);
 
         addStep("Make a connection to the message bus and add two listeners", "No exceptions should be thrown");
-        MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settings.getSettings());
+        MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settings);
         Assert.assertNotNull(con);
 
         MessageReceiver receiver1 = new MessageReceiver("receiver1", testEventManager);
@@ -151,7 +147,7 @@ public class MessageBusTest extends ExtendedTestCase {
         String QUEUE = "DUAL-MESSAGEBUS-TEST-" + new Date().getTime();
 
         addStep("Making the configurations for a embedded message bus.", "Should be allowed.");
-        MessageBusConfigurationTYPE embeddedMBConfig = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+        MessageBusConfiguration embeddedMBConfig = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
 
         addStep("Start a embedded activeMQ instance based on the configuration.", "Should be allowed.");
         LocalActiveMQBroker broker = new LocalActiveMQBroker(embeddedMBConfig);
@@ -159,7 +155,7 @@ public class MessageBusTest extends ExtendedTestCase {
             broker.start();
 
             addStep("Making the configurations for the first message bus.", "Should be allowed.");
-            MessageBusConfigurationTYPE config = new MessageBusConfigurationTYPE();
+            MessageBusConfiguration config = new MessageBusConfiguration();
             config.setURL("tcp://sandkasse-01.kb.dk:61616");
             config.setName("kb-test-messagebus");
             config.setLogin("");
@@ -268,14 +264,15 @@ public class MessageBusTest extends ExtendedTestCase {
             ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);
 
         String busUrl = "tcp://localhost:61616";
-        settings.getSettings().getProtocol().getMessageBusConfiguration().setURL(busUrl);
+        settings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration().setURL(busUrl);
         String destination = "EmbeddedMessageBus";
         content.setTo(destination);
         
         addStep("Starting the local broker.", "A lot of info-level logs should"
                 + " be seen here.");
 
-        LocalActiveMQBroker broker = new LocalActiveMQBroker(settings.getSettings().getProtocol().getMessageBusConfiguration());
+        LocalActiveMQBroker broker = new LocalActiveMQBroker(
+                settings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration());
         try {
             broker.start();
 
@@ -291,7 +288,7 @@ public class MessageBusTest extends ExtendedTestCase {
             addStep("Connecting to the bus, and then connect to the local bus.", 
                     "Info-level logs should be seen here for both connections. "
                     + "Only the last is used.");
-            MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settings.getSettings());
+            MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settings);
 
             addStep("Make a listener for the messagebus and make it listen. "
                     + "Then send a message for the message listener to catch.",

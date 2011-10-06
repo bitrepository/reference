@@ -24,9 +24,9 @@
  */
 package org.bitrepository.integration;
 
-import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integration.configuration.integrationconfiguration.IntegrationConfiguration;
 import org.bitrepository.pillar.ReferencePillar;
 import org.bitrepository.protocol.messagebus.MessageBusFactory;
@@ -92,6 +92,6 @@ public class IntegrationComponentFactory {
     public ReferencePillar getPillar(Settings settings) {
         return new ReferencePillar(
                 MessageBusFactory.createMessageBus(
-                        settings.getProtocol().getMessageBusConfiguration()), settings);
+                        settings.getMessageBusConfiguration()), settings);
     }
 }

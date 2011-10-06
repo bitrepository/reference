@@ -24,14 +24,10 @@
  */
 package org.bitrepository.pillar;
 
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.SettingsProvider;
+import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.integration.IntegrationComponentFactory;
-import org.bitrepository.integration.configuration.integrationconfiguration.IntegrationConfiguration;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.configuration.ProtocolConfiguration;
-import org.bitrepository.protocol.settings.CollectionSettingsLoader;
-import org.bitrepository.protocol.settings.XMLFileSettingsLoader;
 
 /**
  * Method for launching the ReferencePillar. 
@@ -58,10 +54,10 @@ public class ReferencePillarLauncher {
             pathToSettings = DEFAULT_PATH_TO_SETTINGS;
         }
         
-        CollectionSettingsLoader settingsLoader = new CollectionSettingsLoader(
+        SettingsProvider settingsLoader = new SettingsProvider(
                 new XMLFileSettingsLoader(pathToSettings));
         try {
-            Settings settings = settingsLoader.loadSettings(collectionId).getSettings();
+            Settings settings = settingsLoader.getSettings(collectionId);
             IntegrationComponentFactory.getInstance().getPillar(settings);
         } catch (Exception e) {
             e.printStackTrace();

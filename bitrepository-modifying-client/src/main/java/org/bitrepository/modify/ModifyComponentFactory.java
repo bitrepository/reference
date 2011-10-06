@@ -25,12 +25,10 @@
 
 package org.bitrepository.modify;
 
-import org.bitrepository.collection.settings.standardsettings.Settings;
-import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.putfile.ConversationBasedPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
-import org.bitrepository.modify_client.configuration.ModifyConfiguration;
 import org.bitrepository.protocol.messagebus.MessageBusFactory;
 
 /**
@@ -80,7 +78,7 @@ public class ModifyComponentFactory {
     public PutFileClient retrievePutClient(Settings settings) {
         return new ConversationBasedPutFileClient(
                 MessageBusFactory.createMessageBus(
-                        settings.getProtocol().getMessageBusConfiguration()),
+                        settings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration()),
                 settings);
     }
 }

@@ -27,8 +27,8 @@ package org.bitrepository.modify.putfile;
 import java.math.BigInteger;
 import java.net.URL;
 
-import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.putfile.conversation.SimplePutFileConversation;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
@@ -61,7 +61,7 @@ public class ConversationBasedPutFileClient implements PutFileClient {
      */
     public ConversationBasedPutFileClient(MessageBus messageBus, Settings settings) {
         this.conversationMediator = new CollectionBasedConversationMediator<SimplePutFileConversation>(settings, messageBus,
-                settings.getProtocol().getLocalDestination());
+                settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         this.bus = messageBus;
         this.settings = settings;
     }

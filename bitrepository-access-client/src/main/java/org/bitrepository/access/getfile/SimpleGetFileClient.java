@@ -30,9 +30,8 @@ import org.bitrepository.access.getfile.conversation.SimpleGetFileConversation;
 import org.bitrepository.access.getfile.selectors.FastestPillarSelectorForGetFile;
 import org.bitrepository.access.getfile.selectors.PillarSelectorForGetFile;
 import org.bitrepository.access.getfile.selectors.SpecificPillarSelectorForGetFile;
-import org.bitrepository.collection.settings.standardsettings.GetFileTYPE;
-import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.exceptions.NoPillarFoundException;
@@ -56,8 +55,6 @@ public class SimpleGetFileClient implements GetFileClient {
 
     /** The injected settings for the instance */
     private final Settings settings;
-    /** The specific settings for the GetFileClient.*/
-    private final GetFileTYPE getfileSettings;
 
     /** The injected messagebus to use */
     private final MessageBus messageBus;
@@ -72,11 +69,10 @@ public class SimpleGetFileClient implements GetFileClient {
     public SimpleGetFileClient(MessageBus messageBus, Settings settings) {
         conversationMediator = 
             new CollectionBasedConversationMediator<SimpleGetFileConversation>(
-                    settings, messageBus, settings.getProtocol().getLocalDestination());
+                    settings, messageBus, settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         this.settings = settings;
-        this.getfileSettings = settings.getGetFile();
         this.messageBus = messageBus;
     }
 
@@ -87,8 +83,8 @@ public class SimpleGetFileClient implements GetFileClient {
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
 
         log.info("Requesting fastest retrieval of the file '" + fileID + "' which belong to the SLA '" + 
-                settings.getBitRepositoryCollectionID() + "'.");
-        getFile(messageBus, settings, new FastestPillarSelectorForGetFile(settings.getGetFile().getPillarIDs()), 
+                settings.getCollectionSettings().getCollectionID() + "'.");
+        getFile(messageBus, settings, new FastestPillarSelectorForGetFile(settings.getCollectionSettings().getClientSettings().getPillarIDs()), 
                 fileID, uploadUrl, eventHandler);		
     }
 
@@ -98,9 +94,9 @@ public class SimpleGetFileClient implements GetFileClient {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
 
-        log.info("Requesting fastest retrieval of the file '" + fileID + "' which belong to the SLA '" + 
-                settings.getBitRepositoryCollectionID() + "'.");
-        getFile(messageBus, settings, new FastestPillarSelectorForGetFile(settings.getGetFile().getPillarIDs()), 
+        log.info("Requesting fastest retrieval of the file '" + fileID);
+        getFile(messageBus, settings, new FastestPillarSelectorForGetFile(
+                settings.getCollectionSettings().getClientSettings().getPillarIDs()), 
                 fileID, uploadUrl);				
     }
 

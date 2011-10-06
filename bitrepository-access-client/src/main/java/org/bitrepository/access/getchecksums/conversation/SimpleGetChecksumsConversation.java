@@ -36,7 +36,7 @@ import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
-import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.conversation.AbstractConversation;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
@@ -121,7 +121,7 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<Map<Str
         conversationState = initialConversationState;
         initialConversationState.start();                   
         if (eventHandler == null) {
-            waitFor(TimeMeasureComparator.getTimeMeasureInLong(settings.getProtocol().getConversationTimeout()));
+            waitFor(settings.getReferenceSettings().getClientSettings().getConversationTimeout().longValue());
         }
         if (operationFailedException != null) {
             throw operationFailedException;

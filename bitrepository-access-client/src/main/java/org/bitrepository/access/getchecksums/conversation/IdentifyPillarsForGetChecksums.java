@@ -25,7 +25,6 @@
 package org.bitrepository.access.getchecksums.conversation;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -65,19 +64,18 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
         identifyRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         identifyRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         identifyRequest.setBitRepositoryCollectionID(
-                conversation.settings.getBitRepositoryCollectionID());
+                conversation.settings.getCollectionID());
         identifyRequest.setFileIDs(conversation.fileIDs);
-        identifyRequest.setReplyTo(conversation.settings.getProtocol().getLocalDestination());
-        identifyRequest.setTo(conversation.settings.getProtocol().getCollectionDestination());
+        identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        identifyRequest.setTo(conversation.settings.getCollectionDestination());
         
         // TODO insert these variables?
         identifyRequest.setAuditTrailInformation(null);
         identifyRequest.setFileChecksumSpec(null);
 
         conversation.messageSender.sendMessage(identifyRequest);
-        timer.schedule(identifyTimeoutTask, 
-                TimeMeasureComparator.getTimeMeasureInLong(
-                        conversation.settings.getGetChecksums().getIdentificationTimeout()));
+        timer.schedule(identifyTimeoutTask,
+                        conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());
     }
 
     /**

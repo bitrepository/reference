@@ -25,7 +25,6 @@
 package org.bitrepository.access.getchecksums;
 
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -33,8 +32,8 @@ import org.bitrepository.access.getchecksums.conversation.SimpleGetChecksumsConv
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
-import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
@@ -74,7 +73,7 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
         this.bus = messageBus;
         this.settings = settings;
         conversationMediator = new CollectionBasedConversationMediator<SimpleGetChecksumsConversation>(settings, 
-                bus, settings.getProtocol().getLocalDestination());
+                bus, settings.getReferenceSettings().getClientSettings().getReceiverDestination());
     }
     
     @Override

@@ -25,4 +25,96 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+     <plugin>
+        <!-- Include remote resources -->
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <id>process-remote-resources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/settings</outputDirectory>
+              <attached>false</attached> <!-- If attached is true (the default) the copy-resources step below will 
+              re-include the resources from the last build in the current.  -->              
+              <resourceBundles>
+                <resourceBundle>org.bitrepository:bitrepository-collection-settings:${collection.settings.version}</resourceBundle>
+              </resourceBundles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>  
+      <plugin>
+        <!--  Copies the jaxb bindings definition to the message xsd dir, in preparation for the xsd -> java class file
+        generation -->
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.5</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/settings/xsd</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources/xjb-bindings</directory>
+                  <filtering>true</filtering>
+                </resource>            
+                <resource>
+                  <directory>src/main/resources/settings/xsd</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>0.8.0</version>
+        <executions>
+          <execution>
+            <id>generate-settings-classes</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <schemaDirectory>${project.build.directory}/settings/xsd</schemaDirectory>
+              <generateDirectory>${project.build.directory}/generated-sources/settings</generateDirectory>
+              <extension>true</extension>
+              <args>
+                <arg>-XtoString</arg>
+                <arg>-Xequals</arg>
+                <arg>-XhashCode</arg>
+                <arg>-Xannotate</arg>
+              </args>
+              <plugins>
+                <plugin>
+                  <groupId>org.jvnet.jaxb2_commons</groupId>
+                  <artifactId>jaxb2-basics</artifactId>
+                  <version>0.6.2</version>
+                </plugin>
+                <plugin>
+                  <groupId>org.jvnet.jaxb2_commons</groupId>
+                  <artifactId>jaxb2-basics-annotate</artifactId>
+                  <version>0.6.2</version>
+                </plugin>
+              </plugins>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

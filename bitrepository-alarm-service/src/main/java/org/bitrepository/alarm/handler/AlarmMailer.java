@@ -39,7 +39,6 @@ import org.bitrepository.alarm.AlarmException;
 import org.bitrepository.alarm.AlarmHandler;
 import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration;
 import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration.MailingConfiguration;
-import org.bitrepository.bitrepositoryelements.AlarmDescription;
 import org.bitrepository.bitrepositorymessages.Alarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

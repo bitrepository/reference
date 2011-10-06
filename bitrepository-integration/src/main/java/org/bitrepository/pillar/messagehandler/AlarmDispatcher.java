@@ -29,19 +29,19 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.bitrepository.bitrepositoryelements.AlarmConcerning;
+import org.bitrepository.bitrepositoryelements.AlarmConcerning.BitRepositoryCollections;
+import org.bitrepository.bitrepositoryelements.AlarmConcerning.Components;
 import org.bitrepository.bitrepositoryelements.AlarmDescription;
 import org.bitrepository.bitrepositoryelements.AlarmcodeType;
 import org.bitrepository.bitrepositoryelements.ComponentTYPE;
+import org.bitrepository.bitrepositoryelements.ComponentTYPE.ComponentType;
 import org.bitrepository.bitrepositoryelements.PriorityCodeType;
 import org.bitrepository.bitrepositoryelements.RiskAreaType;
 import org.bitrepository.bitrepositoryelements.RiskImpactScoreType;
 import org.bitrepository.bitrepositoryelements.RiskProbabilityScoreType;
 import org.bitrepository.bitrepositoryelements.RiskTYPE;
-import org.bitrepository.bitrepositoryelements.AlarmConcerning.BitRepositoryCollections;
-import org.bitrepository.bitrepositoryelements.AlarmConcerning.Components;
-import org.bitrepository.bitrepositoryelements.ComponentTYPE.ComponentType;
 import org.bitrepository.bitrepositorymessages.Alarm;
-import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -79,17 +79,17 @@ public class AlarmDispatcher {
         // create the Concerning part of the alarm.
         AlarmConcerning ac = new AlarmConcerning();
         BitRepositoryCollections brcs = new BitRepositoryCollections();
-        brcs.getBitRepositoryCollectionID().add(settings.getBitRepositoryCollectionID());
+        brcs.getBitRepositoryCollectionID().add(settings.getCollectionID());
         ac.setBitRepositoryCollections(brcs);
         ac.setMessages(exception.getMessage());
         ac.setFileInformation(null);
         Components comps = new Components();
         ComponentTYPE compType = new ComponentTYPE();
         compType.setComponentComment("ReferencePillar");
-        compType.setComponentID(settings.getPillar().getPillarID());
+        compType.setComponentID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         compType.setComponentType(ComponentType.PILLAR);
         comps.getContributor().add(compType);
-        comps.getDataTransmission().add(settings.getProtocol().getMessageBusConfiguration().toString());
+        comps.getDataTransmission().add(settings.getMessageBusConfiguration().toString());
         ac.setComponents(comps);
         
         // create a descriptor.
@@ -119,19 +119,20 @@ public class AlarmDispatcher {
         
         ComponentTYPE ct = new ComponentTYPE();
         ct.setComponentComment("ReferencePillar");
-        ct.setComponentID(settings.getPillar().getPillarID());
+        ct.setComponentID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         ct.setComponentType(ComponentType.PILLAR);
         alarm.setAlarmRaiser(ct);
         
         alarm.setAlarmConcerning(alarmConcerning);
         alarm.setAlarmDescription(alarmDescription);
         
-        alarm.setAuditTrailInformation("ReferencePillar: " + settings.getPillar().getPillarID());
-        alarm.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
+        alarm.setAuditTrailInformation("ReferencePillar: " + 
+        settings.getReferenceSettings().getPillarSettings().getPillarID());
+        alarm.setBitRepositoryCollectionID(settings.getCollectionID());
         alarm.setCorrelationID(UUID.randomUUID().toString());
         alarm.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        alarm.setReplyTo(settings.getProtocol().getLocalDestination());
-        alarm.setTo(settings.getProtocol().getAlarmDestination());
+        alarm.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        alarm.setTo(settings.getAlarmDestination());
         alarm.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         
         messageBus.sendMessage(alarm);

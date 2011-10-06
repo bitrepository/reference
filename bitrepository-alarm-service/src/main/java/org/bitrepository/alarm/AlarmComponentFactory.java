@@ -25,9 +25,9 @@
 package org.bitrepository.alarm;
 
 import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration;
-import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusFactory;
 
@@ -88,7 +88,7 @@ public class AlarmComponentFactory {
     public AlarmService getAlarmService(Settings settings) {
         try {
             MessageBus bus = MessageBusFactory.createMessageBus(
-                    settings.getProtocol().getMessageBusConfiguration());
+                    settings.getMessageBusConfiguration());
             AlarmService service = new BasicAlarmService(bus);
             
             return service;

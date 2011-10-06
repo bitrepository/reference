@@ -27,8 +27,8 @@ package org.bitrepository.protocol;
 import javax.swing.JFrame;
 
 import org.bitrepository.clienttest.MessageReceiver;
-import org.bitrepository.collection.settings.standardsettings.MessageBusConfigurationTYPE;
-import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.bus.MessageBusWrapper;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
@@ -36,6 +36,7 @@ import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.bitrepository.protocol.http.EmbeddedHttpServer;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusFactory;
+import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.jaccept.TestEventManager;
 import org.jaccept.gui.ComponentTestFrame;
 import org.jaccept.structure.ExtendedTestCase;
@@ -77,6 +78,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      */
     @BeforeMethod(alwaysRun = true)
     public void beforeMethodSetup(java.lang.reflect.Method testMethod) {
+        settings = TestSettingsProvider.getSettings();
         setupSettings();
     }    
 
@@ -113,14 +115,14 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      */
     protected void setupMessageBus() throws Exception {
         if (useEmbeddedMessageBus()) { 
-            MessageBusConfigurationTYPE messageBusConfiguration = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
-            settings.getProtocol().setMessageBusConfiguration(messageBusConfiguration);
+            MessageBusConfiguration messageBusConfiguration = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+            settings.getCollectionSettings().getProtocolSettings().setMessageBusConfiguration(messageBusConfiguration);
             broker = new LocalActiveMQBroker(messageBusConfiguration);
             broker.start();
             messageBus = new MessageBusWrapper(MessageBusFactory.createMessageBus(messageBusConfiguration), testEventManager);
         } else {
-            MessageBusConfigurationTYPE messageBusConfiguration = MessageBusConfigurationFactory.createDefaultConfiguration();
-            settings.getProtocol().setMessageBusConfiguration(messageBusConfiguration);
+            MessageBusConfiguration messageBusConfiguration = MessageBusConfigurationFactory.createDefaultConfiguration();
+            settings.getCollectionSettings().getProtocolSettings().setMessageBusConfiguration(messageBusConfiguration);
             messageBus = new MessageBusWrapper(
                     ProtocolComponentFactory.getInstance().getMessageBus(settings), testEventManager);
         }
@@ -138,6 +140,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         // SLJ4J API 1.5 and 1.6)
         //config.setHttpServerPath("/dav/" + System.getProperty("user.name") + "/");
         httpServer = new HttpServerConnector(config, testEventManager);
+        httpServer.clearFiles();
     }
 
     /** 
@@ -147,14 +150,14 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected void setupSettings() {
         initCollectionSettings();
         String bitRepositoryCollectionID = System.getProperty("user.name") + "-test-collection";
-        settings.setBitRepositoryCollectionID(bitRepositoryCollectionID);
+        settings.getCollectionSettings().setCollectionID(bitRepositoryCollectionID);
     }
     
     protected void defineDestinations() {
         bitRepositoryCollectionDestinationID = "BitRepositoryCollection_topic" + getTopicPostfix();
         bitRepositoryCollectionDestination = new MessageReceiver("BitRepositoryCollection topic receiver", testEventManager);
         messageBus.addListener(bitRepositoryCollectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
-        settings.getProtocol().setCollectionDestination(bitRepositoryCollectionDestinationID);
+        settings.getCollectionSettings().getProtocolSettings().setCollectionDestination(bitRepositoryCollectionDestinationID);
     }
 
     protected void teardownMessageBus() {

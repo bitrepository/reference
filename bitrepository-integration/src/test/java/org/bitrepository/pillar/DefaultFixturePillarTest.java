@@ -25,10 +25,10 @@
 package org.bitrepository.pillar;
 
 import org.bitrepository.clienttest.MessageReceiver;
+import org.bitrepository.common.settings.SettingsProvider;
+import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.TestMessageFactory;
-import org.bitrepository.protocol.settings.CollectionSettingsLoader;
-import org.bitrepository.protocol.settings.XMLFileSettingsLoader;
 import org.testng.annotations.AfterClass;
 
 /**
@@ -93,8 +93,9 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
     public void initCollectionSettings() {
         if(settings == null) {
             try {
-                CollectionSettingsLoader settingsLoader = new CollectionSettingsLoader(new XMLFileSettingsLoader("src/test/resources/settings/xml"));
-                settings = settingsLoader.loadSettings("bitrepository-devel").getSettings();
+                SettingsProvider settingsLoader = new SettingsProvider(
+                        new XMLFileSettingsLoader("src/test/resources/settings/xml"));
+                settings = settingsLoader.getSettings("bitrepository-devel");
             } catch(Exception e) {
                 throw new RuntimeException("Could not load settings.", e);
             }

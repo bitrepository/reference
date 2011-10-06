@@ -24,6 +24,8 @@
  */
 package org.bitrepository.access.getfileids;
 
+import java.net.URL;
+
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.protocol.eventhandler.EventHandler;
@@ -31,8 +33,6 @@ import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 import org.jaccept.TestEventManager;
-
-import java.net.URL;
 
 /**
  * Wraps the <code>GetFileIDsClient</code> adding test event logging and functionality for handling blocking calls.

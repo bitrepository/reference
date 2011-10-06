@@ -29,7 +29,6 @@ import java.util.Collection;
 /**
  * Indicates that one or more arguments are invalid.
  */
-@SuppressWarnings("serial")
 public final class ArgumentValidator {
     
     /** Utility class, should never be instantiated */

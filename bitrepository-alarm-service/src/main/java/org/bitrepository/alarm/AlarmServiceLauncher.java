@@ -25,9 +25,9 @@
 package org.bitrepository.alarm;
 
 import org.bitrepository.alarm.handler.AlarmLogger;
-import org.bitrepository.collection.settings.standardsettings.Settings;
-import org.bitrepository.protocol.settings.CollectionSettingsLoader;
-import org.bitrepository.protocol.settings.XMLFileSettingsLoader;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.SettingsProvider;
+import org.bitrepository.common.settings.XMLFileSettingsLoader;
 
 /**
  * Class for launching an alarm service.
@@ -52,13 +52,13 @@ public class AlarmServiceLauncher {
             pathToSettings = DEFAULT_PATH_TO_SETTINGS;
         }
         
-        CollectionSettingsLoader settingsLoader = new CollectionSettingsLoader(
+        SettingsProvider settingsLoader = new SettingsProvider(
                 new XMLFileSettingsLoader(pathToSettings));
         try {
-            Settings settings = settingsLoader.loadSettings(collectionId).getSettings();
+            Settings settings = settingsLoader.getSettings(collectionId);
             // Instantiate the AlarmService.
             AlarmService alarm = AlarmComponentFactory.getInstance().getAlarmService(settings);
-            alarm.addHandler(new AlarmLogger(), settings.getProtocol().getAlarmDestination());
+            alarm.addHandler(new AlarmLogger(), settings.getAlarmDestination());
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println();

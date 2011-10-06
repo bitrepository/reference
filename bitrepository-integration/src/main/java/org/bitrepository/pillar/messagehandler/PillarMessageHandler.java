@@ -26,7 +26,7 @@ package org.bitrepository.pillar.messagehandler;
 
 import java.math.BigInteger;
 
-import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -76,9 +76,9 @@ public abstract class PillarMessageHandler<T> {
      * @param bitrepositoryCollectionId The collection id to validate.
      */
     protected void validateBitrepositoryCollectionId(String bitrepositoryCollectionId) {
-        if(!bitrepositoryCollectionId.equals(settings.getBitRepositoryCollectionID())) {
+        if(!bitrepositoryCollectionId.equals(settings.getCollectionID())) {
             throw new IllegalArgumentException("The message had a wrong BitRepositoryIdCollection: "
-                    + "Expected '" + settings.getBitRepositoryCollectionID() + "' but was '" 
+                    + "Expected '" + settings.getCollectionID() + "' but was '" 
                     + bitrepositoryCollectionId + "'.");
         }
     }
@@ -88,9 +88,9 @@ public abstract class PillarMessageHandler<T> {
      * @param pillarId The pillar id.
      */
     protected void validatePillarId(String pillarId) {
-        if(!pillarId.equals(settings.getPillar().getPillarID())) {
+        if(!pillarId.equals(settings.getReferenceSettings().getPillarSettings().getPillarID())) {
             throw new IllegalArgumentException("The message had a wrong PillarId: "
-                    + "Expected '" + settings.getPillar().getPillarID() + "' but was '" 
+                    + "Expected '" + settings.getReferenceSettings().getPillarSettings().getPillarID() + "' but was '" 
                     + pillarId + "'.");
         }
     }

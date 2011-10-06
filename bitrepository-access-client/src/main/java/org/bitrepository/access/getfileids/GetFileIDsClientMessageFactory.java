@@ -47,11 +47,11 @@
  */
 package org.bitrepository.access.getfileids;
 
+import java.math.BigInteger;
+
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-
-import java.math.BigInteger;
 
 /**
  * GetFileIDsClientMessageFactory generates request messages for BasicGetFileIDsClient.

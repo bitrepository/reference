@@ -30,7 +30,6 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
-import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -53,7 +52,7 @@ public class GetFileIDsClientTest extends DefaultFixtureClientTest {
     public void setUp() throws JAXBException {
         // TODO getFileIDsFromFastestPillar settings
         if (useMockupPillar()) {
-            testMessageFactory = new TestGetFileIDsMessageFactory(settings.getBitRepositoryCollectionID());
+            testMessageFactory = new TestGetFileIDsMessageFactory(settings.getCollectionID());
             pillar1FileStore = new TestFileStore("Pillar1");
         }
         httpServer.clearFiles();
@@ -81,7 +80,7 @@ public class GetFileIDsClientTest extends DefaultFixtureClientTest {
         FileIDs fileIDs = new FileIDs();
         fileIDs.setAllFileIDs("ALL");
         ResultingFileIDs resultingFileIDs =
-                getFileIDsClient.getFileIDsFromFastestPillar(settings.getBitRepositoryCollectionID(), fileIDs);
+                getFileIDsClient.getFileIDsFromFastestPillar(settings.getCollectionID(), fileIDs);
         Assert.assertNotNull(resultingFileIDs, "resultingFileIDs should not be null");
 
         addStep("Testing getFileIDsFromFastestPillar(bitRepositoryCollectionID, fileIDs, uploadUrl) method.",

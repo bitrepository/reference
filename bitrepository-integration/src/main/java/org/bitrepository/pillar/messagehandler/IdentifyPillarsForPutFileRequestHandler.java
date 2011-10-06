@@ -33,10 +33,11 @@ import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.collection.settings.standardsettings.AlarmLevelTYPE;
-import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.time.TimeMeasurementUtils;
+import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +79,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
                 sendPositiveResponse(message);
             }
         } catch (IllegalArgumentException e) {
-            if(settings.getPillar().getAlarmLevel() == AlarmLevelTYPE.WARNING) {
+            if(settings.getCollectionSettings().getPillarSettings().getAlarmLevel() == AlarmLevel.WARNING) {
                 alarmDispatcher.alarmIllegalArgument(e);
             } else {
                 log.warn("Caught IllegalArgumentException", e);
@@ -95,7 +96,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
         IdentifyPillarsForPutFileResponse reply = createIdentifyPillarsForPutFileResponse(message);
 
         // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
-        reply.setReplyTo(settings.getProtocol().getLocalDestination());
+        reply.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         TimeMeasureTYPE timeToStartDeliver = new TimeMeasureTYPE();
         timeToStartDeliver.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
         timeToStartDeliver.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
@@ -121,7 +122,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
         IdentifyPillarsForPutFileResponse reply = createIdentifyPillarsForPutFileResponse(message);
 
         // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
-        reply.setReplyTo(settings.getProtocol().getLocalDestination());
+        reply.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         TimeMeasureTYPE timeToStartDeliver = new TimeMeasureTYPE();
         timeToStartDeliver.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
         timeToStartDeliver.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
@@ -147,8 +148,9 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
         IdentifyPillarsForPutFileResponse reply = createIdentifyPillarsForPutFileResponse(message);
 
         // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
-        reply.setReplyTo(settings.getProtocol().getLocalDestination());
-        reply.setTimeToDeliver(settings.getPillar().getTimeToStartDeliver());
+        reply.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+                settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         reply.setAuditTrailInformation(null);
         reply.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
         
@@ -180,9 +182,9 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
         res.setVersion(VERSION);
         res.setCorrelationID(msg.getCorrelationID());
         res.setTo(msg.getReplyTo());
-        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
-        res.setPillarID(settings.getPillar().getPillarID());
-        res.setReplyTo(settings.getProtocol().getLocalDestination());
+        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
+        res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         
         return res;
     }

@@ -33,10 +33,11 @@ import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.collection.settings.standardsettings.AlarmLevelTYPE;
-import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.time.TimeMeasurementUtils;
+import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +77,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
             }
         } catch (IllegalArgumentException e) {
             // Only send this message if the alarm level is 'WARNING'.
-            if(settings.getPillar().getAlarmLevel() == AlarmLevelTYPE.WARNING) {
+            if(settings.getCollectionSettings().getPillarSettings().getAlarmLevel() == AlarmLevel.WARNING) {
                 alarmDispatcher.alarmIllegalArgument(e);
             } else {
                 log.warn("Caught illegal argument exception", e);
@@ -85,7 +86,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
     }
     
     /**
-     * Method for making a successfull response to the identification.
+     * Method for making a successful response to the identification.
      * @param message The request message to respond to.
      */
     private void respondSuccesfullIdentification(IdentifyPillarsForGetFileRequest message) {
@@ -94,7 +95,8 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
         
         // set the missing variables in the reply:
         // TimeToDeliver, AuditTrailInformation, IdentifyResponseInfo
-        reply.setTimeToDeliver(settings.getPillar().getTimeToStartDeliver());
+        reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+                settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         reply.setAuditTrailInformation(null);
         
         IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
@@ -150,9 +152,9 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
         res.setCorrelationID(msg.getCorrelationID());
         res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getPillar().getPillarID());
-        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
-        res.setReplyTo(settings.getProtocol().getLocalDestination());
+        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
+        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         
         return res;
     }

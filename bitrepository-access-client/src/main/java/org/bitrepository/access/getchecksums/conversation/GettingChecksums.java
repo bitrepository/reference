@@ -42,7 +42,6 @@ import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
-import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 import org.bitrepository.protocol.time.TimeMeasureComparator;
@@ -102,10 +101,10 @@ public class GettingChecksums extends GetChecksumsState {
 
         GetChecksumsRequest getChecksumsRequest = new GetChecksumsRequest();
         getChecksumsRequest.setBitRepositoryCollectionID(
-                conversation.settings.getBitRepositoryCollectionID());
+                conversation.settings.getCollectionID());
         getChecksumsRequest.setCorrelationID(conversation.getConversationID());
         getChecksumsRequest.setFileIDs(conversation.fileIDs);
-        getChecksumsRequest.setReplyTo(conversation.settings.getProtocol().getLocalDestination());
+        getChecksumsRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         // TODO
 //        getChecksumsRequest.setFileChecksumSpec(conversation.checksumSpecifications);
         getChecksumsRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
@@ -135,9 +134,8 @@ public class GettingChecksums extends GetChecksumsState {
             }
         }
         
-        timer.schedule(getChecksumsTimeoutTask, 
-                TimeMeasureComparator.getTimeMeasureInLong(
-                        conversation.settings.getGetChecksums().getOperationTimeout()));
+        timer.schedule(getChecksumsTimeoutTask,
+                        conversation.settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue());
     }
     
     @Override

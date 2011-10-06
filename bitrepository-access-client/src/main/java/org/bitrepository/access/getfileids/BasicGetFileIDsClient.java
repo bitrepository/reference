@@ -41,7 +41,7 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
-import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
@@ -87,7 +87,7 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         this.settings = settings;
         this.messageBus = messageBus;
         // retrieve the queue from the configuration.
-        queue = settings.getProtocol().getLocalDestination();
+        queue = settings.getReferenceSettings().getClientSettings().getReceiverDestination();
 
         messageListener = new GetFileIDsClientMessageListener(this);
 
@@ -115,7 +115,7 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
                         corrID, bitRepositoryCollectionID, queue, null);
 
         // put correlationId and new CountDownLatch in identifyResponseCountDownLatchMap
-        CountDownLatch countDownLatch = new CountDownLatch(settings.getGetFileIDs().getPillarIDs().size());
+        CountDownLatch countDownLatch = new CountDownLatch(settings.getCollectionSettings().getClientSettings().getPillarIDs().size());
         identifyResponseCountDownLatchMap.put(corrID, countDownLatch);
         // put correlationId and new empty List in identifyPillarsForGetFileIDsResponseMap
         List<IdentifyPillarsForGetFileIDsResponse> responses = new ArrayList<IdentifyPillarsForGetFileIDsResponse>();
@@ -125,15 +125,16 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         messageBus.sendMessage(identifyRequest);
 
         // wait for messages (or until specified waiting time elapses)
-        try {
-            boolean allPillarsResponded = countDownLatch.await(
-                    TimeMeasureComparator.getTimeMeasureInLong(settings.getGetFileIDs().getIdentificationTimeout()), TimeUnit.MILLISECONDS);
+//        try {
+            boolean allPillarsResponded = true;
+//            = countDownLatch.await(
+//                    TimeMeasureComparator.getTimeMeasureInLong(settings.getGetFileIDs().getIdentificationTimeout()), TimeUnit.MILLISECONDS);
             if (!allPillarsResponded) {
                 log.info("identifyPillarsForGetFileIDs time out. Not all pillars responded.");
             }
-        } catch (InterruptedException e) {
-            log.error("identifyPillarsForGetFileIDs InterruptedException",e);  // TODO handle exception
-        }
+//        } catch (InterruptedException e) {
+//            log.error("identifyPillarsForGetFileIDs InterruptedException",e);  // TODO handle exception
+//        }
 
         log.debug("identifyPillarsForGetFileIDs responseMap" +
                 identifyPillarsForGetFileIDsResponseMap.get(corrID).toString());
@@ -164,25 +165,26 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
         messageBus.sendMessage(request);
 
         // wait for messages (or until specified waiting time elapses)
-        try {
-            boolean responseOk = progressResponseCountDown.await(
-                    TimeMeasureComparator.getTimeMeasureInLong(settings.getGetFileIDs().getOperationTimeout()), 
-                    TimeUnit.MILLISECONDS);
-            if (responseOk) {
-                GetFileIDsProgressResponse response = getFileIDsProgressResponseMap.get(correlationID);
-                // TODO how do we want to use the response?
-                // if ProgressResponseInfo held info on expected remaining time, it could maybe be useful...
-            } else {
-                log.info("getFileIDsFromFastestPillar time out. No GetFileIDsProgressResponse received.");
-                // TODO we did not receive a response before time out - it may still come or a complete message may come
-            }
-        } catch (InterruptedException e) {
-            log.error("getFileIDsFromFastestPillar InterruptedException",e); // TODO handle exception
-        }
+//        try {
+//            boolean responseOk = progressResponseCountDown.await(
+//                    TimeMeasureComparator.getTimeMeasureInLong(settings.getGetFileIDs().getOperationTimeout()), 
+//                    TimeUnit.MILLISECONDS);
+//            if (responseOk) {
+//                GetFileIDsProgressResponse response = getFileIDsProgressResponseMap.get(correlationID);
+//                // TODO how do we want to use the response?
+//                // if ProgressResponseInfo held info on expected remaining time, it could maybe be useful...
+//            } else {
+//                log.info("getFileIDsFromFastestPillar time out. No GetFileIDsProgressResponse received.");
+//                // TODO we did not receive a response before time out - it may still come or a complete message may come
+//            }
+//        } catch (InterruptedException e) {
+//            log.error("getFileIDsFromFastestPillar InterruptedException",e); // TODO handle exception
+//        }
 
-        try {
-            boolean completeOk = finalResponseCountDown.await(
-                    TimeMeasureComparator.getTimeMeasureInLong(settings.getGetFileIDs().getOperationTimeout()), TimeUnit.MILLISECONDS);
+//        try {
+            boolean completeOk = true;
+//            boolean completeOk = finalResponseCountDown.await(
+//                    settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue());
             if (completeOk) {
                 return getFileIDsFinalResponseMap.get(correlationID);
                 // TODO use other parts of final response message ?
@@ -190,11 +192,11 @@ public class BasicGetFileIDsClient implements GetFileIDsClient {
                 log.info("getFileIDsFromFastestPillar time out. No GetFileIDsFinalResponse received. return null.");
                 return null;
             }
-        } catch (InterruptedException e) {
-            log.error("getFileIDsFromFastestPillar InterruptedException",e); // TODO handle exception
-        }
+//        } catch (InterruptedException e) {
+//            log.error("getFileIDsFromFastestPillar InterruptedException",e); // TODO handle exception
+//        }
 
-        return null;
+//        return null;
     }
 
     /**

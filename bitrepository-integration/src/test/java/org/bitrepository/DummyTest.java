@@ -24,9 +24,10 @@
  */
 package org.bitrepository;
 
+import static org.testng.AssertJUnit.assertEquals;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import static org.testng.AssertJUnit.*;
 
 public class DummyTest {
     

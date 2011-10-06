@@ -45,7 +45,6 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReq
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.clienttest.TestEventHandler;
-import org.bitrepository.collection.settings.standardsettings.GetChecksumsTYPE;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
@@ -64,34 +63,12 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
     
     @BeforeMethod (alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
-        GetChecksumsTYPE getChecksumsSettings = new GetChecksumsTYPE();
-        getChecksumsSettings.setIdentificationTimeout(defaultTime);
-        getChecksumsSettings.setOperationTimeout(defaultTime);
-
-        getChecksumsSettings.getPillarIDs().clear();
-        getChecksumsSettings.getPillarIDs().add(PILLAR1_ID);
-//        System.setProperty("useMockupPillar", "false");
-//        getChecksumsClientSettings.setBitRepositoryCollectionID("JOLF-TEST");
-//        getChecksumsClientSettings.setBitRepositoryCollectionID("I DO NOT KNOW YOUR COLLECTION ID!!!");
-//        getChecksumsClientSettings.setBitRepositoryCollectionTopicID("JOLF-TESTING-TOPIC");
-//        getChecksumsClientSettings.setPillarIDs(new String[]{"ReferencePillar_1", "ReferencePillar_2"});
-//        getChecksumsClientSettings.setPillarIDs(new String[]{"ReferencePillar_1"});
-//        MessageBusConfiguration busConf = new MessageBusConfiguration();
-//        busConf.setId("distribueret-test-messagebus");
-//        busConf.setUrl("failover:(tcp://sandkasse-01.kb.dk:60001,tcp://sandkasse-01.kb.dk:60002,tcp://sandkasse-01.kb.dk:60003)");
-//        messageBusConfigurations.setPrimaryMessageBusConfiguration(busConf);
-
-        settings.setGetChecksums(getChecksumsSettings);
-
         if (useMockupPillar()) {
             testMessageFactory = new TestGetChecksumsMessageFactory(
-                    settings.getBitRepositoryCollectionID());
+                    settings.getCollectionID());
             pillar1FileStore = new TestFileStore("Pillar1", TestFileStore.DEFAULT_TEST_FILE);
             pillar2FileStore = new TestFileStore("Pillar2", TestFileStore.DEFAULT_TEST_FILE);
         }
-        // The following line is also relevant for non-mockup senarios, where the pillars needs to be initialized 
-        // with content.
-        httpServer.clearFiles();
     }
 
 //    @Test(groups = {"regressiontest"})
@@ -132,7 +109,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be supplied.", 
         "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillar(s).");
-        getChecksumsClient.getChecksums(settings.getGetChecksums().getPillarIDs(), fileIDs, checksumSpecs, 
+        getChecksumsClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, checksumSpecs, 
                 deliveryUrl, testEventHandler);
 
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
@@ -158,7 +135,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     testMessageFactory.createGetChecksumsRequest(receivedGetChecksumsRequest,PILLAR1_ID, pillar1DestinationId));
         }
 
-        for(int i = 0; i < settings.getGetChecksums().getPillarIDs().size(); i++) {
+        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
@@ -248,7 +225,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     testMessageFactory.createGetChecksumsRequest(receivedGetChecksumsRequest,PILLAR1_ID, pillar1DestinationId));
         }
 
-        for(int i = 0; i < settings.getGetChecksums().getPillarIDs().size(); i++) {
+        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
@@ -399,7 +376,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         
         @Override
         public void run() {
-            stuff = getChecksumsClient.getChecksums(settings.getGetChecksums().getPillarIDs(), fileIDs, 
+            stuff = getChecksumsClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
                     csSpecs, eventHandler);
         }
     };

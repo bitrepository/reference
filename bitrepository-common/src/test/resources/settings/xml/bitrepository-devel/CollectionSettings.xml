@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  #%L
+  Bitrepository Common
+  
+  $Id: Settings.xml 286 2011-09-15 10:36:23Z jolf $
+  $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-protocol/src/test/resources/settings/xml/bitrepository-devel/Settings.xml $
+  %%
+  Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as 
+  published by the Free Software Foundation, either version 2.1 of the 
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Lesser Public License for more details.
+  
+  You should have received a copy of the GNU General Lesser Public 
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  #L%
+  -->
+  
+<CollectionSettings xmlns="http://bitrepository.org/settings/CollectionSettings.xsd">
+  <CollectionID>TEST</CollectionID>
+  <ProtocolSettings>
+    <CollectionDestination>TEST-TOPIC</CollectionDestination>
+    <AlarmDestination>TEST-TOPIC</AlarmDestination>
+    <MessageBusConfiguration>
+      <Name>MyMessageBus</Name>
+      <URL>failover://tcp://sandkasse-01.kb.dk:61616</URL>
+      <Login></Login>
+      <Password></Password>
+    </MessageBusConfiguration>
+    <Permissions>
+      <Permission></Permission>
+    </Permissions>
+  </ProtocolSettings>
+  
+  <ClientSettings>
+    <IdentificationTimeout>60000</IdentificationTimeout>
+    <OperationTimeout>60000</OperationTimeout>
+    <PillarIDs>
+      <Pillar>Pillar1</Pillar>  
+      <Pillar>Pillar2</Pillar>  
+    </PillarIDs>
+  </ClientSettings>
+</CollectionSettings>

@@ -90,12 +90,12 @@ class GettingFile extends GetFileState {
         }
 
         GetFileRequest getFileRequest = new GetFileRequest();
-        getFileRequest.setBitRepositoryCollectionID(conversation.settings.getBitRepositoryCollectionID());
+        getFileRequest.setBitRepositoryCollectionID(conversation.settings.getCollectionID());
         getFileRequest.setCorrelationID(conversation.getConversationID());
         getFileRequest.setFileAddress(conversation.uploadUrl.toExternalForm());
         getFileRequest.setFileID(conversation.fileID);
         getFileRequest.setPillarID(conversation.selector.getIDForSelectedPillar());
-        getFileRequest.setReplyTo(conversation.settings.getProtocol().getLocalDestination());
+        getFileRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         getFileRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         getFileRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         getFileRequest.setTo(conversation.selector.getDestinationForSelectedPillar());
@@ -162,7 +162,7 @@ class GettingFile extends GetFileState {
      * @return Returns the maximum time to wait for a GetFile primitive to complete.
      */
     private long getMaxTimeToWaitForGetFileToComplete() {
-        return TimeMeasureComparator.getTimeMeasureInLong(conversation.settings.getGetFile().getOperationTimeout());
+        return conversation.settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue();
     }
 
     /**

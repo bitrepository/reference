@@ -28,10 +28,11 @@ import java.math.BigInteger;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
+import org.bitrepository.common.settings.SettingsProvider;
+import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.TestMessageFactory;
-import org.bitrepository.protocol.settings.CollectionSettingsLoader;
-import org.bitrepository.protocol.settings.XMLFileSettingsLoader;
 
 /**
  * Contains the generic parts for tests integrating to the message bus. 
@@ -50,13 +51,7 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     protected MessageReceiver pillar2Destination; 
     protected static final String PILLAR2_ID = "Pillar2";
     
-    protected static final TimeMeasureTYPE defaultTime;
-    static {
-        defaultTime = new TimeMeasureTYPE();
-        defaultTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
-        defaultTime.setTimeMeasureValue(BigInteger.valueOf(3000));
-    }
-
+    protected static final BigInteger defaultTime = BigInteger.valueOf(3000);
 
     /**
      * Indicated whether the embedded mockup pillars are going to be used in the test (means the test is run as a client 
@@ -109,14 +104,6 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     
     @Override
     public void initCollectionSettings() {
-        if(settings == null) {
-            try {
-                CollectionSettingsLoader settingsLoader = new CollectionSettingsLoader(
-                        new XMLFileSettingsLoader("src/test/resources/settings/xml"));
-                settings = settingsLoader.loadSettings("bitrepository-devel").getSettings();
-            } catch(Exception e) {
-                throw new RuntimeException("Could not load settings.", e);
-            }
-        }
+        settings = TestSettingsProvider.getSettings();
     }
 }

@@ -28,9 +28,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.configuration.FileExchangeConfiguration;
 import org.bitrepository.protocol.configuration.ProtocolConfiguration;
@@ -82,13 +82,13 @@ public class ProtocolComponentFactory {
     /**
      * Gets you an <code>MessageBus</code> instance for accessing the Bitrepositorys message bus. If a messagebus 
      * already exists for the collection ID defined in the settings, the existing instance is returned.
-     * @return The messagebus for this collection
+     * @return The messagebus for this collection.
      */
     public MessageBus getMessageBus(Settings settings) {
-        MessageBus bus = buses.get(settings.getBitRepositoryCollectionID());
+      MessageBus bus = buses.get(settings.getCollectionSettings().getCollectionID());
         if (bus == null) {
-            bus = new ActiveMQMessageBus(settings.getProtocol().getMessageBusConfiguration());
-            buses.put(settings.getBitRepositoryCollectionID(), bus);
+            bus = new ActiveMQMessageBus(settings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration());
+            buses.put(settings.getCollectionSettings().getCollectionID(), bus);
         }
         return bus;
     }

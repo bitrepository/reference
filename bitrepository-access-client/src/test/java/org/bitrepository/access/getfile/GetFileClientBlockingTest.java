@@ -44,7 +44,7 @@ public class GetFileClientBlockingTest extends AbstractGetFileClientTest  {
         addStep("Request a file from a specific non-existing pillar using the blocking get method", 
                 "The method should block until a identify timeout occures, causing a TimeoutException to be thrown");
         
-        settings.getGetFile().setIdentificationTimeout(defaultTime);
+        settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(defaultTime);
         GetFileClient getFileClient = 
             new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(settings), 
                     testEventManager);

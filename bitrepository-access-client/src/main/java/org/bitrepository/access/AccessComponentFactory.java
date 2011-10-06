@@ -30,8 +30,8 @@ import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfile.SimpleGetFileClient;
 import org.bitrepository.access.getfileids.BasicGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
-import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.ModuleCharacteristics;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusFactory;
 
@@ -83,7 +83,7 @@ public class AccessComponentFactory {
     public GetFileClient createGetFileClient(Settings settings) {
         return new SimpleGetFileClient(
                 MessageBusFactory.createMessageBus(
-                        settings.getProtocol().getMessageBusConfiguration()),
+                        settings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration()),
                 settings);
     }
     
@@ -94,7 +94,7 @@ public class AccessComponentFactory {
      */
     public GetChecksumsClient createGetChecksumsClient(Settings settings) {
         return new BasicGetChecksumsClient(
-                MessageBusFactory.createMessageBus(settings.getProtocol().getMessageBusConfiguration()),
+                MessageBusFactory.createMessageBus(settings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration()),
                 settings);
     }
 

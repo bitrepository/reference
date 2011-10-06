@@ -28,11 +28,11 @@ import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.AlarmDescription;
 import org.bitrepository.bitrepositorymessages.Alarm;
-import org.bitrepository.collection.settings.standardsettings.MessageBusConfigurationTYPE;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -70,7 +70,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
         QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
-        MessageBusConfigurationTYPE conf = MessageBusConfigurationFactory.createDefaultConfiguration();
+        MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
         ResendMessageListener listener = null;
 
         try {
@@ -113,7 +113,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
         QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus and define the local broker.", "Both should be created.");
-        MessageBusConfigurationTYPE conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+        MessageBusConfiguration conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
         Assert.assertNotNull(conf);
         LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
         Assert.assertNotNull(broker);
@@ -190,7 +190,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
          * Constructor.
          * @param confs The configurations for declaring the messagebus.
          */
-        public ResendMessageListener(MessageBusConfigurationTYPE conf) {
+        public ResendMessageListener(MessageBusConfiguration conf) {
             this.bus = new ActiveMQMessageBus(conf);
             this.count = 0;
 

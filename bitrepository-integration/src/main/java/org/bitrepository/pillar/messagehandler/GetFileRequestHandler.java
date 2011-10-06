@@ -34,17 +34,17 @@ import java.util.Date;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForBitRepositoryFile;
+import org.bitrepository.bitrepositoryelements.ChecksumsDataForBitRepositoryFile.ChecksumDataItems;
 import org.bitrepository.bitrepositoryelements.ErrorcodeFinalresponseType;
 import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
-import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataForBitRepositoryFile.ChecksumDataItems;
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
+import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
 import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.ReferenceArchive;
@@ -257,9 +257,9 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         res.setFileID(msg.getFileID());
         res.setFilePart(msg.getFilePart());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getPillar().getPillarID());
-        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
-        res.setReplyTo(settings.getProtocol().getLocalDestination());
+        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
+        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
 
         return res;
     }
@@ -282,9 +282,9 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         res.setFileID(msg.getFileID());
         res.setFilePart(msg.getFilePart());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getPillar().getPillarID());
-        res.setBitRepositoryCollectionID(settings.getBitRepositoryCollectionID());
-        res.setReplyTo(settings.getProtocol().getLocalDestination());
+        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
+        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
 
         return res;
     }

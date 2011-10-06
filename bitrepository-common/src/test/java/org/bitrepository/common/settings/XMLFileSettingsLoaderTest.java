@@ -22,9 +22,9 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.settings;
+package org.bitrepository.common.settings;
 
-import org.bitrepository.collection.settings.standardsettings.Settings;
+import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -32,14 +32,14 @@ import org.testng.annotations.Test;
 public class XMLFileSettingsLoaderTest extends ExtendedTestCase{
     private static final String COLLECTION_ID = "bitrepository-devel";
 //    private static final String PATH_TO_SETTINGS = "settings/xml";
-    private static final String PATH_TO_SETTINGS = "src/test/resources/settings/xml";
+    private static final String PATH_TO_SETTINGS = "settings/xml";
     
     @Test(groups = { "regressiontest" })
     public void testCollectionSettingsLoading() throws Exception {
-        SettingsReader settingsLoader = new XMLFileSettingsLoader(PATH_TO_SETTINGS);
+        SettingsLoader settingsLoader = new XMLFileSettingsLoader(PATH_TO_SETTINGS);
         
-        Settings collectionSettings = settingsLoader.loadSettings(
-                COLLECTION_ID, Settings.class);
+        CollectionSettings collectionSettings = settingsLoader.loadSettings(
+                COLLECTION_ID, CollectionSettings.class);
         
         Assert.assertNotNull(collectionSettings, "CollectionSettings");
     }

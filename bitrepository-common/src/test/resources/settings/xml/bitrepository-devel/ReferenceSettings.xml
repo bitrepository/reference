@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- #%L Bitrepository Protocol $Id$ $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-protocol/src/test/resources/settings/xml/bitrepository-devel/Settings.xml 
+  $ %% Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark %% This 
+  program is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License 
+  as published by the Free Software Foundation, either version 2.1 of the License, or (at your option) any later version. This 
+  program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Lesser Public License for more details. You should 
+  have received a copy of the GNU General Lesser Public License along with this program. If not, see <http://www.gnu.org/licenses/lgpl-2.1.html>. 
+  #L% -->
+
+
+<ReferenceSettings xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd">
+  <ClientSettings>
+    <ReceiverDestination>TEST-TOPIC-LOCAL</ReceiverDestination>
+    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
+    <ConversationTimeout>3600000</ConversationTimeout>
+    <IdentificationTimeout>60000</IdentificationTimeout>
+    <OperationTimeout>60000</OperationTimeout>
+  </ClientSettings>
+  <PillarSettings>
+    <PillarID>test-pillar</PillarID>
+    <FileDir>test-archive</FileDir>
+    <MinimumSizeLeft>1000000000</MinimumSizeLeft>
+    <ProgressResponseMandatory>true</ProgressResponseMandatory>
+    <AuditTrailLevel>HIGH</AuditTrailLevel>
+    <AlarmLevel>ERROR</AlarmLevel>
+    <TimeToStartDeliver>1000</TimeToStartDeliver>
+  </PillarSettings>
+</ReferenceSettings>
