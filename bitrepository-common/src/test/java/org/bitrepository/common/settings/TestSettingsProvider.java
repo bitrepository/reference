@@ -29,7 +29,7 @@ import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 
 /**
- * Helper class for easy access to the settings located in the <code>src/test/resources/settings/xml</code> dir.
+ * Helper class for easy access to the settings located in the <code>settings/xml</code> dir.
  */
 public class TestSettingsProvider {
     /** The SettingsProvider to use for accessing the settings */

@@ -16,7 +16,7 @@ public class ProtocolComponentFactoryTest {
     }
     
     protected void setupSettings() throws Exception {
-        SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader("src/test/resources/settings/xml"));
+        SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader("settings/xml"));
         settings = settingsLoader.getSettings("bitrepository-devel");
     }
     

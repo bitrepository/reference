@@ -35,7 +35,7 @@ import org.bitrepository.integration.IntegrationComponentFactory;
  */
 public class ReferencePillarLauncher {
     private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
-    private static final String DEFAULT_PATH_TO_SETTINGS = "src/test/resources/settings/xml";
+    private static final String DEFAULT_PATH_TO_SETTINGS = "settings/xml";
 
     /**
      * @param args <ol>

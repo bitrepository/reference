@@ -36,7 +36,7 @@ public class AlarmServiceLauncher {
     /** The default bitrepository collection id. Used if no arguments.*/
     private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
     /** The default the settings directory. Used if no arguments.*/
-    private static final String DEFAULT_PATH_TO_SETTINGS = "src/test/resources/settings/xml";
+    private static final String DEFAULT_PATH_TO_SETTINGS = "settings/xml";
 
     /**
      * @param args 

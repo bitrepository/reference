@@ -94,7 +94,7 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
         if(settings == null) {
             try {
                 SettingsProvider settingsLoader = new SettingsProvider(
-                        new XMLFileSettingsLoader("src/test/resources/settings/xml"));
+                        new XMLFileSettingsLoader("settings/xml"));
                 settings = settingsLoader.getSettings("bitrepository-devel");
             } catch(Exception e) {
                 throw new RuntimeException("Could not load settings.", e);
