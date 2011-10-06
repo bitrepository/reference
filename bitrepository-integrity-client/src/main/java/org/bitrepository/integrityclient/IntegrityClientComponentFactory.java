@@ -25,9 +25,9 @@
 package org.bitrepository.integrityclient;
 
 import org.bitrepository.access.getfileids.BasicGetFileIDsClient;
-import org.bitrepository.collection.settings.standardsettings.Settings;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
 import org.bitrepository.integrityclient.cache.DatabaseBackedCachedIntegrityInformationStorage;
 import org.bitrepository.integrityclient.collection.DelegatingIntegrityInformationCollector;
