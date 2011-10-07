@@ -18,7 +18,7 @@ do_getlog() {
 }
 
 do_get() {
-	command="$SERVICEURL/getfile/?fileID=$filename&url=$WEBDAVSERVER"
+	command="$SERVICEURL/getfile/?fileID=$filename&url=$WEBDAVSERVER$filename"
 	curl --silent $command
 	echo ""
 }
