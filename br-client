@@ -1,13 +1,13 @@
 #!/bin/bash
 
-SERVICEURL="http://localhost:8080/webservice-0.0.1-SNAPSHOT/repo/reposervice"
+SERVICEURL="http://localhost:8080/bitrepository-webclient-0.0.1-SNAPSHOT/repo/reposervice"
 WEBDAVSERVER="http://sandkasse-01.kb.dk/dav/"
 
 do_put() {
 	curl --silent -T "$filename" $WEBDAVSERVER > /dev/null
 	stripedfilename=`basename $filename`
 	filesize=`du -b $filename | cut -f1`
-	command="$SERVICEURL/putfile/?fileID=$filename&url=$WEBDAVSERVER$stripedfilename&fileSize=$filesize"
+	command="$SERVICEURL/putfile/?fileID=$stripedfilename&url=$WEBDAVSERVER$stripedfilename&fileSize=$filesize"
 	curl --silent $command
 	echo ""
 }
@@ -25,6 +25,10 @@ do_get() {
 
 do_webserver_remove_file() {
 	curl --silent -X DELETE $WEBDAVSERVER$filename > /dev/null 
+}
+
+do_webserver_get_file() {
+	curl --silent $WEBDAVSERVER$filename > $filename
 }
 
 
@@ -56,12 +60,21 @@ case "$1" in
 	filename=$2
 	if [ -z $filename ] 
 	then
-		echo "Usage br-client remove-file"
+		echo "Usage br-client remove-file <filename>"
 		return 1
 	else
 		do_webserver_remove_file $filename
 	fi
 	;;
+  get-file) 
+	filename=$2
+	if [ -z $filename ]
+	then
+		echo "Usage br-client get-file <filename>"
+		return 1
+	else
+		do_webserver_get_file $filename
+	fi
 esac
 
 
