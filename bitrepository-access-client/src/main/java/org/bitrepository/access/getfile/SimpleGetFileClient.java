@@ -82,8 +82,7 @@ public class SimpleGetFileClient implements GetFileClient {
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
 
-        log.info("Requesting fastest retrieval of the file '" + fileID + "' which belong to the SLA '" + 
-                settings.getCollectionSettings().getCollectionID() + "'.");
+        log.info("Requesting fastest retrieval of the file '" + fileID);
         getFile(messageBus, settings, new FastestPillarSelectorForGetFile(settings.getCollectionSettings().getClientSettings().getPillarIDs()), 
                 fileID, uploadUrl, eventHandler);		
     }

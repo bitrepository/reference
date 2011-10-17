@@ -92,7 +92,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
             receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetFileRequest(receivedIdentifyRequestMessage, 
-                            bitRepositoryCollectionDestinationID));
+                            collectionDestinationID));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
 
@@ -228,7 +228,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test(groups = {"regressiontest"})
     public void chooseFastestPillarGetFileClientWithIdentifyTimeout() throws Exception {
-        addDescription("Verify that the FastestPillarGetFile works correct without receiving responses from all" +
+        addDescription("Verify that the FastestPillarGetFile works correct without receiving responses from all " +
         "pillars.");
         addStep("Create a GetFileClient configured to use 3 pillars and a 3 second timeout for identifying pillar.", "");
 
@@ -239,6 +239,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(averagePillarID);
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(fastPillarID);
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(slowPillarID);
+        settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
         GetFileClient getFileClient = 
             new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(settings), 
                     testEventManager);
@@ -296,12 +297,11 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
         settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
         GetFileClient getFileClient = 
                 new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(
                         settings), testEventManager);
         
-            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(settings), 
-                    testEventManager);
         addStep("Make the GetClient ask for fastest pillar.",  
         "It should send message to identify which pillar can respond fastest.");
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
@@ -324,6 +324,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
         settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settings.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(3000));
         GetFileClient getFileClient = 
                 new GetFileClientTestWrapper(
                         AccessComponentFactory.getInstance().createGetFileClient(settings), testEventManager);
@@ -340,7 +341,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 bitRepositoryCollectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetFileRequest(receivedIdentifyRequestMessage, 
-                            bitRepositoryCollectionDestinationID));
+                            collectionDestinationID));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
 

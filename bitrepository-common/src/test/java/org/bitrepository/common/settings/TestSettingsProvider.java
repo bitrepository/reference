@@ -47,10 +47,28 @@ public class TestSettingsProvider {
     }
     
     /** 
-     * Loads the settings for the collection defined by the COLLECTIONID_PROPERTY system variable if defined. If 
+     * Returns the settings for the collection defined by the COLLECTIONID_PROPERTY system variable if defined. If 
      * undefined the DEVELOPMENT_ENVIRONMENT settings will be loaded.
      */
     public static Settings getSettings() {
-        return settingsprovider.getSettings(System.getProperty(SettingsProvider.COLLECTIONID_PROPERTY, DEVELOPMENT_ENVIRONMENT));
+        String collectionID = System.getProperty(SettingsProvider.COLLECTIONID_PROPERTY, DEVELOPMENT_ENVIRONMENT);
+        return settingsprovider.getSettings(collectionID);
+    }
+    
+    /** 
+     * Reloads the settings from disk for the indicated collectionID.
+     */
+    public static Settings reloadSettings(String collectionID) {
+        settingsprovider.loadSettings(collectionID);
+        return getSettings(collectionID);
+    }
+    
+    /** 
+     * Reloads the settings from disk.
+     */
+    public static Settings reloadSettings() {
+        String collectionID = System.getProperty(SettingsProvider.COLLECTIONID_PROPERTY, DEVELOPMENT_ENVIRONMENT);
+        settingsprovider.loadSettings(collectionID);
+        return getSettings();
     }
 }

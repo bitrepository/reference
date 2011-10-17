@@ -43,9 +43,7 @@
   <ClientSettings>
     <IdentificationTimeout>60000</IdentificationTimeout>
     <OperationTimeout>60000</OperationTimeout>
-    <PillarIDs>
-      <Pillar>Pillar1</Pillar>  
-      <Pillar>Pillar2</Pillar>  
-    </PillarIDs>
+    <PillarIDs>Pillar1</PillarIDs>
+    <PillarIDs>Pillar2</PillarIDs>
   </ClientSettings>
 </CollectionSettings>

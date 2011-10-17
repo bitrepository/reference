@@ -73,24 +73,18 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     protected void teardownMessageBus() {
         if (useMockupPillar()) {
             messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
-            messageBus.removeListener(bitRepositoryCollectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
+            messageBus.removeListener(collectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
             messageBus.removeListener(pillar1DestinationId, pillar1Destination.getMessageListener());
             messageBus.removeListener(pillar2DestinationId, pillar2Destination.getMessageListener());
         }
         super.teardownMessageBus();
     }
     
-
-    protected void setupSettings(String testName) {
-//        MutableClientSettings clientSettings =  getClientSettings();
-//        clientSettings.setClientTopicID(clientDestinationId);
-//        clientSettings.getStandardSettings().setCollectionDestination(bitRepositoryCollectionDestinationID);
-    }
-
     @Override
     protected void defineDestinations() {
         super.defineDestinations();
-        clientDestinationId = "Client_topic" + getTopicPostfix();
+        clientDestinationId = settings.getReferenceSettings().getClientSettings().getReceiverDestination() + getTopicPostfix();
+        settings.getReferenceSettings().getClientSettings().setReceiverDestination(clientDestinationId);
         pillar1DestinationId = "Pillar1_topic" + getTopicPostfix();
         pillar2DestinationId = "Pillar2_topic" + getTopicPostfix();
         
@@ -100,10 +94,5 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
         messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());    
         messageBus.addListener(pillar1DestinationId, pillar1Destination.getMessageListener());  
         messageBus.addListener(pillar2DestinationId, pillar2Destination.getMessageListener());       
-    }
-    
-    @Override
-    public void initCollectionSettings() {
-        settings = TestSettingsProvider.getSettings();
     }
 }

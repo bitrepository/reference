@@ -57,30 +57,40 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     public LocalActiveMQBroker broker;
     public EmbeddedHttpServer server;
     public HttpServerConnector httpServer;
+    public HttpServerConfiguration httpServerConfiguration;
     public MessageBus messageBus;
 
-    protected static String bitRepositoryCollectionDestinationID;
+    protected static String collectionDestinationID;
     protected MessageReceiver bitRepositoryCollectionDestination; 
     
+    protected static String alarmDestinationID;
+    protected MessageReceiver alarmDestination; 
+
     protected Settings settings;
 
     @BeforeClass (alwaysRun = true)
     public void setupTest() throws Exception {
         setupSettings();
         setupMessageBus();
-        defineDestinations();
         setupHttpServer();
     }
-    
+
     /**
      * Defines the standard BitRepositoryCollection configuration
      * @param testMethod Used to grap the name of the test method used for naming.
      */
     @BeforeMethod(alwaysRun = true)
     public void beforeMethodSetup(java.lang.reflect.Method testMethod) {
-        settings = TestSettingsProvider.getSettings();
         setupSettings();
+        defineDestinations();
     }    
+
+    /**
+     * Initializes the settings.
+     */
+    protected void setupSettings() {
+        settings = TestSettingsProvider.reloadSettings();
+    }
 
     // Experimental, use at own risk.
     @BeforeTest (alwaysRun = true)
@@ -115,21 +125,40 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      */
     protected void setupMessageBus() throws Exception {
         if (useEmbeddedMessageBus()) { 
-            MessageBusConfiguration messageBusConfiguration = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
-            settings.getCollectionSettings().getProtocolSettings().setMessageBusConfiguration(messageBusConfiguration);
-            broker = new LocalActiveMQBroker(messageBusConfiguration);
-            broker.start();
-            messageBus = new MessageBusWrapper(MessageBusFactory.createMessageBus(messageBusConfiguration), testEventManager);
-        } else {
-            MessageBusConfiguration messageBusConfiguration = MessageBusConfigurationFactory.createDefaultConfiguration();
-            settings.getCollectionSettings().getProtocolSettings().setMessageBusConfiguration(messageBusConfiguration);
-            messageBus = new MessageBusWrapper(
-                    ProtocolComponentFactory.getInstance().getMessageBus(settings), testEventManager);
+            broker = new LocalActiveMQBroker(settings.getMessageBusConfiguration());
+            broker.start(); 
+        }
+        messageBus = new MessageBusWrapper(
+                ProtocolComponentFactory.getInstance().getMessageBus(settings), testEventManager);
+    }
+
+    /**
+     * Defines the general destinations by 
+     */
+    protected void defineDestinations() {
+        collectionDestinationID = settings.getCollectionDestination() + getTopicPostfix();
+        settings.getCollectionSettings().getProtocolSettings().setCollectionDestination(collectionDestinationID);
+        bitRepositoryCollectionDestination = new MessageReceiver("Collection topic receiver", testEventManager);
+        messageBus.addListener(collectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
+        
+        alarmDestinationID = settings.getAlarmDestination() + getTopicPostfix();
+        settings.getCollectionSettings().getProtocolSettings().setAlarmDestination(alarmDestinationID);
+        alarmDestination = new MessageReceiver("Alarm receiver", testEventManager);
+        messageBus.addListener(alarmDestinationID, alarmDestination.getMessageListener());
+    }
+
+    protected void teardownMessageBus() {
+        if (useEmbeddedMessageBus()) { 
+            try {
+                broker.stop();
+            } catch (Exception e) {
+                // No reason to pollute the test output with this
+            }
         }
     }
 
     protected void setupHttpServer() throws Exception {
-        HttpServerConfiguration config = new HttpServerConfiguration();
+        httpServerConfiguration = new HttpServerConfiguration();
         if (useEmbeddedHttpServer()) { // Note that the embedded server isn't fully functional yet
             server = new EmbeddedHttpServer();
             server.start();
@@ -139,35 +168,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         // lot of additional dependencies which caused inconsistencies in the dependency model (usage of incompatible 
         // SLJ4J API 1.5 and 1.6)
         //config.setHttpServerPath("/dav/" + System.getProperty("user.name") + "/");
-        httpServer = new HttpServerConnector(config, testEventManager);
+        httpServer = new HttpServerConnector(httpServerConfiguration, testEventManager);
         httpServer.clearFiles();
-    }
-
-    /** 
-     * Creates the collection settings with the default values. The collection settings creation is delegates to the 
-     * implementing classes, which might also add extra settings or override the values set from here.
-     */
-    protected void setupSettings() {
-        initCollectionSettings();
-        String bitRepositoryCollectionID = System.getProperty("user.name") + "-test-collection";
-        settings.getCollectionSettings().setCollectionID(bitRepositoryCollectionID);
-    }
-    
-    protected void defineDestinations() {
-        bitRepositoryCollectionDestinationID = "BitRepositoryCollection_topic" + getTopicPostfix();
-        bitRepositoryCollectionDestination = new MessageReceiver("BitRepositoryCollection topic receiver", testEventManager);
-        messageBus.addListener(bitRepositoryCollectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
-        settings.getCollectionSettings().getProtocolSettings().setCollectionDestination(bitRepositoryCollectionDestinationID);
-    }
-
-    protected void teardownMessageBus() {
-        if (useEmbeddedMessageBus()) { 
-            try {
-                broker.stop();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     protected void teardownHttpServer() throws Exception {
@@ -184,18 +186,13 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         teardownMessageBus(); 
         teardownHttpServer();
     }
-    
+
     /** 
      * Returns the postfix string to use when accessing user specific topics, which is the mechanism we use in the 
      * bit repository tests.
      * @return The string to postfix all topix names with.
      */
-    public String getTopicPostfix() {
+    protected String getTopicPostfix() {
         return "-" + System.getProperty("user.name");
     }
-    
-    /**
-     * Defines the method for retrieving the the collections settings as implemented by the concrete test case.
-     */
-    protected abstract void initCollectionSettings();
 }

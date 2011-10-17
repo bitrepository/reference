@@ -73,13 +73,8 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
         pillarDestinationId = "pillar_topic" + getTopicPostfix();
         clientDestinationId = "client" + getTopicPostfix();
         messageBus.addListener(pillarDestinationId, pillarTopic.getMessageListener());    
-        messageBus.addListener(bitRepositoryCollectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
+        messageBus.addListener(collectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
         messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());    
-    }
-
-    @Override
-    protected void setupSettings() {
-        super.setupSettings();
     }
 
     @Override
@@ -87,18 +82,5 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
         messageBus.removeListener(pillarDestinationId, pillarTopic.getMessageListener());
 
         super.teardownMessageBus();
-    }
-    
-    @Override
-    public void initCollectionSettings() {
-        if(settings == null) {
-            try {
-                SettingsProvider settingsLoader = new SettingsProvider(
-                        new XMLFileSettingsLoader("settings/xml"));
-                settings = settingsLoader.getSettings("bitrepository-devel");
-            } catch(Exception e) {
-                throw new RuntimeException("Could not load settings.", e);
-            }
-        }
     }
 }

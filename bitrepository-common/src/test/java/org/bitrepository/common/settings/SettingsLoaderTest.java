@@ -24,10 +24,14 @@
  */
 package org.bitrepository.common.settings;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.jaccept.structure.ExtendedTestCase;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class SettingsLoaderTest extends ExtendedTestCase{
@@ -42,11 +46,13 @@ public class SettingsLoaderTest extends ExtendedTestCase{
     }
 
     @Test(groups = { "regressiontest" })
-    public void cd() throws Exception {
+    public void testDevelopmentCollectionSettingsLoading() throws Exception {
         SettingsProvider settingsLoader = 
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_SETTINGS));
 
         Settings settings = settingsLoader.getSettings("bitrepository-devel");
+        List<String> expectedPillarIDs = Arrays.asList(new String[] {"Pillar1", "Pillar2"});
+        Assert.assertEquals(settings.getCollectionSettings().getClientSettings().getPillarIDs(), expectedPillarIDs);
     }
 
     //    @Test(groups = { "regressiontest" })

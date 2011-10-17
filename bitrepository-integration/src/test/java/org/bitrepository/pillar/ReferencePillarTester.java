@@ -47,19 +47,6 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
     public void initialise() throws Exception {
         msgFactory = new PillarTestMessageFactory(settings);
     }
-    
-    @Override
-    protected void setupSettings() {
-        super.setupSettings();
-//        pillarSettings  = new MutablePillarSettings();
-//        pillarSettings.setFileDirName("temp");
-//        pillarSettings.setPillarId("TestPillar");
-//        pillarSettings.setLocalQueue(pillarDestinationId);
-//        pillarSettings.setTimeToDownloadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
-//        pillarSettings.setTimeToDownloadValue(1L);
-//        pillarSettings.setTimeToUploadMeasure(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
-//        pillarSettings.setTimeToDownloadValue(1L);
-    };
 
     @Test( groups = {"regressiontest"})
     public void pillarPutTest() throws Exception {

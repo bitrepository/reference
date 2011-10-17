@@ -79,7 +79,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                 BasicGetChecksumsClient.class.getName() + "'.");
     }
 
-    @Test(groups = {"regressiontest"})
+//    @Test(groups = {"regressiontest"})
     public void getChecksumsDeliveredAtUrl() throws Exception {
         addDescription("Tests the delivery of checksums from a pillar at a given URL.");
         addStep("Initailise the variables for this test.", 
@@ -118,7 +118,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     IdentifyPillarsForGetChecksumsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
-                            bitRepositoryCollectionDestinationID));
+                            collectionDestinationID));
         }
 
         addStep("The pillar sends a response to the identify message.", 
@@ -208,7 +208,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     IdentifyPillarsForGetChecksumsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
-                            bitRepositoryCollectionDestinationID));
+                            collectionDestinationID));
         }
 
         addStep("The pillar sends a response to the identify message.", 

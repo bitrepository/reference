@@ -49,23 +49,15 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     
     private TestPutFileMessageFactory messageFactory;
     
-    private URL downloadUrl = null;
-
-    
     private File testFile;
-    private String fileId;
     
     @BeforeMethod(alwaysRun=true)
     public void initialise() throws Exception {
-        
-        fileId = DEFAULT_FILE_ID;
-        
         if(useMockupPillar()) {
-            messageFactory = new TestPutFileMessageFactory(
-                    settings.getCollectionID());
+            messageFactory = new TestPutFileMessageFactory(settings.getCollectionID());
         }
 
-        testFile = new File("src/test/resources/test-files/", fileId);
+        testFile = new File("src/test/resources/test-files/", DEFAULT_FILE_ID);
     }
     
     @Test(groups={"regressiontest"})
@@ -81,10 +73,10 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     @Test(groups={"regressiontest"})
     public void putClientTester() throws Exception {
         addDescription("Tests the PutClient. Makes a whole conversation for the put client for a 'good' scenario.");
-        addStep("Initialise the number of pillars and the PutClient.", "Should be OK.");
+        addStep("Initialise the number of pillars to one", "Should be OK.");
         
         settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = new PutClientTestWrapper(
                 ModifyComponentFactory.getInstance().retrievePutClient(settings), 
@@ -94,7 +86,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.", 
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
-        putClient.putFileWithId(downloadUrl, fileId, new Long(testFile.length()), testEventHandler);
+        putClient.putFileWithId(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, new Long(testFile.length()), testEventHandler);
         
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
@@ -124,7 +116,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedPutFileRequest.getCorrelationID(),
                             receivedPutFileRequest.getFileAddress(),
                             receivedPutFileRequest.getFileSize(),
-                            fileId
+                            DEFAULT_FILE_ID
                             ));
         }
         
@@ -160,14 +152,14 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
     }
     
-    @Test(groups={"regressiontest"})
+    // Move to system test, not relevant as component test
+    //@Test(groups={"regressiontest"})
     public void putClientBadURLTester() throws Exception {
         addDescription("Tests the PutClient. Makes a whole conversation for the put client, for a 'bad' scenario. "
                 + "The URL is not valid, which should give errors in the FinalResponse.");
         addStep("Initialise the number of pillars and the PutClient.", "Should be OK.");
         
-        downloadUrl = new URL("http://sandkasse-01.kb.dk/ERROR/ERROR/ERROR/ERROR/ERROR/ERROR/ERROR/test.xml");
-        fileId = "ERROR-BAD-URL";
+        URL invalidUrl = new URL("http://sandkasse-01.kb.dk/ERROR/ERROR/ERROR/ERROR/ERROR/ERROR/ERROR/test.xml");
         
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = new PutClientTestWrapper(
@@ -176,7 +168,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.", 
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
-        putClient.putFileWithId(downloadUrl, fileId, new Long(testFile.length()), testEventHandler);
+        putClient.putFileWithId(invalidUrl, DEFAULT_FILE_ID, new Long(testFile.length()), testEventHandler);
         
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
@@ -206,7 +198,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedPutFileRequest.getCorrelationID(),
                             receivedPutFileRequest.getFileAddress(),
                             receivedPutFileRequest.getFileSize(),
-                            fileId
+                            DEFAULT_FILE_ID
                             ));
         }
         

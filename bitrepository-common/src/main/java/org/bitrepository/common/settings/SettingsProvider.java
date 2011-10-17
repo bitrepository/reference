@@ -30,10 +30,16 @@ import java.util.Map;
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
 
-
+/**
+ * Used for accessing <code>Settings</code> objects. A <code>SettingsLoader</code> needs to be provides on 
+ * instantiation for loading stored settings.
+ */
 public class SettingsProvider {
+    /** Defines the property which might be used to specify the collection to load the settings for */
     public static String COLLECTIONID_PROPERTY = "bitrepository.collectionid";
+    /** The loader to use for acessing stored settings*/
     private final SettingsLoader settingsReader;
+    /** Map of the loaded settings */
     private final Map<String,Settings> settingsMap = new HashMap<String,Settings>();
 
     /**
@@ -72,7 +78,7 @@ public class SettingsProvider {
     
     /**
     * Will load the settings from disk to this providers model. Will overwrite any settings already in the provider.
-    * @param collectionID The collectionID to find settings for.
+    * @param collectionID The collectionID to load the settings for.
     */
     public synchronized void loadSettings(String collectionID) {
         Settings settings = new Settings(
