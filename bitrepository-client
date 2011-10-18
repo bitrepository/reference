@@ -7,7 +7,7 @@ do_put() {
 	curl --silent -T "$filename" $WEBDAVSERVER > /dev/null
 	stripedfilename=`basename $filename`
 	filesize=`du -b $filename | cut -f1`
-	command="$SERVICEURL/putfile/?fileID=$stripedfilename&url=$WEBDAVSERVER$stripedfilename&fileSize=$filesize"
+	command="$SERVICEURL/putfile/?fileID=$stripedfilename&url=$WEBDAVSERVER&fileSize=$filesize"
 	curl --silent $command
 	echo ""
 }
@@ -18,7 +18,7 @@ do_getlog() {
 }
 
 do_get() {
-	command="$SERVICEURL/getfile/?fileID=$filename&url=$WEBDAVSERVER$filename"
+	command="$SERVICEURL/getfile/?fileID=$filename&url=$WEBDAVSERVER"
 	curl --silent $command
 	echo ""
 }
