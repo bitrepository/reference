@@ -28,16 +28,21 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.bitrepositoryelements.AlarmcodeType;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs.ChecksumSpecsItems;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataGroupedByChecksumSpec;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataGroupedByChecksumSpec.ChecksumDataItems;
+import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
+import org.bitrepository.bitrepositoryelements.ResultingChecksums.ChecksumDataItems;
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -61,17 +66,28 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
     private TestFileStore pillar1FileStore;
     private TestFileStore pillar2FileStore;
     
+    private ChecksumSpecs DEFAULT_CHECKSUM_SPECS;
+    private String DEFAULT_CHECKSUM_VALUE = "940a51b250e7aa82d8e8ea31217ff267";
+    
     @BeforeMethod (alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
         if (useMockupPillar()) {
             testMessageFactory = new TestGetChecksumsMessageFactory(
                     settings.getCollectionID());
             pillar1FileStore = new TestFileStore("Pillar1", TestFileStore.DEFAULT_TEST_FILE);
-            pillar2FileStore = new TestFileStore("Pillar2", TestFileStore.DEFAULT_TEST_FILE);
+//            pillar2FileStore = new TestFileStore("Pillar2", TestFileStore.DEFAULT_TEST_FILE);
         }
+        DEFAULT_CHECKSUM_SPECS = new ChecksumSpecs();
+        DEFAULT_CHECKSUM_SPECS.setNoOfItems(BigInteger.ONE);
+        ChecksumSpecsItems csItems = new ChecksumSpecsItems();
+        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
+        csType.setChecksumSalt(null);
+        csType.setChecksumType("MD5");
+        csItems.getChecksumSpecsItem().add(csType);
+        DEFAULT_CHECKSUM_SPECS.setChecksumSpecsItems(csItems);
     }
 
-//    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest"})
     public void verifyGetChecksumsClientFromFactory() throws Exception {
         Assert.assertTrue(AccessComponentFactory.getInstance().createGetChecksumsClient(settings) 
                 instanceof BasicGetChecksumsClient, 
@@ -79,7 +95,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                 BasicGetChecksumsClient.class.getName() + "'.");
     }
 
-//    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest"})
     public void getChecksumsDeliveredAtUrl() throws Exception {
         addDescription("Tests the delivery of checksums from a pillar at a given URL.");
         addStep("Initailise the variables for this test.", 
@@ -88,14 +104,11 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         String deliveryFilename = "TEST-CHECKSUM-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
         fileIDs.getFileID().add(DEFAULT_FILE_ID);
-        ChecksumSpecs checksumSpecs = new ChecksumSpecs();
-        checksumSpecs.setNoOfItems(BigInteger.ONE);
-        ChecksumSpecsItems csItems = new ChecksumSpecsItems();
-        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
-        csType.setChecksumSalt(null);
-        csType.setChecksumType("MD5");
-        csItems.getChecksumSpecsItem().add(csType);
-        checksumSpecs.setChecksumSpecsItems(csItems);
+        
+        if(useMockupPillar()) {
+            settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+            settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        }
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetChecksumsClient getChecksumsClient = new GetChecksumsClientTestWrapper(
@@ -109,8 +122,8 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be supplied.", 
         "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillar(s).");
-        getChecksumsClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, checksumSpecs, 
-                deliveryUrl, testEventHandler);
+        getChecksumsClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
+                DEFAULT_CHECKSUM_SPECS, deliveryUrl, testEventHandler);
 
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
@@ -154,9 +167,6 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         addStep("The resulting file is uploaded to the indicated url and the pillar sends a final response upload message", 
                 "The GetChecksumsClient notifies that the file is ready through the callback listener and the uploaded file is present.");
         if (useMockupPillar()) {
-//            httpServer.uploadFile(pillar1FileStore.getFileAsInputstream(receivedGetChecksumsRequest.getFileIDs()),
-//                    new URL(receivedGetFileRequest.getFileAddress()));
-
             GetChecksumsFinalResponse completeMsg = testMessageFactory.createGetChecksumsFinalResponse(
                     receivedGetChecksumsRequest, PILLAR1_ID, pillar1DestinationId);
             
@@ -169,11 +179,9 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PartiallyComplete);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
-        //        File expectedUploadFile = pillar1FileStore.getFile(DEFAULT_FILE_ID);
-//        httpServer.assertFileEquals(TestFileStore.DEFAULT_TEST_FILE, url.toExternalForm());
     }
     
-//    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest"})
     public void checksumsDeliveredThroughMessage() throws Exception {
         addDescription("Tests that the GetChecksumsClient can deliver the results of a checksums operation through "
                 + "the messages.");
@@ -181,25 +189,23 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         
         FileIDs fileIDs = new FileIDs();
         fileIDs.getFileID().add(DEFAULT_FILE_ID);
-        ChecksumSpecs checksumSpecs = new ChecksumSpecs();
-        checksumSpecs.setNoOfItems(BigInteger.ONE);
-        ChecksumSpecsItems csItems = new ChecksumSpecsItems();
-        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
-        csType.setChecksumSalt(null);
-        csType.setChecksumType("MD5");
-        csItems.getChecksumSpecsItem().add(csType);
-        checksumSpecs.setChecksumSpecsItems(csItems);
+        
+        if(useMockupPillar()) {
+            settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+            settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        }
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         
         addStep("Create a separate thread for handling the receival of the results of the conversation.", 
                 "There should be no problems in creating the new thread.");
-        Thread callChecksum = new ChecksumCallThread(fileIDs, checksumSpecs, testEventHandler);
+        ChecksumCallThread callChecksum = new ChecksumCallThread(fileIDs, DEFAULT_CHECKSUM_SPECS, testEventHandler);
         
         addStep("Starting the conversation.", 
                 "Should be handled in the separate thread, along with the receival of the results.");
         callChecksum.start();
-        
+        Assert.assertTrue(callChecksum.isAlive());
+
         addStep("Receiving the identification for the pillar.", 
                 "Should be sent by the GetCheckumsClient");
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
@@ -249,112 +255,209 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             
             ResultingChecksums res = new ResultingChecksums();
             res.setResultAddress(null);
-            ChecksumsDataGroupedByChecksumSpec checksums = new ChecksumsDataGroupedByChecksumSpec();
-            
-            checksums.setNoOfItems(BigInteger.ONE);
-            ChecksumSpecTYPE checksumSpecification = receivedGetChecksumsRequest.getFileChecksumSpec();
-            checksums.setChecksumSpec(checksumSpecification);
-
-            ChecksumDataItems checksumdata = new ChecksumDataItems();
-            ChecksumDataForChecksumSpecTYPE specificChecksum = new ChecksumDataForChecksumSpecTYPE();
-            specificChecksum.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
-            specificChecksum.setChecksumValue(ChecksumUtils.generateChecksum(TestFileStore.DEFAULT_TEST_FILE, 
-                    checksumSpecification.getChecksumType(), checksumSpecification.getChecksumSalt()));
-            checksumdata.getChecksumDataForChecksumSpec().add(specificChecksum);
-            
-            checksums.setChecksumDataItems(checksumdata);
-            //res.setChecksumsDataGroupedByChecksumSpec(checksums);
+            ChecksumDataItems csResultList = new ChecksumDataItems();
+            for(String fileID : receivedGetChecksumsRequest.getFileIDs().getFileID()) {
+                ChecksumDataForChecksumSpecTYPE csSpecs = new ChecksumDataForChecksumSpecTYPE();
+                csSpecs.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+                csSpecs.setChecksumValue(DEFAULT_CHECKSUM_VALUE);
+                csSpecs.setFileID(fileID);
+                csResultList.getChecksumDataForChecksumSpec().add(csSpecs);
+            }
+            res.setChecksumDataItems(csResultList);
+            res.setResultAddress(receivedGetChecksumsRequest.getResultAddress());
             completeMsg.setResultingChecksums(res);
             
             messageBus.sendMessage(completeMsg);
         }
 
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PartiallyComplete);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+        Assert.assertTrue(callChecksum.isAlive(), "The client thread should still be alive.");
+
+        synchronized(callChecksum) {
+            try {
+                callChecksum.wait();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        Assert.assertNotNull(callChecksum.results, "The results should have been received by the thread.");
     }
     
-    //    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest"})
     public void noIdentifyResponses() throws Exception {
-        addDescription("Tests the th eGetFileClient handles lack of IdentifyPillarResponses gracefully  ");
+        addDescription("Tests the GetChecksumsClient handles lack of IdentifyPillarResponses gracefully.");
         addStep("Set the number of pillars for this SLA to 1 and a 3 second timeout for identifying pillar.", "");
+        
+        String deliveryFilename = "TEST-CHECKSUM-DELIVERY.xml";
+        FileIDs fileIDs = new FileIDs();
+        fileIDs.getFileID().add(DEFAULT_FILE_ID);
+        
+        settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
 
-//        ((MutableClientSettings)getFileClientSettings).setPillarIDs(new String[] {PILLAR1_ID});
-//        ((MutableClientSettings)getFileClientSettings).setIdentifyPillarsTimeout(3000);
-//        GetFileClient getFileClient = 
-//            new GetChecksumsClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings), 
-//                    testEventManager);
-//
-//        addStep("Make the GetClient ask for fastest pillar.",  
-//        "It should send message to identify which pillar can respond fastest.");
-//        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-//        getFileClient.getFileFromFastestPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), testEventHandler);
-//        if (useMockupPillar()) {
-//            bitRepositoryCollectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
-//        }
-//
-//        addStep("Wait for at least 3 seconds", "An IdentifyPillarTimeout event should be received");
-//
-//        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.NoPillarFound);
+        if(useMockupPillar()) {
+            settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+            settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        }
+
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        GetChecksumsClient getChecksumsClient = new GetChecksumsClientTestWrapper(
+                AccessComponentFactory.getInstance().createGetChecksumsClient(settings), 
+                testEventManager);
+
+        addStep("Ensure the delivery file isn't already present on the http server", 
+                "Should be remove if it already exists.");
+        httpServer.removeFile(deliveryFilename);
+        URL deliveryUrl = httpServer.getURL(deliveryFilename);
+
+        addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be supplied.", 
+                "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillar(s).");
+        getChecksumsClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
+                DEFAULT_CHECKSUM_SPECS, deliveryUrl, testEventHandler);
+
+        if (useMockupPillar()) {
+            bitRepositoryCollectionDestination.waitForMessage(IdentifyPillarsForGetChecksumsRequest.class);
+        }
+
+        addStep("Wait for at least 3 seconds", "An IdentifyPillarTimeout event should be received");
+        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.NoPillarFound);
     }
 
-
-    //    @Test(groups = {"testfirst"})
+    @Test(groups = {"regressiontest"})
     public void conversationTimeout() throws Exception {
-        addDescription("Tests the th eGetFileClient handles lack of IdentifyPillarResponses gracefully  ");
+        addDescription("Tests the GetChecksumClient handles lack of GetChecksumsResponses gracefully");
         addStep("Set the number of pillars for this SLA to 1 and a 3 second timeout for the conversation.", "");
 
-//        ((MutableClientSettings)getFileClientSettings).setPillarIDs(new String[] {PILLAR1_ID});
-//        ((MutableClientSettings)getFileClientSettings).setConversationTimeout(3000);
-//        GetFileClient getFileClient = 
-//            new GetChecksumsClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings), 
-//                    testEventManager);
-//
-//        addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.", 
-//        "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
-//        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-//        getFileClient.getFileFromSpecificPillar(
-//                DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), PILLAR1_ID, testEventHandler);
-//        IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
-//        if (useMockupPillar()) {
-//            receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
-//            Assert.assertEquals(receivedIdentifyRequestMessage, 
-//                    testMessageFactory.createIdentifyPillarsForGetFileRequest(receivedIdentifyRequestMessage, 
-//                            bitRepositoryCollectionDestinationID));
-//        }
-//
-//        addStep("The pillar sends a response to the identify message.", 
-//                "The callback listener should notify of the response and the client should send a GetFileRequest message to " +
-//        "the pillar"); 
-//
-//        if (useMockupPillar()) {
-//            IdentifyPillarsForGetFileResponse identifyResponse = testMessageFactory.createIdentifyPillarsForGetFileResponse(
-//                    receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
-//            messageBus.sendMessage(identifyResponse);
-//            pillar1Destination.waitForMessage(GetFileRequest.class);
-//        }
-//
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
-//
-//        addStep("Wait for at least 3 seconds", "An failed event should be received");  
-//        Assert.assertEquals(testEventHandler.waitForEvent(4, TimeUnit.SECONDS).getType(), OperationEventType.Failed);
+        String deliveryFilename = "TEST-CHECKSUM-DELIVERY.xml";
+        FileIDs fileIDs = new FileIDs();
+        fileIDs.getFileID().add(DEFAULT_FILE_ID);
+        
+        settings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
+
+        if(useMockupPillar()) {
+            settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+            settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        }
+
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        GetChecksumsClient getChecksumsClient = new GetChecksumsClientTestWrapper(
+                AccessComponentFactory.getInstance().createGetChecksumsClient(settings), 
+                testEventManager);
+
+        addStep("Ensure the delivery file isn't already present on the http server", 
+                "Should be remove if it already exists.");
+        httpServer.removeFile(deliveryFilename);
+        URL deliveryUrl = httpServer.getURL(deliveryFilename);
+
+        addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be supplied.", 
+                "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillar(s).");
+        getChecksumsClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
+                DEFAULT_CHECKSUM_SPECS, deliveryUrl, testEventHandler);
+
+        IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
+        if (useMockupPillar()) {
+            receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(
+                    IdentifyPillarsForGetChecksumsRequest.class);
+            Assert.assertEquals(receivedIdentifyRequestMessage, 
+                    testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
+                            collectionDestinationID));
+        }
+
+        addStep("The pillar sends a response to the identify message.", 
+                "The callback listener should notify of the response and the client should send a GetChecksumsRequest "
+                + "message to the pillar"); 
+
+        GetChecksumsRequest receivedGetChecksumsRequest = null;
+        if (useMockupPillar()) {
+            IdentifyPillarsForGetChecksumsResponse identifyResponse = testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                    receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+            messageBus.sendMessage(identifyResponse);
+            receivedGetChecksumsRequest = pillar1Destination.waitForMessage(GetChecksumsRequest.class);
+            Assert.assertEquals(receivedGetChecksumsRequest, 
+                    testMessageFactory.createGetChecksumsRequest(receivedGetChecksumsRequest,PILLAR1_ID, pillar1DestinationId));
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+        
+        addStep("Wait for at least 3 seconds", "An IdentifyPillarTimeout event should be received");
+        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.Failed);
     }
     
-//    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest"})
     public void testNoSuchFile() throws Exception {
         addDescription("Testing how a request for a non-existing file is handled.");
         addStep("Setting up variables and such.", "Should be OK.");
         
-//        String fileName = "ERROR-NO-SUCH-FILE-ERROR";
-//        GetFileClient gfc = new GetChecksumsClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(getFileClientSettings), 
-//                testEventManager);
-//        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-//        URL url = httpServer.getURL(DEFAULT_FILE_ID);
-//        
-//        addStep("Perform Get operation for retrieving the non-existing file '" + fileName + "'", 
-//                "All pillars should send errors.");
-//        gfc.getFileFromFastestPillar(fileName, url, testEventHandler);
-//        
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Failed);
+        String deliveryFilename = "TEST-CHECKSUM-DELIVERY.xml";
+        FileIDs fileIDs = new FileIDs();
+        fileIDs.getFileID().add(DEFAULT_FILE_ID);
+        
+        if(useMockupPillar()) {
+            settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+            settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        }
+
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        GetChecksumsClient getChecksumsClient = new GetChecksumsClientTestWrapper(
+                AccessComponentFactory.getInstance().createGetChecksumsClient(settings), 
+                testEventManager);
+
+        addStep("Ensure the delivery file isn't already present on the http server", 
+        "Should be remove if it already exists.");
+        httpServer.removeFile(deliveryFilename);
+        URL deliveryUrl = httpServer.getURL(deliveryFilename);
+
+        addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be supplied.", 
+        "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillar(s).");
+        getChecksumsClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
+                DEFAULT_CHECKSUM_SPECS, deliveryUrl, testEventHandler);
+
+        IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
+        if (useMockupPillar()) {
+            receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(
+                    IdentifyPillarsForGetChecksumsRequest.class);
+            Assert.assertEquals(receivedIdentifyRequestMessage, 
+                    testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
+                            collectionDestinationID));
+        }
+
+        addStep("The pillar sends a response to the identify message.", 
+                "The callback listener should notify of the response and the client should send a GetChecksumsRequest "
+                + "message to the pillar"); 
+
+        GetChecksumsRequest receivedGetChecksumsRequest = null;
+        if (useMockupPillar()) {
+            IdentifyPillarsForGetChecksumsResponse identifyResponse = testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                    receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+            messageBus.sendMessage(identifyResponse);
+            receivedGetChecksumsRequest = pillar1Destination.waitForMessage(GetChecksumsRequest.class);
+            Assert.assertEquals(receivedGetChecksumsRequest, 
+                    testMessageFactory.createGetChecksumsRequest(receivedGetChecksumsRequest,PILLAR1_ID, pillar1DestinationId));
+        }
+
+        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+
+        addStep("Send a error that the file cannot be found.", "Should trigger a 'event failed'.");
+        if (useMockupPillar()) {
+            GetChecksumsFinalResponse completeMsg = testMessageFactory.createGetChecksumsFinalResponse(
+                    receivedGetChecksumsRequest, PILLAR1_ID, pillar1DestinationId);
+            
+            FinalResponseInfo rfInfo = new FinalResponseInfo();
+            rfInfo.setFinalResponseCode(ErrorcodeGeneralType.FILE_NOT_FOUND.value().toString());
+            rfInfo.setFinalResponseText("No such file.");
+            completeMsg.setFinalResponseInfo(rfInfo);
+            completeMsg.setResultingChecksums(null);
+            
+            messageBus.sendMessage(completeMsg);
+        }
+
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Failed);
     }
     
     private class ChecksumCallThread extends Thread {
@@ -372,11 +475,11 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     testEventManager);
         }
         
-        public Map<String, ResultingChecksums> stuff = null;
+        public Map<String, ResultingChecksums> results = null;
         
         @Override
         public void run() {
-            stuff = getChecksumsClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
+            results = getChecksumsClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
                     csSpecs, eventHandler);
         }
     };

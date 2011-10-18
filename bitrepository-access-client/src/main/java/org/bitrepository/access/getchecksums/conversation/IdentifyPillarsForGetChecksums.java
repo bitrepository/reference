@@ -130,7 +130,7 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
     private void handleIdentificationTimeout() {
         synchronized (conversation) {
             if (conversation.conversationState == this) {
-                if (conversation.selector.getPillarDestination().isEmpty()) {
+                if (!conversation.selector.getPillarDestination().isEmpty()) {
                     String message = "Time has run out for selecting a pillar. The following pillars did't respond: " + 
                             conversation.selector.getOutstandingPillars() + 
                     ". Using pillar based on uncomplete set of responses.";
@@ -148,7 +148,7 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
                     log.warn(message);
                     if (conversation.eventHandler != null) {
                         conversation.eventHandler.handleEvent(new DefaultEvent(
-                                OperationEventType.NoPillarFound, ""));
+                                OperationEventType.NoPillarFound, message));
                     } else {
                         conversation.throwException(new NoPillarFoundException(message));
                     }

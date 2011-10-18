@@ -92,11 +92,13 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
             conversationMediator.addConversation(conversation);
             conversation.startConversation();
             
-            while(conversation.hasEnded()) {
-                try {
-                    wait(500);
-                } catch(InterruptedException e) {
-                    log.debug("Interrupted!", e);
+            while(!conversation.hasEnded()) {
+                synchronized(conversation) {
+                    try {
+                        conversation.wait(500);
+                    } catch(InterruptedException e) {
+                        log.debug("Interrupted!", e);
+                    }
                 }
             }
             

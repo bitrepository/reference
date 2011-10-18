@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
@@ -171,6 +172,7 @@ public class GettingChecksums extends GetChecksumsState {
         }
         
         if(validateFinalResponse(response.getFinalResponseInfo())) {
+            log.debug("Received positive FinalResponse from pillar: {}", response.getFinalResponseInfo());
             if (conversation.eventHandler != null) {
                 conversation.eventHandler.handleEvent(
                         new DefaultEvent(OperationEvent.OperationEventType.PartiallyComplete, 
@@ -182,6 +184,7 @@ public class GettingChecksums extends GetChecksumsState {
                 results.put(response.getPillarID(), response.getResultingChecksums());
             }
         } else {
+            log.warn("Received bad FinalResponse from pillar: {}", response.getFinalResponseInfo());
             if (conversation.eventHandler != null) {
                 conversation.eventHandler.handleEvent(
                         new DefaultEvent(OperationEvent.OperationEventType.Failed, 
@@ -205,8 +208,14 @@ public class GettingChecksums extends GetChecksumsState {
      * @return Whether the FinalRepsonseInfo tells that the operation has been a success or a failure.
      */
     private boolean validateFinalResponse(FinalResponseInfo frInfo) {
-        // TODO perform this validation.
-        return true;
+        try {
+            if(FinalResponseCodePositiveType.SUCCESS.value().intValue() == new Integer(frInfo.getFinalResponseCode())) {
+                return true;
+            }
+        } catch(NumberFormatException e) {
+            log.warn("Could not handle FinalResponseInfo: " + frInfo, e);
+        }
+        return false;
     }
     
     /**
