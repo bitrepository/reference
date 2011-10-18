@@ -27,22 +27,19 @@ package org.bitrepository.access.getchecksums;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.bitrepositoryelements.AlarmcodeType;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs.ChecksumSpecsItems;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataGroupedByChecksumSpec;
 import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums.ChecksumDataItems;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -51,7 +48,6 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRes
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.clienttest.TestEventHandler;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.testng.Assert;
@@ -255,15 +251,13 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             
             ResultingChecksums res = new ResultingChecksums();
             res.setResultAddress(null);
-            ChecksumDataItems csResultList = new ChecksumDataItems();
             for(String fileID : receivedGetChecksumsRequest.getFileIDs().getFileID()) {
                 ChecksumDataForChecksumSpecTYPE csSpecs = new ChecksumDataForChecksumSpecTYPE();
                 csSpecs.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
                 csSpecs.setChecksumValue(DEFAULT_CHECKSUM_VALUE);
                 csSpecs.setFileID(fileID);
-                csResultList.getChecksumDataForChecksumSpec().add(csSpecs);
+                res.getChecksumDataItems().add(csSpecs);
             }
-            res.setChecksumDataItems(csResultList);
             res.setResultAddress(receivedGetChecksumsRequest.getResultAddress());
             completeMsg.setResultingChecksums(res);
             
@@ -283,6 +277,20 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         }
         
         Assert.assertNotNull(callChecksum.results, "The results should have been received by the thread.");
+        for(String pillar : settings.getCollectionSettings().getClientSettings().getPillarIDs()) {
+            ResultingChecksums res = callChecksum.results.get(pillar);
+            Assert.assertNotNull(res, "The checksums for '" + pillar + "' should exist.");
+            Assert.assertNull(res.getResultAddress(), "No resulting address should be returned.");
+            List<ChecksumDataForChecksumSpecTYPE> checksumItems = res.getChecksumDataItems();
+            Assert.assertNotNull(checksumItems, "A list of checksums should be returned.");
+            
+            Assert.assertEquals(checksumItems.size(), 1, "There should only be one returned element.");
+            Assert.assertEquals(checksumItems.get(0).getFileID(), DEFAULT_FILE_ID, 
+                    "It should return the checksum for requested file.");
+            Assert.assertEquals(checksumItems.get(0).getChecksumValue(), DEFAULT_CHECKSUM_VALUE, 
+                    "It should return the expected checksum for requested file.");
+        }
+        
     }
     
     @Test(groups = {"regressiontest"})

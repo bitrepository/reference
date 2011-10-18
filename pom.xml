@@ -342,7 +342,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <message.xml.version>0.3.2</message.xml.version>
+    <message.xml.version>0.3.3-SNAPSHOT</message.xml.version>
     <collection.settings.version>0.3.0-SNAPSHOT</collection.settings.version>
   </properties>
 </project>
