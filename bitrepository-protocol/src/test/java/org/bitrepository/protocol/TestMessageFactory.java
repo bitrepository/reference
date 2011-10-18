@@ -26,6 +26,7 @@ package org.bitrepository.protocol;
 
 import java.math.BigInteger;
 
+import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
 import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
 import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
@@ -75,7 +76,7 @@ public abstract class TestMessageFactory {
 
     protected static final FinalResponseInfo FINAL_INFO_DEFAULT = new FinalResponseInfo();
     static {
-        FINAL_INFO_DEFAULT.setFinalResponseCode("T-plus 0");
+        FINAL_INFO_DEFAULT.setFinalResponseCode(FinalResponseCodePositiveType.SUCCESS.value().toString());
         FINAL_INFO_DEFAULT.setFinalResponseText("We have liftoff");
     }
 
