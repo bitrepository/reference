@@ -55,7 +55,7 @@ public class FastestPillarSelectorForGetFile extends PillarSelectorForGetFile {
     public boolean checkPillarResponseForSelection(IdentifyPillarsForGetFileResponse response) 
     throws UnexpectedResponseException {
         responseStatus.responseReceived(response.getPillarID());
-        if (!IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.name().equals(
+        if (!IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().toString().equals(
                 response.getIdentifyResponseInfo().getIdentifyResponseCode())) {
             return false;
         } else if (getIDForSelectedPillar() == null || 

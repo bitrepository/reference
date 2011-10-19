@@ -40,6 +40,19 @@
       <version>0.3-SNAPSHOT</version>
       <type>test-jar</type>
     </dependency>
+    <!-- THE TEST SCOPE -->
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-access-client</artifactId>
+      <version>0.3-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-modifying-client</artifactId>
+      <version>0.3-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <description>Here you can find the functionality for working with crosscutting module concerns. 
   This is mainly integration tests.</description>

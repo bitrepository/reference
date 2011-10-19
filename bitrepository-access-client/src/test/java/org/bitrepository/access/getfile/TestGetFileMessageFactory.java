@@ -89,7 +89,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         identifyPillarsForGetFileRequest.setVersion(VERSION_DEFAULT);
         identifyPillarsForGetFileRequest.setMinVersion(VERSION_DEFAULT);
         IdentifyResponseInfo identifyResponseInfo = new IdentifyResponseInfo();
-        identifyResponseInfo.setIdentifyResponseCode(IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.name()); 
+        identifyResponseInfo.setIdentifyResponseCode(IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().toString()); 
         identifyResponseInfo.setIdentifyResponseText("Pillar " + pillarId + " will be able to begin devlivery of file " 
         + receivedIdentifyRequestMessage.getFileID() + " in " + TIME_TO_DELIVER_DEFAULT);
         identifyPillarsForGetFileRequest.setIdentifyResponseInfo(identifyResponseInfo);

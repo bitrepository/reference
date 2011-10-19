@@ -76,11 +76,10 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
                 respondSuccesfullIdentification(message);
             }
         } catch (IllegalArgumentException e) {
+            log.warn("Caught illegal argument exception", e);
             // Only send this message if the alarm level is 'WARNING'.
             if(settings.getCollectionSettings().getPillarSettings().getAlarmLevel() == AlarmLevel.WARNING) {
                 alarmDispatcher.alarmIllegalArgument(e);
-            } else {
-                log.warn("Caught illegal argument exception", e);
             }
         }
     }
@@ -125,8 +124,8 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
         reply.setAuditTrailInformation(null);
         
         IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-        irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.DUPLICATE_FILE.value().toString());
-        irInfo.setIdentifyResponseText("ERROR: " + cause);
+        irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FILE_NOT_FOUND.value().toString());
+        irInfo.setIdentifyResponseText(cause);
         reply.setIdentifyResponseInfo(irInfo);
         
         // Send resulting file.
@@ -158,5 +157,4 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
         
         return res;
     }
-
 }

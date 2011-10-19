@@ -60,7 +60,7 @@ public class SpecificPillarSelectorForGetFile extends PillarSelectorForGetFile {
     public boolean checkPillarResponseForSelection(IdentifyPillarsForGetFileResponse response) {
         boolean selectPillar = false;
         if (pillarToSelect.equals(response.getPillarID() )) {
-            if (IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.name().equals(
+            if (IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().toString().equals(
                     response.getIdentifyResponseInfo().getIdentifyResponseCode())) {
                 selectPillar = true;
             } else {      

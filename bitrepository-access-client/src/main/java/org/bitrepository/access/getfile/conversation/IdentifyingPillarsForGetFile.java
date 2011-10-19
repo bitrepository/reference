@@ -118,6 +118,7 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
                 getFileFromSelectedPillar();
             }
         } catch (UnableToFinishException e) {
+            log.warn("Caught an exception", e);
             if (conversation.eventHandler != null) {
                 conversation.eventHandler.handleEvent(new DefaultEvent(
                         OperationEventType.Failed, e.getMessage()));

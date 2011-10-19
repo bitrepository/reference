@@ -72,6 +72,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
      */
     public void handleMessage(PutFileRequest message) {
         try {
+            log.info("Recived PutFileRequest: " + message);
             if(!validateMessage(message)) {
                 return;
             }

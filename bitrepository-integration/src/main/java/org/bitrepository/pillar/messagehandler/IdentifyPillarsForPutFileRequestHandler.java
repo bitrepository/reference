@@ -70,9 +70,10 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
             // validate message
             validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
 
-            if(archive.hasFile(message.getFileID())) {
+            if(message.getFileID() != null && archive.hasFile(message.getFileID())) {
                 sendDuplicateFileResponse(message);
-            } else if(archive.sizeLeftInArchive() > message.getFileSize().longValue()) {
+            } else if(message.getFileSize() != null 
+                    && (archive.sizeLeftInArchive() > message.getFileSize().longValue())) {
                 // TODO perhaps have a minimum size added?
                 sendNotEnoughSpaceResponse(message);
             } else {
