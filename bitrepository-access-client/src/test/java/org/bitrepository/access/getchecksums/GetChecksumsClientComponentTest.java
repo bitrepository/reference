@@ -62,7 +62,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
     private TestFileStore pillar1FileStore;
     private TestFileStore pillar2FileStore;
     
-    private ChecksumSpecs DEFAULT_CHECKSUM_SPECS;
+    private ChecksumSpecTYPE DEFAULT_CHECKSUM_SPECS;
     private String DEFAULT_CHECKSUM_VALUE = "940a51b250e7aa82d8e8ea31217ff267";
     
     @BeforeMethod (alwaysRun=true)
@@ -73,14 +73,9 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             pillar1FileStore = new TestFileStore("Pillar1", TestFileStore.DEFAULT_TEST_FILE);
 //            pillar2FileStore = new TestFileStore("Pillar2", TestFileStore.DEFAULT_TEST_FILE);
         }
-        DEFAULT_CHECKSUM_SPECS = new ChecksumSpecs();
-        DEFAULT_CHECKSUM_SPECS.setNoOfItems(BigInteger.ONE);
-        ChecksumSpecsItems csItems = new ChecksumSpecsItems();
-        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
-        csType.setChecksumSalt(null);
-        csType.setChecksumType("MD5");
-        csItems.getChecksumSpecsItem().add(csType);
-        DEFAULT_CHECKSUM_SPECS.setChecksumSpecsItems(csItems);
+        DEFAULT_CHECKSUM_SPECS = new ChecksumSpecTYPE();
+        DEFAULT_CHECKSUM_SPECS.setChecksumSalt(null);
+        DEFAULT_CHECKSUM_SPECS.setChecksumType("MD5");
     }
 
     @Test(groups = {"regressiontest"})
@@ -129,6 +124,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
                             collectionDestinationID));
         }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
 
         addStep("The pillar sends a response to the identify message.", 
                 "The callback listener should notify of the response and the client should send a GetChecksumsRequest "
@@ -212,6 +208,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
                             collectionDestinationID));
         }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
 
         addStep("The pillar sends a response to the identify message.", 
                 "The callback listener should notify of the response and the client should send a GetChecksumsRequest "
@@ -327,6 +324,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         if (useMockupPillar()) {
             bitRepositoryCollectionDestination.waitForMessage(IdentifyPillarsForGetChecksumsRequest.class);
         }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
 
         addStep("Wait for at least 3 seconds", "An IdentifyPillarTimeout event should be received");
         Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.NoPillarFound);
@@ -371,6 +369,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
                             collectionDestinationID));
         }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
 
         addStep("The pillar sends a response to the identify message.", 
                 "The callback listener should notify of the response and the client should send a GetChecksumsRequest "
@@ -430,6 +429,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
                             collectionDestinationID));
         }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
 
         addStep("The pillar sends a response to the identify message.", 
                 "The callback listener should notify of the response and the client should send a GetChecksumsRequest "
@@ -472,9 +472,9 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             
         private GetChecksumsClient getChecksumsClient;
         FileIDs fileIDs;
-        ChecksumSpecs csSpecs;
+        ChecksumSpecTYPE csSpecs;
         TestEventHandler eventHandler;
-        public ChecksumCallThread(FileIDs fileIDs, ChecksumSpecs csSpecs, TestEventHandler eventHandler) {
+        public ChecksumCallThread(FileIDs fileIDs, ChecksumSpecTYPE csSpecs, TestEventHandler eventHandler) {
             this.fileIDs = fileIDs;
             this.csSpecs = csSpecs;
             this.eventHandler = eventHandler;

@@ -67,8 +67,8 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
     public void initialise() throws Exception {
         msgFactory = new PillarTestMessageFactory(settings);
     }
-
-//    @Test( groups = {"regressiontest"})
+    
+    //    @Test( groups = {"regressiontest"})
     public void pillarPutTest() throws Exception {
         addDescription("Tests the put functionality of the reference pillar.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -81,7 +81,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForPutFileRequest identifyRequest 
-                = msgFactory.createIdentifyPillarsForPutFileRequest(clientDestinationId);
+        = msgFactory.createIdentifyPillarsForPutFileRequest(clientDestinationId);
         messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", "The pillar should make a response.");
@@ -94,7 +94,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
                         receivedIdentifyResponse.getPillarID(),
                         receivedIdentifyResponse.getTimeToDeliver(),
                         receivedIdentifyResponse.getTo()));
-       
+        
         addStep("Create and send the actual Put message to the pillar.", 
                 "Should be received and handled by the pillar.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
@@ -114,7 +114,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
                         progressResponse.getProgressResponseInfo(), 
                         progressResponse.getReplyTo(), 
                         progressResponse.getTo()));
-
+        
         addStep("Retrieve the FinalResponse for the put request", "The put response should be sent by the pillar.");
         PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse,
@@ -131,99 +131,95 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         
         // validating the checksum
         ChecksumsDataForNewFile receivedChecksums = finalResponse.getChecksumsDataForNewFile();
-//        Assert.assertEquals(receivedChecksums.getFileID(), FILE_ID, receivedChecksums.toString());
-//        Assert.assertEquals(receivedChecksums.getNoOfItems(), BigInteger.valueOf(1L));
-//        ChecksumDataItems checksumItems = receivedChecksums.getChecksumDataItems();
-//        Assert.assertEquals(checksumItems.getChecksumDataForFile().size(), 1);
-//        ChecksumDataForFileTYPE checksumdata = checksumItems.getChecksumDataForFile().get(0);
-//        Assert.assertEquals(checksumdata.getChecksumValue(), FILE_CHECKSUM);
-//        Assert.assertNull(checksumdata.getChecksumSpec().getChecksumSalt(), "should be no salt");
-//        Assert.assertEquals(checksumdata.getChecksumSpec().getChecksumType(), "MD5");
-//        Assert.assertTrue(checksumdata.getCalculationTimestamp().toGregorianCalendar().getTime().getTime() > startDate.getTime());
+        //        Assert.assertEquals(receivedChecksums.getFileID(), FILE_ID, receivedChecksums.toString());
+        //        Assert.assertEquals(receivedChecksums.getNoOfItems(), BigInteger.valueOf(1L));
+        //        ChecksumDataItems checksumItems = receivedChecksums.getChecksumDataItems();
+        //        Assert.assertEquals(checksumItems.getChecksumDataForFile().size(), 1);
+        //        ChecksumDataForFileTYPE checksumdata = checksumItems.getChecksumDataForFile().get(0);
+        //        Assert.assertEquals(checksumdata.getChecksumValue(), FILE_CHECKSUM);
+        //        Assert.assertNull(checksumdata.getChecksumSpec().getChecksumSalt(), "should be no salt");
+        //        Assert.assertEquals(checksumdata.getChecksumSpec().getChecksumType(), "MD5");
+        //        Assert.assertTrue(checksumdata.getCalculationTimestamp().toGregorianCalendar().getTime().getTime() > startDate.getTime());
     }
     
-  @Test( groups = {"regressiontest"})
-  public void testPillarVsPutClient() throws Exception {
-//      File archiveDir = new File("test-archive");
-//      if(archiveDir.exists()) {
-//          FileUtils.delete(archiveDir);
-//      }
-      addDescription("Tests the put functionality of the reference pillar.");
-      addStep("Set up constants and variables.", "Should not fail here!");
-      settings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-pillar-destination");
-      ReferencePillar pillar = IntegrationComponentFactory.getInstance().getPillar(settings);
-      String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
-      Long FILE_SIZE = 27L;
-      String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
-      String FILE_CHECKSUM = "940a51b250e7aa82d8e8ea31217ff267";
-      Date startDate = new Date();
-      
-      TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-      
-      XMLFileSettingsLoader settingsLoader = new XMLFileSettingsLoader("settings/xml");
-      SettingsProvider provider = new SettingsProvider(settingsLoader);
-      Settings clientSettings = provider.getSettings("bitrepository-devel");
-      clientSettings.getCollectionSettings().setProtocolSettings(settings.getCollectionSettings().getProtocolSettings());
-      clientSettings.getCollectionSettings().setClientSettings(settings.getCollectionSettings().getClientSettings());
-      
-      clientSettings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-PutFile-destination");
-      clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-      clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(settings.getReferenceSettings().getPillarSettings().getPillarID());
-      
-      addStep("Create a putclient and start a put operation.", 
-              "This should be caught by the pillar.");
-      PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(clientSettings);
-      putClient.putFileWithId(new URL(FILE_ADDRESS), FILE_ID, FILE_SIZE, testEventHandler);
-
-      addStep("Validate the sequence of operations event for the putclient", "Shoud be in correct order.");
-      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
-      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
-      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
-      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PartiallyComplete);
-      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
-      
-      addStep("Create a GetFileClient and start a get operation", 
-              "This should be caught by the pillar");
-      clientSettings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-GetFile-destination");
-      GetFileClient getClient = AccessComponentFactory.getInstance().createGetFileClient(clientSettings);
-      getClient.getFileFromSpecificPillar(FILE_ID, new URL(FILE_ADDRESS), settings.getReferenceSettings().getPillarSettings().getPillarID(), testEventHandler);
-
-      addStep("Validate the sequence of operations event for the GetFileClient", 
-              "Shoud be in correct order.");
-      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
-      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
-      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
-      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
-      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
-      
-//      addStep("Create a GetChecksumsClient and start a get operation", 
-//              "This should be caught by the pillar");
-//      clientSettings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-GetFile-destination");
-//      GetChecksumsClient getChecksums = AccessComponentFactory.getInstance().createGetChecksumsClient(clientSettings);
-//      FileIDs fileids = new FileIDs();
-//      fileids.getFileID().add(FILE_ID);
-//      
-//      ChecksumSpecs csSpecs = new ChecksumSpecs();
-//      csSpecs.setNoOfItems(BigInteger.ONE);
-//      ChecksumSpecsItems csItems = new ChecksumSpecsItems();
-//      ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
-//      csType.setChecksumSalt(null);
-//      csType.setChecksumType("MD5");
-//      csItems.getChecksumSpecsItem().add(csType);
-//      csSpecs.setChecksumSpecsItems(csItems);
-//      URL csurl = new URL(FILE_ADDRESS + "-cs");
-//      
-//      getChecksums.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
-//              fileids, csSpecs, csurl, testEventHandler);
-//      
-//      addStep("Validate the sequence of operation events for the getChecksumClient", 
-//              "Should be in correct order.");
-//      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
-//      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
-//      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-//      Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
-
-  }
+    @Test( groups = {"regressiontest"})
+    public void testPillarVsPutClient() throws Exception {
+        addDescription("Tests the put functionality of the reference pillar.");
+        addStep("Set up constants and variables.", "Should not fail here!");
+        settings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-pillar-destination");
+        ReferencePillar pillar = IntegrationComponentFactory.getInstance().getPillar(settings);
+        String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
+        Long FILE_SIZE = 27L;
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        String FILE_CHECKSUM = "940a51b250e7aa82d8e8ea31217ff267";
+        Date startDate = new Date();
+        
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        
+        XMLFileSettingsLoader settingsLoader = new XMLFileSettingsLoader("settings/xml");
+        SettingsProvider provider = new SettingsProvider(settingsLoader);
+        Settings clientSettings = provider.getSettings("bitrepository-devel");
+        clientSettings.getCollectionSettings().setProtocolSettings(settings.getCollectionSettings().getProtocolSettings());
+        clientSettings.getCollectionSettings().setClientSettings(settings.getCollectionSettings().getClientSettings());
+        
+        clientSettings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-PutFile-destination");
+        clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(settings.getReferenceSettings().getPillarSettings().getPillarID());
+        
+        addStep("Create a putclient and start a put operation.", 
+                "This should be caught by the pillar.");
+        PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(clientSettings);
+        putClient.putFileWithId(new URL(FILE_ADDRESS), FILE_ID, FILE_SIZE, testEventHandler);
+        
+        addStep("Validate the sequence of operations event for the putclient", "Shoud be in correct order.");
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PartiallyComplete);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+        
+        addStep("Create a GetFileClient and start a get operation", 
+                "This should be caught by the pillar");
+        clientSettings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-GetFile-destination");
+        GetFileClient getClient = AccessComponentFactory.getInstance().createGetFileClient(clientSettings);
+        getClient.getFileFromSpecificPillar(FILE_ID, new URL(FILE_ADDRESS), settings.getReferenceSettings().getPillarSettings().getPillarID(), testEventHandler);
+        
+        addStep("Validate the sequence of operations event for the GetFileClient", 
+                "Shoud be in correct order.");
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+        
+        addStep("Create a GetChecksumsClient and start a get operation", 
+                "This should be caught by the pillar");
+        clientSettings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-GetFile-destination");
+        GetChecksumsClient getChecksums = AccessComponentFactory.getInstance().createGetChecksumsClient(clientSettings);
+        FileIDs fileids = new FileIDs();
+        fileids.getFileID().add(FILE_ID);
+        
+        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
+        csType.setChecksumSalt(null);
+        csType.setChecksumType("MD5");
+        URL csurl = new URL(FILE_ADDRESS + "-cs");
+        
+        getChecksums.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
+                fileids, csType, csurl, testEventHandler);
+        
+        addStep("Validate the sequence of operation events for the getChecksumClient", 
+                "Should be in correct order.");
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PartiallyComplete);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+        
+        
+    }
 }

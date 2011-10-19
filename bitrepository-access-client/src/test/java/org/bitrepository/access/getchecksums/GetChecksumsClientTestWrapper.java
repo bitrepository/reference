@@ -28,6 +28,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
@@ -52,7 +53,7 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
 
     @Override
     public Map<String, ResultingChecksums> getChecksums(Collection<String> pillarIDs, FileIDs fileIDs,
-            ChecksumSpecs checksumSpec, EventHandler eventHandler) {
+            ChecksumSpecTYPE checksumSpec, EventHandler eventHandler) {
         testEventManager.addStimuli("Calling getChecksums(" + pillarIDs + ", " + fileIDs.getFileID() 
                 + ", " + checksumSpec + ")");
         return getChecksumsClientInstance.getChecksums(pillarIDs, fileIDs, checksumSpec, eventHandler);
@@ -60,7 +61,7 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
 
     @Override
     public Map<String, ResultingChecksums> getChecksums(Collection<String> pillarIDs, FileIDs fileIDs,
-            ChecksumSpecs checksumSpec) throws NoPillarFoundException,
+            ChecksumSpecTYPE checksumSpec) throws NoPillarFoundException,
             OperationTimeOutException, OperationFailedException {
         testEventManager.addStimuli("Calling getChecksums(" + pillarIDs + ", " + fileIDs.getFileID() 
                 + ", " + checksumSpec + ")");
@@ -69,7 +70,7 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
 
     @Override
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs,
-            ChecksumSpecs checksumSpec, URL addressForResult,
+            ChecksumSpecTYPE checksumSpec, URL addressForResult,
             EventHandler eventHandler) {
         testEventManager.addStimuli("Calling getChecksums(" + pillarIDs + ", " + fileIDs.getFileID() 
                 + ", " + checksumSpec + ", " + addressForResult + ")");
@@ -78,7 +79,7 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
 
     @Override
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs,
-            ChecksumSpecs checksumSpec, URL addressForResult)
+            ChecksumSpecTYPE checksumSpec, URL addressForResult)
             throws NoPillarFoundException, OperationTimeOutException,
             OperationFailedException {
         testEventManager.addStimuli("Calling getChecksums(" + pillarIDs + ", " + fileIDs.getFileID() 

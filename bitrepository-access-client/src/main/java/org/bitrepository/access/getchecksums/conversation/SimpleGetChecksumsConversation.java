@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bitrepository.access.getchecksums.selector.PillarSelectorForGetChecksums;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
@@ -75,7 +76,7 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<Map<Str
     /** The exception caught if the operation failed.*/
     OperationFailedException operationFailedException;
     /** The specifications for which checksums to retrieve.*/
-    final ChecksumSpecs checksumSpecifications;
+    final ChecksumSpecTYPE checksumSpecifications;
 
     /**
      * Constructor.
@@ -88,7 +89,7 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<Map<Str
      * @param eventHandler The handler of events.
      */
     public SimpleGetChecksumsConversation(MessageSender messageSender, Settings settings, URL url,
-            FileIDs fileIds, ChecksumSpecs checksumsSpecs, Collection<String> pillars, EventHandler eventHandler) {
+            FileIDs fileIds, ChecksumSpecTYPE checksumsSpecs, Collection<String> pillars, EventHandler eventHandler) {
         super(messageSender, UUID.randomUUID().toString());
         
         this.messageSender = messageSender;

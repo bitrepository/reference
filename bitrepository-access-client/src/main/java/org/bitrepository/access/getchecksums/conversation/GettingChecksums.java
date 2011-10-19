@@ -106,14 +106,12 @@ public class GettingChecksums extends GetChecksumsState {
         getChecksumsRequest.setCorrelationID(conversation.getConversationID());
         getChecksumsRequest.setFileIDs(conversation.fileIDs);
         getChecksumsRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
-        // TODO
-//        getChecksumsRequest.setFileChecksumSpec(conversation.checksumSpecifications);
+        getChecksumsRequest.setFileChecksumSpec(conversation.checksumSpecifications);
         getChecksumsRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         getChecksumsRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         
         // TODO these are missing:
         getChecksumsRequest.setAuditTrailInformation(null);
-        getChecksumsRequest.setFileChecksumSpec(null);
         
         // Sending one request to each of the identified pillars.
         for(Entry<String, String> pillarDestination : pillarDestinations.entrySet()) {

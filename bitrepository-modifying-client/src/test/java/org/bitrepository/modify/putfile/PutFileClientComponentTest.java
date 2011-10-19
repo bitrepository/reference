@@ -99,6 +99,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getTo()
                             ));
         }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
 
         addStep("Make response for the pillar.", "The client should then send the actual PutFileRequest.");
         

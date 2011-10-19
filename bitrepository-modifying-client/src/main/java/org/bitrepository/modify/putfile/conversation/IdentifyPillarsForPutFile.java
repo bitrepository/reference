@@ -92,6 +92,11 @@ public class IdentifyPillarsForPutFile extends PutFileState {
         identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         identifyRequest.setTo(conversation.settings.getCollectionDestination());
 
+        if (conversation.eventHandler != null) {
+            conversation.eventHandler.handleEvent(new DefaultEvent(
+                    OperationEventType.IdentifyPillarsRequestSent, "Identifying pillars for putting file " + 
+                            conversation.fileID));
+        }
         conversation.messageSender.sendMessage(identifyRequest);
         timer.schedule(timerTask, 
                 conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());

@@ -85,7 +85,7 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
         if (conversation.eventHandler != null) {
             conversation.eventHandler.handleEvent(new DefaultEvent(
                     OperationEventType.IdentifyPillarsRequestSent, "Identifying pillars for getting file " + 
-            conversation.fileID));
+                            conversation.fileID));
         }
         timer.schedule(identifyTimeoutTask,
                 conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());

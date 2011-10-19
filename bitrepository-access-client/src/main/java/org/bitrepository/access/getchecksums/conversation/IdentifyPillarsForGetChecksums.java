@@ -73,6 +73,11 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
         identifyRequest.setAuditTrailInformation(null);
         identifyRequest.setFileChecksumSpec(null);
 
+        if (conversation.eventHandler != null) {
+            conversation.eventHandler.handleEvent(new DefaultEvent(
+                    OperationEventType.IdentifyPillarsRequestSent, "Identifying pillars for getting file " + 
+                            conversation.fileIDs));
+        }
         conversation.messageSender.sendMessage(identifyRequest);
         timer.schedule(identifyTimeoutTask,
                         conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());

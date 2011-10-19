@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.bitrepository.access.getchecksums.conversation.SimpleGetChecksumsConversation;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
@@ -78,7 +79,7 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
     
     @Override
     public Map<String, ResultingChecksums> getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, 
-            ChecksumSpecs checksumSpec, EventHandler eventHandler) {
+            ChecksumSpecTYPE checksumSpec, EventHandler eventHandler) {
         ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "Collection<String> pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
         ArgumentValidator.checkNotNull(checksumSpec, "ChecksumSpecTYPE checksumSpec");
@@ -112,7 +113,7 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
 
     @Override
     public Map<String, ResultingChecksums> getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, 
-            ChecksumSpecs checksumSpec) throws NoPillarFoundException, OperationTimeOutException, 
+            ChecksumSpecTYPE checksumSpec) throws NoPillarFoundException, OperationTimeOutException, 
             OperationFailedException {
         ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "Collection<String> pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
@@ -131,7 +132,7 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
     }
 
     @Override
-    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, URL addressForResult,
+    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, URL addressForResult,
             EventHandler eventHandler) {
         ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "Collection<String> pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
@@ -153,7 +154,7 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
     }
 
     @Override
-    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, URL addressForResult)
+    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, URL addressForResult)
             throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "Collection<String> pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");

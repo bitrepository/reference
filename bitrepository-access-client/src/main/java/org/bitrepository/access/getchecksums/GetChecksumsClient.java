@@ -28,6 +28,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
@@ -53,7 +54,7 @@ public interface GetChecksumsClient {
      * be of type <code>GetChecksumsCompleteEvent</code>.
      */
     public Map<String, ResultingChecksums> getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, 
-            ChecksumSpecs checksumSpec, EventHandler eventHandler);
+            ChecksumSpecTYPE checksumSpec, EventHandler eventHandler);
     
     /**
      * Method for retrieving a checksums for a set of files from a specific pillar. The method will block until the 
@@ -68,7 +69,7 @@ public interface GetChecksumsClient {
      * @throws OperationFailedException The operation failed.
      */
     public Map<String, ResultingChecksums> getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, 
-            ChecksumSpecs checksumSpec) throws NoPillarFoundException, OperationTimeOutException, 
+            ChecksumSpecTYPE checksumSpec) throws NoPillarFoundException, OperationTimeOutException, 
             OperationFailedException;
     
     /**
@@ -82,7 +83,7 @@ public interface GetChecksumsClient {
      * @param eventHandler The handler which should receive notifications of the events occurring in connection with 
      * the pillar communication. 
      */
-    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, 
+    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
             URL addressForResult, EventHandler eventHandler);
     
     /**
@@ -98,7 +99,7 @@ public interface GetChecksumsClient {
      * @throws OperationTimeOutException The get checksum request timeout.  
      * @throws OperationFailedException The operation failed.
      */
-    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecs checksumSpec, 
+    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
             URL addressForResult)
     throws NoPillarFoundException, OperationTimeOutException, OperationFailedException;
 }
