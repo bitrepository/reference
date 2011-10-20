@@ -77,6 +77,10 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<Map<Str
     OperationFailedException operationFailedException;
     /** The specifications for which checksums to retrieve.*/
     final ChecksumSpecTYPE checksumSpecifications;
+    /** The text audittrail information for requesting the operation.*/
+    final String auditTrailInformation;
+    
+    Map<String, ResultingChecksums> mapOfResults = null;
 
     /**
      * Constructor.
@@ -89,7 +93,8 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<Map<Str
      * @param eventHandler The handler of events.
      */
     public SimpleGetChecksumsConversation(MessageSender messageSender, Settings settings, URL url,
-            FileIDs fileIds, ChecksumSpecTYPE checksumsSpecs, Collection<String> pillars, EventHandler eventHandler) {
+            FileIDs fileIds, ChecksumSpecTYPE checksumsSpecs, Collection<String> pillars, EventHandler eventHandler,
+            String auditTrailInformation) {
         super(messageSender, UUID.randomUUID().toString());
         
         this.messageSender = messageSender;
@@ -99,20 +104,25 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<Map<Str
         this.selector = new PillarSelectorForGetChecksums(pillars);
         this.eventHandler = eventHandler;
         this.checksumSpecifications = checksumsSpecs;
+        this.auditTrailInformation = auditTrailInformation;
     }
 
     @Override
     public boolean hasEnded() {
         return conversationState instanceof GetChecksumsFinished;
     }
-
+    
     @Override
     public Map<String,ResultingChecksums> getResult() {
-        if(hasEnded()) {
-            return ((GetChecksumsFinished) conversationState).getResults();
-        } else {
-            return null;
-        }
+        return mapOfResults;
+    }
+    
+    /**
+     * Method for reporting the results of a conversation.
+     * @param results The results.
+     */
+    void setResults(Map<String, ResultingChecksums> results) {
+        this.mapOfResults = results;
     }
 
     @Override

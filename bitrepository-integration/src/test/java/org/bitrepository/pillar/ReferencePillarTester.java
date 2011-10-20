@@ -208,7 +208,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         URL csurl = new URL(FILE_ADDRESS + "-cs");
         
         getChecksums.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
-                fileids, csType, csurl, testEventHandler);
+                fileids, csType, csurl, testEventHandler, "AuditTrail: TESTING!!!");
         
         addStep("Validate the sequence of operation events for the getChecksumClient", 
                 "Should be in correct order.");

@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.protocol.eventhandler.EventHandler;
@@ -41,51 +40,6 @@ import org.bitrepository.protocol.exceptions.OperationTimeOutException;
  * The <code>GetChecksumsClient</code> is used as a handle for the Bit Repository getChecksums operation.
  */
 public interface GetChecksumsClient {
-
-    /**
-     * Method for retrieving a checksums for a set of files from a specific pillar. The progress of the operation can be 
-     * followed though the supplied event handler.
-     *
-     * @param pillarIDs The list of IDs for the pillars, where the checksum should be retrieved from.
-     * @param fileIDs Defines the set of files.
-     * @param checksumSpec Specification of how the checksums should be calculated.
-     * @param eventHandler The handler which should receive notifications of the events occurring in connection with 
-     * the pillar communication. The result of this operation can be retrieved from the last complete event, which will 
-     * be of type <code>GetChecksumsCompleteEvent</code>.
-     */
-    public Map<String, ResultingChecksums> getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, 
-            ChecksumSpecTYPE checksumSpec, EventHandler eventHandler);
-    
-    /**
-     * Method for retrieving a checksums for a set of files from a specific pillar. The method will block until the 
-     * result has been returned by the pillar or a timeout has occurred.
-     *
-     * @param pillarIDs The list of IDs for the pillars, where the checksum should be retrieved from.
-     * @param fileIDs Defines the set of files.
-     * @param checksumSpec Specification of how the checksums should be calculated.
-     * 
-     * @throws NoPillarFoundException The identify request didn't cause the pillar to respond.  
-     * @throws OperationTimeOutException The get checksum request timeout.  
-     * @throws OperationFailedException The operation failed.
-     */
-    public Map<String, ResultingChecksums> getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, 
-            ChecksumSpecTYPE checksumSpec) throws NoPillarFoundException, OperationTimeOutException, 
-            OperationFailedException;
-    
-    /**
-     * Method for retrieving a checksums for a set of files from a specific pillar. The progress of the operation can be 
-     * followed though the supplied event handler.
-     *
-     * @param pillarIDs The list of IDs for the pillars, where the checksum should be retrieved from.
-     * @param fileIDs Defines the set of files.
-     * @param checksumSpec Specification of how the checksums should be calculated.
-     * @param addressForResult The address to upload the calculated checksums to.
-     * @param eventHandler The handler which should receive notifications of the events occurring in connection with 
-     * the pillar communication. 
-     */
-    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
-            URL addressForResult, EventHandler eventHandler);
-    
     /**
      * Method for retrieving a checksums for a set of files from a specific pillar. The method will block until the 
      * result has been uploaded by the pillar or a timeout has occurred.
@@ -93,13 +47,37 @@ public interface GetChecksumsClient {
      * @param pillarIDs The list of IDs for the pillars, where the checksum should be retrieved from.
      * @param fileIDs Defines the set of files.
      * @param checksumSpec Specification of how the checksums should be calculated.
-     * @param addressForResult The address to upload the calculated checksums to.
+     * @param addressForResult [OPTIONAL] The address to upload the calculated checksums to. If this is null, then the
+     * results will be retrieved through the message.
+     * @param eventHandler [OPTIONAL] The handler which should receive notifications of the events occurring in 
+     * connection with the pillar communication. This is allowed to be null.
+     * @return The map between the pillars and their results.
      * 
      * @throws NoPillarFoundException The identify request didn't cause the pillar to respond.  
      * @throws OperationTimeOutException The get checksum request timeout.  
      * @throws OperationFailedException The operation failed.
      */
+    public Map<String, ResultingChecksums> getChecksumsBlocking(Collection<String> pillarIDs, FileIDs fileIDs, 
+            ChecksumSpecTYPE checksumSpec, URL addressForResult, EventHandler eventHandler, 
+            String auditTrailInformation) throws NoPillarFoundException, OperationTimeOutException, 
+            OperationFailedException;
+    
+    /**
+     * Method for retrieving a checksums for a set of files from a specific pillar. The method will not block until 
+     * the conversation has finished. It will only initiate the conversation.
+     *
+     * @param pillarIDs The list of IDs for the pillars, where the checksum should be retrieved from.
+     * @param fileIDs Defines the set of files.
+     * @param checksumSpec Specification of how the checksums should be calculated.
+     * @param addressForResult [OPTIONAL] The address to upload the calculated checksums to. If this is null, then the
+     * results will be retrieved through the message.
+     * @param eventHandler [OPTIONAL] The handler which should receive notifications of the events occurring in 
+     * connection with the pillar communication. This is allowed to be null.
+     * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation call. 
+     * 
+     * @throws OperationFailedException If the conversation cannot be initiated.
+     */
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
-            URL addressForResult)
-    throws NoPillarFoundException, OperationTimeOutException, OperationFailedException;
+            URL addressForResult, EventHandler eventHandler, String auditTrailInformation)
+            throws OperationFailedException;
 }

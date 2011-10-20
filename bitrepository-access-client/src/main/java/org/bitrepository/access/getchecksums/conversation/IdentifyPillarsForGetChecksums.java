@@ -37,10 +37,18 @@ import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.exceptions.NoPillarFoundException;
-import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Models the behavior of a GetChecksums conversation during the identification phase. That is, it begins with the 
+ * sending of <code>IdentifyPillarsForGetChecksumsRequest</code> messages and finishes with on the reception of the 
+ * <code>IdentifyPillarsForGetChecksumsResponse</code> messages from the responding pillars.
+ * 
+ * Note that this is only used by the GetChecksumsConversation in the same package, therefore the visibility is package 
+ * protected.
+ * This is the initial state for the whole GetChecksums communication.
+ */
 public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -49,6 +57,10 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
     /** The timer task for timeout of identify in this conversation. */
     final TimerTask identifyTimeoutTask = new IdentifyTimerTask();
 
+    /**
+     * Constructor.
+     * @param conversation The conversation for this state.
+     */
     public IdentifyPillarsForGetChecksums(SimpleGetChecksumsConversation conversation) {
         super(conversation);
     }
@@ -68,10 +80,8 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
         identifyRequest.setFileIDs(conversation.fileIDs);
         identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         identifyRequest.setTo(conversation.settings.getCollectionDestination());
-        
-        // TODO insert these variables?
-        identifyRequest.setAuditTrailInformation(null);
-        identifyRequest.setFileChecksumSpec(null);
+        identifyRequest.setAuditTrailInformation(conversation.auditTrailInformation);
+        identifyRequest.setFileChecksumSpec(conversation.checksumSpecifications);
 
         if (conversation.eventHandler != null) {
             conversation.eventHandler.handleEvent(new DefaultEvent(

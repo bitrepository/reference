@@ -45,15 +45,15 @@ import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationTimeOutException;
-import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Models the behavior of a GetChecksums conversation during the file exchange phase. That is, it begins with the sending of
- * a <code>GetFileRequest</code> and finishes with on the reception of a <code>GetFileFinalResponse</code> message.
+ * Models the behavior of a GetChecksums conversation during the operation phase. That is, it begins with the 
+ * sending of <code>GetChecksumsRequest</code> messages and finishes with on the reception of the 
+ * <code>GetChecksumsFinalResponse</code> messages from the responding pillars.
  * 
- * Note that this is only used by the GetFileConversation in the same package, therefore the visibility is package 
+ * Note that this is only used by the GetChecksumsConversation in the same package, therefore the visibility is package 
  * protected.
  */
 public class GettingChecksums extends GetChecksumsState {
@@ -109,9 +109,7 @@ public class GettingChecksums extends GetChecksumsState {
         getChecksumsRequest.setFileChecksumSpec(conversation.checksumSpecifications);
         getChecksumsRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         getChecksumsRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        
-        // TODO these are missing:
-        getChecksumsRequest.setAuditTrailInformation(null);
+        getChecksumsRequest.setAuditTrailInformation(conversation.auditTrailInformation);
         
         // Sending one request to each of the identified pillars.
         for(Entry<String, String> pillarDestination : pillarDestinations.entrySet()) {
@@ -196,7 +194,8 @@ public class GettingChecksums extends GetChecksumsState {
                         new DefaultEvent(OperationEvent.OperationEventType.Complete, 
                                 "All pillars have delivered their checksums."));
             }
-            conversation.conversationState = new GetChecksumsFinished(conversation, results);
+            conversation.setResults(results);
+            conversation.conversationState = new GetChecksumsFinished(conversation);
         }
     }
     

@@ -114,7 +114,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be supplied.", 
         "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillar(s).");
         getChecksumsClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
-                DEFAULT_CHECKSUM_SPECS, deliveryUrl, testEventHandler);
+                DEFAULT_CHECKSUM_SPECS, deliveryUrl, testEventHandler, "TEST-AUDIT");
 
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
@@ -319,7 +319,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be supplied.", 
                 "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillar(s).");
         getChecksumsClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
-                DEFAULT_CHECKSUM_SPECS, deliveryUrl, testEventHandler);
+                DEFAULT_CHECKSUM_SPECS, deliveryUrl, testEventHandler, "TEST-AUDIT");
 
         if (useMockupPillar()) {
             bitRepositoryCollectionDestination.waitForMessage(IdentifyPillarsForGetChecksumsRequest.class);
@@ -359,7 +359,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be supplied.", 
                 "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillar(s).");
         getChecksumsClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
-                DEFAULT_CHECKSUM_SPECS, deliveryUrl, testEventHandler);
+                DEFAULT_CHECKSUM_SPECS, deliveryUrl, testEventHandler, "TEST-AUDIT");
 
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
@@ -419,7 +419,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be supplied.", 
         "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillar(s).");
         getChecksumsClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
-                DEFAULT_CHECKSUM_SPECS, deliveryUrl, testEventHandler);
+                DEFAULT_CHECKSUM_SPECS, deliveryUrl, testEventHandler, "TEST-AUDIT");
 
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
@@ -487,8 +487,13 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         
         @Override
         public void run() {
-            results = getChecksumsClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
-                    csSpecs, eventHandler);
+            try {
+                results = getChecksumsClient.getChecksumsBlocking(
+                        settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
+                        csSpecs, null, eventHandler, "TEST-AUDIT");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     };
 

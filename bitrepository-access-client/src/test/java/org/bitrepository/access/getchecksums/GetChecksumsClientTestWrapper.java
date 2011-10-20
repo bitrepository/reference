@@ -52,38 +52,25 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
     }
 
     @Override
-    public Map<String, ResultingChecksums> getChecksums(Collection<String> pillarIDs, FileIDs fileIDs,
-            ChecksumSpecTYPE checksumSpec, EventHandler eventHandler) {
-        testEventManager.addStimuli("Calling getChecksums(" + pillarIDs + ", " + fileIDs.getFileID() 
-                + ", " + checksumSpec + ")");
-        return getChecksumsClientInstance.getChecksums(pillarIDs, fileIDs, checksumSpec, eventHandler);
-    }
-
-    @Override
-    public Map<String, ResultingChecksums> getChecksums(Collection<String> pillarIDs, FileIDs fileIDs,
-            ChecksumSpecTYPE checksumSpec) throws NoPillarFoundException,
-            OperationTimeOutException, OperationFailedException {
-        testEventManager.addStimuli("Calling getChecksums(" + pillarIDs + ", " + fileIDs.getFileID() 
-                + ", " + checksumSpec + ")");
-        return getChecksumsClientInstance.getChecksums(pillarIDs, fileIDs, checksumSpec);
-    }
-
-    @Override
-    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs,
-            ChecksumSpecTYPE checksumSpec, URL addressForResult,
-            EventHandler eventHandler) {
-        testEventManager.addStimuli("Calling getChecksums(" + pillarIDs + ", " + fileIDs.getFileID() 
-                + ", " + checksumSpec + ", " + addressForResult + ")");
-        getChecksumsClientInstance.getChecksums(pillarIDs, fileIDs, checksumSpec, addressForResult, eventHandler);
-    }
-
-    @Override
-    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs,
-            ChecksumSpecTYPE checksumSpec, URL addressForResult)
-            throws NoPillarFoundException, OperationTimeOutException,
+    public Map<String, ResultingChecksums> getChecksumsBlocking(Collection<String> pillarIDs, FileIDs fileIDs, 
+            ChecksumSpecTYPE checksumSpec, URL addressForResult, EventHandler eventHandler, 
+            String auditTrailInformation) throws NoPillarFoundException, OperationTimeOutException, 
             OperationFailedException {
         testEventManager.addStimuli("Calling getChecksums(" + pillarIDs + ", " + fileIDs.getFileID() 
-                + ", " + checksumSpec + ", " + addressForResult + ")");
-        getChecksumsClientInstance.getChecksums(pillarIDs, fileIDs, checksumSpec, addressForResult);        
+                + ", " + checksumSpec + ", " + addressForResult + ", " + eventHandler + ", " 
+                + auditTrailInformation + ")");
+        return getChecksumsClientInstance.getChecksumsBlocking(pillarIDs, fileIDs, checksumSpec, addressForResult, 
+                eventHandler, auditTrailInformation);
+    }
+
+    @Override
+    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
+            URL addressForResult, EventHandler eventHandler, String auditTrailInformation)
+            throws OperationFailedException {
+        testEventManager.addStimuli("Calling getChecksums(" + pillarIDs + ", " + fileIDs.getFileID() 
+                + ", " + checksumSpec + ", " + addressForResult + ", " + eventHandler + ", " 
+                + auditTrailInformation + ")");
+        getChecksumsClientInstance.getChecksums(pillarIDs, fileIDs, checksumSpec, addressForResult, eventHandler, 
+                auditTrailInformation);        
     }
 }

@@ -69,7 +69,7 @@ public class TestGetChecksumsMessageFactory extends TestMessageFactory {
         identifyPillarsForGetChecksumsRequest.setReplyTo(receivedIdentifyRequestMessage.getReplyTo());
         identifyPillarsForGetChecksumsRequest.setTo(toTopic);
         
-        identifyPillarsForGetChecksumsRequest.setAuditTrailInformation(null);
+        identifyPillarsForGetChecksumsRequest.setAuditTrailInformation(receivedIdentifyRequestMessage.getAuditTrailInformation());
         identifyPillarsForGetChecksumsRequest.setFileChecksumSpec(receivedIdentifyRequestMessage.getFileChecksumSpec());
         identifyPillarsForGetChecksumsRequest.setFileIDs(receivedIdentifyRequestMessage.getFileIDs());
         
@@ -112,7 +112,7 @@ public class TestGetChecksumsMessageFactory extends TestMessageFactory {
         getChecksumsRequest.setFileChecksumSpec(receivedGetChecksumsRequest.getFileChecksumSpec());
         getChecksumsRequest.setFileIDs(receivedGetChecksumsRequest.getFileIDs());
         getChecksumsRequest.setResultAddress(receivedGetChecksumsRequest.getResultAddress());
-        
+        getChecksumsRequest.setAuditTrailInformation(receivedGetChecksumsRequest.getAuditTrailInformation());
         return getChecksumsRequest;
     }
 
