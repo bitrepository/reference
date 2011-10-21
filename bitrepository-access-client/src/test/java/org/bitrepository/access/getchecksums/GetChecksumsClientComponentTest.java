@@ -32,13 +32,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access.getfile.BasicGetFileClient;
-import org.bitrepository.access.getfile.GetFileClient;
-import org.bitrepository.access.getfile.GetFileClientTestWrapper;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecs.ChecksumSpecsItems;
 import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
@@ -465,7 +460,8 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(completeMsg);
         }
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Failed);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Warning);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
     }
     
     private class ChecksumCallThread extends Thread {

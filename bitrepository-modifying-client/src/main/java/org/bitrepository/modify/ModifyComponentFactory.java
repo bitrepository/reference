@@ -31,7 +31,6 @@ import org.bitrepository.modify.putfile.ConversationBasedPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.mediator.ConversationMediatorManager;
-import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
  * Factory class for the access module. 

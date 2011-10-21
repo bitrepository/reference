@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.protocol.eventhandler.EventHandler;

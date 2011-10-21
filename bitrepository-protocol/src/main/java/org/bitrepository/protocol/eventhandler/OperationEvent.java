@@ -26,7 +26,7 @@ package org.bitrepository.protocol.eventhandler;
 
 /**
  * Container for information regarding events occurring during an operation on the Bit Repository.  
- * @param <T> The type of specialised state for this event.
+ * @param <T> The type of specialized state for this event.
  */
 public interface OperationEvent<T> {
     /**
@@ -57,7 +57,8 @@ public interface OperationEvent<T> {
         Complete, 
         Failed,
         NoPillarFound,
-        IdentifyPillarTimeout 
+        IdentifyPillarTimeout, 
+        Warning 
     }
     
     /**

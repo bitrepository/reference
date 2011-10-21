@@ -27,7 +27,6 @@ package org.bitrepository.access.getfile;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.testng.Assert;
-import org.testng.annotations.Test;
 
 public class GetFileClientBlockingTest extends AbstractGetFileClientTest  {
 

@@ -53,7 +53,6 @@ import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
-import org.bitrepository.protocol.exceptions.ConversationTimedOutException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageSender;
 import org.slf4j.Logger;

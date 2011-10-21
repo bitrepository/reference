@@ -60,7 +60,6 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.conversation.Conversation;
 import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

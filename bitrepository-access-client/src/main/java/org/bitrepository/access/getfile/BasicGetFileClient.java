@@ -40,7 +40,6 @@ import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 import org.bitrepository.protocol.mediator.ConversationMediator;
-import org.bitrepository.protocol.mediator.ConversationMediatorManager;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -35,7 +35,6 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.mediator.ConversationMediatorManager;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
  * Factory class for the access module.

@@ -118,6 +118,9 @@ public class ConversationEventMonitor {
      */
     public void warning(String info) {
         log.warn(info);
+        if (eventHandler != null) {
+            eventHandler.handleEvent(new DefaultEvent(OperationEventType.Warning, info));
+        }
     }
     
     public void warning(String info, Exception e) {

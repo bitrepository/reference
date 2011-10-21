@@ -27,7 +27,6 @@ package org.bitrepository.access.getfile.conversation;
 import java.net.URL;
 import java.util.UUID;
 
-import org.bitrepository.access.getchecksums.conversation.IdentifyPillarsForGetChecksums;
 import org.bitrepository.access.getfile.selectors.PillarSelectorForGetFile;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;

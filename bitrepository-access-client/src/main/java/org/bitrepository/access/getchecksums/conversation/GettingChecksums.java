@@ -40,7 +40,6 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.conversation.FlowController;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.slf4j.Logger;
@@ -121,7 +120,7 @@ public class GettingChecksums extends GetChecksumsState {
 
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsResponse response) {
-        log.warn("(ConversationID: " + conversation.getConversationID() 
+        monitor.warning("(ConversationID: " + conversation.getConversationID() 
                 + ") Received IdentifyPillarsForGetChecksumsResponse from " + response.getPillarID() 
                 + " after the GetChecksumsRequest has been sent.");
     }
@@ -134,15 +133,9 @@ public class GettingChecksums extends GetChecksumsState {
 
     @Override
     public void onMessage(GetChecksumsFinalResponse response) {
-        log.info("(ConversationID: " + conversation.getConversationID() + ") "
-                + "Received GetChecksumsFinalResponse from " + response.getPillarID() + ": \n{}", response);
-
         // Remove pillar from outstanding, if it has not yet replied.
         if(!outstandingPillars.contains(response.getPillarID())) {
             monitor.warning("(ConversationID: " + conversation.getConversationID() + ") "
-                    + "Received unexpected final response from " + response.getPillarID() 
-                    + ". Perhaps received previously.");
-            log.warn("(ConversationID: " + conversation.getConversationID() + ") "
                     + "Received unexpected final response from " + response.getPillarID() 
                     + ". Perhaps received previously.");
         } else {

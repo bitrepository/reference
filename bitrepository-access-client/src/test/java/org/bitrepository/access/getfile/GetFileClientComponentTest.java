@@ -30,7 +30,6 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access.getchecksums.BasicGetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
@@ -312,7 +311,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getType(), OperationEventType.Failed);
     }
 
-    @Test(groups = {"testfirst"})
+    @Test(groups = {"regressiontest"})
     public void conversationTimeout() throws Exception {
         addDescription("Tests the the GetFileClient handles lack of IdentifyPillarResponses gracefully  ");
         addStep("Set the number of pillars to 1 and a 3 second timeout for the conversation.", "");
