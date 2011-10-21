@@ -30,12 +30,14 @@ import java.net.URL;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.putfile.conversation.SimplePutFileConversation;
+import org.bitrepository.protocol.conversation.FlowController;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.protocol.mediator.ConversationMediator;
+import org.bitrepository.protocol.mediator.ConversationMediatorManager;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +50,7 @@ public class ConversationBasedPutFileClient implements PutFileClient {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     /** The mediator for the conversations for the PutFileClient.*/
-    private final ConversationMediator<SimplePutFileConversation> conversationMediator;
+    private final ConversationMediator conversationMediator;
     /** The message bus for communication.*/
     private final MessageBus bus;
     /** The settings. */
@@ -59,9 +61,10 @@ public class ConversationBasedPutFileClient implements PutFileClient {
      * @param messageBus The messagebus for communication.
      * @param settings The configurations and settings.
      */
-    public ConversationBasedPutFileClient(MessageBus messageBus, Settings settings) {
-        this.conversationMediator = new CollectionBasedConversationMediator<SimplePutFileConversation>(settings, messageBus,
-                settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+    public ConversationBasedPutFileClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings) {
+        ArgumentValidator.checkNotNull(messageBus, "messageBus");
+        ArgumentValidator.checkNotNull(settings, "settings");
+        this.conversationMediator = conversationMediator;;
         this.bus = messageBus;
         this.settings = settings;
     }
@@ -73,7 +76,7 @@ public class ConversationBasedPutFileClient implements PutFileClient {
         
         try {
             SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
-                    BigInteger.valueOf(sizeOfFile), null, null, eventHandler);
+                    BigInteger.valueOf(sizeOfFile), null, null, eventHandler, new FlowController(settings, false));
             conversationMediator.addConversation(conversation);
             conversation.startConversation();
         } catch (OperationFailedException e) {
@@ -90,7 +93,7 @@ public class ConversationBasedPutFileClient implements PutFileClient {
         ArgumentValidator.checkNotNull(fileId, "String fileId");
         
         SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
-                BigInteger.valueOf(sizeOfFile), null, null, null);
+                BigInteger.valueOf(sizeOfFile), null, null, null, new FlowController(settings, false));
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }

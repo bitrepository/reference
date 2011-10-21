@@ -24,14 +24,19 @@
  */
 package org.bitrepository.modify.putfile.conversation;
 
+import org.bitrepository.protocol.conversation.ConversationEventMonitor;
+import org.bitrepository.protocol.conversation.ConversationState;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
+import org.bitrepository.protocol.messagebus.MessageSender;
 
 /**
  * The interface for states of the PutFile communication.
  */
-public abstract class PutFileState extends AbstractMessageListener {
+public abstract class PutFileState extends AbstractMessageListener implements ConversationState {
     /** The conversation in the given state.*/
     protected final SimplePutFileConversation conversation;
+    protected final ConversationEventMonitor monitor;
+    protected final MessageSender messageSender;
     
     /**
      * Constructor.
@@ -39,6 +44,8 @@ public abstract class PutFileState extends AbstractMessageListener {
      */
     protected PutFileState(SimplePutFileConversation conversation) {
         this.conversation = conversation;
+        this.monitor = conversation.getMonitor();
+        this.messageSender = conversation.messageSender;
     }
     
     /**
@@ -46,5 +53,13 @@ public abstract class PutFileState extends AbstractMessageListener {
      */
     protected void endConversation() {
         conversation.conversationState = new PutFileFinished(conversation);
+    }
+    
+    /**
+     * Should be overridden by the finished state to return true
+     */
+    @Override
+    public boolean hasEnded() {
+        return false;
     }
 }

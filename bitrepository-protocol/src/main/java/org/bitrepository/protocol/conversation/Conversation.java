@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol.conversation;
 
+import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.exceptions.ConversationTimedOutException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageListener;
@@ -50,7 +51,7 @@ import org.bitrepository.protocol.messagebus.MessageListener;
  *
  * @param <T> The outcome of the conversation.
  */
-public interface Conversation<T> extends MessageListener {
+public interface Conversation extends MessageListener {
     /**
      * Get the conversation ID for this conversation.
      *
@@ -66,6 +67,16 @@ public interface Conversation<T> extends MessageListener {
      * @return The start time of the conversation as set by the System.currentTimeMillis().
      */
     long getStartTime();
+    
+    /**
+     * @throws ConversationTimedOutException 
+     */
+    void startConversation() throws OperationFailedException;
+    
+    /**
+     * Ends the conversation. This means setting any relevant conversation state.
+     */
+    void endConversation();
 
     /**
      * Return whether this conversation has ended.
@@ -74,44 +85,10 @@ public interface Conversation<T> extends MessageListener {
      * @return Whether this conversation has ended.
      */
     boolean hasEnded();
-
-    /**
-     * Get the result of this conversation. This will be null, until the conversation has ended,
-     * and may be null after the conversation has ended, in case no result can be generated.
-     *
-     * @return The result of the conversation.
-     */
-    T getResult();
-
-    /**
-     * Block until the conversation is finished.
-     *
-     * @return The result of the conversation.
-     */
-    T waitFor();
-
-    /**
-     * Block until the conversation is finished, or until timeout has occurred.
-     *
-     * @param timeout Timeout (in milliseconds)
-     *
-     * @return The result of the conversation.
-     *
-     * @throws ConversationTimedOutException On timeout. A partial result MAY be available through
-     * {@link #getResult()}
-     *
-     */
-    T waitFor(long timeout) throws ConversationTimedOutException;
-
-    /**
-     * @throws ConversationTimedOutException 
-     * 
-     */
-    void startConversation() throws OperationFailedException;
     
     /**
      * Can be used to fail an conversation. This might be caused by a timeout or other event.
-     * @param message Description of the cause for this failure. 
+     * @param operationFailedEvent Contains information regarding the cause for the failure. 
      */
-    void failConversation(String message);
+    void failConversation(OperationFailedEvent operationFailedEvent);
 }

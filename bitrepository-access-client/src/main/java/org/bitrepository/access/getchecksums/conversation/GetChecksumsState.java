@@ -24,14 +24,17 @@
  */
 package org.bitrepository.access.getchecksums.conversation;
 
+import org.bitrepository.protocol.conversation.ConversationEventMonitor;
+import org.bitrepository.protocol.conversation.ConversationState;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 
 /**
  * Super class for the concrete GetChecksums state handlers.
  */
-public abstract class GetChecksumsState extends AbstractMessageListener {
+public abstract class GetChecksumsState extends AbstractMessageListener implements ConversationState{
     /** The conversation, where the state belong.*/
     protected final SimpleGetChecksumsConversation conversation;
+    protected final ConversationEventMonitor monitor;
 
     /** 
      * The constructor for the indicated conversation.
@@ -39,6 +42,7 @@ public abstract class GetChecksumsState extends AbstractMessageListener {
      */
     public GetChecksumsState(SimpleGetChecksumsConversation conversation) {
         this.conversation = conversation;
+        this.monitor = conversation.getMonitor();
     }
 
     /**
@@ -46,5 +50,13 @@ public abstract class GetChecksumsState extends AbstractMessageListener {
      */
     protected void endConversation() {
         conversation.conversationState = new GetChecksumsFinished(conversation);
+    }
+    
+    /**
+     * Should be overridden by the finished state to return true
+     */
+    @Override
+    public boolean hasEnded() {
+        return false;
     }
 }

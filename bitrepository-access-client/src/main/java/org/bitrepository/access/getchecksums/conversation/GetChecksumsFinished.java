@@ -36,4 +36,17 @@ public class GetChecksumsFinished extends GetChecksumsState {
     public GetChecksumsFinished(SimpleGetChecksumsConversation conversation) {
         super(conversation);
     }
+
+    @Override
+    public void start() {
+        //Noting to do.
+    }
+    
+    /**
+     * Should be overridden by the finished state to return true
+     */
+    @Override
+    public boolean hasEnded() {
+        return true;
+    }
 }

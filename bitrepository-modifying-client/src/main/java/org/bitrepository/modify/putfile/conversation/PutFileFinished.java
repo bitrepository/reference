@@ -65,4 +65,14 @@ public class PutFileFinished extends PutFileState {
                 + "Received PutFileFinalResponse from '" + response.getPillarID() 
                 + "' after the PutFile has ended.");
     }
+    
+    @Override
+    public boolean hasEnded() {
+        return true;
+    }
+
+    @Override
+    public void start() {
+        //Nothing to do.
+    }
 }

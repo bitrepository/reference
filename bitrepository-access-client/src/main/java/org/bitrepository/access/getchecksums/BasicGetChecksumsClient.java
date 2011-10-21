@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.conversation.FlowController;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
@@ -42,6 +43,7 @@ import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 import org.bitrepository.protocol.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.protocol.mediator.ConversationMediator;
+import org.bitrepository.protocol.mediator.ConversationMediatorManager;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,18 +64,18 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
     private final MessageBus bus;
     
     /** The mediator which should manage the conversations. */
-    private final ConversationMediator<SimpleGetChecksumsConversation> conversationMediator;
+    private final ConversationMediator conversationMediator;
 
     /**
      * The constructor.
      * @param messageBus The messagebus for communication.
+     * @param conversationMediator2 
      * @param settings The settings for this instance.
      */
-    public BasicGetChecksumsClient(MessageBus messageBus, Settings settings) {
+    public BasicGetChecksumsClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings) {
         this.bus = messageBus;
         this.settings = settings;
-        conversationMediator = new CollectionBasedConversationMediator<SimpleGetChecksumsConversation>(settings, 
-                bus, settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        this.conversationMediator = conversationMediator;
     }
 
     @Override
@@ -89,8 +91,10 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
                 + pillarIDs + "' with the specifications '" + checksumSpec + "'. "
                 + "The result should be uploaded to '" + addressForResult + "'.");
 
-        SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(bus, settings, 
-                addressForResult, fileIDs, checksumSpec, pillarIDs, eventHandler, auditTrailInformation);
+        SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(
+                bus, settings, addressForResult, fileIDs, checksumSpec, pillarIDs, eventHandler, 
+                new FlowController(settings, true), auditTrailInformation);
+     
         try {
             conversationMediator.addConversation(conversation);
             conversation.startConversation();
@@ -127,8 +131,9 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
         log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"
                 + pillarIDs + "' with the specifications '" + checksumSpec + "'. "
                 + "The result should be uploaded to '" + addressForResult + "'.");
-        SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(bus, settings, 
-                addressForResult, fileIDs, checksumSpec, pillarIDs, eventHandler, auditTrailInformation);
+        SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(
+                bus, settings, addressForResult, fileIDs, checksumSpec, pillarIDs, eventHandler,  
+                new FlowController(settings, false), auditTrailInformation);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }

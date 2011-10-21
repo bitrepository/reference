@@ -23,23 +23,33 @@
  * #L%
  */
 package org.bitrepository.protocol.messagebus;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
-import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 
 /**
- * The place to create message buses.
+ * The place to get message buses. Only one message bus is created for each collection ID.
  */
-public class MessageBusFactory {
+public class MessageBusManager {
+    /** Map of the loaded mediators */
+    private static final Map<String,MessageBus> messageBusMap = new HashMap<String,MessageBus>();
+    
     /** Do not instantiate */
-    private MessageBusFactory() {}
+    private MessageBusManager() {}
 
     /**
      * Returns a new message bus instance based on the supplied configuration
      * @param configuration
      * @return
      */
-    public static MessageBus createMessageBus(MessageBusConfiguration configuration) {
-        return new ActiveMQMessageBus(configuration);
+    public static MessageBus getMessageBus(Settings settings) {
+        String collectionID = settings.getCollectionID();
+        if (!messageBusMap.containsKey(collectionID)) {
+            MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration());
+            messageBusMap.put(collectionID, messageBus);
+        }
+        return messageBusMap.get(collectionID);
     }
 }

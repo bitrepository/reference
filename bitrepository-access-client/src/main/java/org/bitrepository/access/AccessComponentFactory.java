@@ -26,14 +26,16 @@ package org.bitrepository.access;
 
 import org.bitrepository.access.getchecksums.BasicGetChecksumsClient;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
+import org.bitrepository.access.getfile.BasicGetFileClient;
 import org.bitrepository.access.getfile.GetFileClient;
-import org.bitrepository.access.getfile.SimpleGetFileClient;
 import org.bitrepository.access.getfileids.BasicGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.mediator.ConversationMediatorManager;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.messagebus.MessageBusFactory;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
  * Factory class for the access module.
@@ -81,9 +83,9 @@ public class AccessComponentFactory {
      * @return A GetFileClient.
      */
     public GetFileClient createGetFileClient(Settings settings) {
-        return new SimpleGetFileClient(
-                MessageBusFactory.createMessageBus(
-                        settings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration()),
+        return new BasicGetFileClient(
+                ProtocolComponentFactory.getInstance().getMessageBus(settings), 
+                ConversationMediatorManager.getConversationMediator(settings), 
                 settings);
     }
     
@@ -94,7 +96,8 @@ public class AccessComponentFactory {
      */
     public GetChecksumsClient createGetChecksumsClient(Settings settings) {
         return new BasicGetChecksumsClient(
-                MessageBusFactory.createMessageBus(settings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration()),
+                ProtocolComponentFactory.getInstance().getMessageBus(settings), 
+                ConversationMediatorManager.getConversationMediator(settings),
                 settings);
     }
 

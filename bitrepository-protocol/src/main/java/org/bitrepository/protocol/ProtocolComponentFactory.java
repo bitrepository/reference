@@ -31,10 +31,10 @@ import java.util.Map;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.configuration.FileExchangeConfiguration;
 import org.bitrepository.protocol.configuration.ProtocolConfiguration;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
  * Provides access to the different component in the protocol module (Spring/IOC wannabe)
@@ -85,12 +85,7 @@ public class ProtocolComponentFactory {
      * @return The messagebus for this collection.
      */
     public MessageBus getMessageBus(Settings settings) {
-      MessageBus bus = buses.get(settings.getCollectionSettings().getCollectionID());
-        if (bus == null) {
-            bus = new ActiveMQMessageBus(settings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration());
-            buses.put(settings.getCollectionSettings().getCollectionID(), bus);
-        }
-        return bus;
+        return MessageBusManager.getMessageBus(settings);
     }
 
     /**

@@ -59,18 +59,20 @@ import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.conversation.Conversation;
+import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Conversation handler that delegates messages to registered conversations.
  */
-public class CollectionBasedConversationMediator<T extends Conversation> implements ConversationMediator<T> {
+public class CollectionBasedConversationMediator implements ConversationMediator {
     /** Logger for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
     /** Registered conversations, mapping from correlation ID to conversation. */
-    private final Map<String, T> conversations;
+    private final Map<String, Conversation> conversations;
     /** The injected settings defining the mediator behavior */
     private final Settings settings;
     /** The timer used to schedule cleaning of conversations.
@@ -86,13 +88,11 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
      * @param messagebus The message bus to mediate messages on.
      * @param listenerDestination The destinations to mediate messages for.
      */
-    public CollectionBasedConversationMediator(
-            Settings settings, 
-            MessageBus messagebus,
-            String listenerDestination) {
+    public CollectionBasedConversationMediator(Settings settings) {
         log.debug("Initializing the CollectionBasedConversationMediator");
-        this.conversations = Collections.synchronizedMap(new HashMap<String, T>());
-        messagebus.addListener(listenerDestination, this);
+        this.conversations = Collections.synchronizedMap(new HashMap<String, Conversation>());
+        MessageBusManager.getMessageBus(settings).
+            addListener(settings.getReferenceSettings().getClientSettings().getReceiverDestination(), this);
         this.settings = settings;
         cleanTimer = new Timer(true);
         cleanTimer.scheduleAtFixedRate( new ConversationCleaner(), 0, 
@@ -100,7 +100,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     }
 
     @Override
-    public void addConversation(T conversation) {
+    public void addConversation(Conversation conversation) {
         conversations.put(conversation.getConversationID(), conversation);
     }
 
@@ -119,7 +119,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    conversation.failConversation(message);
+                    conversation.failConversation(new OperationFailedEvent(message));
                 }
             });
             t.start();
@@ -129,151 +129,151 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     @Override
     public void onMessage(Alarm message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
             log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-            "conversation.");
+                    "conversation.");
         }
     }
 
     @Override
     public void onMessage(GetAuditTrailsFinalResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
             log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-            "conversation.");
+                    "conversation.");
         }
     }
 
     @Override
     public void onMessage(GetAuditTrailsRequest message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
             log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-            "conversation.");
+                    "conversation.");
         }
     }
 
     @Override
     public void onMessage(GetAuditTrailsProgressResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
             log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-            "conversation.");
+                    "conversation.");
         }
     }
 
     @Override
     public void onMessage(GetChecksumsFinalResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
             log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-            "conversation.");
+                    "conversation.");
         }
     }
 
     @Override
     public void onMessage(GetChecksumsRequest message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
             log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-            "conversation.");
+                    "conversation.");
         }
     }
 
     @Override
     public void onMessage(GetChecksumsProgressResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
             log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-            "conversation.");
+                    "conversation.");
         }
     }
 
     @Override
     public void onMessage(GetFileFinalResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
             log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-            "conversation.");
+                    "conversation.");
         }
     }
 
     @Override
     public void onMessage(GetFileIDsFinalResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
             log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-            "conversation.");
+                    "conversation.");
         }
     }
 
     @Override
     public void onMessage(GetFileIDsRequest message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
             log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-            "conversation.");
+                    "conversation.");
         }
     }
 
     @Override
     public void onMessage(GetFileIDsProgressResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
             log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-            "conversation.");
+                    "conversation.");
         }
     }
 
     @Override
     public void onMessage(GetFileRequest message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
             log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-            "conversation.");
+                    "conversation.");
         }
     }
 
     @Override
     public void onMessage(GetFileProgressResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
@@ -285,7 +285,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     @Override
     public void onMessage(GetStatusRequest message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
@@ -297,7 +297,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     @Override
     public void onMessage(GetStatusProgressResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
@@ -309,7 +309,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     @Override
     public void onMessage(GetStatusFinalResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
@@ -321,7 +321,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
@@ -332,7 +332,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsRequest message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
@@ -343,7 +343,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     @Override
     public void onMessage(IdentifyPillarsForGetFileIDsResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
@@ -354,7 +354,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     @Override
     public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
@@ -365,7 +365,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     @Override
     public void onMessage(IdentifyPillarsForGetFileResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
@@ -376,7 +376,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     @Override
     public void onMessage(IdentifyPillarsForGetFileRequest message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
@@ -387,7 +387,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     @Override
     public void onMessage(IdentifyPillarsForPutFileResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
@@ -398,7 +398,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     @Override
     public void onMessage(IdentifyPillarsForPutFileRequest message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
@@ -409,7 +409,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     @Override
     public void onMessage(PutFileFinalResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
@@ -420,7 +420,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     @Override
     public void onMessage(PutFileRequest message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
@@ -431,14 +431,14 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
     @Override
     public void onMessage(PutFileProgressResponse message) {
         String messageCorrelationID = message.getCorrelationID();
-        T conversation = conversations.get(messageCorrelationID);
+        Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
             log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
         }
     }
-    
+
     /**
      * Will clean out obsolete conversations in each run. An obsolete conversation is a conversation which satisfies on 
      * of the following criterias: <ol>
@@ -446,7 +446,7 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
      * <li> Is older than the conversationTImeout limit allows.
      * </ol>
      * 
-     * A copy of the current conversations is created before running through the conversations to avoid having to lock 
+     * A copy of the currenConversation conversations is created before running through the conversations to avoid having to lock 
      * the conversations map while cleaning.
      */
     private final class ConversationCleaner extends TimerTask {
@@ -454,16 +454,17 @@ public class CollectionBasedConversationMediator<T extends Conversation> impleme
         @Override
         public void run() {
             Conversation[] conversationArray = 
-                conversations.values().toArray(new Conversation[conversations.size()]);
+                    conversations.values().toArray(new Conversation[conversations.size()]);
             long currentTime = System.currentTimeMillis();
             for (Conversation conversation: conversationArray) {
                 if (conversation.hasEnded()) { 
                     conversations.remove(conversation.getConversationID());
                 } else if (currentTime - conversation.getStartTime() > 
                 settings.getReferenceSettings().getClientSettings().getConversationTimeout().longValue()) {
-                    log.warn("Failing timed out conversation " + conversation.getConversationID());
+                    log.warn("Failing timed out conversation " + conversation.getConversationID() + " " +
+                    		"(Age " + (currentTime - conversation.getStartTime()) + "ms)");
                     failConversation(conversation, 
-                            "Failing timed out conversation " + conversation.getConversationID());
+                            "Failing timed ouConversation conversation " + conversation.getConversationID());
                 }
             }
         }       

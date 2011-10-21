@@ -135,7 +135,7 @@ public class PillarSelectorForGetChecksums {
      * Method for retrieving the destinations of the selected pillars.
      * @return A mapping between the IDs of the pillars and their destinations.
      */
-    public Map<String, String> getPillarDestination() {
+    public Map<String, String> getPillarDestinations() {
         return selectedPillars;
     }
 }

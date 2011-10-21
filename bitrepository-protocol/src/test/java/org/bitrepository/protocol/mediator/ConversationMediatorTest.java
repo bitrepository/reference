@@ -53,6 +53,8 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.conversation.AbstractConversation;
+import org.bitrepository.protocol.conversation.ConversationState;
+import org.bitrepository.protocol.conversation.FlowController;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
@@ -73,25 +75,21 @@ public abstract class ConversationMediatorTest {
     @Test (groups = {"testfirst"})
     public void messagedelegationTest() {
         MessageBus messagebus = new MessageBusMock();
-        String listenerDestination = "testDestination";
-        ConversationMediator mediator = createMediator(settings, messagebus, listenerDestination);
+        ConversationMediator mediator = createMediator(settings);
 
         mediator.addConversation(new ConversationStub(messagebus, "testConversation"));
     }
 
-    abstract ConversationMediator<?> createMediator(
-            Settings settings, 
-            MessageBus messagebus,
-            String listenerDestination);
+    abstract ConversationMediator createMediator(Settings settings);
 
-    private class ConversationStub extends AbstractConversation<Object> {
+    private class ConversationStub extends AbstractConversation {
         private boolean hasStarted = false;
         private boolean hasFailed = false;
         private boolean hasEnded = false;
         private Object result = null;
 
         public ConversationStub(MessageSender messageSender, String conversationID) {
-            super(messageSender, conversationID);
+            super(messageSender, conversationID, null, new FlowController(settings, false));
         }
 
         @Override
@@ -100,18 +98,18 @@ public abstract class ConversationMediatorTest {
         }
 
         @Override
-        public Object getResult() {
-            return result;
-        }
-
-        @Override
         public void startConversation() throws OperationFailedException {
             hasStarted = true;
         }
 
         @Override
-        public void failConversation(String message) {
-            hasFailed = true;
+        public void endConversation() {
+        }
+
+        @Override
+        public ConversationState getConversationState() {
+            // TODO Auto-generated method stub
+            return null;
         }
     }
 

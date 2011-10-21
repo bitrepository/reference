@@ -25,8 +25,6 @@
 package org.bitrepository.pillar;
 
 import org.bitrepository.clienttest.MessageReceiver;
-import org.bitrepository.common.settings.SettingsProvider;
-import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.TestMessageFactory;
 import org.testng.annotations.AfterClass;

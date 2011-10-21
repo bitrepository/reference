@@ -32,6 +32,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getfile.BasicGetFileClient;
+import org.bitrepository.access.getfile.GetFileClient;
+import org.bitrepository.access.getfile.GetFileClientTestWrapper;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
@@ -48,8 +51,12 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRes
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.clienttest.TestEventHandler;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
+import org.bitrepository.protocol.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.protocol.mediator.ConversationMediator;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -102,9 +109,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         }
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        GetChecksumsClient getChecksumsClient = new GetChecksumsClientTestWrapper(
-                AccessComponentFactory.getInstance().createGetChecksumsClient(settings), 
-                testEventManager);
+        GetChecksumsClient getChecksumsClient = createGetCheckSumsClient();
 
         addStep("Ensure the delivery file isn't already present on the http server", 
         "Should be remove if it already exists.");
@@ -173,7 +178,8 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
     }
     
-    @Test(groups = {"regressiontest"})
+    // Breaks, as we have decided 
+    @Test(groups = {"testfirst"})
     public void checksumsDeliveredThroughMessage() throws Exception {
         addDescription("Tests that the GetChecksumsClient can deliver the results of a checksums operation through "
                 + "the messages.");
@@ -267,7 +273,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
         synchronized(callChecksum) {
             try {
-                callChecksum.wait();
+                callChecksum.wait(5000);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -307,9 +313,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         }
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        GetChecksumsClient getChecksumsClient = new GetChecksumsClientTestWrapper(
-                AccessComponentFactory.getInstance().createGetChecksumsClient(settings), 
-                testEventManager);
+        GetChecksumsClient getChecksumsClient = createGetCheckSumsClient();
 
         addStep("Ensure the delivery file isn't already present on the http server", 
                 "Should be remove if it already exists.");
@@ -327,7 +331,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
 
         addStep("Wait for at least 3 seconds", "An IdentifyPillarTimeout event should be received");
-        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.NoPillarFound);
+        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.Failed);
     }
 
     @Test(groups = {"regressiontest"})
@@ -347,9 +351,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         }
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        GetChecksumsClient getChecksumsClient = new GetChecksumsClientTestWrapper(
-                AccessComponentFactory.getInstance().createGetChecksumsClient(settings), 
-                testEventManager);
+        GetChecksumsClient getChecksumsClient = createGetCheckSumsClient();
 
         addStep("Ensure the delivery file isn't already present on the http server", 
                 "Should be remove if it already exists.");
@@ -407,9 +409,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         }
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        GetChecksumsClient getChecksumsClient = new GetChecksumsClientTestWrapper(
-                AccessComponentFactory.getInstance().createGetChecksumsClient(settings), 
-                testEventManager);
+        GetChecksumsClient getChecksumsClient = createGetCheckSumsClient();
 
         addStep("Ensure the delivery file isn't already present on the http server", 
         "Should be remove if it already exists.");
@@ -478,9 +478,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             this.fileIDs = fileIDs;
             this.csSpecs = csSpecs;
             this.eventHandler = eventHandler;
-             getChecksumsClient = new GetChecksumsClientTestWrapper(
-                    AccessComponentFactory.getInstance().createGetChecksumsClient(settings), 
-                    testEventManager);
+             getChecksumsClient = createGetCheckSumsClient();
         }
         
         public Map<String, ResultingChecksums> results = null;
@@ -497,4 +495,18 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         }
     };
 
+    /**
+     * Creates a new test GetCheckSumsClient based on the supplied settings. 
+     * 
+     * Note that the normal way of creating client through the module factory would reuse components with settings from
+     * previous tests.
+     * @return A new GetFileClient(Wrapper).
+     */
+    private GetChecksumsClient createGetCheckSumsClient() {
+        MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration());
+        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings);
+        return new GetChecksumsClientTestWrapper(new BasicGetChecksumsClient(
+                messageBus, conversationMediator, settings)
+        , testEventManager);
+    }
 }

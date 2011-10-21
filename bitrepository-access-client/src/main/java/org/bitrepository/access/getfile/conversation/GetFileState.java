@@ -24,13 +24,18 @@
  */
 package org.bitrepository.access.getfile.conversation;
 
+import org.bitrepository.protocol.conversation.ConversationEventMonitor;
+import org.bitrepository.protocol.conversation.ConversationState;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
+import org.bitrepository.protocol.messagebus.MessageSender;
 
 /**
  * Super class for the concrete GetFiles state handlers.
  */
-public class GetFileState extends AbstractMessageListener {
+public abstract class GetFileState extends AbstractMessageListener implements ConversationState {
     protected final SimpleGetFileConversation conversation;
+    protected final ConversationEventMonitor monitor;
+    protected final MessageSender messageSender;
 
     /** 
      * The constructor for the indicated conversation.
@@ -38,6 +43,8 @@ public class GetFileState extends AbstractMessageListener {
      */
     public GetFileState(SimpleGetFileConversation conversation) {
         this.conversation = conversation;
+        this.monitor = conversation.getMonitor();
+        this.messageSender = conversation.messageSender;
     }
 
     /**
@@ -45,5 +52,13 @@ public class GetFileState extends AbstractMessageListener {
      */
     protected void endConversation() {
         conversation.conversationState = new GetFileFinished(conversation);
+    }
+    
+    /**
+     * Should be overridden by the finished state to return true
+     */
+    @Override
+    public boolean hasEnded() {
+        return false;
     }
 }

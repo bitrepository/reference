@@ -51,7 +51,10 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.exceptions.ConversationTimedOutException;
+import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +66,7 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T> The result of this conversation.
  */
-public abstract class AbstractConversation<T> implements Conversation<T> {
+public abstract class AbstractConversation implements Conversation {
     /** The message bus used for sending messages. */
     protected final MessageSender messageSender;
     /** The conversation ID. */
@@ -72,17 +75,29 @@ public abstract class AbstractConversation<T> implements Conversation<T> {
     private final long startTime;
     /** The logger for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
+    /** */
+    private final ConversationEventMonitor monitor;
+    protected OperationFailedException operationFailedException;
+    protected boolean blocking;
+    private final FlowController flowController;
 
     /**
-     * Initialise a conversation on the given message bus.
+     * Initialize a conversation on the given message bus.
      *
      * @param messagebus The message bus used for exchanging messages.
      * @param conversationID The conversation ID for this conversation.
      */
-    public AbstractConversation(MessageSender messageSender, String conversationID) {
+    public AbstractConversation(
+            MessageSender messageSender, 
+            String conversationID, 
+            EventHandler eventHandler, 
+            FlowController flowController) {
         this.messageSender = messageSender;
         this.conversationID = conversationID;
         this.startTime = System.currentTimeMillis();
+        this.monitor = new ConversationEventMonitor(this, eventHandler);
+        this.flowController = flowController;
+        flowController.setConversation(this);
     }
 
     @Override
@@ -95,38 +110,48 @@ public abstract class AbstractConversation<T> implements Conversation<T> {
         return startTime;
     }
 
+    /** Will start the conversation and either:<ol>
+     * <li> If no event handler has been defined the method will block until the conversation has finished.</li>
+     * <li> If a event handler has been defined the method will return after the conversation is started.</li>
+     * </ol>
+     * @return 
+     */
     @Override
-    public T waitFor() {
-        synchronized (this) {
-            while (!hasEnded()) {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    // ignore
-                }
+    public void startConversation() throws OperationFailedException {
+        getConversationState().start();  
+        
+        if (flowController.waitForCompletion()) {
+            if (operationFailedException != null) {
+                throw operationFailedException;
             }
         }
-        return getResult();
+    }
+    
+    public synchronized void failConversation(String info, Exception e) {
+        failConversation(new OperationFailedEvent(info, e));
+    }
+    
+    public synchronized void failConversation(String info) {
+        failConversation(new OperationFailedEvent(info));
     }
 
     @Override
-    public T waitFor(long timeout) throws ConversationTimedOutException {
-        long startTime = System.currentTimeMillis();
-        synchronized (this) {
-            while (!hasEnded() && startTime + timeout > System.currentTimeMillis()) {
-                try {
-                    wait(timeout);
-                } catch (InterruptedException e) {
-                    // ignore
-                }
-            }
-        }
-        if (!hasEnded()) {
-            throw new ConversationTimedOutException("Conversation timed out");
-        }
-        return getResult();
+    public synchronized void failConversation(OperationFailedEvent failedEvent) {
+        monitor.operationFailed(failedEvent);
+        endConversation();
+        flowController.unblock();
     }
 
+    public ConversationEventMonitor getMonitor() {
+        return monitor;
+    }
+    
+    public FlowController getFlowController() {
+        return flowController;
+    }
+    
+    public abstract ConversationState getConversationState();
+    
     @Override
     public void onMessage(GetAuditTrailsFinalResponse message) {
        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");

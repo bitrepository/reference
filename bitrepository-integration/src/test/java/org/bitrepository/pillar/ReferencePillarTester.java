@@ -24,8 +24,6 @@
  */
 package org.bitrepository.pillar;
 
-import java.io.File;
-import java.math.BigInteger;
 import java.net.URL;
 import java.util.Date;
 
@@ -33,10 +31,8 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecs.ChecksumSpecsItems;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
@@ -44,11 +40,8 @@ import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.clienttest.TestEventHandler;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.SettingsLoader;
-import org.bitrepository.common.settings.SettingsLoaderTest;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
-import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.integration.IntegrationComponentFactory;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;

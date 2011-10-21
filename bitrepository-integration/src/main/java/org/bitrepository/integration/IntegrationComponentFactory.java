@@ -29,7 +29,7 @@ import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integration.configuration.integrationconfiguration.IntegrationConfiguration;
 import org.bitrepository.pillar.ReferencePillar;
-import org.bitrepository.protocol.messagebus.MessageBusFactory;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
  * Component factory for this module.
@@ -90,8 +90,6 @@ public class IntegrationComponentFactory {
      * @return The reference requested pillar.
      */
     public ReferencePillar getPillar(Settings settings) {
-        return new ReferencePillar(
-                MessageBusFactory.createMessageBus(
-                        settings.getMessageBusConfiguration()), settings);
+        return new ReferencePillar(MessageBusManager.getMessageBus(settings), settings);
     }
 }

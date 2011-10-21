@@ -29,7 +29,9 @@ import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.putfile.ConversationBasedPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
-import org.bitrepository.protocol.messagebus.MessageBusFactory;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.mediator.ConversationMediatorManager;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
  * Factory class for the access module. 
@@ -77,8 +79,8 @@ public class ModifyComponentFactory {
      */
     public PutFileClient retrievePutClient(Settings settings) {
         return new ConversationBasedPutFileClient(
-                MessageBusFactory.createMessageBus(
-                        settings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration()),
+                ProtocolComponentFactory.getInstance().getMessageBus(settings), 
+                ConversationMediatorManager.getConversationMediator(settings), 
                 settings);
     }
 }

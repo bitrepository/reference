@@ -72,4 +72,9 @@ public class GetFileFinished extends GetFileState {
         log.warn("(ConversationID: " + conversation.getConversationID() + ") " +
                 "Received GetFileFinalResponse from " + response.getPillarID() + " after finishing conversation.");
     }
+
+    @Override
+    public void start() {
+        //Nothing to do.
+    }
 }

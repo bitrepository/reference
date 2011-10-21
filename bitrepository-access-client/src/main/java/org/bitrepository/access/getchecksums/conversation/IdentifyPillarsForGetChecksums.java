@@ -33,12 +33,6 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.eventhandler.DefaultEvent;
-import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
-import org.bitrepository.protocol.exceptions.NoPillarFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Models the behavior of a GetChecksums conversation during the identification phase. That is, it begins with the 
@@ -50,8 +44,6 @@ import org.slf4j.LoggerFactory;
  * This is the initial state for the whole GetChecksums communication.
  */
 public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
-    /** The log for this class. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
     /** The timer used for timeout checks. */
     final Timer timer = new Timer();
     /** The timer task for timeout of identify in this conversation. */
@@ -83,11 +75,7 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
         identifyRequest.setAuditTrailInformation(conversation.auditTrailInformation);
         identifyRequest.setFileChecksumSpec(conversation.checksumSpecifications);
 
-        if (conversation.eventHandler != null) {
-            conversation.eventHandler.handleEvent(new DefaultEvent(
-                    OperationEventType.IdentifyPillarsRequestSent, "Identifying pillars for getting file " + 
-                            conversation.fileIDs));
-        }
+        monitor.identifyPillarsRequestSent("Identifying pillars for getting file " + conversation.fileIDs);
         conversation.messageSender.sendMessage(identifyRequest);
         timer.schedule(identifyTimeoutTask,
                         conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());
@@ -100,32 +88,29 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
      */
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsResponse response) {
-        String message = "Received IdentifyPillarsForGetChecksumsResponse " + response;
-        log.info("(ConversationID: " + conversation.getConversationID() + ") " + message);
+        monitor.pillarIdentified("Received IdentifyPillarsForGetChecksumsResponse " + response, response.getPillarID());
         conversation.selector.processResponse(response);
-        if (conversation.eventHandler != null) {
-            conversation.eventHandler.handleEvent(new PillarOperationEvent(
-                    OperationEventType.PillarIdentified, message, response.getPillarID()));
-        }
-
         if (conversation.selector.isFinished()) {
-            // stop the timer task for this outstanding instance, and then get the file from the selected pillar
             identifyTimeoutTask.cancel();
-            // TODO: Race condition, what if timeout task already triggered this just before now
-
+            
+            if (conversation.selector.getPillarDestinations() == null || conversation.selector.getPillarDestinations().isEmpty()) {
+                conversation.failConversation("Unable to getChecksums, no pillars were identified");
+            }
+            monitor.pillarSelected("Identified pillars for getChecksums", 
+                    conversation.selector.getPillarDestinations().keySet().toString());
             getChecksumsFromSelectedPillar();
         }
     }
     
     @Override
     public void onMessage(GetChecksumsProgressResponse response) {
-        log.warn("(ConversationID: " + conversation.getConversationID() + ") Received GetChecksumsProgressResponse "
+        monitor.outOfSequenceMessage("Received GetChecksumsProgressResponse "
                 + "from " + response.getPillarID() + " before sending GetChecksumsRequest.");
     }
     
     @Override
     public void onMessage(GetChecksumsFinalResponse response) {
-        log.warn("(ConversationID: " + conversation.getConversationID() + ") Received GetChecksumsProgressResponse "
+        monitor.outOfSequenceMessage("Received GetChecksumsProgressResponse "
                 + "from " + response.getPillarID() + " before sending GetChecksumsRequest.");
     }
     
@@ -145,32 +130,17 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
     private void handleIdentificationTimeout() {
         synchronized (conversation) {
             if (conversation.conversationState == this) {
-                if (!conversation.selector.getPillarDestination().isEmpty()) {
-                    String message = "Time has run out for selecting a pillar. The following pillars did't respond: " + 
+                if (!conversation.selector.getPillarDestinations().isEmpty()) {
+                    monitor.identifyPillarTimeout("Time has run out for selecting a pillar. The following pillars did't respond: " + 
                             conversation.selector.getOutstandingPillars() + 
-                    ". Using pillar based on uncomplete set of responses.";
-                    log.warn(message);
-                    if (conversation.eventHandler != null) {
-                        conversation.eventHandler.handleEvent(new DefaultEvent(
-                                OperationEventType.IdentifyPillarTimeout, 
-                                message));
-                    }
+                    ". Using pillar based on uncomplete set of responses.");
                     getChecksumsFromSelectedPillar();
                 } else {
-                    String message = "Unable to select a pillar, time has run out. " +
-                            "The following pillars did't respond: " + 
-                            conversation.selector.getOutstandingPillars();
-                    log.warn(message);
-                    if (conversation.eventHandler != null) {
-                        conversation.eventHandler.handleEvent(new DefaultEvent(
-                                OperationEventType.NoPillarFound, message));
-                    } else {
-                        conversation.throwException(new NoPillarFoundException(message));
-                    }
-                    endConversation();
+                    conversation.failConversation("Unable to select a pillar, time has run out. " +
+                            "The following pillars did't respond: " + conversation.selector.getOutstandingPillars());
                 }
             } else {
-                log.info("Conversation(" + conversation.getConversationID() + ") identification timeout, but " +
+                monitor.warning("Identification timeout, but " +
                         "the conversation state has already changed to " + conversation.conversationState);
             }
         }

@@ -37,11 +37,8 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
-import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
-import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +49,7 @@ import org.slf4j.LoggerFactory;
 public class PuttingFile extends PutFileState {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
-    
+
     /** Defines that the timer is a daemon thread. */
     private static final Boolean TIMER_IS_DAEMON = true;
     /** The timer. Schedules conversation timeouts for this conversation. */
@@ -62,7 +59,7 @@ public class PuttingFile extends PutFileState {
      * The task to handle the timeouts for the identification.
      */
     private TimerTask timerTask = new PutTimerTask();
-    
+
     /**The responses for the pillars.*/
     final PillarsResponseStatus putResponseStatus;
 
@@ -97,25 +94,22 @@ public class PuttingFile extends PutFileState {
         putMsg.setFileID(conversation.fileID);
         putMsg.setFileSize(conversation.fileSize);
         // TODO
-//        putMsg.setAuditTrailInformation(conversation.settings);
+        //        putMsg.setAuditTrailInformation(conversation.settings);
         putMsg.setChecksumsDataForNewFile(conversation.validationChecksums);
-//        putMsg.setChecksumSpecs(conversation.requestChecksums);
-        
+        //        putMsg.setChecksumSpecs(conversation.requestChecksums);
+
         // Send the message to each pillar.
         for(Map.Entry<String, String> pillarDest : pillarDestinations.entrySet()) {
             putMsg.setPillarID(pillarDest.getKey());
             putMsg.setTo(pillarDest.getValue());
             conversation.messageSender.sendMessage(putMsg);
         }
-        
-        // Tell the eventhandle that the requests has been sent.
-        if(conversation.eventHandler != null) {
-            conversation.eventHandler.handleEvent(new DefaultEvent(OperationEventType.RequestSent, 
-                    "Request to put file has been sent to pillars in collection '" 
-                    + conversation.settings.getCollectionID() + "'."));
-        }
-        
-        // Set timeout.
+
+
+        monitor.requestSent("Request to put file " + conversation.fileID + " has been sent to pillars + " +
+                conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs().toString(), 
+                conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs().toString());
+
         timer.schedule(timerTask, 
                 conversation.settings.getReferenceSettings().getClientSettings().getConversationTimeout().longValue());
     }
@@ -140,73 +134,54 @@ public class PuttingFile extends PutFileState {
      */
     @Override
     public void onMessage(PutFileProgressResponse response) {
-        log.info("(ConversationID: " + conversation.getConversationID() + ") " +
-                "Received PutFileProgressResponse from " + response.getPillarID() + " : \n{}", response);
-        if (conversation.eventHandler != null) {
-            conversation.eventHandler.handleEvent(new PillarOperationEvent(OperationEventType.Progress, 
-                    "Progress received from pillar: " + response.getProgressResponseInfo(), response.getPillarID()));
-        }
+        monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.Progress, 
+                "Received PutFileProgressResponse from pillar " + response.getPillarID() + ": " + 
+                        response.getProgressResponseInfo().getProgressResponseText()));
     }
 
     @Override
     public void onMessage(PutFileFinalResponse response) {
-        log.info("(ConversationID: " + conversation.getConversationID() + ") " + "Received PutFileFinalResponse from " 
-                + response.getPillarID() + "'.");
-        
+
         // validate the response info.
         FinalResponseInfo frInfo = response.getFinalResponseInfo();
-        if(frInfo == null || frInfo.getFinalResponseCode() == null
-                || frInfo.getFinalResponseCode().isEmpty()) {
-            String msg = "The final response info is invalid: '" + frInfo + "'";
-            if(conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(new PillarOperationEvent(
-                        OperationEvent.OperationEventType.Failed, msg, response.getPillarID()));
-            }
+        if(frInfo == null || frInfo.getFinalResponseCode() == null || frInfo.getFinalResponseCode().isEmpty()) {
+            handleIncompletePut("The final response info is invalid: '" + frInfo + "'");
         } else {
             // TODO validate the actual values of the response info. Was it success or failure?
             if(frInfo.getFinalResponseText().contains("Error")) {
-                log.warn("The Final Response Info contain an error: '" + frInfo.getFinalResponseCode() + " : " 
+                handleIncompletePut("The Final Response Info contain an error: '" + frInfo.getFinalResponseCode() + " : " 
                         + frInfo.getFinalResponseText() + "'");
-                if(conversation.eventHandler != null) {
-                    conversation.eventHandler.handleEvent(new PillarOperationEvent(
-                            OperationEvent.OperationEventType.Failed, frInfo.toString(), 
-                            response.getPillarID()));
-                }
             }
         }
-        
+
         try {
             putResponseStatus.responseReceived(response.getPillarID());
-            if (conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(
-                        new PillarOperationEvent(OperationEvent.OperationEventType.PartiallyComplete, 
-                                "Finished put on pillar '" + response.getPillarID() + "'.", response.getPillarID()));
-            }
+            monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.Progress,
+                    "Finished put on pillar '" + response.getPillarID() + "'."));
         } catch (UnexpectedResponseException e) {
             // TODO Is this a failure? Can happen if a pillar sends two final responses, or no response was expected 
             // from this pillar, or the pillarId is null.
-            log.warn("Unable to handle this response: '" + response + "'.", e);
-            if (conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(
-                        new PillarOperationEvent(OperationEvent.OperationEventType.Failed, e.getMessage(), 
-                                response.getPillarID()));
-            }
+            monitor.warning("Unable to handle this response: '" + response + "'.", e);
             return;
         }
-        
+
         // Check if the conversation has finished.
         if(putResponseStatus.haveAllPillarResponded()) {
             timerTask.cancel();
-            
-            if (conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(
-                        new DefaultEvent(OperationEvent.OperationEventType.Complete, 
-                                "Finished put on all the pillars."));
-            }
-            
+            monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.Complete,
+                    "Finished put on all the pillars."));
+
             PutFileFinished finishState = new PutFileFinished(conversation);
             conversation.conversationState = finishState;
         }
+    }
+
+    /**
+     * What should we do if something fails during a put operation, try again, rollback???.
+     * @param info
+     */
+    private void handleIncompletePut(String info) {
+        conversation.failConversation(info);
     }
 
     /**
@@ -215,7 +190,7 @@ public class PuttingFile extends PutFileState {
     private class PutTimerTask extends TimerTask {
         @Override
         public void run() {
-            conversation.failConversation("Timeout occurred for the Putting of the file.");
+            handleIncompletePut("Timeout occurred for the Putting of the file.");
         }
     }
 }

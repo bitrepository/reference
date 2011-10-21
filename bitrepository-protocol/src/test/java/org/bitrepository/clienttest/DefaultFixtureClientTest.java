@@ -26,11 +26,6 @@ package org.bitrepository.clienttest;
 
 import java.math.BigInteger;
 
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
-import org.bitrepository.common.settings.SettingsProvider;
-import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.TestMessageFactory;
 

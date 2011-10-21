@@ -11,7 +11,7 @@
 
 <ReferenceSettings xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd">
   <ClientSettings>
-    <ReceiverDestination>TEST-TOPIC-LOCAL</ReceiverDestination>
+    <ReceiverDestination>TEST-TOPIC-CLIENT</ReceiverDestination>
     <MediatorCleanupInterval>1000</MediatorCleanupInterval>
     <ConversationTimeout>3600000</ConversationTimeout>
     <IdentificationTimeout>60000</IdentificationTimeout>

@@ -24,25 +24,24 @@
  */
 package org.bitrepository.protocol.eventhandler;
 
-import org.bitrepository.protocol.exceptions.OperationFailedException;
 
 /**
  * Indicates and operation has failed to complete
  */
-public class OperationFailedEvent implements OperationEvent<OperationFailedException> {
+public class OperationFailedEvent implements OperationEvent<Exception> {
     /** @see #getInfo() */
     private final String info;
     /** @see #getType() */
     private final OperationEventType type = OperationEventType.Failed;
     /** @see #getState() */
-    private final OperationFailedException exception;
+    private final Exception exception;
 
     /**
      * Constructor with exception information
      * @param info
      * @param exception
      */
-    public OperationFailedEvent(String info, OperationFailedException exception) {
+    public OperationFailedEvent(String info, Exception exception) {
         super();
         this.info = info;
         this.exception = exception;
@@ -71,7 +70,7 @@ public class OperationFailedEvent implements OperationEvent<OperationFailedExcep
     /** Returns the exception causing this failure, if any. Might be null if the failure wasn't caused by an 
      * exception */
     @Override
-    public OperationFailedException getState() {
+    public Exception getState() {
         return exception;
     }
 }

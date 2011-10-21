@@ -39,12 +39,10 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.conversation.AbstractConversation;
-import org.bitrepository.protocol.eventhandler.DefaultEvent;
+import org.bitrepository.protocol.conversation.ConversationState;
+import org.bitrepository.protocol.conversation.FlowController;
 import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageSender;
-import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +51,7 @@ import org.slf4j.LoggerFactory;
  *
  * Logic for behaving sanely in GetChecksums conversations.
  */
-public class SimpleGetChecksumsConversation extends AbstractConversation<Map<String,ResultingChecksums>> {
+public class SimpleGetChecksumsConversation extends AbstractConversation {
 
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -69,12 +67,8 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<Map<Str
     final FileIDs fileIDs;
     /** Selects a pillar based on responses. */
     final PillarSelectorForGetChecksums selector;
-    /** The event handler to send notifications of the get file progress */
-    final EventHandler eventHandler;
     /** The conversation state (State pattern) */
     GetChecksumsState conversationState;
-    /** The exception caught if the operation failed.*/
-    OperationFailedException operationFailedException;
     /** The specifications for which checksums to retrieve.*/
     final ChecksumSpecTYPE checksumSpecifications;
     /** The text audittrail information for requesting the operation.*/
@@ -94,25 +88,25 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<Map<Str
      */
     public SimpleGetChecksumsConversation(MessageSender messageSender, Settings settings, URL url,
             FileIDs fileIds, ChecksumSpecTYPE checksumsSpecs, Collection<String> pillars, EventHandler eventHandler,
-            String auditTrailInformation) {
-        super(messageSender, UUID.randomUUID().toString());
+            FlowController flowController, String auditTrailInformation) {
+        super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
+
         
         this.messageSender = messageSender;
         this.settings = settings;
         this.uploadUrl = url;
         this.fileIDs = fileIds;
         this.selector = new PillarSelectorForGetChecksums(pillars);
-        this.eventHandler = eventHandler;
         this.checksumSpecifications = checksumsSpecs;
+        conversationState = new IdentifyPillarsForGetChecksums(this);
         this.auditTrailInformation = auditTrailInformation;
     }
 
     @Override
     public boolean hasEnded() {
-        return conversationState instanceof GetChecksumsFinished;
+        return conversationState.hasEnded();
     }
     
-    @Override
     public Map<String,ResultingChecksums> getResult() {
         return mapOfResults;
     }
@@ -123,20 +117,6 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<Map<Str
      */
     void setResults(Map<String, ResultingChecksums> results) {
         this.mapOfResults = results;
-    }
-
-    @Override
-    public void startConversation() throws OperationFailedException {
-        log.debug("Starting GetChecksum conversation: '" + getConversationID() + "'");
-        IdentifyPillarsForGetChecksums initialConversationState = new IdentifyPillarsForGetChecksums(this);
-        conversationState = initialConversationState;
-        initialConversationState.start();                   
-        if (eventHandler == null) {
-            waitFor(settings.getReferenceSettings().getClientSettings().getConversationTimeout().longValue());
-        }
-        if (operationFailedException != null) {
-            throw operationFailedException;
-        }
     }
 
     @Override
@@ -154,33 +134,13 @@ public class SimpleGetChecksumsConversation extends AbstractConversation<Map<Str
         conversationState.onMessage(message);
     }
 
-    /**
-     * Mark this conversation as ended, and notifies whoever waits for it to end.
-     */
-    private synchronized void unBlock() {    
-        notifyAll();
-    }
-
-    /**
-     * Used in case of a blocking call to the conversation, e.g. no eventHandler supplied,
-     *   for throwing an exception. Will set the conversation exception and unblock the call.
-     * @param exception The exception to throw on unblock. 
-     */
-    public void throwException(OperationFailedException exception) {
-        operationFailedException = exception;
-        unBlock();                           
+    @Override
+    public void endConversation() {
+        conversationState.endConversation();
     }
 
     @Override
-    public synchronized void failConversation(String message) {
-        log.warn("Conversation failed: '" + getConversationID() + "'.");
-        if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(
-                    OperationEventType.Failed, message));
-        } else {
-            throwException(new OperationFailedException(message));
-        }
-        conversationState.endConversation();
-        unBlock();
+    public ConversationState getConversationState() {
+        return conversationState;
     }
 }

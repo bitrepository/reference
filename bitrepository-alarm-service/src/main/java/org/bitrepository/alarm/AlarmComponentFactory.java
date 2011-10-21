@@ -29,7 +29,7 @@ import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.messagebus.MessageBusFactory;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
  * Factory for the Alarm client module.
@@ -87,8 +87,7 @@ public class AlarmComponentFactory {
      */
     public AlarmService getAlarmService(Settings settings) {
         try {
-            MessageBus bus = MessageBusFactory.createMessageBus(
-                    settings.getMessageBusConfiguration());
+            MessageBus bus = MessageBusManager.getMessageBus(settings);
             AlarmService service = new BasicAlarmService(bus);
             
             return service;

@@ -35,12 +35,10 @@ import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.conversation.AbstractConversation;
-import org.bitrepository.protocol.eventhandler.DefaultEvent;
+import org.bitrepository.protocol.conversation.ConversationState;
+import org.bitrepository.protocol.conversation.FlowController;
 import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageSender;
-import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * TODO move all the message generations into separate methods, or use the auto-generated constructors, which Mikis
  * has talked about.
  */
-public class SimplePutFileConversation extends AbstractConversation<URL> {
+public class SimplePutFileConversation extends AbstractConversation {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
     
@@ -66,13 +64,8 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
     final String fileID;
     /** The size of the file to be put.*/
     final BigInteger fileSize;
-    /** The event handler to send notifications of the get file progress */
-    final EventHandler eventHandler;
     /** The state of the PutFile transaction.*/
     PutFileState conversationState;
-    /** The exception if the operation failed.*/
-    OperationFailedException operationFailedException;
-    
     /** The checksum of the file, which the pillars should download. Used for validation at pillar-side.*/
     final ChecksumsDataForNewFile validationChecksums;
     /** The checksums to request from the pillar.*/
@@ -100,17 +93,18 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
             BigInteger sizeOfFile,
             ChecksumsDataForNewFile checksumForValidationAtPillar,
             ChecksumSpecs checksumRequestsForValidation,
-            EventHandler eventHandler) {
-        super(messageSender, UUID.randomUUID().toString());
+            EventHandler eventHandler,
+            FlowController flowController) {
+        super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
         
         this.messageSender = messageSender;
         this.settings = settings;
         this.downloadUrl = urlToDownload;
         this.fileID = fileId;
         this.fileSize = sizeOfFile;
-        this.eventHandler = eventHandler;
         this.validationChecksums = checksumForValidationAtPillar;
         this.requestChecksums = checksumRequestsForValidation;
+        conversationState = new IdentifyPillarsForPutFile(this);
     }
     
     @Override
@@ -118,24 +112,10 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
         return conversationState instanceof PutFileFinished;
     }
     
-    @Override
     public URL getResult() {
         return downloadUrl;
     }
-    
-    @Override
-    public void startConversation() throws OperationFailedException {
-        IdentifyPillarsForPutFile initialState = new IdentifyPillarsForPutFile(this);
-        conversationState = initialState;
-        initialState.start();
-        if (eventHandler == null) {
-            waitFor(settings.getReferenceSettings().getClientSettings().getConversationTimeout().longValue());
-        }
-        if (operationFailedException != null) {
-            throw operationFailedException;
-        }
-    }
-    
+  
     @Override
     public synchronized void onMessage(PutFileFinalResponse message) {
         conversationState.onMessage(message);
@@ -150,35 +130,16 @@ public class SimplePutFileConversation extends AbstractConversation<URL> {
     public synchronized void onMessage(IdentifyPillarsForPutFileResponse message) {
         conversationState.onMessage(message);
     }
-    
-    /**
-     * Mark this conversation as ended, and notifies whoever waits for it to end.
-     */
-    private synchronized void unBlock() {	
-        notifyAll();
-    }
-    
-    /**
-     * Method for throwing an exception.
-     * @param exception The exception to throw.
-     */
-    void throwException(OperationFailedException exception) {
-        operationFailedException = exception;
-        unBlock();		
-    }
-    
+
     @Override
-    public void failConversation(String message) {
-        // TODO how to handle the case, when the file has been put at some pillars but not all?
-        log.warn("Conversation failed: " + message);
-        if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(
-                    OperationEventType.Failed, message));
-        } else {
-            throwException(new OperationFailedException(message));
-        }
-        conversationState.endConversation();
-        unBlock();
+    public void endConversation() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public ConversationState getConversationState() {
+        return conversationState;
     }
     
 }

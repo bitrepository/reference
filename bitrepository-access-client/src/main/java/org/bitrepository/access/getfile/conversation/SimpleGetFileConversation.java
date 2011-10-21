@@ -27,18 +27,17 @@ package org.bitrepository.access.getfile.conversation;
 import java.net.URL;
 import java.util.UUID;
 
+import org.bitrepository.access.getchecksums.conversation.IdentifyPillarsForGetChecksums;
 import org.bitrepository.access.getfile.selectors.PillarSelectorForGetFile;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.conversation.AbstractConversation;
-import org.bitrepository.protocol.eventhandler.DefaultEvent;
+import org.bitrepository.protocol.conversation.ConversationState;
+import org.bitrepository.protocol.conversation.FlowController;
 import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageSender;
-import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +46,7 @@ import org.slf4j.LoggerFactory;
  *
  * Logic for behaving sanely in GetFile conversations.
  */
-public class SimpleGetFileConversation extends AbstractConversation<URL> {
+public class SimpleGetFileConversation extends AbstractConversation {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -62,14 +61,10 @@ public class SimpleGetFileConversation extends AbstractConversation<URL> {
     final String fileID;
     /** Selects a pillar based on responses. */
     final PillarSelectorForGetFile selector;
-    /** The event handler to send notifications of the get file progress */
-    final EventHandler eventHandler;
     /** The conversation state (State pattern) */
     GetFileState conversationState;
-    OperationFailedException operationFailedException;
-
     /**
-     * Initialises the file directory, and the message bus used for sending messages.
+     * Initializes the file directory, and the message bus used for sending messages.
      * The fileDir is retrieved from the configuration.
      *
      * @param messageBus The message bus used for sending messages.
@@ -84,15 +79,16 @@ public class SimpleGetFileConversation extends AbstractConversation<URL> {
             PillarSelectorForGetFile selector,
             String fileID,
             URL uploadUrl,
-            EventHandler eventHandler) {
-        super(messageSender, UUID.randomUUID().toString());
+            EventHandler eventHandler,
+            FlowController flowController) {
+        super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
 
         this.messageSender = messageSender;
         this.settings = settings;
         this.selector = selector;
         this.uploadUrl = uploadUrl;
         this.fileID = fileID;
-        this.eventHandler = eventHandler;
+        conversationState = new IdentifyingPillarsForGetFile(this);
     }
 
     @Override
@@ -100,27 +96,8 @@ public class SimpleGetFileConversation extends AbstractConversation<URL> {
         return conversationState instanceof GetFileFinished;
     }
 
-    @Override
     public URL getResult() {
         return uploadUrl;
-    }
-
-    /** Will start the conversation and either:<ol>
-     * <li> If no event handler has been defined the method will block until the conversation has finished.</li>
-     * <li> If a event handler has been defined the method will return after the conversation is started.</li>
-     * </ol>
-     */
-    @Override
-    public void startConversation() throws OperationFailedException {
-        IdentifyingPillarsForGetFile initialConversationState = new IdentifyingPillarsForGetFile(this);
-        conversationState = initialConversationState;
-        initialConversationState.start();		
-        if (eventHandler == null) {
-            waitFor(settings.getReferenceSettings().getClientSettings().getConversationTimeout().longValue());
-        }
-        if (operationFailedException != null) {
-            throw operationFailedException;
-        }
     }
 
     @Override
@@ -138,32 +115,14 @@ public class SimpleGetFileConversation extends AbstractConversation<URL> {
         conversationState.onMessage(message);
     }
 
-    /**
-     * Mark this conversation as ended, and notifies whoever waits for it to end.
-     */
-    private synchronized void unBlock() {	
-        notifyAll();
-    }
-
-    /**
-     * Used in case of a blocking call to the conversation, eg. no eventHandler supplied,
-     *   for throwing an exception. Will set the conversation exception and unblock the call.
-     * @param exception The exception to throw on unblock. 
-     */
-    public void throwException(OperationFailedException exception) {
-        operationFailedException = exception;
-        unBlock();		
-    }
-
     @Override
-    public synchronized void failConversation(String message) {
-        if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(
-                    OperationEventType.Failed, message));
-        } else {
-            throwException(new OperationFailedException(message));
-        }
+    public void endConversation() {
         conversationState.endConversation();
-        unBlock();
     }
+    
+    @Override
+    public ConversationState getConversationState() {
+        return conversationState;
+    }
+
 }

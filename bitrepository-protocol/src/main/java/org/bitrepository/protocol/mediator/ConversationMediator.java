@@ -35,11 +35,11 @@ import org.bitrepository.protocol.messagebus.MessageListener;
  *
  * @param <T> The type of conversation to have.
  */
-public interface ConversationMediator<T extends Conversation> extends MessageListener {
+public interface ConversationMediator extends MessageListener {
     /**
      * Start a conversation of type T and begin delegating messages to this conversation when received.
      *
      * @param The new conversation.
      */
-    void addConversation(T conversation);
+    void addConversation(Conversation conversation);
 }

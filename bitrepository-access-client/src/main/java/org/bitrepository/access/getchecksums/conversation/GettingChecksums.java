@@ -40,11 +40,9 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.protocol.ProtocolConstants;
+import org.bitrepository.protocol.conversation.FlowController;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
-import org.bitrepository.protocol.exceptions.NoPillarFoundException;
-import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +58,7 @@ public class GettingChecksums extends GetChecksumsState {
 
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
-    
+
     /** The mapping between the pillars and their destinations.*/
     private final Map<String, String> pillarDestinations;
     /** The pillars, which has not yet answered.*/
@@ -72,7 +70,7 @@ public class GettingChecksums extends GetChecksumsState {
     final Timer timer = new Timer(true);
     /** The timer task for timeout of getFile in this conversation. */
     final TimerTask getChecksumsTimeoutTask = new GetChecksumsTimerTask();
-    
+
     /** The results of the checksums calculations. A map between the pillar and its calculated checksums.*/
     private Map<String, ResultingChecksums> results = new HashMap<String, ResultingChecksums>();
 
@@ -82,7 +80,7 @@ public class GettingChecksums extends GetChecksumsState {
      */
     public GettingChecksums(SimpleGetChecksumsConversation conversation) {
         super(conversation);
-        pillarDestinations = conversation.selector.getPillarDestination();
+        pillarDestinations = conversation.selector.getPillarDestinations();
         outstandingPillars = pillarDestinations.keySet();
     }
 
@@ -90,16 +88,6 @@ public class GettingChecksums extends GetChecksumsState {
      * Method for initiating this part of the conversation. Sending the GetChecksumsRequest.
      */
     public void start() {
-        if (pillarDestinations == null || pillarDestinations.isEmpty()) {
-            conversation.throwException(new NoPillarFoundException("Unable to getChecksums, no pillars were selected"));
-        } else {
-            if (conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(
-                        new DefaultEvent(OperationEvent.OperationEventType.PillarSelected, 
-                                "Selected the following pillars: " + pillarDestinations.keySet()));
-            }
-        }
-
         GetChecksumsRequest getChecksumsRequest = new GetChecksumsRequest();
         getChecksumsRequest.setBitRepositoryCollectionID(
                 conversation.settings.getCollectionID());
@@ -115,90 +103,72 @@ public class GettingChecksums extends GetChecksumsState {
         for(Entry<String, String> pillarDestination : pillarDestinations.entrySet()) {
             getChecksumsRequest.setPillarID(pillarDestination.getKey());
             getChecksumsRequest.setTo(pillarDestination.getValue());
-            
+
             if(conversation.uploadUrl != null) {
                 // making the URL: 'baseUrl'-'pillarId'
                 getChecksumsRequest.setResultAddress(conversation.uploadUrl.toExternalForm() + "-" 
                         + pillarDestination.getKey());
             }
-            
+
             conversation.messageSender.sendMessage(getChecksumsRequest); 
-            if (conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(
-                        new PillarOperationEvent(OperationEvent.OperationEventType.RequestSent, 
-                                "GetChecksumRequest sent to: " + pillarDestination.getKey(), 
-                                pillarDestination.getKey()));
-            }
+            monitor.requestSent("GetChecksumRequest sent to: " + pillarDestination.getKey(), 
+                    pillarDestination.getKey());
         }
-        
+
         timer.schedule(getChecksumsTimeoutTask,
-                        conversation.settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue());
+                conversation.settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue());
     }
-    
+
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsResponse response) {
         log.warn("(ConversationID: " + conversation.getConversationID() 
                 + ") Received IdentifyPillarsForGetChecksumsResponse from " + response.getPillarID() 
                 + " after the GetChecksumsRequest has been sent.");
     }
-    
+
     @Override
     public void onMessage(GetChecksumsProgressResponse response) {
-        log.debug("(ConversationID: " + conversation.getConversationID() + ") " +
-                "Received progress response for retrieval of checksums " + response.getFileIDs() + " : \n{}", response);
-        if (conversation.eventHandler != null) {
-            conversation.eventHandler.handleEvent(
-                    new DefaultEvent(OperationEvent.OperationEventType.Progress, 
-                            response.getProgressResponseInfo().toString()));
-        }
+        monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.Progress, 
+                "Received progress response for retrieval of checksums " + response.getFileIDs() + ": response"));
     }
-    
+
     @Override
     public void onMessage(GetChecksumsFinalResponse response) {
         log.info("(ConversationID: " + conversation.getConversationID() + ") "
                 + "Received GetChecksumsFinalResponse from " + response.getPillarID() + ": \n{}", response);
-        
+
         // Remove pillar from outstanding, if it has not yet replied.
         if(!outstandingPillars.contains(response.getPillarID())) {
+            monitor.warning("(ConversationID: " + conversation.getConversationID() + ") "
+                    + "Received unexpected final response from " + response.getPillarID() 
+                    + ". Perhaps received previously.");
             log.warn("(ConversationID: " + conversation.getConversationID() + ") "
                     + "Received unexpected final response from " + response.getPillarID() 
                     + ". Perhaps received previously.");
         } else {
             outstandingPillars.remove(response.getPillarID());
         }
-        
+
         if(validateFinalResponse(response.getFinalResponseInfo())) {
-            log.debug("Received positive FinalResponse from pillar: {}", response.getFinalResponseInfo());
-            if (conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(
-                        new DefaultEvent(OperationEvent.OperationEventType.PartiallyComplete, 
+            monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.PartiallyComplete, 
                                 response.getFinalResponseInfo().toString()));
-            }
-            
             // If calculations in message, then put them into the results map.
             if(response.getResultingChecksums() != null) {
                 results.put(response.getPillarID(), response.getResultingChecksums());
             }
         } else {
-            log.warn("Received bad FinalResponse from pillar: {}", response.getFinalResponseInfo());
-            if (conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(
-                        new DefaultEvent(OperationEvent.OperationEventType.Failed, 
-                                response.getFinalResponseInfo().toString()));
-            }
+            monitor.warning("Received bad FinalResponse from pillar: " + response.getFinalResponseInfo());
         }
-        
+
         if(outstandingPillars.isEmpty()) {
-            if (conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(
-                        new DefaultEvent(OperationEvent.OperationEventType.Complete, 
+            monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.Complete, 
                                 "All pillars have delivered their checksums."));
-            }
+            conversation.getFlowController().unblock();
             conversation.setResults(results);
             conversation.conversationState = new GetChecksumsFinished(conversation);
         }
     }
-    
+
     /**
      * Method for validating the FinalResponseInfo.
      * @param frInfo The FinalResponseInfo to be validated.
@@ -214,25 +184,16 @@ public class GettingChecksums extends GetChecksumsState {
         }
         return false;
     }
-    
+
     /**
      * Method for handling a timeout for this operation.
      */
     protected void handleTimeout() {
         if (!conversation.hasEnded()) { 
-            log.warn("Timeout occured for getting checksums from ??");
-            endConversation();
-            if (conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(
-                        new DefaultEvent(OperationEvent.OperationEventType.Failed, 
-                        "No GetFileFinalResponse received before timeout"));
-            } else {
-                conversation.throwException(new OperationTimeOutException("No GetChecksumsFinalResponse "
-                        + "received before timeout"));
-            }                        
+            conversation.failConversation("No GetFileFinalResponse received before timeout");
         }
     }
-    
+
     /**
      * The timer task class for the outstanding get file request. When the time is reached the conversation should be
      * marked as ended.

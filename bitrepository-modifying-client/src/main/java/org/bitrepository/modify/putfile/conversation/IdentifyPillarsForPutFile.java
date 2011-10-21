@@ -35,23 +35,14 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.eventhandler.DefaultEvent;
-import org.bitrepository.protocol.eventhandler.OperationEvent;
-import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
+import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
-import org.bitrepository.protocol.time.TimeMeasureComparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The first state of the PutFile communication. The identification of the pillars involved.
  */
 public class IdentifyPillarsForPutFile extends PutFileState {
-    /** The log for this class. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
-    
     /** Defines that the timer is a daemon thread. */
     private static final Boolean TIMER_IS_DAEMON = true;
     /** The timer. Schedules conversation timeouts for this conversation. */
@@ -91,53 +82,30 @@ public class IdentifyPillarsForPutFile extends PutFileState {
         identifyRequest.setBitRepositoryCollectionID(conversation.settings.getCollectionID());
         identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         identifyRequest.setTo(conversation.settings.getCollectionDestination());
-
-        if (conversation.eventHandler != null) {
-            conversation.eventHandler.handleEvent(new DefaultEvent(
-                    OperationEventType.IdentifyPillarsRequestSent, "Identifying pillars for putting file " + 
-                            conversation.fileID));
-        }
         conversation.messageSender.sendMessage(identifyRequest);
+
+        monitor.identifyPillarsRequestSent("Identifying pillars for put file " + conversation.fileID);
         timer.schedule(timerTask, 
                 conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());
     }
 
     @Override
     public synchronized void onMessage(IdentifyPillarsForPutFileResponse response) {
-        log.debug("(ConversationID: " + conversation.getConversationID() + ") " 
-                + "Received IdentifyPillarsForPutFileResponse for '" + response.getPillarID() + "'.");
-
         try {
             identifyResponseStatus.responseReceived(response.getPillarID());
             pillarDestinations.put(response.getPillarID(), response.getReplyTo());
         } catch (UnexpectedResponseException e) {
-            log.warn("Received exception:", e);
-            if(conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(new PillarOperationEvent(OperationEventType.Failed, 
-                        "Unexcepted response from " + response.getPillarID() + " : " + e.getMessage(),
-                        response.getPillarID()));
-            }
+            monitor.invalidMessage("Unexcepted response from " + response.getPillarID() + " : " + e.getMessage());
         }
 
-        if (conversation.eventHandler != null) {
-            conversation.eventHandler.handleEvent(new PillarOperationEvent(
-            		OperationEvent.OperationEventType.PillarIdentified, 
-            		"Identified the pillar '" + response.getPillarID() + "' for Put.", 
-            		response.getPillarID()));
-        }
+        monitor.pillarIdentified("Identified the pillar '" + response.getPillarID() + "' for Put.", 
+                response.getPillarID());
 
         // Check if ready to go to next state.
         if(identifyResponseStatus.haveAllPillarResponded()) {
-            log.info("Identified all pillars. Moving to next state.");
-            // Stop timeout.
-            timerTask.cancel();
+            monitor.pillarSelected("Identified all pillars for put. Starting to put.", 
+                    conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs().toString());
             
-            if (conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(
-                        new DefaultEvent(OperationEvent.OperationEventType.PillarSelected, 
-                                "Finished identifying all pillars for the put."));
-            }
-
             // go to next state.
             PuttingFile newState = new PuttingFile(conversation, pillarDestinations);
             conversation.conversationState = newState;
@@ -152,8 +120,8 @@ public class IdentifyPillarsForPutFile extends PutFileState {
      */
     @Override
     public synchronized void onMessage(PutFileProgressResponse response) {
-        log.warn("(ConversationID: " + conversation.getConversationID() + ") " +
-                "Received PutFileProgressResponse from " + response.getPillarID() + " before sending PutFileRequest.");
+        monitor.outOfSequenceMessage("Received PutFileProgressResponse from " + response.getPillarID() + 
+                " before sending PutFileRequest.");
     }
 
     /**
@@ -163,8 +131,8 @@ public class IdentifyPillarsForPutFile extends PutFileState {
      */
     @Override
     public synchronized void onMessage(PutFileFinalResponse response) {
-        log.warn("(ConversationID: " + conversation.getConversationID() + ") " +
-                "Received PutFileFinalResponse from " + response.getPillarID() + " before sending PutFileRequest.");
+        monitor.outOfSequenceMessage("Received PutFileFinalResponse from " + response.getPillarID() + 
+                " before sending PutFileRequest.");
     }
 
     /**
@@ -173,7 +141,8 @@ public class IdentifyPillarsForPutFile extends PutFileState {
     private class IdentifyTimerTask extends TimerTask {
         @Override
         public void run() {
-        	conversation.failConversation("Timeout for the identification of the pillars for the PutFile operation.");
+        	conversation.failConversation(
+        	        new OperationFailedEvent("Timeout for the identification of the pillars for the PutFile operation."));
         }
     }
 }

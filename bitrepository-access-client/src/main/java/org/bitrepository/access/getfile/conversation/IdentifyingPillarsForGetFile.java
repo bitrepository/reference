@@ -35,22 +35,12 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.eventhandler.DefaultEvent;
-import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
-import org.bitrepository.protocol.exceptions.NoPillarFoundException;
-import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.time.TimeMeasureComparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Models the functionality for identifying pillars prior to a get file request.
  */
 public class IdentifyingPillarsForGetFile extends GetFileState {
-    /** The log for this class. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
     /** The timer used for timeout checks. */
     final Timer timer = new Timer();
     /** The timer task for timeout of identify in this conversation. */
@@ -80,13 +70,9 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
         identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         identifyRequest.setTo(conversation.settings.getCollectionDestination());
 
-        conversation.messageSender.sendMessage(identifyRequest);
+        messageSender.sendMessage(identifyRequest);
+        monitor.identifyPillarsRequestSent("Identifying pillars for getting file ");
 
-        if (conversation.eventHandler != null) {
-            conversation.eventHandler.handleEvent(new DefaultEvent(
-                    OperationEventType.IdentifyPillarsRequestSent, "Identifying pillars for getting file " + 
-                            conversation.fileID));
-        }
         timer.schedule(identifyTimeoutTask,
                 conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());
     }
@@ -102,14 +88,10 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
     public void onMessage(IdentifyPillarsForGetFileResponse response) {
         try {
             conversation.selector.processResponse(response);
-            String info = "Received IdentifyPillarsForGetFileResponse for file " + conversation.fileID + 
-                    " from " + response.getPillarID();
-            if (conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(new PillarOperationEvent(
-                        OperationEventType.PillarIdentified, info, response.getPillarID()));
-            }
+            monitor.pillarIdentified("Received IdentifyPillarsForGetFileResponse for file " + conversation.fileID + 
+                    " from " + response.getPillarID(), response.getPillarID());
         } catch (UnexpectedResponseException e) {
-            throw new IllegalArgumentException("Invalid IdentifyPillarsForGetFileResponse.", e);
+            monitor.invalidMessage("Unable to handle IdentifyPillarsForGetFileResponse, " + e.getMessage());
         }
 
         try {
@@ -118,26 +100,19 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
                 getFileFromSelectedPillar();
             }
         } catch (UnableToFinishException e) {
-            log.warn("Caught an exception", e);
-            if (conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(new DefaultEvent(
-                        OperationEventType.Failed, e.getMessage()));
-            } else {
-            conversation.throwException(
-                    new OperationFailedException("Could not find a pillar able to return the requested file.", e));
-            }
+            conversation.failConversation("Could not find a pillar able to get the requested file from.", e);
         }
     }
     
     @Override
     public void onMessage(GetFileProgressResponse response) {
-        log.warn("(ConversationID: " + conversation.getConversationID() + ") " +
+        monitor.outOfSequenceMessage(
                 "Received GetFileProgressResponse from " + response.getPillarID() + " before sending GetFileRequest.");
     }
     
     @Override
     public void onMessage(GetFileFinalResponse response) {
-        log.warn("(ConversationID: " + conversation.getConversationID() + ") " +
+        monitor.outOfSequenceMessage(
                 "Received GetFileFinalResponse from " + response.getPillarID() + "  before sending GetFileRequest.");
     }
 
@@ -160,31 +135,18 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
         synchronized (conversation) {
             if (conversation.conversationState == this) {
                 if (conversation.selector.getIDForSelectedPillar() != null) {
-                    String message = "Time has run out for selecting a pillar. The following pillars did't respond: " + 
-                    Arrays.toString(conversation.selector.getOutstandingPillars()) + 
-                    ". Using pillar based on uncomplete set of responses.";
-                    log.warn(message);
-                    if (conversation.eventHandler != null) {
-                        conversation.eventHandler.handleEvent(new DefaultEvent(
-                                OperationEventType.IdentifyPillarTimeout, 
-                                message));
-                    }
+                    monitor.identifyPillarTimeout("Time has run out for selecting a pillar. " +
+                    		"The following pillars did't respond: " + 
+                            Arrays.toString(conversation.selector.getOutstandingPillars()) + 
+                            ". Using pillar based on uncomplete set of responses.");
                     getFileFromSelectedPillar();
                 } else {
-                    String message = "Unable to select a pillar, time has run out. " +
-                    		"The following pillars did't respond: " + 
-                    		Arrays.toString(conversation.selector.getOutstandingPillars());
-                    log.warn(message);
-                    if (conversation.eventHandler != null) {
-                        conversation.eventHandler.handleEvent(new DefaultEvent(
-                                OperationEventType.NoPillarFound, message));
-                    } else {
-                        conversation.throwException(new NoPillarFoundException(message));
-                    }
-                    endConversation();
+                    conversation.failConversation(
+                            "Unable to select a pillar, time has run out. The following pillars did't respond: " + 
+                            Arrays.toString(conversation.selector.getOutstandingPillars()));
                 }
             } else {
-                log.info("Conversation(" + conversation.getConversationID() + ") identification timeout, but " +
+                monitor.warning("Conversation(" + conversation.getConversationID() + ") identification timeout, but " +
                 		"the conversation state has already changed to " + conversation.conversationState);
             }
         }
@@ -194,6 +156,8 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
      * Used when a suitable pillar has been found to move on to the Getting file state.
      */
     private void getFileFromSelectedPillar() {
+        monitor.pillarSelected("Selected pillar " + conversation.selector.getIDForSelectedPillar() + 
+                " to get file from", conversation.selector.getIDForSelectedPillar());
         identifyTimeoutTask.cancel();
         GettingFile nextConversationState = new GettingFile(conversation);
         conversation.conversationState = nextConversationState;

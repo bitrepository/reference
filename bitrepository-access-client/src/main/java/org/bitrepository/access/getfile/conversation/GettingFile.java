@@ -38,10 +38,6 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
-import org.bitrepository.protocol.exceptions.NoPillarFoundException;
-import org.bitrepository.protocol.exceptions.OperationTimeOutException;
-import org.bitrepository.protocol.time.TimeMeasureComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
@@ -76,19 +72,6 @@ class GettingFile extends GetFileState {
      * Also sets up a timer task to avoid waiting to long for the request to complete.
      */
     public void start() {
-        String info = "Getting file " + conversation.fileID + " from pillar " + 
-    conversation.selector.getIDForSelectedPillar();
-        if (conversation.selector.getIDForSelectedPillar() == null) {
-            conversation.throwException(new NoPillarFoundException("Unable to getFile, no pillar was selected"));
-        } else {
-            if (conversation.eventHandler != null) {
-                conversation.eventHandler.handleEvent(
-                        new PillarOperationEvent(OperationEvent.OperationEventType.PillarSelected, 
-                                info,
-                                conversation.selector.getIDForSelectedPillar()));
-            }
-        }
-
         GetFileRequest getFileRequest = new GetFileRequest();
         getFileRequest.setBitRepositoryCollectionID(conversation.settings.getCollectionID());
         getFileRequest.setCorrelationID(conversation.getConversationID());
@@ -102,29 +85,20 @@ class GettingFile extends GetFileState {
 
         conversation.messageSender.sendMessage(getFileRequest); 
         timer.schedule(getFileTimeoutTask, getMaxTimeToWaitForGetFileToComplete());
-        if (conversation.eventHandler != null) {
-            conversation.eventHandler.handleEvent(
-                    new PillarOperationEvent(OperationEvent.OperationEventType.RequestSent, 
-                            conversation.selector.getIDForSelectedPillar(), 
-                            conversation.selector.getIDForSelectedPillar()));
-        }
+        monitor.requestSent("Sending getFileRequest to " + conversation.selector.getIDForSelectedPillar(), 
+                conversation.selector.getIDForSelectedPillar());
     }
 
     /**
      * Method for handling the GetFileProgressResponse messages.
-     * Currently logs the progress response, but does nothing else.
      *
      * @param msg The GetFileProgressResponse message to be handled by this method.
      */
     @Override
     public void onMessage(GetFileProgressResponse msg) {
-        String info = "Received progress response for retrieval of file " + msg.getFileID() + " : \n{}";
-        log.debug("(ConversationID: " + conversation.getConversationID() + ") " + info, msg);
-        if (conversation.eventHandler != null) {
-            conversation.eventHandler.handleEvent(
-                    new DefaultEvent(OperationEvent.OperationEventType.Progress, 
-                            info + msg.getProgressResponseInfo()));
-        }
+        monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.Progress, 
+                "Received progress response for retrieval of file " + msg.getFileID() + ":\n" + 
+                        msg.getProgressResponseInfo()));
     }
 
     /**
@@ -136,13 +110,8 @@ class GettingFile extends GetFileState {
     public void onMessage(GetFileFinalResponse msg) {
         ArgumentValidator.checkNotNull(msg, "GetFileFinalResponse");
         getFileTimeoutTask.cancel();
-        String message =  "Finished getting file " + msg.getFileID() + " from " + msg.getPillarID();
-        if (conversation.eventHandler != null) {
-            conversation.eventHandler.handleEvent(
-                    new DefaultEvent(OperationEvent.OperationEventType.Complete, message));
-        }
-        log.debug("(ConversationID: " + conversation.getConversationID() +  ") " + message);
-        endConversation();
+        monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.Complete, 
+                "Finished getting file " + msg.getFileID() + " from " + msg.getPillarID()));
     }
 
     @Override
@@ -174,16 +143,8 @@ class GettingFile extends GetFileState {
         public void run() {
             synchronized (conversation) {
                 if (!conversation.hasEnded()) { 
-                    log.warn("No GetFileFinalResponse received before timeout for file " + conversation.fileID + 
+                    conversation.failConversation("No GetFileFinalResponse received before timeout for file " + conversation.fileID + 
                             " from pillar " + conversation.selector.getIDForSelectedPillar());
-                    endConversation();
-                    if (conversation.eventHandler != null) {
-                        conversation.eventHandler.handleEvent(
-                                new DefaultEvent(OperationEvent.OperationEventType.Failed, 
-                                "No GetFileFinalResponse received before timeout"));
-                    } else {
-                        conversation.throwException(new OperationTimeOutException("No GetFileFinalResponse received before timeout"));
-                    }		
                 }
             }
         }

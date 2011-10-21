@@ -30,17 +30,27 @@
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
-      <artifactId>bitrepository-protocol</artifactId>
+      <artifactId>bitrepository-access-client</artifactId>
       <version>0.3-SNAPSHOT</version>
-      <type>test-jar</type>
     </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-modifying-client</artifactId>
+      <version>0.3-SNAPSHOT</version>
+    </dependency>
+    <!-- THE TEST SCOPE -->
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-common</artifactId>
       <version>0.3-SNAPSHOT</version>
       <type>test-jar</type>
     </dependency>
-    <!-- THE TEST SCOPE -->
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-protocol</artifactId>
+      <version>0.3-SNAPSHOT</version>
+      <type>test-jar</type>
+    </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-access-client</artifactId>
