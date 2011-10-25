@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVICEURL="http://localhost:8080/bitrepository-webclient-0.0.1-SNAPSHOT/repo/reposervice"
+SERVICEURL="http://int-bitmag-02.kb.dk:8080/bitrepository-webclient-0.0.1-SNAPSHOT/repo/reposervice"
 WEBDAVSERVER="http://sandkasse-01.kb.dk/dav/"
 
 do_put() {
@@ -21,6 +21,11 @@ do_get() {
 	command="$SERVICEURL/getfile/?fileID=$filename&url=$WEBDAVSERVER"
 	curl --silent $command
 	echo ""
+}
+
+do_getchecksum() {
+	command="$SERVICEURL/getChecksums/?fileIDs=$filename&checksumType=$checksumType&salt=$salt"
+	curl --silent $command
 }
 
 do_webserver_remove_file() {
@@ -55,6 +60,21 @@ case "$1" in
 	else
 		do_get $filename
 	fi
+	;;
+  getchecksum)
+	filename=$2
+	if [ -z $filename ]
+	then 
+		echo "Usage br-client getchecksum <filename> [<checksumType> <salt>]"
+		return 1
+	fi
+	checksumType=$3
+	if [ -z $checksumType ]
+	then 
+		checksumType="md5"
+	fi
+	salt=$4
+	do_getchecksum $filename $checksumType $salt
 	;;
   remove-file)
 	filename=$2
