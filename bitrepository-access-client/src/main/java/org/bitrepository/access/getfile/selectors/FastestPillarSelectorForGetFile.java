@@ -58,8 +58,8 @@ public class FastestPillarSelectorForGetFile extends PillarSelectorForGetFile {
         if (!IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().toString().equals(
                 response.getIdentifyResponseInfo().getIdentifyResponseCode())) {
             return false;
-        } else if (getIDForSelectedPillar() == null || 
-                TimeMeasureComparator.compare(response.getTimeToDeliver(), getTimeToDeliver()) < 0) {
+        } else if (selectedPillar == null || 
+                TimeMeasureComparator.compare(response.getTimeToDeliver(), selectedPillar.getTimeToDeliver()) < 0) {
             return true;
         } else return false;
     }
@@ -72,7 +72,7 @@ public class FastestPillarSelectorForGetFile extends PillarSelectorForGetFile {
     @Override
     public boolean isFinished() throws UnableToFinishException {
         if (responseStatus.haveAllPillarResponded()) {
-            if (getIDForSelectedPillar() != null) {
+            if (selectedPillar != null) {
                 return true;
             } else {
                 throw new UnableToFinishException("All pillars have responded on the identify request, but suitable " +

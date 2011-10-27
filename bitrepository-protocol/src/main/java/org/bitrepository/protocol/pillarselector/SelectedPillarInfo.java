@@ -24,28 +24,38 @@
  */
 package org.bitrepository.protocol.pillarselector;
 
-/** Defines the implementation of an <code>SinglePillarSelector</code>
- *  
- * The selection algorithm itself needs to be defined in a concrete subclass.
+/**
+ * Container for information about a pillar which as been identified and are marked as selected for a request.
  */
-public abstract class AbstractSinglePillarSelector implements SinglePillarSelector {
+public class SelectedPillarInfo {
     /** The ID of the selected pillar */
-    protected String pillarID = null;
+    protected final String pillarID;
     /** The topic for communication with the selected pillar */
-    protected String pillarTopic = null;    
+    protected final String pillarTopic;   
 
-    /** Return the ID of the pillar chosen by this selector if finished. If unfinished null is returned */
-    public String getIDForSelectedPillar() {
+    /**
+     * @param pillarID The ID of the pillar
+     * @param pillarTopic
+     */
+    public SelectedPillarInfo(String pillarID, String pillarTopic) {
+        super();
+        this.pillarID = pillarID;
+        this.pillarTopic = pillarTopic;
+    }
+
+    /** @return The ID of the pillar chosen by this selector if finished. If unfinished null is returned */
+    public String getID() {
         return pillarID;
     }
 
-    /** If finished return the topic for sending messages to the pillar chosen by this selector. 
+    /** 
+     * @return If finished return the topic for sending messages to the pillar chosen by this selector. 
      * If unfinished null is returned 
      */
-    public String getDestinationForSelectedPillar() {
+    public String getDestination() {
         return pillarTopic;
     }  
-    
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + ": pillarID=" + pillarID

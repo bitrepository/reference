@@ -3,8 +3,8 @@
   #%L
   Bitrepository Common
   
-  $Id: Settings.xml 286 2011-09-15 10:36:23Z jolf $
-  $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-protocol/src/test/resources/settings/xml/bitrepository-devel/Settings.xml $
+  $Id$
+  $HeadURL$
   %%
   Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
@@ -28,7 +28,7 @@
   <CollectionID>TEST</CollectionID>
   <ProtocolSettings>
     <CollectionDestination>TEST-TOPIC</CollectionDestination>
-    <AlarmDestination>TEST-TOPIC</AlarmDestination>
+    <AlarmDestination>TEST-ALARM-TOPIC</AlarmDestination>
     <MessageBusConfiguration>
       <Name>MyMessageBus</Name>
       <URL>failover://tcp://sandkasse-01.kb.dk:61616</URL>

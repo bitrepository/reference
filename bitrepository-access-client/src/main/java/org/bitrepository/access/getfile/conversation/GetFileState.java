@@ -33,8 +33,11 @@ import org.bitrepository.protocol.messagebus.MessageSender;
  * Super class for the concrete GetFiles state handlers.
  */
 public abstract class GetFileState extends AbstractMessageListener implements ConversationState {
+    /** The parent conversation containing the general context. */
     protected final SimpleGetFileConversation conversation;
+    /** Handles the mediation of information regarding conversation updates */
     protected final ConversationEventMonitor monitor;
+    /** Used for sending messages */
     protected final MessageSender messageSender;
 
     /** 
@@ -52,13 +55,5 @@ public abstract class GetFileState extends AbstractMessageListener implements Co
      */
     protected void endConversation() {
         conversation.conversationState = new GetFileFinished(conversation);
-    }
-    
-    /**
-     * Should be overridden by the finished state to return true
-     */
-    @Override
-    public boolean hasEnded() {
-        return false;
     }
 }

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitrepository Protocol
+ * Bitrepository Access
  * 
  * $Id$
  * $HeadURL$
@@ -22,28 +22,28 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.exceptions;
+package org.bitrepository.access.getchecksums.conversation;
+
+import org.bitrepository.bitrepositoryelements.ResultingChecksums;
+import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 
 /**
- * Used to indicate that an negative reponse has been received.
- */
-public class UnexpectedResponseException extends Exception {
+* Contains the result of a checksum request sent to a single pillar.
+*/
+public class ChecksumsCompletePillarEvent extends PillarOperationEvent{
+    private final ResultingChecksums result;
     
-
     /**
-     * Constructor with both message and cause exception
-     * @param Description of this exception
-     * @param The throwable causing of the exception
+     * @param result The result returned by the pilalr.
+     * @param pillarID The pillar which generated the result
+     * @param info Additional information.
      */
-    public UnexpectedResponseException(String message, Throwable cause) {
-        super(message, cause);
+    public ChecksumsCompletePillarEvent(ResultingChecksums result, String pillarID, String info) {
+        super(OperationEventType.PillarComplete, pillarID, info);
+        this.result = result;
     }
 
-    /**
-     * Constructor with only a message 
-     * @param Description of this exception
-     */
-    public UnexpectedResponseException(String message) {
-        super(message);
+    public Object getChecksums() {
+        return result;
     }
 }

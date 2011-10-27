@@ -146,7 +146,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         }
         for(int i = 1; i < 2* settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             OperationEventType eventType = testEventHandler.waitForEvent().getType();
-            Assert.assertTrue( (eventType == OperationEventType.PartiallyComplete)
+            Assert.assertTrue( (eventType == OperationEventType.PillarComplete)
                     || (eventType == OperationEventType.Progress),
                     "Expected either PartiallyComplete or Progress, but was: " + eventType);
         }
@@ -235,7 +235,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
             OperationEventType eventType = testEventHandler.waitForEvent().getType();
             Assert.assertTrue( (eventType == OperationEventType.Failed)
                     || (eventType == OperationEventType.Progress) 
-                    || (eventType == OperationEventType.PartiallyComplete),
+                    || (eventType == OperationEventType.PillarComplete),
                     "Expected either Failed, Progress or PartiallyComplete, but was: " + eventType);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);

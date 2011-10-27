@@ -24,26 +24,28 @@
  */
 package org.bitrepository.protocol.exceptions;
 
+import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
+
 /**
- * Used to indicate that an negative reponse has been received.
+ * Used to indicate that an unexpected response has been received.
  */
-public class UnexpectedResponseException extends Exception {
-    
+public class NegativeResponseException extends Exception {
+    private final ErrorcodeGeneralType errorcode;
 
     /**
      * Constructor with both message and cause exception
      * @param Description of this exception
-     * @param The throwable causing of the exception
+     * @param The errorcode causing the exception.
      */
-    public UnexpectedResponseException(String message, Throwable cause) {
-        super(message, cause);
+    public NegativeResponseException(String message, ErrorcodeGeneralType errorcode) {
+        super(message);
+        this.errorcode = errorcode;
     }
 
     /**
-     * Constructor with only a message 
-     * @param Description of this exception
+     * @return The errorcode causing the exception.
      */
-    public UnexpectedResponseException(String message) {
-        super(message);
-    }
+    public ErrorcodeGeneralType getErrorcode() {
+        return errorcode;
+    }  
 }

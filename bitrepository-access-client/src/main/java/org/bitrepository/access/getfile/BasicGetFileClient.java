@@ -150,7 +150,7 @@ public class BasicGetFileClient implements GetFileClient {
     private void getFile(MessageBus messageBus, Settings settings, PillarSelectorForGetFile selector, 
             String fileID, URL uploadUrl) 
     throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
-        AbstractConversation conversation = new SimpleGetFileConversation(
+        SimpleGetFileConversation conversation = new SimpleGetFileConversation(
                     messageBus, settings, selector, fileID, uploadUrl, null, new FlowController(settings, true));
         conversationMediator.addConversation(conversation);  
         conversation.startConversation();

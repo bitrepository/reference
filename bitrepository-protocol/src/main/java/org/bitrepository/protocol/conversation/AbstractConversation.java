@@ -74,10 +74,14 @@ public abstract class AbstractConversation implements Conversation {
     private final long startTime;
     /** The logger for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
-    /** */
+    /** Takes care of publishing update information */
     private final ConversationEventMonitor monitor;
+    /** Used for storing exceptions generates as result of a message reception, so it can be thrown to the initial 
+     * operation initiater */
     protected OperationFailedException operationFailedException;
+    /** Is this conversation a result of a blocking call*/
     protected boolean blocking;
+    /** Handles blocks */
     private final FlowController flowController;
 
     /**
@@ -126,10 +130,19 @@ public abstract class AbstractConversation implements Conversation {
         }
     }
     
+    /**
+     * Use for failing this conversation
+     * @param info A description of the cause.
+     * @param e The causing exception.
+     */
     public synchronized void failConversation(String info, Exception e) {
         failConversation(new OperationFailedEvent(info, e));
     }
-    
+
+    /**
+     * Use for failing this conversation
+     * @param info A description of the cause.
+     */
     public synchronized void failConversation(String info) {
         failConversation(new OperationFailedEvent(info));
     }
@@ -141,14 +154,23 @@ public abstract class AbstractConversation implements Conversation {
         flowController.unblock();
     }
 
+    /**
+     * @return The monitor for distributing update information
+     */
     public ConversationEventMonitor getMonitor() {
         return monitor;
     }
     
+    /**
+     * @return The controller with the responsability of handling blocking
+     */
     public FlowController getFlowController() {
         return flowController;
     }
     
+    /**
+     * @return The state of this conversation.
+     */
     public abstract ConversationState getConversationState();
     
     @Override

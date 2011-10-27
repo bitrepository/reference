@@ -28,12 +28,19 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
 import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
+import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.protocol.exceptions.NegativeResponseException;
+import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
+import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,101 +48,84 @@ import org.slf4j.LoggerFactory;
  * Class for selecting pillars for the GetChecksums operation.
  */
 public class PillarSelectorForGetChecksums {
-    /** The log for this class. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final PillarsResponseStatus responseStatus;
+    private final List<SelectedPillarInfo> selectedPillars = new LinkedList<SelectedPillarInfo>(); 
 
     /** The id for the pillar to select.*/
-    private List<String> outstandingPillarsToSelect = new ArrayList<String>();
+    //private List<String> outstandingPillarsToSelect = new ArrayList<String>();
     /** The map between the IDs of the selected pillars and their destination. */
-    private Map<String, String> selectedPillars = new HashMap<String, String>();
-    
+    //private Map<String, String> selectedPillars = new HashMap<String, String>();
+
     /**
      * Constructor.
      * @param pillars The IDs of the pillars to be selected.
      */
-    public PillarSelectorForGetChecksums(Collection<String> pillars) {
-        for(String p : pillars) {
-            outstandingPillarsToSelect.add(p);
-        }
+    public PillarSelectorForGetChecksums(Collection<String> pillarsWhichShouldRespond) {
+        ArgumentValidator.checkNotNullOrEmpty(pillarsWhichShouldRespond, "pillarsWhichShouldRespond");
+        responseStatus = new PillarsResponseStatus(pillarsWhichShouldRespond);
     }
-    
+
     /**
      * Method for processing a IdentifyPillarsForGetChecksumsResponse. Checks whether the response is from the wanted
      * expected pillar.
      * @param response The response identifying a pillar for the GetChecksums operation.
+     * @return 
      */
-    public void processResponse(IdentifyPillarsForGetChecksumsResponse response) {
-        log.info("Processing response for '" + response.getPillarID() + "'.");
-        if(outstandingPillarsToSelect.contains(response.getPillarID())) {
-            if(validateResponse(response.getIdentifyResponseInfo())) {
-                selectedPillars.put(response.getPillarID(), response.getReplyTo());
-            } else {
-                log.warn("Pillar '" + response.getPillarID() + "' unable to perform operation. Response info: '" 
-                    + response.getIdentifyResponseInfo() + "'");
-            }
-            outstandingPillarsToSelect.remove(response.getPillarID());
-        } else {
-            // handle case when the response has be received twice.
-            if(selectedPillars.containsKey(response.getPillarID())) {
-                String destination = selectedPillars.get(response.getPillarID());
-                if(destination.equals(response.getReplyTo())) {
-                    log.debug("Received another response from pillar '" + response.getPillarID() 
-                            + "' with identical destination.");
-                } else {
-                    log.warn("Received responses from pillar '" + response.getPillarID() 
-                            + "' with diverging destinations: '" + destination + "' and '" + response.getReplyTo() 
-                            + "'. Using the first received: '" + destination + "'");               
-                }
-            } else {
-                log.debug("Ignoring identification response from '" + response.getPillarID() + "'");
-            }
+    public void processResponse(IdentifyPillarsForGetChecksumsResponse response) 
+            throws UnexpectedResponseException, NegativeResponseException {
+        responseStatus.responseReceived(response.getPillarID());
+        validateResponse(response.getIdentifyResponseInfo());
+        if (!IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().equals(
+                new BigInteger(response.getIdentifyResponseInfo().getIdentifyResponseCode()))) {
+            throw new NegativeResponseException(response.getPillarID() + " sent negative response " + 
+                    response.getIdentifyResponseInfo().getIdentifyResponseText(), 
+                    ErrorcodeGeneralType.valueOf(response.getIdentifyResponseInfo().getIdentifyResponseCode()));
         }
+        selectedPillars.add(new SelectedPillarInfo(response.getPillarID(), response.getReplyTo()));
     }
-    
+
     /**
      * Method for validating the response.
      * @param irInfo The IdentifyResponseInfo to validate.
      */
-    private boolean validateResponse(IdentifyResponseInfo irInfo) {
+    private void validateResponse(IdentifyResponseInfo irInfo) throws UnexpectedResponseException {
+        String errorMessage = null;
+
         if(irInfo == null) {
-            return false;
+            errorMessage = "Response code was null";
         }
-        
+
         String responseCode = irInfo.getIdentifyResponseCode();
         if(responseCode == null) {
-            return false;
+            errorMessage = "Response code was null";
         }
-        
-        try {
-            return IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().compareTo(
-                    new BigInteger(responseCode)) == 0;
-        } catch (NumberFormatException e) {
-            log.warn("Cannot decode response code: " + responseCode, e);
-            return false;
-        }
+
+        IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().equals(
+                new BigInteger(responseCode));
+        if (errorMessage != null) throw new UnexpectedResponseException(
+                "Invalid IdentifyResponse from response.getPillarID(), " + errorMessage);
     }
-    
+
     /**
      * Tells whether the selection is finished.
      * @return Whether any pillars are outstanding.
      */
     public boolean isFinished() {
-        return outstandingPillarsToSelect.isEmpty();
+        return responseStatus.haveAllPillarResponded();
     }
-    
+
     /**
      * Method for identifying the pillars, which needs to be identified for this operation to be finished.
      * @return An array of the IDs of the pillars which have not yet responded.
      */
-    public Collection<String> getOutstandingPillars() {
-        return outstandingPillarsToSelect;
+    public String[] getOutstandingPillars() {
+        return responseStatus.getOutstandPillars();
     }
 
     /**
-     * Method for retrieving the destinations of the selected pillars.
-     * @return A mapping between the IDs of the pillars and their destinations.
+     * @return The selected pillars.
      */
-    public Map<String, String> getPillarDestinations() {
+    public List<SelectedPillarInfo> getSelectedPillars() {
         return selectedPillars;
     }
 }

@@ -33,6 +33,8 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.protocol.ProtocolConstants;
+import org.bitrepository.protocol.exceptions.NegativeResponseException;
+import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 
 /**
  * Models the behavior of a GetChecksums conversation during the identification phase. That is, it begins with the 
@@ -88,16 +90,22 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
      */
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsResponse response) {
-        monitor.pillarIdentified("Received IdentifyPillarsForGetChecksumsResponse " + response, response.getPillarID());
-        conversation.selector.processResponse(response);
+        try {
+            conversation.selector.processResponse(response);
+            monitor.pillarIdentified("Received IdentifyPillarsForGetChecksumsResponse " + response, response.getPillarID());
+        } catch (UnexpectedResponseException e) {
+            monitor.pillarFailed("Unable to handle IdentifyPillarsForGetChecksumsResponse, ", e);
+        } catch (NegativeResponseException e) {
+            monitor.pillarFailed("Negativ response from pillar " + response.getPillarID(), e);
+        }
         if (conversation.selector.isFinished()) {
             identifyTimeoutTask.cancel();
             
-            if (conversation.selector.getPillarDestinations() == null || conversation.selector.getPillarDestinations().isEmpty()) {
+            if (conversation.selector.getSelectedPillars().isEmpty()) {
                 conversation.failConversation("Unable to getChecksums, no pillars were identified");
             }
             monitor.pillarSelected("Identified pillars for getChecksums", 
-                    conversation.selector.getPillarDestinations().keySet().toString());
+                    conversation.selector.getSelectedPillars().toString());
             getChecksumsFromSelectedPillar();
         }
     }
@@ -130,10 +138,10 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
     private void handleIdentificationTimeout() {
         synchronized (conversation) {
             if (conversation.conversationState == this) {
-                if (!conversation.selector.getPillarDestinations().isEmpty()) {
-                    monitor.identifyPillarTimeout("Time has run out for selecting a pillar. The following pillars did't respond: " + 
-                            conversation.selector.getOutstandingPillars() + 
-                    ". Using pillar based on uncomplete set of responses.");
+                if (!conversation.selector.getSelectedPillars().isEmpty()) {
+                    monitor.identifyPillarTimeout("Time has run out for selecting a pillar. The following pillars " +
+                    		"didn't respond: " + conversation.selector.getOutstandingPillars() + 
+                    ". Using pillars based on uncomplete set of responses.");
                     getChecksumsFromSelectedPillar();
                 } else {
                     conversation.failConversation("Unable to select a pillar, time has run out. " +
@@ -155,5 +163,10 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
         public void run() {
             handleIdentificationTimeout();
         }
+    }
+    
+    @Override
+    public boolean hasEnded() {
+        return false;
     }
 }

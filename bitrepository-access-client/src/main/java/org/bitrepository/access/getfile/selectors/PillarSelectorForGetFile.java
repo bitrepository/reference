@@ -24,21 +24,19 @@
  */
 package org.bitrepository.access.getfile.selectors;
 
-import java.util.Arrays;
-
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.AbstractSinglePillarSelector;
+import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 
 /**
  * Used to select a specific pillar and find the topic for this pillar. The selection is implemented by sending a 
  * <code>IdentifyPillarsForGetFileRequest</code> and processing the responses.
  *
  */
-public abstract class PillarSelectorForGetFile extends AbstractSinglePillarSelector {
-    /** @see #getTimeToDeliver() */
-    private TimeMeasureTYPE timeToDeliver;
+public abstract class PillarSelectorForGetFile {
+    protected SelectedPillarForGetFileInfo selectedPillar;
     
     /**
      * Each time this method is called the selector will check the response to see whether the selected pillar should 
@@ -49,9 +47,8 @@ public abstract class PillarSelectorForGetFile extends AbstractSinglePillarSelec
      */
     public final void processResponse(IdentifyPillarsForGetFileResponse response) throws UnexpectedResponseException {
         if (checkPillarResponseForSelection(response)) {
-            this.pillarID = response.getPillarID();
-            this.pillarTopic = response.getReplyTo();
-            this.timeToDeliver = response.getTimeToDeliver();
+            selectedPillar = new SelectedPillarForGetFileInfo(
+                    response.getPillarID(), response.getReplyTo(), response.getTimeToDeliver());
         }
     }
     
@@ -70,17 +67,36 @@ public abstract class PillarSelectorForGetFile extends AbstractSinglePillarSelec
      * @return Return an array of pillars which haven't responded.
      */
     public abstract String[] getOutstandingPillars();
-    
+
     /**
-     * The returned timeToDeliver for the selected pillar. May be null if no pillar has been selected.
+     * Container for information about a pillar which as been identified and are marked as 
+     * selected for a GetFile request.
      */
-    public TimeMeasureTYPE getTimeToDeliver() {
-        return timeToDeliver;
+    public class SelectedPillarForGetFileInfo extends SelectedPillarInfo {
+        /** @see #getTimeToDeliver() */
+        private final TimeMeasureTYPE timeToDeliver;       
+        
+        /** 
+         * Delegates to SelectedPillarInfo construct.
+         * @see #getTimeToDeliver() 
+         */
+        public SelectedPillarForGetFileInfo(String pillarID, String pillarTopic, TimeMeasureTYPE timeToDeliver) {
+            super(pillarID, pillarTopic);
+            this.timeToDeliver = timeToDeliver;
+        }
+
+        /**
+         * @return The estimated time to deliver for the selected pillar as specified in the identify response.
+         */
+        public TimeMeasureTYPE getTimeToDeliver() {
+            return timeToDeliver;
+        }
+    }
+    
+    public SelectedPillarForGetFileInfo getSelectedPillar() {
+        return selectedPillar;
     }
 
-    @Override
-    public String toString() {
-        return super.toString() + ", timeToDeliver=" + timeToDeliver + ", outStandingPillars=" + 
-        Arrays.toString(getOutstandingPillars());
-    }
+    public abstract boolean isFinished() throws UnableToFinishException;
+
 }

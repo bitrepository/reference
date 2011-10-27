@@ -35,7 +35,9 @@ import org.bitrepository.protocol.messagebus.MessageSender;
 public abstract class PutFileState extends AbstractMessageListener implements ConversationState {
     /** The conversation in the given state.*/
     protected final SimplePutFileConversation conversation;
+    /** Handles the mediation of information regarding conversation updates */
     protected final ConversationEventMonitor monitor;
+    /** Used for sending messages */
     protected final MessageSender messageSender;
     
     /**
@@ -53,13 +55,5 @@ public abstract class PutFileState extends AbstractMessageListener implements Co
      */
     protected void endConversation() {
         conversation.conversationState = new PutFileFinished(conversation);
-    }
-    
-    /**
-     * Should be overridden by the finished state to return true
-     */
-    @Override
-    public boolean hasEnded() {
-        return false;
     }
 }

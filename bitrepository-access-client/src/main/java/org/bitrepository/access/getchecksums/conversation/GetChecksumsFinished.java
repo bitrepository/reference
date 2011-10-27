@@ -42,9 +42,6 @@ public class GetChecksumsFinished extends GetChecksumsState {
         //Noting to do.
     }
     
-    /**
-     * Should be overridden by the finished state to return true
-     */
     @Override
     public boolean hasEnded() {
         return true;

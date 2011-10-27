@@ -289,7 +289,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test(groups = {"regressiontest"})
     public void noIdentifyResponse() throws Exception {
-        addDescription("Tests the th eGetFileClient handles lack of IdentifyPillarResponses gracefully  ");
+        addDescription("Tests the the GetFileClient handles lack of IdentifyPillarResponses gracefully  ");
         addStep("Set the number of pillars to 1 and a 3 second timeout for identifying pillar.", "");
 
         settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();

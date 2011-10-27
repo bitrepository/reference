@@ -66,8 +66,8 @@ public class FastestPillarSelectorForGetFileTest {
 
         selector.processResponse(mediumPillar.createResponse());
         Assert.assertTrue(selector.isFinished(), "Selector didn't change to finished after 3 response");
-        Assert.assertEquals(selector.getIDForSelectedPillar(), fastPillar.pillarID, "Not pillarID from fastest pillar");
-        Assert.assertEquals(selector.getDestinationForSelectedPillar(), 
+        Assert.assertEquals(selector.selectedPillar.getID(), fastPillar.pillarID, "Not pillarID from fastest pillar");
+        Assert.assertEquals(selector.selectedPillar.getDestination(), 
                 fastPillar.pillarTopic, "Not pillarID from fastest pillar");
     }
 
@@ -95,8 +95,8 @@ public class FastestPillarSelectorForGetFileTest {
 
         selector.processResponse(mediumPillar.createResponse());
         Assert.assertTrue(selector.isFinished(), "Selector didn't change to finished after 3 response");
-        Assert.assertEquals(selector.getIDForSelectedPillar(), fastPillar.pillarID, "Not pillarID from fastest pillar");
-        Assert.assertEquals(selector.getDestinationForSelectedPillar(), 
+        Assert.assertEquals(selector.selectedPillar.getID(), fastPillar.pillarID, "Not pillarID from fastest pillar");
+        Assert.assertEquals(selector.selectedPillar.getDestination(), 
                 fastPillar.pillarTopic, "Not pillarID from fastest pillar");
     }
 

@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.exceptions.UnableToFinishException;
+import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 
 /**
  * Selects a pillar based on the supplied pillarID. 
@@ -38,6 +39,7 @@ import org.bitrepository.common.exceptions.UnableToFinishException;
 public class SpecificPillarSelectorForGetFile extends PillarSelectorForGetFile {
     private final String pillarToSelect;
     private boolean finished = false;
+    
     /**
      * Used for storing error information from the pillar
      */
@@ -57,7 +59,8 @@ public class SpecificPillarSelectorForGetFile extends PillarSelectorForGetFile {
      * finished if the pillar is selected.
      */
     @Override
-    public boolean checkPillarResponseForSelection(IdentifyPillarsForGetFileResponse response) {
+    public boolean checkPillarResponseForSelection(IdentifyPillarsForGetFileResponse response) 
+            throws UnexpectedResponseException{
         boolean selectPillar = false;
         if (pillarToSelect.equals(response.getPillarID() )) {
             if (IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().toString().equals(
@@ -84,7 +87,7 @@ public class SpecificPillarSelectorForGetFile extends PillarSelectorForGetFile {
     /** Returns true if the indicated pillar has responded, else <code>false</code>. */
     @Override
     public boolean isFinished() throws UnableToFinishException {
-        if (finished && getIDForSelectedPillar() != null) {
+        if (finished && selectedPillar != null) {
             return true ;
         } else if (!finished) {
             return false;

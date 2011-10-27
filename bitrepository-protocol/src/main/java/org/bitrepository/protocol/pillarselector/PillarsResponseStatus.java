@@ -35,12 +35,25 @@ public class PillarsResponseStatus {
     private final Set<String> pillarsWithOutstandingResponse;
 
     /**
-     * Constructor.
+     * Use for identify response bookkeeping.
      * @param pillarsWhichShouldRespond An array of pillar IDs specifying which pillars are expected to respond 
      */
     public PillarsResponseStatus(Collection<String> pillarsWhichShouldRespond) {
         this.pillarsWhichShouldRespond = new HashSet<String>(pillarsWhichShouldRespond);
         this.pillarsWithOutstandingResponse = new HashSet<String>(pillarsWhichShouldRespond);
+    }
+    
+    /**
+     * Use for operation response bookkeeping.
+     * @param pillarsWhichShouldRespond An array of selected pillar specifying which pillars are expected to respond. 
+     */
+    public PillarsResponseStatus(SelectedPillarInfo[] pillarsWhichShouldRespond) {
+        this.pillarsWhichShouldRespond = new HashSet<String>();
+        this.pillarsWithOutstandingResponse = new HashSet<String>();
+        for (SelectedPillarInfo pillar: pillarsWhichShouldRespond) {
+            this.pillarsWhichShouldRespond.add(pillar.getID());
+            this.pillarsWithOutstandingResponse.add(pillar.getID());
+        }
     }
 
     /**

@@ -28,6 +28,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -42,6 +43,9 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRes
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
+import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
+import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,14 +58,9 @@ import org.slf4j.LoggerFactory;
  * protected.
  */
 public class GettingChecksums extends GetChecksumsState {
-
-    /** The log for this class. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
-    /** The mapping between the pillars and their destinations.*/
-    private final Map<String, String> pillarDestinations;
     /** The pillars, which has not yet answered.*/
-    private Set<String> outstandingPillars;
+    private List<SelectedPillarInfo> pillarsSelectedForRequest; 
+    private final PillarsResponseStatus responseStatus;
 
     /** 
      * The timer for the getFileTimeout. It is run as a daemon thread, eg. it will not prevent the application from 
@@ -79,8 +78,9 @@ public class GettingChecksums extends GetChecksumsState {
      */
     public GettingChecksums(SimpleGetChecksumsConversation conversation) {
         super(conversation);
-        pillarDestinations = conversation.selector.getPillarDestinations();
-        outstandingPillars = pillarDestinations.keySet();
+        pillarsSelectedForRequest = conversation.selector.getSelectedPillars();
+        responseStatus = new PillarsResponseStatus(
+                pillarsSelectedForRequest.toArray(new SelectedPillarInfo[pillarsSelectedForRequest.size()]));
     }
 
     /**
@@ -97,21 +97,21 @@ public class GettingChecksums extends GetChecksumsState {
         getChecksumsRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         getChecksumsRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         getChecksumsRequest.setAuditTrailInformation(conversation.auditTrailInformation);
-        
+
         // Sending one request to each of the identified pillars.
-        for(Entry<String, String> pillarDestination : pillarDestinations.entrySet()) {
-            getChecksumsRequest.setPillarID(pillarDestination.getKey());
-            getChecksumsRequest.setTo(pillarDestination.getValue());
+        for(SelectedPillarInfo pillar : pillarsSelectedForRequest) {
+            getChecksumsRequest.setPillarID(pillar.getID());
+            getChecksumsRequest.setTo(pillar.getDestination());
 
             if(conversation.uploadUrl != null) {
                 // making the URL: 'baseUrl'-'pillarId'
                 getChecksumsRequest.setResultAddress(conversation.uploadUrl.toExternalForm() + "-" 
-                        + pillarDestination.getKey());
+                        + pillar.getID());
             }
 
             conversation.messageSender.sendMessage(getChecksumsRequest); 
-            monitor.requestSent("GetChecksumRequest sent to: " + pillarDestination.getKey(), 
-                    pillarDestination.getKey());
+            monitor.requestSent("GetChecksumRequest sent to: " + pillar.getID(), 
+                    pillar.getID());
         }
 
         timer.schedule(getChecksumsTimeoutTask,
@@ -120,8 +120,7 @@ public class GettingChecksums extends GetChecksumsState {
 
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsResponse response) {
-        monitor.warning("(ConversationID: " + conversation.getConversationID() 
-                + ") Received IdentifyPillarsForGetChecksumsResponse from " + response.getPillarID() 
+        monitor.outOfSequenceMessage("Received IdentifyPillarsForGetChecksumsResponse from " + response.getPillarID() 
                 + " after the GetChecksumsRequest has been sent.");
     }
 
@@ -133,29 +132,33 @@ public class GettingChecksums extends GetChecksumsState {
 
     @Override
     public void onMessage(GetChecksumsFinalResponse response) {
-        // Remove pillar from outstanding, if it has not yet replied.
-        if(!outstandingPillars.contains(response.getPillarID())) {
-            monitor.warning("(ConversationID: " + conversation.getConversationID() + ") "
-                    + "Received unexpected final response from " + response.getPillarID() 
-                    + ". Perhaps received previously.");
-        } else {
-            outstandingPillars.remove(response.getPillarID());
+        try {
+            responseStatus.responseReceived(response.getPillarID());
+        } catch (UnexpectedResponseException ure) {
+            monitor.pillarFailed("Received unexpected final response from " + response.getPillarID() , ure);
         }
 
-        if(validateFinalResponse(response.getFinalResponseInfo())) {
-            monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.PartiallyComplete, 
-                                response.getFinalResponseInfo().toString()));
-            // If calculations in message, then put them into the results map.
-            if(response.getResultingChecksums() != null) {
-                results.put(response.getPillarID(), response.getResultingChecksums());
-            }
-        } else {
-            monitor.warning("Received bad FinalResponse from pillar: " + response.getFinalResponseInfo());
+        try {
+            if(isReponseSuccess(response.getFinalResponseInfo())) {
+                monitor.pillarComplete(new ChecksumsCompletePillarEvent(
+                        response.getResultingChecksums(),
+                        response.getPillarID(),
+                        "Received checksum result from " + response.getPillarID()));
+                // If calculations in message, then put them into the results map.
+                if(response.getResultingChecksums() != null) {
+                    results.put(response.getPillarID(), response.getResultingChecksums());
+                }
+            } else {
+                monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getFinalResponseInfo());
+            } 
+        } catch (UnexpectedResponseException ure) {
+            monitor.pillarFailed("Received bad FinalResponse from pillar: " + response.getFinalResponseInfo(), ure);
+        
         }
 
-        if(outstandingPillars.isEmpty()) {
+        if(responseStatus.haveAllPillarResponded()) {
             monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.Complete, 
-                                "All pillars have delivered their checksums."));
+                    "All pillars have delivered their checksums."));
             conversation.getFlowController().unblock();
             conversation.setResults(results);
             conversation.conversationState = new GetChecksumsFinished(conversation);
@@ -167,15 +170,10 @@ public class GettingChecksums extends GetChecksumsState {
      * @param frInfo The FinalResponseInfo to be validated.
      * @return Whether the FinalRepsonseInfo tells that the operation has been a success or a failure.
      */
-    private boolean validateFinalResponse(FinalResponseInfo frInfo) {
-        try {
-            if(FinalResponseCodePositiveType.SUCCESS.value().intValue() == new Integer(frInfo.getFinalResponseCode())) {
-                return true;
-            }
-        } catch(NumberFormatException e) {
-            log.warn("Could not handle FinalResponseInfo: " + frInfo, e);
-        }
-        return false;
+    private boolean isReponseSuccess(FinalResponseInfo frInfo) throws UnexpectedResponseException { 
+        if(FinalResponseCodePositiveType.SUCCESS.value().intValue() == new Integer(frInfo.getFinalResponseCode())) {
+            return true;
+        } else return false;
     }
 
     /**
@@ -196,5 +194,10 @@ public class GettingChecksums extends GetChecksumsState {
         public void run() {
             handleTimeout();
         }
+    }
+
+    @Override
+    public boolean hasEnded() {
+        return false;
     }
 }

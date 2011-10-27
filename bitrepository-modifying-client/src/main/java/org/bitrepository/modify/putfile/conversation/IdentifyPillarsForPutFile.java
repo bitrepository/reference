@@ -145,4 +145,9 @@ public class IdentifyPillarsForPutFile extends PutFileState {
         	        new OperationFailedEvent("Timeout for the identification of the pillars for the PutFile operation."));
         }
     }
+    
+    @Override
+    public boolean hasEnded() {
+        return false;
+    }
 }

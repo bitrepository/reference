@@ -170,7 +170,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PartiallyComplete);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarComplete);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
         
         addStep("Create a GetFileClient and start a get operation", 
@@ -210,7 +210,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PartiallyComplete);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarComplete);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
         
         

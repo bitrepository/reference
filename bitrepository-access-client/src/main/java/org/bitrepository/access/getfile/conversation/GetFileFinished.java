@@ -77,4 +77,10 @@ public class GetFileFinished extends GetFileState {
     public void start() {
         //Nothing to do.
     }
+    
+
+    @Override
+    public boolean hasEnded() {
+        return true;
+    }
 }

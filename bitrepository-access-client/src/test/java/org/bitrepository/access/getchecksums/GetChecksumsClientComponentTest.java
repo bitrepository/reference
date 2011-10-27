@@ -169,7 +169,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(completeMsg);
         }
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PartiallyComplete);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarComplete);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
     }
     
@@ -262,7 +262,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(completeMsg);
         }
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PartiallyComplete);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarComplete);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
         Assert.assertTrue(callChecksum.isAlive(), "The client thread should still be alive.");
 
@@ -460,7 +460,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(completeMsg);
         }
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Warning);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarFailed);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
     }
     

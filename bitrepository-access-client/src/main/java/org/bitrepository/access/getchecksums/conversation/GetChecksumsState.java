@@ -31,9 +31,10 @@ import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 /**
  * Super class for the concrete GetChecksums state handlers.
  */
-public abstract class GetChecksumsState extends AbstractMessageListener implements ConversationState{
+public abstract class GetChecksumsState extends AbstractMessageListener implements ConversationState {
     /** The conversation, where the state belong.*/
     protected final SimpleGetChecksumsConversation conversation;
+    /** Handles the mediation of information regarding conversation updates */
     protected final ConversationEventMonitor monitor;
 
     /** 
@@ -50,13 +51,5 @@ public abstract class GetChecksumsState extends AbstractMessageListener implemen
      */
     protected void endConversation() {
         conversation.conversationState = new GetChecksumsFinished(conversation);
-    }
-    
-    /**
-     * Should be overridden by the finished state to return true
-     */
-    @Override
-    public boolean hasEnded() {
-        return false;
     }
 }

@@ -1,3 +1,27 @@
+/*
+ * #%L
+ * Bitrepository Protocol
+ * 
+ * $Id$
+ * $HeadURL$
+ * %%
+ * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.protocol.conversation;
 
 import java.math.BigInteger;
@@ -15,7 +39,11 @@ public class FlowController {
     private final BigInteger conversationTimeout;
     private Conversation conversation;
 
-
+    /**
+     * 
+     * @param settings The configuration to use
+     * @param waitForCompletion Should the controller block until the operation has completed.
+     */
     public FlowController(Settings settings, boolean waitForCompletion) {
         super();
         this.waitForCompletion = waitForCompletion;
@@ -24,11 +52,18 @@ public class FlowController {
         this.conversationTimeout = settings.getReferenceSettings().getClientSettings().getConversationTimeout();
     }
 
+    /**
+     * @param conversation The conversation to use for context.
+     */
     public void setConversation(Conversation conversation) {
         this.conversation = conversation;
     }
 
-
+    /**
+     * If waitForCompletion is true the method will block until the conversation is finished.
+     * @return <code>true</code> if blocking else false. Can be used to determine whether a result might be available.
+     * @throws ConversationTimedOutException
+     */
     public boolean waitForCompletion() throws ConversationTimedOutException {
         if (waitForCompletion) {
             waitFor(conversationTimeout.longValue());

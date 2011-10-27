@@ -77,16 +77,16 @@ class GettingFile extends GetFileState {
         getFileRequest.setCorrelationID(conversation.getConversationID());
         getFileRequest.setFileAddress(conversation.uploadUrl.toExternalForm());
         getFileRequest.setFileID(conversation.fileID);
-        getFileRequest.setPillarID(conversation.selector.getIDForSelectedPillar());
+        getFileRequest.setPillarID(conversation.selector.getSelectedPillar().getID());
         getFileRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         getFileRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         getFileRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        getFileRequest.setTo(conversation.selector.getDestinationForSelectedPillar());
+        getFileRequest.setTo(conversation.selector.getSelectedPillar().getDestination());
 
         conversation.messageSender.sendMessage(getFileRequest); 
         timer.schedule(getFileTimeoutTask, getMaxTimeToWaitForGetFileToComplete());
-        monitor.requestSent("Sending getFileRequest to " + conversation.selector.getIDForSelectedPillar(), 
-                conversation.selector.getIDForSelectedPillar());
+        monitor.requestSent("Sending getFileRequest to " + conversation.selector.getSelectedPillar().getID(), 
+                conversation.selector.getSelectedPillar().getID());
     }
 
     /**
@@ -117,13 +117,10 @@ class GettingFile extends GetFileState {
     @Override
     public void onMessage(IdentifyPillarsForGetFileResponse response) {
         if (conversation.selector instanceof SpecificPillarSelectorForGetFile) {
-            log.debug("(ConversationID: " + conversation.getConversationID() +  ") " +
-                    "Received IdentifyPillarsForGetFileResponse from " + response.getPillarID() + 
-                    " after selecting specific pillar " + conversation.selector.getIDForSelectedPillar());
+            // OK Normal situation.
         } else if (conversation.selector instanceof FastestPillarSelectorForGetFile) {
-            log.warn("(ConversationID: " + conversation.getConversationID() + ") " +
-                    "Received IdentifyPillarsForGetFileResponse from " + response.getPillarID() + 
-                    " after selecting fastest pillar " + conversation.selector.getIDForSelectedPillar());
+            monitor.outOfSequenceMessage("Received IdentifyPillarsForGetFileResponse from " + response.getPillarID() + 
+                    " after selecting fastest pillar " + conversation.selector.getSelectedPillar().getID());
         }
     }
 
@@ -144,9 +141,14 @@ class GettingFile extends GetFileState {
             synchronized (conversation) {
                 if (!conversation.hasEnded()) { 
                     conversation.failConversation("No GetFileFinalResponse received before timeout for file " + conversation.fileID + 
-                            " from pillar " + conversation.selector.getIDForSelectedPillar());
+                            " from pillar " + conversation.selector.getSelectedPillar().getID());
                 }
             }
         }
+    }
+    
+    @Override
+    public boolean hasEnded() {
+        return false;
     }
 }

@@ -49,7 +49,6 @@ import org.slf4j.LoggerFactory;
 public class PuttingFile extends PutFileState {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
-
     /** Defines that the timer is a daemon thread. */
     private static final Boolean TIMER_IS_DAEMON = true;
     /** The timer. Schedules conversation timeouts for this conversation. */
@@ -192,5 +191,10 @@ public class PuttingFile extends PutFileState {
         public void run() {
             handleIncompletePut("Timeout occurred for the Putting of the file.");
         }
+    }
+
+    @Override
+    public boolean hasEnded() {
+        return false;
     }
 }

@@ -134,7 +134,7 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
     private void handleIdentificationTimeout() {
         synchronized (conversation) {
             if (conversation.conversationState == this) {
-                if (conversation.selector.getIDForSelectedPillar() != null) {
+                if (conversation.selector.getSelectedPillar() != null) {
                     monitor.identifyPillarTimeout("Time has run out for selecting a pillar. " +
                     		"The following pillars did't respond: " + 
                             Arrays.toString(conversation.selector.getOutstandingPillars()) + 
@@ -156,11 +156,16 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
      * Used when a suitable pillar has been found to move on to the Getting file state.
      */
     private void getFileFromSelectedPillar() {
-        monitor.pillarSelected("Selected pillar " + conversation.selector.getIDForSelectedPillar() + 
-                " to get file from", conversation.selector.getIDForSelectedPillar());
+        monitor.pillarSelected("Selected pillar " + conversation.selector.getSelectedPillar().getID() + 
+                " to get file from", conversation.selector.getSelectedPillar().getID());
         identifyTimeoutTask.cancel();
         GettingFile nextConversationState = new GettingFile(conversation);
         conversation.conversationState = nextConversationState;
         nextConversationState.start();
+    }
+    
+    @Override
+    public boolean hasEnded() {
+        return false;
     }
 }
