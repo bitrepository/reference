@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.bitrepository</groupId>
@@ -25,6 +26,19 @@
     <module>bitrepository-monitoring-service</module>
     <module>bitrepository-integration</module>
   </modules>
+
+  <repositories>
+    <repository>
+      <id>sbforge-nexus</id>
+      <url>https://sbforge.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <developers>
     <developer>
@@ -144,11 +158,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-    <groupId>org.mockito</groupId>
-    <artifactId>mockito-core</artifactId>
-    <scope>test</scope>
-    <version>1.8.5</version>
-</dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+      <version>1.8.5</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -240,7 +254,8 @@
     </extensions>
     <pluginManagement>
       <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build 
+          itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
           <artifactId>lifecycle-mapping</artifactId>
@@ -272,7 +287,7 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>        
+        <artifactId>maven-project-info-reports-plugin</artifactId>
         <version>2.4</version>
         <configuration>
         </configuration>
@@ -281,11 +296,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>2.7</version>
-        <!--configuration>
-          <configLocation>
-            https://sbforge.org/sonar/profiles/export?format=checkstyle&amp;language=java&amp;name=SBForge%2520way
-        </configLocation>
-        </configuration-->
+        <!--configuration> <configLocation> https://sbforge.org/sonar/profiles/export?format=checkstyle&amp;language=java&amp;name=SBForge%2520way 
+          </configLocation> </configuration -->
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -294,7 +306,7 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>        
+        <artifactId>maven-jxr-plugin</artifactId>
         <version>2.3</version>
         <configuration>
           <aggregate>true</aggregate>
@@ -303,7 +315,7 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>     
+        <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.8</version>
         <configuration>
           <aggregate>true</aggregate>
@@ -311,30 +323,26 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>             
+        <artifactId>maven-pmd-plugin</artifactId>
         <version>2.5</version>
         <configuration>
           <aggregate>true</aggregate>
           <linkXref>true</linkXref>
           <targetJdk>1.6</targetJdk>
-          <!--rulesets>
-            <ruleset>
-              https://sbforge.org/sonar/profiles/export?format=pmd&amp;language=java&amp;name=SBForge%2520way
-            </ruleset>
-          </rulesets-->
+          <!--rulesets> <ruleset> https://sbforge.org/sonar/profiles/export?format=pmd&amp;language=java&amp;name=SBForge%2520way 
+            </ruleset> </rulesets -->
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>     
+        <artifactId>findbugs-maven-plugin</artifactId>
         <version>2.3.2</version>
         <configuration>
           <aggregate>true</aggregate>
           <xmlOutput>true</xmlOutput>
           <effort>Max</effort>
-          <!--includeFilterFile>
-            https://sbforge.org/sonar/profiles/export?format=findbugs&amp;language=java&amp;name=SBForge%2520way
-          </includeFilterFile-->
+          <!--includeFilterFile> https://sbforge.org/sonar/profiles/export?format=findbugs&amp;language=java&amp;name=SBForge%2520way 
+            </includeFilterFile -->
         </configuration>
       </plugin>
     </plugins>
