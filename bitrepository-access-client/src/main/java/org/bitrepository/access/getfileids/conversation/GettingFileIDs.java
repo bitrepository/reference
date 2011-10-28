@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access.getchecksums.conversation;
+package org.bitrepository.access.getfileids.conversation;
 
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -33,11 +33,11 @@ import java.util.TimerTask;
 
 import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
-import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
+import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
@@ -46,14 +46,14 @@ import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
 import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 
 /**
- * Models the behavior of a GetChecksums conversation during the operation phase. That is, it begins with the 
- * sending of <code>GetChecksumsRequest</code> messages and finishes with on the reception of the 
- * <code>GetChecksumsFinalResponse</code> messages from the responding pillars.
+ * Models the behavior of a GetFileIDs conversation during the operation phase. That is, it begins with the 
+ * sending of <code>GetFileIDsRequest</code> messages and finishes with on the reception of the 
+ * <code>GetFileIDsFinalResponse</code> messages from the responding pillars.
  * 
- * Note that this is only used by the GetChecksumsConversation in the same package, therefore the visibility is package 
+ * Note that this is only used by the GetFileIDsConversation in the same package, therefore the visibility is package 
  * protected.
  */
-public class GettingChecksums extends GetChecksumsState {
+public class GettingFileIDs extends GetFileIDsState {
     /** The pillars, which has not yet answered.*/
     private List<SelectedPillarInfo> pillarsSelectedForRequest; 
     private final PillarsResponseStatus responseStatus;
@@ -63,16 +63,16 @@ public class GettingChecksums extends GetChecksumsState {
      * exiting */
     final Timer timer = new Timer(true);
     /** The timer task for timeout of getFile in this conversation. */
-    final TimerTask getChecksumsTimeoutTask = new GetChecksumsTimerTask();
+    final TimerTask getFileIDsTimeoutTask = new GetFileIDsTimerTask();
 
     /** The results of the checksums calculations. A map between the pillar and its calculated checksums.*/
-    private Map<String, ResultingChecksums> results = new HashMap<String, ResultingChecksums>();
+    private Map<String, ResultingFileIDs> results = new HashMap<String, ResultingFileIDs>();
 
     /**
      * Constructor.
      * @param conversation The conversation where this state belongs.
      */
-    public GettingChecksums(SimpleGetChecksumsConversation conversation) {
+    public GettingFileIDs(SimpleGetFileIDsConversation conversation) {
         super(conversation);
         pillarsSelectedForRequest = conversation.selector.getSelectedPillars();
         responseStatus = new PillarsResponseStatus(
@@ -80,54 +80,52 @@ public class GettingChecksums extends GetChecksumsState {
     }
 
     /**
-     * Method for initiating this part of the conversation. Sending the GetChecksumsRequest.
+     * Method for initiating this part of the conversation. Sending the GetFileIDsRequest.
      */
     public void start() {
-        GetChecksumsRequest getChecksumsRequest = new GetChecksumsRequest();
-        getChecksumsRequest.setBitRepositoryCollectionID(
-                conversation.settings.getCollectionID());
-        getChecksumsRequest.setCorrelationID(conversation.getConversationID());
-        getChecksumsRequest.setFileIDs(conversation.fileIDs);
-        getChecksumsRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
-        getChecksumsRequest.setFileChecksumSpec(conversation.checksumSpecifications);
-        getChecksumsRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        getChecksumsRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        getChecksumsRequest.setAuditTrailInformation(conversation.auditTrailInformation);
+        GetFileIDsRequest getFileIDsRequest = new GetFileIDsRequest();
+        getFileIDsRequest.setBitRepositoryCollectionID(conversation.settings.getCollectionID());
+        getFileIDsRequest.setCorrelationID(conversation.getConversationID());
+        getFileIDsRequest.setFileIDs(conversation.fileIDs);
+        getFileIDsRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        getFileIDsRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
+        getFileIDsRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
+        getFileIDsRequest.setAuditTrailInformation(conversation.auditTrailInformation);
 
         // Sending one request to each of the identified pillars.
         for(SelectedPillarInfo pillar : pillarsSelectedForRequest) {
-            getChecksumsRequest.setPillarID(pillar.getID());
-            getChecksumsRequest.setTo(pillar.getDestination());
+            getFileIDsRequest.setPillarID(pillar.getID());
+            getFileIDsRequest.setTo(pillar.getDestination());
 
             if(conversation.uploadUrl != null) {
                 // making the URL: 'baseUrl'-'pillarId'
-                getChecksumsRequest.setResultAddress(conversation.uploadUrl.toExternalForm() + "-" 
+                getFileIDsRequest.setResultAddress(conversation.uploadUrl.toExternalForm() + "-" 
                         + pillar.getID());
             }
 
-            conversation.messageSender.sendMessage(getChecksumsRequest); 
-            monitor.requestSent("GetChecksumRequest sent to: " + pillar.getID(), 
+            conversation.messageSender.sendMessage(getFileIDsRequest); 
+            monitor.requestSent("GetFileIDsRequest sent to: " + pillar.getID(), 
                     pillar.getID());
         }
 
-        timer.schedule(getChecksumsTimeoutTask,
+        timer.schedule(getFileIDsTimeoutTask,
                 conversation.settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue());
     }
 
     @Override
-    public void onMessage(IdentifyPillarsForGetChecksumsResponse response) {
-        monitor.outOfSequenceMessage("Received IdentifyPillarsForGetChecksumsResponse from " + response.getPillarID() 
-                + " after the GetChecksumsRequest has been sent.");
+    public void onMessage(IdentifyPillarsForGetFileIDsResponse response) {
+        monitor.outOfSequenceMessage("Received IdentifyPillarsForGetFileIDsResponse from " + response.getPillarID() 
+                + " after the GetFileIDsRequest has been sent.");
     }
 
     @Override
-    public void onMessage(GetChecksumsProgressResponse response) {
+    public void onMessage(GetFileIDsProgressResponse response) {
         monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.Progress, 
-                "Received progress response for retrieval of checksums " + response.getFileIDs() + ": response"));
+                "Received progress response for retrieval of file ids " + response.getFileIDs() + ": response"));
     }
 
     @Override
-    public void onMessage(GetChecksumsFinalResponse response) {
+    public void onMessage(GetFileIDsFinalResponse response) {
         try {
             responseStatus.responseReceived(response.getPillarID());
         } catch (UnexpectedResponseException ure) {
@@ -136,13 +134,13 @@ public class GettingChecksums extends GetChecksumsState {
 
         try {
             if(isReponseSuccess(response.getFinalResponseInfo())) {
-                monitor.pillarComplete(new ChecksumsCompletePillarEvent(
-                        response.getResultingChecksums(),
+                monitor.pillarComplete(new FileIDsCompletePillarEvent(
+                        response.getResultingFileIDs(),
                         response.getPillarID(),
-                        "Received checksum result from " + response.getPillarID()));
+                        "Received file ids result from " + response.getPillarID()));
                 // If calculations in message, then put them into the results map.
-                if(response.getResultingChecksums() != null) {
-                    results.put(response.getPillarID(), response.getResultingChecksums());
+                if(response.getResultingFileIDs() != null) {
+                    results.put(response.getPillarID(), response.getResultingFileIDs());
                 }
             } else {
                 monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getFinalResponseInfo());
@@ -154,10 +152,10 @@ public class GettingChecksums extends GetChecksumsState {
 
         if(responseStatus.haveAllPillarResponded()) {
             monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.Complete, 
-                    "All pillars have delivered their checksums."));
+                    "All pillars have delivered their FileIDs."));
             conversation.getFlowController().unblock();
             conversation.setResults(results);
-            conversation.conversationState = new GetChecksumsFinished(conversation);
+            conversation.conversationState = new GetFileIDsFinished(conversation);
         }
     }
 
@@ -171,7 +169,7 @@ public class GettingChecksums extends GetChecksumsState {
             return true;
         } else return false;
     }
-
+    
     /**
      * Method for handling a timeout for this operation.
      */
@@ -185,7 +183,7 @@ public class GettingChecksums extends GetChecksumsState {
      * The timer task class for the outstanding get file request. When the time is reached the conversation should be
      * marked as ended.
      */
-    private class GetChecksumsTimerTask extends TimerTask {
+    private class GetFileIDsTimerTask extends TimerTask {
         @Override
         public void run() {
             handleTimeout();

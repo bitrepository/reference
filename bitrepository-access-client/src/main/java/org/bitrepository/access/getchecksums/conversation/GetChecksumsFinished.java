@@ -39,7 +39,7 @@ public class GetChecksumsFinished extends GetChecksumsState {
 
     @Override
     public void start() {
-        //Noting to do.
+        // Noting to do.
     }
     
     @Override

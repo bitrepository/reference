@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitrepository Protocol
+ * Bitrepository Access
  * 
  * $Id$
  * $HeadURL$
@@ -22,27 +22,28 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.time;
-
-import java.math.BigInteger;
-
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
+package org.bitrepository.access.getfileids.conversation;
 
 /**
- * Provides helper method for accessing {@link TimeMeasurementTYPE} objects. 
+ * State for telling, that the GetFileIDs conversation has finished.
  */
-public class TimeMeasurementUtils {
-
+public class GetFileIDsFinished extends GetFileIDsState {
+    
     /**
-     * Generates a TimeMeasureTYPE object based on a milliseconds value.
-     * @param milliseconds The time measure in milliseconds.
-     * @return A corresponding <code>TimeMeasureTYPE</code> object.
+     * Constructor.
+     * @param conversation The conversation which has reached this final stage.
      */
-    public static TimeMeasureTYPE getTimeMeasurementFromMiliseconds(BigInteger milliseconds) {
-        TimeMeasureTYPE timeMeasure = new TimeMeasureTYPE();
-        timeMeasure.setTimeMeasureValue(milliseconds);
-        timeMeasure.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
-        return timeMeasure; 
+    public GetFileIDsFinished(SimpleGetFileIDsConversation conversation) {
+        super(conversation);
+    }
+
+    @Override
+    public void start() {
+        // Nothing to do. 
+    }
+    
+    @Override
+    public boolean hasEnded() {
+        return true;
     }
 }

@@ -25,108 +25,28 @@
 package org.bitrepository.access.getfileids;
 
 import java.net.URL;
+import java.util.Collection;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
-import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 
 /**
  * Interface for GetFileIDs client exposing the bit repository protocol GetFileIDs functionality.
  */
 public interface GetFileIDsClient {
+    
     /**
-     * Get specified fileIds from the fastest pillar holding the specified bit repository collection.
-     * The method will block until the result has been retrieved.
-     * @param bitRepositoryCollectionID The ID of a collection.
-     * @param fileIDs Requested file IDs.
-     * @return resulting file IDs
+     * Method for requesting a given list of FileIDs from pillars. Thus requesting validation of the existence of 
+     * the files at the given pillars.
+     *  
+     * @param pillarIDs The list of pillars which should be requested for the FileIDs.
+     * @param fileIDs The ids for the requested files. 
+     * @param addressForResult The address for delivering the results of the operation. If this is null, then it is 
+     * returned through the messages.
+     * @param eventHandler The eventHandler to keep track of the operation. 
+     * @param auditTrailInformation The auditTrailInformation for the requests.
      */
-    public ResultingFileIDs getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs)
-            throws NoPillarFoundException, OperationTimeOutException, OperationFailedException;
-
-    /**
-     * Get specified fileIds from the fastest pillar holding the specified bit repository collection.
-     * The method will return as soon as the communication has been setup.
-     * @param bitRepositoryCollectionID The ID of a collection.
-     * @param fileIDs Requested file IDs.
-     * @param eventHandler The handler which should receive notifications of the events occurring in connection with
-     * the pillar communication. The result of this operation can be retrieved from the last complete event, which will
-     * be of type <code>GetFileIDsCompleteEvent</code>.
-     */
-    public void getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs,
-                                            EventHandler eventHandler);
-
-    /**
-     * Get specified fileIds from the fastest pillar holding the specified bit repository collection.
-     * The method will block until the result has been uploaded to the requested URL.
-     * @param bitRepositoryCollectionID The ID of a collection.
-     * @param fileIDs Requested file IDs.
-     * @param uploadUrl url where resulting file IDs should be uploaded
-     */
-    public void getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl)
-            throws NoPillarFoundException, OperationTimeOutException, OperationFailedException;
-
-    /**
-     * Get specified fileIds from the fastest pillar holding the specified bit repository collection.
-     * The method will return as soon as the communication has been setup.
-     * @param bitRepositoryCollectionID The ID of a collection.
-     * @param fileIDs Requested file IDs.
-     * @param uploadUrl url where resulting file IDs should be uploaded
-     * @param eventHandler The handler which should receive notifications of the progress events.
-     */
-    public void getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl,
-                                     EventHandler eventHandler);
-
-    /**
-     * Get specified fileIds from specified pillar holding the specified bit repository collection.
-     * The method will block until the result has been retrieved.
-     * @param pillarID ID of the pillar where file IDs are requested from
-     * @param bitRepositoryCollectionID The ID of a collection.
-     * @param fileIDs Requested file IDs.
-     * @return resulting file IDs
-     */
-    public ResultingFileIDs getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID,
-                                                         FileIDs fileIDs)
-            throws NoPillarFoundException, OperationTimeOutException, OperationFailedException;
-
-    /**
-     * Get specified fileIds from specified pillar holding the specified bit repository collection.
-     * The method will return as soon as the communication has been setup.
-     * @param pillarID ID of the pillar where file IDs are requested from
-     * @param bitRepositoryCollectionID The ID of a collection.
-     * @param fileIDs Requested file IDs.
-     * @param eventHandler The handler which should receive notifications of the events occurring in connection with
-     * the pillar communication. The result of this operation can be retrieved from the last complete event, which will
-     * be of type <code>GetFileIDsCompleteEvent</code>.
-     */
-    public void getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID,
-                                             FileIDs fileIDs, EventHandler eventHandler);
-
-    /**
-     * Get specified fileIds from specified pillar holding the specified bit repository collection.
-     * The method will block until the result has been uploaded to the requested URL.
-     * @param pillarID ID of the pillar where file IDs are requested from
-     * @param bitRepositoryCollectionID The ID of a collection.
-     * @param fileIDs Requested file IDs.
-     * @param uploadUrl url where resulting file IDs should be uploaded
-     */
-    public void getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID,
-                                             FileIDs fileIDs, URL uploadUrl)
-            throws NoPillarFoundException, OperationTimeOutException, OperationFailedException;
-
-    /**
-     * Get specified fileIds from specified pillar holding the specified bit repository collection.
-     * The method will return as soon as the communication has been setup.
-     * @param pillarID ID of the pillar where file IDs are requested from
-     * @param bitRepositoryCollectionID The ID of a collection.
-     * @param fileIDs Requested file IDs.
-     * @param uploadUrl url where resulting file IDs should be uploaded
-     * @param eventHandler The handler which should receive notifications of the progress events.
-     */
-    public void getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID,
-                                             FileIDs fileIDs, URL uploadUrl, EventHandler eventHandler);
-
+    public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult, EventHandler eventHandler, 
+            String auditTrailInformation) throws OperationFailedException;
 }

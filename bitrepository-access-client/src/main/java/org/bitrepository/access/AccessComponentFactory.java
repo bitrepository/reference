@@ -28,7 +28,7 @@ import org.bitrepository.access.getchecksums.BasicGetChecksumsClient;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.BasicGetFileClient;
 import org.bitrepository.access.getfile.GetFileClient;
-import org.bitrepository.access.getfileids.BasicGetFileIDsClient;
+import org.bitrepository.access.getfileids.ConversationBasedGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
@@ -106,6 +106,9 @@ public class AccessComponentFactory {
      * @return A GetFileIDsClient.
      */
     public GetFileIDsClient createGetFileIDsClient(MessageBus messageBus, Settings settings) {
-        return new BasicGetFileIDsClient(messageBus, settings);
+        return new ConversationBasedGetFileIDsClient(
+                ProtocolComponentFactory.getInstance().getMessageBus(settings), 
+                ConversationMediatorManager.getConversationMediator(settings),
+                settings);
     }
 }

@@ -37,7 +37,6 @@ import org.testng.annotations.Test;
 
 /**
  * Test class for the 'GetFileIDsClient'.
- * @author kfc
  */
 public class GetFileIDsClientTest extends DefaultFixtureClientTest {
 
@@ -68,31 +67,31 @@ public class GetFileIDsClientTest extends DefaultFixtureClientTest {
         addDescription("Test the get file IDs functionality of the GetFileIDsClient. " +
                 "We should get a result from the fastest pillar.");
 
-        addStep("Testing getFileIDsFromFastestPillar(bitRepositoryCollectionID, fileIDs) method.",
-                "Logging of identifyPillarForGetFileIDsRequest message and response messages; logging of " +
-                        "getFileIDsRequest, getFileIDsProgressResponse, getFileIDsFinalResponse. " +
-                        "Assertion result received.");
-
-        GetFileIDsClient getFileIDsClient = new GetFileIDsClientTestWrapper(
-                AccessComponentFactory.getInstance().createGetFileIDsClient(
-                        messageBus, settings), testEventManager);
-
-        FileIDs fileIDs = new FileIDs();
-        fileIDs.setAllFileIDs("ALL");
-        ResultingFileIDs resultingFileIDs =
-                getFileIDsClient.getFileIDsFromFastestPillar(settings.getCollectionID(), fileIDs);
-        Assert.assertNotNull(resultingFileIDs, "resultingFileIDs should not be null");
-
-        addStep("Testing getFileIDsFromFastestPillar(bitRepositoryCollectionID, fileIDs, uploadUrl) method.",
-                "Logging of identifyPillarForGetFileIDsRequest message and response messages; logging of " +
-                        "getFileIDsRequest, getFileIDsProgressResponse, getFileIDsFinalResponse. " +
-                        "Assertion result uploaded.");
-
-        addStep("Testing getFileIDsFromFastestPillar(bitRepositoryCollectionID, fileIDs, uploadUrl, eventHandler) method.",
-                "Logging of identifyPillarForGetFileIDsRequest message and response messages; logging of " +
-                        "getFileIDsRequest, getFileIDsProgressResponse, getFileIDsFinalResponse. " +
-                        "Assertion result uploaded.");
-
+//        addStep("Testing getFileIDsFromFastestPillar(bitRepositoryCollectionID, fileIDs) method.",
+//                "Logging of identifyPillarForGetFileIDsRequest message and response messages; logging of " +
+//                        "getFileIDsRequest, getFileIDsProgressResponse, getFileIDsFinalResponse. " +
+//                        "Assertion result received.");
+//
+//        GetFileIDsClient getFileIDsClient = new GetFileIDsClientTestWrapper(
+//                AccessComponentFactory.getInstance().createGetFileIDsClient(
+//                        messageBus, settings), testEventManager);
+//
+//        FileIDs fileIDs = new FileIDs();
+//        fileIDs.setAllFileIDs("ALL");
+//        ResultingFileIDs resultingFileIDs =
+//                getFileIDsClient.getFileIDsFromFastestPillar(settings.getCollectionID(), fileIDs);
+//        Assert.assertNotNull(resultingFileIDs, "resultingFileIDs should not be null");
+//
+//        addStep("Testing getFileIDsFromFastestPillar(bitRepositoryCollectionID, fileIDs, uploadUrl) method.",
+//                "Logging of identifyPillarForGetFileIDsRequest message and response messages; logging of " +
+//                        "getFileIDsRequest, getFileIDsProgressResponse, getFileIDsFinalResponse. " +
+//                        "Assertion result uploaded.");
+//
+//        addStep("Testing getFileIDsFromFastestPillar(bitRepositoryCollectionID, fileIDs, uploadUrl, eventHandler) method.",
+//                "Logging of identifyPillarForGetFileIDsRequest message and response messages; logging of " +
+//                        "getFileIDsRequest, getFileIDsProgressResponse, getFileIDsFinalResponse. " +
+//                        "Assertion result uploaded.");
+//
     }
 
     /**

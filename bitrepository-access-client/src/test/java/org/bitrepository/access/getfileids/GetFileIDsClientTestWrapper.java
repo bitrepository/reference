@@ -25,92 +25,37 @@
 package org.bitrepository.access.getfileids;
 
 import java.net.URL;
+import java.util.Collection;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
-import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 import org.jaccept.TestEventManager;
 
 /**
  * Wraps the <code>GetFileIDsClient</code> adding test event logging and functionality for handling blocking calls.
  */
 public class GetFileIDsClientTestWrapper implements GetFileIDsClient {
-    private GetFileIDsClient getFileIDsClient;
-    private TestEventManager testEventManager;
-
-    public GetFileIDsClientTestWrapper(GetFileIDsClient getFileIDsClient,
-                                       TestEventManager testEventManager) {
-        this.getFileIDsClient = getFileIDsClient;
-        this.testEventManager = testEventManager;
+    /** The actual GetFileIDsClient to perform the operations.*/
+    private final GetFileIDsClient client;
+    /** The EventManager to manage the events.*/
+    private final TestEventManager eventManager;
+    
+    /**
+     * Constructor. 
+     * @param client The actual GetFileIDsClient.
+     * @param eventManager The EventManager to notify about the operations performed by this wrapper.
+     */
+    public GetFileIDsClientTestWrapper(GetFileIDsClient client, TestEventManager eventManager) {
+        this.client = client;
+        this.eventManager = eventManager;
     }
-
+    
     @Override
-    public ResultingFileIDs getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs)
-            throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
-        testEventManager.addStimuli("Calling getFileIDsFromFastestPillar(" +
-                bitRepositoryCollectionID + ", " + fileIDs + ")");
-        return getFileIDsClient.getFileIDsFromFastestPillar(bitRepositoryCollectionID, fileIDs);
-    }
-
-    @Override
-    public void getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs,
-                                            EventHandler eventHandler) {
-        testEventManager.addStimuli("Calling getFileIDsFromFastestPillar(" +
-                bitRepositoryCollectionID + ", " + fileIDs + ", " + eventHandler + ")");
-        getFileIDsClient.getFileIDsFromFastestPillar(bitRepositoryCollectionID, fileIDs, eventHandler);
-    }
-
-    @Override
-    public void getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl)
-            throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
-        testEventManager.addStimuli("Calling getFileIDsFromFastestPillar(" +
-                bitRepositoryCollectionID + ", " + fileIDs + ", " + uploadUrl + ")");
-        getFileIDsClient.getFileIDsFromFastestPillar(bitRepositoryCollectionID, fileIDs, uploadUrl);
-    }
-
-    @Override
-    public void getFileIDsFromFastestPillar(String bitRepositoryCollectionID, FileIDs fileIDs, URL uploadUrl,
-                                            EventHandler eventHandler) {
-        testEventManager.addStimuli("Calling getFileIDsFromFastestPillar(" +
-                bitRepositoryCollectionID + ", " + fileIDs + ", " + uploadUrl + ", " + eventHandler + ")");
-        getFileIDsClient.getFileIDsFromFastestPillar(bitRepositoryCollectionID, fileIDs, uploadUrl, eventHandler);
-    }
-
-    @Override
-    public ResultingFileIDs getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID,
-                                                         FileIDs fileIDs)
-            throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
-        testEventManager.addStimuli("Calling getFileIDsFromFastestPillar(" + pillarID + ", " +
-                bitRepositoryCollectionID + ", " + fileIDs + ")");
-        return getFileIDsClient.getFileIDsFromSpecificPillar(pillarID, bitRepositoryCollectionID, fileIDs);
-    }
-
-    @Override
-    public void getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID, FileIDs fileIDs,
-                                             EventHandler eventHandler) {
-        testEventManager.addStimuli("Calling getFileIDsFromFastestPillar(" + pillarID + ", " +
-                bitRepositoryCollectionID + ", " + fileIDs + ", " + eventHandler + ")");
-        getFileIDsClient.getFileIDsFromSpecificPillar(pillarID, bitRepositoryCollectionID, fileIDs, eventHandler);
-    }
-
-    @Override
-    public void getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID,
-                                             FileIDs fileIDs, URL uploadUrl)
-            throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
-        testEventManager.addStimuli("Calling getFileIDsFromFastestPillar(" + pillarID + ", " +
-                bitRepositoryCollectionID + ", " + fileIDs + ", " + uploadUrl + ")");
-        getFileIDsClient.getFileIDsFromSpecificPillar(pillarID, bitRepositoryCollectionID, fileIDs, uploadUrl);
-    }
-
-    @Override
-    public void getFileIDsFromSpecificPillar(String pillarID, String bitRepositoryCollectionID,
-                                             FileIDs fileIDs, URL uploadUrl, EventHandler eventHandler) {
-        testEventManager.addStimuli("Calling getFileIDsFromFastestPillar(" + pillarID + ", " +
-                bitRepositoryCollectionID + ", " + fileIDs + ", " + uploadUrl + ", " + eventHandler + ")");
-        getFileIDsClient.getFileIDsFromSpecificPillar(pillarID, bitRepositoryCollectionID, fileIDs, uploadUrl,
-                eventHandler);
+    public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
+            EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+        eventManager.addStimuli("Calling getFileIDs(" + pillarIDs + ", " + fileIDs + ", " + addressForResult + ", "
+                + eventHandler + ", " + auditTrailInformation + ")");
+        client.getFileIDs(pillarIDs, fileIDs, addressForResult, eventHandler, auditTrailInformation);
     }
 }
