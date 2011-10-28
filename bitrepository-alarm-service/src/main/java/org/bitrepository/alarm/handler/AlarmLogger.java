@@ -42,11 +42,11 @@ public class AlarmLogger implements AlarmHandler {
     
     @Override
     public void handleAlarm(Alarm msg) {
-        log.warn("ALARM: {}", msg.toString());
+        log.info("ALARM: " + msg.toString());
     }
     
     @Override
     public void handleOther(Object msg) {
-        log.warn("Received unexpected object: \n{}", msg.toString());
+        log.warn("Received unexpected object: " + msg.toString());
     }
 }

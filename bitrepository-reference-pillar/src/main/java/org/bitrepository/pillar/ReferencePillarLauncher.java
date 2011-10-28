@@ -27,7 +27,6 @@ package org.bitrepository.pillar;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
-import org.bitrepository.integration.IntegrationComponentFactory;
 
 /**
  * Method for launching the ReferencePillar. 

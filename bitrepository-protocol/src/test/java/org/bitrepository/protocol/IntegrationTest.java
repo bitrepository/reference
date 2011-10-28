@@ -138,6 +138,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         bitRepositoryCollectionDestination = new MessageReceiver("Collection topic receiver", testEventManager);
         messageBus.addListener(collectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
         
+        System.out.println("Using colelction destination: " + collectionDestinationID);
+        
         alarmDestinationID = settings.getAlarmDestination() + getTopicPostfix();
         settings.getCollectionSettings().getProtocolSettings().setAlarmDestination(alarmDestinationID);
         alarmDestination = new MessageReceiver("Alarm receiver", testEventManager);

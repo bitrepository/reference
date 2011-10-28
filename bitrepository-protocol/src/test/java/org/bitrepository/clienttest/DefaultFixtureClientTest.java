@@ -86,7 +86,7 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
         clientTopic = new MessageReceiver("Client topic receiver", testEventManager);
         pillar1Destination = new MessageReceiver("Pillar1 topic receiver", testEventManager);
         pillar2Destination = new MessageReceiver("Pillar2 topic receiver", testEventManager);
-        messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());    
+        messageBus.addListener(clientDestinationId, clientTopic.getMessageListener()); 
         messageBus.addListener(pillar1DestinationId, pillar1Destination.getMessageListener());  
         messageBus.addListener(pillar2DestinationId, pillar2Destination.getMessageListener());       
     }

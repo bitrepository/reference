@@ -36,7 +36,6 @@ import org.testng.annotations.Test;
 public class TimeMeasureComparatorTest {
     @Test (groups = { "regressiontest" })
     public void testCompareMilliSeconds() {
-        TimeMeasureComparator comparator = new TimeMeasureComparator();
         TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
         referenceTime.setTimeMeasureValue(new BigInteger("2"));
         referenceTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
@@ -45,69 +44,20 @@ public class TimeMeasureComparatorTest {
         compareTime.setTimeMeasureValue(new BigInteger("3"));
         compareTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
         
-        Assert.assertTrue(comparator.compare(referenceTime, compareTime) < 0, referenceTime + 
+        Assert.assertTrue(TimeMeasureComparator.compare(referenceTime, compareTime) < 0, referenceTime + 
                 " should be smaller than " + compareTime);
         
         compareTime.setTimeMeasureValue(new BigInteger("1"));
-        Assert.assertTrue(comparator.compare(referenceTime, compareTime) > 0, referenceTime + 
+        Assert.assertTrue(TimeMeasureComparator.compare(referenceTime, compareTime) > 0, referenceTime + 
                 " should be larger than " + compareTime);
         
         compareTime.setTimeMeasureValue(new BigInteger("2"));
-        Assert.assertTrue(comparator.compare(referenceTime, compareTime) == 0, referenceTime + 
+        Assert.assertTrue(TimeMeasureComparator.compare(referenceTime, compareTime) == 0, referenceTime + 
                 " should be same as " + compareTime);
     }
-    
-//    Seconds was removed in TimeMeasureUnit definitions.
-//    @Test (groups = { "regressiontest" })
-//    public void testCompareMilliSecondsToSeconds() {
-//        TimeMeasureComparator comparator = new TimeMeasureComparator();
-//        TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
-//        referenceTime.setTimeMeasureValue(new BigInteger("2000"));
-//        referenceTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
-//        
-//        TimeMeasureTYPE compareTime = new TimeMeasureTYPE();
-//        compareTime.setTimeMeasureValue(new BigInteger("3"));
-//        compareTime.setTimeMeasureUnit("SECONDS");
-//        
-//        Assert.assertTrue(comparator.compare(referenceTime, compareTime) < 0, referenceTime + 
-//                " should be smaller than " + compareTime);
-//        
-//        compareTime.setTimeMeasureValue(new BigInteger("1"));
-//        Assert.assertTrue(comparator.compare(referenceTime, compareTime) > 0, referenceTime + 
-//                " should be larger than " + compareTime);
-//        
-//        compareTime.setTimeMeasureValue(new BigInteger("2"));
-//        Assert.assertTrue(comparator.compare(referenceTime, compareTime) == 0, referenceTime + 
-//                " should be same as " + compareTime);
-//    }
-    
-//    Minutes not part of TimeMeasureTYPE.TimeMeasureUnit definition.
-//    @Test (groups = { "regressiontest" })
-//    public void testCompareMilliSecondsToMinutes() {
-//        TimeMeasureComparator comparator = new TimeMeasureComparator();
-//        TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
-//        referenceTime.setTimeMeasureValue(new BigInteger("120000"));
-//        referenceTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
-//        
-//        TimeMeasureTYPE compareTime = new TimeMeasureTYPE();
-//        compareTime.setTimeMeasureValue(new BigInteger("3"));
-//        compareTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MINUTES);
-//        
-//        Assert.assertTrue(comparator.compare(referenceTime, compareTime) < 0, referenceTime + 
-//                " should be smaller than " + compareTime);
-//        
-//        compareTime.setTimeMeasureValue(new BigInteger("1"));
-//        Assert.assertTrue(comparator.compare(referenceTime, compareTime) > 0, referenceTime + 
-//                " should be larger than " + compareTime);
-//        
-//        compareTime.setTimeMeasureValue(new BigInteger("2"));
-//        Assert.assertTrue(comparator.compare(referenceTime, compareTime) == 0, referenceTime + 
-//                " should be same as " + compareTime);
-//    }
 
     @Test (groups = { "regressiontest" })
     public void testCompareMilliSecondsToHours() {
-        TimeMeasureComparator comparator = new TimeMeasureComparator();
         TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
         referenceTime.setTimeMeasureValue(new BigInteger("7200000"));
         referenceTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
@@ -116,15 +66,15 @@ public class TimeMeasureComparatorTest {
         compareTime.setTimeMeasureValue(new BigInteger("3"));
         compareTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.HOURS);
         
-        Assert.assertTrue(comparator.compare(referenceTime, compareTime) < 0, referenceTime + 
+        Assert.assertTrue(TimeMeasureComparator.compare(referenceTime, compareTime) < 0, referenceTime + 
                 " should be smaller than " + compareTime);
         
         compareTime.setTimeMeasureValue(new BigInteger("1"));
-        Assert.assertTrue(comparator.compare(referenceTime, compareTime) > 0, referenceTime + 
+        Assert.assertTrue(TimeMeasureComparator.compare(referenceTime, compareTime) > 0, referenceTime + 
                 " should be larger than " + compareTime);
         
         compareTime.setTimeMeasureValue(new BigInteger("2"));
-        Assert.assertTrue(comparator.compare(referenceTime, compareTime) == 0, referenceTime + 
+        Assert.assertTrue(TimeMeasureComparator.compare(referenceTime, compareTime) == 0, referenceTime + 
                 " should be same as " + compareTime);
     }
 }

@@ -22,13 +22,12 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integration;
+package org.bitrepository.pillar;
 
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.integration.configuration.integrationconfiguration.IntegrationConfiguration;
-import org.bitrepository.pillar.ReferencePillar;
+import org.bitrepository.pillar.configuration.referencepillarconfiguration.ReferencePillarConfiguration;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
@@ -54,7 +53,7 @@ public class IntegrationComponentFactory {
     /** The characteristics for this module.*/
     private ModuleCharacteristics moduleCharacter;
     /** The configuration for this module.*/
-    private IntegrationConfiguration config;
+    private ReferencePillarConfiguration config;
 
     /**
      * Private constructor for initialization of the singleton.
@@ -75,11 +74,11 @@ public class IntegrationComponentFactory {
      * Method for extracting the configuration for the integration module.
      * @return The integration module configuration.
      */
-    public IntegrationConfiguration getConfig() {
+    public ReferencePillarConfiguration getConfig() {
         if (config == null) {
             ConfigurationFactory configurationFactory = new ConfigurationFactory();
             config = configurationFactory.loadConfiguration(getModuleCharacteristics(), 
-                    IntegrationConfiguration.class);
+                    ReferencePillarConfiguration.class);
         }
         return config;
     }

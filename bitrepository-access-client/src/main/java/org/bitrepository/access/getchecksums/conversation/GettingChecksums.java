@@ -56,6 +56,7 @@ import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 public class GettingChecksums extends GetChecksumsState {
     /** The pillars, which has not yet answered.*/
     private List<SelectedPillarInfo> pillarsSelectedForRequest; 
+    /** Tracks who have responded */
     private final PillarsResponseStatus responseStatus;
 
     /** 

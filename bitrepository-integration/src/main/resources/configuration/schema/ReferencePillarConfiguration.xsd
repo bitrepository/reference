@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Empty schema to satisfy the requirement for a configuration definition in each module -->
+<xs:schema 
+	targetNamespace="http://bitrepository.org/pillar/configuration/ReferencePillarConfiguration.xsd"
+    elementFormDefault="qualified"
+    xmlns="http://bitrepository.org/pillar/configuration/ReferencePillarConfiguration.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" >
+    <xs:element name="ReferencePillarConfiguration">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                The configuration for the reference pillar
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="bitrepositoryCollectionId" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            The Id for the bitrepository collection of the reference pillar
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="bitrepositoryCollectionTopicId" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            The Id for the general topic of the bitrepository collection of the reference pillar
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="filedir" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            The archive location for the reference pillar 
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="pillarId" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            The id for the reference pillar
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="pillarTopic" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            The local topic for the reference pillar
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

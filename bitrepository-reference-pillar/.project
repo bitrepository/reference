@@ -1,0 +1,20 @@
+<projectDescription>
+  <name>bitrepository-reference-pillar</name>
+  <comment>The Bitrepository system enables longterm preservation of data in a distributed, highly redundant 
+  architecture. The data integrity is ensured by using multiple, independently developed data storage systems (﻿Pillars) 
+  across different organizations, together with functionality for maintaining the ﻿integrity of the data over time. NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
+  <projects>
+    <project>bitrepository-access-client</project>
+    <project>bitrepository-common</project>
+    <project>bitrepository-modifying-client</project>
+    <project>bitrepository-protocol</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>
