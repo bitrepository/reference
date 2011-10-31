@@ -24,7 +24,7 @@
   #L%
   -->
   
-<CollectionSettings xmlns="http://bitrepository.org/settings/CollectionSettings.xsd">
+<CollectionSettings xmlns="http://bitrepository.org/settings/${collection.settings.version}/CollectionSettings.xsd">
   <CollectionID>TEST</CollectionID>
   <ProtocolSettings>
     <CollectionDestination>TEST-TOPIC</CollectionDestination>
