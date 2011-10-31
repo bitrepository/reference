@@ -27,6 +27,12 @@
   </dependencies>
 
   <build>
+  	<testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources> 
     <plugins>
      <plugin>
         <!-- Include remote resources -->
@@ -40,7 +46,7 @@
               <goal>process</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/settings</outputDirectory>
+              <outputDirectory>${project.build.directory}/collectionsettings</outputDirectory>
               <attached>false</attached> <!-- If attached is true (the default) the copy-resources step below will 
               re-include the resources from the last build in the current.  -->              
               <resourceBundles>
@@ -63,16 +69,12 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/settings/xsd</outputDirectory>
+              <outputDirectory>${project.build.directory}</outputDirectory>
               <resources>
                 <resource>
-                  <directory>src/main/resources/xjb-bindings</directory>
+                  <directory>src/main/resources/</directory>
                   <filtering>true</filtering>
-                </resource>            
-                <resource>
-                  <directory>src/main/resources/settings/xsd</directory>
-                  <filtering>true</filtering>
-                </resource>
+                </resource>        
               </resources>
             </configuration>
           </execution>
@@ -84,14 +86,45 @@
         <version>0.8.0</version>
         <executions>
           <execution>
-            <id>generate-settings-classes</id>
+            <id>generate-collectionsettings-classes</id>
             <goals>
               <goal>generate</goal>
             </goals>
             <phase>generate-sources</phase>
             <configuration>
-              <schemaDirectory>${project.build.directory}/settings/xsd</schemaDirectory>
-              <generateDirectory>${project.build.directory}/generated-sources/settings</generateDirectory>
+              <schemaDirectory>${project.build.directory}/collectionsettings/xsd</schemaDirectory>
+              <generateDirectory>${project.build.directory}/collectionsettings</generateDirectory>
+              <generatePackage>org.bitrepository.settings.collectionsettings</generatePackage>
+              <extension>true</extension>
+              <args>
+                <arg>-XtoString</arg>
+                <arg>-Xequals</arg>
+                <arg>-XhashCode</arg>
+                <arg>-Xannotate</arg>
+              </args>
+              <plugins>
+                <plugin>
+                  <groupId>org.jvnet.jaxb2_commons</groupId>
+                  <artifactId>jaxb2-basics</artifactId>
+                  <version>0.6.2</version>
+                </plugin>
+                <plugin>
+                  <groupId>org.jvnet.jaxb2_commons</groupId>
+                  <artifactId>jaxb2-basics-annotate</artifactId>
+                  <version>0.6.2</version>
+                </plugin>
+              </plugins>
+            </configuration>
+          </execution> 
+          <execution>
+            <id>generate-referencesettings-classes</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <schemaDirectory>${project.build.directory}/referencesettings/xsd</schemaDirectory>
+              <generateDirectory>${project.build.directory}/referencesettings</generateDirectory>
               <extension>true</extension>
               <args>
                 <arg>-XtoString</arg>
