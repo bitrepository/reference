@@ -24,42 +24,38 @@
  */
 package org.bitrepository.pillar;
 
-import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.configuration.referencepillarconfiguration.ReferencePillarConfiguration;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
  * Component factory for this module.
  */
-public class IntegrationComponentFactory {
+public class ReferencePillarComponentFactory {
     /** The singleton instance. */
-    private static IntegrationComponentFactory instance;
+    private static ReferencePillarComponentFactory instance;
 
     /**
      * Instantiation of this singleton.
      *
      * @return The singleton instance of this factory class.
      */
-    public static IntegrationComponentFactory getInstance() {
+    public static ReferencePillarComponentFactory getInstance() {
         // ensure singleton.
         if(instance == null) {
-            instance = new IntegrationComponentFactory();
+            instance = new ReferencePillarComponentFactory();
         }
         return instance;
     }
 
     /** The characteristics for this module.*/
     private ModuleCharacteristics moduleCharacter;
-    /** The configuration for this module.*/
-    private ReferencePillarConfiguration config;
 
     /**
      * Private constructor for initialization of the singleton.
      */
-    private IntegrationComponentFactory() {
-        moduleCharacter = new ModuleCharacteristics("integration");
+    private ReferencePillarComponentFactory() {
+        moduleCharacter = new ModuleCharacteristics("reference-pillar");
     }
 
     /**
@@ -68,19 +64,6 @@ public class IntegrationComponentFactory {
      */
     public ModuleCharacteristics getModuleCharacteristics() {
         return moduleCharacter;
-    }
-
-    /**
-     * Method for extracting the configuration for the integration module.
-     * @return The integration module configuration.
-     */
-    public ReferencePillarConfiguration getConfig() {
-        if (config == null) {
-            ConfigurationFactory configurationFactory = new ConfigurationFactory();
-            config = configurationFactory.loadConfiguration(getModuleCharacteristics(), 
-                    ReferencePillarConfiguration.class);
-        }
-        return config;
     }
 
     /**

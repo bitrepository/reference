@@ -64,7 +64,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
     public void pillarPutTest() throws Exception {
         addDescription("Tests the put functionality of the reference pillar.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        ReferencePillar pillar = IntegrationComponentFactory.getInstance().getPillar(settings);
+        ReferencePillar pillar = ReferencePillarComponentFactory.getInstance().getPillar(settings);
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         Long FILE_SIZE = 27L;
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
@@ -139,7 +139,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         addDescription("Tests the put functionality of the reference pillar.");
         addStep("Set up constants and variables.", "Should not fail here!");
         settings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-pillar-destination");
-        ReferencePillar pillar = IntegrationComponentFactory.getInstance().getPillar(settings);
+        ReferencePillar pillar = ReferencePillarComponentFactory.getInstance().getPillar(settings);
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         Long FILE_SIZE = 27L;
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();

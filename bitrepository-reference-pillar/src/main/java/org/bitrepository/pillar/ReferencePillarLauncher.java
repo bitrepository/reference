@@ -57,7 +57,7 @@ public class ReferencePillarLauncher {
                 new XMLFileSettingsLoader(pathToSettings));
         try {
             Settings settings = settingsLoader.getSettings(collectionId);
-            IntegrationComponentFactory.getInstance().getPillar(settings);
+            ReferencePillarComponentFactory.getInstance().getPillar(settings);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);
