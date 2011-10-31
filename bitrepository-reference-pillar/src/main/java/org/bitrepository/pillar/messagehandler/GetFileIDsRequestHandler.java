@@ -367,6 +367,6 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         response.setFileIDs(message.getFileIDs());
         response.setTo(message.getReplyTo());
 
-        return null;
+        return response;
     }
 }

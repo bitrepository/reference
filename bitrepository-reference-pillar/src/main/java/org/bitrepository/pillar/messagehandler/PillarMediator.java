@@ -282,7 +282,7 @@ public class PillarMediator extends AbstractMessageListener {
             handler.handleMessage(message);
         } else {
             noHandlerAlarm(message.getClass());
-        }    
+        }
     }
 
     @Override

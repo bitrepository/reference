@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
@@ -37,6 +38,8 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
+import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
+import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
 import org.slf4j.Logger;
@@ -140,29 +143,20 @@ public class PuttingFile extends PutFileState {
 
     @Override
     public void onMessage(PutFileFinalResponse response) {
-
-        // validate the response info.
-        FinalResponseInfo frInfo = response.getFinalResponseInfo();
-        if(frInfo == null || frInfo.getFinalResponseCode() == null || frInfo.getFinalResponseCode().isEmpty()) {
-            handleIncompletePut("The final response info is invalid: '" + frInfo + "'");
-        } else {
-            // TODO validate the actual values of the response info. Was it success or failure?
-            if(frInfo.getFinalResponseText().contains("Error")) {
-                handleIncompletePut("The Final Response Info contain an error: '" + frInfo.getFinalResponseCode() + " : " 
-                        + frInfo.getFinalResponseText() + "'");
-            }
-        }
-
         try {
             putResponseStatus.responseReceived(response.getPillarID());
-            monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.Progress,
-                    "Finished put on pillar '" + response.getPillarID() + "'."));
-        } catch (UnexpectedResponseException e) {
-            // TODO Is this a failure? Can happen if a pillar sends two final responses, or no response was expected 
-            // from this pillar, or the pillarId is null.
-            monitor.warning("Unable to handle this response: '" + response + "'.", e);
-            return;
+        } catch (UnexpectedResponseException ure) {
+            monitor.pillarFailed("Received unexpected final response from " + response.getPillarID() , ure);
         }
+
+        if(isResponseSuccess(response.getFinalResponseInfo())) {
+            monitor.pillarComplete(new PillarOperationEvent(
+                    OperationEventType.PillarComplete,
+                    response.getPillarID(),
+                    "Received checksum result from " + response.getPillarID()));
+        } else {
+            monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getFinalResponseInfo());
+        } 
 
         // Check if the conversation has finished.
         if(putResponseStatus.haveAllPillarResponded()) {
@@ -173,6 +167,23 @@ public class PuttingFile extends PutFileState {
             PutFileFinished finishState = new PutFileFinished(conversation);
             conversation.conversationState = finishState;
         }
+    }
+    
+    /**
+     * Method for validating the FinalResponseInfo.
+     * @param frInfo The FinalResponseInfo to be validated.
+     * @return Whether the FinalRepsonseInfo tells that the operation has been a success or a failure.
+     */
+    private boolean isResponseSuccess(FinalResponseInfo frInfo) {
+        // validate the response info.
+        if(frInfo == null || frInfo.getFinalResponseCode() == null || frInfo.getFinalResponseCode().isEmpty()) {
+            return false;
+        } else {
+            if(FinalResponseCodePositiveType.SUCCESS.value().intValue() == new Integer(frInfo.getFinalResponseCode())) {
+                return true;
+            } 
+        }
+        return false;
     }
 
     /**

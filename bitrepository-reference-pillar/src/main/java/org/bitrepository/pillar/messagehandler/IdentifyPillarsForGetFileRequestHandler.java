@@ -59,7 +59,6 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
             AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
         super(settings, messageBus, alarmDispatcher, referenceArchive);
     }
-
     
     /**
      * Handles the identification messages for the GetFile operation.

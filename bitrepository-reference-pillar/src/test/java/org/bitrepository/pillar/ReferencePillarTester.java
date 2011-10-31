@@ -30,6 +30,7 @@ import java.util.Date;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.GetFileClient;
+import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -134,8 +135,8 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         //        Assert.assertTrue(checksumdata.getCalculationTimestamp().toGregorianCalendar().getTime().getTime() > startDate.getTime());
     }
     
-    @Test( groups = {"regressiontest"})
-    public void testPillarVsPutClient() throws Exception {
+    @Test(groups = {"regressiontest"})
+    public void testPillarVsClients() throws Exception {
         addDescription("Tests the put functionality of the reference pillar.");
         addStep("Set up constants and variables.", "Should not fail here!");
         settings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-pillar-destination");
@@ -154,7 +155,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         clientSettings.getCollectionSettings().setProtocolSettings(settings.getCollectionSettings().getProtocolSettings());
         clientSettings.getCollectionSettings().setClientSettings(settings.getCollectionSettings().getClientSettings());
         
-        clientSettings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-PutFile-destination");
+        clientSettings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-client-destination");
         clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(settings.getReferenceSettings().getPillarSettings().getPillarID());
         
@@ -174,7 +175,6 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         
         addStep("Create a GetFileClient and start a get operation", 
                 "This should be caught by the pillar");
-        clientSettings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-GetFile-destination");
         GetFileClient getClient = AccessComponentFactory.getInstance().createGetFileClient(clientSettings);
         getClient.getFileFromSpecificPillar(FILE_ID, new URL(FILE_ADDRESS), settings.getReferenceSettings().getPillarSettings().getPillarID(), testEventHandler);
         
@@ -189,10 +189,9 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         
         addStep("Create a GetChecksumsClient and start a get operation", 
                 "This should be caught by the pillar");
-        clientSettings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-GetFile-destination");
         GetChecksumsClient getChecksums = AccessComponentFactory.getInstance().createGetChecksumsClient(clientSettings);
-        FileIDs fileids = new FileIDs();
-        fileids.getFileID().add(FILE_ID);
+        FileIDs fileIDsForGetChecksums = new FileIDs();
+        fileIDsForGetChecksums.getFileID().add(FILE_ID);
         
         ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
         csType.setChecksumSalt(null);
@@ -200,7 +199,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         URL csurl = new URL(FILE_ADDRESS + "-cs");
         
         getChecksums.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
-                fileids, csType, csurl, testEventHandler, "AuditTrail: TESTING!!!");
+                fileIDsForGetChecksums, csType, csurl, testEventHandler, "AuditTrail: TESTING!!!");
         
         addStep("Validate the sequence of operation events for the getChecksumClient", 
                 "Should be in correct order.");
@@ -212,6 +211,26 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarComplete);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
         
+        addStep("Create a GetFileIDsClient and start a get operation", 
+                "This should be caught by the pillar");
+        GetFileIDsClient getFileIDs = AccessComponentFactory.getInstance().createGetFileIDsClient(clientSettings);
+        FileIDs fileIdsForGetFileIDs = new FileIDs();
+        fileIdsForGetFileIDs.getFileID().add(FILE_ID);
+        
+        URL fileIDsUrl = new URL(FILE_ADDRESS + "-cs");
+        
+        getFileIDs.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
+                fileIdsForGetFileIDs, fileIDsUrl, testEventHandler, "AuditTrail: TESTING!!!");
+        
+        addStep("Validate the sequence of operation events for the getChecksumClient", 
+                "Should be in correct order.");
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarComplete);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
         
     }
 }
