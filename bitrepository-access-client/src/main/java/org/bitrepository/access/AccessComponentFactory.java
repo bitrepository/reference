@@ -105,7 +105,7 @@ public class AccessComponentFactory {
      *
      * @return A GetFileIDsClient.
      */
-    public GetFileIDsClient createGetFileIDsClient(MessageBus messageBus, Settings settings) {
+    public GetFileIDsClient createGetFileIDsClient(Settings settings) {
         return new ConversationBasedGetFileIDsClient(
                 ProtocolComponentFactory.getInstance().getMessageBus(settings), 
                 ConversationMediatorManager.getConversationMediator(settings),

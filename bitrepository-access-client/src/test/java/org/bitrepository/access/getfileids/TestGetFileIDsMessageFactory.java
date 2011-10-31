@@ -34,9 +34,14 @@ import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
 import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.protocol.TestMessageFactory;
@@ -52,14 +57,16 @@ public class TestGetFileIDsMessageFactory extends TestMessageFactory {
         this.slaID = slaID;
     }
 
-    /**
-     * Generate IdentifyPillarsForGetFileIDsRequest test message with default values.
-     * @return test message
-     */
-    public IdentifyPillarsForGetFileIDsRequest getIdentifyPillarsForGetFileIDsRequestTestMessage() {
-        return getIdentifyPillarsForGetFileIDsRequestTestMessage(
-                CORRELATION_ID_DEFAULT, SLA_ID_DEFAULT, REPLY_TO_DEFAULT, new ArrayList<String>());
+    public IdentifyPillarsForGetFileIDsRequest createIdentifyPillarsForGetFileIDsRequest() {
+        IdentifyPillarsForGetFileIDsRequest identifyPillarsForGetFileIDsRequest = new IdentifyPillarsForGetFileIDsRequest();
+        identifyPillarsForGetFileIDsRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
+        identifyPillarsForGetFileIDsRequest.setMinVersion(VERSION_DEFAULT);
+        identifyPillarsForGetFileIDsRequest.setBitRepositoryCollectionID(slaID);
+        identifyPillarsForGetFileIDsRequest.setVersion(VERSION_DEFAULT);
+        
+        return identifyPillarsForGetFileIDsRequest;
     }
+    
     // TODO queue in all methods?
     /**
      * Generate IdentifyPillarsForGetFileIDsRequest test message with specified values.
@@ -69,176 +76,98 @@ public class TestGetFileIDsMessageFactory extends TestMessageFactory {
      * @param fileIDlist
      * @return test message
      */
-    public IdentifyPillarsForGetFileIDsRequest getIdentifyPillarsForGetFileIDsRequestTestMessage(
-            String correlationID, String slaID, String replyTo, List<String> fileIDlist) {
-        IdentifyPillarsForGetFileIDsRequest request = new IdentifyPillarsForGetFileIDsRequest();
-        request.setCorrelationID(correlationID);
-        request.setBitRepositoryCollectionID(slaID);
-        request.setReplyTo(replyTo);
-        FileIDs fileIDs = new FileIDs();
-        request.setFileIDs(fileIDs);
-        request.setVersion(VERSION_DEFAULT);
-        request.setMinVersion(VERSION_DEFAULT);
+    public IdentifyPillarsForGetFileIDsRequest createIdentifyPillarsForGetFileIDsRequest(
+            IdentifyPillarsForGetFileIDsRequest receivedMessage, String toTopic) {
+        IdentifyPillarsForGetFileIDsRequest request = createIdentifyPillarsForGetFileIDsRequest();
+        request.setCorrelationID(receivedMessage.getCorrelationID());
+        request.setReplyTo(receivedMessage.getReplyTo());
+        request.setTo(toTopic);
+        
+        request.setAuditTrailInformation(receivedMessage.getAuditTrailInformation());
+        request.setFileIDs(receivedMessage.getFileIDs());
+        
         return request;
     }
-    /**
-     * Generate IdentifyPillarsForGetFileIDsProgressResponse test message with default values.
-     * @param pillarID
-     * @return test message
-     */
-    public IdentifyPillarsForGetFileIDsResponse getIdentifyPillarsForGetFileIDsResponseTestMessage(
-            String pillarID) {
-        return getIdentifyPillarsForGetFileIDsResponseTestMessage(
-                CORRELATION_ID_DEFAULT, SLA_ID_DEFAULT, REPLY_TO_DEFAULT, pillarID, new FileIDs(),
-                TIME_MEASURE_UNIT_DEFAULT, TIME_MEASURE_VALUE_DEFAULT);
+    
+    public IdentifyPillarsForGetFileIDsResponse createIdentifyPillarsForGetFileIDsResponse(
+            IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage,
+            String pillarId, String pillarDestinationId) {
+        IdentifyPillarsForGetFileIDsResponse identifyPillarsForGetFileIdsResponse = new IdentifyPillarsForGetFileIDsResponse();
+        identifyPillarsForGetFileIdsResponse.setTo(receivedIdentifyRequestMessage.getReplyTo());
+        identifyPillarsForGetFileIdsResponse.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
+        identifyPillarsForGetFileIdsResponse.setBitRepositoryCollectionID(receivedIdentifyRequestMessage.getBitRepositoryCollectionID());
+        identifyPillarsForGetFileIdsResponse.setReplyTo(pillarDestinationId);
+        identifyPillarsForGetFileIdsResponse.setPillarID(pillarId);
+        identifyPillarsForGetFileIdsResponse.setFileIDs(receivedIdentifyRequestMessage.getFileIDs());
+        identifyPillarsForGetFileIdsResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
+        identifyPillarsForGetFileIdsResponse.setVersion(VERSION_DEFAULT);
+        identifyPillarsForGetFileIdsResponse.setMinVersion(VERSION_DEFAULT);
+        identifyPillarsForGetFileIdsResponse.setIdentifyResponseInfo(IDENTIFY_INFO_DEFAULT);
+        return identifyPillarsForGetFileIdsResponse;
     }
-    /**
-     * Generate IdentifyPillarsForGetFileIDsProgressResponse test message with specified values.
-     * @param correlationID
-     * @param slaID
-     * @param replyTo
-     * @param pillarID
-     * @param fileIDs
-     * @param timeMeasureUnit
-     * @param timeMeasureValue
-     * @return test message
-     */
-    public IdentifyPillarsForGetFileIDsResponse getIdentifyPillarsForGetFileIDsResponseTestMessage(
-            String correlationID, String slaID, String replyTo, String pillarID, FileIDs fileIDs,
-            TimeMeasureTYPE.TimeMeasureUnit timeMeasureUnit, BigInteger timeMeasureValue) {
-        IdentifyPillarsForGetFileIDsResponse response = new IdentifyPillarsForGetFileIDsResponse();
-        response.setCorrelationID(correlationID);
-        response.setBitRepositoryCollectionID(slaID);
-        response.setReplyTo(replyTo);
-        response.setPillarID(pillarID);
-        // todo how do I add a fileID to fileIDs?
-        response.setFileIDs(fileIDs);
-
-        TimeMeasureTYPE time = new TimeMeasureTYPE();
-        time.setTimeMeasureUnit(timeMeasureUnit);
-        time.setTimeMeasureValue(timeMeasureValue);
-        response.setTimeToDeliver(time);
-
-        response.setVersion(VERSION_DEFAULT);
-        response.setMinVersion(VERSION_DEFAULT);
-        return response;
+    
+    public GetFileIDsRequest createGetFileIDsRequest(String pillarId, String toTopic) {
+        GetFileIDsRequest getFileIDsRequest = new GetFileIDsRequest();
+        getFileIDsRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
+        getFileIDsRequest.setMinVersion(VERSION_DEFAULT);
+        getFileIDsRequest.setVersion(VERSION_DEFAULT);
+        getFileIDsRequest.setPillarID(pillarId);
+        getFileIDsRequest.setBitRepositoryCollectionID(slaID);
+        getFileIDsRequest.setTo(toTopic);
+        return getFileIDsRequest;
     }
-    /**
-     * Generate GetFileIDsRequest test message with default values.
-     * @param pillarID
-     * @return test message
-     */
-
-    public GetFileIDsRequest getGetFileIDsRequestTestMessage(String pillarID) {
-        return getGetFileIDsRequestTestMessage(
-                CORRELATION_ID_DEFAULT, SLA_ID_DEFAULT, REPLY_TO_DEFAULT, pillarID, new FileIDs());
+    public GetFileIDsRequest createGetFileIDsRequest(GetFileIDsRequest receivedGetFileIDsRequest,
+            String pillarId, String toTopic) {
+        GetFileIDsRequest getFileIDsRequest = createGetFileIDsRequest(pillarId, toTopic);
+        getFileIDsRequest.setCorrelationID(receivedGetFileIDsRequest.getCorrelationID());
+        getFileIDsRequest.setReplyTo(receivedGetFileIDsRequest.getReplyTo());
+        getFileIDsRequest.setFileIDs(receivedGetFileIDsRequest.getFileIDs());
+        getFileIDsRequest.setResultAddress(receivedGetFileIDsRequest.getResultAddress());
+        getFileIDsRequest.setAuditTrailInformation(receivedGetFileIDsRequest.getAuditTrailInformation());
+        return getFileIDsRequest;
     }
-    /**
-     * Generate GetFileIDsRequest test message with specified values.
-     *
-     * @param correlationID
-     * @param slaID
-     * @param replyTo
-     * @param pillarID
-     * @param fileIDs
-     * @return test message
-     */
-    public GetFileIDsRequest getGetFileIDsRequestTestMessage(
-            String correlationID, String slaID, String replyTo, String pillarID, FileIDs fileIDs) {
-        GetFileIDsRequest request = new GetFileIDsRequest();
-        request.setCorrelationID(correlationID);
-        request.setBitRepositoryCollectionID(slaID);
-        request.setReplyTo(replyTo);
-        request.setPillarID(pillarID);
-        request.setFileIDs(fileIDs);
 
-        request.setVersion(VERSION_DEFAULT);
-        request.setMinVersion(VERSION_DEFAULT);
-        return request;
-    }
-    /**
-     * Generate GetFileIDsProgressResponse test message with default values.
-     * @param pillarID
-     * @return test message
-     */
-    public GetFileIDsProgressResponse getGetFileIDsResponseTestMessage(String pillarID) {
-        return getGetFileIDsResponseTestMessage(
-                CORRELATION_ID_DEFAULT, SLA_ID_DEFAULT, REPLY_TO_DEFAULT, pillarID, new FileIDs(),
-                RESPONSE_CODE_DEFAULT, RESPONSE_TEXT_DEFAULT);
-    }
-    /**
-     * Generate GetFileIDsProgressResponse test message with specified values.
-     * @param correlationID
-     * @param slaID
-     * @param replyTo
-     * @param pillarID
-     * @param fileIDs
-     * @param responseCode
-     * @param responseText
-     * @return test message
-     */
-    public GetFileIDsProgressResponse getGetFileIDsResponseTestMessage(
-            String correlationID, String slaID, String replyTo, String pillarID, FileIDs fileIDs,
-            ProgressResponseCodeType responseCode, String responseText) {
-        GetFileIDsProgressResponse response = new GetFileIDsProgressResponse();
-        response.setCorrelationID(correlationID);
-        response.setBitRepositoryCollectionID(slaID);
-        response.setReplyTo(replyTo);
-        response.setPillarID(pillarID);
-        response.setFileIDs(fileIDs);
-
-        ProgressResponseInfo responseInfo = new ProgressResponseInfo();
-        responseInfo.setProgressResponseCode(responseCode);
-        responseInfo.setProgressResponseText(responseText);
-        response.setProgressResponseInfo(responseInfo);
-
-        response.setVersion(VERSION_DEFAULT);
-        response.setMinVersion(VERSION_DEFAULT);
-        return response;
+    public GetFileIDsProgressResponse createGetFileIDsProgressResponse(
+            GetFileIDsRequest receivedMessage, String pillarId, String pillarDestination) {
+        GetFileIDsProgressResponse getFileIDsProgressResponse = new GetFileIDsProgressResponse();
+        getFileIDsProgressResponse.setTo(receivedMessage.getReplyTo());
+        getFileIDsProgressResponse.setCorrelationID(receivedMessage.getCorrelationID());
+        getFileIDsProgressResponse.setBitRepositoryCollectionID(receivedMessage.getBitRepositoryCollectionID());
+        getFileIDsProgressResponse.setReplyTo(pillarDestination);
+        getFileIDsProgressResponse.setPillarID(pillarId);
+        getFileIDsProgressResponse.setFileIDs(receivedMessage.getFileIDs());
+        getFileIDsProgressResponse.setProgressResponseInfo(PROGRESS_INFO_DEFAULT);
+        getFileIDsProgressResponse.setVersion(VERSION_DEFAULT);
+        getFileIDsProgressResponse.setMinVersion(VERSION_DEFAULT);
+        getFileIDsProgressResponse.setResultAddress(receivedMessage.getResultAddress());
+        
+        return getFileIDsProgressResponse;
     }
 
     /**
-     * Generate GetFileIDsFinalResponse test message with default values.
-     * @param pillarID
-     * @return test message
+     * MISSING:
+     * 
+     * - getFileIDsFinalResponse.setAuditTrailInformation(null);
+     * - getFileIDsFinalResponse.setResultingFileIDs(null);
+     *  
+     * @param receivedGetFileIDsRequest
+     * @param pillarId
+     * @param pillarDestinationId
+     * @return
      */
-    public GetFileIDsFinalResponse getGetFileIDsCompleteTestMessage(String pillarID) {
-        return getGetFileIDsFinalResponseTestMessage(
-                CORRELATION_ID_DEFAULT, SLA_ID_DEFAULT, REPLY_TO_DEFAULT, pillarID, new FileIDs(),
-                COMPLETE_CODE_DEFAULT, COMPLETE_TEXT_DEFAULT, new ResultingFileIDs());
-    }
-    /**
-     * Generate GetFileIDsFinalResponse test message with specified values.
-     * @param correlationID
-     * @param slaID
-     * @param replyTo
-     * @param pillarID
-     * @param fileIDs
-     * @param completeCode
-     * @param completeText
-     * @param resultingFileIDs
-     * @return test message
-     */
-    public GetFileIDsFinalResponse getGetFileIDsFinalResponseTestMessage(
-            String correlationID, String slaID, String replyTo, String pillarID, FileIDs fileIDs,
-            String completeCode, String completeText, ResultingFileIDs resultingFileIDs) {
-        GetFileIDsFinalResponse complete = new GetFileIDsFinalResponse();
-        complete.setCorrelationID(correlationID);
-        complete.setBitRepositoryCollectionID(slaID);
-        complete.setReplyTo(replyTo);
-        complete.setPillarID(pillarID);
+    public GetFileIDsFinalResponse createGetFileIDsFinalResponse(
+            GetFileIDsRequest receivedGetFileIDsRequest, String pillarId, String pillarDestinationId) {
+        GetFileIDsFinalResponse getFileIDsFinalResponse = new GetFileIDsFinalResponse();
+        getFileIDsFinalResponse.setTo(receivedGetFileIDsRequest.getReplyTo());
+        getFileIDsFinalResponse.setCorrelationID(receivedGetFileIDsRequest.getCorrelationID());
+        getFileIDsFinalResponse.setBitRepositoryCollectionID(receivedGetFileIDsRequest.getBitRepositoryCollectionID());
+        getFileIDsFinalResponse.setReplyTo(pillarDestinationId);
+        getFileIDsFinalResponse.setPillarID(pillarId);
+        getFileIDsFinalResponse.setFileIDs(receivedGetFileIDsRequest.getFileIDs());
+        getFileIDsFinalResponse.setFinalResponseInfo(FINAL_INFO_DEFAULT);
+        getFileIDsFinalResponse.setVersion(VERSION_DEFAULT);
+        getFileIDsFinalResponse.setMinVersion(VERSION_DEFAULT);
 
-        complete.setFileIDs(fileIDs);
-
-        FinalResponseInfo completeInfo = new FinalResponseInfo();
-        completeInfo.setFinalResponseCode(completeCode);
-        completeInfo.setFinalResponseText(completeText);
-        complete.setFinalResponseInfo(completeInfo);
-
-        complete.setResultingFileIDs(resultingFileIDs);
-
-        complete.setVersion(VERSION_DEFAULT);
-        complete.setMinVersion(VERSION_DEFAULT);
-        return complete;
+        return getFileIDsFinalResponse;
     }
 }
