@@ -93,7 +93,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             sendFinalResponse(message, compiledResults);
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Message ", e);
-            alarmDispatcher.alarmIllegalArgument(e);
+            alarmDispatcher.handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             FinalResponseInfo fri = new FinalResponseInfo();

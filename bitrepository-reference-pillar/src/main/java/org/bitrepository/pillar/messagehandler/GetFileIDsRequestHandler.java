@@ -33,11 +33,15 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
+import org.bitrepository.bitrepositorydata.FileIDsParameters;
+import org.bitrepository.bitrepositorydata.GetFileIDsResults;
 import org.bitrepository.bitrepositoryelements.ErrorcodeFinalresponseType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
+import org.bitrepository.bitrepositoryelements.FileIDsParameterData.FileIDsItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.bitrepositoryelements.FileIDsParameterData;
 import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
 import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
 import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
@@ -46,17 +50,19 @@ import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
+import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for handling the identification of this pillar for the purpose of performing the GetFileIDs operation.
+ * Class for handling requests for the GetFileIDs operation.
  */
 public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsRequest> {
     /** The log.*/
@@ -75,7 +81,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     }
     
     /**
-     * Handles the identification messages for the GetFileIDs operation.
+     * Handles the requests for the GetFileIDs operation.
      * @param message The IdentifyPillarsForGetFileIDsRequest message to handle.
      */
     public void handleMessage(GetFileIDsRequest message) {
@@ -85,16 +91,16 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
             }
             
             sendInitialProgressMessage(message);
-            ResultingFileIDs results = performOperation(message);
+            ResultingFileIDs results = performGetFileIDsOperation(message);
             sendFinalResponse(message, results);
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Message ", e);
-            alarmDispatcher.alarmIllegalArgument(e);
+            alarmDispatcher.handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
-            log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
+            log.warn("Internal RuntimeException caught. Sending response for 'error at my end'.", e);
             FinalResponseInfo fri = new FinalResponseInfo();
             fri.setFinalResponseCode(ErrorcodeFinalresponseType.OPERATION_FAILED.value().toString());
-            fri.setFinalResponseText("Error: " + e.getMessage());
+            fri.setFinalResponseText("GetFileIDs operation failed with the exception: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
     }
@@ -129,48 +135,45 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         pResponse.setProgressResponseInfo(prInfo);
 
         // Send the ProgressResponse
-        log.info("Sending GetFileProgressResponse: " + pResponse);
         messagebus.sendMessage(pResponse);
     }
     
     /**
-     * Method for finding the requested FileIDs. 
+     * Finds the requested FileIDs and either uploads them or puts them into the final response depending on 
+     * the request. 
      * @param message The message requesting which fileids to be found.
      * @return The ResultingFileIDs with either the list of fileids or the final address for where the 
      * list of fileids is uploaded.
      */
-    private ResultingFileIDs performOperation(GetFileIDsRequest message) {
-        // First find the requested files.
-
-        FileIDsData data = retrieveFileIDsData(message.getFileIDs());
-
+    private ResultingFileIDs performGetFileIDsOperation(GetFileIDsRequest message) {
         ResultingFileIDs res = new ResultingFileIDs();
-        
-        // Either upload the files or put them into a 
-        String resultingAddress = message.getResultAddress();
-        if(resultingAddress == null || resultingAddress.isEmpty()) {
-            res.setFileIDsData(data);
-        } else {
-            try {
+        try {
+            FileIDsData data = retrieveFileIDsData(message.getFileIDs());
+            
+            String resultingAddress = message.getResultAddress();
+            if(resultingAddress == null || resultingAddress.isEmpty()) {
+                res.setFileIDsData(data);
+            } else {
                 File outputFile = makeTemporaryChecksumFile(message, data);
                 uploadFile(outputFile, resultingAddress);
                 res.setResultAddress(resultingAddress);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         return res;
     }
     
     /**
-     * Method for retrieving the requested FileIDs. Depending on which operation is requested, it will call 
-     * appropriate methods.
+     * Retrieves the requested FileIDs. Depending on which operation is requested, it will call the appropriate method.
      * 
      * @param fileIDs The requested FileIDs.
      * @return The resulting collection of FileIDs found.
+     * @throws OperationFailedException If not all the requested fileids can be found or one of them is invalid as a 
+     * file. 
      */
-    private FileIDsData retrieveFileIDsData(FileIDs fileIDs) {
+    private FileIDsData retrieveFileIDsData(FileIDs fileIDs) throws OperationFailedException {
         if(fileIDs.isSetAllFileIDs()) {
             log.debug("Retrieving the id for all the files.");
             return retrieveAllFileIDs();
@@ -187,20 +190,13 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     /**
      * Retrieves all the fileIDs.
      * @return The list of the ids of all the files in the archive, wrapped in the requested datastructure.
+     * @throws OperationFailedException If a file is invalid (e.g. a directory).
      */
-    private FileIDsData retrieveAllFileIDs() {
+    private FileIDsData retrieveAllFileIDs() throws OperationFailedException {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems fileIDList = new FileIDsDataItems();
         for(String fileID : archive.getAllFileIds()) {
-            // validate that the file exists.
-            if(archive.getFile(fileID).isFile()) {
-                FileIDsDataItem fileIDData = new FileIDsDataItem();
-                fileIDData.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
-                fileIDData.setFileID(fileID);
-                fileIDList.getFileIDsDataItem().add(fileIDData);
-            } else {
-                log.warn("The requested file '" + fileID + "' is not a real file (does not exist or is a directory).");
-            }
+            fileIDList.getFileIDsDataItem().add(getDataItemForFileID(fileID));
         }
         res.setNoOfItems(BigInteger.valueOf(fileIDList.getFileIDsDataItem().size()));
         res.setFileIDsDataItems(fileIDList);
@@ -220,24 +216,34 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      * Retrieves specified fileIDs and whether the files exists as a proper file.
      * @param fileIDs The requested fileIDs to find and validate their existence..
      * @return The list of the ids of the requested files in the archive, wrapped in the requested datastructure.
+     * @throws OperationFailedException If a requested file does not exist or is invalid (e.g. a directory).
      */
-    private FileIDsData retrieveSpecifiedFileIDs(List<String> fileIDs) {
+    private FileIDsData retrieveSpecifiedFileIDs(List<String> fileIDs) throws OperationFailedException {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems fileIDList = new FileIDsDataItems();
         for(String fileID : fileIDs) {
-            // validate that the file exists.
-            if(archive.getFile(fileID).isFile()) {
-                FileIDsDataItem fileIDData = new FileIDsDataItem();
-                fileIDData.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
-                fileIDData.setFileID(fileID);
-                fileIDList.getFileIDsDataItem().add(fileIDData);
-            } else {
-                log.warn("The requested file '" + fileID + "' is not a real file (does not exist or is a directory).");
-            }
+            fileIDList.getFileIDsDataItem().add(getDataItemForFileID(fileID));            
         }
         res.setNoOfItems(BigInteger.valueOf(fileIDList.getFileIDsDataItem().size()));
         res.setFileIDsDataItems(fileIDList);
         return res;
+    }
+    
+    /**
+     * Retrieves a given fileID as a FileIDsDataItem after its existence has been validated.
+     * @param fileID The fileID to validate and make into a FileIDsDataItem.
+     * @return The FileIDsDataItem for the requested fileID.
+     * @throws OperationFailedException If the fileID is not valid.
+     */
+    private FileIDsDataItem getDataItemForFileID(String fileID) throws OperationFailedException {
+        if(!archive.getFile(fileID).isFile()) {
+            throw new OperationFailedException("The file '" + fileID + "' is not valid. It either does not exist or "
+                    +" it is a directory instead of a file.");
+        }        
+        FileIDsDataItem fileIDData = new FileIDsDataItem();
+        fileIDData.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+        fileIDData.setFileID(fileID);
+        return fileIDData;
     }
     
     /**
@@ -257,11 +263,14 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         OutputStream is = null;
         try {
             is = new FileOutputStream(checksumResultFile);
-            for(FileIDsDataItem fileid : fileIDs.getFileIDsDataItems().getFileIDsDataItem()) {
-                // TODO write this correct format. Which???
-                is.write(new String(fileid.getFileID() + "##" + fileid.getCalculationTimestamp() 
-                        + "\n").getBytes());
-            }
+            GetFileIDsResults result = new GetFileIDsResults();
+            result.setBitRepositoryCollectionID(settings.getCollectionID());
+            result.setMinVersion(MIN_VERSION);
+            result.setVersion(VERSION);
+            result.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
+            result.setFileIDsData(fileIDs);
+            
+            is.write(JaxbHelper.serializeToXml(result).getBytes());
             is.flush();
         } finally {
             if(is != null) {
@@ -300,11 +309,8 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         fri.setFinalResponseCode(FinalResponseCodePositiveType.SUCCESS.value().toString());
         fri.setFinalResponseText("Finished locating the requested files.");
         fResponse.setFinalResponseInfo(fri);
-        
         fResponse.setResultingFileIDs(results);
         
-        // Send the FinalResponse
-        log.info("Sending GetFileIDsFinalResponse: " + fResponse);
         messagebus.sendMessage(fResponse);        
     }
     
@@ -317,8 +323,6 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         GetFileIDsFinalResponse fResponse = createFinalResponse(message);
         fResponse.setFinalResponseInfo(fri);
         
-        // Send the FinalResponse
-        log.info("Sending GetFileIDsFinalResponse: " + fResponse);
         messagebus.sendMessage(fResponse);        
     }
     

@@ -24,20 +24,16 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import java.math.BigInteger;
-
 import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
 import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.ReferenceArchive;
+import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.time.TimeMeasurementUtils;
-import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,20 +62,37 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
      */
     public void handleMessage(IdentifyPillarsForGetFileRequest message) {
         try {
-            // Validate the message.
             validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
-
-            if(!archive.hasFile(message.getFileID())) {
-                respondMissingFileIdentification(message, "The file does not exist within the archive.");
-            } else {
-                respondSuccesfullIdentification(message);
-            }
+            checkThatFileIsAvailable(message);
+            respondSuccesfullIdentification(message);
         } catch (IllegalArgumentException e) {
-            log.warn("Caught illegal argument exception", e);
-            // Only send this message if the alarm level is 'WARNING'.
-            if(settings.getCollectionSettings().getPillarSettings().getAlarmLevel() == AlarmLevel.WARNING) {
-                alarmDispatcher.alarmIllegalArgument(e);
-            }
+            alarmDispatcher.handleIllegalArgumentException(e);
+        } catch (IdentifyPillarsException e) {
+            log.warn("Unsuccessfull identification for the GetFile operation.", e);
+            respondUnsuccessfulIdentification(message, e);
+        } catch (RuntimeException e) {
+            alarmDispatcher.handleRuntimeExceptions(e);
+        }
+    }
+    
+    /**
+     * Validates that the requested file is within the archive. 
+     * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
+     * @param message The request for the identification for the GetFileRequest operation.
+     */
+    private void checkThatFileIsAvailable(IdentifyPillarsForGetFileRequest message) {
+        if(message.getFileID() == null) {
+            log.debug("No fileid given in the identification request.");
+            return;
+        }
+        
+        if(!archive.hasFile(message.getFileID())) {
+            IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
+            irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FILE_NOT_FOUND.value().toString());
+            irInfo.setIdentifyResponseText("The file '" + message.getFileID() 
+                    + "' does not exist within the archive.");
+            
+            throw new IdentifyPillarsException(irInfo);
         }
     }
     
@@ -110,22 +123,13 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
      * Method for sending a bad response.
      * @param message The identification request to respond to.
      */
-    private void respondMissingFileIdentification(IdentifyPillarsForGetFileRequest message, String cause) {
+    private void respondUnsuccessfulIdentification(IdentifyPillarsForGetFileRequest message, 
+            IdentifyPillarsException cause) {
         // Create the response.
         IdentifyPillarsForGetFileResponse reply = createIdentifyPillarsForGetFileResponse(message);
         
-        // set the missing variables in the reply:
-        // TimeToDeliver, AuditTrailInformation, IdentifyResponseInfo
-        TimeMeasureTYPE timeToStartDeliver = new TimeMeasureTYPE();
-        timeToStartDeliver.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
-        timeToStartDeliver.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
-        reply.setTimeToDeliver(timeToStartDeliver);
-        reply.setAuditTrailInformation(null);
-        
-        IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-        irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FILE_NOT_FOUND.value().toString());
-        irInfo.setIdentifyResponseText(cause);
-        reply.setIdentifyResponseInfo(irInfo);
+        reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
+        reply.setIdentifyResponseInfo(cause.getResponseInfo());
         
         // Send resulting file.
         messagebus.sendMessage(reply);

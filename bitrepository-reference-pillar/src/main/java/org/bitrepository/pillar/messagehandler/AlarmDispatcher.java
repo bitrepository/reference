@@ -45,6 +45,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,24 +74,20 @@ public class AlarmDispatcher {
     
     /**
      * Method for sending an alarm based on an IllegalArgumentException.
+     * Is only send if the alarm level is 'WARNING', otherwise the exception is just logged.
      * @param exception The exception to base the alarm upon.
      */
-    public void alarmIllegalArgument(IllegalArgumentException exception) {
+    public void handleIllegalArgumentException(IllegalArgumentException exception) {
+        if(settings.getCollectionSettings().getPillarSettings().getAlarmLevel() != AlarmLevel.WARNING) {
+            log.warn("IllegalArgumentException caught, but we do not issue alarms for this, when the alarm level is '"
+                    + settings.getCollectionSettings().getPillarSettings().getAlarmLevel() + "'", exception);
+            return;
+        }
+        
         // create the Concerning part of the alarm.
-        AlarmConcerning ac = new AlarmConcerning();
-        BitRepositoryCollections brcs = new BitRepositoryCollections();
-        brcs.getBitRepositoryCollectionID().add(settings.getCollectionID());
-        ac.setBitRepositoryCollections(brcs);
+        AlarmConcerning ac = createAlarmConcerning();
         ac.setMessages(exception.getMessage());
         ac.setFileInformation(null);
-        Components comps = new Components();
-        ComponentTYPE compType = new ComponentTYPE();
-        compType.setComponentComment("ReferencePillar");
-        compType.setComponentID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        compType.setComponentType(ComponentType.PILLAR);
-        comps.getContributor().add(compType);
-        comps.getDataTransmission().add(settings.getMessageBusConfiguration().toString());
-        ac.setComponents(comps);
         
         // create a descriptor.
         AlarmDescription ad = new AlarmDescription();
@@ -101,6 +98,41 @@ public class AlarmDispatcher {
         RiskTYPE rt = new RiskTYPE();
         rt.setRiskArea(RiskAreaType.CONFIDENTIALITY);
         rt.setRiskImpactScore(RiskImpactScoreType.CRITICAL_IMPACT);
+        rt.setRiskProbabilityScore(RiskProbabilityScoreType.HIGH_PROPABILITY);
+        ad.setRisk(rt);
+        
+        sendAlarm(ac, ad);
+    }
+    
+    /**
+     * Sends an alarm for a RuntimeException. Such exceptions are sent unless the AlarmLevel is 'EMERGENCY',
+     * otherwise the exception is just logged.
+     * @param exception The exception causing the alarm.
+     */
+    public void handleRuntimeExceptions(RuntimeException exception) {
+        if(settings.getCollectionSettings().getPillarSettings().getAlarmLevel() == AlarmLevel.EMERGENCY) {
+            log.error("RuntimeException caught, but we do not issue alarms for this, when the alarm level is '"
+                    + settings.getCollectionSettings().getPillarSettings().getAlarmLevel() + "'", exception);
+            return;
+        }
+        
+        log.error("Sending alarm for RunTimeException", exception);
+        
+        // create the Concerning part of the alarm.
+        AlarmConcerning ac = createAlarmConcerning();
+        ac.setMessages(exception.getMessage());
+        ac.setFileInformation(null);
+        
+        // create a descriptor.
+        AlarmDescription ad = new AlarmDescription();
+        ad.setAlarmCode(AlarmcodeType.GENERAL);
+        ad.setAlarmText(exception.getMessage());
+        ad.setOrigDateTime(CalendarUtils.getXmlGregorianCalendar(new Date()));
+        ad.setPriority(PriorityCodeType.MANUAL_CHECK);
+        RiskTYPE rt = new RiskTYPE();
+        // TODO missing types: RiskAreaType.UNKNOWN, RiskImpactScoreType.UNKNOWN, RiskProbabilityScoreType.UNKNOWN 
+        rt.setRiskArea(RiskAreaType.SAFETY);
+        rt.setRiskImpactScore(RiskImpactScoreType.MEDIUM_IMPACT);
         rt.setRiskProbabilityScore(RiskProbabilityScoreType.HIGH_PROPABILITY);
         ad.setRisk(rt);
         
@@ -136,5 +168,29 @@ public class AlarmDispatcher {
         alarm.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         
         messageBus.sendMessage(alarm);
+    }
+
+    /**
+     * Creates the generic AlarmConcerning for the ReferencePillar.
+     * Is missing:
+     * <br/> - Messages
+     * <br/> - FileInformation
+     * @return The generic AlarmConcerning.
+     */
+    private AlarmConcerning createAlarmConcerning() {
+        AlarmConcerning ac = new AlarmConcerning();
+        BitRepositoryCollections brcs = new BitRepositoryCollections();
+        brcs.getBitRepositoryCollectionID().add(settings.getCollectionID());
+        ac.setBitRepositoryCollections(brcs);
+        Components comps = new Components();
+        ComponentTYPE compType = new ComponentTYPE();
+        compType.setComponentComment("ReferencePillar");
+        compType.setComponentID(settings.getReferenceSettings().getPillarSettings().getPillarID());
+        compType.setComponentType(ComponentType.PILLAR);
+        comps.getContributor().add(compType);
+        comps.getDataTransmission().add(settings.getMessageBusConfiguration().toString());
+        ac.setComponents(comps);
+
+        return ac;
     }
 }

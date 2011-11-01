@@ -82,7 +82,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             sendFinalResponse(message);
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Possible intruder -> Sending alarm! ", e);
-            alarmDispatcher.alarmIllegalArgument(e);
+            alarmDispatcher.handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             FinalResponseInfo fri = new FinalResponseInfo();

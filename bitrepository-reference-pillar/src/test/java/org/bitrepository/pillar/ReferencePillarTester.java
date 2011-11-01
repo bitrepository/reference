@@ -46,6 +46,8 @@ import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.settings.collectionsettings.AlarmLevel;
+import org.bitrepository.settings.collectionsettings.PillarSettings;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

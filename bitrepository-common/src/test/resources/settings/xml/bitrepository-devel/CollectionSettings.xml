@@ -46,4 +46,10 @@
     <PillarIDs>Pillar1</PillarIDs>
     <PillarIDs>Pillar2</PillarIDs>
   </ClientSettings>
+
+  <PillarSettings>
+    <AlarmLevel>ERROR</AlarmLevel>
+    <AuditTrailLevel>MEDIUM</AuditTrailLevel>
+    <ProgressResponseMandatory>FALSE</ProgressResponseMandatory>
+  </PillarSettings>
 </CollectionSettings>

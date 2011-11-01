@@ -24,7 +24,6 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,15 +31,13 @@ import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
 import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.ReferenceArchive;
+import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.time.TimeMeasurementUtils;
-import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,38 +62,36 @@ public class IdentifyPillarsForGetFileIDsRequestHandler extends PillarMessageHan
     
     /**
      * Handles the identification messages for the GetFileIDs operation.
-     * TODO perhaps synchronisation?
      * @param message The IdentifyPillarsForGetFileIDsRequest message to handle.
      */
     public void handleMessage(IdentifyPillarsForGetFileIDsRequest message) {
         try {
-            // Validate the message.
             validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
-
-            if(verifyFiles(message)) {
-                respondSuccesfullIdentification(message);
-            }
+            checkThatAllRequestedFilesAreAvailable(message);
+            respondSuccesfullIdentification(message);
         } catch (IllegalArgumentException e) {
-            // Only send this message if the alarm level is 'WARNING'.
-            if(settings.getCollectionSettings().getPillarSettings().getAlarmLevel() == AlarmLevel.WARNING) {
-                alarmDispatcher.alarmIllegalArgument(e);
-            } else {
-                log.warn("Caught illegal argument exception", e);
-            }
+            alarmDispatcher.handleIllegalArgumentException(e);
+        } catch (IdentifyPillarsException e) {
+            log.warn("Unsuccessfull identification for the GetFileIDs.", e);
+            respondUnsuccessfulIdentification(message, e);
+        } catch (RuntimeException e) {
+            alarmDispatcher.handleRuntimeExceptions(e);
         }
     }
     
     /**
-     * Method for validating that all the requested files in the filelist are present. 
-     * An empty filelist is expected when "AllFiles" or the parameter option is used.
-     * If this is not the case, then a bad response message with the appropriate error is sent. 
-     * @param message The message containing the list files.
-     * @return Whether all the files are present or not.
+     * Validates that all the requested files in the filelist are present. 
+     * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
+     * @param message The message containing the list files. An empty filelist is expected 
+     * when "AllFiles" or the parameter option is used.
      */
-    public boolean verifyFiles(IdentifyPillarsForGetFileIDsRequest message) {
+    public void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetFileIDsRequest message) {
         FileIDs fileids = message.getFileIDs();
-
-        // go through all the files and find any missing
+        if(fileids == null) {
+            log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
+            return;
+        }
+        
         List<String> missingFiles = new ArrayList<String>();
         for(String fileID : fileids.getFileID()) {
             if(!archive.hasFile(fileID)) {
@@ -104,26 +99,24 @@ public class IdentifyPillarsForGetFileIDsRequestHandler extends PillarMessageHan
             }
         }
         
-        // if not missing, then all files have been found!
-        if(missingFiles.isEmpty()) {
-            return true;
+        // Throw exception if any files are missing.
+        if(!missingFiles.isEmpty()) {
+            IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
+            irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FILE_NOT_FOUND.value().toString());
+            irInfo.setIdentifyResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
+            
+            throw new IdentifyPillarsException(irInfo);
         }
-        
-        // report on the missing files
-        respondMissingFileIdentification(message, missingFiles.size() + " missing files: '" + missingFiles + "'");
-        return false;
     }
     
     /**
-     * Method for making a successful response to the identification.
+     * Makes a response to the successful identification.
      * @param message The request message to respond to.
      */
     private void respondSuccesfullIdentification(IdentifyPillarsForGetFileIDsRequest message) {
         // Create the response.
         IdentifyPillarsForGetFileIDsResponse reply = createIdentifyPillarsForGetFileIDsResponse(message);
         
-        // set the missing variables in the reply:
-        // TimeToDeliver, IdentifyResponseInfo
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
                 settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
@@ -137,27 +130,19 @@ public class IdentifyPillarsForGetFileIDsRequestHandler extends PillarMessageHan
     }
     
     /**
-     * Method for sending a bad response.
+     * Sending a bad response with the 
      * @param message The identification request to respond to.
-     * @param cause The cause of the bad identification (e.g. which files are missing).
+     * @param cause The cause of the unsuccessful identification (e.g. which files are missing).
      */
-    private void respondMissingFileIdentification(IdentifyPillarsForGetFileIDsRequest message, String cause) {
-        // Create the response.
+    private void respondUnsuccessfulIdentification(IdentifyPillarsForGetFileIDsRequest message, 
+            IdentifyPillarsException cause) {
         IdentifyPillarsForGetFileIDsResponse reply = createIdentifyPillarsForGetFileIDsResponse(message);
         
-        // set the missing variables in the reply:
-        // TimeToDeliver, IdentifyResponseInfo
-        TimeMeasureTYPE timeToStartDeliver = new TimeMeasureTYPE();
-        timeToStartDeliver.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
-        timeToStartDeliver.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
-        reply.setTimeToDeliver(timeToStartDeliver);
+        reply.setIdentifyResponseInfo(cause.getResponseInfo());
         
-        IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-        irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FILE_NOT_FOUND.value().toString());
-        irInfo.setIdentifyResponseText(cause);
-        reply.setIdentifyResponseInfo(irInfo);
+        // Set to maximum time to indicate that it is a bad reply.
+        reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
         
-        // Send resulting file.
         messagebus.sendMessage(reply);
     }
     

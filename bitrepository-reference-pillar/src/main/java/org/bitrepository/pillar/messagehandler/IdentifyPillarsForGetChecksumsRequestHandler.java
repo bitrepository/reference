@@ -24,7 +24,6 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -35,15 +34,13 @@ import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
 import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.ReferenceArchive;
+import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.time.TimeMeasurementUtils;
-import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,63 +71,33 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
      */
     public void handleMessage(IdentifyPillarsForGetChecksumsRequest message) {
         try {
-            // Validate the message.
             validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
-
-            if(verifyChecksumFunction(message) && verifyFiles(message)) {
-                respondSuccesfullIdentification(message);
-            }
+            checkThatAllRequestedFilesAreAvailable(message);
+            checkThatTheChecksumFunctionIsAvailable(message);
+            respondSuccesfullIdentification(message);
         } catch (IllegalArgumentException e) {
-            // Only send this message if the alarm level is 'WARNING'.
-            if(settings.getCollectionSettings().getPillarSettings().getAlarmLevel() == AlarmLevel.WARNING) {
-                alarmDispatcher.alarmIllegalArgument(e);
-            } else {
-                log.warn("Caught illegal argument exception", e);
-            }
+            alarmDispatcher.handleIllegalArgumentException(e);
+        } catch (IdentifyPillarsException e) {
+            log.warn("Unsuccessfull identification for the GetChecksums operation.", e);
+            respondUnsuccessfulIdentification(message, e);
+        } catch (RuntimeException e) {
+            alarmDispatcher.handleRuntimeExceptions(e);
         }
     }
     
     /**
-     * Method for validating that it is possible to instantiate the requested checksum algorithm.
-     * If this is not the case, then a bad response message with the appropriate error is sent. 
-     * Though this is not a mandatory field for the identification message, thus this method returns true, 
-     * if the field or the algorithm is missing.
-     * 
-     * @param message The message with the checksum algorithm to validate.
-     * @return Whether it the algorithm can be instantiated.  
+     * Validates that all the requested files in the filelist are present. 
+     * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
+     * @param message The message containing the list files. An empty filelist is expected 
+     * when "AllFiles" or the parameter option is used.
      */
-    public boolean verifyChecksumFunction(IdentifyPillarsForGetChecksumsRequest message) {
-        ChecksumSpecTYPE checksumSpec = message.getFileChecksumSpec();
-        
-        // validate that this non-mandatory field has been filled out.
-        if(checksumSpec == null || checksumSpec.getChecksumType() == null) {
-            log.debug("No checksumSpec in the identification. Thus no reason to expect, that we cannot handle it.");
-            return true;
-        }
-        
-        try {
-            MessageDigest.getInstance(checksumSpec.getChecksumType());
-        } catch (NoSuchAlgorithmException e) {
-            log.warn("Could not instantiate the given messagedigester for calculating a checksum.", e);
-            respondNoSuchAlgorithm(message, "The algorithm '" + checksumSpec.getChecksumType() 
-                    + "' cannot be found. Exception: " + e.getLocalizedMessage());
-            return false;
-        }
-
-        return true;
-    }
-    
-    /**
-     * Method for validating that all the requested files in the filelist are present. 
-     * An empty filelist is expected when "AllFiles" or the parameter option is used.
-     * If this is not the case, then a bad response message with the appropriate error is sent. 
-     * @param message The message containing the list files.
-     * @return Whether all the files are present or not.
-     */
-    public boolean verifyFiles(IdentifyPillarsForGetChecksumsRequest message) {
+    public void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetChecksumsRequest message) {
         FileIDs fileids = message.getFileIDs();
-
-        // go through all the files and find any missing
+        if(fileids == null) {
+            log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
+            return;
+        }
+        
         List<String> missingFiles = new ArrayList<String>();
         for(String fileID : fileids.getFileID()) {
             if(!archive.hasFile(fileID)) {
@@ -138,14 +105,40 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
             }
         }
         
-        // if not missing, then all files have been found!
-        if(missingFiles.isEmpty()) {
-            return true;
+        // Throw exception if any files are missing.
+        if(!missingFiles.isEmpty()) {
+            IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
+            irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FILE_NOT_FOUND.value().toString());
+            irInfo.setIdentifyResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
+            
+            throw new IdentifyPillarsException(irInfo);
+        }
+    }
+    
+    /**
+     * Validates that it is possible to instantiate the requested checksum algorithm.
+     * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
+     * @param message The message with the checksum algorithm to validate.
+     */
+    public void checkThatTheChecksumFunctionIsAvailable(IdentifyPillarsForGetChecksumsRequest message) {
+        ChecksumSpecTYPE checksumSpec = message.getFileChecksumSpec();
+        
+        // validate that this non-mandatory field has been filled out.
+        if(checksumSpec == null || checksumSpec.getChecksumType() == null) {
+            log.debug("No checksumSpec in the identification. Thus no reason to expect, that we cannot handle it.");
+            return;
         }
         
-        // report on the missing files
-        respondMissingFileIdentification(message, missingFiles.size() + " missing files: '" + missingFiles + "'");
-        return false;
+        try {
+            MessageDigest.getInstance(checksumSpec.getChecksumType());
+        } catch (NoSuchAlgorithmException e) {
+            log.warn("Could not instantiate the given messagedigester for calculating a checksum.", e);
+            IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
+            irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FAILURE.value().toString());
+            irInfo.setIdentifyResponseText("The algorithm '" + checksumSpec.getChecksumType() 
+                    + "' cannot be found. Exception: " + e.getLocalizedMessage());
+            throw new IdentifyPillarsException(irInfo);
+        }
     }
     
     /**
@@ -172,55 +165,17 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     }
     
     /**
-     * Method for sending a bad response.
+     * Sends a bad response with the given cause.
      * @param message The identification request to respond to.
      * @param cause The cause of the bad identification (e.g. which files are missing).
      */
-    private void respondMissingFileIdentification(IdentifyPillarsForGetChecksumsRequest message, String cause) {
-        // Create the response.
+    private void respondUnsuccessfulIdentification(IdentifyPillarsForGetChecksumsRequest message, 
+            IdentifyPillarsException cause) {
         IdentifyPillarsForGetChecksumsResponse reply = createIdentifyPillarsForGetChecksumsResponse(message);
         
-        // set the missing variables in the reply:
-        // TimeToDeliver, AuditTrailInformation, IdentifyResponseInfo
-        TimeMeasureTYPE timeToStartDeliver = new TimeMeasureTYPE();
-        timeToStartDeliver.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
-        timeToStartDeliver.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
-        reply.setTimeToDeliver(timeToStartDeliver);
-        reply.setAuditTrailInformation(null);
+        reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
+        reply.setIdentifyResponseInfo(cause.getResponseInfo());
         
-        IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-        irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FILE_NOT_FOUND.value().toString());
-        irInfo.setIdentifyResponseText(cause);
-        reply.setIdentifyResponseInfo(irInfo);
-        
-        // Send resulting file.
-        messagebus.sendMessage(reply);
-    }
-    
-    /**
-     * Method for sending a bad response in the case of a unknown algorithm.
-     * @param message The message to respond to.
-     * @param cause The cause of the 'no such algorithm'.
-     */
-    private void respondNoSuchAlgorithm(IdentifyPillarsForGetChecksumsRequest message, String cause) {
-        // Create the response.
-        IdentifyPillarsForGetChecksumsResponse reply = createIdentifyPillarsForGetChecksumsResponse(message);
-        
-        // set the missing variables in the reply:
-        // TimeToDeliver, AuditTrailInformation, IdentifyResponseInfo
-        TimeMeasureTYPE timeToStartDeliver = new TimeMeasureTYPE();
-        timeToStartDeliver.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
-        timeToStartDeliver.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
-        reply.setTimeToDeliver(timeToStartDeliver);
-        reply.setAuditTrailInformation(null);
-        
-        IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-        // TODO make an errorcode for the 'NoSuchAlgorithm'?
-        irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FAILURE.value().toString());
-        irInfo.setIdentifyResponseText(cause);
-        reply.setIdentifyResponseInfo(irInfo);
-        
-        // Send resulting file.
         messagebus.sendMessage(reply);
     }
     

@@ -26,10 +26,12 @@ package org.bitrepository.pillar.messagehandler;
 
 import java.math.BigInteger;
 
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.time.TimeMeasurementUtils;
 
 /**
  * Abstract level for message handling. 

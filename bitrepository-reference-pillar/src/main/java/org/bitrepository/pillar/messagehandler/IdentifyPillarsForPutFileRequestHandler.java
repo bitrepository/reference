@@ -29,15 +29,13 @@ import java.math.BigInteger;
 import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
 import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.ReferenceArchive;
+import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.time.TimeMeasurementUtils;
-import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,76 +65,79 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
      */
     public void handleMessage(IdentifyPillarsForPutFileRequest message) {
         try {
-            // validate message
             validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
-
-            if(message.getFileID() != null && archive.hasFile(message.getFileID())) {
-                sendDuplicateFileResponse(message);
-            } else if(message.getFileSize() != null 
-                    && (archive.sizeLeftInArchive() > message.getFileSize().longValue())) {
-                // TODO perhaps have a minimum size added?
-                sendNotEnoughSpaceResponse(message);
-            } else {
-                sendPositiveResponse(message);
-            }
+            checkThatTheFileDoesNotAlreadyExist(message);
+            checkSpaceForStoringNewFile(message);
+            respondSuccesfullIdentification(message);
         } catch (IllegalArgumentException e) {
-            if(settings.getCollectionSettings().getPillarSettings().getAlarmLevel() == AlarmLevel.WARNING) {
-                alarmDispatcher.alarmIllegalArgument(e);
-            } else {
-                log.warn("Caught IllegalArgumentException", e);
-            }
+            alarmDispatcher.handleIllegalArgumentException(e);
+        } catch (IdentifyPillarsException e) {
+            log.warn("Unsuccessfull identification for the GetChecksums operation.", e);
+            respondUnsuccessfulIdentification(message, e);
+        } catch (RuntimeException e) {
+            alarmDispatcher.handleRuntimeExceptions(e);
+        }
+    }
+    
+    /**
+     * Validates that the file is not already within the archive. 
+     * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
+     * @param message The request with the filename to validate.
+     */
+    private void checkThatTheFileDoesNotAlreadyExist(IdentifyPillarsForPutFileRequest message) {
+        if(message.getFileID() == null) {
+            log.debug("No fileid given in the identification request.");
+            return;
+        }
+        
+        if(archive.hasFile(message.getFileID())) {
+            IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
+            irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.DUPLICATE_FILE.value().toString());
+            irInfo.setIdentifyResponseText("The file '" + message.getFileID() 
+                    + "' already exists within the archive.");
+            
+            throw new IdentifyPillarsException(irInfo);
+        }
+    }
+    
+    /**
+     * Validates that enough space exists is left in the archive.
+     * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
+     * @param message The request with the size of the file.
+     */
+    private void checkSpaceForStoringNewFile(IdentifyPillarsForPutFileRequest message) {
+        BigInteger fileSize = message.getFileSize();
+        if(fileSize == null) {
+            log.debug("No file size given in the identification request. "
+                    + "Validating that the archive has any space left.");
+            fileSize = BigInteger.ZERO;
+        }
+        
+        long useableSizeLeft = archive.sizeLeftInArchive() 
+                - settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
+        if(useableSizeLeft < fileSize.longValue()) {
+            IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
+            irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FAILURE.value().toString());
+            irInfo.setIdentifyResponseText("Not enough space left in this pillar. Requires '" 
+                    + fileSize.longValue() + "' but has only '" + useableSizeLeft + "'");
+            
+            throw new IdentifyPillarsException(irInfo);
         }
     }
     
     /**
      * Sending a response telling, that the file is already in the archive.
      * @param message The message requesting the identification of the operation.
+     * @param cause The cause of the bad identification (e.g. that the file already exists).
      */
-    protected void sendDuplicateFileResponse(IdentifyPillarsForPutFileRequest message) {
+    protected void respondUnsuccessfulIdentification(IdentifyPillarsForPutFileRequest message,
+            IdentifyPillarsException cause) {
         log.info("Creating 'duplicate file' reply for '" + message + "'");
         IdentifyPillarsForPutFileResponse reply = createIdentifyPillarsForPutFileResponse(message);
-
-        // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
-        reply.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
-        TimeMeasureTYPE timeToStartDeliver = new TimeMeasureTYPE();
-        timeToStartDeliver.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
-        timeToStartDeliver.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
-        reply.setTimeToDeliver(timeToStartDeliver);
-        reply.setAuditTrailInformation(null);
-        reply.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
         
-        IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-        irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.DUPLICATE_FILE.value().toString());
-        irInfo.setIdentifyResponseText("The file is already in the archive.");
-        reply.setIdentifyResponseInfo(irInfo);
-
-        log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
-        messagebus.sendMessage(reply);
-    }
-    
-    /**
-     * Sending a response telling, that there is not enough space in the archive.
-     * @param message The message requesting the identification of the operation.
-     */
-    protected void sendNotEnoughSpaceResponse(IdentifyPillarsForPutFileRequest message) {
-        log.info("Creating 'not enough space' reply for '" + message + "'");
-        IdentifyPillarsForPutFileResponse reply = createIdentifyPillarsForPutFileResponse(message);
-
-        // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
-        reply.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
-        TimeMeasureTYPE timeToStartDeliver = new TimeMeasureTYPE();
-        timeToStartDeliver.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
-        timeToStartDeliver.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
-        reply.setTimeToDeliver(timeToStartDeliver);
-        reply.setAuditTrailInformation(null);
-        reply.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
+        reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
+        reply.setIdentifyResponseInfo(cause.getResponseInfo());
         
-        IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-        irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FAILURE.value().toString());
-        irInfo.setIdentifyResponseText("Not enough space left in this pillar.");
-        reply.setIdentifyResponseInfo(irInfo);
-
-        log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
         messagebus.sendMessage(reply);
     }
     
@@ -144,7 +145,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
      * Method for sending a positive response for putting this file.
      * @param message The message to respond to.
      */
-    protected void sendPositiveResponse(IdentifyPillarsForPutFileRequest message)  {
+    protected void respondSuccesfullIdentification(IdentifyPillarsForPutFileRequest message)  {
         log.info("Creating positive reply for '" + message + "'");
         IdentifyPillarsForPutFileResponse reply = createIdentifyPillarsForPutFileResponse(message);
 

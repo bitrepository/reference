@@ -45,4 +45,15 @@ public class TimeMeasurementUtils {
         timeMeasure.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
         return timeMeasure; 
     }
+    
+    /**
+     * Method for getting the maximum time. Uses the maximum value of Long and puts it in HOURS.
+     * @return The TimeMeasure for the maximum time.
+     */
+    public static TimeMeasureTYPE getMaximumTime() {
+        TimeMeasureTYPE timeMeasure = new TimeMeasureTYPE();
+        timeMeasure.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
+        timeMeasure.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
+        return timeMeasure; 
+    }
 }
