@@ -24,12 +24,43 @@
  */
 package org.bitrepository.protocol;
 
+import java.io.IOException;
+import java.util.Properties;
+
 /** Defines the constants for this code base. */
 public class ProtocolConstants {
     /** Protocol version used. */
     public static final long PROTOCOL_VERSION = 1L;
     /** Protocol minimum version used. */
     public static final long PROTOCOL_MIN_VERSION = 1L;
+    
+    public static String getProtocolVersion() {
+    	Properties properties = new Properties();
+    	String version = null;
+    	try {
+            properties.load(Thread.currentThread().getContextClassLoader()
+                                    .getResourceAsStream("protocol_version.properties"));
+            
+            version = properties.getProperty("org.bitrepository.protocol.version");
+        } catch (IOException e) {
+        	//Will just result in a null being returned, should be sufficient to indicate an error
+        }
+        return version;
+    }
+    
+    public static String getProtocolMinVersion() {
+    	Properties properties = new Properties();
+    	String version = null;
+    	try {
+            properties.load(Thread.currentThread().getContextClassLoader()
+                                    .getResourceAsStream("protocol_version.properties"));
+            
+            version = properties.getProperty("org.bitrepository.protocol.min_version");
+        } catch (IOException e) {
+        	//Will just result in a null being returned, should be sufficient to indicate an error
+        }
+        return version;
+    }
 
     /** Hides the constructor, preventing instantiation */
     private ProtocolConstants() {}

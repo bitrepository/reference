@@ -43,6 +43,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
   <build>
     <plugins>
       <plugin>
@@ -136,6 +137,10 @@
       </plugin>
     </plugins>
     <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
       <resource>
         <directory>src/main/resources/configurations/xml</directory>
       </resource>
