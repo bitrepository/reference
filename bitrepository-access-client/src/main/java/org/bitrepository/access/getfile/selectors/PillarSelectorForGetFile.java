@@ -93,10 +93,18 @@ public abstract class PillarSelectorForGetFile {
         }
     }
     
+    /** 
+     * @return The pillar selected for the GetFile request
+     */
     public SelectedPillarForGetFileInfo getSelectedPillar() {
         return selectedPillar;
     }
 
+    /**
+     * 
+     * @return Subclass needs to implement this, so the conversation might check if it has reached a finished state.
+     * @throws UnableToFinishException A state has been reached where the operation can't be finished.
+     */
     public abstract boolean isFinished() throws UnableToFinishException;
 
 }

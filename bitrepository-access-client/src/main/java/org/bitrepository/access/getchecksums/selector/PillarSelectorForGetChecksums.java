@@ -48,13 +48,10 @@ import org.slf4j.LoggerFactory;
  * Class for selecting pillars for the GetChecksums operation.
  */
 public class PillarSelectorForGetChecksums {
+    /** Used for tracking who has answered. */
     private final PillarsResponseStatus responseStatus;
+    /** The pillars which have been selected for a checksums request. */
     private final List<SelectedPillarInfo> selectedPillars = new LinkedList<SelectedPillarInfo>(); 
-
-    /** The id for the pillar to select.*/
-    //private List<String> outstandingPillarsToSelect = new ArrayList<String>();
-    /** The map between the IDs of the selected pillars and their destination. */
-    //private Map<String, String> selectedPillars = new HashMap<String, String>();
 
     /**
      * Constructor.
@@ -69,7 +66,6 @@ public class PillarSelectorForGetChecksums {
      * Method for processing a IdentifyPillarsForGetChecksumsResponse. Checks whether the response is from the wanted
      * expected pillar.
      * @param response The response identifying a pillar for the GetChecksums operation.
-     * @return 
      */
     public void processResponse(IdentifyPillarsForGetChecksumsResponse response) 
             throws UnexpectedResponseException, NegativeResponseException {

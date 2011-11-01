@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * This class is just a thin wrapper which creates a conversion each time a operation is started. The conversations 
  * takes over the rest of the operation handling.
  */
-public class BasicGetFileClient implements GetFileClient {
+public class CollectionBasedGetFileClient implements GetFileClient {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -67,7 +67,7 @@ public class BasicGetFileClient implements GetFileClient {
      * @param messageBus The message bus to use.
      * @param settings The settings to use.
      */
-    public BasicGetFileClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings) {
+    public CollectionBasedGetFileClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings) {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         this.settings = settings;

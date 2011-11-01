@@ -30,11 +30,12 @@ import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 /**
 * Contains the result of a checksum request sent to a single pillar.
 */
-public class ChecksumsCompletePillarEvent extends PillarOperationEvent{
+public class ChecksumsCompletePillarEvent extends PillarOperationEvent {
+    /** @see #getChecksums(). */
     private final ResultingChecksums result;
     
     /**
-     * @param result The result returned by the pilalr.
+     * @param result The result returned by the pillar.
      * @param pillarID The pillar which generated the result
      * @param info Additional information.
      */
@@ -43,7 +44,10 @@ public class ChecksumsCompletePillarEvent extends PillarOperationEvent{
         this.result = result;
     }
 
-    public Object getChecksums() {
+    /** 
+     * @return The checksum result from a single pillar. 
+     */
+    public ResultingChecksums getChecksums() {
         return result;
     }
 }

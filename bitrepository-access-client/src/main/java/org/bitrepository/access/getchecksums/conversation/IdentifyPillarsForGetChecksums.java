@@ -96,7 +96,7 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
         } catch (UnexpectedResponseException e) {
             monitor.pillarFailed("Unable to handle IdentifyPillarsForGetChecksumsResponse, ", e);
         } catch (NegativeResponseException e) {
-            monitor.pillarFailed("Negativ response from pillar " + response.getPillarID(), e);
+            monitor.pillarFailed("Negativ IdentifyPillarsForGetChecksumsResponse from pillar " + response.getPillarID(), e);
         }
         if (conversation.selector.isFinished()) {
             identifyTimeoutTask.cancel();

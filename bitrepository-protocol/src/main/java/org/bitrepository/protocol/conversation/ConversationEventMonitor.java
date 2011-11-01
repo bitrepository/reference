@@ -244,18 +244,22 @@ public class ConversationEventMonitor {
             this.conversationID = conversationID;
         }
 
+        /** Delegates to the normal logger debug */
         public void debug(String info) {
             logger.debug("Conversation(" + conversationID + " ) event:" +info);
         }
 
+        /** Delegates to the normal logger info */
         public void info(String info) {
             logger.info("Conversation(" + conversationID + " ) event:" +info);
         }
-        
+
+        /** Delegates to the normal logger warn */
         public void warn(String info, Throwable e) {
             logger.warn("Conversation(" + conversationID + " ) event:" +info, e);
         }
-        
+
+        /** Delegates to the normal logger warn */
         public void warn(String info) {
             logger.warn("Conversation(" + conversationID + " ) event:" +info);
         }

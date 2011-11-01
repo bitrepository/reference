@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * This class is just a thin wrapper which creates a conversion each time a operation is started. The conversations 
  * takes over the rest of the operation handling.
  */
-public class BasicGetChecksumsClient implements GetChecksumsClient {
+public class CollectionBasedGetChecksumsClient implements GetChecksumsClient {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -70,7 +70,7 @@ public class BasicGetChecksumsClient implements GetChecksumsClient {
      * @param conversationMediator2 
      * @param settings The settings for this instance.
      */
-    public BasicGetChecksumsClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings) {
+    public CollectionBasedGetChecksumsClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings) {
         this.bus = messageBus;
         this.settings = settings;
         this.conversationMediator = conversationMediator;

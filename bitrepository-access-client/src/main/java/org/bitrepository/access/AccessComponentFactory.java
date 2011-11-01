@@ -24,9 +24,9 @@
  */
 package org.bitrepository.access;
 
-import org.bitrepository.access.getchecksums.BasicGetChecksumsClient;
+import org.bitrepository.access.getchecksums.CollectionBasedGetChecksumsClient;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
-import org.bitrepository.access.getfile.BasicGetFileClient;
+import org.bitrepository.access.getfile.CollectionBasedGetFileClient;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfileids.ConversationBasedGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
@@ -82,7 +82,7 @@ public class AccessComponentFactory {
      * @return A GetFileClient.
      */
     public GetFileClient createGetFileClient(Settings settings) {
-        return new BasicGetFileClient(
+        return new CollectionBasedGetFileClient(
                 ProtocolComponentFactory.getInstance().getMessageBus(settings), 
                 ConversationMediatorManager.getConversationMediator(settings), 
                 settings);
@@ -94,7 +94,7 @@ public class AccessComponentFactory {
      * @return The GetChecksumsClient
      */
     public GetChecksumsClient createGetChecksumsClient(Settings settings) {
-        return new BasicGetChecksumsClient(
+        return new CollectionBasedGetChecksumsClient(
                 ProtocolComponentFactory.getInstance().getMessageBus(settings), 
                 ConversationMediatorManager.getConversationMediator(settings),
                 settings);
