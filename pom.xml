@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.sbforge</groupId>
     <artifactId>sbforge-parent</artifactId>
-    <version>9</version>
+    <version>10</version>
   </parent>
 
   <name>Bitrepository</name>
@@ -25,7 +25,6 @@
     <module>bitrepository-alarm-service</module>
     <module>bitrepository-monitoring-service</module>
     <module>bitrepository-integration</module>
-    <module>bitrepository-reference-pillar</module>
   </modules>
 
   <repositories>
@@ -45,27 +44,26 @@
     <developer>
       <name>Mikis Seth Sørensen</name>
       <email>mss@statsbiblioteket.dk</email>
+      <organization>The Danish State and University Library</organization>
+      <organizationUrl>http://en.statsbiblioteket.dk</organizationUrl>
       <roles>
         <role>Project Manager</role>
       </roles>
     </developer>
     <developer>
+      <name>Kim Teglgaard Christensen   </name>
+      <email>ktc@statsbiblioteket.dk</email>
+      <organization>The Danish State and University Library</organization>
+      <organizationUrl>http://en.statsbiblioteket.dk</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
       <name>Kåre Fiedler Christiansen</name>
       <email>kfc@statsbiblioteket.dk</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Bolette Ammitzbøll Jurik</name>
-      <email>bam@statsbiblioteket.dk</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Eld Zierau</name>
-      <email>elzi@kb.dk</email>
+      <organization>The Danish State and University Library</organization>
+      <organizationUrl>http://en.statsbiblioteket.dk</organizationUrl>
       <roles>
         <role>Developer</role>
       </roles>
@@ -73,6 +71,8 @@
     <developer>
       <name>Jonas Lindberg Frellesen</name>
       <email>jolf@kb.dk</email>
+      <organization>kb</organization>
+      <organizationUrl>http://kb.dk</organizationUrl>
       <roles>
         <role>Developer</role>
       </roles>
@@ -80,6 +80,8 @@
     <developer>
       <name>Christian Vandel</name>
       <email>csv@kb.dk</email>
+      <organization>kb</organization>
+      <organizationUrl>http://kb.dk</organizationUrl>
       <roles>
         <role>Developer</role>
       </roles>
@@ -106,6 +108,14 @@
     <url>https://sbforge.org/jenkins/</url>
   </ciManagement>
 
+        <distributionManagement>
+  <site>
+      <id>sbforge-nexus</id>
+      <name>SBForge Maven site</name>
+      <url>${project.site.location}</url>
+    </site>
+    </distributionManagement>
+
   <description>The Bitrepository system enables longterm preservation of data in a distributed, highly redundant 
   architecture. The data integrity is ensured by using multiple, independently developed data storage systems (﻿Pillars) 
   across different organizations, together with functionality for maintaining the ﻿integrity of the data over time. 
@@ -122,13 +132,6 @@
     <connection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk</connection>
     <developerConnection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk</developerConnection>
   </scm>
-
-  <distributionManagement>
-    <site>
-      <id>sbforge-nexus</id>
-      <url>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</url>
-    </site>
-  </distributionManagement>
 
   <dependencies>
     <dependency>
@@ -350,8 +353,8 @@
   </reporting>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <message.xml.version>0.3.3-SNAPSHOT</message.xml.version>
     <collection.settings.version>0.3.0</collection.settings.version>
+    <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
   </properties>
 </project>
