@@ -108,13 +108,13 @@
     <url>https://sbforge.org/jenkins/</url>
   </ciManagement>
 
-        <distributionManagement>
-  <site>
+  <distributionManagement>
+    <site>
       <id>sbforge-nexus</id>
       <name>SBForge Maven site</name>
-      <url>${project.site.location}</url>
+      <url>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</url>
     </site>
-    </distributionManagement>
+  </distributionManagement>
 
   <description>The Bitrepository system enables longterm preservation of data in a distributed, highly redundant 
   architecture. The data integrity is ensured by using multiple, independently developed data storage systems (﻿Pillars) 
