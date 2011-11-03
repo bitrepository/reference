@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.bitrepository</groupId>
     <artifactId>bitrepository</artifactId>
-    <version>0.3</version>
+    <version>0.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>bitrepository-integration</artifactId>
@@ -26,44 +26,44 @@
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-protocol</artifactId>
-      <version>0.3</version>
+      <version>0.4-SNAPSHOT</version>
     </dependency>
     <!-- THE TEST SCOPE -->
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-access-client</artifactId>
-      <version>0.3</version>
+      <version>0.4-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-modifying-client</artifactId>
-      <version>0.3</version>
+      <version>0.4-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-common</artifactId>
-      <version>0.3</version>
+      <version>0.4-SNAPSHOT</version>
       <type>test-jar</type>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-protocol</artifactId>
-      <version>0.3</version>
+      <version>0.4-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-access-client</artifactId>
-      <version>0.3</version>
+      <version>0.4-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-modifying-client</artifactId>
-      <version>0.3</version>
+      <version>0.4-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
