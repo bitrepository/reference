@@ -49,4 +49,9 @@ public class PillarOperationEvent extends AbstractOperationEvent<String> {
     public String getState() {
         return pillarID;
     }
+    
+    @Override
+    public String toString() {
+        return "PillarOperationEvent for pillar '" + pillarID + "': " + getInfo();
+    }
 }
