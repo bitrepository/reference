@@ -4,7 +4,7 @@
   <parent>
     <artifactId>bitrepository</artifactId>
     <groupId>org.bitrepository</groupId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
   </parent>
   <artifactId>bitrepository-common</artifactId>
   <name>Bitrepository Common</name>
