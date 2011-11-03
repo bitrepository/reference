@@ -101,6 +101,10 @@ var auto_refresh = setInterval(
                         <td>FileIDs:&nbsp; &nbsp;</td>
                         <td><textarea name="fileIDs" id="getFileIDs" cols="20" rows="10"></textarea></td>
                     </tr>
+                    <tr>
+                    	<td></td>
+                    	<td><input type="checkbox" name="allFileIDs" value="All fileIDs" /> Get all fileIDs</td>
+                    </tr>
                 </table> 
                 <input type="submit" />
                 </div>
@@ -203,13 +207,19 @@ var auto_refresh = setInterval(
 	<script>
     	$("#getFileIDsForm").submit(function() {
 	        var fileIDs = escape(document.getElementById('getFileIDs').value);
+	        var allFileIDs = $('input[name=allFileIDs]').is(':checked');
+	        var setAllFileIDs = "false";
 	        
-	        if (fileIDs == "") {
-	            $('#messagediv').html("<p2>List of fileIDs empty!</p2>").show().fadeOut(5000);
-	            return false;
+	        if(allFileIDs) {
+	        	setAllFileIDs = "true"
+	        } else {
+	        	if (fileIDs == "") {
+		            $('#messagediv').html("<p2>List of fileIDs empty!</p2>").show().fadeOut(5000);
+		            return false;
+		        }
 	        }
-	
-	        var command = "repo/reposervice/getFileIDsHtml/?fileIDs=" + fileIDs;
+	     
+	        var command = "repo/reposervice/getFileIDsHtml/?fileIDs=" + fileIDs + "&allFileIDs=" + setAllFileIDs;
 	    	var windowName = "";
 	    	var windowSize = "width=600,height=400,scrollbars=yes";
 	

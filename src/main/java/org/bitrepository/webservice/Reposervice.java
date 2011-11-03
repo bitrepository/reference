@@ -158,8 +158,10 @@ public class Reposervice {
     @GET
     @Path("getFileIDsHtml")
     @Produces("text/html")
-    public String getFileIDsHtml(@QueryParam("fileIDs") String fileIDs) {
-    	GetFileIDsResults results = client.getFileIDs(fileIDs);
+    public String getFileIDsHtml(
+    		@QueryParam("fileIDs") String fileIDs,
+    		@QueryParam("allFileIDs") boolean allFileIDs) {
+    	GetFileIDsResults results = client.getFileIDs(fileIDs, allFileIDs);
     	StringBuilder sb = new StringBuilder();
     	sb.append("<html><head><style> #good{background-color:#31B404;} #bad{background-color:#B40404;} " +
     			"td{padding: 5px;}</style></head><body>"); 

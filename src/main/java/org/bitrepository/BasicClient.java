@@ -196,15 +196,19 @@ public class BasicClient {
     	return result;
     }
     
-    public GetFileIDsResults getFileIDs(String fileIDsText) {
+    public GetFileIDsResults getFileIDs(String fileIDsText, boolean allFileIDs) {
     	GetFileIDsResults results = new GetFileIDsResults(
     			settings.getCollectionSettings().getClientSettings().getPillarIDs());
     	GetFileIDsEventHandler handler = new GetFileIDsEventHandler(results, eventHandler);
-    	
-    	String[] IDs = fileIDsText.split("\n");
     	FileIDs fileIDs = new FileIDs();
-    	for(String ID : IDs) {
-    		fileIDs.getFileID().add(ID.trim());	
+    	
+    	if(allFileIDs) {
+    		fileIDs.setAllFileIDs(allFileIDs);
+    	} else {
+    	String[] IDs = fileIDsText.split("\n");
+	    	for(String ID : IDs) {
+	    		fileIDs.getFileID().add(ID.trim());	
+	    	}
     	}
     	try {
 			getFileIDsClient.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
