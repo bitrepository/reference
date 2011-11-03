@@ -38,6 +38,14 @@
       <jaxb:typesafeEnumClass name="AlarmcodeType">
         <jaxb:typesafeEnumMember value="541" name="GENERAL" />
         <jaxb:typesafeEnumMember value="542" name="UNKNOWN_USER" />
+        <jaxb:typesafeEnumMember value="700" name="COMPONENT_FAILURE" />
+        <jaxb:typesafeEnumMember value="701" name="INCONSISTENT_REQUEST" />
+        <jaxb:typesafeEnumMember value="702" name="CHECKSUM" />
+        <jaxb:typesafeEnumMember value="703" name="FAILED_TRANSFER" />
+        <jaxb:typesafeEnumMember value="704" name="FAILED_OPERATION" />
+        <jaxb:typesafeEnumMember value="705" name="INVALID_MESSAGE" />
+        <jaxb:typesafeEnumMember value="706" name="INVALID_MESSAGE_VERSION" />
+        <jaxb:typesafeEnumMember value="707" name="TIMEOUT" />
       </jaxb:typesafeEnumClass>
     </jaxb:bindings>
 
