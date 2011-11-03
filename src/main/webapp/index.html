@@ -1,0 +1,224 @@
+<html>
+
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+
+<head>
+  <style>
+  p { margin:0; color:blue; }
+  #settingsdiv { position:fixed; top:10px; right:20px;}
+  p2 {margin:0; color:red;}
+  div,p { margin-left:10px; }
+  span { color:red; }
+  </style>
+</head>
+
+<script>
+var auto_refresh = setInterval(
+	    function() {
+	    	$('#logdiv').load('repo/reposervice/getShortHtmlLog/').fadeIn("slow");
+	    	}, 2500);
+</script> 
+
+
+
+<body>
+<table>
+    <tr valign="top">
+        <td>
+            <form id="getFileForm" action="javascript:submit()">
+                <div>
+                <p><b>Get file</b></p>
+                <table border="0">
+                    <tr>
+                        <td>Filename:</td>
+                        <td><input type="text" name="filename" id="getFilename"/></td>
+                    </tr>
+                    <tr>
+                        <td>Fileaddress:</td>
+                        <td> <input type="text" name="fileaddr" id="getFileaddr" value="http://sandkasse-01.kb.dk/dav/"/></td>
+                    </tr>
+                </table> 
+                <input type="submit" />
+                </div>
+            </form></td>
+        <td>&nbsp; &nbsp; &nbsp;</td>
+        <td>
+            <form id="putFileForm" action="javascript:submit()">
+                <div>
+                <p><b>Put file</b></p>
+                <table border="0">
+                    <tr>
+                        <td>Filename:</td>
+                        <td><input type="text" name="filename" id="putFilename"/></td>
+                    </tr>
+                    <tr>
+                        <td>Fileaddress:</td>
+                        <td> <input type="text" name="fileaddr" id="putFileaddr" value="http://sandkasse-01.kb.dk/dav/"/></td>
+                    </tr>
+                    <tr>
+                        <td>Filesize:</td>
+                        <td> <input type="text" name="fileaddr" id="putFilesize"/></td>
+                    </tr>
+                </table> 
+                <input type="submit" />
+                </div>
+            </form>
+        </td>
+        <td>
+            <form id="getChecksumsForm" action="javascript:submit()">
+                <div>
+                <p><b>Get checksums</b></p>
+                <table border="0">
+                    <tr valign="top">
+                        <td>FileIDs:</td>
+                        <td><textarea name="fileIDs" id="getChecksumFileIDs" cols="20" rows="10"></textarea></td>
+                    </tr>
+                    <tr valign="top">
+                        <td>Checksum type:</td>
+                        <td> 
+							<input type="radio" name="checksumType" id="md5ChecksumType" value="md5" checked="yes"/> md5 
+							<input type="radio" name="checksumType" id="sha1ChecksumType" value="sha1"/> sha1
+							<!-- <input type="radio" name="checksumtype" id="getChecksumType" value="md5" checked="yes"/> md5 --> 
+							<!--<input type="radio" name="checksumtype" id="getChecksumType" value="sha1"/> sha1-->
+						</td>
+        			</tr>
+					<tr>
+                        <td>Salt (optional):</td>
+                        <td><input type="text" name="salt" id="getChecksumSalt"/></td>
+                    </tr>
+                </table> 
+                <input type="submit" />
+                </div>
+            </form>
+		</td>
+		<td>&nbsp; &nbsp; &nbsp;</td>
+		<td>
+            <form id="getFileIDsForm" action="javascript:submit()">
+                <div>
+                <p><b>Get FileIDs</b></p>
+                <table border="0">
+                    <tr valign="top">
+                        <td>FileIDs:&nbsp; &nbsp;</td>
+                        <td><textarea name="fileIDs" id="getFileIDs" cols="20" rows="10"></textarea></td>
+                    </tr>
+                </table> 
+                <input type="submit" />
+                </div>
+            </form>
+		</td>
+    </tr>
+    
+    <div id="settingsdiv"> 
+        <p><b> Collection summary: <br></b></p>
+        <div id="settingscontent"></div>
+    </div>
+</table>
+    <div id="messagediv"></div>
+  <hr>   
+  <div id="logdiv"></div>
+  <a href="repo/reposervice/getHtmlLog/"> Get full log</a> 
+  <span></span>
+  
+  	<script>
+    	$('#settingscontent').load('repo/reposervice/getSettingsSummary/').show();
+  	</script>
+  
+  	<script>
+  		function submit() { return ; }
+  	</script>
+  
+  	<script>
+	    $("#getFileForm").submit(function() {
+	        var fileName = $("#getFilename").val();
+	        var fileAddr = $("#getFileaddr").val();
+	
+	
+	        if (fileName == "") {
+	            $('#messagediv').html("<p2>Invalid filename!</p2>").show().fadeOut(5000);
+	            return false;
+	        }
+	        if (fileAddr == "") {
+	            $('#messagediv').html("<p2>Invalid address!</p2>").show().fadeOut(5000);
+	            return false;
+	        }
+	    var command = "repo/reposervice/getfile/?fileID=" + fileName + "&url=" + fileAddr;
+	    $('#messagediv').load(command).show().fadeOut(5000);
+	    return true;
+	    });
+	</script>
+
+  	<script>
+    	$("#putFileForm").submit(function() {
+	        var fileName = $("#putFilename").val();
+	        var fileAddr = $("#putFileaddr").val();
+	        var fileSize = $("#putFilesize").val();
+
+	
+	        if (fileName == "") {
+	            $('#messagediv').html("<p2>Invalid filename!</p2>").show().fadeOut(5000);
+	            return false;
+	        }
+	        if (fileAddr == "") {
+	            $('#messagediv').html("<p2>Invalid address!</p2>").show().fadeOut(5000);
+	            return false;
+	        }
+	        if(fileSize == "") {
+	        	$('#messagediv').html("<p2>Invalid filesize!</p2>").show().fadeOut(5000);
+	            return false;
+	        }
+	    	var command = "repo/reposervice/putfile/?fileID=" + fileName + "&url=" + fileAddr +"&fileSize="+ fileSize;
+	    	$('#messagediv').load(command).show().fadeOut(5000);
+	    	return true;
+	    });
+	</script>
+	
+	<script>
+   		$("#getChecksumsForm").submit(function() {
+	        var fileIDs = escape(document.getElementById('getChecksumFileIDs').value);
+	        var checksumType = $('input[name=checksumType]:checked', '#getChecksumsForm').val();
+
+	        var salt = $("#getChecksumSalt").val();
+	
+	
+	        if (fileIDs == "") {
+	            $('#messagediv').html("<p2>List of fileIDs empty!</p2>").show().fadeOut(5000);
+	            return false;
+	        }
+	        if (checksumType == "") {
+	            $('#messagediv').html("<p2>Invalid checksumtype!</p2>").show().fadeOut(5000);
+	            return false;
+	        }
+
+		    var command = "repo/reposervice/getChecksumsHtml/?fileIDs=" + fileIDs + "&checksumType=" + checksumType +"&salt="+ salt;
+		    var windowName = "";
+		    var windowSize = "width=600,height=400,scrollbars=yes";
+		
+		    window.open(command, windowName, windowSize);
+		    event.preventDefault();
+			$('#messagediv').html("<p>Requesting checksums!</p>").show().fadeOut(5000);
+		    return true;
+   		});
+	</script>
+	
+	<script>
+    	$("#getFileIDsForm").submit(function() {
+	        var fileIDs = escape(document.getElementById('getFileIDs').value);
+	        
+	        if (fileIDs == "") {
+	            $('#messagediv').html("<p2>List of fileIDs empty!</p2>").show().fadeOut(5000);
+	            return false;
+	        }
+	
+	        var command = "repo/reposervice/getFileIDsHtml/?fileIDs=" + fileIDs;
+	    	var windowName = "";
+	    	var windowSize = "width=600,height=400,scrollbars=yes";
+	
+	    	window.open(command, windowName, windowSize);
+	    	event.preventDefault();
+			$('#messagediv').html("<p>Requesting fileIDs!</p>").show().fadeOut(5000);
+	    	return true;
+	    });
+	</script>
+
+</body>
+</html>
