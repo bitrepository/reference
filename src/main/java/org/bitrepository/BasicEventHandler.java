@@ -39,7 +39,7 @@ public class BasicEventHandler implements EventHandler {
         BufferedWriter out;
         String timestamp = DateFormat.getDateTimeInstance().format(new Date());
         try {
-        	String logEntry = "[" + timestamp + "] (" + event.getType().toString() + ") " + event.getInfo() + "\n";
+        	String logEntry = "[" + timestamp + "] " + event.toString() + "\n";
             out = new BufferedWriter(new FileWriter(logFile, true));
             out.write(logEntry);
             out.flush();
