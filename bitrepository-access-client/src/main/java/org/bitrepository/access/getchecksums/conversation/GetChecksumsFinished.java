@@ -24,11 +24,14 @@
  */
 package org.bitrepository.access.getchecksums.conversation;
 
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
+
 /**
  * State for telling, that the conversation has finished.
  */
 public class GetChecksumsFinished extends GetChecksumsState {
-
     /**
      * Constructor.
      * @param conversation The conversation which has reached this finished state.
@@ -37,6 +40,24 @@ public class GetChecksumsFinished extends GetChecksumsState {
         super(conversation);
     }
 
+    @Override
+    public void onMessage(IdentifyPillarsForGetChecksumsResponse response) {
+        monitor.outOfSequenceMessage("Received " + response.getClass().getName() + " from " + response.getPillarID() 
+                + " after the conversation has ended.");
+    }
+
+    @Override
+    public void onMessage(GetChecksumsProgressResponse response) {
+        monitor.outOfSequenceMessage("Received " + response.getClass().getName() + " from " + response.getPillarID() 
+                + " after the conversation has ended.");
+    }
+
+    @Override
+    public void onMessage(GetChecksumsFinalResponse response) {
+        monitor.outOfSequenceMessage("Received " + response.getClass().getName() + " from " + response.getPillarID() 
+                + " after the conversation has ended.");
+    }
+    
     @Override
     public void start() {
         // Noting to do.

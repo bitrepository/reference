@@ -56,6 +56,7 @@ import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 public class GettingFileIDs extends GetFileIDsState {
     /** The pillars, which has not yet answered.*/
     private List<SelectedPillarInfo> pillarsSelectedForRequest; 
+    /** The status for the expected responses.*/
     private final PillarsResponseStatus responseStatus;
 
     /** 
@@ -121,18 +122,14 @@ public class GettingFileIDs extends GetFileIDsState {
     @Override
     public void onMessage(GetFileIDsProgressResponse response) {
         monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.Progress, 
-                "Received progress response for retrieval of file ids " + response.getFileIDs() + ": response"));
+                "Received progress response for retrieval of file ids " + response.getFileIDs()));
     }
 
     @Override
     public void onMessage(GetFileIDsFinalResponse response) {
         try {
             responseStatus.responseReceived(response.getPillarID());
-        } catch (UnexpectedResponseException ure) {
-            monitor.pillarFailed("Received unexpected final response from " + response.getPillarID() , ure);
-        }
-
-        try {
+            
             if(isReponseSuccess(response.getFinalResponseInfo())) {
                 monitor.pillarComplete(new FileIDsCompletePillarEvent(
                         response.getResultingFileIDs(),
@@ -146,7 +143,7 @@ public class GettingFileIDs extends GetFileIDsState {
                 monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getFinalResponseInfo());
             } 
         } catch (UnexpectedResponseException ure) {
-            monitor.pillarFailed("Received bad FinalResponse from pillar: " + response.getFinalResponseInfo(), ure);
+            monitor.warning("Received bad FinalResponse from pillar: " + response.getFinalResponseInfo(), ure);
         
         }
 
@@ -154,7 +151,6 @@ public class GettingFileIDs extends GetFileIDsState {
             monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.Complete, 
                     "All pillars have delivered their FileIDs."));
             conversation.getFlowController().unblock();
-            conversation.setResults(results);
             conversation.conversationState = new GetFileIDsFinished(conversation);
         }
     }
@@ -165,9 +161,10 @@ public class GettingFileIDs extends GetFileIDsState {
      * @return Whether the FinalRepsonseInfo tells that the operation has been a success or a failure.
      */
     private boolean isReponseSuccess(FinalResponseInfo frInfo) throws UnexpectedResponseException { 
-        if(FinalResponseCodePositiveType.SUCCESS.value().intValue() == new Integer(frInfo.getFinalResponseCode())) {
+        if(FinalResponseCodePositiveType.SUCCESS.value().toString().equals(frInfo.getFinalResponseCode())) {
             return true;
-        } else return false;
+        } 
+        return false;
     }
     
     /**
@@ -180,8 +177,8 @@ public class GettingFileIDs extends GetFileIDsState {
     }
 
     /**
-     * The timer task class for the outstanding get file request. When the time is reached the conversation should be
-     * marked as ended.
+     * The timer task class for the outstanding get file ids request. When the time is reached the conversation 
+     * should be marked as ended.
      */
     private class GetFileIDsTimerTask extends TimerTask {
         @Override

@@ -146,7 +146,7 @@ public class IdentifyPillarsForGetFileIDs extends GetFileIDsState {
                             "The following pillars did't respond: " + conversation.selector.getOutstandingPillars());
                 }
             } else {
-                monitor.warning("Identification timeout, but " +
+                monitor.outOfSequenceMessage("Identification timeout, but " +
                         "the conversation state has already changed to " + conversation.conversationState);
             }
         }

@@ -38,8 +38,6 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Models the behavior of a GetFile conversation during the file exchange phase. That is, it begins with the sending of
  * a <code>GetFileRequest</code> and finishes with on the reception of a <code>GetFileFinalResponse</code> message.
@@ -48,9 +46,6 @@ import org.slf4j.LoggerFactory;
  * protected.
  */
 class GettingFile extends GetFileState {
-
-    /** The log for this class. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
 
     /** 
      * The timer for the getFileTimeout. It is run as a daemon thread, eg. it will not prevent the application from 

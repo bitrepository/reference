@@ -26,12 +26,10 @@ package org.bitrepository.access.getfileids.conversation;
 
 import java.net.URL;
 import java.util.Collection;
-import java.util.Map;
 import java.util.UUID;
 
 import org.bitrepository.access.getfileids.selector.PillarSelectorForGetFileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
@@ -65,8 +63,6 @@ public class SimpleGetFileIDsConversation extends AbstractConversation {
     /** The text audittrail information for requesting the operation.*/
     final String auditTrailInformation;
     
-    Map<String, ResultingFileIDs> mapOfResults = null;
-
     /**
      * Constructor.
      * @param messageSender The instance for sending the messages.
@@ -97,18 +93,6 @@ public class SimpleGetFileIDsConversation extends AbstractConversation {
         return conversationState.hasEnded();
     }
     
-    public Map<String,ResultingFileIDs> getResult() {
-        return mapOfResults;
-    }
-    
-    /**
-     * Method for reporting the results of a conversation.
-     * @param results The results.
-     */
-    void setResults(Map<String, ResultingFileIDs> results) {
-        this.mapOfResults = results;
-    }
-
     @Override
     public synchronized void onMessage(GetFileIDsFinalResponse message) {
         conversationState.onMessage(message);

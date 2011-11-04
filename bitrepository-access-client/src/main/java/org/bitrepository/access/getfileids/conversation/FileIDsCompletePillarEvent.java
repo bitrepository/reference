@@ -44,6 +44,9 @@ public class FileIDsCompletePillarEvent extends PillarOperationEvent{
         this.result = result;
     }
 
+    /**
+     * @return The results from the pillar, which has completed the GetFileIDs operation.
+     */
     public ResultingFileIDs getFileIDs() {
         return result;
     }

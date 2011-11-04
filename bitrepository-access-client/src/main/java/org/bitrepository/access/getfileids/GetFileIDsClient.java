@@ -39,6 +39,13 @@ public interface GetFileIDsClient {
     /**
      * Method for requesting a given list of FileIDs from pillars. Thus requesting validation of the existence of 
      * the files at the given pillars.
+     * <br/>
+     * The FileIDs can be requested either through a URL or through the message (give URL = null as argument).
+     * <br/>
+     * Since every pillar cannot upload their fileids to the same URL, it is extended with the pillarId for the given
+     * pillar, e.g.: 'http://upload.url/mypath' + '-pillarId'.
+     * <br/>
+     * The results are returned through as an special event through the eventHandler, the FileIDsCompletePillarCompete. 
      *  
      * @param pillarIDs The list of pillars which should be requested for the FileIDs.
      * @param fileIDs The ids for the requested files. 

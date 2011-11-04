@@ -42,8 +42,6 @@ import org.bitrepository.protocol.conversation.ConversationState;
 import org.bitrepository.protocol.conversation.FlowController;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.messagebus.MessageSender;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A conversation for GetChecksums.
@@ -51,10 +49,6 @@ import org.slf4j.LoggerFactory;
  * Logic for behaving sanely in GetChecksums conversations.
  */
 public class SimpleGetChecksumsConversation extends AbstractConversation {
-
-    /** The log for this class. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
     /** The sender to use for dispatching messages */
     final MessageSender messageSender; 
     /** The configuration specific to the BitRepositoryCollection related to this conversion. */
@@ -89,7 +83,6 @@ public class SimpleGetChecksumsConversation extends AbstractConversation {
             FileIDs fileIds, ChecksumSpecTYPE checksumsSpecs, Collection<String> pillars, EventHandler eventHandler,
             FlowController flowController, String auditTrailInformation) {
         super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
-
         
         this.messageSender = messageSender;
         this.settings = settings;
@@ -97,7 +90,7 @@ public class SimpleGetChecksumsConversation extends AbstractConversation {
         this.fileIDs = fileIds;
         this.selector = new PillarSelectorForGetChecksums(pillars);
         this.checksumSpecifications = checksumsSpecs;
-        conversationState = new IdentifyPillarsForGetChecksums(this);
+        this.conversationState = new IdentifyPillarsForGetChecksums(this);
         this.auditTrailInformation = auditTrailInformation;
     }
 

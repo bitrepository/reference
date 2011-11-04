@@ -195,6 +195,14 @@ public class ConversationEventMonitor {
             eventHandler.handleEvent(new DefaultEvent(OperationEventType.Warning, info + ", " + e.getMessage()));
         }
     }
+    
+    /**
+     * Logs debug information.
+     * @param info The debug info to log.
+     */
+    public void debug(String info) {
+        log.debug(info);
+    }
 
     /**
      * A pillar has failed to handle a request successfully.

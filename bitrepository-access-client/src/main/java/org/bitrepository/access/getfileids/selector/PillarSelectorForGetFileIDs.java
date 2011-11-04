@@ -43,7 +43,9 @@ import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
  * Class for selecting pillars for the GetFileIDs operation.
  */
 public class PillarSelectorForGetFileIDs {
+    /** The status for the responses from the pillars. */
     private final PillarsResponseStatus responseStatus;
+    /** The list of information about the pillars selected for the GetFileIDs operation.*/
     private final List<SelectedPillarInfo> selectedPillars = new LinkedList<SelectedPillarInfo>(); 
 
     /**

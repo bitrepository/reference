@@ -56,7 +56,10 @@ public interface GetChecksumsClient {
      * @throws NoPillarFoundException The identify request didn't cause the pillar to respond.  
      * @throws OperationTimeOutException The get checksum request timeout.  
      * @throws OperationFailedException The operation failed.
+     * 
+     * @deprecated Only the asynchronous method should be called.
      */
+    @Deprecated 
     public Map<String, ResultingChecksums> getChecksumsBlocking(Collection<String> pillarIDs, FileIDs fileIDs, 
             ChecksumSpecTYPE checksumSpec, URL addressForResult, EventHandler eventHandler, 
             String auditTrailInformation) throws NoPillarFoundException, OperationTimeOutException, 
@@ -65,6 +68,12 @@ public interface GetChecksumsClient {
     /**
      * Method for retrieving a checksums for a set of files from a specific pillar. The method will not block until 
      * the conversation has finished. It will only initiate the conversation.
+     * <br/>
+     * Since every pillar cannot upload their checksums to the same URL, it is extended with the pillarId for the given
+     * pillar, e.g.: 'http://upload.url/mypath' + '-pillarId'.
+     * <br/>
+     * The results are returned through as an special event through the eventHandler, 
+     * the ChecksumsCompletePillarCompete. 
      *
      * @param pillarIDs The list of IDs for the pillars, where the checksum should be retrieved from.
      * @param fileIDs Defines the set of files.

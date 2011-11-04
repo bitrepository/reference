@@ -60,8 +60,8 @@ public class GettingChecksums extends GetChecksumsState {
     private final PillarsResponseStatus responseStatus;
 
     /** 
-     * The timer for the getFileTimeout. It is run as a daemon thread, eg. it will not prevent the application from 
-     * exiting */
+     * The timer for the getChecksumsTimeout. It is run as a daemon thread, eg. it will not prevent the application 
+     * from exiting */
     final Timer timer = new Timer(true);
     /** The timer task for timeout of getFile in this conversation. */
     final TimerTask getChecksumsTimeoutTask = new GetChecksumsTimerTask();
@@ -132,7 +132,7 @@ public class GettingChecksums extends GetChecksumsState {
         try {
             responseStatus.responseReceived(response.getPillarID());
         } catch (UnexpectedResponseException ure) {
-            monitor.pillarFailed("Received unexpected final response from " + response.getPillarID() , ure);
+            monitor.warning("Received unexpected final response from " + response.getPillarID() , ure);
         }
 
         try {
@@ -150,7 +150,6 @@ public class GettingChecksums extends GetChecksumsState {
             } 
         } catch (UnexpectedResponseException ure) {
             monitor.pillarFailed("Received bad FinalResponse from pillar: " + response.getFinalResponseInfo(), ure);
-        
         }
 
         if(responseStatus.haveAllPillarResponded()) {

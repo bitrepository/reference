@@ -37,8 +37,6 @@ import org.bitrepository.protocol.conversation.ConversationState;
 import org.bitrepository.protocol.conversation.FlowController;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.messagebus.MessageSender;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A conversation for GetFile.
@@ -46,9 +44,6 @@ import org.slf4j.LoggerFactory;
  * Logic for behaving sanely in GetFile conversations.
  */
 public class SimpleGetFileConversation extends AbstractConversation {
-    /** The log for this class. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
     /** The sender to use for dispatching messages */
     final MessageSender messageSender; 
     /** The configuration specific to the SLA related to this conversion. */
