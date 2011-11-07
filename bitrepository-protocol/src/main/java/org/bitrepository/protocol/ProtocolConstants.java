@@ -34,34 +34,38 @@ public class ProtocolConstants {
     /** Protocol minimum version used. */
     public static final long PROTOCOL_MIN_VERSION = 1L;
     
-    public static String getProtocolVersion() {
+    public static long getProtocolVersion() throws IOException, NumberFormatException {
+    	long l; 
     	Properties properties = new Properties();
     	String version = null;
-    	try {
-            properties.load(Thread.currentThread().getContextClassLoader()
+    	String[] splittedVersion;
+    	
+        properties.load(Thread.currentThread().getContextClassLoader()
                                     .getResourceAsStream("protocol_version.properties"));
             
-            version = properties.getProperty("org.bitrepository.protocol.version");
-        } catch (IOException e) {
-        	//Will just result in a null being returned, should be sufficient to indicate an error
-        }
-        return version;
+        version = properties.getProperty("org.bitrepository.protocol.version");
+        splittedVersion = version.split("\\D");
+        l = Long.parseLong(splittedVersion[0]);
+        
+        return l;
     }
     
-    public static String getProtocolMinVersion() {
+    public static long getProtocolMinVersion() throws IOException, NumberFormatException {
+    	long l; 
     	Properties properties = new Properties();
     	String version = null;
-    	try {
-            properties.load(Thread.currentThread().getContextClassLoader()
+    	String[] splittedVersion;
+
+        properties.load(Thread.currentThread().getContextClassLoader()
                                     .getResourceAsStream("protocol_version.properties"));
             
-            version = properties.getProperty("org.bitrepository.protocol.min_version");
-        } catch (IOException e) {
-        	//Will just result in a null being returned, should be sufficient to indicate an error
-        }
-        return version;
+        version = properties.getProperty("org.bitrepository.protocol.min_version");
+        splittedVersion = version.split("\\D");
+        l = Long.parseLong(splittedVersion[0]);
+        
+        return l;
     }
-
+    
     /** Hides the constructor, preventing instantiation */
     private ProtocolConstants() {}
 }
