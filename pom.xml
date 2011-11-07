@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.bitrepository</groupId>
   <artifactId>bitrepository-webclient</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.3</version>
   <packaging>war</packaging>
 
   <parent>
@@ -18,7 +17,7 @@
   <properties>
     <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <bitrepository-version>0.3-SNAPSHOT</bitrepository-version>
+    <bitrepository-version>0.3</bitrepository-version>
   </properties>
 
   <repositories>
@@ -58,9 +57,9 @@
   </organization>
 
   <scm>
-    <url>https://sbforge.org/fisheye/browse/Bitmagasinet/bitrepository-webclient/</url>
-    <connection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-webclient/</connection>
-    <developerConnection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-webclient/</developerConnection>
+    <url>https://sbforge.org/fisheye/browse/Bitmagasinet/bitrepository-webclient/tags/bitrepository-webclient-0.3</url>
+    <connection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-webclient/tags/bitrepository-webclient-0.3</connection>
+    <developerConnection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-webclient/tags/bitrepository-webclient-0.3</developerConnection>
   </scm>
   
   <dependencies>
@@ -197,7 +196,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore></ignore>
+                    <ignore />
                   </action>
                 </pluginExecution>
               </pluginExecutions>
