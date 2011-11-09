@@ -33,6 +33,7 @@ import javax.xml.bind.JAXBException;
 import org.bitrepository.common.JaxbHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * Loads settings as xml from the classpath.
@@ -65,19 +66,26 @@ public class XMLFileSettingsLoader implements SettingsLoader {
      */
     public <T> T loadSettings(String collectionID, Class<T> settingsClass) {
         String fileLocation = pathToSettingsFiles + "/" + collectionID + "/" + settingsClass.getSimpleName() + ".xml";
-        InputStream configStream = ClassLoader.getSystemResourceAsStream(fileLocation);
-        if (configStream == null) {
+        String schemaLocation = "xsd/" + settingsClass.getSimpleName() + ".xsd";
+        JaxbHelper jaxbHelper = new JaxbHelper(schemaLocation);
+        InputStream configStreamLoad = ClassLoader.getSystemResourceAsStream(fileLocation);
+        InputStream configStreamValidate = ClassLoader.getSystemResourceAsStream(fileLocation);
+        if (configStreamLoad == null) {
             try {
-                configStream = new FileInputStream(fileLocation);
+                configStreamLoad = new FileInputStream(fileLocation);
+                configStreamValidate = new FileInputStream(fileLocation);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException("Unable to load settings from " + fileLocation, e);
             }
         }
         log.debug("Loading the settings file '" + fileLocation + "'.");
         try {
-            return (T) JaxbHelper.loadXml(settingsClass, configStream);
+        	jaxbHelper.validate(configStreamValidate);
+            return (T) jaxbHelper.loadXml(settingsClass, configStreamLoad);
         } catch (JAXBException e) {
             throw new RuntimeException("Unable to load settings from " + fileLocation, e);
-        }
+        } catch (SAXException e) {
+        throw new RuntimeException("Unable to validate settings from " + fileLocation, e);
+    	}
     }
 }

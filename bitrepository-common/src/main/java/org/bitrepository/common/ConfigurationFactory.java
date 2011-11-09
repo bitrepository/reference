@@ -33,6 +33,7 @@ import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * General class for instantiating configurations based on xml files
@@ -85,9 +86,10 @@ public final class ConfigurationFactory {
                 moduleCharacteristics.getLowerCaseName());
         String defaultTestClassPathLocation = String.format(DEFAULT_TEST_CONFIGURATION_CLASSPATH_LOCATION, 
                         moduleCharacteristics.getLowerCaseName());
-
-        InputStream configStream = null;
-        if(configStream == null) {
+        JaxbHelper jaxbHelper = new JaxbHelper("configuration/schema/Configuration.xsd");
+        InputStream configStreamLoad = null;
+        InputStream configStreamValidate = null;
+        if(configStreamLoad == null) {
             String path = System.getProperty(CONFIGURATION_DIR_SYSTEM_PROPERTY);
             String name = String.format(DEFAULT_CONFIGURATION_CLASSPATH_NAME,
                     moduleCharacteristics.getLowerCaseName());
@@ -95,30 +97,38 @@ public final class ConfigurationFactory {
                 File configFile = new File(path, name);
                 log.trace("Trying to retrieve configuration from '" + configFile.getAbsolutePath() + "'.");
                 try {
-                    configStream = new FileInputStream(configFile);
+                    configStreamLoad = new FileInputStream(configFile);
+                    configStreamValidate = new FileInputStream(configFile);
                 } catch (IOException e) {
                     log.warn("Couldn't find or handle config file '" + configFile.getAbsolutePath() + "'");
                 }
             }
         }
-        if (configStream == null) {
+        if (configStreamLoad == null) {
             log.trace("Trying to retrieve configuration from classpath '" + defaultClassPathLocation + "'");
-            configStream = ClassLoader.getSystemResourceAsStream(defaultClassPathLocation);
+            configStreamLoad = ClassLoader.getSystemResourceAsStream(defaultClassPathLocation);
+            configStreamValidate = ClassLoader.getSystemResourceAsStream(defaultClassPathLocation);
         }
-        if(configStream == null) {
+        if(configStreamLoad == null) {
             log.trace("Trying to retrieve configuration from classpath '" + defaultTestClassPathLocation + "'");
-            configStream = ClassLoader.getSystemResourceAsStream(defaultTestClassPathLocation);
+            configStreamLoad = ClassLoader.getSystemResourceAsStream(defaultTestClassPathLocation);
+            configStreamValidate = ClassLoader.getSystemResourceAsStream(defaultTestClassPathLocation);
         }
-        if (configStream == null) {
+        if (configStreamLoad == null || configStreamValidate == null) {
             throw new ConfigurationException("Failed to find " + defaultTestClassPathLocation + " or " + 
                     defaultClassPathLocation + " in classpath");
         }
         try {
             log.debug("Loading the configuration '" + configurationClass.getCanonicalName() + "'.");
-            return (T) JaxbHelper.loadXml(configurationClass, configStream);
+            jaxbHelper.validate(configStreamValidate);
+            return (T) jaxbHelper.loadXml(configurationClass, configStreamLoad);
+            
         } catch (JAXBException e) {
-            throw new ConfigurationException("Failed to load the configuration from " + configStream, 
+            throw new ConfigurationException("Failed to load the configuration from " + configStreamLoad, 
                     e);
+        } catch(SAXException e) {
+        	throw new ConfigurationException("Failed to validate the xml from " + configStreamLoad, e);
         }
+        
     }
 }

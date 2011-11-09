@@ -27,17 +27,21 @@
 <CollectionSettings xmlns="http://bitrepository.org/settings/${collection.settings.version}/CollectionSettings.xsd">
   <CollectionID>TEST</CollectionID>
   <ProtocolSettings>
+    <DefaultChecksumType>md5</DefaultChecksumType>
     <CollectionDestination>TEST-TOPIC</CollectionDestination>
     <AlarmDestination>TEST-ALARM-TOPIC</AlarmDestination>
+    <Permissions>
+      <Permission>
+       <User>Me</User>
+       <OperationType>All</OperationType>     
+      </Permission>
+    </Permissions>
     <MessageBusConfiguration>
       <Name>MyMessageBus</Name>
       <URL>failover://tcp://sandkasse-01.kb.dk:61616</URL>
       <Login></Login>
       <Password></Password>
     </MessageBusConfiguration>
-    <Permissions>
-      <Permission></Permission>
-    </Permissions>
   </ProtocolSettings>
   
   <ClientSettings>
@@ -48,8 +52,20 @@
   </ClientSettings>
 
   <PillarSettings>
-    <AlarmLevel>ERROR</AlarmLevel>
+    <ProgressResponseMandatory>false</ProgressResponseMandatory>
     <AuditTrailLevel>MEDIUM</AuditTrailLevel>
-    <ProgressResponseMandatory>FALSE</ProgressResponseMandatory>
+    <AlarmLevel>ERROR</AlarmLevel>
   </PillarSettings>
+  
+  <DeleteFileSettings></DeleteFileSettings>
+  <GetAuditTrailSettings></GetAuditTrailSettings>
+  <GetChecksumsSettings></GetChecksumsSettings>
+  <GetFileSettings></GetFileSettings>
+  <GetFileIDsSettings></GetFileIDsSettings>
+  <GetStatusSettings></GetStatusSettings>
+  <PutFileSettings></PutFileSettings>
+  <ReplaceFileSettings>
+   <IdentificationTimeout>10000</IdentificationTimeout> 
+  </ReplaceFileSettings>
+  
 </CollectionSettings>

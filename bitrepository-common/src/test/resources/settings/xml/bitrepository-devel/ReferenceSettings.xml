@@ -14,16 +14,24 @@
     <ReceiverDestination>TEST-TOPIC-CLIENT</ReceiverDestination>
     <MediatorCleanupInterval>1000</MediatorCleanupInterval>
     <ConversationTimeout>3600000</ConversationTimeout>
-    <IdentificationTimeout>60000</IdentificationTimeout>
-    <OperationTimeout>60000</OperationTimeout>
   </ClientSettings>
   <PillarSettings>
     <PillarID>test-pillar</PillarID>
     <FileDir>test-archive</FileDir>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
-    <ProgressResponseMandatory>true</ProgressResponseMandatory>
-    <AuditTrailLevel>HIGH</AuditTrailLevel>
-    <AlarmLevel>ERROR</AlarmLevel>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
   </PillarSettings>
+  <DeleteFileSettings></DeleteFileSettings>
+  <GetAuditTrailSettings></GetAuditTrailSettings>
+  <GetChecksumsSettings></GetChecksumsSettings>
+  <GetFileSettings></GetFileSettings>
+  <GetFileIDsSettings></GetFileIDsSettings>
+  <GetStatusSettings></GetStatusSettings>
+  <PutFileSettings></PutFileSettings>
+  <ReplaceFileSettings>
+   <IdentificationTimeout>10000</IdentificationTimeout> 
+  </ReplaceFileSettings>
+  <AlarmServiceSettings></AlarmServiceSettings>
+  <AuditTrailServiceSettings></AuditTrailServiceSettings>
+  <IntegrityServiceSettings></IntegrityServiceSettings>
 </ReferenceSettings>
