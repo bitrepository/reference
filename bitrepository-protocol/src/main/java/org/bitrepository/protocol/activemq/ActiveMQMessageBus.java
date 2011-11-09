@@ -468,7 +468,7 @@ public class ActiveMQMessageBus implements MessageBus {
         public void onMessage(final Message message) {
             String type = null;
             String text = null;
-            String schemaLocation = "BitRepositoryMessages.xsd";
+            String schemaLocation = "xsd/BitRepositoryMessages.xsd";
             JaxbHelper jaxbHelper = new JaxbHelper(schemaLocation); 
             Object content;
             try {

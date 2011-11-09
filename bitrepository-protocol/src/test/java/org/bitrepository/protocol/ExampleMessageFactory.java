@@ -36,7 +36,7 @@ public class ExampleMessageFactory {
     
     public static <T> T createMessage(Class<T> messageType) throws Exception {
         String xmlMessage = loadXMLExample(messageType.getSimpleName());
-        String schemaLocation = "BitRepositoryMessages.xsd";
+        String schemaLocation = "xsd/BitRepositoryMessages.xsd";
         JaxbHelper jaxbHelper = new JaxbHelper(schemaLocation);
         jaxbHelper.validate(new ByteArrayInputStream(xmlMessage.getBytes()));
         return jaxbHelper.loadXml(messageType,
