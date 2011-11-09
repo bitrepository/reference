@@ -81,9 +81,12 @@ public class SettingsProvider {
     * @param collectionID The collectionID to load the settings for.
     */
     public synchronized void loadSettings(String collectionID) {
+    	CollectionSettings collectionSettings = settingsReader.loadSettings(collectionID, CollectionSettings.class);
+    	ReferenceSettings referenceSettings = settingsReader.loadSettings(collectionID, ReferenceSettings.class);
         Settings settings = new Settings(
-                settingsReader.loadSettings(collectionID, CollectionSettings.class),
-                settingsReader.loadSettings(collectionID, ReferenceSettings.class)
+        		collectionSettings, referenceSettings
+                //settingsReader.loadSettings(collectionID, CollectionSettings.class),
+                //settingsReader.loadSettings(collectionID, ReferenceSettings.class)
         );
         settingsMap.put(collectionID, settings);
     }

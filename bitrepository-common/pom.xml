@@ -24,6 +24,11 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.bitrepository</groupId>
+    	<artifactId>bitrepository-collection-settings</artifactId>
+    	<version>${collection.settings.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -74,7 +79,7 @@
                 <resource>
                   <directory>src/main/resources/</directory>
                   <filtering>true</filtering>
-                </resource>        
+                </resource>
               </resources>
             </configuration>
           </execution>
@@ -123,7 +128,7 @@
             </goals>
             <phase>generate-sources</phase>
             <configuration>
-              <schemaDirectory>${project.build.directory}/referencesettings/xsd</schemaDirectory>
+              <schemaDirectory>${project.build.directory}/xsd</schemaDirectory>
               <generateDirectory>${project.build.directory}/referencesettings</generateDirectory>
               <extension>true</extension>
               <args>
