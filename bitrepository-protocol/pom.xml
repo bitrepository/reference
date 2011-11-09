@@ -65,7 +65,8 @@
               -->
               <attached>false</attached>     
               <resourceBundles>
-                <resourceBundle>org.bitrepository:bitrepository-message-xml:${message.xml.version}</resourceBundle>
+                 <resourceBundle>org.bitrepository:bitrepository-message-xml:${message.xml.version}</resourceBundle> 
+            <!--     <resourceBundle>org.bitrepository:bitrepository-message-xml:0.3.6-SNAPSHOT</resourceBundle> -->
               </resourceBundles>
             </configuration>
           </execution>
@@ -140,6 +141,10 @@
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
+      </resource>
+      <resource>
+        <directory>${project.build.directory}/xsd</directory>
+        <!-- If an output directory is added remember to update the paths in the java code.. -->
       </resource>
       <resource>
         <directory>src/main/resources/configurations/xml</directory>

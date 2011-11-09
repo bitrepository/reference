@@ -73,6 +73,7 @@ import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * Contains the basic functionality for connection and communicating with the
@@ -467,11 +468,14 @@ public class ActiveMQMessageBus implements MessageBus {
         public void onMessage(final Message message) {
             String type = null;
             String text = null;
+            String schemaLocation = "BitRepositoryMessages.xsd";
+            JaxbHelper jaxbHelper = new JaxbHelper(schemaLocation); 
             Object content;
             try {
                 type = message.getStringProperty(MESSAGE_TYPE_KEY);
                 text = ((TextMessage) message).getText();
-                content = JaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
+                jaxbHelper.validate(new ByteArrayInputStream(text.getBytes()));
+                content = jaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
                                              new ByteArrayInputStream(text.getBytes()));
                 log.debug("Received message: " + text);
                 if(content.getClass().equals(Alarm.class)){
@@ -579,6 +583,8 @@ public class ActiveMQMessageBus implements MessageBus {
                     return;
                 }
                 log.error("Received message of unknown type '" + type + "'\n{}", text);
+            } catch (SAXException e) {
+                log.error("Error validating message", e);
             } catch (Exception e) {
                 log.error("Error handling message. Received type was '" + type + "'.\n{}", text, e);
             }

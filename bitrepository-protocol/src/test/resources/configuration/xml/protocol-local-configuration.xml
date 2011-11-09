@@ -28,15 +28,11 @@
 <ProtocolConfiguration xmlns="http://bitrepository.org/protocol/Configuration.xsd" 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xsi:schemaLocation="http://bitrepository.org/protocol/Configuration.xsd ../schema/Configuration.xsd ">
-  <messageBusConfigurations>
-    <primaryMessageBusConfiguration>
-      <id>local-test-messagebus</id>
-      <url>failover://tcp://localhost:61616</url>
-      <username></username>
-      <password></password>
-    </primaryMessageBusConfiguration>
-  </messageBusConfigurations>
   <fileExchangeConfigurations>
     <fileExchangeClass>org.bitrepository.protocol.http.HTTPFileExchange</fileExchangeClass>
+    <httpsKeystorePath>foo/bar/baz</httpsKeystorePath>
+    <httpsKeyStorePassword>123456</httpsKeyStorePassword>
+    <httpsCertificatePath>path/to/ca</httpsCertificatePath>
+    <httpsCertificateAlias>foobar</httpsCertificateAlias>
   </fileExchangeConfigurations>
 </ProtocolConfiguration>

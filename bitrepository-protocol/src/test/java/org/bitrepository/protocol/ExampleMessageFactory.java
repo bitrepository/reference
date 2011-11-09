@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import org.apache.activemq.util.ByteArrayInputStream;
+import org.bitrepository.common.JaxbHelper;
 
 /** Used to create message objects based on the example xml found in the message-xml module. */
 public class ExampleMessageFactory {
@@ -35,8 +36,10 @@ public class ExampleMessageFactory {
     
     public static <T> T createMessage(Class<T> messageType) throws Exception {
         String xmlMessage = loadXMLExample(messageType.getSimpleName());
-        return org.bitrepository.common.JaxbHelper.loadXml(
-                messageType,
+        String schemaLocation = "BitRepositoryMessages.xsd";
+        JaxbHelper jaxbHelper = new JaxbHelper(schemaLocation);
+        jaxbHelper.validate(new ByteArrayInputStream(xmlMessage.getBytes()));
+        return jaxbHelper.loadXml(messageType,
                 new ByteArrayInputStream(xmlMessage.getBytes()));
     }
 
