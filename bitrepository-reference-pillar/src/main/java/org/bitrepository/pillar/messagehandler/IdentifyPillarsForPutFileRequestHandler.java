@@ -65,7 +65,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
      */
     public void handleMessage(IdentifyPillarsForPutFileRequest message) {
         try {
-            validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
+            validateBitrepositoryCollectionId(message.getCollectionID());
             checkThatTheFileDoesNotAlreadyExist(message);
             checkSpaceForStoringNewFile(message);
             respondSuccesfullIdentification(message);
@@ -183,7 +183,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
         res.setVersion(VERSION);
         res.setCorrelationID(msg.getCorrelationID());
         res.setTo(msg.getReplyTo());
-        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setCollectionID(settings.getCollectionID());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         

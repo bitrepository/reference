@@ -85,7 +85,7 @@ public class GettingFileIDs extends GetFileIDsState {
      */
     public void start() {
         GetFileIDsRequest getFileIDsRequest = new GetFileIDsRequest();
-        getFileIDsRequest.setBitRepositoryCollectionID(conversation.settings.getCollectionID());
+        getFileIDsRequest.setCollectionID(conversation.settings.getCollectionID());
         getFileIDsRequest.setCorrelationID(conversation.getConversationID());
         getFileIDsRequest.setFileIDs(conversation.fileIDs);
         getFileIDsRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());

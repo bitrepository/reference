@@ -62,7 +62,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
      */
     public void handleMessage(IdentifyPillarsForGetFileRequest message) {
         try {
-            validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
+            validateBitrepositoryCollectionId(message.getCollectionID());
             checkThatFileIsAvailable(message);
             respondSuccesfullIdentification(message);
         } catch (IllegalArgumentException e) {
@@ -154,7 +154,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
         res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setCollectionID(settings.getCollectionID());
         res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         
         return res;

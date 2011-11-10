@@ -173,145 +173,145 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public void sendMessage(Alarm content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                 content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetChecksumsFinalResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetChecksumsRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetChecksumsProgressResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetFileFinalResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetFileIDsFinalResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetFileIDsRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetFileIDsProgressResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetFileRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetFileProgressResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetStatusRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                 content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetStatusProgressResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                 content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(GetStatusFinalResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                 content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForGetChecksumsResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForGetChecksumsRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForGetFileIDsRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForGetFileIDsResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForGetFileRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForGetFileResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForPutFileResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(IdentifyPillarsForPutFileRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(PutFileFinalResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(PutFileRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 
     @Override
     public void sendMessage(PutFileProgressResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getBitRepositoryCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
 

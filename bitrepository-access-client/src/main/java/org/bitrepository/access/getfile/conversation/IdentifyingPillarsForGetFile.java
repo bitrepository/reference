@@ -65,7 +65,7 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
         identifyRequest.setCorrelationID(conversation.getConversationID());
         identifyRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         identifyRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        identifyRequest.setBitRepositoryCollectionID(conversation.settings.getCollectionID());
+        identifyRequest.setCollectionID(conversation.settings.getCollectionID());
         identifyRequest.setFileID(conversation.fileID);
         identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         identifyRequest.setTo(conversation.settings.getCollectionDestination());

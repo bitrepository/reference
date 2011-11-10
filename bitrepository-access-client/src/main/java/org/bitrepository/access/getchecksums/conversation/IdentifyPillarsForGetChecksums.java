@@ -69,7 +69,7 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
         identifyRequest.setCorrelationID(conversation.getConversationID());
         identifyRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         identifyRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        identifyRequest.setBitRepositoryCollectionID(
+        identifyRequest.setCollectionID(
                 conversation.settings.getCollectionID());
         identifyRequest.setFileIDs(conversation.fileIDs);
         identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());

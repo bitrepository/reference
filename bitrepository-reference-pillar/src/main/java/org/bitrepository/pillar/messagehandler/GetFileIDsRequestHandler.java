@@ -114,7 +114,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      */
     private boolean validateMessage(GetFileIDsRequest message) {
         // Validate the message.
-        validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
+        validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
         
         log.debug("Message '" + message.getCorrelationID() + "' validated and accepted.");
@@ -198,7 +198,6 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         for(String fileID : archive.getAllFileIds()) {
             fileIDList.getFileIDsDataItem().add(getDataItemForFileID(fileID));
         }
-        res.setNoOfItems(BigInteger.valueOf(fileIDList.getFileIDsDataItem().size()));
         res.setFileIDsDataItems(fileIDList);
         return res;
     }
@@ -224,7 +223,6 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         for(String fileID : fileIDs) {
             fileIDList.getFileIDsDataItem().add(getDataItemForFileID(fileID));            
         }
-        res.setNoOfItems(BigInteger.valueOf(fileIDList.getFileIDsDataItem().size()));
         res.setFileIDsDataItems(fileIDList);
         return res;
     }
@@ -264,7 +262,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         try {
             is = new FileOutputStream(checksumResultFile);
             GetFileIDsResults result = new GetFileIDsResults();
-            result.setBitRepositoryCollectionID(settings.getCollectionID());
+            result.setCollectionID(settings.getCollectionID());
             result.setMinVersion(MIN_VERSION);
             result.setVersion(VERSION);
             result.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
@@ -338,7 +336,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         GetFileIDsProgressResponse response = new GetFileIDsProgressResponse();
         response.setMinVersion(MIN_VERSION);
         response.setVersion(VERSION);
-        response.setBitRepositoryCollectionID(settings.getCollectionID());
+        response.setCollectionID(settings.getCollectionID());
         response.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         response.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         response.setCorrelationID(message.getCorrelationID());
@@ -362,7 +360,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         GetFileIDsFinalResponse response = new GetFileIDsFinalResponse();
         response.setMinVersion(MIN_VERSION);
         response.setVersion(VERSION);
-        response.setBitRepositoryCollectionID(settings.getCollectionID());
+        response.setCollectionID(settings.getCollectionID());
         response.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         response.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         response.setCorrelationID(message.getCorrelationID());

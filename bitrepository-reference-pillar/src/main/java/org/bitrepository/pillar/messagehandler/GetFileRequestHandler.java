@@ -110,7 +110,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
      */
     protected boolean validateMessage(GetFileRequest message) {
         // Validate the message.
-        validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
+        validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
 
         // Validate, that we have the requested file.
@@ -148,12 +148,11 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         if(USE_CHECKSUM) {
             log.debug("generating checksum data for '" + requestedFile.getName() + "'.");
             ChecksumsDataForBitRepositoryFile checksumCollection = new ChecksumsDataForBitRepositoryFile();
-            ChecksumDataItems checksumData = new ChecksumDataItems();
+            ChecksumsDataForBitRepositoryFile checksumData = new ChecksumsDataForBitRepositoryFile();
             // Retrieve the checksum using default digester without any salt.
             checksumData.getChecksumDataForFile().add(calculateChecksum(requestedFile, null, CHECKSUM_DIGESTER));
             checksumCollection.setChecksumDataItems(checksumData);
             checksumCollection.setFileID(message.getFileID());
-            checksumCollection.setNoOfItems(BigInteger.valueOf(1L));
             pResponse.setChecksumsDataForBitRepositoryFile(checksumCollection);
         }
 
@@ -254,7 +253,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         res.setFilePart(msg.getFilePart());
         res.setTo(msg.getReplyTo());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setCollectionID(settings.getCollectionID());
         res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
 
         return res;
@@ -279,7 +278,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         res.setFilePart(msg.getFilePart());
         res.setTo(msg.getReplyTo());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setCollectionID(settings.getCollectionID());
         res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
 
         return res;

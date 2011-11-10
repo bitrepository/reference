@@ -93,7 +93,7 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
                 "The Alarm message should be received and stored.");
         Assert.assertNotNull(alarmHandler.getLatestAlarm(), "The handler should have received a Alarm message");
         Assert.assertNotNull(alarmHandler.getLatestAlarmMessage(), "The handler should have received a Alarm message");
-        Assert.assertTrue(alarmHandler.getLatestAlarmMessage().contains(alarmMsg.getBitRepositoryCollectionID()));
+        Assert.assertTrue(alarmHandler.getLatestAlarmMessage().contains(alarmMsg.getCollectionID()));
         Assert.assertTrue(alarmHandler.getLatestAlarmMessage().contains(alarmMsg.getCorrelationID()));
         Assert.assertTrue(alarmHandler.getLatestAlarmMessage().contains(QUEUE));
         Assert.assertEquals(alarmMsg, alarmHandler.getLatestAlarm());
@@ -149,7 +149,7 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
             "Should be written to the log.");
             IdentifyContributorsForGetStatusRequest identifyMsg = ExampleMessageFactory.createMessage(
 	     IdentifyContributorsForGetStatusRequest.class);
-            identifyMsg.setBitRepositoryCollectionID(IDENTIFY_ID);
+            identifyMsg.setCollectionID(IDENTIFY_ID);
             handler.handleOther(identifyMsg);
             logwrittenOutput = new String(out.toByteArray());
             Assert.assertTrue(logwrittenOutput.contains(IDENTIFY_ID), 

@@ -90,7 +90,7 @@ public class PuttingFile extends PutFileState {
         putMsg.setCorrelationID(conversation.getConversationID());
         putMsg.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         putMsg.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        putMsg.setBitRepositoryCollectionID(conversation.settings.getCollectionID());
+        putMsg.setCollectionID(conversation.settings.getCollectionID());
         putMsg.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         putMsg.setFileAddress(conversation.downloadUrl.toExternalForm());
         putMsg.setFileID(conversation.fileID);

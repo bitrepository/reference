@@ -26,7 +26,7 @@
 
 
 <Settings xmlns="http://bitrepository.org/collection/settings/StandardSettings.xsd" xmlns:bre="http://bitrepository.org/BitRepositoryElements.xsd">
-  <BitRepositoryCollectionID>TEST</BitRepositoryCollectionID>
+  <CollectionID>TEST</CollectionID>
   <Protocol>
     <LocalDestination>TEST-TOPIC-LOCAL</LocalDestination>
     <CollectionDestination>TEST-TOPIC</CollectionDestination>

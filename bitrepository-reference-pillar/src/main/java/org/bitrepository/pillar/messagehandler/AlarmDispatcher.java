@@ -157,7 +157,7 @@ public class AlarmDispatcher {
         alarm.setAlarmConcerning(alarmConcerning);
         alarm.setAlarmDescription(alarmDescription);
         
-        alarm.setBitRepositoryCollectionID(settings.getCollectionID());
+        alarm.setCollectionID(settings.getCollectionID());
         alarm.setCorrelationID(UUID.randomUUID().toString());
         alarm.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         alarm.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());

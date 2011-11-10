@@ -51,7 +51,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         identifyPillarsForGetFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         identifyPillarsForGetFileRequest.setFileID(FILE_ID_DEFAULT);
         identifyPillarsForGetFileRequest.setMinVersion(VERSION_DEFAULT);
-        identifyPillarsForGetFileRequest.setBitRepositoryCollectionID(slaID);
+        identifyPillarsForGetFileRequest.setCollectionID(slaID);
         identifyPillarsForGetFileRequest.setVersion(VERSION_DEFAULT);
         return identifyPillarsForGetFileRequest;
     }
@@ -80,8 +80,8 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         IdentifyPillarsForGetFileResponse identifyPillarsForGetFileRequest = new IdentifyPillarsForGetFileResponse();
         identifyPillarsForGetFileRequest.setTo(receivedIdentifyRequestMessage.getReplyTo());
         identifyPillarsForGetFileRequest.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
-        identifyPillarsForGetFileRequest.setBitRepositoryCollectionID(
-        		receivedIdentifyRequestMessage.getBitRepositoryCollectionID());
+        identifyPillarsForGetFileRequest.setCollectionID(
+        		receivedIdentifyRequestMessage.getCollectionID());
         identifyPillarsForGetFileRequest.setReplyTo(pillarDestinationId);
         identifyPillarsForGetFileRequest.setPillarID(pillarId);
         identifyPillarsForGetFileRequest.setFileID(receivedIdentifyRequestMessage.getFileID());
@@ -103,7 +103,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         getFileRequest.setMinVersion(VERSION_DEFAULT);
         getFileRequest.setVersion(VERSION_DEFAULT);
         getFileRequest.setPillarID(pillarId);
-        getFileRequest.setBitRepositoryCollectionID(slaID);
+        getFileRequest.setCollectionID(slaID);
         getFileRequest.setTo(toTopic);
         return getFileRequest;
     }
@@ -121,7 +121,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         GetFileProgressResponse getFileProgressResponse = new GetFileProgressResponse();
         getFileProgressResponse.setTo(receivedGetFileRequest.getReplyTo());
         getFileProgressResponse.setCorrelationID(receivedGetFileRequest.getCorrelationID());
-        getFileProgressResponse.setBitRepositoryCollectionID(receivedGetFileRequest.getBitRepositoryCollectionID());
+        getFileProgressResponse.setCollectionID(receivedGetFileRequest.getCollectionID());
         getFileProgressResponse.setReplyTo(pillarDestinationId);
         getFileProgressResponse.setPillarID(pillarId);
         getFileProgressResponse.setFileID(receivedGetFileRequest.getFileID());
@@ -137,7 +137,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         GetFileFinalResponse getFileFinalResponse = new GetFileFinalResponse();
         getFileFinalResponse.setTo(receivedGetFileRequest.getReplyTo());
         getFileFinalResponse.setCorrelationID(receivedGetFileRequest.getCorrelationID());
-        getFileFinalResponse.setBitRepositoryCollectionID(receivedGetFileRequest.getBitRepositoryCollectionID());
+        getFileFinalResponse.setCollectionID(receivedGetFileRequest.getCollectionID());
         getFileFinalResponse.setReplyTo(pillarDestinationId);
         getFileFinalResponse.setPillarID(pillarId);
         getFileFinalResponse.setFileID(receivedGetFileRequest.getFileID());

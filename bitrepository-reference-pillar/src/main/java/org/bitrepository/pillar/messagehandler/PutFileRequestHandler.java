@@ -98,7 +98,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
      */
     private boolean validateMessage(PutFileRequest message) {
         // validate message
-        validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
+        validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
 
         // verify, that we already have the file
@@ -264,7 +264,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setCollectionID(settings.getCollectionID());
         res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         
         return res;
@@ -290,7 +290,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setCollectionID(settings.getCollectionID());
         res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
 
         return res;

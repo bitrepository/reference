@@ -66,7 +66,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler extends PillarMessageHan
      */
     public void handleMessage(IdentifyPillarsForGetFileIDsRequest message) {
         try {
-            validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
+            validateBitrepositoryCollectionId(message.getCollectionID());
             checkThatAllRequestedFilesAreAvailable(message);
             respondSuccesfullIdentification(message);
         } catch (IllegalArgumentException e) {
@@ -165,7 +165,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler extends PillarMessageHan
         res.setFileIDs(msg.getFileIDs());
         res.setTo(msg.getReplyTo());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setCollectionID(settings.getCollectionID());
         res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         
         return res;

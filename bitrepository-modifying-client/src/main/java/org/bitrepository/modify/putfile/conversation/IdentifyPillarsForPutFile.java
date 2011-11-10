@@ -79,7 +79,7 @@ public class IdentifyPillarsForPutFile extends PutFileState {
         identifyRequest.setCorrelationID(conversation.getConversationID());
         identifyRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         identifyRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        identifyRequest.setBitRepositoryCollectionID(conversation.settings.getCollectionID());
+        identifyRequest.setCollectionID(conversation.settings.getCollectionID());
         identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         identifyRequest.setTo(conversation.settings.getCollectionDestination());
         conversation.messageSender.sendMessage(identifyRequest);

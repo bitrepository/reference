@@ -71,7 +71,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
      */
     public void handleMessage(IdentifyPillarsForGetChecksumsRequest message) {
         try {
-            validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
+            validateBitrepositoryCollectionId(message.getCollectionID());
             checkThatAllRequestedFilesAreAvailable(message);
             checkThatTheChecksumFunctionIsAvailable(message);
             respondSuccesfullIdentification(message);
@@ -200,7 +200,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         res.setTo(msg.getReplyTo());
         res.setFileChecksumSpec(msg.getFileChecksumSpec());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setCollectionID(settings.getCollectionID());
         res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         
         return res;

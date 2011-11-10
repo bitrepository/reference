@@ -22,6 +22,7 @@
     <module>bitrepository-modifying-client</module>
     <module>bitrepository-integrity-client</module>
     <module>bitrepository-alarm-service</module>
+    <module>bitrepository-reference-pillar</module>
     <module>bitrepository-monitoring-service</module>
     <module>bitrepository-integration</module>
   </modules>
@@ -352,7 +353,7 @@
   </reporting>
 
   <properties>
-    <message.xml.version>0.3.8</message.xml.version>
+    <message.xml.version>0.4.0-SNAPSHOT</message.xml.version>
     <collection.settings.version>0.3.0</collection.settings.version>
     <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
   </properties>

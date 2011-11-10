@@ -112,7 +112,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      */
     private boolean validateMessage(GetChecksumsRequest message) {
         // Validate the message.
-        validateBitrepositoryCollectionId(message.getBitRepositoryCollectionID());
+        validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
         
         if(!validateFileIDs(message)) {
@@ -427,7 +427,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         res.setFileIDs(message.getFileIDs());
         res.setResultAddress(message.getResultAddress());
         res.setTo(message.getReplyTo());
-        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setCollectionID(settings.getCollectionID());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
 
@@ -451,7 +451,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         res.setCorrelationID(message.getCorrelationID());
         res.setFileChecksumSpec(message.getFileChecksumSpec());
         res.setTo(message.getReplyTo());
-        res.setBitRepositoryCollectionID(settings.getCollectionID());
+        res.setCollectionID(settings.getCollectionID());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         

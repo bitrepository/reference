@@ -57,7 +57,7 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
         IdentifyPillarsForPutFileRequest identifyPillarsForPutFileRequest = new IdentifyPillarsForPutFileRequest();
         identifyPillarsForPutFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         identifyPillarsForPutFileRequest.setMinVersion(VERSION_DEFAULT);
-        identifyPillarsForPutFileRequest.setBitRepositoryCollectionID(collectionId);
+        identifyPillarsForPutFileRequest.setCollectionID(collectionId);
         identifyPillarsForPutFileRequest.setVersion(VERSION_DEFAULT);
         identifyPillarsForPutFileRequest.setAuditTrailInformation(null);
         return identifyPillarsForPutFileRequest;
@@ -92,7 +92,7 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
         IdentifyPillarsForPutFileResponse ipfpfResponse = new IdentifyPillarsForPutFileResponse();
         ipfpfResponse.setTo(receivedIdentifyRequestMessage.getReplyTo());
         ipfpfResponse.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
-        ipfpfResponse.setBitRepositoryCollectionID(collectionId);
+        ipfpfResponse.setCollectionID(collectionId);
         ipfpfResponse.setPillarID(pillarId);
         ipfpfResponse.setReplyTo(pillarDestinationId);
         ipfpfResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
@@ -114,7 +114,7 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
         putFileRequest.setFileID(FILE_ID_DEFAULT);
         putFileRequest.setMinVersion(VERSION_DEFAULT);
         putFileRequest.setVersion(VERSION_DEFAULT);
-        putFileRequest.setBitRepositoryCollectionID(collectionId);
+        putFileRequest.setCollectionID(collectionId);
         return putFileRequest;
     }
 
@@ -158,7 +158,7 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
         PutFileProgressResponse progressResponse = new PutFileProgressResponse();
         progressResponse.setTo(request.getReplyTo());
         progressResponse.setCorrelationID(request.getCorrelationID());
-        progressResponse.setBitRepositoryCollectionID(collectionId);
+        progressResponse.setCollectionID(collectionId);
         progressResponse.setReplyTo(pillarDestinationId);
         progressResponse.setPillarID(pillarId);
         progressResponse.setFileAddress(request.getFileAddress());
@@ -184,7 +184,7 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
         PutFileFinalResponse finalResponse = new PutFileFinalResponse();
         finalResponse.setTo(request.getReplyTo());
         finalResponse.setCorrelationID(request.getCorrelationID());
-        finalResponse.setBitRepositoryCollectionID(collectionId);
+        finalResponse.setCollectionID(collectionId);
         finalResponse.setReplyTo(pillarDestinationId);
         finalResponse.setPillarID(pillarId);
         finalResponse.setFileAddress(request.getFileAddress());
