@@ -39,6 +39,7 @@ import org.jaccept.gui.ComponentTestFrame;
 import org.jaccept.structure.ExtendedTestCase;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
@@ -58,7 +59,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     public MessageBus messageBus;
 
     protected static String collectionDestinationID;
-    protected MessageReceiver bitRepositoryCollectionDestination; 
+    protected MessageReceiver collectionDestination; 
     
     protected static String alarmDestinationID;
     protected MessageReceiver alarmDestination; 
@@ -71,16 +72,27 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         setupMessageBus();
         setupHttpServer();
     }
+    @AfterClass(alwaysRun = true)
+    public void teardownTest() throws Exception {
+        teardownMessageBus(); 
+        teardownHttpServer();
+    }
+
 
     /**
      * Defines the standard BitRepositoryCollection configuration
      * @param testMethod Used to grap the name of the test method used for naming.
      */
     @BeforeMethod(alwaysRun = true)
-    public void beforeMethodSetup(java.lang.reflect.Method testMethod) {
+    public void setupTest(java.lang.reflect.Method testMethod) {
         setupSettings();
-        defineDestinations();
+        initializeMessageBusListeners();
     }    
+
+    @AfterMethod(alwaysRun = true)
+    public void teardownTestMethod() {
+        teardownMessageBusListeners();
+    }
 
     /**
      * Initializes the settings.
@@ -98,7 +110,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
             hmi.setVisible(true);
         }
     }
-
     @BeforeTest (alwaysRun = true)
     public void writeLogStatus() {  
         if (System.getProperty("enableLogStatus", "false").equals("true")) {
@@ -118,7 +129,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     }
 
     /**
-     * 
+     * Hooks up the message bus.
      */
     protected void setupMessageBus() throws Exception {
         if (useEmbeddedMessageBus()) { 
@@ -130,13 +141,13 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     }
 
     /**
-     * Defines the general destinations by 
+     * Defines the general destinations used in the tests and adds listeners to the message bus.
      */
-    protected void defineDestinations() {
+    protected void initializeMessageBusListeners() {
         collectionDestinationID = settings.getCollectionDestination() + getTopicPostfix();
         settings.getCollectionSettings().getProtocolSettings().setCollectionDestination(collectionDestinationID);
-        bitRepositoryCollectionDestination = new MessageReceiver("Collection topic receiver", testEventManager);
-        messageBus.addListener(collectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
+        collectionDestination = new MessageReceiver("Collection topic receiver", testEventManager);
+        messageBus.addListener(collectionDestinationID, collectionDestination.getMessageListener());
         
         System.out.println("Using colelction destination: " + collectionDestinationID);
         
@@ -145,7 +156,15 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         alarmDestination = new MessageReceiver("Alarm receiver", testEventManager);
         messageBus.addListener(alarmDestinationID, alarmDestination.getMessageListener());
     }
+    
+    protected void teardownMessageBusListeners() {
+        messageBus.removeListener(collectionDestinationID, collectionDestination.getMessageListener());
+        messageBus.removeListener(alarmDestinationID, alarmDestination.getMessageListener());
+    }
 
+    /**
+     * Shutdown the embedded message bus if any
+     */
     protected void teardownMessageBus() {
         if (useEmbeddedMessageBus()) { 
             try {
@@ -156,6 +175,11 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         }
     }
 
+    /**
+     * Initialises the connection to the file exchange server. Also starts an embedded http server 
+     * if this is going to be used, eg. if useEmbeddedHttpServer is true. 
+     * @throws Exception
+     */
     protected void setupHttpServer() throws Exception {
         httpServerConfiguration = new HttpServerConfiguration();
         if (useEmbeddedHttpServer()) { // Note that the embedded server isn't fully functional yet
@@ -171,19 +195,14 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         httpServer.clearFiles();
     }
 
+    /**
+     * Shutdown the embedded http server if any. 
+     * @throws Exception
+     */
     protected void teardownHttpServer() throws Exception {
         if (useEmbeddedHttpServer()) {
             server.stop();
         }
-    }
-
-    /**
-     * Removes references to the message bus, such as listeners.
-     */
-    @AfterClass(alwaysRun = true)
-    public void teardownTest() throws Exception {
-        teardownMessageBus(); 
-        teardownHttpServer();
     }
 
     /** 

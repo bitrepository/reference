@@ -34,7 +34,6 @@ import java.util.Date;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForBitRepositoryFile;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataForBitRepositoryFile.ChecksumDataItems;
 import org.bitrepository.bitrepositoryelements.ErrorcodeFinalresponseType;
 import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
@@ -146,7 +145,6 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         prInfo.setProgressResponseCode(ProgressResponseCodeType.REQUEST_ACCEPTED);
         prInfo.setProgressResponseText("Started to retrieve data.");
         pResponse.setProgressResponseInfo(prInfo);
-        pResponse.setAuditTrailInformation(null);
         if(USE_CHECKSUM) {
             log.debug("generating checksum data for '" + requestedFile.getName() + "'.");
             ChecksumsDataForBitRepositoryFile checksumCollection = new ChecksumsDataForBitRepositoryFile();
@@ -188,8 +186,6 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
     protected void sendFinalResponse(GetFileRequest message) {
         // make ProgressResponse to tell that we are handling this.
         GetFileFinalResponse fResponse = createGetFileFinalResponse(message);
-        // set missing variables in the message: AuditTrailInformation, FinalResponseInfo
-        fResponse.setAuditTrailInformation(null);
         FinalResponseInfo frInfo = new FinalResponseInfo();
         frInfo.setFinalResponseCode(FinalResponseCodePositiveType.SUCCESS.value().toString());
         frInfo.setFinalResponseText("Data delivered.");

@@ -99,7 +99,6 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
         ipfpfResponse.setMinVersion(VERSION_DEFAULT);
         ipfpfResponse.setVersion(VERSION_DEFAULT);
 
-        ipfpfResponse.setAuditTrailInformation(null);
         ipfpfResponse.setPillarChecksumSpec(null);
 
         return ipfpfResponse;
@@ -164,7 +163,6 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
         progressResponse.setPillarID(pillarId);
         progressResponse.setFileAddress(request.getFileAddress());
         progressResponse.setFileID(request.getFileID());
-        progressResponse.setAuditTrailInformation(null);
         progressResponse.setPillarChecksumSpec(null);
         progressResponse.setProgressResponseInfo(PROGRESS_INFO_DEFAULT);
         progressResponse.setVersion(VERSION_DEFAULT);
@@ -191,7 +189,6 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
         finalResponse.setPillarID(pillarId);
         finalResponse.setFileAddress(request.getFileAddress());
         finalResponse.setFileID(request.getFileID());
-        finalResponse.setAuditTrailInformation(null);
         finalResponse.setPillarChecksumSpec(null);
         finalResponse.setFinalResponseInfo(FINAL_INFO_DEFAULT);
         finalResponse.setVersion(VERSION_DEFAULT);

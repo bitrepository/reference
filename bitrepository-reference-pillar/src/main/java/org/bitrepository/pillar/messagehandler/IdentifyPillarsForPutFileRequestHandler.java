@@ -153,7 +153,6 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
         reply.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
                 settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
-        reply.setAuditTrailInformation(null);
         reply.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
         
         IdentifyResponseInfo irInfo = new IdentifyResponseInfo();

@@ -65,19 +65,17 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     }
 
     @Override
-    protected void teardownMessageBus() {
-        if (useMockupPillar()) {
-            messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
-            messageBus.removeListener(collectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
-            messageBus.removeListener(pillar1DestinationId, pillar1Destination.getMessageListener());
-            messageBus.removeListener(pillar2DestinationId, pillar2Destination.getMessageListener());
-        }
-        super.teardownMessageBus();
+    protected void teardownMessageBusListeners() {
+        messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
+        messageBus.removeListener(collectionDestinationID, collectionDestination.getMessageListener());
+        messageBus.removeListener(pillar1DestinationId, pillar1Destination.getMessageListener());
+        messageBus.removeListener(pillar2DestinationId, pillar2Destination.getMessageListener());
+        super.teardownMessageBusListeners();
     }
     
     @Override
-    protected void defineDestinations() {
-        super.defineDestinations();
+    protected void initializeMessageBusListeners() {
+        super.initializeMessageBusListeners();
         clientDestinationId = settings.getReferenceSettings().getClientSettings().getReceiverDestination() + getTopicPostfix();
         settings.getReferenceSettings().getClientSettings().setReceiverDestination(clientDestinationId);
         pillar1DestinationId = "Pillar1_topic" + getTopicPostfix();

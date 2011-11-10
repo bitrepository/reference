@@ -90,7 +90,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
                     IdentifyPillarsForPutFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     messageFactory.createIdentifyPillarsForPutFileRequest(
@@ -171,7 +171,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
                     IdentifyPillarsForPutFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     messageFactory.createIdentifyPillarsForPutFileRequest(

@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.AlarmConcerning;
-import org.bitrepository.bitrepositoryelements.AlarmConcerning.BitRepositoryCollections;
 import org.bitrepository.bitrepositoryelements.AlarmConcerning.Components;
 import org.bitrepository.bitrepositoryelements.AlarmDescription;
 import org.bitrepository.bitrepositoryelements.AlarmcodeType;
@@ -144,9 +143,6 @@ public class PillarMediator extends AbstractMessageListener {
         
         // create the Concerning part of the alarm.
         AlarmConcerning ac = new AlarmConcerning();
-        BitRepositoryCollections brcs = new BitRepositoryCollections();
-        brcs.getBitRepositoryCollectionID().add(settings.getCollectionID());
-        ac.setBitRepositoryCollections(brcs);
         ac.setMessages(msg);
         ac.setFileInformation(null);
         Components comps = new Components();
@@ -275,7 +271,7 @@ public class PillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(IdentifyPillarsForGetFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message);
 
         PillarMessageHandler<IdentifyPillarsForGetFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {

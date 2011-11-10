@@ -118,7 +118,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
-            receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
                     IdentifyPillarsForGetFileIDsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage, 
@@ -214,7 +214,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
-            receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
                     IdentifyPillarsForGetFileIDsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage, 
@@ -321,7 +321,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
                 deliveryUrl, testEventHandler, "TEST-AUDIT");
 
         if (useMockupPillar()) {
-            bitRepositoryCollectionDestination.waitForMessage(IdentifyPillarsForGetFileIDsRequest.class);
+            collectionDestination.waitForMessage(IdentifyPillarsForGetFileIDsRequest.class);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
 
@@ -361,7 +361,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
-            receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
                     IdentifyPillarsForGetFileIDsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage, 
@@ -419,7 +419,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
-            receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
                     IdentifyPillarsForGetFileIDsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage, 

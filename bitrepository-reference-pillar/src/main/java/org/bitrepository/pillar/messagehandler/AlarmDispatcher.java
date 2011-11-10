@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.bitrepository.bitrepositoryelements.AlarmConcerning;
-import org.bitrepository.bitrepositoryelements.AlarmConcerning.BitRepositoryCollections;
 import org.bitrepository.bitrepositoryelements.AlarmConcerning.Components;
 import org.bitrepository.bitrepositoryelements.AlarmDescription;
 import org.bitrepository.bitrepositoryelements.AlarmcodeType;
@@ -158,8 +157,6 @@ public class AlarmDispatcher {
         alarm.setAlarmConcerning(alarmConcerning);
         alarm.setAlarmDescription(alarmDescription);
         
-        alarm.setAuditTrailInformation("ReferencePillar: " + 
-        settings.getReferenceSettings().getPillarSettings().getPillarID());
         alarm.setBitRepositoryCollectionID(settings.getCollectionID());
         alarm.setCorrelationID(UUID.randomUUID().toString());
         alarm.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
@@ -179,9 +176,6 @@ public class AlarmDispatcher {
      */
     private AlarmConcerning createAlarmConcerning() {
         AlarmConcerning ac = new AlarmConcerning();
-        BitRepositoryCollections brcs = new BitRepositoryCollections();
-        brcs.getBitRepositoryCollectionID().add(settings.getCollectionID());
-        ac.setBitRepositoryCollections(brcs);
         Components comps = new Components();
         ComponentTYPE compType = new ComponentTYPE();
         compType.setComponentComment("ReferencePillar");

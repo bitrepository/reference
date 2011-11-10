@@ -164,7 +164,6 @@ public class IdentifyPillarsForGetFileIDsRequestHandler extends PillarMessageHan
         res.setCorrelationID(msg.getCorrelationID());
         res.setFileIDs(msg.getFileIDs());
         res.setTo(msg.getReplyTo());
-        res.setAuditTrailInformation(msg.getAuditTrailInformation());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         res.setBitRepositoryCollectionID(settings.getCollectionID());
         res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());

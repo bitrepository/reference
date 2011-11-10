@@ -66,12 +66,12 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
     }
 
     @Override
-    protected void defineDestinations() {
-        super.defineDestinations();
+    protected void initializeMessageBusListeners() {
+        super.initializeMessageBusListeners();
         pillarDestinationId = "pillar_topic" + getTopicPostfix();
         clientDestinationId = "client" + getTopicPostfix();
         messageBus.addListener(pillarDestinationId, pillarTopic.getMessageListener());    
-        messageBus.addListener(collectionDestinationID, bitRepositoryCollectionDestination.getMessageListener());
+        messageBus.addListener(collectionDestinationID, collectionDestination.getMessageListener());
         messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());    
     }
 

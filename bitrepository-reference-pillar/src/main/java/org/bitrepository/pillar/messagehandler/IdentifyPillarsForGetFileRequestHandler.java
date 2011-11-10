@@ -108,7 +108,6 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
         // TimeToDeliver, AuditTrailInformation, IdentifyResponseInfo
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
                 settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
-        reply.setAuditTrailInformation(null);
         
         IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
         irInfo.setIdentifyResponseCode(IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().toString());

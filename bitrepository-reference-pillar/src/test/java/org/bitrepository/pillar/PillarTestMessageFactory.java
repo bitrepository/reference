@@ -66,7 +66,6 @@ public class PillarTestMessageFactory extends TestMessageFactory {
             String correlationId, String replyTo, String pillarId, 
             TimeMeasureTYPE timeToDeliver, String toTopic) {
         IdentifyPillarsForPutFileResponse res = new IdentifyPillarsForPutFileResponse();
-        res.setAuditTrailInformation(null);
         res.setBitRepositoryCollectionID(settings.getCollectionID());
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarChecksumSpec(null);
@@ -112,7 +111,6 @@ public class PillarTestMessageFactory extends TestMessageFactory {
             String pillarId, ChecksumSpecTYPE checksumSpec, ProgressResponseInfo prInfo, String replyTo, 
             String toTopic) {
         PutFileProgressResponse res = new PutFileProgressResponse();
-        res.setAuditTrailInformation(null);
         res.setBitRepositoryCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
@@ -132,7 +130,6 @@ public class PillarTestMessageFactory extends TestMessageFactory {
             String correlationId, String url, String fileId, FinalResponseInfo frInfo, String pillarId, 
             ChecksumSpecTYPE checksumSpec, String replyTo, String toTopic) {
         PutFileFinalResponse res = new PutFileFinalResponse();
-        res.setAuditTrailInformation(null);
         res.setBitRepositoryCollectionID(settings.getCollectionID());
         res.setChecksumsDataForNewFile(checksumNewFile);
         res.setCorrelationID(correlationId);

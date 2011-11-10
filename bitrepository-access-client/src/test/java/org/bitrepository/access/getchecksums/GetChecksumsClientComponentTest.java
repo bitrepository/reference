@@ -118,7 +118,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
-            receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
                     IdentifyPillarsForGetChecksumsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
@@ -203,7 +203,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                 "Should be sent by the GetCheckumsClient");
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
-            receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
                     IdentifyPillarsForGetChecksumsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
@@ -321,7 +321,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                 DEFAULT_CHECKSUM_SPECS, deliveryUrl, testEventHandler, "TEST-AUDIT");
 
         if (useMockupPillar()) {
-            bitRepositoryCollectionDestination.waitForMessage(IdentifyPillarsForGetChecksumsRequest.class);
+            collectionDestination.waitForMessage(IdentifyPillarsForGetChecksumsRequest.class);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
 
@@ -360,7 +360,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
-            receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
                     IdentifyPillarsForGetChecksumsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
@@ -418,7 +418,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
-            receivedIdentifyRequestMessage = bitRepositoryCollectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
                     IdentifyPillarsForGetChecksumsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 

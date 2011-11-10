@@ -80,10 +80,10 @@ public class MessageBusTest extends ExtendedTestCase {
 
     @Test(groups = { "failing" })
     public final void busActivityTest() throws Exception {
-        addDescription("Tests whether it is possible to create a message listener," +
+        addDescription("Tests whether it is possible to create a message listener, " +
                 "and then set it to listen to the topic. Then puts a message" +
                 "on the topic for the message listener to find, and" +
-        "tests whether it finds the correct message.");
+                "tests whether it finds the correct message.");
 
         IdentifyPillarsForGetFileRequest content = 
             ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);

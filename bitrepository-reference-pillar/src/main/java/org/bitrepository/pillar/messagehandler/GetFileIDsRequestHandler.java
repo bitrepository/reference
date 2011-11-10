@@ -341,7 +341,6 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         response.setBitRepositoryCollectionID(settings.getCollectionID());
         response.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         response.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
-        response.setAuditTrailInformation(message.getAuditTrailInformation());
         response.setCorrelationID(message.getCorrelationID());
         response.setFileIDs(message.getFileIDs());
         response.setResultAddress(message.getResultAddress());
@@ -366,7 +365,6 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         response.setBitRepositoryCollectionID(settings.getCollectionID());
         response.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         response.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
-        response.setAuditTrailInformation(message.getAuditTrailInformation());
         response.setCorrelationID(message.getCorrelationID());
         response.setFileIDs(message.getFileIDs());
         response.setTo(message.getReplyTo());

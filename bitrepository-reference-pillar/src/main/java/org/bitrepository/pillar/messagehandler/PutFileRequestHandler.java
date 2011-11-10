@@ -125,7 +125,6 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         PutFileProgressResponse pResponse = createPutFileProgressResponse(message);
 
         // Needs to fill in: AuditTrailInformation, PillarChecksumSpec, ProgressResponseInfo
-        pResponse.setAuditTrailInformation(null);
         pResponse.setPillarChecksumSpec(null);
         ProgressResponseInfo prInfo = new ProgressResponseInfo();
         prInfo.setProgressResponseCode(ProgressResponseCodeType.REQUEST_ACCEPTED);
@@ -197,7 +196,6 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         PutFileFinalResponse fResponse = createPutFileFinalResponse(message);
 
         // insert: AuditTrailInformation, ChecksumsDataForNewFile, FinalResponseInfo, PillarChecksumSpec
-        fResponse.setAuditTrailInformation(null);
         FinalResponseInfo frInfo = new FinalResponseInfo();
         frInfo.setFinalResponseCode(FinalResponseCodePositiveType.SUCCESS.value().toString());
         frInfo.setFinalResponseText("The put has be finished.");
