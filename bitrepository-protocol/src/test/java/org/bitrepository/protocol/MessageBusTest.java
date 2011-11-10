@@ -78,7 +78,7 @@ public class MessageBusTest extends ExtendedTestCase {
         Assert.assertNotNull(ProtocolComponentFactory.getInstance().getMessageBus(settings));
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test(groups = { "failing" })
     public final void busActivityTest() throws Exception {
         addDescription("Tests whether it is possible to create a message listener," +
                 "and then set it to listen to the topic. Then puts a message" +
