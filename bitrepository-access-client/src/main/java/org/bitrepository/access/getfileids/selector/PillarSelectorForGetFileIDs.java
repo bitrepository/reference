@@ -29,9 +29,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
-import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
-import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.protocol.exceptions.NegativeResponseException;
@@ -65,12 +64,12 @@ public class PillarSelectorForGetFileIDs {
     public void processResponse(IdentifyPillarsForGetFileIDsResponse response) 
             throws UnexpectedResponseException, NegativeResponseException {
         responseStatus.responseReceived(response.getPillarID());
-        validateResponse(response.getIdentifyResponseInfo());
-        if (!IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().equals(
-                new BigInteger(response.getIdentifyResponseInfo().getIdentifyResponseCode()))) {
+        validateResponse(response.getResponseInfo());
+        if (!ResponseCode.IDENTIFICATION_POSITIVE.value().equals(
+                response.getResponseInfo().getResponseCode().value())) {
             throw new NegativeResponseException(response.getPillarID() + " sent negative response " + 
-                    response.getIdentifyResponseInfo().getIdentifyResponseText(), 
-                    ErrorcodeGeneralType.valueOf(response.getIdentifyResponseInfo().getIdentifyResponseCode()));
+                    response.getResponseInfo().getResponseText(), 
+                    response.getResponseInfo().getResponseCode());
         }
         selectedPillars.add(new SelectedPillarInfo(response.getPillarID(), response.getReplyTo()));
     }
@@ -79,20 +78,20 @@ public class PillarSelectorForGetFileIDs {
      * Method for validating the response.
      * @param irInfo The IdentifyResponseInfo to validate.
      */
-    private void validateResponse(IdentifyResponseInfo irInfo) throws UnexpectedResponseException {
+    private void validateResponse(ResponseInfo irInfo) throws UnexpectedResponseException {
         String errorMessage = null;
 
         if(irInfo == null) {
             errorMessage = "Response code was null";
         }
 
-        String responseCode = irInfo.getIdentifyResponseCode();
+        ResponseCode responseCode = irInfo.getResponseCode();
         if(responseCode == null) {
             errorMessage = "Response code was null";
         }
 
-        IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().equals(
-                new BigInteger(responseCode));
+        ResponseCode.IDENTIFICATION_POSITIVE.value().equals(
+                responseCode);
         if (errorMessage != null) throw new UnexpectedResponseException(
                 "Invalid IdentifyResponse from response.getPillarID(), " + errorMessage);
     }

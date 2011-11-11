@@ -93,7 +93,7 @@ class GettingFile extends GetFileState {
     public void onMessage(GetFileProgressResponse msg) {
         monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.Progress, 
                 "Received progress response for retrieval of file " + msg.getFileID() + ":\n" + 
-                        msg.getProgressResponseInfo()));
+                        msg.getResponseInfo()));
     }
 
     /**

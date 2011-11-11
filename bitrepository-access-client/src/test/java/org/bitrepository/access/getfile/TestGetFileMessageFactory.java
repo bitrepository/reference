@@ -24,8 +24,8 @@
  */
 package org.bitrepository.access.getfile;
 
-import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
-import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
@@ -88,11 +88,11 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         identifyPillarsForGetFileRequest.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
         identifyPillarsForGetFileRequest.setVersion(VERSION_DEFAULT);
         identifyPillarsForGetFileRequest.setMinVersion(VERSION_DEFAULT);
-        IdentifyResponseInfo identifyResponseInfo = new IdentifyResponseInfo();
-        identifyResponseInfo.setIdentifyResponseCode(IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().toString()); 
-        identifyResponseInfo.setIdentifyResponseText("Pillar " + pillarId + " will be able to begin devlivery of file " 
+        ResponseInfo identifyResponseInfo = new ResponseInfo();
+        identifyResponseInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE); 
+        identifyResponseInfo.setResponseText("Pillar " + pillarId + " will be able to begin devlivery of file " 
         + receivedIdentifyRequestMessage.getFileID() + " in " + TIME_TO_DELIVER_DEFAULT);
-        identifyPillarsForGetFileRequest.setIdentifyResponseInfo(identifyResponseInfo);
+        identifyPillarsForGetFileRequest.setResponseInfo(identifyResponseInfo);
         return identifyPillarsForGetFileRequest;
     }
   
@@ -125,7 +125,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         getFileProgressResponse.setReplyTo(pillarDestinationId);
         getFileProgressResponse.setPillarID(pillarId);
         getFileProgressResponse.setFileID(receivedGetFileRequest.getFileID());
-        getFileProgressResponse.setProgressResponseInfo(PROGRESS_INFO_DEFAULT);
+        getFileProgressResponse.setResponseInfo(PROGRESS_INFO_DEFAULT);
         getFileProgressResponse.setVersion(VERSION_DEFAULT);
         getFileProgressResponse.setMinVersion(VERSION_DEFAULT);
         getFileProgressResponse.setFileAddress(receivedGetFileRequest.getFileAddress());
@@ -141,7 +141,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         getFileFinalResponse.setReplyTo(pillarDestinationId);
         getFileFinalResponse.setPillarID(pillarId);
         getFileFinalResponse.setFileID(receivedGetFileRequest.getFileID());
-        getFileFinalResponse.setFinalResponseInfo(FINAL_INFO_DEFAULT);
+        getFileFinalResponse.setResponseInfo(FINAL_INFO_DEFAULT);
         getFileFinalResponse.setVersion(VERSION_DEFAULT);
         getFileFinalResponse.setMinVersion(VERSION_DEFAULT);
         getFileFinalResponse.setFileAddress(receivedGetFileRequest.getFileAddress());

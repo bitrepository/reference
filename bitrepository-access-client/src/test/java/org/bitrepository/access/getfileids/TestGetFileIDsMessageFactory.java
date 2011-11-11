@@ -29,9 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
-import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
-import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
@@ -102,7 +99,7 @@ public class TestGetFileIDsMessageFactory extends TestMessageFactory {
         identifyPillarsForGetFileIdsResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
         identifyPillarsForGetFileIdsResponse.setVersion(VERSION_DEFAULT);
         identifyPillarsForGetFileIdsResponse.setMinVersion(VERSION_DEFAULT);
-        identifyPillarsForGetFileIdsResponse.setIdentifyResponseInfo(IDENTIFY_INFO_DEFAULT);
+        identifyPillarsForGetFileIdsResponse.setResponseInfo(IDENTIFY_INFO_DEFAULT);
         return identifyPillarsForGetFileIdsResponse;
     }
     
@@ -136,7 +133,7 @@ public class TestGetFileIDsMessageFactory extends TestMessageFactory {
         getFileIDsProgressResponse.setReplyTo(pillarDestination);
         getFileIDsProgressResponse.setPillarID(pillarId);
         getFileIDsProgressResponse.setFileIDs(receivedMessage.getFileIDs());
-        getFileIDsProgressResponse.setProgressResponseInfo(PROGRESS_INFO_DEFAULT);
+        getFileIDsProgressResponse.setResponseInfo(PROGRESS_INFO_DEFAULT);
         getFileIDsProgressResponse.setVersion(VERSION_DEFAULT);
         getFileIDsProgressResponse.setMinVersion(VERSION_DEFAULT);
         getFileIDsProgressResponse.setResultAddress(receivedMessage.getResultAddress());
@@ -164,7 +161,7 @@ public class TestGetFileIDsMessageFactory extends TestMessageFactory {
         getFileIDsFinalResponse.setReplyTo(pillarDestinationId);
         getFileIDsFinalResponse.setPillarID(pillarId);
         getFileIDsFinalResponse.setFileIDs(receivedGetFileIDsRequest.getFileIDs());
-        getFileIDsFinalResponse.setFinalResponseInfo(FINAL_INFO_DEFAULT);
+        getFileIDsFinalResponse.setResponseInfo(FINAL_INFO_DEFAULT);
         getFileIDsFinalResponse.setVersion(VERSION_DEFAULT);
         getFileIDsFinalResponse.setMinVersion(VERSION_DEFAULT);
 

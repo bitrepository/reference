@@ -34,9 +34,9 @@ import java.util.concurrent.TimeUnit;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
@@ -451,10 +451,10 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             GetChecksumsFinalResponse completeMsg = testMessageFactory.createGetChecksumsFinalResponse(
                     receivedGetChecksumsRequest, PILLAR1_ID, pillar1DestinationId);
             
-            FinalResponseInfo rfInfo = new FinalResponseInfo();
-            rfInfo.setFinalResponseCode(ErrorcodeGeneralType.FILE_NOT_FOUND.value().toString());
-            rfInfo.setFinalResponseText("No such file.");
-            completeMsg.setFinalResponseInfo(rfInfo);
+            ResponseInfo rfInfo = new ResponseInfo();
+            rfInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            rfInfo.setResponseText("No such file.");
+            completeMsg.setResponseInfo(rfInfo);
             completeMsg.setResultingChecksums(null);
             
             messageBus.sendMessage(completeMsg);

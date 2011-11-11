@@ -26,7 +26,7 @@ package org.bitrepository.access.getfile.selectors;
 
 import java.util.Collection;
 
-import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.exceptions.UnableToFinishException;
@@ -55,8 +55,8 @@ public class FastestPillarSelectorForGetFile extends PillarSelectorForGetFile {
     public boolean checkPillarResponseForSelection(IdentifyPillarsForGetFileResponse response) 
     throws UnexpectedResponseException {
         responseStatus.responseReceived(response.getPillarID());
-        if (!IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().toString().equals(
-                response.getIdentifyResponseInfo().getIdentifyResponseCode())) {
+        if (!ResponseCode.IDENTIFICATION_POSITIVE.equals(
+                response.getResponseInfo().getResponseCode())) {
             return false;
         } else if (selectedPillar == null || 
                 TimeMeasureComparator.compare(response.getTimeToDeliver(), selectedPillar.getTimeToDeliver()) < 0) {

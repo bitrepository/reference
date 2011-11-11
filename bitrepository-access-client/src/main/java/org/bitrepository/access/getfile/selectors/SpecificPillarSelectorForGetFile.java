@@ -24,7 +24,7 @@
  */
 package org.bitrepository.access.getfile.selectors;
 
-import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.exceptions.UnableToFinishException;
@@ -63,11 +63,11 @@ public class SpecificPillarSelectorForGetFile extends PillarSelectorForGetFile {
             throws UnexpectedResponseException{
         boolean selectPillar = false;
         if (pillarToSelect.equals(response.getPillarID() )) {
-            if (IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().toString().equals(
-                    response.getIdentifyResponseInfo().getIdentifyResponseCode())) {
+            if (ResponseCode.IDENTIFICATION_POSITIVE.equals(
+                    response.getResponseInfo().getResponseCode())) {
                 selectPillar = true;
             } else {      
-                pillarMessage = response.getIdentifyResponseInfo().getIdentifyResponseText();          
+                pillarMessage = response.getResponseInfo().getResponseText();          
                 selectPillar = false;
             }
             finished = true;

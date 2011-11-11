@@ -33,12 +33,12 @@ import javax.xml.bind.JAXBException;
 
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
-import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
@@ -452,10 +452,10 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
             GetFileIDsFinalResponse completeMsg = testMessageFactory.createGetFileIDsFinalResponse(
                     receivedGetFileIDsRequest, PILLAR1_ID, pillar1DestinationId);
             
-            FinalResponseInfo rfInfo = new FinalResponseInfo();
-            rfInfo.setFinalResponseCode(ErrorcodeGeneralType.FILE_NOT_FOUND.value().toString());
-            rfInfo.setFinalResponseText("No such file.");
-            completeMsg.setFinalResponseInfo(rfInfo);
+            ResponseInfo rfInfo = new ResponseInfo();
+            rfInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            rfInfo.setResponseText("No such file.");
+            completeMsg.setResponseInfo(rfInfo);
             completeMsg.setResultingFileIDs(null);
             
             messageBus.sendMessage(completeMsg);

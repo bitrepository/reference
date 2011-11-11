@@ -90,7 +90,7 @@ public class TestGetChecksumsMessageFactory extends TestMessageFactory {
         identifyPillarsForGetChecksumsRequest.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
         identifyPillarsForGetChecksumsRequest.setVersion(VERSION_DEFAULT);
         identifyPillarsForGetChecksumsRequest.setMinVersion(VERSION_DEFAULT);
-        identifyPillarsForGetChecksumsRequest.setIdentifyResponseInfo(IDENTIFY_INFO_DEFAULT);
+        identifyPillarsForGetChecksumsRequest.setResponseInfo(IDENTIFY_INFO_DEFAULT);
         return identifyPillarsForGetChecksumsRequest;
     }
   
@@ -125,7 +125,7 @@ public class TestGetChecksumsMessageFactory extends TestMessageFactory {
         getChecksumsProgressResponse.setReplyTo(pillarDestinationId);
         getChecksumsProgressResponse.setPillarID(pillarId);
         getChecksumsProgressResponse.setFileIDs(receivedGetChecksumsRequest.getFileIDs());
-        getChecksumsProgressResponse.setProgressResponseInfo(PROGRESS_INFO_DEFAULT);
+        getChecksumsProgressResponse.setResponseInfo(PROGRESS_INFO_DEFAULT);
         getChecksumsProgressResponse.setVersion(VERSION_DEFAULT);
         getChecksumsProgressResponse.setMinVersion(VERSION_DEFAULT);
         getChecksumsProgressResponse.setResultAddress(receivedGetChecksumsRequest.getResultAddress());
@@ -154,7 +154,7 @@ public class TestGetChecksumsMessageFactory extends TestMessageFactory {
         getChecksumsFinalResponse.setReplyTo(pillarDestinationId);
         getChecksumsFinalResponse.setPillarID(pillarId);
         //getChecksumsFinalResponse.setFileIDs(receivedGetChecksumsRequest.getFileIDs());
-        getChecksumsFinalResponse.setFinalResponseInfo(FINAL_INFO_DEFAULT);
+        getChecksumsFinalResponse.setResponseInfo(FINAL_INFO_DEFAULT);
         getChecksumsFinalResponse.setVersion(VERSION_DEFAULT);
         getChecksumsFinalResponse.setMinVersion(VERSION_DEFAULT);
         

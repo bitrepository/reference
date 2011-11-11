@@ -31,8 +31,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
-import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
@@ -130,7 +130,7 @@ public class GettingFileIDs extends GetFileIDsState {
         try {
             responseStatus.responseReceived(response.getPillarID());
             
-            if(isReponseSuccess(response.getFinalResponseInfo())) {
+            if(isReponseSuccess(response.getResponseInfo())) {
                 monitor.pillarComplete(new FileIDsCompletePillarEvent(
                         response.getResultingFileIDs(),
                         response.getPillarID(),
@@ -140,10 +140,10 @@ public class GettingFileIDs extends GetFileIDsState {
                     results.put(response.getPillarID(), response.getResultingFileIDs());
                 }
             } else {
-                monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getFinalResponseInfo());
+                monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
             } 
         } catch (UnexpectedResponseException ure) {
-            monitor.warning("Received bad FinalResponse from pillar: " + response.getFinalResponseInfo(), ure);
+            monitor.warning("Received bad FinalResponse from pillar: " + response.getResponseInfo(), ure);
         
         }
 
@@ -160,8 +160,8 @@ public class GettingFileIDs extends GetFileIDsState {
      * @param frInfo The FinalResponseInfo to be validated.
      * @return Whether the FinalRepsonseInfo tells that the operation has been a success or a failure.
      */
-    private boolean isReponseSuccess(FinalResponseInfo frInfo) throws UnexpectedResponseException { 
-        if(FinalResponseCodePositiveType.SUCCESS.value().toString().equals(frInfo.getFinalResponseCode())) {
+    private boolean isReponseSuccess(ResponseInfo frInfo) throws UnexpectedResponseException { 
+        if(ResponseCode.SUCCESS.equals(frInfo.getResponseCode())) {
             return true;
         } 
         return false;
