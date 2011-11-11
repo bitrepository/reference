@@ -33,7 +33,7 @@ import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataForBitRepositoryFile;
+import org.bitrepository.bitrepositoryelements.ChecksumsDataForFile;
 import org.bitrepository.bitrepositoryelements.ErrorcodeFinalresponseType;
 import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
@@ -147,13 +147,14 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         pResponse.setProgressResponseInfo(prInfo);
         if(USE_CHECKSUM) {
             log.debug("generating checksum data for '" + requestedFile.getName() + "'.");
-            ChecksumsDataForBitRepositoryFile checksumCollection = new ChecksumsDataForBitRepositoryFile();
-            ChecksumsDataForBitRepositoryFile checksumData = new ChecksumsDataForBitRepositoryFile();
+            ChecksumsDataForFile checksumCollection = new ChecksumsDataForFile();
+            ChecksumsDataForFile checksumData = new ChecksumsDataForFile();
             // Retrieve the checksum using default digester without any salt.
             checksumData.getChecksumDataForFile().add(calculateChecksum(requestedFile, null, CHECKSUM_DIGESTER));
-            checksumCollection.setChecksumDataItems(checksumData);
+            //TODO Review the current progressResponse info. 
+            // checksumCollection.setFileIDChecksumDataItem(checksumData);
             checksumCollection.setFileID(message.getFileID());
-            pResponse.setChecksumsDataForBitRepositoryFile(checksumCollection);
+            pResponse.setChecksumsDataForFile(checksumCollection);
         }
 
         // Send the ProgressResponse
