@@ -84,17 +84,15 @@ public final class JaxbHelper {
 		Unmarshaller unmarshaller = context.createUnmarshaller();
 		return xmlroot.cast(unmarshaller.unmarshal(inputStream));
 	}
-
-	public void validate(InputStream inputStream) throws SAXException{
-		try {
-		    schemaValidator.validate(new SAXSource(new InputSource(inputStream)));
-		
-		} catch (IOException e) {
-			e.printStackTrace();
-
-			return;
-		}
-		return;
+	
+	/**
+	 * Validates the xml in the inputstream
+	 * @param inputStream The stream containing the xml to validate
+	 * @throws SAXException The xml didn't validate.
+	 * @throws Exception General error.
+	 */
+	public void validate(InputStream inputStream) throws SAXException, Exception {
+	    schemaValidator.validate(new SAXSource(new InputSource(inputStream)));
 	}
 
 	/**

@@ -21,7 +21,7 @@
       <artifactId>activemq-all</artifactId>
       <!-- Note that we can't upgrade to 5.5, as this includes a dependency on a pre 1.6 slf4j, which is incompatible with 
         our 1.6.1 slf4j dependency, see https://issues.apache.org/jira/browse/AMQ-3296 (fixed in ActiveMQ 5.6.0) -->
-      <version>5.3.2</version>
+      <version>5.4.3</version>
     </dependency>
     <dependency>
       <scope>test</scope>

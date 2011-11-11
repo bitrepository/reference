@@ -584,7 +584,7 @@ public class ActiveMQMessageBus implements MessageBus {
                 }
                 log.error("Received message of unknown type '" + type + "'\n{}", text);
             } catch (SAXException e) {
-                log.error("Error validating message", e);
+                log.error("Error validating message " + message, e);
             } catch (Exception e) {
                 log.error("Error handling message. Received type was '" + type + "'.\n{}", text, e);
             }
