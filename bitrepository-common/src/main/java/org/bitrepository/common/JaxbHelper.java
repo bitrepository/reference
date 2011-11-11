@@ -32,6 +32,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
@@ -49,12 +50,22 @@ import java.util.List;
  * Provides extra JAXB related utilities
  */
 public final class JaxbHelper {
-
-	private String pathToSchema;
+	private final Validator schemaValidator;
 	/** Hides constructor for this utility class to prevent instantiation */
 	public JaxbHelper(String pathToSchema) {
 		ArgumentValidator.checkNotNullOrEmpty(pathToSchema, "pathToSchema");
-		this.pathToSchema = pathToSchema;
+		
+		InputStream schemaStream = ClassLoader.getSystemResourceAsStream(pathToSchema);
+        LSResourceResolver resourceResolver = new ResourceResolver();
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        schemaFactory.setResourceResolver(resourceResolver);
+        Schema schema;
+        try {
+            schema = schemaFactory.newSchema(new SAXSource(new InputSource(schemaStream)));
+        } catch (SAXException e) {
+            throw new IllegalArgumentException("Unable to parse schema " + pathToSchema, e);
+        }
+        schemaValidator = schema.newValidator();
 	}
 
 	/**
@@ -75,15 +86,8 @@ public final class JaxbHelper {
 	}
 
 	public void validate(InputStream inputStream) throws SAXException{
-		InputStream schemaStream = ClassLoader.getSystemResourceAsStream(pathToSchema);
-		LSResourceResolver resourceResolver = new ResourceResolver();
-		SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		schemaFactory.setResourceResolver(resourceResolver);
-		Schema schema;
-		schema = schemaFactory.newSchema(new SAXSource(new InputSource(schemaStream)));
-
 		try {
-			schema.newValidator().validate(new SAXSource(new InputSource(inputStream)));
+		    schemaValidator.validate(new SAXSource(new InputSource(inputStream)));
 		
 		} catch (IOException e) {
 			e.printStackTrace();

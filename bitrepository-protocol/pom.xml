@@ -71,7 +71,6 @@
               <attached>false</attached>     
               <resourceBundles>
                  <resourceBundle>org.bitrepository:bitrepository-message-xml:${message.xml.version}</resourceBundle> 
-            <!--     <resourceBundle>org.bitrepository:bitrepository-message-xml:0.3.6-SNAPSHOT</resourceBundle> -->
               </resourceBundles>
             </configuration>
           </execution>
