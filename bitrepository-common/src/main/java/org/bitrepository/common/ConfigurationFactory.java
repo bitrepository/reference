@@ -122,13 +122,11 @@ public final class ConfigurationFactory {
             log.debug("Loading the configuration '" + configurationClass.getCanonicalName() + "'.");
             jaxbHelper.validate(configStreamValidate);
             return (T) jaxbHelper.loadXml(configurationClass, configStreamLoad);
-            
-        } catch (JAXBException e) {
+        } catch(SAXException e) {
+            throw new ConfigurationException("Failed to validate the xml from " + configStreamLoad, e); 
+        } catch (Exception e) {
             throw new ConfigurationException("Failed to load the configuration from " + configStreamLoad, 
                     e);
-        } catch(SAXException e) {
-        	throw new ConfigurationException("Failed to validate the xml from " + configStreamLoad, e);
-        }
-        
+        }   
     }
 }
