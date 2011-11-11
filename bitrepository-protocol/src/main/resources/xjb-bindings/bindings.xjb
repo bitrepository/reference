@@ -36,8 +36,6 @@
 
     <jaxb:bindings node="//xs:simpleType[@name='ALARMCODE_TYPE']">
       <jaxb:typesafeEnumClass name="AlarmcodeType">
-        <jaxb:typesafeEnumMember value="541" name="GENERAL" />
-        <jaxb:typesafeEnumMember value="542" name="UNKNOWN_USER" />
         <jaxb:typesafeEnumMember value="700" name="COMPONENT_FAILURE" />
         <jaxb:typesafeEnumMember value="701" name="INCONSISTENT_REQUEST" />
         <jaxb:typesafeEnumMember value="702" name="CHECKSUM" />
@@ -49,33 +47,24 @@
       </jaxb:typesafeEnumClass>
     </jaxb:bindings>
 
-    <jaxb:bindings node="//xs:simpleType[@name='ERRORCODE_FINALRESPONSE_TYPE']">
-      <jaxb:typesafeEnumClass name="ErrorcodeFinalresponseType">
-        <jaxb:typesafeEnumMember value="581" name="OPERATION_FAILED" />
-      </jaxb:typesafeEnumClass>
-    </jaxb:bindings>
-    <jaxb:bindings node="//xs:simpleType[@name='ERRORCODE_GENERAL_TYPE']">
-      <jaxb:typesafeEnumClass name="ErrorcodeGeneralType">
+    <jaxb:bindings node="//xs:simpleType[@name='ResponseCode_TYPE']">
+      <jaxb:typesafeEnumClass name="ResponseCode">
+        <jaxb:typesafeEnumMember value="440" name="IDENTIFICATION_POSITIVE" />
+        <jaxb:typesafeEnumMember value="460" name="REQUEST_ACCEPTED" />
+        <jaxb:typesafeEnumMember value="461" name="BUFFERING_SUCCESSFUL" />
+        <jaxb:typesafeEnumMember value="462" name="FILE_FOUND" />
+        <jaxb:typesafeEnumMember value="480" name="SUCCESS" />
         <jaxb:typesafeEnumMember value="501" name="FILE_NOT_FOUND" />
         <jaxb:typesafeEnumMember value="502" name="DUPLICATE_FILE" />
         <jaxb:typesafeEnumMember value="500" name="FAILURE" />
         <jaxb:typesafeEnumMember value="561" name="REQUEST_NOT_UNDERSTOOD" />
+        <jaxb:typesafeEnumMember value="581" name="OPERATION_FAILED" />
       </jaxb:typesafeEnumClass>
     </jaxb:bindings>
+
 
     <!--jaxb:bindings node="//xs:simpleType[@name='FileID_TYPE']"> <jaxb:typesafeEnumClass name="FileIDType" /> </jaxb:bindings -->
 
-    <jaxb:bindings node="//xs:simpleType[@name='FinalResponseCodePositive_TYPE']">
-      <jaxb:typesafeEnumClass name="FinalResponseCodePositiveType">
-        <jaxb:typesafeEnumMember value="480" name="SUCCESS" />
-      </jaxb:typesafeEnumClass>
-    </jaxb:bindings>
-
-    <jaxb:bindings node="//xs:simpleType[@name='IdentifyResponseCodePositive_TYPE']">
-      <jaxb:typesafeEnumClass name="IdentifyResponseCodePositiveType">
-        <jaxb:typesafeEnumMember value="440" name="IDENTIFICATION_POSITIVE" />
-      </jaxb:typesafeEnumClass>
-    </jaxb:bindings>
 
     <!--jaxb:bindings node="//xs:simpleType[@name='PillarID_TYPE']"> <jaxb:typesafeEnumClass name="PillarIDType" /> </jaxb:bindings> -->
     <jaxb:bindings node="//xs:simpleType[@name='PriorityCode_TYPE']">
@@ -84,13 +73,6 @@
         <jaxb:typesafeEnumMember value="2" name="MISSING_IDS" />
         <jaxb:typesafeEnumMember value="3" name="CHECKSUM_ERROR" />
         <jaxb:typesafeEnumMember value="4" name="OTHER" />
-      </jaxb:typesafeEnumClass>
-    </jaxb:bindings>
-    <jaxb:bindings node="//xs:simpleType[@name='ProgressResponseCode_TYPE']">
-      <jaxb:typesafeEnumClass name="ProgressResponseCodeType">
-        <jaxb:typesafeEnumMember value="460" name="REQUEST_ACCEPTED" />
-        <jaxb:typesafeEnumMember value="461" name="BUFFERING_SUCCESSFUL" />
-        <jaxb:typesafeEnumMember value="462" name="FILE_FOUND" />
       </jaxb:typesafeEnumClass>
     </jaxb:bindings>
 
