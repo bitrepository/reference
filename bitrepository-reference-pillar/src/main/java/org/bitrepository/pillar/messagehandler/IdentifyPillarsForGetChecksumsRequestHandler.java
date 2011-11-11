@@ -30,10 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
-import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.common.settings.Settings;
@@ -107,9 +106,9 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         
         // Throw exception if any files are missing.
         if(!missingFiles.isEmpty()) {
-            IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-            irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FILE_NOT_FOUND.value().toString());
-            irInfo.setIdentifyResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
+            ResponseInfo irInfo = new ResponseInfo();
+            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
             
             throw new IdentifyPillarsException(irInfo);
         }
@@ -133,9 +132,9 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
             MessageDigest.getInstance(checksumSpec.getChecksumType());
         } catch (NoSuchAlgorithmException e) {
             log.warn("Could not instantiate the given messagedigester for calculating a checksum.", e);
-            IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-            irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FAILURE.value().toString());
-            irInfo.setIdentifyResponseText("The algorithm '" + checksumSpec.getChecksumType() 
+            ResponseInfo irInfo = new ResponseInfo();
+            irInfo.setResponseCode(ResponseCode.FAILURE);
+            irInfo.setResponseText("The algorithm '" + checksumSpec.getChecksumType() 
                     + "' cannot be found. Exception: " + e.getLocalizedMessage());
             throw new IdentifyPillarsException(irInfo);
         }
@@ -154,10 +153,10 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
                 settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
-        IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-        irInfo.setIdentifyResponseCode(IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().toString());
-        irInfo.setIdentifyResponseText("Operation acknowledged and accepted.");
-        reply.setIdentifyResponseInfo(irInfo);
+        ResponseInfo irInfo = new ResponseInfo();
+        irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
+        irInfo.setResponseText("Operation acknowledged and accepted.");
+        reply.setResponseInfo(irInfo);
         
         // Send resulting file.
         messagebus.sendMessage(reply);
@@ -173,7 +172,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         IdentifyPillarsForGetChecksumsResponse reply = createIdentifyPillarsForGetChecksumsResponse(message);
         
         reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
-        reply.setIdentifyResponseInfo(cause.getResponseInfo());
+        reply.setResponseInfo(cause.getResponseInfo());
         
         messagebus.sendMessage(reply);
     }

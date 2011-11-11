@@ -106,7 +106,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
                         progressResponse.getFileID(), 
                         progressResponse.getPillarID(), 
                         progressResponse.getPillarChecksumSpec(), 
-                        progressResponse.getProgressResponseInfo(), 
+                        progressResponse.getResponseInfo(), 
                         progressResponse.getReplyTo(), 
                         progressResponse.getTo()));
         
@@ -118,7 +118,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
                         finalResponse.getCorrelationID(), 
                         finalResponse.getFileAddress(), 
                         finalResponse.getFileID(), 
-                        finalResponse.getFinalResponseInfo(), 
+                        finalResponse.getResponseInfo(), 
                         finalResponse.getPillarID(), 
                         finalResponse.getPillarChecksumSpec(), 
                         finalResponse.getReplyTo(), 

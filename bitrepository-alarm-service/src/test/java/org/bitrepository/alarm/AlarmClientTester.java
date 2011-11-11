@@ -120,7 +120,7 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
             addStep("Insert description of ALARM_CODE and ALARM_MESSAGE in message send to handler", 
             "Should sent to log.");
             AlarmDescription desc = new AlarmDescription();
-            desc.setAlarmCode(AlarmcodeType.GENERAL);
+            desc.setAlarmCode(AlarmcodeType.COMPONENT_FAILURE);
             desc.setAlarmText(ALARM_MESSAGE);
             alarmMsg.setAlarmDescription(desc);
             handler.handleAlarm(alarmMsg);
@@ -129,8 +129,8 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
             String logwrittenOutput = new String(out.toByteArray());
             Assert.assertTrue(logwrittenOutput.contains(ALARM_MESSAGE), 
 	     "The message should contain '" + ALARM_MESSAGE + "' but was: '" + logwrittenOutput);
-            Assert.assertTrue(logwrittenOutput.contains(AlarmcodeType.GENERAL.name()), 
-	     "The message should contain '" + AlarmcodeType.GENERAL + "' but was: '" + logwrittenOutput);
+            Assert.assertTrue(logwrittenOutput.contains(AlarmcodeType.COMPONENT_FAILURE.name()), 
+	     "The message should contain '" + AlarmcodeType.COMPONENT_FAILURE + "' but was: '" + logwrittenOutput);
             Assert.assertTrue(logwrittenOutput.contains(alarmMsg.getClass().getName()), 
 	     "The message should contain '" + alarmMsg.getClass().getName() + "' but was: '" + logwrittenOutput);
             defaultOut.print(logwrittenOutput);
@@ -185,7 +185,7 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
         addStep("Insert description of ALARM_CODE and ALARM_MESSAGE in message send to handler", 
         "Should sent to log.");
         AlarmDescription desc = new AlarmDescription();
-        desc.setAlarmCode(AlarmcodeType.GENERAL);
+        desc.setAlarmCode(AlarmcodeType.COMPONENT_FAILURE);
         desc.setAlarmText(ALARM_MESSAGE);
         msg.setAlarmDescription(desc);
         handler.handleAlarm(msg);

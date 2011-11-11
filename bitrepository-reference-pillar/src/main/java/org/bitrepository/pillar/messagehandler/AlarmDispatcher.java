@@ -90,7 +90,7 @@ public class AlarmDispatcher {
         
         // create a descriptor.
         AlarmDescription ad = new AlarmDescription();
-        ad.setAlarmCode(AlarmcodeType.UNKNOWN_USER);
+        ad.setAlarmCode(AlarmcodeType.FAILED_OPERATION); //TODO Jonas see if this should be changed to another type
         ad.setAlarmText(exception.getMessage());
         ad.setOrigDateTime(CalendarUtils.getXmlGregorianCalendar(new Date()));
         ad.setPriority(PriorityCodeType.OTHER);
@@ -124,7 +124,7 @@ public class AlarmDispatcher {
         
         // create a descriptor.
         AlarmDescription ad = new AlarmDescription();
-        ad.setAlarmCode(AlarmcodeType.GENERAL);
+        ad.setAlarmCode(AlarmcodeType.COMPONENT_FAILURE);
         ad.setAlarmText(exception.getMessage());
         ad.setOrigDateTime(CalendarUtils.getXmlGregorianCalendar(new Date()));
         ad.setPriority(PriorityCodeType.MANUAL_CHECK);

@@ -26,9 +26,8 @@ package org.bitrepository.pillar.messagehandler;
 
 import java.math.BigInteger;
 
-import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
-import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
-import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.common.settings.Settings;
@@ -91,9 +90,9 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
         }
         
         if(archive.hasFile(message.getFileID())) {
-            IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-            irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.DUPLICATE_FILE.value().toString());
-            irInfo.setIdentifyResponseText("The file '" + message.getFileID() 
+            ResponseInfo irInfo = new ResponseInfo();
+            irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE);
+            irInfo.setResponseText("The file '" + message.getFileID() 
                     + "' already exists within the archive.");
             
             throw new IdentifyPillarsException(irInfo);
@@ -116,9 +115,9 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
         long useableSizeLeft = archive.sizeLeftInArchive() 
                 - settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
         if(useableSizeLeft < fileSize.longValue()) {
-            IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-            irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FAILURE.value().toString());
-            irInfo.setIdentifyResponseText("Not enough space left in this pillar. Requires '" 
+            ResponseInfo irInfo = new ResponseInfo();
+            irInfo.setResponseCode(ResponseCode.FAILURE);
+            irInfo.setResponseText("Not enough space left in this pillar. Requires '" 
                     + fileSize.longValue() + "' but has only '" + useableSizeLeft + "'");
             
             throw new IdentifyPillarsException(irInfo);
@@ -136,7 +135,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
         IdentifyPillarsForPutFileResponse reply = createIdentifyPillarsForPutFileResponse(message);
         
         reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
-        reply.setIdentifyResponseInfo(cause.getResponseInfo());
+        reply.setResponseInfo(cause.getResponseInfo());
         
         messagebus.sendMessage(reply);
     }
@@ -155,10 +154,10 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
                 settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         reply.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
         
-        IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-        irInfo.setIdentifyResponseCode(IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().toString());
-        irInfo.setIdentifyResponseText("Operation acknowledged and accepted.");
-        reply.setIdentifyResponseInfo(irInfo);
+        ResponseInfo irInfo = new ResponseInfo();
+        irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
+        irInfo.setResponseText("Operation acknowledged and accepted.");
+        reply.setResponseInfo(irInfo);
 
         log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
         messagebus.sendMessage(reply);

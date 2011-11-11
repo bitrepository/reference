@@ -30,8 +30,7 @@ import java.util.UUID;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
-import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
-import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
@@ -108,7 +107,7 @@ public class PillarTestMessageFactory extends TestMessageFactory {
     }
 
     public PutFileProgressResponse createPutFileProgressResponse(String correlationId, String url, String fileId, 
-            String pillarId, ChecksumSpecTYPE checksumSpec, ProgressResponseInfo prInfo, String replyTo, 
+            String pillarId, ChecksumSpecTYPE checksumSpec, ResponseInfo prInfo, String replyTo, 
             String toTopic) {
         PutFileProgressResponse res = new PutFileProgressResponse();
         res.setCollectionID(settings.getCollectionID());
@@ -118,7 +117,7 @@ public class PillarTestMessageFactory extends TestMessageFactory {
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setPillarChecksumSpec(checksumSpec);
-        res.setProgressResponseInfo(prInfo);
+        res.setResponseInfo(prInfo);
         res.setReplyTo(replyTo);
         res.setTo(toTopic);
         res.setVersion(VERSION_DEFAULT);
@@ -127,7 +126,7 @@ public class PillarTestMessageFactory extends TestMessageFactory {
     }
 
     public PutFileFinalResponse createPutFileFinalResponse(ChecksumsDataForNewFile checksumNewFile, 
-            String correlationId, String url, String fileId, FinalResponseInfo frInfo, String pillarId, 
+            String correlationId, String url, String fileId, ResponseInfo frInfo, String pillarId, 
             ChecksumSpecTYPE checksumSpec, String replyTo, String toTopic) {
         PutFileFinalResponse res = new PutFileFinalResponse();
         res.setCollectionID(settings.getCollectionID());
@@ -135,7 +134,7 @@ public class PillarTestMessageFactory extends TestMessageFactory {
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);
-        res.setFinalResponseInfo(frInfo);
+        res.setResponseInfo(frInfo);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setPillarChecksumSpec(checksumSpec);

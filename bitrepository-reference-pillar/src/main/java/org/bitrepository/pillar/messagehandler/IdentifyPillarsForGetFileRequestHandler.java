@@ -24,9 +24,8 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
-import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
-import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.settings.Settings;
@@ -87,9 +86,9 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
         }
         
         if(!archive.hasFile(message.getFileID())) {
-            IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-            irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FILE_NOT_FOUND.value().toString());
-            irInfo.setIdentifyResponseText("The file '" + message.getFileID() 
+            ResponseInfo irInfo = new ResponseInfo();
+            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            irInfo.setResponseText("The file '" + message.getFileID() 
                     + "' does not exist within the archive.");
             
             throw new IdentifyPillarsException(irInfo);
@@ -109,10 +108,10 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
                 settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
-        IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-        irInfo.setIdentifyResponseCode(IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().toString());
-        irInfo.setIdentifyResponseText("Operation acknowledged and accepted.");
-        reply.setIdentifyResponseInfo(irInfo);
+        ResponseInfo irInfo = new ResponseInfo();
+        irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
+        irInfo.setResponseText("Operation acknowledged and accepted.");
+        reply.setResponseInfo(irInfo);
         
         // Send resulting file.
         messagebus.sendMessage(reply);
@@ -128,7 +127,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
         IdentifyPillarsForGetFileResponse reply = createIdentifyPillarsForGetFileResponse(message);
         
         reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
-        reply.setIdentifyResponseInfo(cause.getResponseInfo());
+        reply.setResponseInfo(cause.getResponseInfo());
         
         // Send resulting file.
         messagebus.sendMessage(reply);

@@ -164,7 +164,7 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
         progressResponse.setFileAddress(request.getFileAddress());
         progressResponse.setFileID(request.getFileID());
         progressResponse.setPillarChecksumSpec(null);
-        progressResponse.setProgressResponseInfo(PROGRESS_INFO_DEFAULT);
+        progressResponse.setResponseInfo(PROGRESS_INFO_DEFAULT);
         progressResponse.setVersion(VERSION_DEFAULT);
         progressResponse.setMinVersion(VERSION_DEFAULT);
         
@@ -190,7 +190,7 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
         finalResponse.setFileAddress(request.getFileAddress());
         finalResponse.setFileID(request.getFileID());
         finalResponse.setPillarChecksumSpec(null);
-        finalResponse.setFinalResponseInfo(FINAL_INFO_DEFAULT);
+        finalResponse.setResponseInfo(FINAL_INFO_DEFAULT);
         finalResponse.setVersion(VERSION_DEFAULT);
         finalResponse.setMinVersion(VERSION_DEFAULT);
         

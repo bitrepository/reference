@@ -29,8 +29,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
-import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
@@ -138,7 +138,7 @@ public class PuttingFile extends PutFileState {
     public void onMessage(PutFileProgressResponse response) {
         monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.Progress, 
                 "Received PutFileProgressResponse from pillar " + response.getPillarID() + ": " + 
-                        response.getProgressResponseInfo().getProgressResponseText()));
+                        response.getResponseInfo().getResponseText()));
     }
 
     @Override
@@ -149,13 +149,13 @@ public class PuttingFile extends PutFileState {
             monitor.pillarFailed("Received unexpected final response from " + response.getPillarID() , ure);
         }
 
-        if(isResponseSuccess(response.getFinalResponseInfo())) {
+        if(isResponseSuccess(response.getResponseInfo())) {
             monitor.pillarComplete(new PillarOperationEvent(
                     OperationEventType.PillarComplete,
                     response.getPillarID(),
                     "Received checksum result from " + response.getPillarID()));
         } else {
-            monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getFinalResponseInfo());
+            monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
         } 
 
         // Check if the conversation has finished.
@@ -174,12 +174,12 @@ public class PuttingFile extends PutFileState {
      * @param frInfo The FinalResponseInfo to be validated.
      * @return Whether the FinalRepsonseInfo tells that the operation has been a success or a failure.
      */
-    private boolean isResponseSuccess(FinalResponseInfo frInfo) {
+    private boolean isResponseSuccess(ResponseInfo frInfo) {
         // validate the response info.
-        if(frInfo == null || frInfo.getFinalResponseCode() == null || frInfo.getFinalResponseCode().isEmpty()) {
+        if(frInfo == null || frInfo.getResponseCode() == null) {
             return false;
         } else {
-            if(FinalResponseCodePositiveType.SUCCESS.value().intValue() == new Integer(frInfo.getFinalResponseCode())) {
+            if(ResponseCode.SUCCESS.equals(frInfo.getResponseCode())) {
                 return true;
             } 
         }

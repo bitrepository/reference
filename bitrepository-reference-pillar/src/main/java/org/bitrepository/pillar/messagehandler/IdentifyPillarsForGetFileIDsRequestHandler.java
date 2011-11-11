@@ -27,10 +27,9 @@ package org.bitrepository.pillar.messagehandler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.IdentifyResponseCodePositiveType;
-import org.bitrepository.bitrepositoryelements.IdentifyResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.common.settings.Settings;
@@ -101,9 +100,9 @@ public class IdentifyPillarsForGetFileIDsRequestHandler extends PillarMessageHan
         
         // Throw exception if any files are missing.
         if(!missingFiles.isEmpty()) {
-            IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-            irInfo.setIdentifyResponseCode(ErrorcodeGeneralType.FILE_NOT_FOUND.value().toString());
-            irInfo.setIdentifyResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
+            ResponseInfo irInfo = new ResponseInfo();
+            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
             
             throw new IdentifyPillarsException(irInfo);
         }
@@ -120,10 +119,10 @@ public class IdentifyPillarsForGetFileIDsRequestHandler extends PillarMessageHan
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
                 settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
-        IdentifyResponseInfo irInfo = new IdentifyResponseInfo();
-        irInfo.setIdentifyResponseCode(IdentifyResponseCodePositiveType.IDENTIFICATION_POSITIVE.value().toString());
-        irInfo.setIdentifyResponseText("Operation acknowledged and accepted.");
-        reply.setIdentifyResponseInfo(irInfo);
+        ResponseInfo irInfo = new ResponseInfo();
+        irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
+        irInfo.setResponseText("Operation acknowledged and accepted.");
+        reply.setResponseInfo(irInfo);
         
         // Send resulting file.
         messagebus.sendMessage(reply);
@@ -138,7 +137,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler extends PillarMessageHan
             IdentifyPillarsException cause) {
         IdentifyPillarsForGetFileIDsResponse reply = createIdentifyPillarsForGetFileIDsResponse(message);
         
-        reply.setIdentifyResponseInfo(cause.getResponseInfo());
+        reply.setResponseInfo(cause.getResponseInfo());
         
         // Set to maximum time to indicate that it is a bad reply.
         reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());

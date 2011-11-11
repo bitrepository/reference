@@ -34,12 +34,8 @@ import java.util.Date;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForFile;
-import org.bitrepository.bitrepositoryelements.ErrorcodeFinalresponseType;
-import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
-import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
-import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
-import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
-import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
@@ -96,9 +92,9 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
             alarmDispatcher.handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
-            FinalResponseInfo fri = new FinalResponseInfo();
-            fri.setFinalResponseCode(ErrorcodeFinalresponseType.OPERATION_FAILED.value().toString());
-            fri.setFinalResponseText("Error: " + e.getMessage());
+            ResponseInfo fri = new ResponseInfo();
+            fri.setResponseCode(ResponseCode.OPERATION_FAILED);
+            fri.setResponseText("Error: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
     }
@@ -117,9 +113,9 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         if(!archive.hasFile(message.getFileID())) {
             log.warn("The file '" + message.getFileID() + "' has been requested, but we do not have that file!");
             // Then tell the mediator, that we failed.
-            FinalResponseInfo fri = new FinalResponseInfo();
-            fri.setFinalResponseCode(ErrorcodeGeneralType.FILE_NOT_FOUND.value().toString());
-            fri.setFinalResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
+            ResponseInfo fri = new ResponseInfo();
+            fri.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            fri.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
                     + "not have that file!");
             sendFailedResponse(message, fri);
 
@@ -141,10 +137,10 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         // set missing variables in the message:
         // AuditTrailInformation, ChecksumsDataForBitRepositoryFile, FileSize, ProgressResponseInfo
         pResponse.setFileSize(BigInteger.valueOf(requestedFile.length()));
-        ProgressResponseInfo prInfo = new ProgressResponseInfo();
-        prInfo.setProgressResponseCode(ProgressResponseCodeType.REQUEST_ACCEPTED);
-        prInfo.setProgressResponseText("Started to retrieve data.");
-        pResponse.setProgressResponseInfo(prInfo);
+        ResponseInfo prInfo = new ResponseInfo();
+        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED);
+        prInfo.setResponseText("Started to retrieve data.");
+        pResponse.setResponseInfo(prInfo);
         if(USE_CHECKSUM) {
             log.debug("generating checksum data for '" + requestedFile.getName() + "'.");
             ChecksumsDataForFile checksumCollection = new ChecksumsDataForFile();
@@ -186,10 +182,10 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
     protected void sendFinalResponse(GetFileRequest message) {
         // make ProgressResponse to tell that we are handling this.
         GetFileFinalResponse fResponse = createGetFileFinalResponse(message);
-        FinalResponseInfo frInfo = new FinalResponseInfo();
-        frInfo.setFinalResponseCode(FinalResponseCodePositiveType.SUCCESS.value().toString());
-        frInfo.setFinalResponseText("Data delivered.");
-        fResponse.setFinalResponseInfo(frInfo);
+        ResponseInfo frInfo = new ResponseInfo();
+        frInfo.setResponseCode(ResponseCode.SUCCESS);
+        frInfo.setResponseText("Data delivered.");
+        fResponse.setResponseInfo(frInfo);
 
         // send the FinalResponse.
         log.info("Sending GetFileFinalResponse: " + fResponse);
@@ -201,10 +197,10 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
      * @param message The message requesting the operation.
      * @param frInfo The information about what went wrong.
      */
-    protected void sendFailedResponse(GetFileRequest message, FinalResponseInfo frInfo) {
+    protected void sendFailedResponse(GetFileRequest message, ResponseInfo frInfo) {
         log.info("Sending bad GetFileFinalResponse: " + frInfo);
         GetFileFinalResponse fResponse = createGetFileFinalResponse(message);
-        fResponse.setFinalResponseInfo(frInfo);
+        fResponse.setResponseInfo(frInfo);
         messagebus.sendMessage(fResponse);
     }
     

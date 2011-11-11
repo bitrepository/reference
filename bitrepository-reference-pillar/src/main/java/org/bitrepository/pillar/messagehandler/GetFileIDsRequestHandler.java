@@ -35,17 +35,14 @@ import java.util.List;
 
 import org.bitrepository.bitrepositorydata.FileIDsParameters;
 import org.bitrepository.bitrepositorydata.GetFileIDsResults;
-import org.bitrepository.bitrepositoryelements.ErrorcodeFinalresponseType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsParameterData.FileIDsItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.bitrepositoryelements.FileIDsParameterData;
-import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
-import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
-import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
-import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
@@ -98,9 +95,9 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
             alarmDispatcher.handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RuntimeException caught. Sending response for 'error at my end'.", e);
-            FinalResponseInfo fri = new FinalResponseInfo();
-            fri.setFinalResponseCode(ErrorcodeFinalresponseType.OPERATION_FAILED.value().toString());
-            fri.setFinalResponseText("GetFileIDs operation failed with the exception: " + e.getMessage());
+            ResponseInfo fri = new ResponseInfo();
+            fri.setResponseCode(ResponseCode.OPERATION_FAILED);
+            fri.setResponseText("GetFileIDs operation failed with the exception: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
     }
@@ -129,10 +126,10 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     private void sendInitialProgressMessage(GetFileIDsRequest message) {
         GetFileIDsProgressResponse pResponse = createProgressResponse(message);
         
-        ProgressResponseInfo prInfo = new ProgressResponseInfo();
-        prInfo.setProgressResponseCode(ProgressResponseCodeType.REQUEST_ACCEPTED);
-        prInfo.setProgressResponseText("Operation accepted. Starting to locate files.");
-        pResponse.setProgressResponseInfo(prInfo);
+        ResponseInfo prInfo = new ResponseInfo();
+        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED);
+        prInfo.setResponseText("Operation accepted. Starting to locate files.");
+        pResponse.setResponseInfo(prInfo);
 
         // Send the ProgressResponse
         messagebus.sendMessage(pResponse);
@@ -303,10 +300,10 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     private void sendFinalResponse(GetFileIDsRequest message, ResultingFileIDs results) {
         GetFileIDsFinalResponse fResponse = createFinalResponse(message);
         
-        FinalResponseInfo fri = new FinalResponseInfo();
-        fri.setFinalResponseCode(FinalResponseCodePositiveType.SUCCESS.value().toString());
-        fri.setFinalResponseText("Finished locating the requested files.");
-        fResponse.setFinalResponseInfo(fri);
+        ResponseInfo fri = new ResponseInfo();
+        fri.setResponseCode(ResponseCode.SUCCESS);
+        fri.setResponseText("Finished locating the requested files.");
+        fResponse.setResponseInfo(fri);
         fResponse.setResultingFileIDs(results);
         
         messagebus.sendMessage(fResponse);        
@@ -317,9 +314,9 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      * @param message The message to base the response upon.
      * @param fri The information about why the operation failed.
      */
-    private void sendFailedResponse(GetFileIDsRequest message, FinalResponseInfo fri) {
+    private void sendFailedResponse(GetFileIDsRequest message, ResponseInfo fri) {
         GetFileIDsFinalResponse fResponse = createFinalResponse(message);
-        fResponse.setFinalResponseInfo(fri);
+        fResponse.setResponseInfo(fri);
         
         messagebus.sendMessage(fResponse);        
     }

@@ -28,12 +28,8 @@ import java.io.File;
 import java.net.URL;
 
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
-import org.bitrepository.bitrepositoryelements.ErrorcodeFinalresponseType;
-import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
-import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
-import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
-import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
-import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -85,9 +81,9 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             alarmDispatcher.handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
-            FinalResponseInfo fri = new FinalResponseInfo();
-            fri.setFinalResponseCode(ErrorcodeFinalresponseType.OPERATION_FAILED.value().toString());
-            fri.setFinalResponseText("Error: " + e.getMessage());
+            ResponseInfo fri = new ResponseInfo();
+            fri.setResponseCode(ResponseCode.OPERATION_FAILED);
+            fri.setResponseText("Error: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
     }
@@ -106,9 +102,9 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             log.warn("Cannot perform put for a file, '" + message.getFileID() 
                     + "', which we already have within the archive");
             // Then tell the mediator, that we failed.
-            FinalResponseInfo fri = new FinalResponseInfo();
-            fri.setFinalResponseCode(ErrorcodeGeneralType.DUPLICATE_FILE.value().toString());
-            fri.setFinalResponseText("File is already within archive.");
+            ResponseInfo fri = new ResponseInfo();
+            fri.setResponseCode(ResponseCode.DUPLICATE_FILE);
+            fri.setResponseText("File is already within archive.");
             sendFailedResponse(message, fri);
 
             return false;
@@ -126,10 +122,10 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
 
         // Needs to fill in: AuditTrailInformation, PillarChecksumSpec, ProgressResponseInfo
         pResponse.setPillarChecksumSpec(null);
-        ProgressResponseInfo prInfo = new ProgressResponseInfo();
-        prInfo.setProgressResponseCode(ProgressResponseCodeType.REQUEST_ACCEPTED);
-        prInfo.setProgressResponseText("Started to receive date.");  
-        pResponse.setProgressResponseInfo(prInfo);
+        ResponseInfo prInfo = new ResponseInfo();
+        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED);
+        prInfo.setResponseText("Started to receive date.");  
+        pResponse.setResponseInfo(prInfo);
 
         log.info("Sending ProgressResponseInfo: " + prInfo);
         messagebus.sendMessage(pResponse);
@@ -196,10 +192,10 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         PutFileFinalResponse fResponse = createPutFileFinalResponse(message);
 
         // insert: AuditTrailInformation, ChecksumsDataForNewFile, FinalResponseInfo, PillarChecksumSpec
-        FinalResponseInfo frInfo = new FinalResponseInfo();
-        frInfo.setFinalResponseCode(FinalResponseCodePositiveType.SUCCESS.value().toString());
-        frInfo.setFinalResponseText("The put has be finished.");
-        fResponse.setFinalResponseInfo(frInfo);
+        ResponseInfo frInfo = new ResponseInfo();
+        frInfo.setResponseCode(ResponseCode.SUCCESS);
+        frInfo.setResponseText("The put has be finished.");
+        fResponse.setResponseInfo(frInfo);
         fResponse.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
 
         ChecksumsDataForNewFile checksumForValidation = new ChecksumsDataForNewFile();
@@ -238,10 +234,10 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
      * @param message The message requesting the put operation.
      * @param frInfo The information about why it has failed.
      */
-    private void sendFailedResponse(PutFileRequest message, FinalResponseInfo frInfo) {
+    private void sendFailedResponse(PutFileRequest message, ResponseInfo frInfo) {
         // send final response telling, that the file already exists!
         PutFileFinalResponse fResponse = createPutFileFinalResponse(message);
-        fResponse.setFinalResponseInfo(frInfo);
+        fResponse.setResponseInfo(frInfo);
         messagebus.sendMessage(fResponse);
     }
     

@@ -27,7 +27,8 @@ package org.bitrepository.modify.putfile;
 import java.io.File;
 import java.net.URL;
 
-import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
@@ -223,11 +224,11 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         if(useMockupPillar()) {
             PutFileFinalResponse putFileFinalResponse = messageFactory.createPutFileFinalResponse(
                     receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
-            FinalResponseInfo frInfo = new FinalResponseInfo();
-            frInfo.setFinalResponseCode("500");
+            ResponseInfo frInfo = new ResponseInfo();
+            frInfo.setResponseCode(ResponseCode.FAILURE);
             // TODO has to contain 'Error' to be caught.
-            frInfo.setFinalResponseText("Error: could not use URL!"); 
-            putFileFinalResponse.setFinalResponseInfo(frInfo);
+            frInfo.setResponseText("Error: could not use URL!"); 
+            putFileFinalResponse.setResponseInfo(frInfo);
             messageBus.sendMessage(putFileFinalResponse);
         }
 

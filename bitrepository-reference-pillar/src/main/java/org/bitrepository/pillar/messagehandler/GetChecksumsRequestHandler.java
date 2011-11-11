@@ -37,13 +37,9 @@ import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ErrorcodeFinalresponseType;
-import org.bitrepository.bitrepositoryelements.ErrorcodeGeneralType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.FinalResponseCodePositiveType;
-import org.bitrepository.bitrepositoryelements.FinalResponseInfo;
-import org.bitrepository.bitrepositoryelements.ProgressResponseCodeType;
-import org.bitrepository.bitrepositoryelements.ProgressResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
@@ -96,9 +92,9 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             alarmDispatcher.handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
-            FinalResponseInfo fri = new FinalResponseInfo();
-            fri.setFinalResponseCode(ErrorcodeFinalresponseType.OPERATION_FAILED.value().toString());
-            fri.setFinalResponseText("Error: " + e.getMessage());
+            ResponseInfo fri = new ResponseInfo();
+            fri.setResponseCode(ResponseCode.OPERATION_FAILED);
+            fri.setResponseText("Error: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
     }
@@ -153,9 +149,9 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             String errText = "The following files are missing: '" + missingFiles + "'";
             log.warn(errText);
             // Then tell the mediator, that we failed.
-            FinalResponseInfo fri = new FinalResponseInfo();
-            fri.setFinalResponseCode(ErrorcodeGeneralType.FILE_NOT_FOUND.value().toString());
-            fri.setFinalResponseText(errText);
+            ResponseInfo fri = new ResponseInfo();
+            fri.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            fri.setResponseText(errText);
             sendFailedResponse(message, fri);
 
             return false;
@@ -180,9 +176,9 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         if(checksumSpec == null || checksumSpec.getChecksumType() == null) {
             String errText = "No checksumSpec in the request. Needs an algorithm to calculate checksums!";
             log.warn(errText);
-            FinalResponseInfo fri = new FinalResponseInfo();
-            fri.setFinalResponseCode(ErrorcodeGeneralType.FAILURE.value().toString());
-            fri.setFinalResponseText(errText);
+            ResponseInfo fri = new ResponseInfo();
+            fri.setResponseCode(ResponseCode.FAILURE);
+            fri.setResponseText(errText);
             sendFailedResponse(message, fri);
             
             return false;
@@ -193,9 +189,9 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         } catch (NoSuchAlgorithmException e) {
             String errText = "Could not instantiate the given messagedigester for calculating a checksum.";
             log.warn(errText, e);
-            FinalResponseInfo fri = new FinalResponseInfo();
-            fri.setFinalResponseCode(ErrorcodeGeneralType.FAILURE.value().toString());
-            fri.setFinalResponseText(errText);
+            ResponseInfo fri = new ResponseInfo();
+            fri.setResponseCode(ResponseCode.FAILURE);
+            fri.setResponseText(errText);
             sendFailedResponse(message, fri);
             
             return false;
@@ -211,10 +207,10 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
     private void sendInitialProgressMessage(GetChecksumsRequest message) {
         GetChecksumsProgressResponse pResponse = createProgressResponse(message);
         
-        ProgressResponseInfo prInfo = new ProgressResponseInfo();
-        prInfo.setProgressResponseCode(ProgressResponseCodeType.REQUEST_ACCEPTED);
-        prInfo.setProgressResponseText("Operation accepted. Starting to calculate checksums.");
-        pResponse.setProgressResponseInfo(prInfo);
+        ResponseInfo prInfo = new ResponseInfo();
+        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED);
+        prInfo.setResponseText("Operation accepted. Starting to calculate checksums.");
+        pResponse.setResponseInfo(prInfo);
 
         // Send the ProgressResponse
         log.info("Sending GetFileProgressResponse: " + pResponse);
@@ -390,10 +386,10 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
     private void sendFinalResponse(GetChecksumsRequest message, ResultingChecksums results) {
         GetChecksumsFinalResponse fResponse = createFinalResponse(message);
         
-        FinalResponseInfo fri = new FinalResponseInfo();
-        fri.setFinalResponseCode(FinalResponseCodePositiveType.SUCCESS.value().toString());
-        fri.setFinalResponseText("Successfully calculated the requested checksums.");
-        fResponse.setFinalResponseInfo(fri);
+        ResponseInfo fri = new ResponseInfo();
+        fri.setResponseCode(ResponseCode.SUCCESS);
+        fri.setResponseText("Successfully calculated the requested checksums.");
+        fResponse.setResponseInfo(fri);
         fResponse.setResultingChecksums(results);
         
         // Send the FinalResponse
@@ -401,9 +397,9 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         messagebus.sendMessage(fResponse);        
     }
     
-    private void sendFailedResponse(GetChecksumsRequest message, FinalResponseInfo fri) {
+    private void sendFailedResponse(GetChecksumsRequest message, ResponseInfo fri) {
         GetChecksumsFinalResponse fResponse = createFinalResponse(message);
-        fResponse.setFinalResponseInfo(fri);
+        fResponse.setResponseInfo(fri);
         
         // Send the FinalResponse
         log.info("Sending GetFileFinalResponse: " + fResponse);
