@@ -42,6 +42,7 @@ public class BasicClientFactory {
                 client = new BasicClient(settings);
             } catch (Exception e) {
             	//won't handle..
+                throw new RuntimeException(e);
             }
         }
         return client;
