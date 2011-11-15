@@ -100,8 +100,15 @@ public class ActiveMQMessageBus implements MessageBus {
     /** The variable to separate the parts of the consumer key. */
     private static final String CONSUMER_KEY_SEPARATOR = "#";
 
-    /** The session. */
-    private final Session session;
+    /** The session for sending messages. Should not be the same as the consumer session, 
+     * as sessions are not thread safe. This also means the session should be used in a synchronized manor.
+     * TODO Switch to use a session pool/producer poll to allow multithreaded message sending, see 
+     * https://sbforge.org/jira/browse/BITMAG-357.
+     */
+    private final Session producerSession;
+    
+    /** The session for receiving messages. */
+    private final Session consumerSession;
 
     /**
      * Map of the consumers, mapping from a hash of "destinations and listener" to consumer.
@@ -137,7 +144,9 @@ public class ActiveMQMessageBus implements MessageBus {
             connection.setExceptionListener(new MessageBusExceptionListener());
             connection.start();
 
-            session = connection.createSession(TRANSACTED, ACKNOWLEDGE_MODE);
+            producerSession = connection.createSession(TRANSACTED, ACKNOWLEDGE_MODE);
+            consumerSession = connection.createSession(TRANSACTED, ACKNOWLEDGE_MODE);
+            
         } catch (JMSException e) {
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
@@ -317,6 +326,8 @@ public class ActiveMQMessageBus implements MessageBus {
 
     /**
      * Send a message using ActiveMQ.
+     * 
+     * Note that the method is synchronized to avoid multithreaded usage of the providerSession.
      *
      * @param destinationID Name of destination to send message to.
      * @param replyTo       The queue to reply to.
@@ -324,7 +335,7 @@ public class ActiveMQMessageBus implements MessageBus {
      * @param correlationID The correlation ID of the message.
      * @param content       JAXB-serializable object to send.
      */
-    private void sendMessage(String destinationID, String replyTo, String collectionID, String correlationID,
+    private synchronized void sendMessage(String destinationID, String replyTo, String collectionID, String correlationID,
                              Object content) {
         try {
             String xmlContent = JaxbHelper.serializeToXml(content);
@@ -333,14 +344,14 @@ public class ActiveMQMessageBus implements MessageBus {
             MessageProducer producer = addTopicMessageProducer(destinationID);
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
-            Message msg = session.createTextMessage(xmlContent);
+            Message msg = producerSession.createTextMessage(xmlContent);
             msg.setStringProperty(MESSAGE_TYPE_KEY, content.getClass().getSimpleName());
             msg.setStringProperty(COLLECTION_ID_KEY, collectionID);
             msg.setJMSCorrelationID(correlationID);
-            msg.setJMSReplyTo(getTopic(replyTo));
+            msg.setJMSReplyTo(getTopic(replyTo, producerSession));
 
             producer.send(msg);
-            session.commit();
+            producerSession.commit();
         } catch (JMSException e) {
             throw new CoordinationLayerException("Could not send message", e);
         } catch (JAXBException e) {
@@ -362,10 +373,10 @@ public class ActiveMQMessageBus implements MessageBus {
                           + "'. Key: '" + key + "'.");
         if (!consumers.containsKey(key)) {
             log.debug("No consumer known. Creating new for key '" + key + "'.");
-            Topic topic = getTopic(destinationID);
+            Topic topic = getTopic(destinationID, consumerSession);
             MessageConsumer consumer;
             try {
-                consumer = session.createConsumer(topic);
+                consumer = consumerSession.createConsumer(topic);
             } catch (JMSException e) {
                 throw new CoordinationLayerException("Could not create message consumer for topic '" + topic + '"', e);
             }
@@ -392,10 +403,10 @@ public class ActiveMQMessageBus implements MessageBus {
      * @return The message producer for this destination.
      */
     private MessageProducer addTopicMessageProducer(String destination) {
-        Topic topic = getTopic(destination);
+        Topic topic = getTopic(destination, producerSession);
         MessageProducer producer;
         try {
-            producer = session.createProducer(topic);
+            producer = producerSession.createProducer(topic);
         } catch (JMSException e) {
             throw new CoordinationLayerException(
                     "Could not create message producer for destination '" + destination + "'", e);
@@ -409,7 +420,7 @@ public class ActiveMQMessageBus implements MessageBus {
      * @param topicID ID of the topic.
      * @return The object representing that topic. Will always return the same topic object for the same topic ID.
      */
-    private Topic getTopic(String topicID) {
+    private Topic getTopic(String topicID, Session session) {
         Topic topic = topics.get(topicID);
         if (topic == null) {
             try {
