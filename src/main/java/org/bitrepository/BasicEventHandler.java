@@ -12,6 +12,9 @@ import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *	Basic event handler, does nothing more than write the textual description of the event to the event log. 
+ */
 public class BasicEventHandler implements EventHandler {
     private String logFile;
     private final Logger log = LoggerFactory.getLogger(getClass());

@@ -1,7 +1,6 @@
 package org.bitrepository.webservice;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,6 +13,10 @@ import org.bitrepository.BasicClient;
 import org.bitrepository.BasicClientFactory;
 import org.bitrepository.GetFileIDsResults;
 
+/**
+ * The class exposes the REST webservices provided by the Bitrepository-webclient using Jersey. 
+ */
+
 @Path("/reposervice")
 public class Reposervice {
     
@@ -24,6 +27,14 @@ public class Reposervice {
         client = BasicClientFactory.getInstance();
     }
     
+    /**
+     * putFile exposes the possibility of uploading a file to the bitrepository collection that the webservice 
+     * is configured to use. The three parameters are all mandatory.
+     * @param fileID Filename of the file to be put in the bitrepository. 
+     * @param fileSize Size of the file en bytes
+     * @param url Place where the bitrepository pillars can fetch the file from 
+     * @return A string indicating if the request was successfully started or has been rejected. 
+     */
     @GET
     @Path("/putfile/")
     @Produces("text/plain")
@@ -34,6 +45,13 @@ public class Reposervice {
         return client.putFile(fileID, fileSize, URL);       
     }
     
+    /**
+     * getFile exposes the possibility of downloading a file from the bitrepository collection that the webservice 
+     * is configured to use. The two parameters are all mandatory.
+     * @param fileID Filename of the file to be downloaded in the bitrepository. 
+     * @param url Place where the bitrepository pillars can upload the file to. 
+     * @return A string indicating if the request was successfully started or has been rejected. 
+     */
     @GET
     @Path("/getfile/")
     @Produces("text/plain")
@@ -43,6 +61,11 @@ public class Reposervice {
         return client.getFile(fileID, URL);       
     }
     
+    /**
+     * getLog gets the log of events that has happened since the webclient were started. The log contains a textual description 
+     * of all events that has occurred, both successes and failures.  
+     * @return The log in a textual format. 
+     */
     @GET
     @Path("/getLog")
     @Produces("text/plain")
@@ -50,6 +73,11 @@ public class Reposervice {
         return client.getLog();
     }
     
+    /**
+     * getHtmlLog gets the log of events that has happened since the webclient were started. The log contains a textual description 
+     * of all events that has occurred, both successes and failures.  
+     * @return The log is formatted with HTML. 
+     */
     @GET
     @Path("/getHtmlLog")
     @Produces("text/html")
@@ -57,6 +85,11 @@ public class Reposervice {
         return client.getHtmlLog();
     }
     
+    /**
+     * getShortHtmlLog gets the latests 25 log entries in reverse order. The log contains a textual description 
+     * of all events that has occurred, both successes and failures.  
+     * @return The log is formatted with HTML. 
+     */
     @GET
     @Path("/getShortHtmlLog")
     @Produces("text/html")
@@ -64,6 +97,13 @@ public class Reposervice {
     	return client.getShortHtmlLog();
     }
     
+    /**
+     * getSettingsSummary provides a summary of some important settings of the Bitrepository collection, herein:
+     * - The message bus which that is communicated with
+     * - The Pillars in the collection
+     * - The Bitrepository collection ID
+     * @return The current settings formatted as HTML 
+     */
     @GET
     @Path("/getSettingsSummary")
     @Produces("text/plain")
@@ -71,6 +111,16 @@ public class Reposervice {
         return client.getSettingsSummary();
     }
     
+    /**
+     * getChecksumsHtml exposes the possibility of requesting checksums for the files present in the Bitrepository.
+     * The two first parameters are mandatory.
+     * @param fileIDs List of filenames to get checksums for. FileIDs should be seperated by a '\n'
+     * @param checksumType The type of checksum algorithm that the requested checksum should be in.
+     * 			The type needs to be one supported by all pillars in the collection. 
+     * @param salt A string to alter the preconditions of calculating a checksum. Will result in the returned checksum
+     * 			being of type hmac:<checksumType>. The salt parameter is optional. 
+     * @return A HTML page containing a table of the requested fileIDs and their checksums, or an error message.
+     */
     @GET
     @Path("getChecksumsHtml")
     @Produces("text/html")
@@ -114,6 +164,16 @@ public class Reposervice {
     	return sb.toString();
     }
     
+    /**
+     * getChecksums exposes the possibility of requesting checksums for the files present in the Bitrepository.
+     * The two first parameters are mandatory.
+     * @param fileIDs List of filenames to get checksums for. FileIDs should be seperated by a '\n'
+     * @param checksumType The type of checksum algorithm that the requested checksum should be in.
+     * 			The type needs to be one supported by all pillars in the collection. 
+     * @param salt A string to alter the preconditions of calculating a checksum. Will result in the returned checksum
+     * 			being of type hmac:<checksumType>. The salt parameter is optional. 
+     * @return A tab separated table containing the requested fileIDs and their checksums, or an error message.
+     */
     @GET
     @Path("getChecksums")
     @Produces("text/plain")
@@ -154,7 +214,16 @@ public class Reposervice {
     	return sb.toString();
     }
 
-    
+    /**
+     * getFileIDsHtml exposes the possibility of requesting listing of files present in the Bitrepository.
+     * Of the two parameters at least one may not be empty. 
+     * @param fileIDs List of filenames to be listed. FileIDs should be seperated by a '\n'
+     * @param allFileIDs Boolean indicating to get a list of all files in the Bitrepository collection. 
+     * 			Setting this will override any files set in by the fileIDs parameter. 
+     * @return A HTML page containing a table containing the requested fileIDs and which pillars have answered.
+     * 			The entry of each fileID is color coded to indicate whether all pillars have answered on that particular file.  
+     * 			In case of an error, an error message is returned instead.
+     */
     @GET
     @Path("getFileIDsHtml")
     @Produces("text/html")

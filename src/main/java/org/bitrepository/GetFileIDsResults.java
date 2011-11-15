@@ -19,20 +19,23 @@ public class GetFileIDsResults {
 		pillarList = pillars;
 	}
 	
-	public synchronized void addResultsFromPillar(String pillarID, ResultingFileIDs fileIDs) {
+	public void addResultsFromPillar(String pillarID, ResultingFileIDs fileIDs) {
 		if(results == null) {
 			results = new HashMap<String, List<String>>();	
 		}
 		
 		List<FileIDsDataItem> items = fileIDs.getFileIDsData().getFileIDsDataItems().getFileIDsDataItem();
 		for(FileIDsDataItem item : items) {
-			if(results.containsKey(item.getFileID())) {
+			synchronized (this) {
+				if(results.containsKey(item.getFileID())) {
 					results.get(item.getFileID()).add(pillarID);
-			} else {
-				List<String> value = new ArrayList<String>();
-				value.add(pillarID);
-				results.put(item.getFileID(), value);
+				} else {
+					List<String> value = new ArrayList<String>();
+					value.add(pillarID);
+					results.put(item.getFileID(), value);
+				}	
 			}
+			
 		}
 	}
 	

@@ -1,22 +1,47 @@
 package org.bitrepository;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
+import org.bitrepository.common.settings.XMLFileSettingsLoader;
 
 public class BasicClientFactory {
     private static BasicClient client;
-
+    private static String confDir; 
+    private static final String CONFIGFILE = "webclient.properties"; 
+    private static final String KEYSTOREFILE = "org.bitrepository.webclient.keystorefile";
+    private static final String KEYSTOREPASSWD = "org.bitrepository.webclient.keystorepassword";
+    private static final String TRUSTSTOREFILE = "org.bitrepository.webclient.truststorefile";
+    private static final String TRUSTSTOREPASSWD = "org.bitrepository.webclient.truststorepassword";
+    
+    /**
+     * Set the configuration directory. 
+     * Should only be run at initialization time. 
+     */
+    public synchronized static void init(String configurationDir) {
+    	confDir = configurationDir;
+    }
+    
+    /**
+     *	Factory method to get a singleton instance of BasicClient
+     *	@return The BasicClient instance or a null in case of trouble.  
+     */
     public synchronized static BasicClient getInstance() {
         if(client == null) {
-            SettingsProvider settingsLoader = new SettingsProvider(new WebServiceEnabledXmlFileSettingsReader("."));
+        	if(confDir == null) {
+        		throw new RuntimeException("No configuration dir has been set!");
+        	}
+        	SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
             Settings settings = settingsLoader.getSettings("bitrepository-devel");	 
             loadProperties();
             try {
                 client = new BasicClient(settings);
             } catch (Exception e) {
+            	//won't handle..
             }
         }
         return client;
@@ -26,17 +51,19 @@ public class BasicClientFactory {
     private static void loadProperties() {
     	Properties properties = new Properties();
     	try {
-            properties.load(Thread.currentThread().getContextClassLoader()
-                                    .getResourceAsStream("webclient.properties"));
-            
+    		String propertiesFile = confDir + "/" + CONFIGFILE;
+    		BufferedReader reader
+    		   = new BufferedReader(new FileReader(propertiesFile));
+    		properties.load(reader);
+    		
             System.setProperty("javax.net.ssl.keyStore", 
-            		properties.getProperty("org.bitrepository.webclient.keystorefile"));
+            		properties.getProperty(KEYSTOREFILE));
             System.setProperty("javax.net.ssl.keyStorePassword", 
-            		properties.getProperty("org.bitrepository.webclient.keystorepassword"));
+            		properties.getProperty(KEYSTOREPASSWD));
             System.setProperty("javax.net.ssl.trustStore", 
-            		properties.getProperty("org.bitrepository.webclient.truststorefile"));
+            		properties.getProperty(TRUSTSTOREFILE));
             System.setProperty("javax.net.ssl.trustStorePassword", 
-            		properties.getProperty("org.bitrepository.webclient.truststorepassword"));
+            		properties.getProperty(TRUSTSTOREPASSWD));
         } catch (IOException e) {
             //will just fail setting keystore stuff and we won't be able to connect over ssl
         	// not a big deal..

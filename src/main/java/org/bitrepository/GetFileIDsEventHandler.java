@@ -6,6 +6,9 @@ import org.bitrepository.protocol.eventhandler.GetFileIDsCompleteEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 
+/**
+ *	Event handler for the asynchronous GetFileIDs method.   
+ */
 public class GetFileIDsEventHandler implements EventHandler {
 
 	private EventHandler logger;
@@ -27,16 +30,25 @@ public class GetFileIDsEventHandler implements EventHandler {
 		
 	}
 	
+	/**
+	 * Not quite sure that this will ever be called. 
+	 */
 	public void handleEvent(FileIDsCompletePillarEvent event) {
 		logger.handleEvent(event);
 		results.addResultsFromPillar(event.getState(), event.getFileIDs());
 	}
 	
+	/**
+	 * Not quite sure that this will ever be called. 
+	 */
 	public void handleEvent(OperationFailedEvent event) {
 		logger.handleEvent(event);
 		results.failed();
 	}
-
+	
+	/**
+	 * Not quite sure that this will ever be called. 
+	 */
 	public void handleEvent(GetFileIDsCompleteEvent event) {
 		logger.handleEvent(event);
 		// add results to results object. Does however need to get pillar id first..

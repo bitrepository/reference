@@ -152,7 +152,7 @@ public class BasicClient {
     	String[] IDs = fileIDsText.split("\n");
     	Map<String, Map<String, String>> result = null;
     	ChecksumSpecTYPE checksumSpecItem = new ChecksumSpecTYPE();
-    	if(salt != null || salt != "") {
+    	if(salt != null || !salt.equals("")) {
     		checksumSpecItem.setChecksumSalt(salt);	
     	}
     	checksumSpecItem.setChecksumType(checksumType);
