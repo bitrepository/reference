@@ -67,7 +67,6 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     @Override
     protected void teardownMessageBusListeners() {
         messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
-        messageBus.removeListener(collectionDestinationID, collectionDestination.getMessageListener());
         messageBus.removeListener(pillar1DestinationId, pillar1Destination.getMessageListener());
         messageBus.removeListener(pillar2DestinationId, pillar2Destination.getMessageListener());
         super.teardownMessageBusListeners();

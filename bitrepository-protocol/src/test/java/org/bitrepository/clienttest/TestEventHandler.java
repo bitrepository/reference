@@ -54,12 +54,12 @@ public class TestEventHandler implements EventHandler {
 
     @Override
     public void handleEvent(OperationEvent event) {
-        testEventManager.addStimuli("Received event: "+ event);
+        testEventManager.addResult("Received event: "+ event);
         eventQueue.add(event);
     }
 
     /**
-     * Wait for an event for the DEFAULT_WAIT_SECONDS amaount of time.
+     * Wait for an event for the DEFAULT_WAIT_SECONDS amount of time.
      * @return The next event if any, else null 
      */
     public OperationEvent<?> waitForEvent() throws InterruptedException {

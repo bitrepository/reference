@@ -173,6 +173,9 @@ public class ActiveMQMessageBus implements MessageBus {
         MessageConsumer consumer = getMessageConsumer(destinationID, listener);
         try {
             consumer.close();
+            // We need to set the listener to null to have the removeListerer take effect at once. 
+            // If this isn't done the listener will continue to receive messages. Do we have a memory leak here? 
+            consumer.setMessageListener(null);
         } catch (JMSException e) {
             throw new CoordinationLayerException(
                     "Unable to remove listener '" + listener + "' from destinationID '" + destinationID + "'", e);
