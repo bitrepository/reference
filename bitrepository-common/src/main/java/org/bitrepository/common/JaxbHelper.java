@@ -48,12 +48,14 @@ import java.net.URL;
 
 /**
  * Provides extra JAXB related utilities
+ * This class should not be considered light-weight, as it loads XSD from specified source!
  */
 public final class JaxbHelper {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final Validator schemaValidator;
     private final String prefix;
+    private final String schema;
     /** Hides constructor for this utility class to prevent instantiation */
     public JaxbHelper(String inputPrefix, String pathToSchema) {
         ArgumentValidator.checkNotNullOrEmpty(pathToSchema, "pathToSchema");
@@ -62,9 +64,11 @@ public final class JaxbHelper {
         } else {
             this.prefix = inputPrefix;
         }
+        
+        this.schema = pathToSchema;
 
         InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(prefix + pathToSchema);
-        log.info("Creating JAXBHelper based on schema from: " + 
+        log.debug("Creating JAXBHelper based on schema from: " + 
                 Thread.currentThread().getContextClassLoader().getResource(prefix + pathToSchema));
         LSResourceResolver resourceResolver = new ResourceResolver(prefix);
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -78,6 +82,13 @@ public final class JaxbHelper {
         schemaValidator = schema.newValidator();
     }
 
+    /**
+     * Gets the path to the schema that the validator uses. 
+     */
+    public String getSchemaPath() {
+        return "" + Thread.currentThread().getContextClassLoader().getResource(prefix + schema);
+    }
+    
     /**
      * Uses JAXB to create a object representation of an xml file. The class used to load the XML has been generated
      * based on the xsd for the xml.
