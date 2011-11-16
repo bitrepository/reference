@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>bitrepository</artifactId>
     <groupId>org.bitrepository</groupId>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.4.0</version>
   </parent>
   
   <artifactId>bitrepository-reference-pillar</artifactId>
@@ -25,44 +24,44 @@
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-protocol</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.4.0</version>
     </dependency>
     <!-- THE TEST SCOPE -->
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-access-client</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.4.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-modifying-client</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.4.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-common</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.4.0</version>
       <type>test-jar</type>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-protocol</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.4.0</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-access-client</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.4.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-modifying-client</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.4.0</version>
       <scope>test</scope>
     </dependency>
  </dependencies> 

@@ -2,7 +2,7 @@
     <parent>
         <groupId>org.bitrepository</groupId>
         <artifactId>bitrepository</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>bitrepository-integrity-client</artifactId>
@@ -17,7 +17,7 @@
         <dependency>
             <groupId>org.bitrepository</groupId>
             <artifactId>bitrepository-access-client</artifactId>
-            <version>0.4-SNAPSHOT</version>
+            <version>0.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
