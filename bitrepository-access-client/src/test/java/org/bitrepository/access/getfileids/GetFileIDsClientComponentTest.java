@@ -263,7 +263,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
             FileIDsDataItems fiddItems = new FileIDsDataItems();
             for(String fileID : receivedGetFileIDsRequest.getFileIDs().getFileID()) {
                 FileIDsDataItem fidItem = new FileIDsDataItem();
-                fidItem.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+                fidItem.setCreationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
                 fidItem.setFileID(fileID);
                 fiddItems.getFileIDsDataItem().add(fidItem);
             }
