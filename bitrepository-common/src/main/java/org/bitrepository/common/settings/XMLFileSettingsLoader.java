@@ -28,8 +28,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBException;
-
 import org.bitrepository.common.JaxbHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,10 +64,10 @@ public class XMLFileSettingsLoader implements SettingsLoader {
      */
     public <T> T loadSettings(String collectionID, Class<T> settingsClass) {
         String fileLocation = pathToSettingsFiles + "/" + collectionID + "/" + settingsClass.getSimpleName() + ".xml";
-        String schemaLocation = "xsd/" + settingsClass.getSimpleName() + ".xsd";
-        JaxbHelper jaxbHelper = new JaxbHelper(schemaLocation);
-        InputStream configStreamLoad = ClassLoader.getSystemResourceAsStream(fileLocation);
-        InputStream configStreamValidate = ClassLoader.getSystemResourceAsStream(fileLocation);
+        String schemaLocation = settingsClass.getSimpleName() + ".xsd";
+        JaxbHelper jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
+        InputStream configStreamLoad = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileLocation);
+        InputStream configStreamValidate = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileLocation);
         if (configStreamLoad == null) {
             try {
                 configStreamLoad = new FileInputStream(fileLocation);
@@ -80,11 +78,12 @@ public class XMLFileSettingsLoader implements SettingsLoader {
         }
         log.debug("Loading the settings file '" + fileLocation + "'.");
         try {
-        	jaxbHelper.validate(configStreamValidate);
+            jaxbHelper.validate(configStreamValidate);
             return (T) jaxbHelper.loadXml(settingsClass, configStreamLoad);
         } catch (SAXException e) {
-            throw new RuntimeException("Unable to validate settings from " + fileLocation, e);
-    	} catch (Exception e) {
+            throw new RuntimeException("Unable to validate settings from " + 
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream(fileLocation), e);
+        } catch (Exception e) {
             throw new RuntimeException("Unable to load settings from " + fileLocation, e);
         }
     }

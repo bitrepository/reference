@@ -86,7 +86,7 @@ public final class ConfigurationFactory {
                 moduleCharacteristics.getLowerCaseName());
         String defaultTestClassPathLocation = String.format(DEFAULT_TEST_CONFIGURATION_CLASSPATH_LOCATION, 
                         moduleCharacteristics.getLowerCaseName());
-        JaxbHelper jaxbHelper = new JaxbHelper("configuration/schema/Configuration.xsd");
+        JaxbHelper jaxbHelper = new JaxbHelper("configuration/schema/", "Configuration.xsd");
         InputStream configStreamLoad = null;
         InputStream configStreamValidate = null;
         if(configStreamLoad == null) {
@@ -106,13 +106,16 @@ public final class ConfigurationFactory {
         }
         if (configStreamLoad == null) {
             log.trace("Trying to retrieve configuration from classpath '" + defaultClassPathLocation + "'");
-            configStreamLoad = ClassLoader.getSystemResourceAsStream(defaultClassPathLocation);
-            configStreamValidate = ClassLoader.getSystemResourceAsStream(defaultClassPathLocation);
+            
+            configStreamLoad = Thread.currentThread().getContextClassLoader().getResourceAsStream(defaultClassPathLocation);
+            configStreamValidate = Thread.currentThread().getContextClassLoader().getResourceAsStream(defaultClassPathLocation);
         }
         if(configStreamLoad == null) {
             log.trace("Trying to retrieve configuration from classpath '" + defaultTestClassPathLocation + "'");
-            configStreamLoad = ClassLoader.getSystemResourceAsStream(defaultTestClassPathLocation);
-            configStreamValidate = ClassLoader.getSystemResourceAsStream(defaultTestClassPathLocation);
+            configStreamLoad = Thread.currentThread().getContextClassLoader().
+            		getResourceAsStream(defaultTestClassPathLocation);
+            configStreamValidate = Thread.currentThread().getContextClassLoader().
+            		getResourceAsStream(defaultTestClassPathLocation);
         }
         if (configStreamLoad == null || configStreamValidate == null) {
             throw new ConfigurationException("Failed to find " + defaultTestClassPathLocation + " or " + 
