@@ -44,7 +44,7 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
-      <version>8.0.0.M3</version>
+      <version>8.0.4.v20111024</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -145,10 +145,6 @@
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
-      </resource>
-      <resource>
-        <directory>${project.build.directory}/xsd</directory>
-        <!-- If an output directory is added remember to update the paths in the java code.. -->
       </resource>
       <resource>
         <directory>src/main/resources/configurations/xml</directory>

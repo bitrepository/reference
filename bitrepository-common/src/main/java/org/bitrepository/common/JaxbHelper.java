@@ -55,12 +55,12 @@ public final class JaxbHelper {
     private final Validator schemaValidator;
     private final String prefix;
     /** Hides constructor for this utility class to prevent instantiation */
-    public JaxbHelper(String prefix, String pathToSchema) {
+    public JaxbHelper(String inputPrefix, String pathToSchema) {
         ArgumentValidator.checkNotNullOrEmpty(pathToSchema, "pathToSchema");
-        if(prefix == null) {
+        if(inputPrefix == null) {
             this.prefix = "";
         } else {
-            this.prefix = prefix;
+            this.prefix = inputPrefix;
         }
 
         InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(prefix + pathToSchema);

@@ -82,7 +82,7 @@ public class XMLFileSettingsLoader implements SettingsLoader {
             return (T) jaxbHelper.loadXml(settingsClass, configStreamLoad);
         } catch (SAXException e) {
             throw new RuntimeException("Unable to validate settings from " + 
-                    Thread.currentThread().getContextClassLoader().getResourceAsStream(fileLocation), e);
+                    Thread.currentThread().getContextClassLoader().getResource(fileLocation), e);
         } catch (Exception e) {
             throw new RuntimeException("Unable to load settings from " + fileLocation, e);
         }
