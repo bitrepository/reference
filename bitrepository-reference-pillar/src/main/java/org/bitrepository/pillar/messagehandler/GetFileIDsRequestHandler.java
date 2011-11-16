@@ -236,7 +236,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
                     +" it is a directory instead of a file.");
         }        
         FileIDsDataItem fileIDData = new FileIDsDataItem();
-        fileIDData.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+        fileIDData.setCreationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
         fileIDData.setFileID(fileID);
         return fileIDData;
     }
