@@ -120,7 +120,10 @@ public class ActiveMQMessageBus implements MessageBus {
     private final Map<String, Topic> topics = new HashMap<String, Topic>();
     /** The configuration for the connection to the activeMQ. */
     private final MessageBusConfiguration configuration;
-
+    private String schemaLocation = "BitRepositoryMessages.xsd";
+    private final JaxbHelper jaxbHelper;
+    
+    
     /**
      * Use the {@link org.bitrepository.protocol.ProtocolComponentFactory} to get a handle on a instance of
      * MessageBusConnections. This constructor is for the
@@ -131,7 +134,7 @@ public class ActiveMQMessageBus implements MessageBus {
     public ActiveMQMessageBus(MessageBusConfiguration messageBusConfiguration) {
         log.debug("Initializing ActiveMQConnection to '" + messageBusConfiguration + "'.");
         this.configuration = messageBusConfiguration;
-
+        jaxbHelper = new JaxbHelper("xsd/", schemaLocation); 
         // Retrieve factory for connection
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getLogin(),
                                                                                     configuration.getPassword(),
@@ -451,7 +454,7 @@ public class ActiveMQMessageBus implements MessageBus {
      *
      * This adapts from general Active MQ messages to the protocol types.
      */
-    private static class ActiveMQMessageListener implements javax.jms.MessageListener {
+    private class ActiveMQMessageListener implements javax.jms.MessageListener {
         /** The Log. */
         private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -482,8 +485,7 @@ public class ActiveMQMessageBus implements MessageBus {
         public void onMessage(final Message message) {
             String type = null;
             String text = null;
-            String schemaLocation = "BitRepositoryMessages.xsd";
-            JaxbHelper jaxbHelper = new JaxbHelper("xsd/", schemaLocation); 
+
             Object content;
             try {
                 type = message.getStringProperty(MESSAGE_TYPE_KEY);
