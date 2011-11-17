@@ -122,14 +122,16 @@ public final class JaxbHelper {
      * @return The XML representation of the message object.
      * @throws JAXBException If the object could not be serialized as a JAXB object.
      */
-    public static String serializeToXml(Object object) throws JAXBException {
+    public String serializeToXml(Object object) throws JAXBException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JAXBContext.newInstance(object.getClass()).createMarshaller().marshal(object, baos);
         return baos.toString();
     }
 
     public static class ResourceResolver implements LSResourceResolver {
-        private final String prefix; 
+        private final String prefix;
+        private final Logger log = LoggerFactory.getLogger(getClass());
+
         public ResourceResolver(String prefix) {
             this.prefix = prefix;
         }
@@ -141,6 +143,7 @@ public final class JaxbHelper {
             if (systemId == null) {
                 return null;
             }
+            log.info("Looking up systemId '" + systemId + "'. Other params: type: '" + type + "', namespaceURI: '" + namespaceURI + "', publicId: '" + publicId + "', baseURI: '" + baseURI + "'");
 
             URL schema = Thread.currentThread().getContextClassLoader().getResource(prefix + systemId);
             LSInput input = new MyLSInput(schema);

@@ -54,6 +54,7 @@ public class MessageBusTest extends ExtendedTestCase {
     
     /** The settings to use for this test */
     private Settings settings;
+    /** Serializer and validator */
     
     /**
      * Defines the standard BitRepositoryCollection configuration
@@ -67,6 +68,7 @@ public class MessageBusTest extends ExtendedTestCase {
     
     protected void setupSettings() throws Exception {
         settings = TestSettingsProvider.getSettings(); 
+        
     }
 
     @Test(groups = { "regressiontest" })
@@ -84,7 +86,9 @@ public class MessageBusTest extends ExtendedTestCase {
                 "and then set it to listen to the topic. Then puts a message" +
                 "on the topic for the message listener to find, and" +
                 "tests whether it finds the correct message.");
-
+        
+        JaxbHelper jaxbHelper = new JaxbHelper("xsd/", "BitRepositoryMessages.xsd");
+       
         IdentifyPillarsForGetFileRequest content = 
             ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);
         TestMessageListener listener = new TestMessageListener();
@@ -103,8 +107,8 @@ public class MessageBusTest extends ExtendedTestCase {
         }
 
         Assert.assertNotNull(listener.getMessage());
-        XMLAssert.assertXMLEqual(JaxbHelper.serializeToXml(content),
-                JaxbHelper.serializeToXml(listener.getMessage()));
+        XMLAssert.assertXMLEqual(jaxbHelper.serializeToXml(content),
+                jaxbHelper.serializeToXml(listener.getMessage()));
     }
 
     @Test(groups = {"test-first"})
@@ -260,6 +264,9 @@ public class MessageBusTest extends ExtendedTestCase {
                 + " and using it for communication by sending a simple message"
                 + " over it and verifying that the corresponding message is "
                 + "received.");
+        
+        JaxbHelper jaxbHelper = new JaxbHelper("xsd/", "BitRepositoryMessages.xsd");
+
         IdentifyPillarsForGetFileRequest content = 
             ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);
 
@@ -306,8 +313,8 @@ public class MessageBusTest extends ExtendedTestCase {
             }
 
             Assert.assertNotNull(listener.getMessage(), "A message should be received.");
-            XMLAssert.assertEquals(JaxbHelper.serializeToXml(content),
-                    JaxbHelper.serializeToXml(listener.getMessage()));
+            XMLAssert.assertEquals(jaxbHelper.serializeToXml(content),
+                    jaxbHelper.serializeToXml(listener.getMessage()));
 
             con.removeListener("EmbeddedBrokerTopic", listener);
         } finally {

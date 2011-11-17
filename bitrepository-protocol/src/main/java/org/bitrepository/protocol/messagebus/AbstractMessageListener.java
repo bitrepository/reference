@@ -73,8 +73,9 @@ public abstract class AbstractMessageListener implements MessageListener {
      * @param message The unsupported message received.
      */
     protected void reportUnsupported(Object message) {
+        JaxbHelper jaxbHelper = new JaxbHelper("xsd/", "BitRepositoryMessages.xsd");
         try {
-            log.warn("Received unsupported message '{}'", JaxbHelper.serializeToXml(message));
+            log.warn("Received unsupported message '{}'", jaxbHelper.serializeToXml(message));
         } catch (JAXBException e) {
             log.warn("Received unsupported message of type '" + message.getClass().getName()
                              + "', which could not be serialized as XML.", e);

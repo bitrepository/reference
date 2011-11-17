@@ -33,6 +33,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.FileIDsParameters;
 import org.bitrepository.bitrepositorydata.GetFileIDsResults;
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -57,6 +58,7 @@ import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * Class for handling requests for the GetFileIDs operation.
@@ -64,7 +66,9 @@ import org.slf4j.LoggerFactory;
 public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-
+    
+    /** Serializer and validator */
+    private final JaxbHelper jaxbHelper;
     /**
      * Constructor.
      * @param settings The settings for handling the message.
@@ -75,6 +79,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     public GetFileIDsRequestHandler(Settings settings, MessageBus messageBus,
             AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
         super(settings, messageBus, alarmDispatcher, referenceArchive);
+        jaxbHelper = new JaxbHelper("xsd/", "BitRepositoryMessages.xsd");
     }
     
     /**
@@ -265,7 +270,14 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
             result.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
             result.setFileIDsData(fileIDs);
             
-            is.write(JaxbHelper.serializeToXml(result).getBytes());
+            String file = jaxbHelper.serializeToXml(result);
+            try {
+                jaxbHelper.validate(new ByteArrayInputStream(file.getBytes()));
+            } catch (SAXException e) {
+                log.error("Failed to validate message ", e);
+                throw new Exception(e);
+            }
+            is.write(file.getBytes());
             is.flush();
         } finally {
             if(is != null) {

@@ -38,7 +38,8 @@
     </Permissions>
     <MessageBusConfiguration>
       <Name>MyMessageBus</Name>
-      <URL>failover://(tcp://sandkasse-01.kb.dk:61616)?timeout=10000</URL>
+      <URL>failover://(tcp://sandkasse-01.kb.dk:61616)?timeout=10000</URL><!--  -->
+      <!-- <URL>failover://(tcp://int-bitmag-02.kb.dk:50000,tcp://int-bitmag-01.kb.dk:50000)?timeout=10000</URL> -->
       <Login></Login>
       <Password></Password>
     </MessageBusConfiguration>

@@ -344,7 +344,8 @@ public class ActiveMQMessageBus implements MessageBus {
     private synchronized void sendMessage(String destinationID, String replyTo, String collectionID, String correlationID,
                              Object content) {
         try {
-            String xmlContent = JaxbHelper.serializeToXml(content);
+            String xmlContent = jaxbHelper.serializeToXml(content);
+            jaxbHelper.validate(new ByteArrayInputStream(xmlContent.getBytes()));
             log.debug("The following message is sent to the destination '" + destinationID + "'" + " on message-bus '"
                               + configuration.getName() + "': \n{}", xmlContent);
             MessageProducer producer = addTopicMessageProducer(destinationID);
@@ -361,6 +362,10 @@ public class ActiveMQMessageBus implements MessageBus {
         } catch (JMSException e) {
             throw new CoordinationLayerException("Could not send message", e);
         } catch (JAXBException e) {
+            throw new CoordinationLayerException("Could not send message", e);
+        } catch (SAXException e) {
+            throw new CoordinationLayerException("Could not validate message", e);
+        } catch (Exception e) {
             throw new CoordinationLayerException("Could not send message", e);
         }
     }

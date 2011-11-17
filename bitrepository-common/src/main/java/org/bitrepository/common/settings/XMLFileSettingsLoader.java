@@ -66,6 +66,7 @@ public class XMLFileSettingsLoader implements SettingsLoader {
         String fileLocation = pathToSettingsFiles + "/" + collectionID + "/" + settingsClass.getSimpleName() + ".xml";
         String schemaLocation = settingsClass.getSimpleName() + ".xsd";
         JaxbHelper jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
+
         InputStream configStreamLoad = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileLocation);
         InputStream configStreamValidate = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileLocation);
         if (configStreamLoad == null) {
