@@ -26,10 +26,10 @@
  * This package provides functionality for communicating with the protocol
  * of the bit repository.
  * <p/>
- * The classes {@link org.bitrepository.protocol.MessageBus}
+ * The classes {@link org.bitrepository.protocol.messagebus.MessageBus}
  * and {@link org.bitrepository.protocol.messagebus.MessageListener} provide the
  * primary interface for sending asynchronous messages in the protocol.
- * {@link org.bitrepository.protocol.AbstractMessageListener} provides a
+ * {@link org.bitrepository.protocol.messagebus.AbstractMessageListener} provides a
  * default implementation that throws exceptions in all instances.
  * <p/>
  * The {@link org.bitrepository.protocol.FileExchange} interface defines the interface for transporting binary blobs of
@@ -38,10 +38,10 @@
  * The class {@link org.bitrepository.protocol.ProtocolComponentFactory} provides the
  * interface for initiating concrete asynchronous communication in the protocol.
  * <p/>
- * The subpackage {@link org.repository.protocol.activemq} contains an
+ * The subpackage {@link org.bitrepository.protocol.activemq} contains an
  * implementation of a message connection in ActiveMQ.
  * <p/>
- * The subpackage {@link org.repository.protocol.http} contains the protocol
+ * The subpackage {@link org.bitrepository.protocol.http} contains the protocol
  * for synchronous communication of blobs of binary data implemented in HTTP.
  *
  * <h3>Exceptions</h3>
