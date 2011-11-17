@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.bitrepository</groupId>
     <artifactId>bitrepository</artifactId>
-    <version>0.4</version>
+    <version>0.4.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>bitrepository-access-client</artifactId>
@@ -11,25 +11,25 @@
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-protocol</artifactId>
-      <version>0.4</version>
+      <version>0.4.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-common</artifactId>
-      <version>0.4</version>
+      <version>0.4.1-SNAPSHOT</version>
     </dependency>
     <!--  Test dependencies -->
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-protocol</artifactId>
-      <version>0.4</version>
+      <version>0.4.1-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-common</artifactId>
-      <version>0.4</version>
+      <version>0.4.1-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
