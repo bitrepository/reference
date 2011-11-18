@@ -64,16 +64,12 @@ public class HTTPFileExchange implements FileExchange {
     /** The lower boundary for the error codes of the HTTP codes.*/
     private static final int HTTP_ERROR_CODE_BARRIER = 300;
     
-    /** The configuration for the file exchange.*/
-    private final FileExchangeConfiguration config; 
-    
     /**
      * Initialise HTTP file exchange.
      *
      * @param configuration The configuration for file exchange.
      */
     public HTTPFileExchange() {
-        config = ProtocolComponentFactory.getInstance().getProtocolConfiguration().getFileExchangeConfigurations();
     }
     
     @Override

@@ -33,6 +33,7 @@ import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.configuration.FileExchangeConfiguration;
 import org.bitrepository.protocol.configuration.ProtocolConfiguration;
+import org.bitrepository.protocol.http.HTTPFileExchange;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 
@@ -96,13 +97,8 @@ public class ProtocolComponentFactory {
      */
     public FileExchange getFileExchange() {
         if (fileExchange == null) {
-            try {
-                FileExchangeConfiguration feConf = getProtocolConfiguration().getFileExchangeConfigurations();
-                Class instantiation = Class.forName(feConf.getFileExchangeClass());
-                fileExchange = (FileExchange) instantiation.newInstance();
-            } catch (Exception e) {
-                throw new CoordinationLayerException("Could not instantiate the fileexchange.", e);
-            }
+            // TODO handle different?
+            fileExchange = new HTTPFileExchange();
         }
         return fileExchange;
     }

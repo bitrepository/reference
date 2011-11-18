@@ -79,7 +79,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     public GetFileIDsRequestHandler(Settings settings, MessageBus messageBus,
             AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
         super(settings, messageBus, alarmDispatcher, referenceArchive);
-        jaxbHelper = new JaxbHelper("xsd/", "BitRepositoryMessages.xsd");
+        jaxbHelper = new JaxbHelper("xsd/", "BitRepositoryData.xsd");
     }
     
     /**
