@@ -1,0 +1,50 @@
+<html>
+<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" />	
+<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="defaultText.js"></script>
+
+
+	<script>
+	    $(function() {
+		    $("#getFileForm").buttonset();
+	    });
+    </script>
+	
+	<div class=ui-widget id=getFileTab>
+		<form id="getFileForm" action="javascript:submit()">
+	            <p><b>Get file</b></p>
+	            <table border="0">
+	                <tr>
+	                    <td>Filename:</td>
+	                    <td><input class="defaultText" title="Filename" id="getFilename" type="text"/></td>
+	                </tr>
+	                <tr>
+	                    <td>Fileaddress:</td>
+	                    <td> <input type="text" name="fileaddr" id="getFileaddr" value="http://sandkasse-01.kb.dk/dav/"/></td>
+	                </tr>
+	            </table> 
+	            <input type="submit" value="Get file"/>
+	    </form>
+	</div>
+
+    <script>
+        $("#getFileForm").submit(function() {
+            var fileName = $("#getFilename").val();
+            var fileAddr = $("#getFileaddr").val();
+    
+    
+            if (fileName == "") {
+                //$('#messagediv').html("<p2>Invalid filename!</p2>").show().fadeOut(5000);
+                return false;
+            }
+            if (fileAddr == "") {
+                //$('#messagediv').html("<p2>Invalid address!</p2>").show().fadeOut(5000);
+                return false;
+            }
+        var command = "repo/reposervice/getfile/?fileID=" + fileName + "&url=" + fileAddr;
+        //$('#messagediv').load(command).show().fadeOut(5000);
+        return true;
+        });
+    </script>
+</html>

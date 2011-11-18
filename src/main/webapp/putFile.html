@@ -1,0 +1,59 @@
+<html>
+<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" />	
+<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="defaultText.js"></script>
+
+
+	<script>
+	    $(function() {
+		    $("#putFileForm").buttonset();
+	    });
+    </script>
+
+<div class=ui-widget id=putFileTab>
+    <form id="putFileForm" action="javascript:submit()">
+            <p><b>Put file</b></p>
+            <table border="0">
+                <tr>
+                    <td>Filename:</td>
+                    <td><input class="defaultText" title="Filename" id="putFilename" type="text"/></td>
+                </tr>
+                <tr>
+                    <td>Fileaddress:</td>
+                    <td> <input type="text" id="putFileaddr" value="http://sandkasse-01.kb.dk/dav/"/></td>
+                </tr>
+                <tr>
+                    <td>Filesize:</td>
+                    <td><input class="defaultText" title="Filesize" id="putFilesize" type="text"/>
+                </tr>
+            </table> 
+            <input type="submit" value="Put file"/>
+    </form> 
+</div>
+    
+    <script>
+        $("#putFileForm").submit(function() {
+            var fileName = $("#putFilename").val();
+            var fileAddr = $("#putFileaddr").val();
+            var fileSize = $("#putFilesize").val();
+
+    
+            if (fileName == "") {
+                //$('#messagediv').html("<p2>Invalid filename!</p2>").show().fadeOut(5000);
+                return false;
+            }
+            if (fileAddr == "") {
+                //$('#messagediv').html("<p2>Invalid address!</p2>").show().fadeOut(5000);
+                return false;
+            }
+            if(fileSize == "") {
+                //$('#messagediv').html("<p2>Invalid filesize!</p2>").show().fadeOut(5000);
+                return false;
+            }
+            var command = "repo/reposervice/putfile/?fileID=" + fileName + "&url=" + fileAddr +"&fileSize="+ fileSize;
+            //$('#messagediv').load(command).show().fadeOut(5000);
+            return true;
+        });
+    </script>       
+</html>

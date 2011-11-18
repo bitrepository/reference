@@ -1,0 +1,70 @@
+<html>
+
+<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" />	
+<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="defaultText.js"></script>
+
+
+	<script>
+	    $(function() {
+		    $("#getChecksumsForm").buttonset();
+	    });
+    </script>
+
+    <div class=ui-widget id=getChecksumTab>
+        <form id="getChecksumsForm" action="javascript:submit()">
+            <p><b>Get checksums</b></p>
+            <table border="0">
+                <tr valign="top">
+                    <td>FileIDs:
+                    <td><input class="defaultText" title="FileID" id="getChecksumFileID" type="text"/></td>
+                </tr>
+                <tr valign="top">
+                    <td>Checksum type:</td>
+                    <td> 
+	        			<input type="radio" name="checksumType" id="md5ChecksumType" value="md5" checked="yes"/> 
+	        			<label for="md5ChecksumType">md5</label>
+						<input type="radio" name="checksumType" id="sha1ChecksumType" value="sha1"/> 
+						<label for="sha1ChecksumType">sha1</label>
+	    			</td>
+       			</tr>
+				<tr>
+                    <td>Salt (optional):</td>
+                    <td><input class="defaultText" Title="Salt (optional)" type="text" id="getChecksumSalt"/></td>
+                </tr>
+            </table> 
+            <input type="submit" value="Get checksum"/>
+        </form>
+    </div>
+    
+    
+    <script>
+        $("#getChecksumsForm").submit(function() {
+            var fileID = $("#getChecksumFileID").val();
+            var checksumType = $('input[name=checksumType]:checked', '#getChecksumsForm').val();
+
+            var salt = $("#getChecksumSalt").val();
+    
+    
+            if (fileID == "") {
+                //$('#messagediv').html("<p2>List of fileIDs empty!</p2>").show().fadeOut(5000);
+                return false;
+            }
+            if (checksumType == "") {
+                //$('#messagediv').html("<p2>Invalid checksumtype!</p2>").show().fadeOut(5000);
+                return false;
+            }
+
+            var command = "repo/reposervice/getChecksumsHtml/?fileIDs=" + fileID + "&checksumType=" + checksumType +"&salt="+ salt;
+            var windowName = "";
+            var windowSize = "width=600,height=400,scrollbars=yes";
+        
+            window.open(command, windowName, windowSize);
+            event.preventDefault();
+            //$('#messagediv').html("<p>Requesting checksums!</p>").show().fadeOut(5000);
+            return true;
+        });
+    </script>
+    
+</html>
