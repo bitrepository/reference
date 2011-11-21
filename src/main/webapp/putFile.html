@@ -11,8 +11,8 @@
 	    });
     </script>
 
-<div class=ui-widget id=putFileTab>
-    <form id="putFileForm" action="javascript:submit()">
+    <div class=ui-widget id=putFileTab>
+        <form id="putFileForm">
             <p><b>Put file</b></p>
             <table border="0">
                 <tr>
@@ -29,8 +29,10 @@
                 </tr>
             </table> 
             <input type="submit" value="Put file"/>
-    </form> 
-</div>
+        </form> 
+    </div>
+    <div id="messagediv"></div>
+    
     
     <script>
         $("#putFileForm").submit(function() {
@@ -52,7 +54,7 @@
                 return false;
             }
             var command = "repo/reposervice/putfile/?fileID=" + fileName + "&url=" + fileAddr +"&fileSize="+ fileSize;
-            //$('#messagediv').load(command).show().fadeOut(5000);
+            $('#messagediv').load(command).show().fadeOut(5000);
             return true;
         });
     </script>       

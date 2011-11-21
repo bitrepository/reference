@@ -1,0 +1,15 @@
+<document xmlns="http://maven.apache.org/changes/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
+  <properties>
+    <title>Bitrepository webclient</title>
+    <author email="ktc@statsbiblioteket.dk">Kim Christensen</author>
+  </properties>
+  <body>
+    <release version="0.5.0" date="2011-11-21" description="New web UI added.">
+      <action dev="Kim" type="add">
+        New web-UI which is the new default.   
+      </action>
+    </release>
+  </body>
+</document>

@@ -12,21 +12,23 @@
     </script>
 	
 	<div class=ui-widget id=getFileTab>
-		<form id="getFileForm" action="javascript:submit()">
-	            <p><b>Get file</b></p>
-	            <table border="0">
-	                <tr>
-	                    <td>Filename:</td>
-	                    <td><input class="defaultText" title="Filename" id="getFilename" type="text"/></td>
-	                </tr>
-	                <tr>
-	                    <td>Fileaddress:</td>
-	                    <td> <input type="text" name="fileaddr" id="getFileaddr" value="http://sandkasse-01.kb.dk/dav/"/></td>
-	                </tr>
-	            </table> 
-	            <input type="submit" value="Get file"/>
+		<form id="getFileForm">
+	        <p><b>Get file</b></p>
+	        <table border="0">
+	            <tr>
+	                <td>Filename:</td>
+	                <td><input class="defaultText" title="Filename" id="getFilename" type="text"/></td>
+	            </tr>
+	            <tr>
+	                <td>Fileaddress:</td>
+	                <td> <input type="text" name="fileaddr" id="getFileaddr" value="http://sandkasse-01.kb.dk/dav/"/></td>
+	            </tr>
+	        </table> 
+	        <input type="submit" value="Get file"/>
 	    </form>
 	</div>
+	<div id="messagediv"></div>
+	
 
     <script>
         $("#getFileForm").submit(function() {
@@ -43,7 +45,7 @@
                 return false;
             }
         var command = "repo/reposervice/getfile/?fileID=" + fileName + "&url=" + fileAddr;
-        //$('#messagediv').load(command).show().fadeOut(5000);
+        $('#messagediv').load(command).show().fadeOut(5000);
         return true;
         });
     </script>

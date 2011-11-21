@@ -13,7 +13,7 @@
     </script>
 
     <div class=ui-widget id=getChecksumTab>
-        <form id="getChecksumsForm" action="javascript:submit()">
+        <form id="getChecksumsForm">
             <p><b>Get checksums</b></p>
             <table border="0">
                 <tr valign="top">
@@ -31,7 +31,7 @@
        			</tr>
 				<tr>
                     <td>Salt (optional):</td>
-                    <td><input class="defaultText" Title="Salt (optional)" type="text" id="getChecksumSalt"/></td>
+                    <td><input type="text" id="getChecksumSalt"/></td>
                 </tr>
             </table> 
             <input type="submit" value="Get checksum"/>
@@ -42,7 +42,8 @@
     <script>
         $("#getChecksumsForm").submit(function() {
             var fileID = $("#getChecksumFileID").val();
-            var checksumType = $('input[name=checksumType]:checked', '#getChecksumsForm').val();
+            var checksumType = $("input[@name=checksumType]:checked").val();
+            //var checksumType = $('input[name=checksumType]:checked', '#getChecksumsForm').val();
 
             var salt = $("#getChecksumSalt").val();
     

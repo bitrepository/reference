@@ -7,32 +7,33 @@
 
 	<script>
 	    $(function() {
+	    	$("#allFileIDs").button();
 		    $("#getFileIDForm").buttonset();
 	    });
     </script>
 
-<div class=ui-widget id=getFileIDTab>
-    <form id="getFileIDForm" action="javascript:submit()">
-        <p><b>Get FileIDs</b></p>
-        <table border="0">
-            <tr valign="top">
-                <td>FileIDs:&nbsp; &nbsp;</td>
-                <td><input class="defaultText" title="FileID" id="getFileID" type="text"/></td>
-            </tr>
-            <tr>
-               	<td></td>
-               	<td><input type="checkbox" id="allFileIDs" /><label for="allFileIDs">All FileIDs</label></td>
-            </tr>
-        </table> 
-        <input type="submit" value="Get fileID"/>
-    </form>
-</div>
+    <div class=ui-widget id=getFileIDTab>
+        <form id="getFileIDForm">
+            <p><b>Get FileIDs</b></p>
+            <table border="0">
+                <tr valign="top">
+                    <td>FileIDs:&nbsp; &nbsp;</td>
+                    <td><input class="defaultText" title="FileID" id="getFileID" type="text"/></td>
+                </tr>
+                <tr>
+                	<td></td>
+               	    <td><input type="checkbox" id="allFileIDs" /><label for="allFileIDs">All FileIDs</label></td>
+                </tr>
+            </table> 
+            <input type="submit" value="Get fileID"/>
+        </form>
+    </div>
     
     <script>
         $("#getFileIDForm").submit(function() {
-        	
-            var fileID = $("#getFileID").val();
-            var allFileIDs = $('input[name=allFileIDs]').is(':checked');
+            var fileID = $("#getFileID").val();     
+            var allFileIDs = $("#allFileIDs").is(':checked');
+            //var allFileIDs = $("#allFileIDs").button("option", "checked");
             var setAllFileIDs = "false";
             
             if(allFileIDs) {
