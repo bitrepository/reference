@@ -35,8 +35,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.bitrepository.bitrepositorydata.GetChecksumsResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumsDataGroupedByChecksumSpec;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -44,6 +46,7 @@ import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
+import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
@@ -342,16 +345,26 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         // Create the temporary file.
         File checksumResultFile = File.createTempFile(message.getCorrelationID(), new Date().getTime() + ".cs");
         log.debug("Writing the list of checksums to the file '" + checksumResultFile + "'");
+        
+        // Create data format 
+        GetChecksumsResults results = new GetChecksumsResults();
+        results.setVersion(VERSION);
+        results.setMinVersion(MIN_VERSION);
+        results.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
+        results.setCollectionID(settings.getCollectionID());
+        ChecksumsDataGroupedByChecksumSpec checksumData = new ChecksumsDataGroupedByChecksumSpec();
+        checksumData.setChecksumSpec(message.getFileChecksumSpec());
+        for(ChecksumDataForChecksumSpecTYPE cs : checksumList) {
+            checksumData.getChecksumDataForChecksumSpec().add(cs);
+        }
+        results.setChecksumsDataGroupedByChecksumSpec(checksumData);
 
         // Print all the checksums safely (close the streams!)
         OutputStream is = null;
         try {
             is = new FileOutputStream(checksumResultFile);
-            for(ChecksumDataForChecksumSpecTYPE cs : checksumList) {
-                // TODO write this correct format. Which???
-                is.write(new String(cs.getFileID() + "##" + cs.getChecksumValue() + "##" + cs.getCalculationTimestamp() 
-                        + "\n").getBytes());
-            }
+            JaxbHelper jaxb = new JaxbHelper("xsd/", "BitRepositoryData.xsd");
+            is.write(jaxb.serializeToXml(results).getBytes());
             is.flush();
         } finally {
             if(is != null) {
