@@ -144,7 +144,6 @@ public class GettingFileIDs extends GetFileIDsState {
             } 
         } catch (UnexpectedResponseException ure) {
             monitor.warning("Received bad FinalResponse from pillar: " + response.getResponseInfo(), ure);
-        
         }
 
         if(responseStatus.haveAllPillarResponded()) {

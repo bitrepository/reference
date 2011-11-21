@@ -220,6 +220,15 @@
             The settings for the Alarm service.
           </xs:documentation>
         </xs:annotation>
+        <xs:sequence>
+          <xs:element name="SchedulerInterval" type="xs:long">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The amount of milliseconds between each time the scheduler collects integrity information.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
       </xs:complexType>
     </xs:element>
 </xs:schema>

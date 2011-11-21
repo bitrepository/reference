@@ -24,6 +24,8 @@
  */
 package org.bitrepository.integrityclient.cache;
 
+import java.util.Collection;
+
 import org.bitrepository.bitrepositoryelements.ChecksumsDataGroupedByChecksumSpec;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 
@@ -34,14 +36,21 @@ public interface CachedIntegrityInformationStorage {
     /**
      * Add file ID data to cache.
      * @param data The received data.
+     * @param pillarId The id of the pillar the received data comes from.
      */
-    void addFileIDs(FileIDsData data);
+    void addFileIDs(FileIDsData data, String pillarId);
 
     /**
      * Add checksum data to cache.
      * @param data The received data.
+     * @param pillarId The id of the pillar the received data comes from.
      */
-    void addChecksums(ChecksumsDataGroupedByChecksumSpec data);
+    void addChecksums(ChecksumsDataGroupedByChecksumSpec data, String pillarId);
 
-    //TODO How to access the data
+    /**
+     * Retrieves the info from all pillars for a given file id.
+     * @param fileId The id of the file. 
+     * @return The collection of information about this file.
+     */
+    Collection<FileIDInfo> getFileInfo(String fileId);
 }

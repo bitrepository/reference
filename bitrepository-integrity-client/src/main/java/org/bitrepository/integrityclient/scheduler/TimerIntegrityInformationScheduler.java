@@ -22,8 +22,9 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityclient.collection;
+package org.bitrepository.integrityclient.scheduler;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityclient.configuration.integrityclientconfiguration.CollectionConfiguration;
 
 import java.util.Timer;
@@ -42,8 +43,8 @@ public class TimerIntegrityInformationScheduler implements IntegrityInformationS
      *
      * @param configuration The configuration for the collection. Currently contains polling interval.
      */
-    public TimerIntegrityInformationScheduler(CollectionConfiguration configuration) {
-        this.interval = configuration.getPollingInterval();
+    public TimerIntegrityInformationScheduler(Settings settings) {
+        this.interval = settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval();
         timer = new Timer("Integrity Information Scheduler", true);
     }
 

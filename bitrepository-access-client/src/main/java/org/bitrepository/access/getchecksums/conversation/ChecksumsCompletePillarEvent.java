@@ -24,6 +24,7 @@
  */
 package org.bitrepository.access.getchecksums.conversation;
 
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 
@@ -33,15 +34,19 @@ import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 public class ChecksumsCompletePillarEvent extends PillarOperationEvent {
     /** @see #getChecksums(). */
     private final ResultingChecksums result;
+    /** @see #getChecksumType(). */
+    private final ChecksumSpecTYPE checksumType;
     
     /**
      * @param result The result returned by the pillar.
      * @param pillarID The pillar which generated the result
      * @param info Additional information.
      */
-    public ChecksumsCompletePillarEvent(ResultingChecksums result, String pillarID, String info) {
+    public ChecksumsCompletePillarEvent(ResultingChecksums result, ChecksumSpecTYPE checksumType, String pillarID, 
+            String info) {
         super(OperationEventType.PillarComplete, pillarID, info);
         this.result = result;
+        this.checksumType = checksumType;
     }
 
     /** 
@@ -49,5 +54,12 @@ public class ChecksumsCompletePillarEvent extends PillarOperationEvent {
      */
     public ResultingChecksums getChecksums() {
         return result;
+    }
+    
+    /**
+     * @return The checksum calculation specifics (e.g. the algorithm and optionally salt).
+     */
+    public ChecksumSpecTYPE getChecksumType() {
+        return checksumType;
     }
 }

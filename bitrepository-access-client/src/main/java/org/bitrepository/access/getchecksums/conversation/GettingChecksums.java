@@ -139,6 +139,7 @@ public class GettingChecksums extends GetChecksumsState {
             if(isReponseSuccess(response.getResponseInfo())) {
                 monitor.pillarComplete(new ChecksumsCompletePillarEvent(
                         response.getResultingChecksums(),
+                        conversation.checksumSpecifications,
                         response.getPillarID(),
                         "Received checksum result from " + response.getPillarID()));
                 // If calculations in message, then put them into the results map.

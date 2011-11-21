@@ -22,9 +22,9 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityclient.collection.triggers;
+package org.bitrepository.integrityclient.scheduler.triggers;
 
-import org.bitrepository.integrityclient.collection.Trigger;
+import org.bitrepository.integrityclient.scheduler.Trigger;
 
 /**
  * Abstract trigger, that triggers at given interval.

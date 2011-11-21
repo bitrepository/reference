@@ -33,5 +33,7 @@
   </ReplaceFileSettings>
   <AlarmServiceSettings></AlarmServiceSettings>
   <AuditTrailServiceSettings></AuditTrailServiceSettings>
-  <IntegrityServiceSettings></IntegrityServiceSettings>
+  <IntegrityServiceSettings>
+    <SchedulerInterval>600000</SchedulerInterval>
+  </IntegrityServiceSettings>
 </ReferenceSettings>

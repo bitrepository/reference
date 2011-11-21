@@ -22,7 +22,9 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityclient.collection;
+package org.bitrepository.integrityclient.scheduler;
+
+import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
 
 /**
  * Interface for defining a trigger for collecting events.
