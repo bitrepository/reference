@@ -28,6 +28,8 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
 import org.bitrepository.integrityclient.cache.MemoryBasedIntegrityCache;
+import org.bitrepository.integrityclient.checking.IntegrityChecker;
+import org.bitrepository.integrityclient.checking.SystematicIntegrityValidator;
 import org.bitrepository.integrityclient.collector.DelegatingIntegrityInformationCollector;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityclient.scheduler.IntegrityInformationScheduler;
@@ -66,6 +68,8 @@ public final class IntegrityServiceComponentFactory {
     private IntegrityInformationCollector integrityInformationCollector;
     /** The integrity information collector. */
     private CachedIntegrityInformationStorage cachedIntegrityInformationStorage;
+    /** The integrity checker. */
+    private IntegrityChecker integrityChecker;
 
     /**
      * Gets you an <code>IntegrityInformationScheduler</code> that schedules integrity information collection.
@@ -90,6 +94,18 @@ public final class IntegrityServiceComponentFactory {
                     AccessComponentFactory.getInstance().createGetChecksumsClient(settings));
         }
         return integrityInformationCollector;
+    }
+    
+    /**
+     * Gets you an <code>IntegrityChecker</code> the can perform the integrity checks.
+     * @param settings The settings for this instance. 
+     * @return An <code>IntegrityChecker</code> the can perform the integrity checks.
+     */
+    public IntegrityChecker getIntegrityChecker(Settings settings) {
+        if(integrityChecker == null) {
+            integrityChecker = new SystematicIntegrityValidator(settings, getCachedIntegrityInformationStorage());
+        }
+        return integrityChecker;
     }
 
     /**

@@ -53,4 +53,10 @@ public interface CachedIntegrityInformationStorage {
      * @return The collection of information about this file.
      */
     Collection<FileIDInfo> getFileInfo(String fileId);
+    
+    /**
+     * Retrieves all the file ids in the collection.
+     * @return The collection of file ids.
+     */
+    Collection<String> getAllFileIDs();
 }

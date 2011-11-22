@@ -25,6 +25,7 @@
 package org.bitrepository.integrityclient.cache;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -94,28 +95,31 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
      * @param pillarId The id of pillar who delivered these file id data.
      */
     private void updateFileId(FileIDsDataItem fileIdData, String pillarId) {
-        synchronized(cache) {
-            List<FileIDInfo> fileInfos = cache.get(fileIdData.getFileID());
-            
-            // Extract current file info or create a new one.
-            FileIDInfo currentInfo = null;
-            for(FileIDInfo fileInfo : fileInfos) {
-                if(fileInfo.getPillarId().equals(pillarId)) {
-                    currentInfo = fileInfo;
-                    fileInfos.remove(fileInfo);
-                }
-            }
-            if(currentInfo == null) {
-                currentInfo = new FileIDInfo(fileIdData.getFileID(), pillarId);
-            }
-            
-            // Update the file info
-            currentInfo.setDateForLastFileIDCheck(fileIdData.getCreationTimestamp());
-            
-            // put it back into the list and that back into the cache.
-            fileInfos.add(currentInfo);
-            cache.put(fileIdData.getFileID(), fileInfos);
+        List<FileIDInfo> fileInfos = cache.get(fileIdData.getFileID());
+        if(fileInfos == null) {
+            fileInfos = new ArrayList<FileIDInfo>();
         }
+        
+        // Extract current file info or create a new one.
+        FileIDInfo currentInfo = null;
+        for(int i = 0; i < fileInfos.size(); i++) {
+            FileIDInfo fileInfo = fileInfos.get(i);
+            if(fileInfo.getPillarId().equals(pillarId)) {
+                currentInfo = fileInfo;
+                fileInfos.remove(i);
+                i--;
+            }
+        }
+        if(currentInfo == null) {
+            currentInfo = new FileIDInfo(fileIdData.getFileID(), pillarId);
+        }
+        
+        // Update the file info
+        currentInfo.setDateForLastFileIDCheck(fileIdData.getCreationTimestamp());
+        
+        // put it back into the list and that back into the cache.
+        fileInfos.add(currentInfo);
+        cache.put(fileIdData.getFileID(), fileInfos);
     }
     
     @Override
@@ -184,5 +188,17 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
     @Override
     public List<FileIDInfo> getFileInfo(String fileId) {
         return cache.get(fileId);
+    }
+
+    @Override
+    public Collection<String> getAllFileIDs() {
+        return cache.keySet();
+    }
+    
+    /**
+     * Clean the cache for test purposes only!
+     */
+    public void clearCache() {
+        cache.clear();
     }
 }

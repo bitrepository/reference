@@ -57,4 +57,10 @@ public class DatabaseBackedCachedIntegrityInformationStorage implements CachedIn
         // TODO implement
         return null;
     }
+
+    @Override
+    public Collection<String> getAllFileIDs() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

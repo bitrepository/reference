@@ -24,21 +24,18 @@
  */
 package org.bitrepository.integrityclient.collector;
 
+import java.util.Collection;
+
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.FileIDsData;
-import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
-import org.bitrepository.integrityclient.IntegrityInformationRetrievalException;
 import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
 import org.bitrepository.integrityclient.collector.eventhandler.GetChecksumsEventHandler;
 import org.bitrepository.integrityclient.collector.eventhandler.GetFileIdsEventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
 
 /**
  * Integrity information collector that delegates collecting information to the clients.
