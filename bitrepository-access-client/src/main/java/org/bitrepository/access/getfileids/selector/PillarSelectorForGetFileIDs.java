@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Access
  * 
- * $Id: PillarSelectorForGetChecksums.java 372 2011-10-27 15:15:20Z mss $
- * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-access-client/src/main/java/org/bitrepository/access/getchecksums/selector/PillarSelectorForGetChecksums.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%

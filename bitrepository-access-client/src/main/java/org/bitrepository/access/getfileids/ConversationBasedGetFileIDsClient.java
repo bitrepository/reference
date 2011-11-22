@@ -27,7 +27,6 @@ package org.bitrepository.access.getfileids;
 import java.net.URL;
 import java.util.Collection;
 
-import org.bitrepository.access.getchecksums.conversation.SimpleGetChecksumsConversation;
 import org.bitrepository.access.getfileids.conversation.SimpleGetFileIDsConversation;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.ArgumentValidator;

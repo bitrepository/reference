@@ -76,14 +76,6 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
         settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
-        
-//        settings.getCollectionSettings().getProtocolSettings().setCollectionDestination("TEST-TOPIC-jolf");
-//        settings.getCollectionSettings().setCollectionID("TEST-jolf");
-//        
-//        settings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-client-destination");
-//        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-//        settings.getCollectionSettings().getClientSettings().getPillarIDs().add("jolf-pillar");
-//        System.setProperty("useMockupPillar", "false");
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetFileClient client = createGetFileClient();
