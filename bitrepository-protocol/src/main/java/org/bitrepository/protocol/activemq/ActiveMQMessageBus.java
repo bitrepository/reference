@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
+import javax.jms.Destination;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -37,7 +38,6 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import javax.jms.Topic;
 import javax.xml.bind.JAXBException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -116,13 +116,13 @@ public class ActiveMQMessageBus implements MessageBus {
      */
     private final Map<String, MessageConsumer> consumers = Collections
             .synchronizedMap(new HashMap<String, MessageConsumer>());
-    /** Map of topics, mapping from ID to topic. */
-    private final Map<String, Topic> topics = new HashMap<String, Topic>();
+    /** Map of destinations, mapping from ID to destination. */
+    private final Map<String, Destination> destinations = new HashMap<String, Destination>();
     /** The configuration for the connection to the activeMQ. */
     private final MessageBusConfiguration configuration;
     private String schemaLocation = "BitRepositoryMessages.xsd";
     private final JaxbHelper jaxbHelper;
-    
+    private final Connection connection;
     
     /**
      * Use the {@link org.bitrepository.protocol.ProtocolComponentFactory} to get a handle on a instance of
@@ -142,7 +142,7 @@ public class ActiveMQMessageBus implements MessageBus {
 
         try {
             // create and start the connection
-            Connection connection = connectionFactory.createConnection();
+            connection = connectionFactory.createConnection();
 
             connection.setExceptionListener(new MessageBusExceptionListener());
             connection.start();
@@ -348,14 +348,14 @@ public class ActiveMQMessageBus implements MessageBus {
             jaxbHelper.validate(new ByteArrayInputStream(xmlContent.getBytes()));
             log.debug("The following message is sent to the destination '" + destinationID + "'" + " on message-bus '"
                               + configuration.getName() + "': \n{}", xmlContent);
-            MessageProducer producer = addTopicMessageProducer(destinationID);
+            MessageProducer producer = addDestinationMessageProducer(destinationID);
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
             Message msg = producerSession.createTextMessage(xmlContent);
             msg.setStringProperty(MESSAGE_TYPE_KEY, content.getClass().getSimpleName());
             msg.setStringProperty(COLLECTION_ID_KEY, collectionID);
             msg.setJMSCorrelationID(correlationID);
-            msg.setJMSReplyTo(getTopic(replyTo, producerSession));
+            msg.setJMSReplyTo(getDestination(replyTo, producerSession));
 
             producer.send(msg);
             producerSession.commit();
@@ -384,12 +384,12 @@ public class ActiveMQMessageBus implements MessageBus {
                           + "'. Key: '" + key + "'.");
         if (!consumers.containsKey(key)) {
             log.debug("No consumer known. Creating new for key '" + key + "'.");
-            Topic topic = getTopic(destinationID, consumerSession);
+            Destination destination = getDestination(destinationID, consumerSession);
             MessageConsumer consumer;
             try {
-                consumer = consumerSession.createConsumer(topic);
+                consumer = consumerSession.createConsumer(destination);
             } catch (JMSException e) {
-                throw new CoordinationLayerException("Could not create message consumer for topic '" + topic + '"', e);
+                throw new CoordinationLayerException("Could not create message consumer for destination '" + destination + '"', e);
             }
             consumers.put(key, consumer);
         }
@@ -413,37 +413,55 @@ public class ActiveMQMessageBus implements MessageBus {
      * @param destination The id for the destination.
      * @return The message producer for this destination.
      */
-    private MessageProducer addTopicMessageProducer(String destination) {
-        Topic topic = getTopic(destination, producerSession);
+    private MessageProducer addDestinationMessageProducer(String destinationID) {
+        Destination destination = getDestination(destinationID, producerSession);
         MessageProducer producer;
         try {
-            producer = producerSession.createProducer(topic);
+            producer = producerSession.createProducer(destination);
         } catch (JMSException e) {
             throw new CoordinationLayerException(
-                    "Could not create message producer for destination '" + destination + "'", e);
+                    "Could not create message producer for destination '" + destinationID + "'", e);
         }
         return producer;
     }
 
     /**
-     * Given a topic ID, retrieve the topic object.
+     * Given a destination ID, retrieve the destination object.
      *
-     * @param topicID ID of the topic.
-     * @return The object representing that topic. Will always return the same topic object for the same topic ID.
+     * @param destinationID ID of the destination.
+     * @return The object representing that destination. Will always return the same destination object for the same destination ID.
      */
-    private Topic getTopic(String topicID, Session session) {
-        Topic topic = topics.get(topicID);
-        if (topic == null) {
+    private Destination getDestination(String destinationID, Session session) {
+        Destination destination = destinations.get(destinationID);
+        if (destination == null) {
             try {
+                
+                String[] parts = destinationID.split("://");
+                if (parts.length == 1) {
+                    destination = session.createTopic(destinationID);
+                } else if (parts.length == 2) {
+                    if (parts[0].equals("topic")) {
+                        destination = session.createTopic(parts[1]);
+                    } else if (parts[0].equals("queue")) {
+                        destination = session.createQueue(parts[1]);
+                    } else if (parts[0].equals("temporary-queue")) {
+                        destination = session.createTemporaryQueue();
+                    } else if (parts[0].equals("temporary-topic")) {
+                        destination = session.createTemporaryTopic();
+                    } else {
+                        throw new CoordinationLayerException("Unable to create destination '" + 
+                                destination + "'. Unknown type.");
+                    }
+                }
+                
                 // TODO: According to javadoc, topics should be looked up in another fashion.
                 // See http://download.oracle.com/javaee/6/api/javax/jms/Session.html#createTopic(java.lang.String)
-                topic = session.createTopic(topicID);
             } catch (JMSException e) {
-                throw new CoordinationLayerException("Could not create topic '" + topicID + "'", e);
+                throw new CoordinationLayerException("Could not create destination '" + destinationID + "'", e);
             }
-            topics.put(topicID, topic);
+            destinations.put(destinationID, destination);
         }
-        return topic;
+        return destination;
     }
 
     /** Class for handling the message bus exceptions. */
