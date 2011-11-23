@@ -1,0 +1,48 @@
+<html>
+
+<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" />	
+
+<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="defaultText.js"></script>
+    
+<script>
+    $(function() {
+        $("#integForm").buttonset();
+    });
+</script>
+
+    <div class="ui-widget">
+    <h1>Integrity check:</h1><br>
+    Dummy integrity checking ;)
+	
+	<form id="integForm" action="javascript:submit()">
+        <div>
+            <p><b>Integrity check file</b></p>
+            <table border="0">
+                <tr>
+                    <td>File ID:</td>
+                    <td><input class="defaultText" title="File ID" id="fileID" type="text"/></td>
+                </tr>
+            </table> 
+            <input type="submit" id="integSubmit" value="Check file"/>
+        </div>
+    </form>
+    <div id="status"> </div>
+    
+
+    
+    <script>
+            $("#integForm").submit(function() {
+            $("#status").html("<p>Integrity process started!</p>").show();
+            return true;
+        });
+    </script> 
+    
+   	<script>
+  		function submit() { return ; }
+  	</script>
+    
+    
+    </div>
+</html>

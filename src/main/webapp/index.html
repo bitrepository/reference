@@ -11,6 +11,15 @@
 	    .defaultText { width: 300px; }
 	    .defaultTextActive { color: #a1a1a1; font-style: italic; }
     </style>
+    <style>
+        body { font-size: 80%; }
+        input.text { margin-bottom:12px; width:95%; padding: .4em; }
+        fieldset { padding:0; border:0; margin-top:25px; }
+        h1 { font-size: 1.2em; margin: .6em 0; }
+        div#alarm-container { width: 920px; margin: 20px 0; }
+        div#alarm-container table { margin: 1em 0; border-collapse: collapse; width: 100%; }
+        div#alarm-container table td, div#alarm-container table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
+    </style>
 
     <script>
 	$(function() {
@@ -36,7 +45,12 @@
 		<li><a href="putFile.html">Put file</a></li>
 		<li><a href="getChecksum.html">Get checksum</a></li>
     	<li><a href="getFileID.html">Get fileID</a></li>
+    	<li><a href="deleteFile.html">Delete file</a></li>
+    	<li><a href="replaceFile.html">Replace file</a></li>
     	<li><a href="configuration.html">Configuration</a></li>
+        <li><a href="alarmService.html">Alarms</a></li>
+        <li><a href="auditService.html">Audit</a></li>
+        <li><a href="integService.html">Integrity check</a></li>
 	</ul>
 </div>
 
