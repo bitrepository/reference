@@ -3,7 +3,7 @@
   <parent>
     <artifactId>bitrepository</artifactId>
     <groupId>org.bitrepository</groupId>
-    <version>0.4.1</version>
+    <version>0.4.2-SNAPSHOT</version>
   </parent>
   <artifactId>bitrepository-monitoring-service</artifactId>
   <name>Bitrepository Monitoring Service</name>
