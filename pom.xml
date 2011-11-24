@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.bitrepository</groupId>
   <artifactId>bitrepository</artifactId>
-  <version>0.4.1</version>
+  <version>0.4.2-SNAPSHOT</version>
 
   <parent>
     <groupId>org.sbforge</groupId>
@@ -128,9 +128,9 @@
   </organization>
 
   <scm>
-    <url>https://sbforge.org/fisheye/browse/Bitmagasinet/bitrepository-reference/tags/bitrepository-0.4.1</url>
-    <connection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-reference/tags/bitrepository-0.4.1</connection>
-    <developerConnection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-reference/tags/bitrepository-0.4.1</developerConnection>
+    <url>https://sbforge.org/fisheye/browse/Bitmagasinet/bitrepository-reference/trunk/</url>
+    <connection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk</connection>
+    <developerConnection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk</developerConnection>
   </scm>
 
   <dependencies>
