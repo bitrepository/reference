@@ -44,7 +44,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class IntegrityCheckingTester extends ExtendedTestCase {
+public class IntegrityCheckingTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
     
@@ -257,7 +257,6 @@ public class IntegrityCheckingTester extends ExtendedTestCase {
             checksumCalculation.setChecksumValue("abc" + fileid + "abc");
             checksumdata2.getChecksumDataForChecksumSpec().add(checksumCalculation);
         }
-
         
         // add the checksums for two pillars.
         cache.addChecksums(checksumdata1, TEST_PILLAR_1);
