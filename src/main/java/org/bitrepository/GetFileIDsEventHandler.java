@@ -2,7 +2,6 @@ package org.bitrepository;
 
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.eventhandler.GetFileIDsCompleteEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 
@@ -46,13 +45,6 @@ public class GetFileIDsEventHandler implements EventHandler {
 		results.failed();
 	}
 	
-	/**
-	 * Not quite sure that this will ever be called. 
-	 */
-	public void handleEvent(GetFileIDsCompleteEvent event) {
-		logger.handleEvent(event);
-		// add results to results object. Does however need to get pillar id first..
-		
-	}
+
 	
 }
