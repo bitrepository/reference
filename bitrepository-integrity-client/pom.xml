@@ -16,6 +16,16 @@
   <dependencies>
     <dependency>
       <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-protocol</artifactId>
+      <version>0.4.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-common</artifactId>
+      <version>0.4.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-access-client</artifactId>
       <version>0.4.2-SNAPSHOT</version>
     </dependency>

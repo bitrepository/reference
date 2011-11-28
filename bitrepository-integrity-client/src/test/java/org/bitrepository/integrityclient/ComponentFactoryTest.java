@@ -24,19 +24,34 @@
  */
 package org.bitrepository.integrityclient;
 
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.integrityclient.cache.MemoryBasedIntegrityCache;
 import org.bitrepository.integrityclient.checking.SystematicIntegrityValidator;
 import org.bitrepository.integrityclient.collector.DelegatingIntegrityInformationCollector;
 import org.bitrepository.integrityclient.scheduler.TimerIntegrityInformationScheduler;
 import org.bitrepository.protocol.IntegrationTest;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
  * Simple test case for the component factory.
  */
-public class ComponentFactoryTest extends IntegrationTest {
-
+public class ComponentFactoryTest extends ExtendedTestCase {
+    /** The settings for the tests. Should be instantiated in the setup.*/
+    Settings settings;
+    MessageBus messageBus;
+    
+    @BeforeClass (alwaysRun = true)
+    public void setup() {
+        settings = TestSettingsProvider.reloadSettings();
+        messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings);
+    }
+    
     @Test(groups = {"regressiontest"})
     public void verifyCacheFromFactory() throws Exception {
         Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage()
