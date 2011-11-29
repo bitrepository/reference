@@ -39,6 +39,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
 import org.bitrepository.integrityclient.cache.MemoryBasedIntegrityCache;
 import org.bitrepository.integrityclient.checking.IntegrityChecker;
+import org.bitrepository.integrityclient.checking.SystematicIntegrityValidator;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -86,7 +87,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addFileIDs(fileidsData1, TEST_PILLAR_2);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
-        IntegrityChecker checker = IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings);
+        IntegrityChecker checker = new SystematicIntegrityValidator(settings, cache);
         
         FileIDs fileidsToCheck = new FileIDs();
         fileidsToCheck.setAllFileIDs("true");
@@ -124,7 +125,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addFileIDs(fileidsData1, TEST_PILLAR_1);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
-        IntegrityChecker checker = IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings);
+        IntegrityChecker checker = new SystematicIntegrityValidator(settings, cache);
         
         FileIDs fileidsToCheck = new FileIDs();
         fileidsToCheck.setAllFileIDs("true");
@@ -166,13 +167,13 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addChecksums(checksumdata, TEST_PILLAR_2);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
-        IntegrityChecker checker = IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings);
+        IntegrityChecker checker = new SystematicIntegrityValidator(settings, cache);
         
         FileIDs fileidsToCheck = new FileIDs();
         fileidsToCheck.setAllFileIDs("true");
         
         addStep("Check whether all pillars have all the file ids", "They should contain the same files.");
-        Assert.assertTrue(checker.checkFileIDs(fileidsToCheck), "The file ids should be validated");
+        Assert.assertTrue(checker.checkFileIDs(fileidsToCheck), "The file ids should be validated.");
         
         addStep("Check that the checksum for these file ids are the same", "They should be.");
         Assert.assertTrue(checker.checkChecksum(fileidsToCheck), "The checksums should be validated");
@@ -209,7 +210,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addChecksums(checksumdata, TEST_PILLAR_1);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
-        IntegrityChecker checker = IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings);
+        IntegrityChecker checker = new SystematicIntegrityValidator(settings, cache);
         
         FileIDs fileidsToCheck = new FileIDs();
         fileidsToCheck.setAllFileIDs("true");
@@ -263,7 +264,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addChecksums(checksumdata2, TEST_PILLAR_2);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
-        IntegrityChecker checker = IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings);
+        IntegrityChecker checker = new SystematicIntegrityValidator(settings, cache);
         
         FileIDs fileidsToCheck = new FileIDs();
         fileidsToCheck.setAllFileIDs("true");
