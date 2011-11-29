@@ -26,6 +26,8 @@ package org.bitrepository.access.getfile;
 
 import java.net.URL;
 
+import javax.jms.JMSException;
+
 import org.bitrepository.access.getfile.conversation.SimpleGetFileConversation;
 import org.bitrepository.access.getfile.selectors.FastestPillarSelectorForGetFile;
 import org.bitrepository.access.getfile.selectors.PillarSelectorForGetFile;
@@ -120,6 +122,16 @@ public class CollectionBasedGetFileClient implements GetFileClient {
         log.info("Requesting the file '" + fileID + "' from pillar '" + pillarID + "'.");
         getFile(messageBus, settings, new SpecificPillarSelectorForGetFile(pillarID), 
                 fileID, uploadUrl);				
+    }
+    
+    @Override
+    public void shutdown() {
+        try {
+            messageBus.close();
+            // TODO Kill any lingering timer threads
+        } catch (JMSException e) {
+            log.info("Error during shutdown of messagebus ", e);
+        }
     }
 
     /** 

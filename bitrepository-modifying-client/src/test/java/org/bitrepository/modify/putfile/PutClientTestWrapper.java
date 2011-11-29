@@ -60,5 +60,9 @@ public class PutClientTestWrapper implements PutFileClient {
         testEventManager.addStimuli("Calling PutFileWithId(" + url + ", " + fileId + ", " + fileSize + ", eventHandler)");
         wrappedPutClient.putFileWithId(url, fileId, fileSize);
     }
-
+    
+    @Override
+    public void shutdown() {
+        // Empty
+    }
 }

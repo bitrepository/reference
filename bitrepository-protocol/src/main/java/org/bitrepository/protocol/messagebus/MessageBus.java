@@ -24,6 +24,8 @@
  */
 package org.bitrepository.protocol.messagebus;
 
+import javax.jms.JMSException;
+
 
 /**
  * The communication interface for the message bus in the bitrepository protocol.
@@ -51,4 +53,10 @@ public interface MessageBus extends MessageSender {
      * @param listener      The listener to remove from the destination.
      */
     void removeListener(String destinationId, MessageListener listener);
+    
+    
+    /**
+     * Closes the messagebus connection so that everything can be shutdown nicely.  
+     */
+    void close() throws JMSException;
 }

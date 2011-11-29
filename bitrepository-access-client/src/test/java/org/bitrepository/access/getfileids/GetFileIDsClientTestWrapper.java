@@ -58,4 +58,9 @@ public class GetFileIDsClientTestWrapper implements GetFileIDsClient {
                 + eventHandler + ", " + auditTrailInformation + ")");
         client.getFileIDs(pillarIDs, fileIDs, addressForResult, eventHandler, auditTrailInformation);
     }
+    
+    @Override
+    public void shutdown() {
+        // Empty
+    }
 }

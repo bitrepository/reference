@@ -28,6 +28,8 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.jms.JMSException;
+
 import org.bitrepository.access.getchecksums.conversation.SimpleGetChecksumsConversation;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -134,5 +136,15 @@ public class CollectionBasedGetChecksumsClient implements GetChecksumsClient {
                 new FlowController(settings, false), auditTrailInformation);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
+    }
+    
+    @Override
+    public void shutdown() {
+        try {
+            bus.close();
+            // TODO Kill any lingering timer threads
+        } catch (JMSException e) {
+            log.info("Error during shutdown of messagebus ", e);
+        }
     }
 }

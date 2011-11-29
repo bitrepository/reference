@@ -89,4 +89,9 @@ public interface GetChecksumsClient {
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
             URL addressForResult, EventHandler eventHandler, String auditTrailInformation)
             throws OperationFailedException;
+    
+    /**
+     * Method to perform a graceful shutdown of the client.
+     */
+    void shutdown();
 }

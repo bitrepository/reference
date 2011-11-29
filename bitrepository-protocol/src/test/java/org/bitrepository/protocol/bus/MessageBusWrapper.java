@@ -24,6 +24,8 @@
  */
 package org.bitrepository.protocol.bus;
 
+import javax.jms.JMSException;
+
 import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
@@ -216,4 +218,8 @@ public class MessageBusWrapper implements MessageBus {
         messageBus.removeListener(destinationId, listener);
     }
 
+    @Override
+    public void close() throws JMSException {
+        messageBus.close();
+    }
 }

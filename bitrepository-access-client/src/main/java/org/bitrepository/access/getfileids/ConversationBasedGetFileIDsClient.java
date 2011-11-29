@@ -27,6 +27,8 @@ package org.bitrepository.access.getfileids;
 import java.net.URL;
 import java.util.Collection;
 
+import javax.jms.JMSException;
+
 import org.bitrepository.access.getfileids.conversation.SimpleGetFileIDsConversation;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.ArgumentValidator;
@@ -84,5 +86,15 @@ public class ConversationBasedGetFileIDsClient implements GetFileIDsClient {
                 new FlowController(settings, false), auditTrailInformation);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
+    }
+    
+    @Override
+    public void shutdown() {
+        try {
+            bus.close();
+            // TODO Kill any lingering timer threads
+        } catch (JMSException e) {
+            log.info("Error during shutdown of messagebus ", e);
+        }
     }
 }

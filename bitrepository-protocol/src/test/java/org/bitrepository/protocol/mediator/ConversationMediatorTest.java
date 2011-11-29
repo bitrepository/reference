@@ -222,5 +222,10 @@ public abstract class ConversationMediatorTest {
         public void removeListener(String destinationId, MessageListener listener) {
             listener = null;
         }
+        
+        @Override 
+        public void close() {
+            // Empty
+        }
     }
 }

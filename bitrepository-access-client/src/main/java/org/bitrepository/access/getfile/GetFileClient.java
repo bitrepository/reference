@@ -88,4 +88,9 @@ public interface GetFileClient {
      */
     void getFileFromSpecificPillar(String fileId, URL uploadUrl, String pillarId)
     throws NoPillarFoundException, OperationTimeOutException, OperationFailedException;
+    
+    /**
+     * Method to perform a graceful shutdown of the client.
+     */
+    void shutdown();
 }

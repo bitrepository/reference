@@ -56,4 +56,9 @@ public interface GetFileIDsClient {
      */
     public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult, EventHandler eventHandler, 
             String auditTrailInformation) throws OperationFailedException;
+    
+    /**
+     * Method to perform a graceful shutdown of the client.
+     */
+    void shutdown();
 }

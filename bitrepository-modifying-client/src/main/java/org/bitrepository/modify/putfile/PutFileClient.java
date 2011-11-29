@@ -54,4 +54,9 @@ public interface PutFileClient {
      * @throws OperationFailedException If the operation failed.
      */
     void putFileWithId(URL url, String fileId, long sizeOfFile) throws OperationFailedException;
+    
+    /**
+     * Method to perform a graceful shutdown of the client.
+     */
+    void shutdown();
 }

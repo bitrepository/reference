@@ -185,6 +185,11 @@ public class ActiveMQMessageBus implements MessageBus {
         }
         consumers.remove(getConsumerHash(destinationID, listener));
     }
+    
+    @Override 
+    public void close() throws JMSException {
+        connection.close();
+    }
 
     @Override
     public void sendMessage(Alarm content) {

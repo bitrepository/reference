@@ -27,6 +27,8 @@ package org.bitrepository.modify.putfile;
 import java.math.BigInteger;
 import java.net.URL;
 
+import javax.jms.JMSException;
+
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.putfile.conversation.SimplePutFileConversation;
@@ -94,5 +96,15 @@ public class ConversationBasedPutFileClient implements PutFileClient {
                 BigInteger.valueOf(sizeOfFile), null, null, null, new FlowController(settings, false));
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
+    }
+    
+    @Override
+    public void shutdown() {
+        try {
+            bus.close();
+            //TODO Consider if we can kill possible timer object too, they might be lingering somewhere in the background
+        } catch (JMSException e) {
+            log.info("Error during shutdown of messagebus ", e);
+        }
     }
 }
