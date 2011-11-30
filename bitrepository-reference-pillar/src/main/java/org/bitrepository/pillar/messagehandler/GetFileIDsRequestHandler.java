@@ -48,6 +48,7 @@ import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -87,6 +88,8 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      * @param message The IdentifyPillarsForGetFileIDsRequest message to handle.
      */
     public void handleMessage(GetFileIDsRequest message) {
+        ArgumentValidator.checkNotNull(message, "GetFileIDsRequest message");
+
         try {
             if(!validateMessage(message)) {
                 return;

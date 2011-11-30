@@ -40,6 +40,7 @@ import org.bitrepository.bitrepositoryelements.RiskImpactScoreType;
 import org.bitrepository.bitrepositoryelements.RiskProbabilityScoreType;
 import org.bitrepository.bitrepositoryelements.RiskTYPE;
 import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.ProtocolConstants;
@@ -67,6 +68,9 @@ public class AlarmDispatcher {
      * @param messageBus The bus for sending the alarms.
      */
     public AlarmDispatcher(Settings settings, MessageBus messageBus) {
+        ArgumentValidator.checkNotNull(settings, "settings");
+        ArgumentValidator.checkNotNull(messageBus, "messagebus");
+        
         this.settings = settings;
         this.messageBus = messageBus;
     }
@@ -77,6 +81,7 @@ public class AlarmDispatcher {
      * @param exception The exception to base the alarm upon.
      */
     public void handleIllegalArgumentException(IllegalArgumentException exception) {
+        ArgumentValidator.checkNotNull(exception, "IllegalArgumentException exception");
         if(settings.getCollectionSettings().getPillarSettings().getAlarmLevel() != AlarmLevel.WARNING) {
             log.warn("IllegalArgumentException caught, but we do not issue alarms for this, when the alarm level is '"
                     + settings.getCollectionSettings().getPillarSettings().getAlarmLevel() + "'", exception);
@@ -109,6 +114,7 @@ public class AlarmDispatcher {
      * @param exception The exception causing the alarm.
      */
     public void handleRuntimeExceptions(RuntimeException exception) {
+        ArgumentValidator.checkNotNull(exception, "RuntimeException exception");
         if(settings.getCollectionSettings().getPillarSettings().getAlarmLevel() == AlarmLevel.EMERGENCY) {
             log.error("RuntimeException caught, but we do not issue alarms for this, when the alarm level is '"
                     + settings.getCollectionSettings().getPillarSettings().getAlarmLevel() + "'", exception);
@@ -144,6 +150,9 @@ public class AlarmDispatcher {
      * @param alarmDescription The description of the alarm, e.g. What caused the alarm.
      */
     public void sendAlarm(AlarmConcerning alarmConcerning, AlarmDescription alarmDescription) {
+        ArgumentValidator.checkNotNull(alarmConcerning, "alarmConcerning");
+        ArgumentValidator.checkNotNull(alarmDescription, "alarmDescription");
+        
         log.warn("Sending alarm, concerning: '" + alarmConcerning + "', with description: '" + alarmDescription + "'");
         
         Alarm alarm = new Alarm();

@@ -35,6 +35,7 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
@@ -69,6 +70,8 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
      * @param message The IdentifyPillarsForGetChecksumsRequest message to handle.
      */
     public void handleMessage(IdentifyPillarsForGetChecksumsRequest message) {
+        ArgumentValidator.checkNotNull(message, "IdentifyPillarsForGetChecksumsRequest message");
+
         try {
             validateBitrepositoryCollectionId(message.getCollectionID());
             checkThatAllRequestedFilesAreAvailable(message);

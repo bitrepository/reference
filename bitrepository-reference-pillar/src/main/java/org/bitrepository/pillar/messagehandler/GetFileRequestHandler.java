@@ -39,6 +39,7 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
@@ -79,6 +80,8 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
      */
     @Override
     public void handleMessage(GetFileRequest message) {
+        ArgumentValidator.checkNotNull(message, "GetFileRequest message");
+
         try {
             if(!validateMessage(message)) {
                 return;

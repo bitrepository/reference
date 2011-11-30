@@ -30,6 +30,7 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
@@ -63,6 +64,8 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
      * @param message The IdentifyPillarsForPutFileRequest message to handle.
      */
     public void handleMessage(IdentifyPillarsForPutFileRequest message) {
+        ArgumentValidator.checkNotNull(message, "IdentifyPillarsForPutFileRequest message");
+
         try {
             validateBitrepositoryCollectionId(message.getCollectionID());
             checkThatTheFileDoesNotAlreadyExist(message);
@@ -159,7 +162,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
         irInfo.setResponseText("Operation acknowledged and accepted.");
         reply.setResponseInfo(irInfo);
 
-        log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
+        log.info("Sending IdentifyPillarsForPutfileResponse: " + reply);
         messagebus.sendMessage(reply);
     }
     

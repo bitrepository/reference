@@ -49,6 +49,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReque
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.ReferenceArchive;
@@ -82,6 +83,7 @@ public class PillarMediator extends AbstractMessageListener {
     final AlarmDispatcher alarmDispatcher;
 
     // THE MESSAGE HANDLERS!
+    /** The map between the messagenames and their respective handlers.*/
     private Map<String, PillarMessageHandler> handlers = new HashMap<String, PillarMessageHandler>();
 
     /**
@@ -94,6 +96,10 @@ public class PillarMediator extends AbstractMessageListener {
      * @param messageFactory The message factory.
      */
     public PillarMediator(MessageBus messagebus, Settings pSettings, ReferenceArchive refArchive) {
+        ArgumentValidator.checkNotNull(messagebus, "messageBus");
+        ArgumentValidator.checkNotNull(pSettings, "Settings pSettings");
+        ArgumentValidator.checkNotNull(refArchive, "ReferenceArchive refArchive");
+
         this.messagebus = messagebus;
         this.archive = refArchive;
         this.settings = pSettings;

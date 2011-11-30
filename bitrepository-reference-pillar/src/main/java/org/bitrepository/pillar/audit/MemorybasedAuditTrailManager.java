@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.pillar.AuditTrailManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,8 @@ public class MemorybasedAuditTrailManager implements AuditTrailManager {
      * @param msg The audit to insert.
      */
     public synchronized void insertAudit(Date date, Object msg) {
+        ArgumentValidator.checkNotNull(date, "date");
+        
         log.info("At '" + date + "' inserted audit: " + msg.toString());
         auditTrails.put(date, msg.toString());
     }
@@ -72,16 +75,23 @@ public class MemorybasedAuditTrailManager implements AuditTrailManager {
 
     @Override
     public Collection<String> getAuditsAfterDate(Date date) {
+        ArgumentValidator.checkNotNull(date, "date");
+        
         return auditTrails.tailMap(date).values();
     }
 
     @Override
     public Collection<String> getAuditsBeforeDate(Date date) {
+        ArgumentValidator.checkNotNull(date, "date");
+
         return auditTrails.headMap(date).values();
     }
     
     @Override
     public Collection<String> getAuditsBetweenDates(Date start, Date end) {
+        ArgumentValidator.checkNotNull(start, "Date start");
+        ArgumentValidator.checkNotNull(end, "Date end");
+        
         return auditTrails.tailMap(start).headMap(end).values();
     }
 }

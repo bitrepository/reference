@@ -24,6 +24,7 @@
  */
 package org.bitrepository.pillar;
 
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.messagehandler.PillarMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -38,6 +39,9 @@ public class ReferencePillar {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     public ReferencePillar(MessageBus mBus, Settings settings) {
+        ArgumentValidator.checkNotNull(mBus, "MessageBus mBus");
+        ArgumentValidator.checkNotNull(settings, "settings");
+        
         log.info("Starting the reference pillar!");
         
         ReferenceArchive archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());

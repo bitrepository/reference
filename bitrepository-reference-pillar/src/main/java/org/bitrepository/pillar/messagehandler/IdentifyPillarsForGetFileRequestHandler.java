@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
@@ -60,6 +61,8 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
      * @param message The IdentifyPillarsForGetFileRequest message to handle.
      */
     public void handleMessage(IdentifyPillarsForGetFileRequest message) {
+        ArgumentValidator.checkNotNull(message, "IdentifyPillarsForGetFileRequest message");
+
         try {
             validateBitrepositoryCollectionId(message.getCollectionID());
             checkThatFileIsAvailable(message);

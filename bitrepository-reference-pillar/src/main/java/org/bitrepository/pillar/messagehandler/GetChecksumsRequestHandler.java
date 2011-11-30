@@ -46,6 +46,7 @@ import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -81,6 +82,8 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * @param message The GetChecksumsRequest message to handle.
      */
     public void handleMessage(GetChecksumsRequest message) {
+        ArgumentValidator.checkNotNull(message, "GetChecksumsRequest message");
+
         try {
             if(!validateMessage(message)) {
                 return;

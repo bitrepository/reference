@@ -33,6 +33,7 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
@@ -67,6 +68,8 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
      * @param message The IdentifyPillarsForPutFileRequest message to handle.
      */
     public void handleMessage(PutFileRequest message) {
+        ArgumentValidator.checkNotNull(message, "PutFileRequest message");
+
         try {
             log.info("Recived PutFileRequest: " + message);
             if(!validateMessage(message)) {

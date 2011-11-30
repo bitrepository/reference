@@ -86,6 +86,8 @@ public class ReferenceArchive implements FileStore {
 
     @Override
     public File getFile(String fileID) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        
         File res = new File(fileDir, fileID);
         if(!res.isFile()) {
             throw new IllegalArgumentException("The file '" + fileID + "' is not within the archive.");
@@ -95,6 +97,8 @@ public class ReferenceArchive implements FileStore {
 
     @Override
     public boolean hasFile(String fileID) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        
         return (new File(fileDir, fileID)).isFile();
     }
 
@@ -115,6 +119,9 @@ public class ReferenceArchive implements FileStore {
 
     @Override
     public File downloadFileForValidation(String fileID, InputStream inputStream) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        ArgumentValidator.checkNotNull(inputStream, "inputStream");
+
         // Download the file first, then move it to the fileDir.
         File downloadedFile = new File(tmpDir, fileID);
 
@@ -142,6 +149,8 @@ public class ReferenceArchive implements FileStore {
     
     @Override
     public void moveToArchive(String fileID) throws Exception {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+
         File downloadedFile = new File(tmpDir, fileID);
         File archivedFile = new File(fileDir, fileID);
         
@@ -158,6 +167,9 @@ public class ReferenceArchive implements FileStore {
 
     @Override
     public void replaceFile(String fileID, InputStream inputStream) throws Exception {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        ArgumentValidator.checkNotNull(inputStream, "inputStream");
+        
         // delete the old file.
         deleteFile(fileID);
 
@@ -168,6 +180,8 @@ public class ReferenceArchive implements FileStore {
 
     @Override
     public void deleteFile(String fileID) throws Exception {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+
         // Move old file to retain area.
         File oldFile = new File(fileDir, fileID);
         if(!oldFile.isFile()) {
