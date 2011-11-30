@@ -38,11 +38,10 @@
       <xs:sequence>
         <xs:element name="ReceiverDestination" type="xs:string">
           <xs:annotation>
-            <xs:documentation xml:lang="
-          en ">
-          The destination for receiving messages for a component.
-        </xs:documentation>
-        </xs:annotation>
+            <xs:documentation xml:lang="en">
+              The destination for receiving messages for a component.
+            </xs:documentation>
+          </xs:annotation>
         </xs:element>
         <xs:element name="MediatorCleanupInterval" type="xs:nonNegativeInteger">
           <xs:annotation>
@@ -100,6 +99,13 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="ReceiverDestination" type="xs:string">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The destination for receiving messages for a component.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>        
       </xs:sequence>
     </xs:complexType>
   </xs:element>

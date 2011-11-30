@@ -53,4 +53,12 @@ public class CalendarUtils {
             throw new RuntimeException(e);
         }
     }
+    
+    /**
+     * Method for easier retrieving the current date in XML format.
+     * @return The current date in XML format
+     */
+    public static XMLGregorianCalendar getNow() {
+        return getXmlGregorianCalendar(new Date());
+    }
 }

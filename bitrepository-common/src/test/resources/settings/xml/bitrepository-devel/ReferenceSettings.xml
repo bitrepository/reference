@@ -20,6 +20,7 @@
     <FileDir>test-archive</FileDir>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
+    <ReceiverDestination>TEST-TOPIC-PILLAR</ReceiverDestination>
   </PillarSettings>
   <DeleteFileSettings></DeleteFileSettings>
   <GetAuditTrailSettings></GetAuditTrailSettings>

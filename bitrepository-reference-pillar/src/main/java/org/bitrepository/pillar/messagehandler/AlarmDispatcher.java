@@ -169,7 +169,7 @@ public class AlarmDispatcher {
         alarm.setCollectionID(settings.getCollectionID());
         alarm.setCorrelationID(UUID.randomUUID().toString());
         alarm.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        alarm.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        alarm.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
         alarm.setTo(settings.getAlarmDestination());
         alarm.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         

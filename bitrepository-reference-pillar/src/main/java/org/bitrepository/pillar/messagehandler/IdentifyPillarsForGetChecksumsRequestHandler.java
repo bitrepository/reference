@@ -203,7 +203,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         res.setFileChecksumSpec(msg.getFileChecksumSpec());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

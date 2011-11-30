@@ -157,7 +157,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
         res.setTo(msg.getReplyTo());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

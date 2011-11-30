@@ -350,7 +350,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         response.setVersion(VERSION);
         response.setCollectionID(settings.getCollectionID());
         response.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        response.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        response.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
         response.setCorrelationID(message.getCorrelationID());
         response.setFileIDs(message.getFileIDs());
         response.setResultAddress(message.getResultAddress());
@@ -374,7 +374,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         response.setVersion(VERSION);
         response.setCollectionID(settings.getCollectionID());
         response.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        response.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        response.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
         response.setCorrelationID(message.getCorrelationID());
         response.setFileIDs(message.getFileIDs());
         response.setTo(message.getReplyTo());

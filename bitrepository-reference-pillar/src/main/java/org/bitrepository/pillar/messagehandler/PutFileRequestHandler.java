@@ -27,6 +27,7 @@ package org.bitrepository.pillar.messagehandler;
 import java.io.File;
 import java.net.URL;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -35,6 +36,8 @@ import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -202,29 +205,21 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         fResponse.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
 
         ChecksumsDataForNewFile checksumForValidation = new ChecksumsDataForNewFile();
-//        if(message.getChecksumSpecs() != null && message.getChecksumSpecs().getNoOfItems().equals(BigInteger.ZERO)) {
-//            // Calculate the requested checksum data.
-//            checksumForValidation.setFileID(message.getFileID());
-//            checksumForValidation.setNoOfItems(message.getChecksumSpecs().getNoOfItems());
-//            Collection<ChecksumSpecTYPE> requestedChecksumToCalculate 
-//                    = message.getChecksumSpecs().getChecksumSpecsItems().getChecksumSpecsItem();
-//            ChecksumDataItems cdi = new ChecksumDataItems();
-//            // Calculate each of the requested checksums and put them into the response message.
-//            for(ChecksumSpecTYPE checksumToCalculate : requestedChecksumToCalculate) {
-//                String checksum = ChecksumUtils.generateChecksum(retrievedFile, 
-//                        checksumToCalculate.getChecksumType(),
-//                        checksumToCalculate.getChecksumSalt());
-//                ChecksumDataForFileTYPE resultingChecksum = new ChecksumDataForFileTYPE();
-//                resultingChecksum.setChecksumSpec(checksumToCalculate);
-//                resultingChecksum.setChecksumValue(checksum);
-//                resultingChecksum.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
-//                cdi.getChecksumDataForFile().add(resultingChecksum);
-//            }
-//            checksumForValidation.setChecksumDataItems(cdi);
-//        } else {
-//            // TODO is such a request required?
-//            log.info("No checksum validation requested.");
-//        }
+        
+        if(message.getFileChecksumSpec() != null) {
+            ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
+            checksumData.setChecksumValue(ChecksumUtils.generateChecksum(retrievedFile, 
+                    message.getFileChecksumSpec().getChecksumType(), 
+                    message.getFileChecksumSpec().getChecksumType()));
+            checksumData.setCalculationTimestamp(CalendarUtils.getNow());
+            checksumData.setChecksumSpec(message.getFileChecksumSpec());
+            checksumForValidation.setChecksumDataItem(checksumData);
+        } else {
+            // TODO is such a request required?
+            log.info("No checksum validation requested.");
+            checksumForValidation = null;
+        }
+        
         fResponse.setChecksumsDataForNewFile(checksumForValidation);
 
         // Finish by sending final response.
@@ -264,7 +259,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         res.setTo(msg.getReplyTo());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }
@@ -290,7 +285,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         res.setTo(msg.getReplyTo());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
 
         return res;
     }

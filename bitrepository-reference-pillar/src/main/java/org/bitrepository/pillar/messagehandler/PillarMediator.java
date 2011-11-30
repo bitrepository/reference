@@ -111,7 +111,7 @@ public class PillarMediator extends AbstractMessageListener {
 
         // add to both the general topic and the local queue.
         messagebus.addListener(settings.getCollectionDestination(), this);
-        messagebus.addListener(settings.getReferenceSettings().getClientSettings().getReceiverDestination(), this);
+        messagebus.addListener(settings.getReferenceSettings().getPillarSettings().getReceiverDestination(), this);
     }
     
     /**

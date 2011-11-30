@@ -25,6 +25,7 @@
 package org.bitrepository.pillar;
 
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.UUID;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
@@ -38,6 +39,7 @@ import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.TestMessageFactory;
 
 public class PillarTestMessageFactory extends TestMessageFactory {
@@ -63,12 +65,13 @@ public class PillarTestMessageFactory extends TestMessageFactory {
 
     public IdentifyPillarsForPutFileResponse createIdentifyPillarsForPutFileResponse(
             String correlationId, String replyTo, String pillarId, 
-            TimeMeasureTYPE timeToDeliver, String toTopic) {
+            TimeMeasureTYPE timeToDeliver, String toTopic, ResponseInfo responseInfo) {
         IdentifyPillarsForPutFileResponse res = new IdentifyPillarsForPutFileResponse();
         res.setCollectionID(settings.getCollectionID());
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarChecksumSpec(null);
         res.setVersion(VERSION_DEFAULT);
+        res.setResponseInfo(responseInfo);
          
         res.setCorrelationID(correlationId);
         res.setReplyTo(replyTo);
@@ -83,19 +86,25 @@ public class PillarTestMessageFactory extends TestMessageFactory {
             String pillarId, String replyTo, String toTopic) {
         PutFileRequest res = new PutFileRequest();
         res.setAuditTrailInformation(null);
-        res.setCollectionID(settings.getCollectionID());
         
         ChecksumsDataForNewFile csdataForNewFile = new ChecksumsDataForNewFile();
         ChecksumDataForFileTYPE checksumDataForFile = new ChecksumDataForFileTYPE();
-        
-        ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
-        csSpec.setChecksumType("MD5");
-        checksumDataForFile.setChecksumSpec(csSpec);       
+        ChecksumSpecTYPE csDeliveredSpec = new ChecksumSpecTYPE();
+        csDeliveredSpec.setChecksumType("MD5");
+        checksumDataForFile.setChecksumSpec(csDeliveredSpec);       
+        checksumDataForFile.setChecksumValue("940a51b250e7aa82d8e8ea31217ff267");
+        checksumDataForFile.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
         csdataForNewFile.setChecksumDataItem(checksumDataForFile);
-        
         res.setChecksumsDataForNewFile(csdataForNewFile);
+
+        res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
+        
+        ChecksumSpecTYPE csReturnSpec = new ChecksumSpecTYPE();
+        csReturnSpec.setChecksumType("SHA-1");
+        res.setFileChecksumSpec(csReturnSpec);
+        
         res.setFileID(fileId);
         res.setFileSize(BigInteger.valueOf(fileSize));
         res.setMinVersion(VERSION_DEFAULT);
@@ -103,6 +112,7 @@ public class PillarTestMessageFactory extends TestMessageFactory {
         res.setReplyTo(replyTo);
         res.setTo(toTopic);
         res.setVersion(VERSION_DEFAULT);
+        
         return res;
     }
 

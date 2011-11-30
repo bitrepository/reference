@@ -441,7 +441,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         res.setTo(message.getReplyTo());
         res.setCollectionID(settings.getCollectionID());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
 
         return res;
     }
@@ -465,7 +465,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         res.setTo(message.getReplyTo());
         res.setCollectionID(settings.getCollectionID());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }
