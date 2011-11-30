@@ -89,7 +89,7 @@ public final class IntegrityServiceComponentFactory {
     public IntegrityInformationCollector getIntegrityInformationCollector(MessageBus messageBus, Settings settings) {
         if (integrityInformationCollector == null) {
             integrityInformationCollector = new DelegatingIntegrityInformationCollector(
-                    getCachedIntegrityInformationStorage(),
+                    getCachedIntegrityInformationStorage(), getIntegrityChecker(settings),
                     AccessComponentFactory.getInstance().createGetFileIDsClient(settings),
                     AccessComponentFactory.getInstance().createGetChecksumsClient(settings));
         }

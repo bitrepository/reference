@@ -24,10 +24,13 @@
  */
 package org.bitrepository.integrityclient.cache;
 
+import java.util.Date;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.utils.CalendarUtils;
 
 /**
  * Class for containing the information about a given file at a given pillar.
@@ -86,7 +89,11 @@ public class FileIDInfo {
      * @return The date for the last check of the file. 
      */
     public XMLGregorianCalendar getDateForLastFileIDCheck() {
-        return fileLastCheck;
+        if(fileLastCheck != null) {
+            return fileLastCheck;
+        }
+        
+        return CalendarUtils.getXmlGregorianCalendar(new Date(0));
     }
     
     /**
@@ -128,7 +135,11 @@ public class FileIDInfo {
      * @return The date for the last check of the checksum.
      */
     public XMLGregorianCalendar getDateForLastChecksumCheck() {
-        return checksumLastCheck;
+        if(checksumLastCheck != null) {
+            return checksumLastCheck;
+        }
+        
+        return CalendarUtils.getXmlGregorianCalendar(new Date(0));
     }
     
     /**

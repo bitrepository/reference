@@ -69,7 +69,8 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
      * The memory cache for containing the information about the files in the system.
      * Synchronized for avoiding threading problems.
      */
-    private Map<String, List<FileIDInfo>> cache = Collections.synchronizedMap(new HashMap<String, List<FileIDInfo>>());
+    private Map<String, CollectionFileIDInfo> cache = Collections.synchronizedMap(new HashMap<String, 
+            CollectionFileIDInfo>());
     
     /**
      * Constructor.
@@ -95,31 +96,14 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
      * @param pillarId The id of pillar who delivered these file id data.
      */
     private void updateFileId(FileIDsDataItem fileIdData, String pillarId) {
-        List<FileIDInfo> fileInfos = cache.get(fileIdData.getFileID());
+        CollectionFileIDInfo fileInfos = cache.get(fileIdData.getFileID());
         if(fileInfos == null) {
-            fileInfos = new ArrayList<FileIDInfo>();
+            fileInfos = new CollectionFileIDInfo();
         }
         
-        // Extract current file info or create a new one.
-        FileIDInfo currentInfo = null;
-        for(int i = 0; i < fileInfos.size(); i++) {
-            FileIDInfo fileInfo = fileInfos.get(i);
-            if(fileInfo.getPillarId().equals(pillarId)) {
-                currentInfo = fileInfo;
-                fileInfos.remove(i);
-                i--;
-            }
-        }
-        if(currentInfo == null) {
-            currentInfo = new FileIDInfo(fileIdData.getFileID(), pillarId);
-        }
-        
-        // Update the file info
-        currentInfo.setDateForLastFileIDCheck(fileIdData.getCreationTimestamp());
-        
-        // put it back into the list and that back into the cache.
-        fileInfos.add(currentInfo);
+        fileInfos.updateFileIDs(fileIdData, pillarId);
         cache.put(fileIdData.getFileID(), fileInfos);
+        
     }
     
     @Override
@@ -143,14 +127,103 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
     private void updateChecksum(ChecksumDataForChecksumSpecTYPE checksumData, ChecksumSpecTYPE checksumType, 
             String pillarId) {
         synchronized(cache) {
-            List<FileIDInfo> fileInfos = cache.get(checksumData.getFileID());
+            CollectionFileIDInfo fileInfos = cache.get(checksumData.getFileID());
+            
+            fileInfos.updateChecksums(checksumData, checksumType, pillarId);
+            cache.put(checksumData.getFileID(), fileInfos);
+        }
+    }
+    
+    /**
+     * Instantiates a new List for the file id infos for a given file id.
+     * @param fileId The id of the file to be inserted into the cache. 
+     */
+    private synchronized void instantiateFileInfoListForFileId(String fileId) {
+        if(cache.containsKey(fileId)) {
+            log.warn("Attempt to instantiate file, which already exists, averted");
+            return;
+        }
+        CollectionFileIDInfo fileIdInfo = new CollectionFileIDInfo();
+        cache.put(fileId, fileIdInfo);
+    }
+    
+    @Override
+    public List<FileIDInfo> getFileInfo(String fileId) {
+        return cache.get(fileId).getFileIDInfos();
+    }
+
+    @Override
+    public Collection<String> getAllFileIDs() {
+        return cache.keySet();
+    }
+    
+    /**
+     * Clean the cache for test purposes only!
+     */
+    public void clearCache() {
+        cache.clear();
+    }
+
+    /**
+     * Container for the collection of FileIDInfos for a single file.
+     * 
+     * All functions are package-protected.
+     */
+    private class CollectionFileIDInfo {
+        /** The collection of FileIDInfos.*/
+        private List<FileIDInfo> fileIDInfos;
+        
+        /**
+         * Constructor. Initializes and empty list of FileIDInfos.
+         */
+        CollectionFileIDInfo() {
+            fileIDInfos = new ArrayList<FileIDInfo>();
+        }
+        
+        /**
+         * Updates the FileIDInfo for a given pillar based on the results of a GetFileIDs operation.
+         * @param fileIdData The resulting date from the GetFileIDs operation.
+         * @param pillarId The id of the pillar.
+         */
+        void updateFileIDs(FileIDsDataItem fileIdData, String pillarId) {
+            // Extract current file info or create a new one.
+            FileIDInfo currentInfo = null;
+            for(int i = 0; i < fileIDInfos.size(); i++) {
+                FileIDInfo fileInfo = fileIDInfos.get(i);
+                if(fileInfo.getPillarId().equals(pillarId)) {
+                    currentInfo = fileInfo;
+                    fileIDInfos.remove(i);
+                    i--; // make up for removal
+                }
+            }
+            if(currentInfo == null) {
+                currentInfo = new FileIDInfo(fileIdData.getFileID(), pillarId);
+            }
+            
+            // Update the file info
+            currentInfo.setDateForLastFileIDCheck(fileIdData.getCreationTimestamp());
+            
+            // put it back into the list and that back into the cache.
+            fileIDInfos.add(currentInfo);
+        }
+        
+        /**
+         * Updates the FileIDInfo for a given pillar based on the results of a GetChecksums operation.
+         * Also updates the 'latestChecksumUpdate'.
+         * 
+         * @param checksumData The results of the GetChecksumOperation for this given file.
+         * @param checksumType The type of checksum (e.g. algorithm and optional salt).
+         * @param pillarId The id of the pillar.
+         */
+        void updateChecksums(ChecksumDataForChecksumSpecTYPE checksumData, ChecksumSpecTYPE checksumType,
+                String pillarId) {
             
             // Extract current file info and update it or create a new one.
             FileIDInfo currentInfo = null;
-            for(FileIDInfo fileInfo : fileInfos) {
+            for(FileIDInfo fileInfo : fileIDInfos) {
                 if(fileInfo.getPillarId().equals(pillarId)) {
                     currentInfo = fileInfo;
-                    fileInfos.remove(fileInfo);
+                    fileIDInfos.remove(fileInfo);
                 }
             }
             if(currentInfo == null) {
@@ -167,38 +240,14 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
             }
             
             // put it back into the list and that back into the cache.
-            fileInfos.add(currentInfo);
-            cache.put(checksumData.getFileID(), fileInfos);
+            fileIDInfos.add(currentInfo);
         }
-    }
-    
-    /**
-     * Instantiates a new List for the file id infos for a given file id.
-     * @param fileId The id of the file to be inserted into the cache. 
-     */
-    private synchronized void instantiateFileInfoListForFileId(String fileId) {
-        if(cache.containsKey(fileId)) {
-            log.warn("Attempt to instantiate file, which already exists, averted");
-            return;
+        
+        /**
+         * @return All the FileIDInfos for this given file.
+         */
+        List<FileIDInfo> getFileIDInfos() {
+            return fileIDInfos;
         }
-        List<FileIDInfo> fileIdInfo = new ArrayList<FileIDInfo>();
-        cache.put(fileId, fileIdInfo);
-    }
-    
-    @Override
-    public List<FileIDInfo> getFileInfo(String fileId) {
-        return cache.get(fileId);
-    }
-
-    @Override
-    public Collection<String> getAllFileIDs() {
-        return cache.keySet();
-    }
-    
-    /**
-     * Clean the cache for test purposes only!
-     */
-    public void clearCache() {
-        cache.clear();
     }
 }

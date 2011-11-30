@@ -145,7 +145,7 @@ public class SystematicIntegrityValidator implements IntegrityChecker {
             
             unfoundPillars.remove(fileinfo.getPillarId());
             
-            // TODO check the time.
+            // TODO check the time?
         }
         
         return unfoundPillars.isEmpty();

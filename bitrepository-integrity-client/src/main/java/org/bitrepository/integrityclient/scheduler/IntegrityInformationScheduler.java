@@ -33,6 +33,15 @@ public interface IntegrityInformationScheduler {
     /** Add a trigger for initiating information collection.
      *
      * @param trigger The definition of whether a collection should run, and if so what collection.
+     * @param name The name of the trigger.
      */
-    void addTrigger(Trigger trigger);
+    void addTrigger(Trigger trigger, String name);
+    
+    /**
+     * Removes a trigger with the given name.
+     * 
+     * @param name
+     * @return Whether the trigger was successfully found and removed. 
+     */
+    boolean removeTrigger(String name);
 }

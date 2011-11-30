@@ -24,11 +24,12 @@
  */
 package org.bitrepository.integrityclient.scheduler;
 
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.integrityclient.configuration.integrityclientconfiguration.CollectionConfiguration;
-
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import org.bitrepository.common.settings.Settings;
 
 /**
  * Scheduler that uses Timer to trigger events.
@@ -38,6 +39,8 @@ public class TimerIntegrityInformationScheduler implements IntegrityInformationS
     private final Timer timer;
     /** The period between testing whether triggers have triggered. */
     private final long interval;
+    /** The map between the running timertasks and their names.*/
+    private Map<String, TimerTask> triggerTimerTasks = new HashMap<String, TimerTask>();
 
     /** Setup a timer task for triggering all triggers at requested interval.
      *
@@ -49,13 +52,26 @@ public class TimerIntegrityInformationScheduler implements IntegrityInformationS
     }
 
     @Override
-    public void addTrigger(Trigger trigger) {
+    public void addTrigger(Trigger trigger, String name) {
         TimerTask task = new TriggerTimerTask(trigger);
         // TODO: Should the interval rather be a suggestion from the trigger?
         // TODO: Should triggers be defined in configuration? How?
         timer.scheduleAtFixedRate(task, 0L, interval);
+        
+        triggerTimerTasks.put(name, task);
     }
-
+    
+    @Override
+    public boolean removeTrigger(String name) {
+        TimerTask task = triggerTimerTasks.remove(name);
+        if(task == null) {
+            return false;
+        }
+        
+        task.cancel();
+        return true;
+    }
+    
     private static class TriggerTimerTask extends TimerTask {
         /** The trigger to test and run. */
         private Trigger trigger;

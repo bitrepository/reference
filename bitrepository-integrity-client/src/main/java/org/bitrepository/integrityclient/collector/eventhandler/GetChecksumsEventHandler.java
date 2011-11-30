@@ -27,7 +27,9 @@ package org.bitrepository.integrityclient.collector.eventhandler;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataGroupedByChecksumSpec;
+import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
+import org.bitrepository.integrityclient.checking.IntegrityChecker;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
@@ -44,13 +46,20 @@ public class GetChecksumsEventHandler implements EventHandler {
     
     /** The storage to send the results.*/
     private CachedIntegrityInformationStorage informationCache;
+    /** The FileIDs to be */
+    private final FileIDs fileIDs;
+    /** The checker used for checking the integrity of the results.*/
+    private final IntegrityChecker integrityChecker;
     
     /**
      * Constructor.
      * @param informationCache The cache for storing the results.
      */
-    public GetChecksumsEventHandler(CachedIntegrityInformationStorage informationCache) {
+    public GetChecksumsEventHandler(CachedIntegrityInformationStorage informationCache, 
+            IntegrityChecker integrityChecker, FileIDs fileIDs) {
         this.informationCache = informationCache;
+        this.integrityChecker = integrityChecker;
+        this.fileIDs = fileIDs;
     }
     
     @Override
@@ -92,14 +101,17 @@ public class GetChecksumsEventHandler implements EventHandler {
      * @param event The event that failed.
      */
     private void handleFailure(OperationEvent event) {
-        // TODO implement
+        log.warn(event.getType() + " : " + event.getState() + " : " + event.getInfo());
+        // TODO ??
     }
     
     /**
-     * Method for handling a complete. Thus notifying the relevant instance.
+     * Handles a Complete for the whole operation by performing a integrity check on the given checksums.
      * @param event The event that has completed.
      */
     private void handleComplete(OperationEvent event) {
-       // TODO implement.
+        log.info(event.getType() + " : " + event.getState() + " : " + event.getInfo());
+        
+        integrityChecker.checkChecksum(fileIDs);
     }
 }

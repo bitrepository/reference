@@ -31,8 +31,10 @@ import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
+import org.bitrepository.integrityclient.checking.IntegrityChecker;
 import org.bitrepository.integrityclient.collector.eventhandler.GetChecksumsEventHandler;
 import org.bitrepository.integrityclient.collector.eventhandler.GetFileIdsEventHandler;
+import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,12 +50,10 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     private final CachedIntegrityInformationStorage storage;
     /** The client for retrieving file IDs. */
     private final GetFileIDsClient getFileIDsClient;
-    /** The eventhandler for the GetFileIDs Operations.*/
-    private GetFileIdsEventHandler fileIdsEventHandler;
     /** The client for retrieving checksums. */
     private final GetChecksumsClient getChecksumsClient;
-    /** The eventhandler for the GetChecksums Operations.*/
-    private GetChecksumsEventHandler checksumsEventHandler;
+    /** The checker for the integrity. Should be used, when the collecting has finished to validate the collected.*/
+    private final IntegrityChecker checker;
     
     /**
      * Initialise a delegating integrity information collector.
@@ -63,17 +63,18 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
      * @param getChecksumsClient The client for retrieving checksums
      */
     public DelegatingIntegrityInformationCollector(CachedIntegrityInformationStorage storage,
-            GetFileIDsClient getFileIDsClient, GetChecksumsClient getChecksumsClient) {
+            IntegrityChecker integrityChecker, GetFileIDsClient getFileIDsClient, 
+            GetChecksumsClient getChecksumsClient) {
         this.storage = storage;
+        this.checker = integrityChecker;
         this.getFileIDsClient = getFileIDsClient;
-        fileIdsEventHandler = new GetFileIdsEventHandler(storage);
         this.getChecksumsClient = getChecksumsClient;
-        checksumsEventHandler = new GetChecksumsEventHandler(storage);
     }
 
     @Override
     public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation) {
         try {
+            EventHandler fileIdsEventHandler = new GetFileIdsEventHandler(storage, checker, fileIDs);
             getFileIDsClient.getFileIDs(pillarIDs, fileIDs, null, fileIdsEventHandler, auditTrailInformation);
         } catch (OperationFailedException e) {
             log.warn("Could not retrieve the file ids '" + fileIDs + "' from '" + pillarIDs + "'", e);
@@ -87,7 +88,9 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType, 
             String auditTrailInformation) {
         try {
-            getChecksumsClient.getChecksums(pillarIDs, fileIDs, checksumType, null, null, auditTrailInformation);
+            EventHandler checksumEventHandler = new GetChecksumsEventHandler(storage, checker, fileIDs);
+            getChecksumsClient.getChecksums(pillarIDs, fileIDs, checksumType, null, checksumEventHandler, 
+                    auditTrailInformation);
         } catch (OperationFailedException e) {
             log.warn("Could not retrieve the checksum '" + fileIDs + "' from '" + pillarIDs + "' with spec '" 
                     + checksumType + "'", e);
