@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar;
+package org.bitrepository.integration;
 
 import java.net.URL;
 import java.util.Date;
@@ -40,6 +40,9 @@ import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;
+import org.bitrepository.pillar.DefaultFixturePillarTest;
+import org.bitrepository.pillar.ReferencePillar;
+import org.bitrepository.pillar.ReferencePillarComponentFactory;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -47,7 +50,7 @@ import org.testng.annotations.Test;
 /**
  * Test class for the reference pillar.
  */
-public class ReferencePillarTester extends DefaultFixturePillarTest {
+public class ReferencePillarTest extends DefaultFixturePillarTest {
     
     @Test(groups = {"regressiontest"})
     public void testPillarVsClients() throws Exception {
@@ -102,7 +105,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
                 "This should be caught by the pillar");
         GetChecksumsClient getChecksums = AccessComponentFactory.getInstance().createGetChecksumsClient(clientSettings);
         FileIDs fileIDsForGetChecksums = new FileIDs();
-        fileIDsForGetChecksums.getFileID().add(FILE_ID);
+        fileIDsForGetChecksums.setFileID(FILE_ID);
         
         ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
         csType.setChecksumSalt(null);
@@ -126,7 +129,7 @@ public class ReferencePillarTester extends DefaultFixturePillarTest {
                 "This should be caught by the pillar");
         GetFileIDsClient getFileIDs = AccessComponentFactory.getInstance().createGetFileIDsClient(clientSettings);
         FileIDs fileIdsForGetFileIDs = new FileIDs();
-        fileIdsForGetFileIDs.getFileID().add(FILE_ID);
+        fileIdsForGetFileIDs.setFileID(FILE_ID);
         
         URL fileIDsUrl = new URL(FILE_ADDRESS + "-id");
         

@@ -96,7 +96,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
 
         String deliveryFilename = "TEST-FILE-IDS-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
-        fileIDs.getFileID().add(DEFAULT_FILE_ID);
+        fileIDs.setFileID(DEFAULT_FILE_ID);
         
         if(useMockupPillar()) {
             settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
@@ -193,7 +193,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
 
         String deliveryFilename = "TEST-FILE-IDS-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
-        fileIDs.getFileID().add(DEFAULT_FILE_ID);
+        fileIDs.setFileID(DEFAULT_FILE_ID);
         
         if(useMockupPillar()) {
             settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
@@ -261,12 +261,12 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
             ResultingFileIDs res = new ResultingFileIDs();
             FileIDsData fileIDsData = new FileIDsData();
             FileIDsDataItems fiddItems = new FileIDsDataItems();
-            for(String fileID : receivedGetFileIDsRequest.getFileIDs().getFileID()) {
-                FileIDsDataItem fidItem = new FileIDsDataItem();
-                fidItem.setCreationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
-                fidItem.setFileID(fileID);
-                fiddItems.getFileIDsDataItem().add(fidItem);
-            }
+            String fileID = receivedGetFileIDsRequest.getFileIDs().getFileID();
+            FileIDsDataItem fidItem = new FileIDsDataItem();
+            fidItem.setCreationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+            fidItem.setFileID(fileID);
+            fiddItems.getFileIDsDataItem().add(fidItem);
+            
             fileIDsData.setFileIDsDataItems(fiddItems);
             res.setFileIDsData(fileIDsData);
             completeMsg.setResultingFileIDs(res);
@@ -285,7 +285,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
                     + "and therefore no resulting address should be returned.");
             Assert.assertNotNull(resFileIDs.getFileIDsData(), "No FileIDsData should be returned.");
             Assert.assertEquals(resFileIDs.getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size(),
-                    fileIDs.getFileID().size(), "Response should contain same amount of fileids as requested.");
+                    1, "Response should contain same amount of fileids as requested.");
         }
         
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
@@ -298,7 +298,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         
         String deliveryFilename = "TEST-FILE-ID-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
-        fileIDs.getFileID().add(DEFAULT_FILE_ID);
+        fileIDs.setFileID(DEFAULT_FILE_ID);
         
         settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
 
@@ -337,7 +337,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
 
         String deliveryFilename = "TEST-FILE-IDS-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
-        fileIDs.getFileID().add(DEFAULT_FILE_ID);
+        fileIDs.setFileID(DEFAULT_FILE_ID);
         
         settings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
 
@@ -397,7 +397,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         
         String deliveryFilename = "TEST-FILE-IDS-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
-        fileIDs.getFileID().add(DEFAULT_FILE_ID);
+        fileIDs.setFileID(DEFAULT_FILE_ID);
         
         if(useMockupPillar()) {
             settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();

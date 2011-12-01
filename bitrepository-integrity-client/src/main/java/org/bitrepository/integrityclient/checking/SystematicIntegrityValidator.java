@@ -25,6 +25,7 @@
 package org.bitrepository.integrityclient.checking;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -120,11 +121,8 @@ public class SystematicIntegrityValidator implements IntegrityChecker {
     private Collection<String> getRequestedFileIDs(FileIDs fileIDs) {
         if(fileIDs.getAllFileIDs() != null) {
             return cache.getAllFileIDs();
-        } else if(fileIDs.getParameterAddress() != null){
-            // TODO handle the parameter address?
-            throw new IllegalStateException("Cannot use the 'ParameterAddress'");
         } 
-        return fileIDs.getFileID();
+        return Arrays.asList(fileIDs.getFileID());
     }
     
     /**

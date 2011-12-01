@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.bitrepository</groupId>
   <artifactId>bitrepository</artifactId>
-  <version>0.4.2-SNAPSHOT</version>
+  <version>0.5.0-SNAPSHOT</version>
 
   <parent>
     <groupId>org.sbforge</groupId>
@@ -341,7 +341,7 @@
   </reporting>
 
   <properties>
-    <message.xml.version>0.4.0</message.xml.version>
+    <message.xml.version>5</message.xml.version>
     <collection.settings.version>0.3.1</collection.settings.version>
     <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
   </properties>

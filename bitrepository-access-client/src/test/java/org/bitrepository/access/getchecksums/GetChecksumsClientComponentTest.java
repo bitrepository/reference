@@ -96,7 +96,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
         String deliveryFilename = "TEST-CHECKSUM-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
-        fileIDs.getFileID().add(DEFAULT_FILE_ID);
+        fileIDs.setFileID(DEFAULT_FILE_ID);
         
         if(useMockupPillar()) {
             settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
@@ -181,7 +181,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         addStep("Initialise the variables.", "");
         
         FileIDs fileIDs = new FileIDs();
-        fileIDs.getFileID().add(DEFAULT_FILE_ID);
+        fileIDs.setFileID(DEFAULT_FILE_ID);
         
         if(useMockupPillar()) {
             settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
@@ -249,13 +249,14 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             
             ResultingChecksums res = new ResultingChecksums();
             res.setResultAddress(null);
-            for(String fileID : receivedGetChecksumsRequest.getFileIDs().getFileID()) {
-                ChecksumDataForChecksumSpecTYPE csSpecs = new ChecksumDataForChecksumSpecTYPE();
-                csSpecs.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
-                csSpecs.setChecksumValue(DEFAULT_CHECKSUM_VALUE);
-                csSpecs.setFileID(fileID);
-                res.getChecksumDataItems().add(csSpecs);
-            }
+            
+            String fileID = receivedGetChecksumsRequest.getFileIDs().getFileID();
+            ChecksumDataForChecksumSpecTYPE csSpecs = new ChecksumDataForChecksumSpecTYPE();
+            csSpecs.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+            csSpecs.setChecksumValue(DEFAULT_CHECKSUM_VALUE);
+            csSpecs.setFileID(fileID);
+            res.getChecksumDataItems().add(csSpecs);
+
             res.setResultAddress(receivedGetChecksumsRequest.getResultAddress());
             completeMsg.setResultingChecksums(res);
             
@@ -298,7 +299,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         
         String deliveryFilename = "TEST-CHECKSUM-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
-        fileIDs.getFileID().add(DEFAULT_FILE_ID);
+        fileIDs.setFileID(DEFAULT_FILE_ID);
         
         settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
 
@@ -336,7 +337,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
         String deliveryFilename = "TEST-CHECKSUM-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
-        fileIDs.getFileID().add(DEFAULT_FILE_ID);
+        fileIDs.setFileID(DEFAULT_FILE_ID);
         
         settings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
 
@@ -396,7 +397,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         
         String deliveryFilename = "TEST-CHECKSUM-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
-        fileIDs.getFileID().add(DEFAULT_FILE_ID);
+        fileIDs.setFileID(DEFAULT_FILE_ID);
         
         if(useMockupPillar()) {
             settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();

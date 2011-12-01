@@ -85,7 +85,7 @@ public class CollectChecksumsTrigger extends IntervalTrigger {
             // If any such pillars then collect the checksum of the file from them.
             if(!pillarsToUpdate.isEmpty()) {
                 FileIDs fileIDs = new FileIDs();
-                fileIDs.getFileID().add(fileid);
+                fileIDs.setFileID(fileid);
                 informationCollector.getChecksums(pillarsToUpdate, fileIDs, checksumType, 
                       "IntegrityService Scheduling GetChecksums collector");
             }

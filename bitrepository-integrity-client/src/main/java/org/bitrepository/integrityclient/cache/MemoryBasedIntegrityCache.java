@@ -33,7 +33,6 @@ import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataGroupedByChecksumSpec;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.slf4j.Logger;
@@ -107,14 +106,15 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
     }
     
     @Override
-    public void addChecksums(ChecksumsDataGroupedByChecksumSpec data, String pillarId) {
-        for(ChecksumDataForChecksumSpecTYPE checksumResult : data.getChecksumDataForChecksumSpec()) {
+    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, 
+            String pillarId) {
+        for(ChecksumDataForChecksumSpecTYPE checksumResult : data) {
             log.debug("Adding/updating checksums for file '" + checksumResult.getFileID() + "'");
             
             if(!cache.containsKey(checksumResult.getFileID())) {
                 instantiateFileInfoListForFileId(checksumResult.getFileID());
             }
-            updateChecksum(checksumResult, data.getChecksumSpec(), pillarId);
+            updateChecksum(checksumResult, checksumType, pillarId);
         }
     }
     

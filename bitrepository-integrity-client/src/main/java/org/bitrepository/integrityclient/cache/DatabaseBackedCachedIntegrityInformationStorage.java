@@ -25,8 +25,10 @@
 package org.bitrepository.integrityclient.cache;
 
 import java.util.Collection;
+import java.util.List;
 
-import org.bitrepository.bitrepositoryelements.ChecksumsDataGroupedByChecksumSpec;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.integrityclient.configuration.integrityclientconfiguration.StorageConfiguration;
 
@@ -48,7 +50,8 @@ public class DatabaseBackedCachedIntegrityInformationStorage implements CachedIn
     }
 
     @Override
-    public void addChecksums(ChecksumsDataGroupedByChecksumSpec data, String pillarId) {
+    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, 
+            String pillarId) {
         // TODO implement
     }
 

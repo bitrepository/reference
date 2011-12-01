@@ -28,20 +28,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.net.URL;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.activemq.util.ByteArrayInputStream;
-import org.bitrepository.bitrepositorydata.FileIDsParameters;
 import org.bitrepository.bitrepositorydata.GetFileIDsResults;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
-import org.bitrepository.bitrepositoryelements.FileIDsParameterData.FileIDsItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
-import org.bitrepository.bitrepositoryelements.FileIDsParameterData;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
@@ -68,8 +63,6 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
-    /** Serializer and validator */
-    private final JaxbHelper jaxbHelper;
     /**
      * Constructor.
      * @param settings The settings for handling the message.
@@ -80,7 +73,6 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     public GetFileIDsRequestHandler(Settings settings, MessageBus messageBus,
             AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
         super(settings, messageBus, alarmDispatcher, referenceArchive);
-        jaxbHelper = new JaxbHelper("xsd/", "BitRepositoryData.xsd");
     }
     
     /**
@@ -183,10 +175,6 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
             log.debug("Retrieving the id for all the files.");
             return retrieveAllFileIDs();
         }
-        if(fileIDs.isSetParameterAddress()) {
-            log.debug("Retrieves the file ids for parameter: " + fileIDs.getParameterAddress());
-            return retrieveParameterFileIDs(fileIDs.getParameterAddress());
-        }
         
         log.debug("Retrieve the specified fileIDs: " + fileIDs.getFileID());
         return retrieveSpecifiedFileIDs(fileIDs.getFileID());
@@ -208,26 +196,15 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     }
     
     /**
-     * Retrieves all the fileIDs matching a given parameter address.
-     * TODO implement.
-     * @return The list of the ids of the requested files in the archive, wrapped in the requested datastructure.
-     */
-    private FileIDsData retrieveParameterFileIDs(String parameterAddress) {
-        throw new IllegalStateException("Implement me!");
-    }
-    
-    /**
      * Retrieves specified fileIDs and whether the files exists as a proper file.
-     * @param fileIDs The requested fileIDs to find and validate their existence..
+     * @param fileID The requested fileID to find and validate the existence of.
      * @return The list of the ids of the requested files in the archive, wrapped in the requested datastructure.
      * @throws OperationFailedException If a requested file does not exist or is invalid (e.g. a directory).
      */
-    private FileIDsData retrieveSpecifiedFileIDs(List<String> fileIDs) throws OperationFailedException {
+    private FileIDsData retrieveSpecifiedFileIDs(String fileID) throws OperationFailedException {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems fileIDList = new FileIDsDataItems();
-        for(String fileID : fileIDs) {
-            fileIDList.getFileIDsDataItem().add(getDataItemForFileID(fileID));            
-        }
+        fileIDList.getFileIDsDataItem().add(getDataItemForFileID(fileID));            
         res.setFileIDsDataItems(fileIDList);
         return res;
     }
@@ -273,6 +250,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
             result.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
             result.setFileIDsData(fileIDs);
             
+            JaxbHelper jaxbHelper = new JaxbHelper(XSD_CLASSPATH, XSD_BR_DATA);
             String file = jaxbHelper.serializeToXml(result);
             try {
                 jaxbHelper.validate(new ByteArrayInputStream(file.getBytes()));

@@ -38,7 +38,6 @@ import java.util.List;
 import org.bitrepository.bitrepositorydata.GetChecksumsResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataGroupedByChecksumSpec;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -142,17 +141,15 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         FileIDs fileids = message.getFileIDs();
 
         // go through all the files and find any missing
-        List<String> missingFiles = new ArrayList<String>();
-        for(String fileID : fileids.getFileID()) {
-            if(!archive.hasFile(fileID)) {
-                missingFiles.add(fileID);
-            }
+        String fileID = fileids.getFileID();
+        if(fileID == null || fileID.isEmpty()) {
+            return true;
         }
         
         // if not missing, then all files have been found!
-        if(!missingFiles.isEmpty()) {
+        if(!archive.hasFile(fileID)) {
             // report on the missing files
-            String errText = "The following files are missing: '" + missingFiles + "'";
+            String errText = "The following file are missing: '" + fileID + "'";
             log.warn(errText);
             // Then tell the mediator, that we failed.
             ResponseInfo fri = new ResponseInfo();
@@ -244,22 +241,17 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             log.debug("Calculating the checksum for all the files.");
             return calculateChecksumForAllFiles(checksumAlgorithmDigester, salt);
         }
-        if(fileids.isSetParameterAddress()) {
-            log.debug("Calculating the checksum for parameter: " + fileids.getParameterAddress());
-            return calculateChecksumForParameter(checksumAlgorithmDigester, salt, fileids.getParameterAddress());
-        }
         
         log.debug("Calculating the checksum for specified files: " + fileids.getFileID());
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
-        for(String fileid : fileids.getFileID()) {
-            File file = archive.getFile(fileid);
-            ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
-            singleFileResult.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
-            singleFileResult.setFileID(fileid);
-            singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, checksumAlgorithmDigester, salt));
-            
-            res.add(singleFileResult);
-        }
+        String fileid = fileids.getFileID();
+        File file = archive.getFile(fileid);
+        ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
+        singleFileResult.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+        singleFileResult.setFileID(fileid);
+        singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, checksumAlgorithmDigester, salt));
+        
+        res.add(singleFileResult);
         
         return res;
     }
@@ -286,20 +278,6 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         }
 
         return res;
-    }
-    
-    /**
-     * Method for calculating the files specified by a parameter.
-     * TODO implement me!
-     * @param checksumAlgorithmDigester The digester with the requested algorithm for calculating the checksums.
-     * @param salt The salt of the checksum.
-     * @param parameterAddress The parameter for specifying files.
-     * @return The list of checksums for requested files. 
-     */
-    private List<ChecksumDataForChecksumSpecTYPE> calculateChecksumForParameter(
-            MessageDigest checksumAlgorithmDigester, String salt, String parameterAddress) {
-        // TODO support the parameter stuff.
-        throw new IllegalStateException("Method not implemented!");
     }
     
     /**
@@ -355,18 +333,15 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         results.setMinVersion(MIN_VERSION);
         results.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         results.setCollectionID(settings.getCollectionID());
-        ChecksumsDataGroupedByChecksumSpec checksumData = new ChecksumsDataGroupedByChecksumSpec();
-        checksumData.setChecksumSpec(message.getFileChecksumSpec());
         for(ChecksumDataForChecksumSpecTYPE cs : checksumList) {
-            checksumData.getChecksumDataForChecksumSpec().add(cs);
+            results.getChecksumDataItems().add(cs);
         }
-        results.setChecksumsDataGroupedByChecksumSpec(checksumData);
 
         // Print all the checksums safely (close the streams!)
         OutputStream is = null;
         try {
             is = new FileOutputStream(checksumResultFile);
-            JaxbHelper jaxb = new JaxbHelper("xsd/", "BitRepositoryData.xsd");
+            JaxbHelper jaxb = new JaxbHelper(XSD_CLASSPATH, XSD_BR_DATA);
             is.write(jaxb.serializeToXml(results).getBytes());
             is.flush();
         } finally {

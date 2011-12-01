@@ -25,8 +25,6 @@
 package org.bitrepository.integrityclient.collector.eventhandler;
 
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataGroupedByChecksumSpec;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
 import org.bitrepository.integrityclient.checking.IntegrityChecker;
@@ -87,13 +85,8 @@ public class GetChecksumsEventHandler implements EventHandler {
      * @param event The event with the results of the completed pillar.
      */
     private void handleChecksumsComplete(ChecksumsCompletePillarEvent event) {
-        ChecksumsDataGroupedByChecksumSpec res = new ChecksumsDataGroupedByChecksumSpec();
-        res.setChecksumSpec(event.getChecksumType());
-        for(ChecksumDataForChecksumSpecTYPE checksumData : event.getChecksums().getChecksumDataItems()) {
-            res.getChecksumDataForChecksumSpec().add(checksumData);
-        }
-        
-        informationCache.addChecksums(res, event.getState());
+        informationCache.addChecksums(event.getChecksums().getChecksumDataItems(), event.getChecksumType(), 
+                event.getState());
     }
     
     /**

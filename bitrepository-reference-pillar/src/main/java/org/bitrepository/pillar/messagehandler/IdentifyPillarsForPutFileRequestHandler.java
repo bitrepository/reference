@@ -162,7 +162,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
         irInfo.setResponseText("Operation acknowledged and accepted.");
         reply.setResponseInfo(irInfo);
 
-        log.info("Sending IdentifyPillarsForPutfileResponse: " + reply);
+        log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
         messagebus.sendMessage(reply);
     }
     

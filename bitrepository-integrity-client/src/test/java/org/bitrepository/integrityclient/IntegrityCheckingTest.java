@@ -24,11 +24,12 @@
  */
 package org.bitrepository.integrityclient;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataGroupedByChecksumSpec;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
@@ -148,23 +149,22 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         String[] fileids = new String[]{"test-file-1", "test-file-2"};
        
         addStep("Initialise the checksum results data.", "Should be created and put into the cache.");
-        ChecksumsDataGroupedByChecksumSpec checksumdata = new ChecksumsDataGroupedByChecksumSpec();
         ChecksumSpecTYPE checksumtype = new ChecksumSpecTYPE();
         checksumtype.setChecksumSalt("");
         checksumtype.setChecksumType("MD5");
-        checksumdata.setChecksumSpec(checksumtype);
         
+        List<ChecksumDataForChecksumSpecTYPE> checksumData = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         for(String fileid : fileids) {
             ChecksumDataForChecksumSpecTYPE checksumCalculation = new ChecksumDataForChecksumSpecTYPE();
             checksumCalculation.setFileID(fileid);
             checksumCalculation.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
             checksumCalculation.setChecksumValue("123" + fileid + "123");
-            checksumdata.getChecksumDataForChecksumSpec().add(checksumCalculation);
+            checksumData.add(checksumCalculation);
         }
         
         // add the checksums for two pillars.
-        cache.addChecksums(checksumdata, TEST_PILLAR_1);
-        cache.addChecksums(checksumdata, TEST_PILLAR_2);
+        cache.addChecksums(checksumData, checksumtype, TEST_PILLAR_1);
+        cache.addChecksums(checksumData, checksumtype, TEST_PILLAR_2);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
         IntegrityChecker checker = new SystematicIntegrityValidator(settings, cache);
@@ -192,22 +192,21 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         String[] fileids = new String[]{"test-file-1", "test-file-2"};
        
         addStep("Initialise the checksum results data.", "Should be created and put into the cache.");
-        ChecksumsDataGroupedByChecksumSpec checksumdata = new ChecksumsDataGroupedByChecksumSpec();
         ChecksumSpecTYPE checksumtype = new ChecksumSpecTYPE();
         checksumtype.setChecksumSalt("");
         checksumtype.setChecksumType("MD5");
-        checksumdata.setChecksumSpec(checksumtype);
-        
+
+        List<ChecksumDataForChecksumSpecTYPE> checksumData = new ArrayList<ChecksumDataForChecksumSpecTYPE>();        
         for(String fileid : fileids) {
             ChecksumDataForChecksumSpecTYPE checksumCalculation = new ChecksumDataForChecksumSpecTYPE();
             checksumCalculation.setFileID(fileid);
             checksumCalculation.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
             checksumCalculation.setChecksumValue("123" + fileid + "123");
-            checksumdata.getChecksumDataForChecksumSpec().add(checksumCalculation);
+            checksumData.add(checksumCalculation);
         }
         
         // add the checksums for two pillars.
-        cache.addChecksums(checksumdata, TEST_PILLAR_1);
+        cache.addChecksums(checksumData, checksumtype, TEST_PILLAR_1);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
         IntegrityChecker checker = new SystematicIntegrityValidator(settings, cache);
@@ -239,29 +238,27 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         ChecksumSpecTYPE checksumtype = new ChecksumSpecTYPE();
         checksumtype.setChecksumSalt("");
         checksumtype.setChecksumType("MD5");
-        ChecksumsDataGroupedByChecksumSpec checksumdata1 = new ChecksumsDataGroupedByChecksumSpec();
-        checksumdata1.setChecksumSpec(checksumtype);
+        List<ChecksumDataForChecksumSpecTYPE> checksumData1 = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         for(String fileid : fileids) {
             ChecksumDataForChecksumSpecTYPE checksumCalculation = new ChecksumDataForChecksumSpecTYPE();
             checksumCalculation.setFileID(fileid);
             checksumCalculation.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
             checksumCalculation.setChecksumValue("123" + fileid + "123");
-            checksumdata1.getChecksumDataForChecksumSpec().add(checksumCalculation);
+            checksumData1.add(checksumCalculation);
         }
         
-        ChecksumsDataGroupedByChecksumSpec checksumdata2 = new ChecksumsDataGroupedByChecksumSpec();
-        checksumdata2.setChecksumSpec(checksumtype);
+        List<ChecksumDataForChecksumSpecTYPE> checksumData2 = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         for(String fileid : fileids) {
             ChecksumDataForChecksumSpecTYPE checksumCalculation = new ChecksumDataForChecksumSpecTYPE();
             checksumCalculation.setFileID(fileid);
             checksumCalculation.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
             checksumCalculation.setChecksumValue("abc" + fileid + "abc");
-            checksumdata2.getChecksumDataForChecksumSpec().add(checksumCalculation);
+            checksumData2.add(checksumCalculation);
         }
         
         // add the checksums for two pillars.
-        cache.addChecksums(checksumdata1, TEST_PILLAR_1);
-        cache.addChecksums(checksumdata2, TEST_PILLAR_2);
+        cache.addChecksums(checksumData1, checksumtype, TEST_PILLAR_1);
+        cache.addChecksums(checksumData2, checksumtype, TEST_PILLAR_2);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
         IntegrityChecker checker = new SystematicIntegrityValidator(settings, cache);

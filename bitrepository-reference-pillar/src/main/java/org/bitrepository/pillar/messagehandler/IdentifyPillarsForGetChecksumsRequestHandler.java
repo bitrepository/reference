@@ -101,10 +101,9 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         }
         
         List<String> missingFiles = new ArrayList<String>();
-        for(String fileID : fileids.getFileID()) {
-            if(!archive.hasFile(fileID)) {
-                missingFiles.add(fileID);
-            }
+        String fileID = fileids.getFileID();
+        if(fileID != null && !fileID.isEmpty() && !archive.hasFile(fileID)) {
+            missingFiles.add(fileID);
         }
         
         // Throw exception if any files are missing.

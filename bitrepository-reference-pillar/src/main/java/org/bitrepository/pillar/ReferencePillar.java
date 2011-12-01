@@ -38,14 +38,19 @@ public class ReferencePillar {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    public ReferencePillar(MessageBus mBus, Settings settings) {
-        ArgumentValidator.checkNotNull(mBus, "MessageBus mBus");
+    /**
+     * Constructor.
+     * @param messageBus The messagebus for the communication.
+     * @param settings The settings for the pillar.
+     */
+    public ReferencePillar(MessageBus messageBus, Settings settings) {
+        ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         
         log.info("Starting the reference pillar!");
         
         ReferenceArchive archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        PillarMediator mediator = new PillarMediator(mBus, settings, archive);
+        PillarMediator mediator = new PillarMediator(messageBus, settings, archive);
         log.info("ReferencePillar started!");
     }
 }
