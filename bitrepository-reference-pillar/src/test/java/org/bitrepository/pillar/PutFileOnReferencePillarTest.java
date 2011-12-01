@@ -47,7 +47,8 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         msgFactory = new PillarTestMessageFactory(settings);
     }
     
-    @Test( groups = {"regressiontest"})
+//    @Test( groups = {"regressiontest"})
+    @Test( groups = {"pillar-test"})
     public void pillarPutTest() throws Exception {
         addDescription("Tests the put functionality of the reference pillar.");
         addStep("Set up constants and variables.", "Should not fail here!");
