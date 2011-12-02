@@ -26,6 +26,8 @@ package org.bitrepository.modify.putfile;
 
 import java.net.URL;
 
+import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
+import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.jaccept.TestEventManager;
@@ -60,9 +62,20 @@ public class PutClientTestWrapper implements PutFileClient {
         testEventManager.addStimuli("Calling PutFileWithId(" + url + ", " + fileId + ", " + fileSize + ", eventHandler)");
         wrappedPutClient.putFileWithId(url, fileId, fileSize);
     }
+
+    @Override
+    public void putFile(URL url, String fileId, long sizeOfFile, ChecksumsDataForNewFile checksumForValidationAtPillar,
+            ChecksumSpecs checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation)
+            throws OperationFailedException {
+        testEventManager.addStimuli("Calling PutFileWithId(" + url + ", " + fileId + ", " + sizeOfFile + ", " 
+            + checksumForValidationAtPillar + ", " + checksumRequestsForValidation + ", " + eventHandler + ", "
+            + auditTrailInformation + ")");
+        wrappedPutClient.putFile(url, fileId, sizeOfFile, checksumForValidationAtPillar, checksumRequestsForValidation, 
+                eventHandler, auditTrailInformation);
+    }
     
     @Override
     public void shutdown() {
-        // Empty
+        wrappedPutClient.shutdown();
     }
 }

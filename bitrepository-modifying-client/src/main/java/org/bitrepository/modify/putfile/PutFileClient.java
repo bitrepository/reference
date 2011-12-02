@@ -26,6 +26,8 @@ package org.bitrepository.modify.putfile;
 
 import java.net.URL;
 
+import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
+import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 
@@ -54,6 +56,22 @@ public interface PutFileClient {
      * @throws OperationFailedException If the operation failed.
      */
     void putFileWithId(URL url, String fileId, long sizeOfFile) throws OperationFailedException;
+    
+    /**
+     * Method for performing the put operation.
+     * 
+     * @param url The URL where the file to be put is located.
+     * @param fileId The id of the file.
+     * @param sizeOfFile The number of bytes the file requires.
+     * @param checksumForValidationAtPillar The checksum for validating at pillar side.
+     * @param checksumRequestsForValidation The checksum for validating at client side.
+     * @param eventHandler The EventHandler for the operation.
+     * @param auditTrailInformation The audit trail information.
+     * @throws OperationFailedException If the operation failed.
+     */
+    void putFile(URL url, String fileId, long sizeOfFile, ChecksumsDataForNewFile checksumForValidationAtPillar, 
+            ChecksumSpecs checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation)
+            throws OperationFailedException;
     
     /**
      * Method to perform a graceful shutdown of the client.

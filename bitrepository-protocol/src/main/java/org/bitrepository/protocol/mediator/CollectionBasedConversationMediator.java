@@ -31,6 +31,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
@@ -46,6 +49,8 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -137,6 +142,42 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         }
     }
 
+    @Override
+    public void onMessage(DeleteFileFinalResponse message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
+                    "conversation.");
+        }
+    }
+
+    @Override
+    public void onMessage(DeleteFileProgressResponse message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
+                    "conversation.");
+        }
+    }
+    
+    @Override
+    public void onMessage(DeleteFileRequest message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
+                    "conversation.");
+        }
+    }
+    
     @Override
     public void onMessage(GetAuditTrailsFinalResponse message) {
         String messageCorrelationID = message.getCorrelationID();
@@ -317,6 +358,28 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         }
     }
 
+    @Override
+    public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+        }
+    }
+
+    @Override
+    public void onMessage(IdentifyPillarsForDeleteFileResponse message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+        }
+    }
+    
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsResponse message) {
         String messageCorrelationID = message.getCorrelationID();

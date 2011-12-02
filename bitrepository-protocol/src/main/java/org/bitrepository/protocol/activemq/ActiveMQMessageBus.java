@@ -43,6 +43,9 @@ import javax.xml.bind.JAXBException;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -55,6 +58,8 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -198,6 +203,24 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     @Override
+    public void sendMessage(DeleteFileFinalResponse content) {
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
+                content.getCorrelationID(), content);
+    }
+
+    @Override
+    public void sendMessage(DeleteFileProgressResponse content) {
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
+                content.getCorrelationID(), content);
+    }
+
+    @Override
+    public void sendMessage(DeleteFileRequest content) {
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
+                content.getCorrelationID(), content);
+    }
+
+    @Override
     public void sendMessage(GetChecksumsFinalResponse content) {
         sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
@@ -271,6 +294,18 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public void sendMessage(IdentifyPillarsForGetChecksumsResponse content) {
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
+                    content.getCorrelationID(), content);
+    }
+
+    @Override
+    public void sendMessage(IdentifyPillarsForDeleteFileRequest content) {
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
+                    content.getCorrelationID(), content);
+    }
+
+    @Override
+    public void sendMessage(IdentifyPillarsForDeleteFileResponse content) {
         sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
@@ -527,6 +562,21 @@ public class ActiveMQMessageBus implements MessageBus {
                 	return;
                 }
                 
+                if (content.getClass().equals(DeleteFileFinalResponse.class)) {
+                    listener.onMessage((DeleteFileFinalResponse) content);
+                    return;
+                }
+                
+                if (content.getClass().equals(DeleteFileProgressResponse.class)) {
+                    listener.onMessage((DeleteFileProgressResponse) content);
+                    return;
+                }
+                
+                if (content.getClass().equals(DeleteFileRequest.class)) {
+                    listener.onMessage((DeleteFileRequest) content);
+                    return;
+                }
+                
                 if (content.getClass().equals(GetChecksumsFinalResponse.class)) {
                     listener.onMessage((GetChecksumsFinalResponse) content);
                     return;
@@ -572,6 +622,16 @@ public class ActiveMQMessageBus implements MessageBus {
                     return;
                 }
 
+                if (content.getClass().equals(IdentifyPillarsForDeleteFileRequest.class)) {
+                    listener.onMessage((IdentifyPillarsForDeleteFileRequest) content);
+                    return;
+                }
+
+                if (content.getClass().equals(IdentifyPillarsForDeleteFileResponse.class)) {
+                    listener.onMessage((IdentifyPillarsForDeleteFileResponse) content);
+                    return;
+                }
+                
                 if (content.getClass().equals(IdentifyPillarsForGetChecksumsResponse.class)) {
                     listener.onMessage((IdentifyPillarsForGetChecksumsResponse) content);
                     return;

@@ -25,6 +25,9 @@
 package org.bitrepository.protocol.messagebus;
 
 import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
@@ -40,6 +43,8 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -63,179 +68,218 @@ public interface MessageListener {
      *
      * @param message The message received.
      */
-	void onMessage(Alarm message);
+    void onMessage(Alarm message);
+
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
-	void onMessage(GetAuditTrailsRequest message);
+    void onMessage(DeleteFileFinalResponse message);
+
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
-	void onMessage(GetAuditTrailsProgressResponse message);
+    void onMessage(DeleteFileProgressResponse message);
+
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
-	void onMessage(GetAuditTrailsFinalResponse message);
+    void onMessage(DeleteFileRequest message);
+
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(GetAuditTrailsRequest message);
+    
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(GetAuditTrailsProgressResponse message);
+    
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(GetAuditTrailsFinalResponse message);
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(GetChecksumsFinalResponse message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(GetChecksumsRequest message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(GetChecksumsProgressResponse message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(GetFileFinalResponse message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(GetFileIDsFinalResponse message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(GetFileIDsRequest message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(GetFileIDsProgressResponse message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(GetFileRequest message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(GetFileProgressResponse message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(GetStatusRequest message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(GetStatusProgressResponse message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(GetStatusFinalResponse message);
-
+    
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyPillarsForDeleteFileRequest message);
+    
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyPillarsForDeleteFileResponse message);
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(IdentifyPillarsForGetChecksumsResponse message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(IdentifyPillarsForGetChecksumsRequest message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(IdentifyPillarsForGetFileIDsResponse message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(IdentifyPillarsForGetFileIDsRequest message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(IdentifyPillarsForGetFileResponse message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(IdentifyPillarsForGetFileRequest message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(IdentifyPillarsForPutFileResponse message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(IdentifyPillarsForPutFileRequest message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(PutFileFinalResponse message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
      */
     void onMessage(PutFileRequest message);
-
+    
     /**
      * Action to perform upon receiving a message.
      *

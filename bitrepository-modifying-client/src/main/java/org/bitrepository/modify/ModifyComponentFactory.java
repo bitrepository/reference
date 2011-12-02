@@ -27,6 +27,8 @@ package org.bitrepository.modify;
 
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.modify.deletefile.ConversationBasedDeleteFileClient;
+import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.ConversationBasedPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -72,12 +74,22 @@ public class ModifyComponentFactory {
     }
 
     /**
-     * Method for initialising the PutClient in the configuration.
-     * TODO use the configuration instead of this default. 
+     * Method for initialising the PutClient.
      * @return The configured PutClient.
      */
     public PutFileClient retrievePutClient(Settings settings) {
         return new ConversationBasedPutFileClient(
+                ProtocolComponentFactory.getInstance().getMessageBus(settings), 
+                ConversationMediatorManager.getConversationMediator(settings), 
+                settings);
+    }
+    
+    /**
+     * @param settings The settings for the DeleteFileClient.
+     * @return The requested DeleteClient.
+     */
+    public DeleteFileClient retrieveDeleteFileClient(Settings settings) {
+        return new ConversationBasedDeleteFileClient(
                 ProtocolComponentFactory.getInstance().getMessageBus(settings), 
                 ConversationMediatorManager.getConversationMediator(settings), 
                 settings);

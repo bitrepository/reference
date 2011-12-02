@@ -26,6 +26,7 @@ package org.bitrepository.modify.putfile;
 
 import java.io.File;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -97,7 +98,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                     messageFactory.createIdentifyPillarsForPutFileRequest(
                             receivedIdentifyRequestMessage.getCorrelationID(),
                             receivedIdentifyRequestMessage.getReplyTo(),
-                            receivedIdentifyRequestMessage.getTo()
+                            receivedIdentifyRequestMessage.getTo(),
+                            DEFAULT_FILE_ID
                             ));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
@@ -110,7 +112,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                     .createIdentifyPillarsForPutFileResponse(
                             receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(identifyResponse);
-            receivedPutFileRequest = pillar1Destination.waitForMessage(PutFileRequest.class);
+            receivedPutFileRequest = pillar1Destination.waitForMessage(PutFileRequest.class, 10, TimeUnit.SECONDS);
             Assert.assertEquals(receivedPutFileRequest, 
                     messageFactory.createPutFileRequest(
                             PILLAR1_ID, pillar1DestinationId,
@@ -156,6 +158,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
     // Move to system test, not relevant as component test
     //@Test(groups={"regressiontest"})
+    @Test(groups={"systemtest"})
     public void putClientBadURLTester() throws Exception {
         addDescription("Tests the PutClient. Makes a whole conversation for the put client, for a 'bad' scenario. "
                 + "The URL is not valid, which should give errors in the FinalResponse.");
@@ -163,6 +166,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         URL invalidUrl = new URL("http://sandkasse-01.kb.dk/ERROR/ERROR/ERROR/ERROR/ERROR/ERROR/ERROR/test.xml");
 
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 
@@ -178,10 +183,11 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                     messageFactory.createIdentifyPillarsForPutFileRequest(
                             receivedIdentifyRequestMessage.getCorrelationID(),
                             receivedIdentifyRequestMessage.getReplyTo(),
-                            receivedIdentifyRequestMessage.getTo()
+                            receivedIdentifyRequestMessage.getTo(),
+                            DEFAULT_FILE_ID
                             ));
         }
-
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
         addStep("Make response for the pillar.", "The client should then send the actual PutFileRequest.");
 
         PutFileRequest receivedPutFileRequest = null;
@@ -190,7 +196,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                     .createIdentifyPillarsForPutFileResponse(
                             receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(identifyResponse);
-            receivedPutFileRequest = pillar1Destination.waitForMessage(PutFileRequest.class);
+            receivedPutFileRequest = pillar1Destination.waitForMessage(PutFileRequest.class, 10, TimeUnit.SECONDS);
             Assert.assertEquals(receivedPutFileRequest, 
                     messageFactory.createPutFileRequest(
                             PILLAR1_ID, pillar1DestinationId,
@@ -226,18 +232,16 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                     receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
             ResponseInfo frInfo = new ResponseInfo();
             frInfo.setResponseCode(ResponseCode.FAILURE);
-            // TODO has to contain 'Error' to be caught.
-            frInfo.setResponseText("Error: could not use URL!"); 
+            frInfo.setResponseText("Could not use URL!"); 
             putFileFinalResponse.setResponseInfo(frInfo);
             messageBus.sendMessage(putFileFinalResponse);
         }
 
-        for(int i = 1; i < 3* settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 1; i < 2 * settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             OperationEventType eventType = testEventHandler.waitForEvent().getType();
-            Assert.assertTrue( (eventType == OperationEventType.Failed)
-                    || (eventType == OperationEventType.Progress) 
-                    || (eventType == OperationEventType.PillarComplete),
-                    "Expected either Failed, Progress or PartiallyComplete, but was: " + eventType);
+            Assert.assertTrue( (eventType == OperationEventType.PillarFailed)
+                    || (eventType == OperationEventType.Progress),
+                    "Expected either PillarFailed, Progress or PillarComplete, but was: " + eventType);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
     }

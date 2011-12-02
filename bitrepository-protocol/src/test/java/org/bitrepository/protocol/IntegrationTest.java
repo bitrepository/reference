@@ -91,7 +91,12 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     @AfterMethod(alwaysRun = true)
     public void teardownTestMethod() {
-        teardownMessageBusListeners();
+        try {
+            teardownMessageBusListeners();
+        } catch (CoordinationLayerException e) {
+            System.err.println(e);
+            e.printStackTrace();
+        }
     }
 
     /**

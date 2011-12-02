@@ -27,6 +27,9 @@ package org.bitrepository.protocol.bus;
 import javax.jms.JMSException;
 
 import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -39,6 +42,8 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -66,6 +71,24 @@ public class MessageBusWrapper implements MessageBus {
 
     @Override
     public void sendMessage(Alarm content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
+    }
+    
+    @Override
+    public void sendMessage(DeleteFileFinalResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
+    }
+    
+    @Override
+    public void sendMessage(DeleteFileProgressResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
+    }
+    
+    @Override
+    public void sendMessage(DeleteFileRequest content) {
         testEventManager.addStimuli("Sending message: " + content);
         messageBus.sendMessage(content);
     }
@@ -142,6 +165,18 @@ public class MessageBusWrapper implements MessageBus {
         messageBus.sendMessage(content);
     }
     
+    @Override
+    public void sendMessage(IdentifyPillarsForDeleteFileRequest content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
+    }
+
+    @Override
+    public void sendMessage(IdentifyPillarsForDeleteFileResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
+    }
+
     @Override
     public void sendMessage(IdentifyPillarsForGetChecksumsResponse content) {
         testEventManager.addStimuli("Sending message: " + content);

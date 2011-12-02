@@ -25,6 +25,9 @@
 package org.bitrepository.protocol.messagebus;
 
 import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -37,6 +40,8 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -59,6 +64,27 @@ public interface MessageSender {
      * @param content       The content of the message.
      */
     void sendMessage(Alarm content);
+    
+    /**
+     * Method for sending a message on a specific destination.
+     *
+     * @param content       The content of the message.
+     */
+    void sendMessage(DeleteFileFinalResponse content);
+    
+    /**
+     * Method for sending a message on a specific destination.
+     *
+     * @param content       The content of the message.
+     */
+    void sendMessage(DeleteFileProgressResponse content);
+    
+    /**
+     * Method for sending a message on a specific destination.
+     *
+     * @param content       The content of the message.
+     */
+    void sendMessage(DeleteFileRequest content);
     
     /**
      * Method for sending a message on a specific destination.
@@ -143,6 +169,20 @@ public interface MessageSender {
      * @param content       The content of the message.
      */
     void sendMessage(GetStatusFinalResponse content);
+
+    /**
+     * Method for sending a message on a specific destination.
+     *
+     * @param content       The content of the message.
+     */
+    void sendMessage(IdentifyPillarsForDeleteFileRequest content);
+
+    /**
+     * Method for sending a message on a specific destination.
+     *
+     * @param content       The content of the message.
+     */
+    void sendMessage(IdentifyPillarsForDeleteFileResponse content);
 
     /**
      * Method for sending a message on a specific destination.

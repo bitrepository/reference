@@ -34,6 +34,9 @@ import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 
 import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
@@ -49,6 +52,8 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -185,6 +190,18 @@ public class MessageReceiver {
             messageModel.addMessage(message);
         }
         @Override
+        public void onMessage(DeleteFileFinalResponse message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(DeleteFileProgressResponse message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(DeleteFileRequest message) {
+            messageModel.addMessage(message);
+        }
+        @Override
         public void onMessage(GetAuditTrailsRequest message) {
             messageModel.addMessage(message);
         }
@@ -242,6 +259,14 @@ public class MessageReceiver {
         }
         @Override
         public void onMessage(GetStatusFinalResponse message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(IdentifyPillarsForDeleteFileResponse message) {
             messageModel.addMessage(message);
         }
         @Override

@@ -50,16 +50,11 @@ import org.slf4j.LoggerFactory;
  * the file).
  */
 public class PuttingFile extends PutFileState {
-    /** The log for this class. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
     /** Defines that the timer is a daemon thread. */
     private static final Boolean TIMER_IS_DAEMON = true;
     /** The timer. Schedules conversation timeouts for this conversation. */
     final Timer timer = new Timer(TIMER_IS_DAEMON);
-
-    /**
-     * The task to handle the timeouts for the identification.
-     */
+    /** The task to handle the timeouts for the identification. */
     private TimerTask timerTask = new PutTimerTask();
 
     /**The responses for the pillars.*/
@@ -123,8 +118,7 @@ public class PuttingFile extends PutFileState {
      */
     @Override
     public void onMessage(IdentifyPillarsForPutFileResponse response) {
-        log.warn("(ConversationID: " + conversation.getConversationID() + ") " 
-                + "Received IdentifyPillarsForPutFileResponse from '" + response.getPillarID() 
+        monitor.warning("Received IdentifyPillarsForPutFileResponse from '" + response.getPillarID() 
                 + "' after the PutFileRequests has been sent.");
     }
 

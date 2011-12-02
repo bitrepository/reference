@@ -46,8 +46,10 @@ import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
  * This is the initial state for the whole GetChecksums communication.
  */
 public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
+    /** Defines that the timer is a daemon thread. */
+    private static final Boolean TIMER_IS_DAEMON = true;
     /** The timer used for timeout checks. */
-    final Timer timer = new Timer();
+    final Timer timer = new Timer(TIMER_IS_DAEMON);
     /** The timer task for timeout of identify in this conversation. */
     final TimerTask identifyTimeoutTask = new IdentifyTimerTask();
 
@@ -98,6 +100,7 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
         } catch (NegativeResponseException e) {
             monitor.pillarFailed("Negativ IdentifyPillarsForGetChecksumsResponse from pillar " + response.getPillarID(), e);
         }
+        
         if (conversation.selector.isFinished()) {
             identifyTimeoutTask.cancel();
             

@@ -29,6 +29,8 @@ import java.net.URL;
 
 import javax.jms.JMSException;
 
+import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
+import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.putfile.conversation.SimplePutFileConversation;
@@ -87,6 +89,26 @@ public class ConversationBasedPutFileClient implements PutFileClient {
         }
     }
     
+    @Override
+    public void putFile(URL url, String fileId, long sizeOfFile, 
+            ChecksumsDataForNewFile checksumForValidationAtPillar, ChecksumSpecs checksumRequestsForValidation, 
+            EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+        ArgumentValidator.checkNotNull(url, "URL url");
+        ArgumentValidator.checkNotNull(fileId, "String fileId");
+        
+        try {
+            SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
+                    BigInteger.valueOf(sizeOfFile), checksumForValidationAtPillar, checksumRequestsForValidation, 
+                    eventHandler, new FlowController(settings, false));
+            conversationMediator.addConversation(conversation);
+            conversation.startConversation();
+        } catch (OperationFailedException e) {
+            String msg = "Couldn't perform put for '" + fileId + "' at '" + url + "' due to the following error: '"
+                    + e.getMessage() + "'.";
+            log.error(msg, e);
+            eventHandler.handleEvent(new DefaultEvent(OperationEventType.Failed, msg));
+        }
+    }   
     @Override
     public void putFileWithId(URL url, String fileId, long sizeOfFile) throws OperationFailedException {
         ArgumentValidator.checkNotNull(url, "URL url");

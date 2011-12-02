@@ -27,6 +27,9 @@ package org.bitrepository.protocol.mediator;
 import static org.mockito.Mockito.mock;
 
 import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -39,6 +42,8 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -122,6 +127,18 @@ public abstract class ConversationMediatorTest {
             messageSender.sendMessage(content); 
         }
         @Override
+        public void sendMessage(DeleteFileFinalResponse content) { 
+            messageSender.sendMessage(content); 
+        }
+        @Override
+        public void sendMessage(DeleteFileProgressResponse content) { 
+            messageSender.sendMessage(content); 
+        }
+        @Override
+        public void sendMessage(DeleteFileRequest content) { 
+            messageSender.sendMessage(content); 
+        }
+        @Override
         public void sendMessage(GetChecksumsFinalResponse content) { 
             messageSender.sendMessage(content); 
         }
@@ -167,6 +184,14 @@ public abstract class ConversationMediatorTest {
         }
         @Override
         public void sendMessage(GetStatusFinalResponse content) { 
+            messageSender.sendMessage(content); 
+        }
+        @Override
+        public void sendMessage(IdentifyPillarsForDeleteFileRequest content) { 
+            messageSender.sendMessage(content); 
+        }
+        @Override
+        public void sendMessage(IdentifyPillarsForDeleteFileResponse content) { 
             messageSender.sendMessage(content); 
         }
         @Override
