@@ -164,7 +164,7 @@ public class PillarMediator extends AbstractMessageListener {
         AlarmDescription ad = new AlarmDescription();
         ad.setAlarmCode(AlarmcodeType.FAILED_OPERATION);
         ad.setAlarmText(msg);
-        ad.setOrigDateTime(CalendarUtils.getXmlGregorianCalendar(new Date()));
+        ad.setOrigDateTime(CalendarUtils.getNow());
         ad.setPriority(PriorityCodeType.OTHER);
         RiskTYPE rt = new RiskTYPE();
         rt.setRiskArea(RiskAreaType.AVAILABILITY);

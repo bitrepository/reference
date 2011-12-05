@@ -51,22 +51,32 @@ public class FileIDInfo {
     
     /**
      * Constructor for all data.
-     * @param fileID The id of the file.
-     * @param fileLastCheck The date for the last check of the file id.
+     * @param fileID The id of the file (may not be null)
+     * @param fileLastCheck The date for the last check of the file id (if null, replaced by Epoch).
      * @param checksum The checksum of the file.
-     * @param checksumLastCheck The date for the last check of the checksum.
-     * @param pillarId The id of the pillar.
+     * @param checksumType The type of checksum (e.g. Algorithm and optionally salt). 
+     * @param checksumLastCheck The date for the last check of the checksum (if null, replaced by Epoch).
+     * @param pillarId The id of the pillar (may not be null)
      */
     public FileIDInfo(String fileID, XMLGregorianCalendar fileLastCheck, String checksum, 
             ChecksumSpecTYPE checksumType, XMLGregorianCalendar checksumLastCheck, String pillarId) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         this.fileID = fileID;
-        this.fileLastCheck = fileLastCheck;
         this.checksum = checksum;
         this.checksumType = checksumType;
         this.checksumLastCheck = checksumLastCheck;
         this.pillarId = pillarId;
+        
+        // If file id date is null, then replace with epoch.
+        if(fileLastCheck == null) {
+            this.fileLastCheck = CalendarUtils.getEpoch();
+        }
+        
+        // If checksum date is null, then replace with epoch.
+        if(checksumLastCheck == null) {
+            this.checksumLastCheck = CalendarUtils.getEpoch();
+        }
     }
     
     /**
@@ -89,11 +99,7 @@ public class FileIDInfo {
      * @return The date for the last check of the file. 
      */
     public XMLGregorianCalendar getDateForLastFileIDCheck() {
-        if(fileLastCheck != null) {
-            return fileLastCheck;
-        }
-        
-        return CalendarUtils.getXmlGregorianCalendar(new Date(0));
+        return fileLastCheck;
     }
     
     /**
@@ -135,11 +141,7 @@ public class FileIDInfo {
      * @return The date for the last check of the checksum.
      */
     public XMLGregorianCalendar getDateForLastChecksumCheck() {
-        if(checksumLastCheck != null) {
-            return checksumLastCheck;
-        }
-        
-        return CalendarUtils.getXmlGregorianCalendar(new Date(0));
+        return checksumLastCheck;
     }
     
     /**

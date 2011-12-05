@@ -223,7 +223,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
             checksumType.setChecksumSpec(csType);
             checksumType.setChecksumValue(ChecksumUtils.generateChecksum(file, 
                     MessageDigest.getInstance(digester), salt));
-            checksumType.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+            checksumType.setCalculationTimestamp(CalendarUtils.getNow());
 
             return checksumType;
         } catch (Exception e) {

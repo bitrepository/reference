@@ -61,4 +61,21 @@ public class CalendarUtils {
     public static XMLGregorianCalendar getNow() {
         return getXmlGregorianCalendar(new Date());
     }
+    
+    /**
+     * Method for easier retrieving the date for Epoch (January 1, 1970 00:00:00.000 GMT).
+     * @return Epoch in XMLGregorianCalendar format.
+     */
+    public static XMLGregorianCalendar getEpoch() {
+        return getXmlGregorianCalendar(new Date(0));
+    }
+    
+    /**
+     * Method for easier retrieving the Date for a given time since Epoch in millis.
+     * @param millis The amount of milliseconds since Epoch.
+     * @return The date in XMLGregorianCalendar format.
+     */
+    public static XMLGregorianCalendar getFromMillis(long millis) {
+        return getXmlGregorianCalendar(new Date(millis));
+    }
 }

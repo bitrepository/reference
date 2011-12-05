@@ -78,7 +78,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         for(String fileid : fileids) {
             FileIDsDataItem item = new FileIDsDataItem();
             item.setFileID(fileid);
-            item.setCreationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+            item.setCreationTimestamp(CalendarUtils.getNow());
             items1.getFileIDsDataItem().add(item);
         }
         fileidsData1.setFileIDsDataItems(items1);
@@ -117,7 +117,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         for(String fileid : fileids) {
             FileIDsDataItem item = new FileIDsDataItem();
             item.setFileID(fileid);
-            item.setCreationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+            item.setCreationTimestamp(CalendarUtils.getNow());
             items1.getFileIDsDataItem().add(item);
         }
         fileidsData1.setFileIDsDataItems(items1);
@@ -157,7 +157,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         for(String fileid : fileids) {
             ChecksumDataForChecksumSpecTYPE checksumCalculation = new ChecksumDataForChecksumSpecTYPE();
             checksumCalculation.setFileID(fileid);
-            checksumCalculation.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+            checksumCalculation.setCalculationTimestamp(CalendarUtils.getNow());
             checksumCalculation.setChecksumValue("123" + fileid + "123");
             checksumData.add(checksumCalculation);
         }
@@ -200,7 +200,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         for(String fileid : fileids) {
             ChecksumDataForChecksumSpecTYPE checksumCalculation = new ChecksumDataForChecksumSpecTYPE();
             checksumCalculation.setFileID(fileid);
-            checksumCalculation.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+            checksumCalculation.setCalculationTimestamp(CalendarUtils.getNow());
             checksumCalculation.setChecksumValue("123" + fileid + "123");
             checksumData.add(checksumCalculation);
         }
@@ -242,7 +242,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         for(String fileid : fileids) {
             ChecksumDataForChecksumSpecTYPE checksumCalculation = new ChecksumDataForChecksumSpecTYPE();
             checksumCalculation.setFileID(fileid);
-            checksumCalculation.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+            checksumCalculation.setCalculationTimestamp(CalendarUtils.getNow());
             checksumCalculation.setChecksumValue("123" + fileid + "123");
             checksumData1.add(checksumCalculation);
         }
@@ -251,7 +251,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         for(String fileid : fileids) {
             ChecksumDataForChecksumSpecTYPE checksumCalculation = new ChecksumDataForChecksumSpecTYPE();
             checksumCalculation.setFileID(fileid);
-            checksumCalculation.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+            checksumCalculation.setCalculationTimestamp(CalendarUtils.getNow());
             checksumCalculation.setChecksumValue("abc" + fileid + "abc");
             checksumData2.add(checksumCalculation);
         }

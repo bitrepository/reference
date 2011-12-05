@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Access
  * 
- * $Id: IdentifyPillarsForDeleteFile.java 455 2011-11-10 15:18:22Z mss $
- * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-modifying-client/src/main/java/org/bitrepository/modify/deletefile/conversation/IdentifyPillarsForDeleteFile.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%

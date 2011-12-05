@@ -252,7 +252,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             
             String fileID = receivedGetChecksumsRequest.getFileIDs().getFileID();
             ChecksumDataForChecksumSpecTYPE csSpecs = new ChecksumDataForChecksumSpecTYPE();
-            csSpecs.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+            csSpecs.setCalculationTimestamp(CalendarUtils.getNow());
             csSpecs.setChecksumValue(DEFAULT_CHECKSUM_VALUE);
             csSpecs.setFileID(fileID);
             res.getChecksumDataItems().add(csSpecs);

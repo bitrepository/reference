@@ -247,7 +247,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         String fileid = fileids.getFileID();
         File file = archive.getFile(fileid);
         ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
-        singleFileResult.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+        singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
         singleFileResult.setFileID(fileid);
         singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, checksumAlgorithmDigester, salt));
         
@@ -270,7 +270,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         for(String fileid : archive.getAllFileIds()) {
             File file = archive.getFile(fileid);
             ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
-            singleFileResult.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+            singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
             singleFileResult.setFileID(fileid);
             singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, checksumAlgorithmDigester, salt));
             

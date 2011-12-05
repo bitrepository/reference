@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Access Client
  * 
- * $Id: TestDeleteFileMessageFactory.java 470 2011-11-11 13:35:05Z ktc $
- * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-modifying-client/src/test/java/org/bitrepository/modify/deletefile/TestDeleteFileMessageFactory.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%

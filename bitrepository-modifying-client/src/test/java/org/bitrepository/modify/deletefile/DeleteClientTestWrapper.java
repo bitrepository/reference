@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Access Client
  * 
- * $Id: PutClientTestWrapper.java 575 2011-11-29 13:15:38Z ktc $
- * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-modifying-client/src/test/java/org/bitrepository/modify/putfile/PutClientTestWrapper.java $
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%

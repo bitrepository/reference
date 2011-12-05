@@ -97,7 +97,7 @@ public class AlarmDispatcher {
         AlarmDescription ad = new AlarmDescription();
         ad.setAlarmCode(AlarmcodeType.FAILED_OPERATION); //TODO Jonas see if this should be changed to another type
         ad.setAlarmText(exception.getMessage());
-        ad.setOrigDateTime(CalendarUtils.getXmlGregorianCalendar(new Date()));
+        ad.setOrigDateTime(CalendarUtils.getNow());
         ad.setPriority(PriorityCodeType.OTHER);
         RiskTYPE rt = new RiskTYPE();
         rt.setRiskArea(RiskAreaType.CONFIDENTIALITY);
@@ -132,7 +132,7 @@ public class AlarmDispatcher {
         AlarmDescription ad = new AlarmDescription();
         ad.setAlarmCode(AlarmcodeType.COMPONENT_FAILURE);
         ad.setAlarmText(exception.getMessage());
-        ad.setOrigDateTime(CalendarUtils.getXmlGregorianCalendar(new Date()));
+        ad.setOrigDateTime(CalendarUtils.getNow());
         ad.setPriority(PriorityCodeType.MANUAL_CHECK);
         RiskTYPE rt = new RiskTYPE();
         // TODO missing types: RiskAreaType.UNKNOWN, RiskImpactScoreType.UNKNOWN, RiskProbabilityScoreType.UNKNOWN 
