@@ -51,6 +51,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.ReferenceArchive;
+import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -84,14 +85,13 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         ArgumentValidator.checkNotNull(message, "GetChecksumsRequest message");
 
         try {
-            if(!validateMessage(message)) {
-                return;
-            }
-            
+            validateMessage(message);
             sendInitialProgressMessage(message);
             List<ChecksumDataForChecksumSpecTYPE> checksumList = calculateChecksumResults(message);
             ResultingChecksums compiledResults = performPostProcessing(message, checksumList);
             sendFinalResponse(message, compiledResults);
+        } catch (InvalidMessageException e) {
+            sendFailedResponse(message, e.getResponseInfo());
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Message ", e);
             alarmDispatcher.handleIllegalArgumentException(e);
@@ -109,23 +109,16 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * Is it possible to perform the operation?
      * 
      * @param message The message to validate.
-     * @return Whether it is valid.
      */
-    private boolean validateMessage(GetChecksumsRequest message) {
+    private void validateMessage(GetChecksumsRequest message) {
         // Validate the message.
         validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
         
-        if(!validateFileIDs(message)) {
-            return false;
-        }
-        if(!validateChecksum(message)) {
-            return false;
-        }
+        validateFileIDs(message);
+        validateChecksum(message);
         
         log.debug("Message '" + message.getCorrelationID() + "' validated and accepted.");
-        
-        return true;
     }
     
     /**
@@ -134,16 +127,15 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * This does only concern the specified files. Not 'AllFiles' or the parameter stuff.
      *  
      * @param message The message to validate the FileIDs of.
-     * @return Whether all the specified files in FileIDs are present.
      */
-    private boolean validateFileIDs(GetChecksumsRequest message) {
+    private void validateFileIDs(GetChecksumsRequest message) {
         // Validate the requested files
         FileIDs fileids = message.getFileIDs();
 
         // go through all the files and find any missing
         String fileID = fileids.getFileID();
         if(fileID == null || fileID.isEmpty()) {
-            return true;
+            return;
         }
         
         // if not missing, then all files have been found!
@@ -155,12 +147,8 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FILE_NOT_FOUND);
             fri.setResponseText(errText);
-            sendFailedResponse(message, fri);
-
-            return false;
+            throw new InvalidMessageException(fri);
         }
-        
-        return true;
     }
     
     /**
@@ -171,7 +159,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * @param message The message to have its checksum algorithm validated.
      * @return Whether the algorithm is present and operational.
      */
-    private boolean validateChecksum(GetChecksumsRequest message) {
+    private void validateChecksum(GetChecksumsRequest message) {
         // validate the checksum function
         ChecksumSpecTYPE checksumSpec = message.getFileChecksumSpec();
         
@@ -182,9 +170,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText(errText);
-            sendFailedResponse(message, fri);
-            
-            return false;
+            throw new InvalidMessageException(fri);
         }
         
         try {
@@ -195,12 +181,8 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText(errText);
-            sendFailedResponse(message, fri);
-            
-            return false;
+            throw new InvalidMessageException(fri);
         }
-        
-        return true;
     }
     
     /**

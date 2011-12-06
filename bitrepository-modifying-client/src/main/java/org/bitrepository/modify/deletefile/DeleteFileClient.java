@@ -38,15 +38,16 @@ public interface DeleteFileClient {
      * @param fileId The id of the file to delete.
      * @param pillarId The id of the pillar, where the file should be deleted.
      * @param checksum The checksum of the file.
-     * @param checksumType The specifications for the checksum of the file.
+     * @param checksumForPillar The specifications for the checksum of the file.
      * @param eventHandler [OPTIONAL] The handler which should receive notifications of the events occurring in 
      * connection with the pillar communication. This is allowed to be null.
      * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation call.
      * 
      * @throws OperationFailedException If the operation cannot be instantiated.
      */
-    void deleteFile(String fileId, String pillarId, String checksum, ChecksumSpecTYPE checksumType, 
-            EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException;
+    void deleteFile(String fileId, String pillarId, String checksum, ChecksumSpecTYPE checksumForPillar, 
+            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) 
+                    throws OperationFailedException;
     
     /**
      * Method to perform a graceful shutdown of the client.

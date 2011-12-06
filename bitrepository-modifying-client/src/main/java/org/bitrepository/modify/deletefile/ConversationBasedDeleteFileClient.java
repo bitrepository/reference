@@ -63,18 +63,20 @@ public class ConversationBasedDeleteFileClient implements DeleteFileClient {
     }
     
     @Override
-    public void deleteFile(String fileId, String pillarId, String checksum, ChecksumSpecTYPE checksumType,
-            EventHandler eventHandler, String auditTrailInformation) 
+    public void deleteFile(String fileId, String pillarId, String checksum, ChecksumSpecTYPE checksumForPillar,
+            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) 
                     throws OperationFailedException {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         ArgumentValidator.checkNotNullOrEmpty(checksum, "String checksum");
         
         log.info("Requesting the deletion of the file '" + fileId + "' from the pillar '"
-                + pillarId + "' with the checksum '" + checksum + "' and checksum specifications '" + checksumType 
-                + "'. And the audit trail information '" + auditTrailInformation + "'.");
+                + pillarId + "' with the checksum '" + checksum + "' and checksum specifications '" + checksumForPillar 
+                + "', while requested checksum '" + checksumRequested + "'. And the audit trail information '" 
+                + auditTrailInformation + "'.");
         SimpleDeleteFileConversation conversation = new SimpleDeleteFileConversation(bus, settings, fileId, pillarId, 
-                checksum, checksumType, eventHandler, new FlowController(settings, false), auditTrailInformation);
+                checksum, checksumForPillar, checksumRequested, eventHandler, new FlowController(settings, false), 
+                auditTrailInformation);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }

@@ -24,9 +24,6 @@
  */
 package org.bitrepository.modify.deletefile;
 
-import java.io.File;
-
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
@@ -51,15 +48,12 @@ import org.testng.annotations.Test;
  */
 public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     private TestDeleteFileMessageFactory messageFactory;
-    private File testFile;
 
     @BeforeMethod(alwaysRun=true)
     public void initialise() throws Exception {
         if(useMockupPillar()) {
             messageFactory = new TestDeleteFileMessageFactory(settings.getCollectionID());
         }
-
-        testFile = new File("src/test/resources/test-files/", DEFAULT_FILE_ID);
     }
 
 //    @Test(groups={"regressiontest"})
@@ -83,12 +77,14 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         DeleteFileClient deleteClient = createDeleteFileClient();
         
         String checksum = "123checksum321";
-        ChecksumSpecTYPE checksumType = new ChecksumSpecTYPE();
-        checksumType.setChecksumType("MD5");
+        ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
+        checksumForPillar.setChecksumType("MD5");
+        ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
+        checksumRequest.setChecksumType("SHA-1");        
 
         addStep("Request a file to be deleted on the default pillar.", 
                 "A IdentifyPillarsForDeleteFileRequest should be sent to the pillar.");
-        deleteClient.deleteFile(DEFAULT_FILE_ID, PILLAR1_ID, checksum, checksumType, testEventHandler, null);
+        deleteClient.deleteFile(DEFAULT_FILE_ID, PILLAR1_ID, checksum, checksumForPillar, checksumRequest, testEventHandler, null);
 
         IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
@@ -126,7 +122,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Validate the steps of the DeleteClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
-        for(String s : settings.getCollectionSettings().getClientSettings().getPillarIDs()) {
+        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);

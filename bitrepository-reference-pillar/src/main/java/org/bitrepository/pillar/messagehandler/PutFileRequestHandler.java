@@ -39,6 +39,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.ReferenceArchive;
+import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -67,21 +68,18 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
 
     /**
      * Handles the identification messages for the PutFile operation.
-     * TODO perhaps synchronisation for all these methods?
      * @param message The IdentifyPillarsForPutFileRequest message to handle.
      */
     public void handleMessage(PutFileRequest message) {
         ArgumentValidator.checkNotNull(message, "PutFileRequest message");
 
         try {
-            log.info("Recived PutFileRequest: " + message);
-            if(!validateMessage(message)) {
-                return;
-            }
-            
+            validateMessage(message);
             tellAboutProgress(message);
             retrieveFile(message);
             sendFinalResponse(message);
+        } catch (InvalidMessageException e) {
+            sendFailedResponse(message, e.getResponseInfo());
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Possible intruder -> Sending alarm! ", e);
             alarmDispatcher.handleIllegalArgumentException(e);
@@ -98,7 +96,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
      * Validates the message.
      * @param message The message to validate.
      */
-    private boolean validateMessage(PutFileRequest message) {
+    private void validateMessage(PutFileRequest message) {
         // validate message
         validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
@@ -111,11 +109,8 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.DUPLICATE_FILE);
             fri.setResponseText("File is already within archive.");
-            sendFailedResponse(message, fri);
-
-            return false;
+            throw new InvalidMessageException(fri);
         }
-        return true;
     }
     
     /**

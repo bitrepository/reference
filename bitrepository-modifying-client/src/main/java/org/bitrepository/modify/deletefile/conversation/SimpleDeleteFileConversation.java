@@ -54,8 +54,10 @@ public class SimpleDeleteFileConversation extends AbstractConversation {
     final String pillarId;
     /** The checksum of the file to delete.*/
     final String checksumOfFileToDelete;
-    /** The checksums to request from the pillar.*/
+    /** The checksums specification for the pillar.*/
     final ChecksumSpecTYPE checksumSpecOfFileToDelete;
+    /** The checksum specification requested from the pillar.*/
+    final ChecksumSpecTYPE checksumSpecRequested;
     /** The state of the PutFile transaction.*/
     DeleteFileState conversationState;
     /** The audit trail information for the conversation.*/
@@ -70,7 +72,7 @@ public class SimpleDeleteFileConversation extends AbstractConversation {
      * @param fileId The id of the file.
      * @param pillarId The id of the pillar.
      * @param checksumOfFileToDelete The checksum of the file to delete.
-     * @param checksumSpecOfFileToDelete The checksum specifications for the file to delete.
+     * @param checksumSpecForPillar The checksum specifications for the file to delete.
      * @param eventHandler The event handler.
      * @param flowController The flow controller for the conversation.
      * @param auditTrailInformation The audit trail information for the conversation.
@@ -80,7 +82,8 @@ public class SimpleDeleteFileConversation extends AbstractConversation {
             String fileId,
             String pillarId,
             String checksumOfFileToDelete,
-            ChecksumSpecTYPE checksumSpecOfFileToDelete,
+            ChecksumSpecTYPE checksumSpecForPillar,
+            ChecksumSpecTYPE checksumSpecRequested,
             EventHandler eventHandler,
             FlowController flowController,
             String auditTrailInformation) {
@@ -91,7 +94,8 @@ public class SimpleDeleteFileConversation extends AbstractConversation {
         this.fileID = fileId;
         this.pillarId = pillarId;
         this.checksumOfFileToDelete = checksumOfFileToDelete;
-        this.checksumSpecOfFileToDelete = checksumSpecOfFileToDelete;
+        this.checksumSpecOfFileToDelete = checksumSpecForPillar;
+        this.checksumSpecRequested = checksumSpecRequested;
         this.auditTrailInformation = auditTrailInformation;
         conversationState = new IdentifyPillarsForDeleteFile(this);
     }

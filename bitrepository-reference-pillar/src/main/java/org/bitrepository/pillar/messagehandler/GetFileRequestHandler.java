@@ -29,7 +29,6 @@ import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.net.URL;
 import java.security.MessageDigest;
-import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -44,6 +43,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.ReferenceArchive;
+import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -83,13 +83,12 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         ArgumentValidator.checkNotNull(message, "GetFileRequest message");
 
         try {
-            if(!validateMessage(message)) {
-                return;
-            }
-            
+            validateMessage(message);
             sendProgressMessage(message);
             uploadToClient(message);
             sendFinalResponse(message);
+        } catch (InvalidMessageException e) {
+            sendFailedResponse(message, e.getResponseInfo());
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Message ", e);
             alarmDispatcher.handleIllegalArgumentException(e);
@@ -107,7 +106,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
      * @param message The message requesting the operation, which should be validated.
      * @return Whether it was valid.
      */
-    protected boolean validateMessage(GetFileRequest message) {
+    protected void validateMessage(GetFileRequest message) {
         // Validate the message.
         validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
@@ -120,11 +119,8 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
             fri.setResponseCode(ResponseCode.FILE_NOT_FOUND);
             fri.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
                     + "not have that file!");
-            sendFailedResponse(message, fri);
-
-            return false;
+            throw new InvalidMessageException(fri);
         }
-        return true;
     }
     
     /**

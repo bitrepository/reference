@@ -48,6 +48,7 @@ import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.ReferenceArchive;
+import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
@@ -83,13 +84,12 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         ArgumentValidator.checkNotNull(message, "GetFileIDsRequest message");
 
         try {
-            if(!validateMessage(message)) {
-                return;
-            }
-            
+            validateMessage(message);
             sendInitialProgressMessage(message);
             ResultingFileIDs results = performGetFileIDsOperation(message);
             sendFinalResponse(message, results);
+        } catch (InvalidMessageException e) {
+            sendFailedResponse(message, e.getResponseInfo());
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Message ", e);
             alarmDispatcher.handleIllegalArgumentException(e);
@@ -109,14 +109,12 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      * @param message The message to validate.
      * @return Whether it is valid.
      */
-    private boolean validateMessage(GetFileIDsRequest message) {
+    private void validateMessage(GetFileIDsRequest message) {
         // Validate the message.
         validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
         
         log.debug("Message '" + message.getCorrelationID() + "' validated and accepted.");
-        
-        return true;
     }
     
     /**

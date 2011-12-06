@@ -86,13 +86,13 @@ public class DeletingFile extends DeleteFileState {
         request.setFileID(conversation.fileID);
         request.setPillarID(conversation.pillarId);
         request.setTo(pillarDest);
-        request.setFileChecksumSpec(conversation.checksumSpecOfFileToDelete);
+        request.setFileChecksumSpec(conversation.checksumSpecRequested);
         
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumSpec(conversation.checksumSpecOfFileToDelete);
         checksumData.setChecksumValue(conversation.checksumOfFileToDelete);
         // TODO retrieve the actual date?
-        checksumData.setCalculationTimestamp(CalendarUtils.getNow());
+        checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
         request.setChecksumDataForFile(checksumData);
         
         conversation.messageSender.sendMessage(request);

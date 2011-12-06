@@ -39,11 +39,13 @@ import org.bitrepository.bitrepositoryelements.RiskAreaType;
 import org.bitrepository.bitrepositoryelements.RiskImpactScoreType;
 import org.bitrepository.bitrepositoryelements.RiskProbabilityScoreType;
 import org.bitrepository.bitrepositoryelements.RiskTYPE;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
@@ -135,6 +137,10 @@ public class PillarMediator extends AbstractMessageListener {
                 new IdentifyPillarsForPutFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
         this.handlers.put(PutFileRequest.class.getName(), 
                 new PutFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+        this.handlers.put(IdentifyPillarsForDeleteFileRequest.class.getName(), 
+                new IdentifyPillarsForDeleteFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+        this.handlers.put(DeleteFileRequest.class.getName(), 
+                new DeleteFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
     }
 
     
@@ -179,6 +185,19 @@ public class PillarMediator extends AbstractMessageListener {
     protected void reportUnsupported(Object message) {
         audits.addMessageReceivedAudit("Received unsupported: " + message.getClass());
         if(AlarmLevel.WARNING.equals(settings.getCollectionSettings().getPillarSettings().getAlarmLevel())) {
+            noHandlerAlarm(message);
+        }
+    }
+    
+    @Override
+    public void onMessage(DeleteFileRequest message) {
+        log.info("Received: " + message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+
+        PillarMessageHandler<DeleteFileRequest> handler = handlers.get(message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        } else {
             noHandlerAlarm(message);
         }
     }
@@ -248,6 +267,19 @@ public class PillarMediator extends AbstractMessageListener {
         }    
     }
 
+    @Override
+    public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
+        log.info("Received: " + message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+
+        PillarMessageHandler<IdentifyPillarsForDeleteFileRequest> handler = handlers.get(message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        } else {
+            noHandlerAlarm(message);
+        }
+    }
+    
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsRequest message) {
         log.info("Received: " + message);

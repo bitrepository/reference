@@ -51,7 +51,6 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         extends PillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-
     
     /**
      * Constructor.

@@ -39,6 +39,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.modify.ModifyComponentFactory;
+import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.ReferencePillar;
@@ -61,6 +62,11 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         Long FILE_SIZE = 27L;
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        String CHECKSUM = "940a51b250e7aa82d8e8ea31217ff267";
+        ChecksumSpecTYPE DEFAULT_CHECKSUM_TYPE = new ChecksumSpecTYPE();
+        DEFAULT_CHECKSUM_TYPE.setChecksumSalt(null);
+        DEFAULT_CHECKSUM_TYPE.setChecksumType("MD5");
+
         
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         
@@ -79,13 +85,13 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         putClient.putFileWithId(new URL(FILE_ADDRESS), FILE_ID, FILE_SIZE, testEventHandler);
         
         addStep("Validate the sequence of operations event for the putclient", "Shoud be in correct order.");
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarComplete);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.PillarIdentified);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.Progress);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.PillarComplete);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.Complete);
         
         addStep("Create a GetFileClient and start a get operation", 
                 "This should be caught by the pillar");
@@ -94,12 +100,12 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Validate the sequence of operations event for the GetFileClient", 
                 "Shoud be in correct order.");
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.IdentifyPillarsRequestSent);
         Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.PillarIdentified);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.Progress);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.Complete);
         
         addStep("Create a GetChecksumsClient and start a get operation", 
                 "This should be caught by the pillar");
@@ -107,23 +113,20 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         FileIDs fileIDsForGetChecksums = new FileIDs();
         fileIDsForGetChecksums.setFileID(FILE_ID);
         
-        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
-        csType.setChecksumSalt(null);
-        csType.setChecksumType("MD5");
         URL csurl = new URL(FILE_ADDRESS + "-cs");
         
         getChecksums.getChecksums(clientSettings.getCollectionSettings().getClientSettings().getPillarIDs(), 
-                fileIDsForGetChecksums, csType, csurl, testEventHandler, "AuditTrail: TESTING!!!");
+                fileIDsForGetChecksums, DEFAULT_CHECKSUM_TYPE, csurl, testEventHandler, "AuditTrail: TESTING!!!");
         
         addStep("Validate the sequence of operation events for the getChecksumClient", 
                 "Should be in correct order.");
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarComplete);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.PillarIdentified);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.Progress);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.PillarComplete);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.Complete);
         
         addStep("Create a GetFileIDsClient and start a get operation", 
                 "This should be caught by the pillar");
@@ -138,13 +141,32 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Validate the sequence of operation events for the getChecksumClient", 
                 "Should be in correct order.");
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarComplete);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.PillarIdentified);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.Progress);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.PillarComplete);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.Complete);
+
+        addStep("Create a DeleteFileClient and start a delete operation", 
+                "This should be caught by the pillar");
+        DeleteFileClient deleteFile = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(clientSettings);
+
+        ChecksumSpecTYPE checksumRequested = new ChecksumSpecTYPE();
+        checksumRequested.setChecksumSalt(null);
+        checksumRequested.setChecksumType("SHA-1");
+        deleteFile.deleteFile(FILE_ID, settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+                CHECKSUM, DEFAULT_CHECKSUM_TYPE, checksumRequested, testEventHandler, "AuditTrail: TESTING!!!");
         
+        addStep("Validate the sequence of operation events for the DeleteFileClient", 
+                "Should be in correct order.");
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.PillarIdentified);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.Progress);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.PillarComplete);
+        Assert.assertEquals(testEventHandler.waitForEvent(10, TimeUnit.SECONDS).getType(), OperationEventType.Complete);
     }
 }
