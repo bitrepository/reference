@@ -63,6 +63,7 @@ public class FileIDInfo {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         this.fileID = fileID;
+        this.fileLastCheck = fileLastCheck;
         this.checksum = checksum;
         this.checksumType = checksumType;
         this.checksumLastCheck = checksumLastCheck;
@@ -161,6 +162,6 @@ public class FileIDInfo {
     @Override
     public String toString() {
         return "Pillar id: " + pillarId + ", File id: " + fileID + " (date: " + fileLastCheck + "), Checksum: " 
-                + checksum + " (date: " + checksumLastCheck + ")";
+                + checksum + " (date: " + checksumLastCheck + "), Checksum type: " + checksumType;
     }
 }

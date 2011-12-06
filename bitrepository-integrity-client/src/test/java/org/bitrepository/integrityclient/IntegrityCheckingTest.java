@@ -24,8 +24,9 @@
  */
 package org.bitrepository.integrityclient;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
@@ -38,12 +39,15 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
+import org.bitrepository.integrityclient.cache.FileBasedIntegrityCache;
 import org.bitrepository.integrityclient.cache.MemoryBasedIntegrityCache;
 import org.bitrepository.integrityclient.checking.IntegrityChecker;
 import org.bitrepository.integrityclient.checking.SystematicIntegrityValidator;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class IntegrityCheckingTest extends ExtendedTestCase {
@@ -58,6 +62,26 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         settings = TestSettingsProvider.reloadSettings();
     }
     
+    @BeforeMethod  (alwaysRun = true) 
+    public void initialiseFileCache() {
+        CachedIntegrityInformationStorage cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage();
+        if(cache instanceof MemoryBasedIntegrityCache) {
+            ((MemoryBasedIntegrityCache) cache).clearCache();
+        } 
+        if(cache instanceof FileBasedIntegrityCache) {
+            ((FileBasedIntegrityCache) cache).clearCache();
+        }
+    }
+    
+    @AfterMethod (alwaysRun = true)
+    public void removeFileCache() {
+        File fileCache = new File(FileBasedIntegrityCache.DEFAULT_FILE_NAME);
+        if(fileCache.isFile()) {
+            System.out.println("Deleting the file '" + fileCache + "'");
+            fileCache.delete();
+        }
+    }
+    
     @Test(groups = {"regressiontest"})
     public void testFileidsValid() {
         addDescription("Tests the file ids validation is able to give good result, when two pillars give the same "
@@ -68,7 +92,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
         
         CachedIntegrityInformationStorage cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage();
-        ((MemoryBasedIntegrityCache) cache).clearCache();
+//        ((MemoryBasedIntegrityCache) cache).clearCache();
         String[] fileids = new String[]{"test-file-1", "test-file-2"};
         
         addStep("Initialise the file ids data.", "Should be created and put into the cache.");
@@ -107,7 +131,6 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
         
         CachedIntegrityInformationStorage cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage();
-        ((MemoryBasedIntegrityCache) cache).clearCache();
         String[] fileids = new String[]{"test-file-1", "test-file-2"};
         
         addStep("Initialise the file ids data.", "Should be created and put into the cache.");
@@ -145,7 +168,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
         
         CachedIntegrityInformationStorage cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage();
-        ((MemoryBasedIntegrityCache) cache).clearCache();
+//        ((MemoryBasedIntegrityCache) cache).clearCache();
         String[] fileids = new String[]{"test-file-1", "test-file-2"};
        
         addStep("Initialise the checksum results data.", "Should be created and put into the cache.");
@@ -188,7 +211,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
         
         CachedIntegrityInformationStorage cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage();
-        ((MemoryBasedIntegrityCache) cache).clearCache();
+//        ((MemoryBasedIntegrityCache) cache).clearCache();
         String[] fileids = new String[]{"test-file-1", "test-file-2"};
        
         addStep("Initialise the checksum results data.", "Should be created and put into the cache.");
@@ -215,10 +238,10 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         fileidsToCheck.setAllFileIDs("true");
         
         addStep("Check whether all pillars have all the file ids", "Only one pillar should contain the file ids.");
-        Assert.assertFalse(checker.checkFileIDs(fileidsToCheck), "The file ids should be validated");
+        Assert.assertFalse(checker.checkFileIDs(fileidsToCheck), "The file ids should not be valid");
         
         addStep("Check that the checksum for these file ids are valid", "They should be, since only pillar has the checksums.");
-        Assert.assertTrue(checker.checkChecksum(fileidsToCheck), "The checksums should be validated");
+        Assert.assertTrue(checker.checkChecksum(fileidsToCheck), "The checksums should be valid");
     }
     
     @Test(groups = {"regressiontest"})
@@ -231,7 +254,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
         
         CachedIntegrityInformationStorage cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage();
-        ((MemoryBasedIntegrityCache) cache).clearCache();
+//        ((MemoryBasedIntegrityCache) cache).clearCache();
         String[] fileids = new String[]{"test-file-1", "test-file-2"};
        
         addStep("Initialise the two different checksum results data.", "Should be created and put into the cache for each pillar.");

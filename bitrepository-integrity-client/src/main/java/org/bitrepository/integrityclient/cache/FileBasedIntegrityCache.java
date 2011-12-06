@@ -53,6 +53,8 @@ public class FileBasedIntegrityCache implements CachedIntegrityInformationStorag
     private static final String SEPARATOR = "##";
     /** The separator for the different elements in the string representation of the FileIDInfos.*/
     private static final boolean APPEND_TO_FILE = true;
+    
+    public static final String DEFAULT_FILE_NAME = "integrity-data.cache";
 
     /** The container for handling the file and data cache along with synchronization between them.*/
     private FileStorage fileStorage;
@@ -61,7 +63,7 @@ public class FileBasedIntegrityCache implements CachedIntegrityInformationStorag
      * Constructor.
      */
     public FileBasedIntegrityCache() {
-        fileStorage = new FileStorage("integrity-data.cache"); 
+        fileStorage = new FileStorage(DEFAULT_FILE_NAME); 
     }
     
     @Override
@@ -92,8 +94,8 @@ public class FileBasedIntegrityCache implements CachedIntegrityInformationStorag
         fileStorage.synchronizeWithFile();
         boolean rewrite = false;
         for(ChecksumDataForChecksumSpecTYPE dataItem : data) {
-            // Create with no 'file id date'.
-            FileIDInfo fileidInfo = new FileIDInfo(dataItem.getFileID(), CalendarUtils.getEpoch(), 
+            // Create with no 'file id date' (automatically set to Epoch).
+            FileIDInfo fileidInfo = new FileIDInfo(dataItem.getFileID(), null, 
                     dataItem.getChecksumValue(), checksumType, dataItem.getCalculationTimestamp(), pillarId);
 
             if(fileStorage.containsFileIDInfo(dataItem.getFileID(), pillarId)) {
@@ -120,6 +122,13 @@ public class FileBasedIntegrityCache implements CachedIntegrityInformationStorag
     public Collection<String> getAllFileIDs() {
         fileStorage.synchronizeWithFile();
         return fileStorage.getAllFileIDs();
+    }
+    
+    /**
+     * Clears the cache.
+     */
+    public void clearCache() {
+        fileStorage.dataCache.clear();
     }
     
     /**
@@ -155,6 +164,7 @@ public class FileBasedIntegrityCache implements CachedIntegrityInformationStorag
                 if(fileCache.isFile()) {
                     loadCache();
                 } else {
+                    System.out.println("Create a new file for the cache");
                     fileCache.createNewFile();
                 }
             } catch (IOException e) {
@@ -215,35 +225,36 @@ public class FileBasedIntegrityCache implements CachedIntegrityInformationStorag
                 return;
             }
             
-            FileIDInfo currentIDInfo = null;
+            FileIDInfo oldIDInfo = null;
             
             // go through and remove any previous entry for the pillar.
-            for(FileIDInfo f : fileidInfos) {
-                if(f.getPillarId().equals(fileidInfo.getPillarId())) {
-                    currentIDInfo = f;
-                    fileidInfos.remove(f);
+            for(int i = 0; i < fileidInfos.size(); i++) {
+                if(fileidInfos.get(i).getPillarId().equals(fileidInfo.getPillarId())) {
+                    oldIDInfo = fileidInfos.get(i);
+                    fileidInfos.remove(i);
+                    i--;
                 }
             }
             
-            if(currentIDInfo != null) {
+            if(oldIDInfo != null) {
                 // use the newest file id date
-                if(currentIDInfo.getDateForLastFileIDCheck().toGregorianCalendar().getTimeInMillis() 
+                if(oldIDInfo.getDateForLastFileIDCheck().toGregorianCalendar().getTimeInMillis() 
                         < fileidInfo.getDateForLastFileIDCheck().toGregorianCalendar().getTimeInMillis()) {
-                    currentIDInfo.setDateForLastFileIDCheck(fileidInfo.getDateForLastFileIDCheck());
+                    oldIDInfo.setDateForLastFileIDCheck(fileidInfo.getDateForLastFileIDCheck());
                 }
                 
                 // use newest checksum
-                if(currentIDInfo.getDateForLastChecksumCheck().toGregorianCalendar().getTimeInMillis()
+                if(oldIDInfo.getDateForLastChecksumCheck().toGregorianCalendar().getTimeInMillis()
                         < fileidInfo.getDateForLastChecksumCheck().toGregorianCalendar().getTimeInMillis()) {
-                    currentIDInfo.setChecksum(fileidInfo.getChecksum());
-                    currentIDInfo.setDateForLastChecksumCheck(fileidInfo.getDateForLastChecksumCheck());
-                    currentIDInfo.setChecksumType(fileidInfo.getChecksumType());
+                    oldIDInfo.setChecksum(fileidInfo.getChecksum());
+                    oldIDInfo.setDateForLastChecksumCheck(fileidInfo.getDateForLastChecksumCheck());
+                    oldIDInfo.setChecksumType(fileidInfo.getChecksumType());
                 }
             } else {
-                currentIDInfo = fileidInfo;
+                oldIDInfo = fileidInfo;
             }
             
-            fileidInfos.add(currentIDInfo);
+            fileidInfos.add(oldIDInfo);
             dataCache.put(fileidInfo.getFileID(), fileidInfos);
         }
         
@@ -303,7 +314,9 @@ public class FileBasedIntegrityCache implements CachedIntegrityInformationStorag
          * @throws IOException If the file cannot be loaded.
          */
         private synchronized void loadCache() throws IOException {
+            log.info("(Re)Loads the cache from file.");
             synchronized(fileCache) {
+                dataCache.clear();
                 BufferedReader reader = new BufferedReader(new FileReader(fileCache));
                 
                 String line;
@@ -320,26 +333,29 @@ public class FileBasedIntegrityCache implements CachedIntegrityInformationStorag
         }
         
         /**
-         * 
-         * @param fileidInfo
+         * Inserts a FileIDInfo into the cache, and removes any previous FileIDInfo for the same file and pillar.
+         * @param fileidInfo The FileIDInfo to insert into the cache.
          */
-        private void insertFileIDInfoIntoCache(FileIDInfo fileidInfo) {
-            List<FileIDInfo> fileidInfos;
+        private synchronized void insertFileIDInfoIntoCache(FileIDInfo fileidInfo) {
+            List<FileIDInfo> infos;
             if(dataCache.containsKey(fileidInfo.getFileID())) {
-                fileidInfos = dataCache.get(fileidInfo.getFileID());
+                infos = dataCache.get(fileidInfo.getFileID());
                 
-                // go through and remove any previous entry for the pillar.
-                for(FileIDInfo f : fileidInfos) {
-                    if(f.getPillarId().equals(fileidInfo.getPillarId())) {
-                        fileidInfos.remove(f);
+                if(infos != null) {
+                    // go through and remove any previous entry for the pillar.
+                    for(int i = 0; i < infos.size(); i++) {
+                        if(infos.get(i).getPillarId().equals(fileidInfo.getPillarId())) {
+                            infos.remove(i);
+                            i--;
+                        }
                     }
                 }
             } else {
-                fileidInfos = new ArrayList<FileIDInfo>();
+                infos = Collections.synchronizedList(new ArrayList<FileIDInfo>());
             }
             
-            fileidInfos.add(fileidInfo);
-            dataCache.put(fileidInfo.getFileID(), fileidInfos);
+            infos.add(fileidInfo);
+            dataCache.put(fileidInfo.getFileID(), infos);
         }
         
         /**
@@ -412,6 +428,7 @@ public class FileBasedIntegrityCache implements CachedIntegrityInformationStorag
             if(fileCache.lastModified() > timeStamp) {
                 try {
                     loadCache();
+                    timeStamp = fileCache.lastModified();
                 } catch (IOException e) {
                     throw new IllegalStateException("Could not reload the cache from file '" 
                             + fileCache.getAbsolutePath() + "'", e);
@@ -424,6 +441,7 @@ public class FileBasedIntegrityCache implements CachedIntegrityInformationStorag
          * Creates a new temporary file, where the data cache is written to, before it overwrites the data file.
          */
         private void rewriteFileCache() {
+            log.info("Rewriting the file cache");
             File temporaryFile = new File(fileCache.getName() + ".tmp");
             synchronized(fileCache) {
                 try {

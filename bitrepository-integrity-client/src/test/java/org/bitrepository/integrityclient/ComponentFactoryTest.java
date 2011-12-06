@@ -26,6 +26,7 @@ package org.bitrepository.integrityclient;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.integrityclient.cache.FileBasedIntegrityCache;
 import org.bitrepository.integrityclient.cache.MemoryBasedIntegrityCache;
 import org.bitrepository.integrityclient.checking.SystematicIntegrityValidator;
 import org.bitrepository.integrityclient.collector.DelegatingIntegrityInformationCollector;
@@ -55,7 +56,8 @@ public class ComponentFactoryTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})
     public void verifyCacheFromFactory() throws Exception {
         Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage()
-                instanceof MemoryBasedIntegrityCache, 
+//                instanceof MemoryBasedIntegrityCache,
+                instanceof FileBasedIntegrityCache,
                 "The default Cache should be the '" + MemoryBasedIntegrityCache.class.getName() + "' but was '"
                 + IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage().getClass().getName() + "'");
     }
