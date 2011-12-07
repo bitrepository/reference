@@ -40,7 +40,7 @@ public class ShutdownListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         BasicClient client = BasicClientFactory.getInstance();
-        // TODO Ask client to gracefully shutdown 
+        client.shutdown(); 
         log.debug("Servlet context destroyed");
     }
 

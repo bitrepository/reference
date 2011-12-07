@@ -48,9 +48,9 @@ public class BasicClient {
     private ArrayBlockingQueue<String> shortLog;
 
     
-    public BasicClient(Settings settings) {
+    public BasicClient(Settings settings, String logFile) {
         log.debug("---- Basic client instanciated ----");
-        logFile = "/tmp/webservice-logfile";
+        this.logFile = logFile;
         changeLogFiles();
         shortLog = new ArrayBlockingQueue<String>(50);
         eventHandler = new BasicEventHandler(logFile, shortLog);
@@ -59,6 +59,13 @@ public class BasicClient {
         getClient = AccessComponentFactory.getInstance().createGetFileClient(settings);
         getChecksumClient = AccessComponentFactory.getInstance().createGetChecksumsClient(settings);
         getFileIDsClient = AccessComponentFactory.getInstance().createGetFileIDsClient(settings);
+    }
+    
+    public void shutdown() {
+        putClient.shutdown();
+        getClient.shutdown();
+        getChecksumClient.shutdown();
+        getFileIDsClient.shutdown();
     }
     
     public String putFile(String fileID, long fileSize, String URLStr) {
@@ -149,7 +156,6 @@ public class BasicClient {
     }
     
     public Map<String, Map<String, String>> getChecksums(String fileIDsText, String checksumType, String salt) {
-    	String[] IDs = fileIDsText.split("\n");
     	Map<String, Map<String, String>> result = null;
     	ChecksumSpecTYPE checksumSpecItem = new ChecksumSpecTYPE();
     	if(salt != null || !salt.equals("")) {
@@ -157,9 +163,7 @@ public class BasicClient {
     	}
     	checksumSpecItem.setChecksumType(checksumType);
     	FileIDs fileIDs = new FileIDs();
-    	for(String ID : IDs) {
-    		fileIDs.getFileID().add(ID.trim());	
-    	}
+    	fileIDs.setFileID(fileIDsText);
 
     	Map<String, ResultingChecksums> clientResult;
 		try {
@@ -205,10 +209,7 @@ public class BasicClient {
     	if(allFileIDs) {
     		fileIDs.setAllFileIDs(allFileIDs);
     	} else {
-    	String[] IDs = fileIDsText.split("\n");
-	    	for(String ID : IDs) {
-	    		fileIDs.getFileID().add(ID.trim());	
-	    	}
+    	    fileIDs.setFileID(fileIDsText);
     	}
     	try {
 			getFileIDsClient.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(),

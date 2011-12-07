@@ -12,11 +12,13 @@ import org.bitrepository.common.settings.XMLFileSettingsLoader;
 public class BasicClientFactory {
     private static BasicClient client;
     private static String confDir; 
+    private static String logFile;
     private static final String CONFIGFILE = "webclient.properties"; 
     private static final String KEYSTOREFILE = "org.bitrepository.webclient.keystorefile";
     private static final String KEYSTOREPASSWD = "org.bitrepository.webclient.keystorepassword";
     private static final String TRUSTSTOREFILE = "org.bitrepository.webclient.truststorefile";
     private static final String TRUSTSTOREPASSWD = "org.bitrepository.webclient.truststorepassword";
+    private static final String LOGFILE = "org.bitrepository.webclient.logfile";
     
     /**
      * Set the configuration directory. 
@@ -39,7 +41,7 @@ public class BasicClientFactory {
             Settings settings = settingsLoader.getSettings("bitrepository-devel");	 
             loadProperties();
             try {
-                client = new BasicClient(settings);
+                client = new BasicClient(settings, logFile);
             } catch (Exception e) {
             	//won't handle..
                 throw new RuntimeException(e);
@@ -65,6 +67,7 @@ public class BasicClientFactory {
             		properties.getProperty(TRUSTSTOREFILE));
             System.setProperty("javax.net.ssl.trustStorePassword", 
             		properties.getProperty(TRUSTSTOREPASSWD));
+            logFile = properties.getProperty(LOGFILE);
         } catch (IOException e) {
             //will just fail setting keystore stuff and we won't be able to connect over ssl
         	// not a big deal..
