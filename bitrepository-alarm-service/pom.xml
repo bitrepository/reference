@@ -3,7 +3,7 @@
   <parent>
     <artifactId>bitrepository</artifactId>
     <groupId>org.bitrepository</groupId>
-    <version>0.5.0</version>
+    <version>0.5.1-SNAPSHOT</version>
   </parent>
   <artifactId>bitrepository-alarm-service</artifactId>
   <name>Bitrepository Alarm Service</name>
@@ -11,12 +11,12 @@
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-protocol</artifactId>
-      <version>0.5.0</version>
+      <version>0.5.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-common</artifactId>
-      <version>0.5.0</version>
+      <version>0.5.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
@@ -27,14 +27,14 @@
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-protocol</artifactId>
-      <version>0.5.0</version>
+      <version>0.5.1-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-common</artifactId>
-      <version>0.5.0</version>
+      <version>0.5.1-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
