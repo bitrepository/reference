@@ -3,7 +3,7 @@
   <parent>
     <artifactId>bitrepository</artifactId>
     <groupId>org.bitrepository</groupId>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>0.5.0</version>
   </parent>
   <artifactId>bitrepository-protocol</artifactId>
   <name>Bitrepository Protocol</name>
@@ -14,7 +14,7 @@
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-common</artifactId>
-      <version>0.5.0-SNAPSHOT</version>
+      <version>0.5.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.activemq</groupId>
@@ -32,7 +32,7 @@
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>bitrepository-common</artifactId>
-      <version>0.5.0-SNAPSHOT</version>
+      <version>0.5.0</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
