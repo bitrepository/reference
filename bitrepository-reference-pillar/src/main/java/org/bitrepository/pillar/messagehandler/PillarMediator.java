@@ -119,7 +119,7 @@ public class PillarMediator extends AbstractMessageListener {
     /**
      * Method for instantiating the handlers.
      */
-    protected void initialiseHandlers() {
+    private void initialiseHandlers() {
         this.handlers.put(IdentifyPillarsForGetFileRequest.class.getName(), 
                 new IdentifyPillarsForGetFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
         this.handlers.put(GetFileRequest.class.getName(), 

@@ -100,4 +100,18 @@ public class FlowController {
             conversation.notifyAll();
         }
     }
+    
+    /**
+     * @return The identifyTimeout.
+     */
+    public BigInteger getIdentifyTimeout() {
+        return identifyTimeout;
+    }
+    
+    /**
+     * @return The operationTimeout.
+     */
+    public BigInteger getOperationTimeout() {
+        return operationTimeout;
+    }
 }

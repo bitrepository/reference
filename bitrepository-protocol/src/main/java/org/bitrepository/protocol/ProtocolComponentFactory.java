@@ -24,14 +24,9 @@
  */
 package org.bitrepository.protocol;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.configuration.FileExchangeConfiguration;
 import org.bitrepository.protocol.configuration.ProtocolConfiguration;
 import org.bitrepository.protocol.http.HTTPFileExchange;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -40,12 +35,10 @@ import org.bitrepository.protocol.messagebus.MessageBusManager;
 /**
  * Provides access to the different component in the protocol module (Spring/IOC wannabe)
  */
-public class ProtocolComponentFactory {
+public final class ProtocolComponentFactory {
 
     /** The singleton instance */
-    protected static ProtocolComponentFactory instance;
-    
-    private Map<String, MessageBus> buses;
+    private static ProtocolComponentFactory instance;
 
     /**
      * The singletonic access to the instance of this class
@@ -61,9 +54,7 @@ public class ProtocolComponentFactory {
     /**
      * The singleton constructor.
      */
-    protected ProtocolComponentFactory() {
-        buses = Collections.synchronizedMap(new HashMap<String, MessageBus>());
-    }
+    protected ProtocolComponentFactory() { }
 
     /** @see #getModuleCharacteristics() */
     private static final ModuleCharacteristics MODULE_CHARACTERISTICS = new ModuleCharacteristics("protocol");

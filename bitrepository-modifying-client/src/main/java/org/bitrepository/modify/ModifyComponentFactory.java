@@ -38,7 +38,7 @@ import org.bitrepository.protocol.mediator.ConversationMediatorManager;
  * Factory class for the access module. 
  * Instantiates the instances of the interfaces within this module.
  */
-public class ModifyComponentFactory {
+public final class ModifyComponentFactory {
     /** The singleton instance. */
     private static ModifyComponentFactory instance;
 
@@ -47,7 +47,7 @@ public class ModifyComponentFactory {
      * 
      * @return The singleton instance of this factory class.
      */
-    public static ModifyComponentFactory getInstance() {
+    public static synchronized ModifyComponentFactory getInstance() {
         // ensure singleton.
         if(instance == null) {
             instance = new ModifyComponentFactory();

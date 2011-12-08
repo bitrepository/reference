@@ -137,7 +137,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
             irInfo.setResponseCode(ResponseCode.FAILURE);
             irInfo.setResponseText("The algorithm '" + checksumSpec.getChecksumType() 
                     + "' cannot be found. Exception: " + e.getLocalizedMessage());
-            throw new IdentifyPillarsException(irInfo);
+            throw new IdentifyPillarsException(irInfo, e);
         }
     }
     

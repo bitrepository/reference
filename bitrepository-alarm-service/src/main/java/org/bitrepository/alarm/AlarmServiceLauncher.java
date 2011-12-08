@@ -39,6 +39,11 @@ public class AlarmServiceLauncher {
     private static final String DEFAULT_PATH_TO_SETTINGS = "settings/xml";
 
     /**
+     * Private constructor. To prevent instantiation of this utility class.
+     */
+    private AlarmServiceLauncher() { }
+    
+    /**
      * @param args 
      */
     public static void main(String[] args) {

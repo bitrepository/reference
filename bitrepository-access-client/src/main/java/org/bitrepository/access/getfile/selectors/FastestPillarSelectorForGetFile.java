@@ -58,10 +58,12 @@ public class FastestPillarSelectorForGetFile extends PillarSelectorForGetFile {
         if (!ResponseCode.IDENTIFICATION_POSITIVE.equals(
                 response.getResponseInfo().getResponseCode())) {
             return false;
-        } else if (selectedPillar == null || 
-                TimeMeasureComparator.compare(response.getTimeToDeliver(), selectedPillar.getTimeToDeliver()) < 0) {
+        } 
+        if (selectedPillar == null || TimeMeasureComparator.compare(response.getTimeToDeliver(), 
+                selectedPillar.getTimeToDeliver()) < 0) {
             return true;
-        } else return false;
+        } 
+        return false;
     }
 
     @Override

@@ -55,7 +55,7 @@ public final class JaxbHelper {
 
     private final Validator schemaValidator;
     private final String prefix;
-    private final String schema;
+    private final String schemaToSchema;
     /** Hides constructor for this utility class to prevent instantiation */
     public JaxbHelper(String inputPrefix, String pathToSchema) {
         ArgumentValidator.checkNotNullOrEmpty(pathToSchema, "pathToSchema");
@@ -65,7 +65,7 @@ public final class JaxbHelper {
             this.prefix = inputPrefix;
         }
         
-        this.schema = pathToSchema;
+        this.schemaToSchema = pathToSchema;
 
         InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(prefix + pathToSchema);
         log.debug("Creating JAXBHelper based on schema from: " + 
@@ -86,7 +86,7 @@ public final class JaxbHelper {
      * Gets the path to the schema that the validator uses. 
      */
     public String getSchemaPath() {
-        return "" + Thread.currentThread().getContextClassLoader().getResource(prefix + schema);
+        return "" + Thread.currentThread().getContextClassLoader().getResource(prefix + schemaToSchema);
     }
     
     /**
@@ -110,9 +110,9 @@ public final class JaxbHelper {
      * Validates the xml in the inputstream
      * @param inputStream The stream containing the xml to validate
      * @throws SAXException The xml didn't validate.
-     * @throws Exception General error.
+     * @throws IOException Problems accessing the input stream.
      */
-    public void validate(InputStream inputStream) throws SAXException, Exception {
+    public void validate(InputStream inputStream) throws SAXException, IOException {
         schemaValidator.validate(new SAXSource(new InputSource(inputStream)));
     }
 

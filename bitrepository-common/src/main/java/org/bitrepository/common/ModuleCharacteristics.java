@@ -33,87 +33,88 @@ import org.apache.commons.lang.WordUtils;
  * 
  */
 public final class ModuleCharacteristics {
-	private String upperCamelCaseName;
-	private String lowerCamelCaseName;
-	private String lowerCaseNameWithHyphen;
-	private String lowerCaseName;
-	
-	/**
-	 * Creates an immutable <code>ModuleCharacteristics</code> instance.
-	 * @param lowerCaseNameWithHyphen The protocol name in lowerCaseNameWithHyphen notation
-	 */
-	public ModuleCharacteristics(String lowerCaseNameWithHyphen) {
-		if (containsUpperCaseChar(lowerCaseNameWithHyphen)) 
-			throw new IllegalArgumentException("No upper case characters allowed in constructor");
-		this.lowerCaseNameWithHyphen = lowerCaseNameWithHyphen;
-		constructCamelCaseStrings();
-		lowerCaseName = lowerCamelCaseName.toLowerCase();
-	}
-
-	/**
-	 * Return the Module name in upper camel casing, see http://en.wikipedia.org/wiki/CamelCase for details
-	 * 
-	 * Example: 'AlarmClient'
-	 * @return the upper camel casing representation of the module name
-	 */
-	public String getUpperCamelCaseName() {
-		return upperCamelCaseName;
-	}
-
-	/**
-	 * Return the Module name in lower camel casing, see http://en.wikipedia.org/wiki/CamelCase for details.
-	 * 
-	 * Example: 'alarmClient'
-     * @return the lower camel casing representation of the module name
-	 */
-    public String getLowerCamelCaseName() {
-    	return lowerCamelCaseName;
-	}
-
-    /**
-	 * Return the Module name in all lower case.
-	 * 
-	 * Example: 'alarmclient'
-     * @return the lower case representation of the module name
-	 */
-    public String getLowerCaseName() {
-    	return lowerCaseName;
-	}
+    private String upperCamelCaseName;
+    private String lowerCamelCaseName;
+    private String lowerCaseNameWithHyphen;
+    private String lowerCaseName;
     
-	/**
-	 * Return the Module name in all lower case, with words separated by the '-' char.
-	 * 
-	 * Example: 'alarm-client'
+    /**
+     * Creates an immutable <code>ModuleCharacteristics</code> instance.
+     * @param lowerCaseNameWithHyphen The protocol name in lowerCaseNameWithHyphen notation
+     */
+    public ModuleCharacteristics(String lowerCaseNameWithHyphen) {
+        if (containsUpperCaseChar(lowerCaseNameWithHyphen)) {
+            throw new IllegalArgumentException("No upper case characters allowed in constructor");
+        }
+        this.lowerCaseNameWithHyphen = lowerCaseNameWithHyphen;
+        constructCamelCaseStrings();
+        lowerCaseName = lowerCamelCaseName.toLowerCase();
+    }
+    
+    /**
+     * Return the Module name in upper camel casing, see http://en.wikipedia.org/wiki/CamelCase for details
+     * 
+     * Example: 'AlarmClient'
+     * @return the upper camel casing representation of the module name
+     */
+    public String getUpperCamelCaseName() {
+        return upperCamelCaseName;
+    }
+    
+    /**
+     * Return the Module name in lower camel casing, see http://en.wikipedia.org/wiki/CamelCase for details.
+     * 
+     * Example: 'alarmClient'
+     * @return the lower camel casing representation of the module name
+     */
+    public String getLowerCamelCaseName() {
+        return lowerCamelCaseName;
+    }
+    
+    /**
+     * Return the Module name in all lower case.
+     * 
+     * Example: 'alarmclient'
+     * @return the lower case representation of the module name
+     */
+    public String getLowerCaseName() {
+        return lowerCaseName;
+    }
+    
+    /**
+     * Return the Module name in all lower case, with words separated by the '-' char.
+     * 
+     * Example: 'alarm-client'
      * @return the lower case representation of the module name with '-' as word separator.
-	 */
+     */
     public String getLowerCaseNameWithHyphen() {
-    	return lowerCaseNameWithHyphen;
-	}
+        return lowerCaseNameWithHyphen;
+    }
     
     /**
      * Checks the supplied string for upper case characters.
      * @return <code>true</code> if the supplied string contains any upper case characters, else <code>false</code>.
      */
     private boolean containsUpperCaseChar(String stringToCheck) {
-    	return (!stringToCheck.toLowerCase().equals(stringToCheck));
+        return (!stringToCheck.toLowerCase().equals(stringToCheck));
     }
     
     private void constructCamelCaseStrings() {
-    	StringBuilder upperCamelCaseSB = new StringBuilder();
-    	StringBuilder lowerCamelCaseSB = new StringBuilder();
-    	StringTokenizer st = new StringTokenizer(lowerCaseNameWithHyphen, "-");
-    	boolean firstWord = true;
-    	while (st.hasMoreElements()) {
-    		String word = st.nextToken();
-    		upperCamelCaseSB.append(WordUtils.capitalize(word));
-    		if (firstWord) {
-    			lowerCamelCaseSB.append(word);
-    			firstWord = false;
-    		} else {
-    			lowerCamelCaseSB.append(WordUtils.capitalize(word));
-    		}
-    	}
-    	upperCamelCaseName = upperCamelCaseSB.toString();
-    	lowerCamelCaseName = lowerCamelCaseSB.toString();
+        StringBuilder upperCamelCaseSB = new StringBuilder();
+        StringBuilder lowerCamelCaseSB = new StringBuilder();
+        StringTokenizer st = new StringTokenizer(lowerCaseNameWithHyphen, "-");
+        boolean firstWord = true;
+        while (st.hasMoreElements()) {
+            String word = st.nextToken();
+            upperCamelCaseSB.append(WordUtils.capitalize(word));
+            if (firstWord) {
+                lowerCamelCaseSB.append(word);
+                firstWord = false;
+            } else {
+                lowerCamelCaseSB.append(WordUtils.capitalize(word));
+            }
+        }
+        upperCamelCaseName = upperCamelCaseSB.toString();
+        lowerCamelCaseName = lowerCamelCaseSB.toString();
     }
 }

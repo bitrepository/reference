@@ -170,7 +170,8 @@ public class GettingChecksums extends GetChecksumsState {
     private boolean isReponseSuccess(ResponseInfo frInfo) throws UnexpectedResponseException { 
         if(ResponseCode.SUCCESS.equals(frInfo.getResponseCode())) {
             return true;
-        } else return false;
+        }
+        return false;
     }
 
     /**

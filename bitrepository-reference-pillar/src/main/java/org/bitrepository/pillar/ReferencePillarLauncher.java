@@ -33,16 +33,23 @@ import org.bitrepository.common.settings.XMLFileSettingsLoader;
  * It just loads the configurations and uses them to create the PillarSettings needed for starting the ReferencePillar.
  */
 public class ReferencePillarLauncher {
+    /** The default path to the collection id during development.*/
     private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
+    /** The default path for the settings in the development.*/
     private static final String DEFAULT_PATH_TO_SETTINGS = "settings/xml";
 
+    /**
+     * Private constructor. To prevent instantiation of this utility class.
+     */
+    private ReferencePillarLauncher() { }
+    
     /**
      * @param args <ol>
      * <li> The path to the directory containing the settings. See {@link XMLFileSettingsLoader} for details.</li>
      * <li> The collection ID to load the settings for.</li>
      * </ol>
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         String collectionId;
         String pathToSettings;
         if(args.length >= 2) {

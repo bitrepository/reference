@@ -120,14 +120,18 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         String conversationID = conversation.getConversationID();
         if (conversationID != null) {
             conversations.remove(conversationID);
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    conversation.failConversation(new OperationFailedEvent(message));
-                }
-            });
+            Thread t = new FailingConversation(conversation, message);
             t.start();
         }
+    }
+    
+    /**
+     * Handles
+     * @param correlationID
+     */
+    private void handleNoConversation(String correlationID) {
+        log.debug("Message with correlationID '" + correlationID + "' could not be delegated to any " +
+                "conversation.");
     }
 
     @Override
@@ -137,8 +141,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-                    "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -149,8 +152,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-                    "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -161,8 +163,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-                    "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
     
@@ -173,8 +174,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-                    "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
     
@@ -185,8 +185,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-                    "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -197,8 +196,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-                    "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -209,8 +207,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-                    "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -221,8 +218,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-                    "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -233,8 +229,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-                    "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -245,8 +240,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-                    "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -257,8 +251,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-                    "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -269,8 +262,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-                    "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -281,8 +273,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-                    "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -293,8 +284,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-                    "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -305,8 +295,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any " +
-                    "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -317,8 +306,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any "
-                    + "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -329,8 +317,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any "
-                    + "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -341,8 +328,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any "
-                    + "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -353,8 +339,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message with correlationID '" + messageCorrelationID + "' could not be delegated to any "
-                    + "conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -365,7 +350,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -376,7 +361,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
     
@@ -387,7 +372,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -398,7 +383,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -409,7 +394,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -420,7 +405,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -431,7 +416,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -442,7 +427,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -453,7 +438,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -464,7 +449,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -475,7 +460,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -486,7 +471,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -497,7 +482,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            log.debug("Message '" + messageCorrelationID + "' could not be delegated to any conversation.");
+            handleNoConversation(messageCorrelationID);
         }
     }
 
@@ -530,5 +515,29 @@ public class CollectionBasedConversationMediator implements ConversationMediator
                 }
             }
         }       
+    }
+    
+    /**
+     * Thread for handling the failing of a conversation.
+     */
+    private static class FailingConversation extends Thread {
+        /** The conversation to fail.*/
+        private final Conversation conversation;
+        /** The message telling the reason for the conversation to fail.*/
+        private final String message;
+        /**
+         * Constructor.
+         * @param conversation The conversation to fail.
+         * @param message The reason for the conversation to fail.
+         */
+        FailingConversation(Conversation conversation, String message) {
+            this.conversation = conversation;
+            this.message = message;
+        }
+        
+        @Override
+        public void run() {
+            conversation.failConversation(new OperationFailedEvent(message));
+        }
     }
 }

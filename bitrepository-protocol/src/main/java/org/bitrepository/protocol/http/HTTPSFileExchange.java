@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -49,6 +50,8 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.configuration.FileExchangeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import sun.security.util.HostnameChecker;
 
 /**
  * Class for handling the file exchange through the HTTPS protocol.
@@ -102,8 +105,12 @@ public class HTTPSFileExchange extends HTTPFileExchange {
             // keystore file.
             if(keystore.isFile()) {
                 store = KeyStore.getInstance(SUN_JCEKS_KEYSTORE_TYPE);
-                store.load(new FileInputStream(config.getHttpsKeystorePath()), 
-                        config.getHttpsKeyStorePassword().toCharArray());
+                InputStream is = new FileInputStream(config.getHttpsKeystorePath());
+                try {
+                    store.load(is, config.getHttpsKeyStorePassword().toCharArray());
+                } finally {
+                    is.close();
+                }
             } else {
                 store = initKeyStore();
             }
@@ -127,14 +134,7 @@ public class HTTPSFileExchange extends HTTPFileExchange {
             throw new CoordinationLayerException("Could not initialise the SSL Context.", e);
         }
 
-        hostnameVerifier = new HostnameVerifier() {  
-            // TODO handle different? We currently accept everybody.
-            @Override
-            public boolean verify(String string, SSLSession sslSession) {
-                return true;
-            }
-        };
-
+        hostnameVerifier = new VerifyingHostnameVerifier();
     }
 
     /**
@@ -151,12 +151,15 @@ public class HTTPSFileExchange extends HTTPFileExchange {
             // load the certificate
             CertificateFactory certFactory = CertificateFactory.getInstance(CERTIFICATE_TYPE);
             FileInputStream fis = new FileInputStream(config.getHttpsCertificatePath());
-            Certificate cert = certFactory.generateCertificate(fis);
-            fis.close();
-
-            // insert the certificate into the keystore
-            store.setCertificateEntry(config.getHttpsCertificateAlias(), cert);
-
+            try {
+                Certificate cert = certFactory.generateCertificate(fis);
+                
+                // insert the certificate into the keystore
+                store.setCertificateEntry(config.getHttpsCertificateAlias(), cert);
+            } finally {
+                fis.close();
+            }
+            
             // Write the keystore to a file, with the given password.
             OutputStream out = new FileOutputStream(config.getHttpsKeystorePath());
             store.store(out, config.getHttpsKeyStorePassword().toCharArray());
@@ -182,7 +185,17 @@ public class HTTPSFileExchange extends HTTPFileExchange {
     @Override
     public URL getURL(String filename) throws MalformedURLException {
         // create the URL based on hardcoded values (change to using settings!)
-        URL res = new URL(PROTOCOL, SERVER_NAME, PORT_NUMBER, SERVER_PATH + "/" + filename);
-        return res;
+        return new URL(PROTOCOL, SERVER_NAME, PORT_NUMBER, SERVER_PATH + "/" + filename);
+    }
+    
+    /**
+     * A hostname verifier, which verifies eveything.
+     */
+    private static class VerifyingHostnameVerifier implements HostnameVerifier {
+        // TODO handle different? We currently accept everybody.
+        @Override
+        public boolean verify(String string, SSLSession sslSession) {
+            return true;
+        }
     }
 }

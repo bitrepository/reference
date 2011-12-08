@@ -27,9 +27,12 @@ package org.bitrepository.pillar.messagehandler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Date;
+
+import javax.xml.bind.JAXBException;
 
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetFileIDsResults;
@@ -231,9 +234,11 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      * @param message The GetChecksumMessage requesting the checksum calculations.
      * @param checksumList The list of checksums to put into the list.
      * @return A file containing all the checksums in the list.
-     * @throws Exception If something goes wrong, e.g. IOException or JAXBException.
+     * @throws IOException If a problem occurs during accessing or handling the data.
+     * @throws JAXBException If the resulting structure cannot be serialized or if it is invalid.
      */
-    private File makeTemporaryChecksumFile(GetFileIDsRequest message, FileIDsData fileIDs) throws Exception {
+    private File makeTemporaryChecksumFile(GetFileIDsRequest message, FileIDsData fileIDs) 
+            throws IOException, JAXBException {
         // Create the temporary file.
         File checksumResultFile = File.createTempFile(message.getCorrelationID(), new Date().getTime() + ".id");
         log.debug("Writing the requested fileids to the file '" + checksumResultFile + "'");
@@ -254,8 +259,10 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
             try {
                 jaxbHelper.validate(new ByteArrayInputStream(file.getBytes()));
             } catch (SAXException e) {
-                log.error("Failed to validate message ", e);
-                throw new Exception(e);
+                String errMsg = "The resulting XML for the GetFileIDsRequest does not validate. \n"
+                        + file;
+                log.error(errMsg, e);
+                throw new JAXBException(errMsg, e);
             }
             is.write(file.getBytes());
             is.flush();
@@ -275,7 +282,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      * @param url The location where the file should be uploaded.
      * @throws Exception If something goes wrong.
      */
-    private void uploadFile(File fileToUpload, String url) throws Exception {
+    private void uploadFile(File fileToUpload, String url) throws IOException {
         URL uploadUrl = new URL(url);
         
         // Upload the file.

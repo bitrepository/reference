@@ -33,7 +33,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 /**
  * Utility class for calendar issues. 
  */
-public class CalendarUtils {
+public final class CalendarUtils {
     /**
      * Private constructor to prevent instantiation of utility class.
      */

@@ -72,7 +72,7 @@ public abstract class PillarSelectorForGetFile {
      * Container for information about a pillar which as been identified and are marked as 
      * selected for a GetFile request.
      */
-    public class SelectedPillarForGetFileInfo extends SelectedPillarInfo {
+    public static class SelectedPillarForGetFileInfo extends SelectedPillarInfo {
         /** @see #getTimeToDeliver() */
         private final TimeMeasureTYPE timeToDeliver;       
         

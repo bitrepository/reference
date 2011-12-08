@@ -34,13 +34,12 @@ import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.mediator.ConversationMediatorManager;
-import org.bitrepository.protocol.messagebus.MessageBus;
 
 /**
  * Factory class for the access module.
  * Instantiates the instances of the interfaces within this module.
  */
-public class AccessComponentFactory {
+public final class AccessComponentFactory {
     /** The singleton instance. */
     private static AccessComponentFactory instance;
     
@@ -49,7 +48,7 @@ public class AccessComponentFactory {
      *
      * @return The singleton instance of this factory class.
      */
-    public static AccessComponentFactory getInstance() {
+    public static synchronized AccessComponentFactory getInstance() {
         // ensure singleton.
         if(instance == null) {
             instance = new AccessComponentFactory();

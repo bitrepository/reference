@@ -32,7 +32,7 @@ import org.bitrepository.protocol.messagebus.MessageBusManager;
 /**
  * Component factory for this module.
  */
-public class ReferencePillarComponentFactory {
+public final class ReferencePillarComponentFactory {
     /** The singleton instance. */
     private static ReferencePillarComponentFactory instance;
 
@@ -41,7 +41,7 @@ public class ReferencePillarComponentFactory {
      *
      * @return The singleton instance of this factory class.
      */
-    public static ReferencePillarComponentFactory getInstance() {
+    public static synchronized ReferencePillarComponentFactory getInstance() {
         // ensure singleton.
         if(instance == null) {
             instance = new ReferencePillarComponentFactory();

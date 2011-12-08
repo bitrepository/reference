@@ -244,7 +244,7 @@ public class ConversationEventMonitor {
     /**
      * Custom logger for prefixing the log entries with the conversation ID.
      */
-    private class ConversationLogger {
+    private static class ConversationLogger {
         /** The wrapped logger. */
         private final Logger logger = LoggerFactory.getLogger(getClass());
         private final String conversationID;

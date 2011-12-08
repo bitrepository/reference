@@ -32,7 +32,7 @@ import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 /**
  * The place to get message buses. Only one message bus is created for each collection ID.
  */
-public class MessageBusManager {
+public final class MessageBusManager {
     /** Map of the loaded mediators */
     private static final Map<String,MessageBus> messageBusMap = new HashMap<String,MessageBus>();
     

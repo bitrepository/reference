@@ -26,10 +26,18 @@ package org.bitrepository.common.utils;
 
 import java.io.File;
 
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * Utility class for method involving the handling of files.
+ */
 public final class FileUtils {
-    
+    /** The log.*/
+    private static Logger log = LoggerFactory.getLogger(FileUtils.class);
+
     /**
      * Private constructor. To prevent instantiation of this utility class.
      */
@@ -43,10 +51,7 @@ public final class FileUtils {
      * @return The directory at the end of the path.
      */
     public static File retrieveDirectory(String dirPath) {
-        // validate the argument
-        if(dirPath == null || dirPath.isEmpty()) {
-            throw new ConfigurationException("Bad path for the directory: " + dirPath);
-        }
+        ArgumentValidator.checkNotNullOrEmpty(dirPath, "String dirPath");
         
         // instantiate the directory
         File directory = new File(dirPath);
@@ -63,12 +68,11 @@ public final class FileUtils {
      * @return The instantiated subdirectory.
      */
     public static File retrieveSubDirectory(File parentDir, String dirName) {
+        ArgumentValidator.checkNotNullOrEmpty(dirName, "String dirName");
+        ArgumentValidator.checkNotNull(parentDir, "File parentDir");
+
         // validate the argument
-        if(dirName == null || dirName.isEmpty()) {
-            throw new ConfigurationException("Invalid name for the directory: " + dirName);
-        }
-        // validate the argument
-        if(parentDir == null || !parentDir.isDirectory()) {
+        if(!parentDir.isDirectory()) {
             throw new ConfigurationException("The parent directory, " + parentDir + ", is invalid");
         }
         
@@ -94,8 +98,7 @@ public final class FileUtils {
         
         // Create the directory if it does not exist, and validate that it is a directory afterwards.
         if(!directory.exists() || !directory.isDirectory()) {
-            directory.mkdirs();
-            if(!directory.isDirectory()) {
+            if(!directory.mkdirs()) {
                 throw new ConfigurationException("The file directory '" + directory.getAbsolutePath() + "' cannot be "
                         + "instantiated as a directory.");
             }
@@ -108,6 +111,8 @@ public final class FileUtils {
      * @param f The file to remove.
      */
     public static void delete(File f) {
+        ArgumentValidator.checkNotNull(f, "File f");
+        
         if(!f.exists()) {
             throw new IllegalArgumentException("The file '" + f + "' does not exist.");
         }
@@ -116,7 +121,9 @@ public final class FileUtils {
                 delete(sub);
             }
         }
-        f.delete();
+        if(!f.delete()) {
+            log.warn("Could not delete '" + f.getAbsolutePath() + "'");
+        }
     }
     
     /**
@@ -125,6 +132,8 @@ public final class FileUtils {
      * @param f The file to deprecate.
      */
     public static void deprecateFile(File f) {
+        ArgumentValidator.checkNotNull(f, "File f");
+        
         if(!f.exists()) {
             throw new IllegalArgumentException("The file '" + f + "' does not exist.");
         }
@@ -133,6 +142,30 @@ public final class FileUtils {
             deprecateFile(deprecatedLocation);
         }
         
-        f.renameTo(deprecatedLocation);
+        if(!f.renameTo(deprecatedLocation)) {
+            log.warn("Could not deprecate the file '" + f.getAbsolutePath() + "'.");
+        }
+    }
+    
+    /**
+     * Method for moving a file from one position to another.
+     * @param from The file to move from.
+     * @param to The file to move to.
+     */
+    public static void moveFile(File from, File to) {
+        ArgumentValidator.checkNotNull(from, "File from");
+        ArgumentValidator.checkNotNull(to, "File to");
+        
+        if(!from.isFile()) {
+            throw new IllegalArgumentException("No downloaded file to archive '" + from.getName() + "'");
+        }
+        if(to.exists()) {
+            throw new IllegalArgumentException("The file already exists within the archive. Cannot archive again!");
+        }
+        
+        if(!from.renameTo(to)) {
+            log.warn("Could move the file '" + from.getAbsolutePath() + "' to the location '" + to.getAbsolutePath() 
+                    + "'");
+        }
     }
 }

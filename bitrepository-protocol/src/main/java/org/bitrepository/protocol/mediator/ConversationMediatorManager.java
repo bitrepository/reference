@@ -37,6 +37,11 @@ public class ConversationMediatorManager {
     private static final Map<String,ConversationMediator> mediatorMap = new HashMap<String,ConversationMediator>();
     
     /**
+     * Private constructor. To prevent instantiation of this utility class.
+     */
+    private ConversationMediatorManager() { }
+    
+    /**
      * Will return a the <code>ConversationMediator</code> for the collection indicated in the settings. 
      * If the mediator does doesn't exist, it will be created.
      * @param collectionID The collectionID to find settings for.

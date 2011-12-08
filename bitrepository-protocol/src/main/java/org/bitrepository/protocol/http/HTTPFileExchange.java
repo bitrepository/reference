@@ -37,8 +37,6 @@ import java.net.URL;
 import org.bitrepository.common.utils.StreamUtils;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.configuration.FileExchangeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

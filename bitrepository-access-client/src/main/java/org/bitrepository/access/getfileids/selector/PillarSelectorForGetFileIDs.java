@@ -24,7 +24,7 @@
  */
 package org.bitrepository.access.getfileids.selector;
 
-import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -77,23 +77,23 @@ public class PillarSelectorForGetFileIDs {
     /**
      * Method for validating the response.
      * @param irInfo The IdentifyResponseInfo to validate.
+     * @throws UnexpectedResponseException If it was not an expected response, e.g. if it was not positive.
      */
     private void validateResponse(ResponseInfo irInfo) throws UnexpectedResponseException {
-        String errorMessage = null;
-
         if(irInfo == null) {
-            errorMessage = "Response code was null";
+            throw new UnexpectedResponseException("Response info was null");
         }
 
         ResponseCode responseCode = irInfo.getResponseCode();
         if(responseCode == null) {
-            errorMessage = "Response code was null";
+            throw new UnexpectedResponseException("Response code was null, with text: " + irInfo.getResponseText());
         }
-
-        ResponseCode.IDENTIFICATION_POSITIVE.value().equals(
-                responseCode);
-        if (errorMessage != null) throw new UnexpectedResponseException(
-                "Invalid IdentifyResponse from response.getPillarID(), " + errorMessage);
+        
+        if(responseCode != ResponseCode.IDENTIFICATION_POSITIVE) {
+            throw new UnexpectedResponseException("Invalid IdentifyResponse. Expected '"
+                    + ResponseCode.IDENTIFICATION_POSITIVE + "' but received: '" + responseCode.value() 
+                    + "', with text '" + irInfo.getResponseText() + "'");
+        }
     }
 
     /**
@@ -108,8 +108,8 @@ public class PillarSelectorForGetFileIDs {
      * Method for identifying the pillars, which needs to be identified for this operation to be finished.
      * @return An array of the IDs of the pillars which have not yet responded.
      */
-    public String[] getOutstandingPillars() {
-        return responseStatus.getOutstandPillars();
+    public List<String> getOutstandingPillars() {
+        return Arrays.asList(responseStatus.getOutstandPillars());
     }
 
     /**

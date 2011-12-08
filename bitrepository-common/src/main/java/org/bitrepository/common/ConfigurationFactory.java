@@ -89,19 +89,18 @@ public final class ConfigurationFactory {
         JaxbHelper jaxbHelper = new JaxbHelper("configuration/schema/", "Configuration.xsd");
         InputStream configStreamLoad = null;
         InputStream configStreamValidate = null;
-        if(configStreamLoad == null) {
-            String path = System.getProperty(CONFIGURATION_DIR_SYSTEM_PROPERTY);
-            String name = String.format(DEFAULT_CONFIGURATION_CLASSPATH_NAME,
-                    moduleCharacteristics.getLowerCaseName());
-            if(path != null && !path.isEmpty()){
-                File configFile = new File(path, name);
-                log.trace("Trying to retrieve configuration from '" + configFile.getAbsolutePath() + "'.");
-                try {
-                    configStreamLoad = new FileInputStream(configFile);
-                    configStreamValidate = new FileInputStream(configFile);
-                } catch (IOException e) {
-                    log.warn("Couldn't find or handle config file '" + configFile.getAbsolutePath() + "'");
-                }
+        
+        String path = System.getProperty(CONFIGURATION_DIR_SYSTEM_PROPERTY);
+        String name = String.format(DEFAULT_CONFIGURATION_CLASSPATH_NAME,
+                moduleCharacteristics.getLowerCaseName());
+        if(path != null && !path.isEmpty()){
+            File configFile = new File(path, name);
+            log.trace("Trying to retrieve configuration from '" + configFile.getAbsolutePath() + "'.");
+            try {
+                configStreamLoad = new FileInputStream(configFile);
+                configStreamValidate = new FileInputStream(configFile);
+            } catch (IOException e) {
+                log.warn("Couldn't find or handle config file '" + configFile.getAbsolutePath() + "'");
             }
         }
         if (configStreamLoad == null) {

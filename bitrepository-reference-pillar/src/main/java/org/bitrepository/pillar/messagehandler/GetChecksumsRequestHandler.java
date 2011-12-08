@@ -27,6 +27,7 @@ package org.bitrepository.pillar.messagehandler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -34,6 +35,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.xml.bind.JAXBException;
 
 import org.bitrepository.bitrepositorydata.GetChecksumsResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
@@ -301,10 +304,11 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * @param message The GetChecksumMessage requesting the checksum calculations.
      * @param checksumList The list of checksums to put into the list.
      * @return A file containing all the checksums in the list.
-     * @throws Exception If something goes wrong, e.g. IOException or JAXBException.
+     * @throws IOException If something goes wrong in the upload.
+     * @throws JAXBException If the resulting structure cannot be serialized.
      */
     private File makeTemporaryChecksumFile(GetChecksumsRequest message, 
-            List<ChecksumDataForChecksumSpecTYPE> checksumList) throws Exception {
+            List<ChecksumDataForChecksumSpecTYPE> checksumList) throws IOException, JAXBException {
         // Create the temporary file.
         File checksumResultFile = File.createTempFile(message.getCorrelationID(), new Date().getTime() + ".cs");
         log.debug("Writing the list of checksums to the file '" + checksumResultFile + "'");
@@ -342,7 +346,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * @param url The location where the file should be uploaded.
      * @throws Exception If something goes wrong.
      */
-    private void uploadFile(File fileToUpload, String url) throws Exception {
+    private void uploadFile(File fileToUpload, String url) throws IOException {
         URL uploadUrl = new URL(url);
         
         // Upload the file.

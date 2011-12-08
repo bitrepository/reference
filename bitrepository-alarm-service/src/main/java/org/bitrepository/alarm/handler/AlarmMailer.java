@@ -135,7 +135,8 @@ public class AlarmMailer implements AlarmHandler {
             // Make the body of the mail.
             body.append("Host: " + InetAddress.getLocalHost().getCanonicalHostName() + "\n");
             body.append("Date: " + new Date().toString() + "\n");
-            body.append(content + "\n");
+            body.append(content);
+            body.append("\n");
             msg.setContent(body.toString(), MIMETYPE);
         } catch (Exception e) {
             throw new AlarmException("Could not create mail body.", e);
@@ -155,7 +156,7 @@ public class AlarmMailer implements AlarmHandler {
             
             addReceiversToMessage(msg);
         } catch (MessagingException e) {
-            throw new AlarmException("Could not create header.");
+            throw new AlarmException("Could not create header.", e);
         }
     }
     

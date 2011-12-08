@@ -112,7 +112,8 @@ class GettingFile extends GetFileState {
     @Override
     public void onMessage(IdentifyPillarsForGetFileResponse response) {
         if (conversation.selector instanceof SpecificPillarSelectorForGetFile) {
-            // OK Normal situation.
+            monitor.debug("Received IdentifyPillarsForGetFileResponse from " + response.getPillarID() 
+                    + " after the specific pillar was selected. No problem at all.");
         } else if (conversation.selector instanceof FastestPillarSelectorForGetFile) {
             monitor.outOfSequenceMessage("Received IdentifyPillarsForGetFileResponse from " + response.getPillarID() + 
                     " after selecting fastest pillar " + conversation.selector.getSelectedPillar().getID());

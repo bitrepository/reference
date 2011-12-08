@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 /** Defines the constants for this code base. */
-public class ProtocolConstants {
+public final class ProtocolConstants {
     /** Protocol version used. */
     public static final long PROTOCOL_VERSION = 1L;
     /** Protocol minimum version used. */

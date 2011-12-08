@@ -38,14 +38,14 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 public abstract class PillarMessageHandler<T> {
 
     /** The constant for the VERSION of the messages.*/
-    protected final BigInteger VERSION = BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION);
+    protected static final BigInteger VERSION = BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION);
     /** The constant for the MIN_VERSION of the messages.*/
-    protected final BigInteger MIN_VERSION = BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION);
+    protected static final BigInteger MIN_VERSION = BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION);
     
     /** The classpath to the 'xsd'.*/
-    protected final String XSD_CLASSPATH = "xsd/";
+    protected static final String XSD_CLASSPATH = "xsd/";
     /** The name of the XSD containing the BitRepositoryData elements. */
-    protected final String XSD_BR_DATA = "BitRepositoryData.xsd";
+    protected static final String XSD_BR_DATA = "BitRepositoryData.xsd";
     
     /** The dispatcher for sending alarm messages.*/
     protected final AlarmDispatcher alarmDispatcher;

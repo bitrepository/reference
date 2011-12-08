@@ -31,7 +31,7 @@ import java.io.OutputStream;
 /**
  * Utility class for handling standard stream issues.
  */
-public class StreamUtils {
+public final class StreamUtils {
     /** Private constructor to prevent instantiation of this utility class.*/
     private StreamUtils() {}
     

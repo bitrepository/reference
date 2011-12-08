@@ -35,7 +35,7 @@ import org.bitrepository.protocol.messagebus.MessageBusManager;
  * Factory for the Alarm client module.
  * Instantiates the instances of the interfaces in the Alarm client module.
  */
-public class AlarmComponentFactory {
+public final class AlarmComponentFactory {
     /** The singleton component factory.*/
     private static AlarmComponentFactory instance;
     /** The characteristics for this module.*/
@@ -52,7 +52,7 @@ public class AlarmComponentFactory {
      * Method for retrieving the singleton instance of this factory.
      * @return The singleton instance.
      */
-    public static AlarmComponentFactory getInstance() {
+    public static synchronized AlarmComponentFactory getInstance() {
         if(instance == null) {
             instance = new AlarmComponentFactory();
         }

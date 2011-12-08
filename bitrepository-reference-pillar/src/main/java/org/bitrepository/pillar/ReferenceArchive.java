@@ -113,7 +113,7 @@ public class ReferenceArchive implements FileStore {
     }
 
     @Override
-    public FileInputStream getFileAsInputstream(String fileID) throws Exception {
+    public FileInputStream getFileAsInputstream(String fileID) throws IOException {
         return new FileInputStream(getFile(fileID));
     }
 
@@ -124,7 +124,8 @@ public class ReferenceArchive implements FileStore {
 
         // Download the file first, then move it to the fileDir.
         File downloadedFile = new File(tmpDir, fileID);
-
+        log.debug("Downloading the file '" + fileID + "' for validation.");
+        
         // Save InputStream to the file.
         BufferedOutputStream bufferedOutputstream = null;
         try {
@@ -148,25 +149,19 @@ public class ReferenceArchive implements FileStore {
     }
     
     @Override
-    public void moveToArchive(String fileID) throws Exception {
+    public void moveToArchive(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        log.info("Moving the file '" + fileID + "' to archive.");
 
         File downloadedFile = new File(tmpDir, fileID);
         File archivedFile = new File(fileDir, fileID);
         
-        if(!downloadedFile.isFile()) {
-            throw new IllegalArgumentException("No downloaded file to archive '" + fileID + "'");
-        }
-        if(archivedFile.exists()) {
-            throw new IllegalArgumentException("The file already exists within the archive. Cannot archive again!");
-        }
-        
         // Move the file to the fileDir.
-        downloadedFile.renameTo(archivedFile);
+        FileUtils.moveFile(downloadedFile, archivedFile);
     }
 
     @Override
-    public void replaceFile(String fileID, InputStream inputStream) throws Exception {
+    public void replaceFile(String fileID, InputStream inputStream) throws IOException {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         ArgumentValidator.checkNotNull(inputStream, "inputStream");
         
@@ -179,7 +174,7 @@ public class ReferenceArchive implements FileStore {
     }
 
     @Override
-    public void deleteFile(String fileID) throws Exception {
+    public void deleteFile(String fileID) throws IOException {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
         // Move old file to retain area.
@@ -194,7 +189,7 @@ public class ReferenceArchive implements FileStore {
             FileUtils.deprecateFile(retainFile);
         }
         
-        oldFile.renameTo(retainFile);
+        FileUtils.moveFile(oldFile, retainFile);
     }
     
     /**

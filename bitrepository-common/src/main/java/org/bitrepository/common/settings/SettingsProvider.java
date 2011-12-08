@@ -36,7 +36,7 @@ import org.bitrepository.settings.referencesettings.ReferenceSettings;
  */
 public class SettingsProvider {
     /** Defines the property which might be used to specify the collection to load the settings for */
-    public static String COLLECTIONID_PROPERTY = "bitrepository.collectionid";
+    public static final String COLLECTIONID_PROPERTY = "bitrepository.collectionid";
     /** The loader to use for acessing stored settings*/
     private final SettingsLoader settingsReader;
     /** Map of the loaded settings */

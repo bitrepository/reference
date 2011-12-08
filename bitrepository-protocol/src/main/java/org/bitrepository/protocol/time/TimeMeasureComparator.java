@@ -33,7 +33,7 @@ import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
 import org.bitrepository.common.ArgumentValidator;
 
 /** Used for comparing {@link TimeMeasureTYPE} objects.*/
-public class TimeMeasureComparator {
+public final class TimeMeasureComparator {
     
     
     /** Utility class, never instantiate. */
@@ -63,12 +63,7 @@ public class TimeMeasureComparator {
     private static BigInteger convertToMilliSeconds(TimeMeasureTYPE timeMeasure) throws UnknownFormatConversionException {
         if(timeMeasure.getTimeMeasureUnit().equals(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS)) {
             return timeMeasure.getTimeMeasureValue();
-        } else if (timeMeasure.getTimeMeasureUnit().equals("SECONDS")) {
-            return timeMeasure.getTimeMeasureValue().multiply(new BigInteger("1000"));
-        } else if (timeMeasure.getTimeMeasureUnit().equals("MINUTES")) {
-            return timeMeasure.getTimeMeasureValue().multiply(new BigInteger("60000"));
-        } else if ((timeMeasure.getTimeMeasureUnit().equals(TimeMeasureUnit.HOURS)) 
-                || (timeMeasure.getTimeMeasureUnit().equals("HOURS"))) {
+        } else if ((timeMeasure.getTimeMeasureUnit().equals(TimeMeasureUnit.HOURS))) {
             return timeMeasure.getTimeMeasureValue().multiply(new BigInteger("3600000"));     
         } else {
             throw new UnknownFormatConversionException ("Unable to compare times, unknown unit " + 

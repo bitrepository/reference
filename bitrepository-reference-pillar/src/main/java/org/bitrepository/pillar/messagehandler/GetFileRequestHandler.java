@@ -26,6 +26,7 @@ package org.bitrepository.pillar.messagehandler;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -58,9 +59,9 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /** Constant for identifying this.*/
-    private static boolean USE_CHECKSUM = false;
+    private static final boolean USE_CHECKSUM = false;
     /** The default checksum digester.*/
-    private static String CHECKSUM_DIGESTER = "MD5";
+    private static final String CHECKSUM_DIGESTER = "MD5";
     
     /**
      * Constructor.
@@ -169,7 +170,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
             log.info("Uploading file: " + requestedFile.getName() + " to " + message.getFileAddress());
             FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
             fe.uploadToServer(new FileInputStream(requestedFile), new URL(message.getFileAddress()));
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

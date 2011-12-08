@@ -35,6 +35,11 @@ import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
 public class TimeMeasurementUtils {
 
     /**
+     * Private constructor. To prevent instantiation of this utility class.
+     */
+    private TimeMeasurementUtils() { }
+    
+    /**
      * Generates a TimeMeasureTYPE object based on a milliseconds value.
      * @param milliseconds The time measure in milliseconds.
      * @return A corresponding <code>TimeMeasureTYPE</code> object.

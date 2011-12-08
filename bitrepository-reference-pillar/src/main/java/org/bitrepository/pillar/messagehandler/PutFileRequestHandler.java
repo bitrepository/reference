@@ -25,7 +25,9 @@
 package org.bitrepository.pillar.messagehandler;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
@@ -144,42 +146,29 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         try {
             fileForValidation = archive.downloadFileForValidation(message.getFileID(), 
                     fe.downloadFromServer(new URL(message.getFileAddress())));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not download the file '" + message.getFileID() + "' from the url '"
+                    + message.getFileAddress() + "'.", e);
         }
         
-//        if(message.getChecksumsDataForNewFile() != null 
-//                && message.getChecksumsDataForNewFile().getChecksumDataItems() != null
-//                && message.getChecksumsDataForNewFile().getChecksumDataItems().getChecksumDataForFile() != null) {
-//            Collection<ChecksumDataForFileTYPE> validationChecksums 
-//                    = message.getChecksumsDataForNewFile().getChecksumDataItems().getChecksumDataForFile();
-//            try {
-//                for(ChecksumDataForFileTYPE csType : validationChecksums) {
-//                    String checksum = ChecksumUtils.generateChecksum(fileForValidation, 
-//                            csType.getChecksumSpec().getChecksumType(), 
-//                            csType.getChecksumSpec().getChecksumSalt());
-//                    if(!checksum.equals(csType.getChecksumValue())) {
-//                        log.error("Expected checksums '" + csType.getChecksumValue() + "' but the checksum was '" 
-//                                + checksum + "'.");
-//                        throw new IllegalStateException("Wrong checksum! Expected: [" + csType.getChecksumValue() 
-//                                + "], but calculated: [" + checksum + "]");
-//                    }
-//                }
-//            } catch (Exception e) {
-//                log.error("The retrieved file did not validate! Removing it from archive.", e);
-//                throw new RuntimeException(e);
-//            }
-//        } else {
-//            // TODO is such a checksum required?
-//            log.warn("No checksums for validating the retrieved file.");
-//        }
-
-        try {
-            // TODO verify that this operation is successful.
-            archive.moveToArchive(message.getFileID());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if(message.getChecksumsDataForNewFile() != null
+                && message.getChecksumsDataForNewFile().getChecksumDataItem() != null) {
+            ChecksumDataForFileTYPE csType = message.getChecksumsDataForNewFile().getChecksumDataItem();
+            String checksum = ChecksumUtils.generateChecksum(fileForValidation, 
+                    csType.getChecksumSpec().getChecksumType(), 
+                    csType.getChecksumSpec().getChecksumSalt());
+            if(!checksum.equals(csType.getChecksumValue())) {
+                log.error("Expected checksums '" + csType.getChecksumValue() + "' but the checksum was '" 
+                        + checksum + "'.");
+                throw new IllegalStateException("Wrong checksum! Expected: [" + csType.getChecksumValue() 
+                        + "], but calculated: [" + checksum + "]");
+            }
+        } else {
+            // TODO is such a checksum required?
+            log.warn("No checksums for validating the retrieved file.");
         }
+
+        archive.moveToArchive(message.getFileID());
     }
     
     /**
