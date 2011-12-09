@@ -1,3 +1,27 @@
+/*
+ * #%L
+ * Bitrepository Reference Pillar
+ * 
+ * $Id$
+ * $HeadURL$
+ * %%
+ * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.pillar.messagehandler;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
@@ -85,7 +109,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         if(checksumType == null) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD);
-            responseInfo.setResponseText("An checksum for deletion is required!");
+            responseInfo.setResponseText("A checksum for deletion is required!");
             throw new InvalidMessageException(responseInfo);
         }
         
@@ -95,11 +119,14 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
             // Log the different checksums, but do not send the right checksum back!
             log.info("Failed to handle delete operation on file '" + message.getFileID() + "' since the request had "
                     + "the checksum '" + checksumData.getChecksumValue() + "' where our local file has the value '"
-                    + checksum + "'.");
+                    + checksum + "'. Sending alarm and respond failure.");
+            String errMsg = "Requested to delete file '" + message.getFileID() + "' with checksum '"
+                    + checksumData.getChecksumValue() + "', but our file had a different checksum.";
+            alarmDispatcher.sendInvalidChecksumAlarm(message, message.getFileID(), errMsg);
+            
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);
-            responseInfo.setResponseText("Requested to delete file '" + message.getFileID() + "' with checksum '"
-                    + checksumData.getChecksumValue() + "', but our file had a different checksum.");
+            responseInfo.setResponseText(errMsg);
             throw new InvalidMessageException(responseInfo);
         }
     }
@@ -109,17 +136,16 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
      * @param message The request for the GetFile operation.
      */
     protected void sendProgressMessage(DeleteFileRequest message) {
-        // make ProgressResponse to tell that we are handling this.
+        // make ProgressResponse to tell that we are handling the requested operation.
         DeleteFileProgressResponse pResponse = createDeleteFileProgressResponse(message);
         
         // set missing variables in the message: ResponseInfo
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED);
-        prInfo.setResponseText("Started to delete the file.");
+        prInfo.setResponseText("Starting to delete the file.");
         pResponse.setResponseInfo(prInfo);
 
         // Send the ProgressResponse
-        log.info("Sending DeleteFileProgressResponse: " + pResponse);
         messagebus.sendMessage(pResponse);
     }
     
@@ -174,7 +200,6 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         fResponse.setResponseInfo(frInfo);
 
         // send the FinalResponse.
-        log.info("Sending GetFileFinalResponse: " + fResponse);
         messagebus.sendMessage(fResponse);
     }
     

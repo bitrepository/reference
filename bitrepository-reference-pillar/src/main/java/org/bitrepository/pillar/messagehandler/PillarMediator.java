@@ -24,7 +24,6 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,6 +85,7 @@ public class PillarMediator extends AbstractMessageListener {
 
     // THE MESSAGE HANDLERS!
     /** The map between the messagenames and their respective handlers.*/
+    @SuppressWarnings("rawtypes")
     private Map<String, PillarMessageHandler> handlers = new HashMap<String, PillarMessageHandler>();
 
     /**
@@ -93,18 +93,18 @@ public class PillarMediator extends AbstractMessageListener {
      * Sets the parameters of this mediator, and adds itself as a listener to the destinations.
      * 
      * @param messagebus The messagebus for this instance.
-     * @param pSettings The settings for the reference pillar.
+     * @param settings The settings for the reference pillar.
      * @param refArchive The archive for the reference pillar.
      * @param messageFactory The message factory.
      */
-    public PillarMediator(MessageBus messagebus, Settings pSettings, ReferenceArchive refArchive) {
+    public PillarMediator(MessageBus messagebus, Settings settings, ReferenceArchive refArchive) {
         ArgumentValidator.checkNotNull(messagebus, "messageBus");
-        ArgumentValidator.checkNotNull(pSettings, "Settings pSettings");
+        ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(refArchive, "ReferenceArchive refArchive");
 
         this.messagebus = messagebus;
         this.archive = refArchive;
-        this.settings = pSettings;
+        this.settings = settings;
         this.audits = new MemorybasedAuditTrailManager();
         this.alarmDispatcher = new AlarmDispatcher(settings, messagebus);
 
@@ -189,6 +189,7 @@ public class PillarMediator extends AbstractMessageListener {
         }
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public void onMessage(DeleteFileRequest message) {
         log.info("Received: " + message);
@@ -202,6 +203,7 @@ public class PillarMediator extends AbstractMessageListener {
         }
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public void onMessage(GetAuditTrailsRequest message) {
         log.info("Received: " + message);
@@ -215,6 +217,7 @@ public class PillarMediator extends AbstractMessageListener {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onMessage(GetChecksumsRequest message) {
         log.info("Received: " + message);
@@ -228,6 +231,7 @@ public class PillarMediator extends AbstractMessageListener {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onMessage(GetFileIDsRequest message) {
         log.info("Received: " + message);
@@ -241,6 +245,7 @@ public class PillarMediator extends AbstractMessageListener {
         }    
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onMessage(GetFileRequest message) {
         log.info("Received: " + message);
@@ -254,6 +259,7 @@ public class PillarMediator extends AbstractMessageListener {
         }    
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onMessage(GetStatusRequest message) {
         log.info("Received: " + message);
@@ -267,6 +273,7 @@ public class PillarMediator extends AbstractMessageListener {
         }    
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
         log.info("Received: " + message);
@@ -280,6 +287,7 @@ public class PillarMediator extends AbstractMessageListener {
         }
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsRequest message) {
         log.info("Received: " + message);
@@ -293,6 +301,7 @@ public class PillarMediator extends AbstractMessageListener {
         }    
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
         log.info("Received: " + message);
@@ -306,6 +315,7 @@ public class PillarMediator extends AbstractMessageListener {
         }    
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onMessage(IdentifyPillarsForGetFileRequest message) {
         log.info("Received: " + message);
@@ -319,6 +329,7 @@ public class PillarMediator extends AbstractMessageListener {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onMessage(IdentifyPillarsForPutFileRequest message) {
         log.info("Received: " + message);
@@ -332,6 +343,7 @@ public class PillarMediator extends AbstractMessageListener {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onMessage(PutFileRequest message) {
         log.info("Received: " + message);

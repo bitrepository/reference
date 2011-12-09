@@ -27,7 +27,6 @@ package org.bitrepository.pillar.messagehandler;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;

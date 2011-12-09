@@ -38,6 +38,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetChecksumsResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -60,6 +61,7 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * Class for performing the GetChecksums operation for this pillar.
@@ -144,7 +146,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         // if not missing, then all files have been found!
         if(!archive.hasFile(fileID)) {
             // report on the missing files
-            String errText = "The following file are missing: '" + fileID + "'";
+            String errText = "The following file is missing: '" + fileID + "'";
             log.warn(errText);
             // Then tell the mediator, that we failed.
             ResponseInfo fri = new ResponseInfo();
@@ -160,7 +162,6 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * Also validates whether an algorithm has been granted.
      * 
      * @param message The message to have its checksum algorithm validated.
-     * @return Whether the algorithm is present and operational.
      */
     private void validateChecksum(GetChecksumsRequest message) {
         // validate the checksum function
@@ -306,9 +307,10 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * @return A file containing all the checksums in the list.
      * @throws IOException If something goes wrong in the upload.
      * @throws JAXBException If the resulting structure cannot be serialized.
+     * @throws SAXException If the results does not validate against the XSD.
      */
     private File makeTemporaryChecksumFile(GetChecksumsRequest message, 
-            List<ChecksumDataForChecksumSpecTYPE> checksumList) throws IOException, JAXBException {
+            List<ChecksumDataForChecksumSpecTYPE> checksumList) throws IOException, JAXBException, SAXException {
         // Create the temporary file.
         File checksumResultFile = File.createTempFile(message.getCorrelationID(), new Date().getTime() + ".cs");
         log.debug("Writing the list of checksums to the file '" + checksumResultFile + "'");
@@ -328,7 +330,9 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         try {
             is = new FileOutputStream(checksumResultFile);
             JaxbHelper jaxb = new JaxbHelper(XSD_CLASSPATH, XSD_BR_DATA);
-            is.write(jaxb.serializeToXml(results).getBytes());
+            String xmlMessage = jaxb.serializeToXml(results);
+            jaxb.validate(new ByteArrayInputStream(xmlMessage.getBytes()));
+            is.write(xmlMessage.getBytes());
             is.flush();
         } finally {
             if(is != null) {

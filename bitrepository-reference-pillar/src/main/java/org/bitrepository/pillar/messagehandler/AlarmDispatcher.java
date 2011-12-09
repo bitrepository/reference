@@ -25,15 +25,18 @@
 package org.bitrepository.pillar.messagehandler;
 
 import java.math.BigInteger;
-import java.util.Date;
 import java.util.UUID;
+
+import javax.xml.bind.JAXBException;
 
 import org.bitrepository.bitrepositoryelements.AlarmConcerning;
 import org.bitrepository.bitrepositoryelements.AlarmConcerning.Components;
+import org.bitrepository.bitrepositoryelements.AlarmConcerning.FileInformation;
 import org.bitrepository.bitrepositoryelements.AlarmDescription;
 import org.bitrepository.bitrepositoryelements.AlarmcodeType;
 import org.bitrepository.bitrepositoryelements.ComponentTYPE;
 import org.bitrepository.bitrepositoryelements.ComponentTYPE.ComponentType;
+import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.PriorityCodeType;
 import org.bitrepository.bitrepositoryelements.RiskAreaType;
 import org.bitrepository.bitrepositoryelements.RiskImpactScoreType;
@@ -41,6 +44,7 @@ import org.bitrepository.bitrepositoryelements.RiskProbabilityScoreType;
 import org.bitrepository.bitrepositoryelements.RiskTYPE;
 import org.bitrepository.bitrepositorymessages.Alarm;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.ProtocolConstants;
@@ -56,6 +60,11 @@ public class AlarmDispatcher {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
+    /** The classpath to the 'xsd'.*/
+    protected static final String XSD_CLASSPATH = "xsd/";
+    /** The name of the XSD containing the BitRepositoryData elements. */
+    protected static final String XSD_BR_MESSAGE = "BitRepositoryMessage.xsd";
+
     /** The settings for this AlarmDispatcher.*/
     private final Settings settings;
     
@@ -69,7 +78,7 @@ public class AlarmDispatcher {
      */
     public AlarmDispatcher(Settings settings, MessageBus messageBus) {
         ArgumentValidator.checkNotNull(settings, "settings");
-        ArgumentValidator.checkNotNull(messageBus, "messagebus");
+        ArgumentValidator.checkNotNull(messageBus, "messageBus");
         
         this.settings = settings;
         this.messageBus = messageBus;
@@ -175,6 +184,52 @@ public class AlarmDispatcher {
         
         messageBus.sendMessage(alarm);
     }
+    
+    /**
+     * Method for creating and sending an Alarm about the checksum being invalid.
+     * @param message The 
+     * @param fileId
+     * @param alarmText
+     */
+    public void sendInvalidChecksumAlarm(Object message, String fileId, String alarmText) {
+        AlarmConcerning alarmConcerning = new AlarmConcerning();
+        
+        Components components = new Components();
+        ComponentTYPE componentType = new ComponentTYPE();
+        componentType.setComponentComment("ReferencePillar");
+        componentType.setComponentID(settings.getReferenceSettings().getPillarSettings().getPillarID());
+        componentType.setComponentType(ComponentType.PILLAR);
+        components.getContributor().add(componentType);
+        alarmConcerning.setComponents(components);
+        
+        FileInformation fileInformation = new FileInformation();
+        FileIDs fileIDs = new FileIDs();
+        fileIDs.setFileID(fileId);
+        fileInformation.setFileIDs(fileIDs);
+        alarmConcerning.setFileInformation(fileInformation);
+
+        JaxbHelper jaxbHelper = new JaxbHelper(XSD_CLASSPATH, XSD_BR_MESSAGE);
+        try {
+            alarmConcerning.setMessages(jaxbHelper.serializeToXml(message));
+        } catch (JAXBException e) {
+            log.warn("Could not serialize the message: " + message.toString(), e);
+            alarmConcerning.setMessages(message.toString());
+        }
+        
+        AlarmDescription alarmDescription = new AlarmDescription();
+        alarmDescription.setAlarmCode(AlarmcodeType.CHECKSUM);
+        alarmDescription.setAlarmText(alarmText);
+        alarmDescription.setOrigDateTime(CalendarUtils.getNow());
+        alarmDescription.setPriority(PriorityCodeType.CHECKSUM_ERROR);
+        
+        RiskTYPE riskType = new RiskTYPE();
+        riskType.setRiskArea(RiskAreaType.CONFIDENTIALITY);
+        riskType.setRiskImpactScore(RiskImpactScoreType.HIGH_IMPACT);
+        riskType.setRiskProbabilityScore(RiskProbabilityScoreType.MEDIUM_PROPABILITY);
+        
+        alarmDescription.setRisk(riskType);
+    }
+
 
     /**
      * Creates the generic AlarmConcerning for the ReferencePillar.

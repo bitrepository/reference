@@ -47,6 +47,9 @@ public abstract class PillarMessageHandler<T> {
     /** The name of the XSD containing the BitRepositoryData elements. */
     protected static final String XSD_BR_DATA = "BitRepositoryData.xsd";
     
+    /** The response value for a positive identification.*/
+    protected static final String RESPONSE_FOR_POSITIVE_IDENTIFICATION = "Operation acknowledged and accepted.";
+    
     /** The dispatcher for sending alarm messages.*/
     protected final AlarmDispatcher alarmDispatcher;
     /** The settings for this setup.*/

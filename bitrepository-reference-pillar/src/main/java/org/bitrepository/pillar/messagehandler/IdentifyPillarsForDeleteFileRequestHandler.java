@@ -1,3 +1,27 @@
+/*
+ * #%L
+ * Bitrepository Reference Pillar
+ * 
+ * $Id$
+ * $HeadURL$
+ * %%
+ * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.pillar.messagehandler;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -35,7 +59,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
 
     @Override
     void handleMessage(IdentifyPillarsForDeleteFileRequest message) {
-        ArgumentValidator.checkNotNull(message, "IdentifyPillarsForGetChecksumsRequest message");
+        ArgumentValidator.checkNotNull(message, "IdentifyPillarsForDeleteFileRequest message");
 
         try {
             validateBitrepositoryCollectionId(message.getCollectionID());
@@ -58,15 +82,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
      * but the operation is accepted.
      */
     private void checkThatRequestedFileAreAvailable(IdentifyPillarsForDeleteFileRequest message) {
-        String fileId = message.getFileID();
-        
-        if(fileId == null || fileId.isEmpty()) {
-            log.warn("Received identification for a delete operation without the id of the file to delete. "
-                    + "Accepting the operation.");
-            return;
-        }
-        
-        if(!archive.hasFile(fileId)) {
+        if(!archive.hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND);
             irInfo.setResponseText("Could not find the requested file to delete.");
@@ -89,7 +105,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
-        irInfo.setResponseText("Operation acknowledged and accepted.");
+        irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
         reply.setResponseInfo(irInfo);
         
         // Send resulting file.
@@ -99,7 +115,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
     /**
      * Sends a bad response with the given cause.
      * @param message The identification request to respond to.
-     * @param cause The cause of the bad identification (e.g. which files are missing).
+     * @param cause The cause of the bad identification (e.g. which file is missing).
      */
     private void respondUnsuccessfulIdentification(IdentifyPillarsForDeleteFileRequest message, 
             IdentifyPillarsException cause) {
@@ -115,7 +131,6 @@ public class IdentifyPillarsForDeleteFileRequestHandler
      * Creates a IdentifyPillarsForGetChecksumsResponse based on a 
      * IdentifyPillarsForGetFileRequest. The following fields are not inserted:
      * <br/> - TimeToDeliver
-     * <br/> - AuditTrailInformation
      * <br/> - IdentifyResponseInfo
      * <br/> - PillarChecksumSpec
      * 

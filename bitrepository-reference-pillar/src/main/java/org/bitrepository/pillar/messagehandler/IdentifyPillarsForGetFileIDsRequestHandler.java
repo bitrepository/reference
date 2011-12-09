@@ -123,7 +123,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler extends PillarMessageHan
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
-        irInfo.setResponseText("Operation acknowledged and accepted.");
+        irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
         reply.setResponseInfo(irInfo);
         
         // Send resulting file.
