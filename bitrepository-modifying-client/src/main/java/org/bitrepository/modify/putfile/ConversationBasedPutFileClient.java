@@ -78,7 +78,8 @@ public class ConversationBasedPutFileClient implements PutFileClient {
         
         try {
             SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
-                    BigInteger.valueOf(sizeOfFile), null, null, eventHandler, new FlowController(settings, false));
+                    BigInteger.valueOf(sizeOfFile), null, null, eventHandler, new FlowController(settings, false), 
+                    "TODO");
             conversationMediator.addConversation(conversation);
             conversation.startConversation();
         } catch (OperationFailedException e) {
@@ -94,12 +95,14 @@ public class ConversationBasedPutFileClient implements PutFileClient {
             ChecksumsDataForNewFile checksumForValidationAtPillar, ChecksumSpecs checksumRequestsForValidation, 
             EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
         ArgumentValidator.checkNotNull(url, "URL url");
-        ArgumentValidator.checkNotNull(fileId, "String fileId");
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+        ArgumentValidator.checkPositive(sizeOfFile, "long sizeOfFile");
+        // TODO add potential regex from collection settings.
         
         try {
             SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
                     BigInteger.valueOf(sizeOfFile), checksumForValidationAtPillar, checksumRequestsForValidation, 
-                    eventHandler, new FlowController(settings, false));
+                    eventHandler, new FlowController(settings, false), auditTrailInformation);
             conversationMediator.addConversation(conversation);
             conversation.startConversation();
         } catch (OperationFailedException e) {
@@ -108,14 +111,15 @@ public class ConversationBasedPutFileClient implements PutFileClient {
             log.error(msg, e);
             eventHandler.handleEvent(new DefaultEvent(OperationEventType.Failed, msg));
         }
-    }   
+    }
+    
     @Override
     public void putFileWithId(URL url, String fileId, long sizeOfFile) throws OperationFailedException {
         ArgumentValidator.checkNotNull(url, "URL url");
         ArgumentValidator.checkNotNull(fileId, "String fileId");
         
         SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
-                BigInteger.valueOf(sizeOfFile), null, null, null, new FlowController(settings, false));
+                BigInteger.valueOf(sizeOfFile), null, null, null, new FlowController(settings, false), "TODO");
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }

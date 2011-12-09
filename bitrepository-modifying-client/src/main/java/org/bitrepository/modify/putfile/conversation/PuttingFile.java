@@ -38,12 +38,10 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The state for the PutFile communication, where the file is put to the pillars (the pillars are requested to retrieve
@@ -90,10 +88,8 @@ public class PuttingFile extends PutFileState {
         putMsg.setFileAddress(conversation.downloadUrl.toExternalForm());
         putMsg.setFileID(conversation.fileID);
         putMsg.setFileSize(conversation.fileSize);
-        // TODO
-        //        putMsg.setAuditTrailInformation(conversation.settings);
+        putMsg.setAuditTrailInformation(conversation.auditTrailInformation);
         putMsg.setChecksumsDataForNewFile(conversation.validationChecksums);
-        //        putMsg.setChecksumSpecs(conversation.requestChecksums);
 
         // Send the message to each pillar.
         for(Map.Entry<String, String> pillarDest : pillarDestinations.entrySet()) {

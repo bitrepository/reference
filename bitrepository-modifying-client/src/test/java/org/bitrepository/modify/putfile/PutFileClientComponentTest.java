@@ -99,7 +99,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getCorrelationID(),
                             receivedIdentifyRequestMessage.getReplyTo(),
                             receivedIdentifyRequestMessage.getTo(),
-                            DEFAULT_FILE_ID
+                            DEFAULT_FILE_ID,
+                            receivedIdentifyRequestMessage.getAuditTrailInformation()
                             ));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
@@ -120,7 +121,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedPutFileRequest.getCorrelationID(),
                             receivedPutFileRequest.getFileAddress(),
                             receivedPutFileRequest.getFileSize(),
-                            DEFAULT_FILE_ID
+                            DEFAULT_FILE_ID,
+                            receivedPutFileRequest.getAuditTrailInformation()
                             ));
         }
 
@@ -184,7 +186,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getCorrelationID(),
                             receivedIdentifyRequestMessage.getReplyTo(),
                             receivedIdentifyRequestMessage.getTo(),
-                            DEFAULT_FILE_ID
+                            DEFAULT_FILE_ID,
+                            receivedIdentifyRequestMessage.getAuditTrailInformation()
                             ));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
@@ -204,7 +207,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedPutFileRequest.getCorrelationID(),
                             receivedPutFileRequest.getFileAddress(),
                             receivedPutFileRequest.getFileSize(),
-                            DEFAULT_FILE_ID
+                            DEFAULT_FILE_ID,
+                            receivedPutFileRequest.getAuditTrailInformation()
                             ));
         }
 

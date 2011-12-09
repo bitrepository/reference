@@ -83,6 +83,7 @@ public class IdentifyPillarsForPutFile extends PutFileState {
         identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         identifyRequest.setTo(conversation.settings.getCollectionDestination());
         identifyRequest.setFileID(conversation.fileID);
+        identifyRequest.setAuditTrailInformation(conversation.auditTrailInformation);
         conversation.messageSender.sendMessage(identifyRequest);
 
         monitor.identifyPillarsRequestSent("Identifying pillars for put file " + conversation.fileID);

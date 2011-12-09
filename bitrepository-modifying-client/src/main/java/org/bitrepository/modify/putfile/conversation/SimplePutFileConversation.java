@@ -66,6 +66,8 @@ public class SimplePutFileConversation extends AbstractConversation {
     /** The checksums to request from the pillar.*/
     final ChecksumSpecs requestChecksums;
     
+    final String auditTrailInformation;
+    
     /**
      * Constructor.
      * Initializes all the variables for the conversation.
@@ -80,6 +82,7 @@ public class SimplePutFileConversation extends AbstractConversation {
      * @param checksumRequestsForValidation The checksum requested for client-side validation of correct put.
      * Can be null, if no client-side validation is wanted.
      * @param eventHandler The event handler.
+     * @param auditTrailInformation The audit trail information for the conversation.
      */
     public SimplePutFileConversation(MessageSender messageSender,
             Settings settings,
@@ -89,7 +92,8 @@ public class SimplePutFileConversation extends AbstractConversation {
             ChecksumsDataForNewFile checksumForValidationAtPillar,
             ChecksumSpecs checksumRequestsForValidation,
             EventHandler eventHandler,
-            FlowController flowController) {
+            FlowController flowController,
+            String auditTrailInformation) {
         super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
         
         this.messageSender = messageSender;
@@ -100,6 +104,7 @@ public class SimplePutFileConversation extends AbstractConversation {
         this.validationChecksums = checksumForValidationAtPillar;
         this.requestChecksums = checksumRequestsForValidation;
         conversationState = new IdentifyPillarsForPutFile(this);
+        this.auditTrailInformation = auditTrailInformation;
     }
     
     @Override

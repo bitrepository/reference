@@ -71,12 +71,13 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
      * @return The requested IdentifyPillarsForPutFileRequest.
      */
     public IdentifyPillarsForPutFileRequest createIdentifyPillarsForPutFileRequest(String correlationID, 
-            String replyTo, String toTopic, String fileId) {
+            String replyTo, String toTopic, String fileId, String auditTrailInformation) {
         IdentifyPillarsForPutFileRequest identifyPillarsForPutFileRequest = createIdentifyPillarsForPutFileRequest();
         identifyPillarsForPutFileRequest.setCorrelationID(correlationID);
         identifyPillarsForPutFileRequest.setReplyTo(replyTo);
         identifyPillarsForPutFileRequest.setTo(toTopic);
         identifyPillarsForPutFileRequest.setFileID(fileId);
+        identifyPillarsForPutFileRequest.setAuditTrailInformation(auditTrailInformation);
         return identifyPillarsForPutFileRequest;
     }
 
@@ -130,7 +131,7 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
      * @return The requested PutFileRequest.
      */
     public PutFileRequest createPutFileRequest(String pillarId, String toTopic, String replyTo, String correlationId,
-            String fileAddress, BigInteger filesize, String fileId) {
+            String fileAddress, BigInteger filesize, String fileId, String auditTrailInformation) {
         PutFileRequest putFileRequest = createPutFileRequest();
         putFileRequest.setPillarID(pillarId);
         putFileRequest.setTo(toTopic);
@@ -139,8 +140,8 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
         putFileRequest.setFileAddress(fileAddress);
         putFileRequest.setFileSize(filesize);
         putFileRequest.setFileID(fileId);
+        putFileRequest.setAuditTrailInformation(auditTrailInformation);
         
-        putFileRequest.setAuditTrailInformation(null);
         putFileRequest.setChecksumsDataForNewFile(null);
 //        putFileRequest.setChecksumSpecs(null);
         
