@@ -41,7 +41,7 @@ public class TestEventHandler implements EventHandler {
     private final BlockingQueue<OperationEvent<?>> eventQueue = new LinkedBlockingQueue<OperationEvent<?>>();
 
     /** The default time to wait for events */
-    private static final long DEFAULT_WAIT_SECONDS = 3;  
+    private static final long DEFAULT_WAIT_SECONDS = 10;  
 
     /** The constructor.
      * 
