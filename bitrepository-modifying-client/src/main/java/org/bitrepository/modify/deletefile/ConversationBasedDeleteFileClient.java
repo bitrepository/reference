@@ -24,8 +24,11 @@
  */
 package org.bitrepository.modify.deletefile;
 
+import java.util.Arrays;
+
 import javax.jms.JMSException;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
@@ -63,20 +66,34 @@ public class ConversationBasedDeleteFileClient implements DeleteFileClient {
     }
     
     @Override
-    public void deleteFile(String fileId, String pillarId, String checksum, ChecksumSpecTYPE checksumForPillar,
+    public void deleteFile(String fileId, String pillarId, ChecksumDataForFileTYPE checksumForPillar,
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) 
                     throws OperationFailedException {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
-        ArgumentValidator.checkNotNullOrEmpty(checksum, "String checksum");
         
-        log.info("Requesting the deletion of the file '" + fileId + "' from the pillar '"
-                + pillarId + "' with the checksum '" + checksum + "' and checksum specifications '" + checksumForPillar 
-                + "', while requested checksum '" + checksumRequested + "'. And the audit trail information '" 
-                + auditTrailInformation + "'.");
-        SimpleDeleteFileConversation conversation = new SimpleDeleteFileConversation(bus, settings, fileId, pillarId, 
-                checksum, checksumForPillar, checksumRequested, eventHandler, new FlowController(settings, false), 
-                auditTrailInformation);
+        log.info("Requesting the deletion of the file '" + fileId + "' from the pillar '" + pillarId 
+                + "' with checksum '" + checksumForPillar + "', while requested checksum '" + checksumRequested 
+                + "'. And the audit trail information '" + auditTrailInformation + "'.");
+        SimpleDeleteFileConversation conversation = new SimpleDeleteFileConversation(bus, settings, fileId, 
+                Arrays.asList(new String[]{pillarId}), checksumForPillar, checksumRequested, eventHandler, 
+                new FlowController(settings, false), auditTrailInformation);
+        conversationMediator.addConversation(conversation);
+        conversation.startConversation();
+    }
+    
+    @Override
+    public void deleteFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForPillar,
+            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) 
+                    throws OperationFailedException {
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+        
+        log.info("Requesting the deletion of the file '" + fileId + "' from all pillars with checksum '" 
+        + checksumForPillar + "', while requested checksum '" + checksumRequested 
+        + "'. And the audit trail information '" + auditTrailInformation + "'.");
+        SimpleDeleteFileConversation conversation = new SimpleDeleteFileConversation(bus, settings, fileId, 
+                settings.getCollectionSettings().getClientSettings().getPillarIDs(), checksumForPillar, 
+                checksumRequested, eventHandler, new FlowController(settings, false), auditTrailInformation);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }

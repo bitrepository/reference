@@ -140,8 +140,7 @@ public class PuttingFile extends PutFileState {
         }
 
         if(isResponseSuccess(response.getResponseInfo())) {
-            monitor.pillarComplete(new PillarOperationEvent(
-                    OperationEventType.PillarComplete,
+            monitor.pillarComplete(new PutFileCompletePillarEvent(response.getChecksumsDataForNewFile(),
                     response.getPillarID(),
                     "Received checksum result from " + response.getPillarID()));
         } else {

@@ -24,7 +24,6 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +36,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReq
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -130,7 +130,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         }
         
         try {
-            MessageDigest.getInstance(checksumSpec.getChecksumType());
+            ChecksumUtils.verifyAlgorithm(checksumSpec.getChecksumType());
         } catch (NoSuchAlgorithmException e) {
             log.warn("Could not instantiate the given messagedigester for calculating a checksum.", e);
             ResponseInfo irInfo = new ResponseInfo();

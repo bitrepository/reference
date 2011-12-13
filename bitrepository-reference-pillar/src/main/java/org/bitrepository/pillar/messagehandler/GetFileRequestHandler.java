@@ -208,18 +208,18 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
      * Method for calculating the checksum for a given file. The checksum is calculated with 
      * @param file The file to calculate the checksum for.
      * @param salt The salt of for the checksum.
-     * @param digester The name of the digester for calculating the checksum (e.g. MD5 or SHA1).
+     * @param algorithm The name of the digester for calculating the checksum (e.g. MD5 or SHA1).
      * @return The requested ChecksumDataForFileTYPE, or null if any bad stuff happens.
      */
-    protected ChecksumDataForFileTYPE calculateChecksum(File file, String salt, String digester) {
+    protected ChecksumDataForFileTYPE calculateChecksum(File file, String salt, String algorithm) {
         try {
             ChecksumDataForFileTYPE checksumType = new ChecksumDataForFileTYPE();
             ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
             csType.setChecksumSalt(salt);
-            csType.setChecksumType(digester);
+            csType.setChecksumType(algorithm);
             checksumType.setChecksumSpec(csType);
             checksumType.setChecksumValue(ChecksumUtils.generateChecksum(file, 
-                    MessageDigest.getInstance(digester), salt));
+                    algorithm, salt));
             checksumType.setCalculationTimestamp(CalendarUtils.getNow());
 
             return checksumType;

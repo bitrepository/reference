@@ -24,18 +24,17 @@
  */
 package org.bitrepository.common.utils;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.MessageDigest;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 
-import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.ConfigurationException;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Utility class for handling checksum calculations.
+ * Uses the HMAC method for calculating the checksums with salt.
  */
 public final class ChecksumUtils {
 
@@ -43,8 +42,6 @@ public final class ChecksumUtils {
     private static final int MAGIC_INTEGER_4 = 4;
     /** The magical integer for the hexadecimal '0x0F'.*/
     private static final int MAGIC_INTEGER_OXOF = 0x0F;
-    /** The maximal size of the byte array for digest.*/
-    private static final int BYTE_ARRAY_SIZE_FOR_DIGEST = 4000;
 
     /** 
      * Private constructor. To prevent instantiation of this utility class.
@@ -52,58 +49,7 @@ public final class ChecksumUtils {
     private ChecksumUtils() { }
 
     /**
-     * Calculates the checksum for a file based on the given checksum algorithm, though calculated with a given salt.
-     * 
-     * @param file The file to calculate the checksum for.
-     * @param messageDigest The digest algorithm to use for calculating the checksum of the file.
-     * @param salt The string to add in front of the data stream before calculating the checksum. Null or the empty 
-     * string means no salt. 
-     * @return The checksum of the file in hexadecimal.
-     */
-    public static String generateChecksum(File file, MessageDigest messageDigest, String salt) {
-        ArgumentValidator.checkNotNull(messageDigest, "MessageDigest messageDigest");
-        ArgumentValidator.checkNotNull(file, "File file");
-        
-        byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
-        int bytesRead;
-        try {
-            DataInputStream fis = null;
-            try {
-                fis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
-                messageDigest.reset();
-                // first add the salt, if any
-                if(salt != null && !salt.isEmpty()) {
-                    messageDigest.update(salt.getBytes(), 0, salt.length());
-                }
-                // Then add the actual message.
-                while ((bytesRead = fis.read(bytes)) > 0) {
-                    messageDigest.update(bytes, 0, bytesRead);
-                }
-            } finally {
-                if (fis != null) {
-                    fis.close();
-                }
-            }
-        } catch (IOException e) {
-            throw new ConfigurationException("Could not calculate the checksum with algorithm '" + messageDigest 
-                    + "' for file '" + file.getAbsolutePath() + "'.", e);
-        }
-        return toHex(messageDigest.digest());
-    }
-    
-    /**
-     * Calculates the checksum for a file based on the given checksum algorithm. This is calculated without any salt.
-     * 
-     * @param file The file to calculate the checksum for.
-     * @param messageDigest The name of the digest algorithm to use for calculating the checksum of the file.
-     * @return The checksum of the file in hexadecimal.
-     */
-    public static String generateChecksum(File file, MessageDigest messageDigest) {
-        return generateChecksum(file, messageDigest, null);
-    }
-    
-    /**
-     * Calculates the checksum for a file based on the given checksum algorith, though calculated with a given salt.
+     * Calculates the checksum for a file based on the given checksum algorith, where the calculcation is salted.
      * 
      * @param file The file to calculate the checksum for.
      * @param messageDigest The digest algorithm to use for calculating the checksum of the file.
@@ -111,9 +57,42 @@ public final class ChecksumUtils {
      * string means no salt.
      * @return The checksum of the file in hexadecimal.
      */
-    public static String generateChecksum(File file, String messageDigestName, String salt) {
+    public static String generateChecksum(File file, String algorithm, String salt) {
         try {
-            return generateChecksum(file, MessageDigest.getInstance(messageDigestName), salt);
+            return generateChecksum(FileUtils.readFile(file), algorithm, salt);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    /**
+     * Calculates a checksum based on 
+     * 
+     * @param content The string to calculate from.
+     * @param algorithm The algorithm to use for calculation. If it is not prefixed with 'Hmac', then it is added.
+     * @param salt The salt for the calculation. 
+     * @return The HMAC calculated checksum in hexadecimal.
+     */
+    public static String generateChecksum(String content, String algorithm, String salt) {
+        try {
+            String algorithmName = algorithm.toUpperCase();
+            if(!algorithm.startsWith("Hmac")) {
+                algorithmName = "Hmac" + algorithm.toUpperCase();
+            }
+            
+            Mac messageAuthenticationCode = Mac.getInstance(algorithmName);
+            Key key;
+            
+            if(salt == null || salt.isEmpty()) {
+                key = new SecretKeySpec(new byte[]{0}, algorithmName);
+            } else {
+                key = new SecretKeySpec(salt.getBytes(), algorithmName);
+            }
+            
+            messageAuthenticationCode.init(key);
+            byte[] digest = messageAuthenticationCode.doFinal(content.getBytes());
+            
+            return toHex(digest);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -135,5 +114,21 @@ public final class ChecksumUtils {
             sb.append(hexdigit[b & MAGIC_INTEGER_OXOF]);
         }
         return sb.toString();
+    }
+    
+    /**
+     * Returns whether a given checksum calculation algorithm exists.
+     * This only checksum whether the algorithm exists for HMAC. If it is not prefixed with 'Hmac', then it is added. 
+     * 
+     * @param algorithm The algorithm for the checksum calculation to test.
+     * @throws NoSuchAlgorithmException If the algorithm does not exist.
+     */
+    public static void verifyAlgorithm(String algorithm) throws NoSuchAlgorithmException {
+        String algorithmName = algorithm.toUpperCase();
+        if(!algorithm.startsWith("Hmac")) {
+            algorithmName = "Hmac" + algorithm.toUpperCase();
+        }
+        
+        Mac.getInstance(algorithmName);
     }
 }

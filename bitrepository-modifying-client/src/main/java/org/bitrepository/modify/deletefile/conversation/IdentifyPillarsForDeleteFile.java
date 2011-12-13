@@ -25,22 +25,17 @@
 package org.bitrepository.modify.deletefile.conversation;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.exceptions.NegativeResponseException;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
 
 /**
  * The first state of the DeleteFile communication. The identification of the pillars involved.
@@ -51,19 +46,14 @@ public class IdentifyPillarsForDeleteFile extends DeleteFileState {
     /** The timer. Schedules conversation timeouts for this conversation. */
     final Timer timer = new Timer(TIMER_IS_DAEMON);
     /** The task to handle the timeouts for the identification. */
-    private TimerTask timerTask = new IdentifyTimerTask();
+    private TimerTask identifyTimeoutTask = new IdentifyTimerTask();
     
-    /** Response status for the pillars.*/
-    final PillarsResponseStatus identifyResponseStatus;
-
     /**
      * Constructor.
      * @param conversation The conversation in this given state.
      */
     public IdentifyPillarsForDeleteFile(SimpleDeleteFileConversation conversation) {
         super(conversation);
-        this.identifyResponseStatus = new PillarsResponseStatus(
-                conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs());
     }
 
     /**
@@ -82,28 +72,31 @@ public class IdentifyPillarsForDeleteFile extends DeleteFileState {
         conversation.messageSender.sendMessage(identifyRequest);
 
         monitor.identifyPillarsRequestSent("Identifying pillars for Delete file " + conversation.fileID);
-        timer.schedule(timerTask, 
+        timer.schedule(identifyTimeoutTask, 
                 conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());
     }
 
     @Override
     public synchronized void onMessage(IdentifyPillarsForDeleteFileResponse response) {
         try {
-            identifyResponseStatus.responseReceived(response.getPillarID());
+            conversation.pillarSelector.processResponse(response);
+            monitor.pillarIdentified("Received IdentifyPillarsForDeleteFileResponse " + response, 
+                    response.getPillarID());
         } catch (UnexpectedResponseException e) {
-            monitor.invalidMessage("Unexcepted response from " + response.getPillarID() + " : " + e.getMessage());
+            monitor.pillarFailed("Unable to handle IdentifyPillarsForDeleteFileResponse, ", e);
+        } catch (NegativeResponseException e) {
+            monitor.pillarFailed("Negativ IdentifyPillarsForDeleteFileResponse from pillar " + response.getPillarID(), e);
         }
         
-        if(response.getPillarID().equals(conversation.pillarId)) {
-            monitor.pillarIdentified("Identified the pillar '" + response.getPillarID() + "' for Delete.", 
-                    response.getPillarID());
-            monitor.pillarSelected("Identified all pillars for Delete. Starting to Delete.", 
-                    response.getPillarID());
+        if (conversation.pillarSelector.isFinished()) {
+            identifyTimeoutTask.cancel();
             
-            // go to next state.
-            DeletingFile newState = new DeletingFile(conversation, response.getReplyTo());
-            conversation.conversationState = newState;
-            newState.start();
+            if (conversation.pillarSelector.getSelectedPillars().isEmpty()) {
+                conversation.failConversation("Unable to getChecksums, no pillars were identified");
+            }
+            monitor.pillarSelected("Identified pillars for getChecksums", 
+                    conversation.pillarSelector.getSelectedPillars().toString());
+            deleteFileFromSelectedPillar();
         }
     }
 
@@ -127,6 +120,16 @@ public class IdentifyPillarsForDeleteFile extends DeleteFileState {
     public synchronized void onMessage(DeleteFileFinalResponse response) {
         monitor.outOfSequenceMessage("Received DeleteFileFinalResponse from " + response.getPillarID() + 
                 " before sending DeleteFileRequest.");
+    }
+    
+    /**
+     * Method for moving to the next stage: GettingChecksum.
+     */
+    protected void deleteFileFromSelectedPillar() {
+        identifyTimeoutTask.cancel();
+        DeletingFile nextConversationState = new DeletingFile(conversation);
+        conversation.conversationState = nextConversationState;
+        nextConversationState.start();
     }
 
     /**

@@ -25,26 +25,32 @@
 package org.bitrepository.modify.deletefile.conversation;
 
 import java.math.BigInteger;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
-import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 
+/**
+ * Models the behavior of a DeleteFile conversation during the operation phase. That is, it begins with the sending of
+ * <code>DeleteFileRequest</code> messages and finishes with the reception of the <code>DeleteFileFinalResponse</code>
+ * messages from all responding pillars. 
+ * 
+ * Note that this is only used by the DeleteFileConversation in the same package, therefore the visibility is package 
+ * protected.
+ */
 public class DeletingFile extends DeleteFileState {
     /** Defines that the timer is a daemon thread. */
     private static final Boolean TIMER_IS_DAEMON = true;
@@ -53,21 +59,20 @@ public class DeletingFile extends DeleteFileState {
     /** The task to handle the timeouts for the identification. */
     private TimerTask timerTask = new DeleteTimerTask();
 
+    /** The pillars, which has not yet answered.*/
+    private List<SelectedPillarInfo> pillarsSelectedForRequest; 
     /** The responses for the pillars.*/
-    final PillarsResponseStatus deleteResponseStatus;
-
-    /** The destination of the pillar to delete the file from.*/
-    final String pillarDest;
+    private final PillarsResponseStatus deleteResponseStatus;
 
     /**
      * Constructor.
      * @param conversation The conversation in this state.
      * @param pillarDest The destination of the pillar.
      */
-    public DeletingFile(SimpleDeleteFileConversation conversation, String pillarDest) {
+    public DeletingFile(SimpleDeleteFileConversation conversation) {
         super(conversation);
-        this.pillarDest = pillarDest;
-        deleteResponseStatus = new PillarsResponseStatus(Arrays.asList(conversation.pillarId));
+        pillarsSelectedForRequest = conversation.pillarSelector.getSelectedPillars();
+        deleteResponseStatus = new PillarsResponseStatus(conversation.pillarId);
     }
 
     /**
@@ -84,21 +89,17 @@ public class DeletingFile extends DeleteFileState {
         request.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         request.setAuditTrailInformation(conversation.auditTrailInformation);
         request.setFileID(conversation.fileID);
-        request.setPillarID(conversation.pillarId);
-        request.setTo(pillarDest);
         request.setFileChecksumSpec(conversation.checksumSpecRequested);
+        request.setChecksumDataForFile(conversation.checksumForFileToDelete);
         
-        ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
-        checksumData.setChecksumSpec(conversation.checksumSpecOfFileToDelete);
-        checksumData.setChecksumValue(conversation.checksumOfFileToDelete);
-        // TODO retrieve the actual date?
-        checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
-        request.setChecksumDataForFile(checksumData);
-        
-        conversation.messageSender.sendMessage(request);
-        
-        monitor.requestSent("Request to delete file " + conversation.fileID + " has been sent to the pillar + " +
-                conversation.pillarId, conversation.pillarId);
+        for(SelectedPillarInfo pillarInfo : pillarsSelectedForRequest) {
+            request.setPillarID(pillarInfo.getID());
+            request.setTo(pillarInfo.getDestination());
+            
+            conversation.messageSender.sendMessage(request);
+            monitor.requestSent("Request to delete file " + conversation.fileID + " has been sent to the pillar + " +
+                    conversation.pillarId, pillarInfo.getID());
+        }
 
         timer.schedule(timerTask, 
                 conversation.settings.getReferenceSettings().getClientSettings().getConversationTimeout().longValue());
@@ -133,23 +134,24 @@ public class DeletingFile extends DeleteFileState {
         try {
             deleteResponseStatus.responseReceived(response.getPillarID());
         } catch (UnexpectedResponseException ure) {
-            monitor.pillarFailed("Received unexpected final response from " + response.getPillarID() , ure);
+            monitor.warning("Received unexpected final response from " + response.getPillarID() , ure);
         }
 
         if(isResponseSuccess(response.getResponseInfo())) {
-            monitor.pillarComplete(new PillarOperationEvent(
-                    OperationEventType.PillarComplete,
+            monitor.pillarComplete(new DeleteFileCompletePillarEvent(
+                    response.getChecksumDataForFile(),
                     response.getPillarID(),
-                    "Received checksum result from " + response.getPillarID()));
+                    "Received delete file result from " + response.getPillarID()));
         } else {
             monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
-        } 
-
+        }
+        
         // Check if the conversation has finished.
         if(deleteResponseStatus.haveAllPillarResponded()) {
             timerTask.cancel();
             monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.Complete,
                     "Finished Delete on all the pillars."));
+            conversation.getFlowController().unblock();
 
             DeleteFileFinished finishState = new DeleteFileFinished(conversation);
             conversation.conversationState = finishState;

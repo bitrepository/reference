@@ -24,6 +24,7 @@
  */
 package org.bitrepository.modify.deletefile;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
@@ -49,12 +50,21 @@ public class DeleteClientTestWrapper implements DeleteFileClient {
     }
 
     @Override
-    public void deleteFile(String fileId, String pillarId, String checksum, ChecksumSpecTYPE checksumForPillar,
+    public void deleteFile(String fileId, String pillarId, ChecksumDataForFileTYPE checksumForPillar,
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
-        testEventManager.addStimuli("Calling deleteFile(" + fileId + ", " + pillarId + ", " + checksum + ", " 
-                + checksumForPillar + ", " + checksumRequested + ", eventHandler, " + auditTrailInformation + ")");
-        wrappedDeleteClient.deleteFile(fileId, pillarId, checksum, checksumForPillar, checksumRequested, 
-                eventHandler, auditTrailInformation);        
+        testEventManager.addStimuli("Calling deleteFile(" + fileId + ", " + pillarId + ", " + checksumForPillar + ", " 
+            + checksumRequested + ", eventHandler, " + auditTrailInformation + ")");
+        wrappedDeleteClient.deleteFile(fileId, pillarId, checksumForPillar, checksumRequested, eventHandler, 
+                auditTrailInformation);        
+    }
+    
+    @Override
+    public void deleteFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForPillar,
+            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+        testEventManager.addStimuli("Calling deleteFileAtAllPillars(" + fileId + ", " + checksumForPillar + ", " 
+            + checksumRequested + ", eventHandler, " + auditTrailInformation + ")");
+        wrappedDeleteClient.deleteFileAtAllPillars(fileId, checksumForPillar, checksumRequested, eventHandler, 
+                auditTrailInformation);        
     }
     
     @Override

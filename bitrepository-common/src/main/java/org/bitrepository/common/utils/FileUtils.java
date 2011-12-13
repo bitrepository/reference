@@ -24,7 +24,11 @@
  */
 package org.bitrepository.common.utils;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.ConfigurationException;
@@ -37,6 +41,8 @@ import org.slf4j.LoggerFactory;
 public final class FileUtils {
     /** The log.*/
     private static Logger log = LoggerFactory.getLogger(FileUtils.class);
+    /** The maximal size of the byte array for digest.*/
+    private static final int BYTE_ARRAY_SIZE_FOR_DIGEST = 4096;
 
     /**
      * Private constructor. To prevent instantiation of this utility class.
@@ -167,5 +173,36 @@ public final class FileUtils {
             log.warn("Could move the file '" + from.getAbsolutePath() + "' to the location '" + to.getAbsolutePath() 
                     + "'");
         }
+    }
+    
+    /**
+     * Reads a file into a byte array.
+     * TODO handle the case, when the file is longer than can be expressed with an Integer.
+     * 
+     * @param file 
+     * @return
+     * @throws IOException
+     */
+    public static String readFile(File file) throws IOException {
+        ArgumentValidator.checkNotNull(file, "file");
+        
+        DataInputStream fis = null;
+        StringBuffer res = new StringBuffer();
+        
+        try {
+            fis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+            
+            byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
+            int bytesRead;
+            while ((bytesRead = fis.read(bytes)) > 0) {
+                res.append(new String(bytes));
+            }
+        } finally {
+            if (fis != null) {
+                fis.close();
+            }
+        }
+        
+        return res.toString();
     }
 }

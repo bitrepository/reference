@@ -59,10 +59,12 @@ public class GettingChecksums extends GetChecksumsState {
     /** Tracks who have responded */
     private final PillarsResponseStatus responseStatus;
 
+    /** Defines that the timer is a daemon thread. */
+    private static final Boolean TIMER_IS_DAEMON = true;
     /** 
      * The timer for the getChecksumsTimeout. It is run as a daemon thread, eg. it will not prevent the application 
      * from exiting */
-    final Timer timer = new Timer(true);
+    final Timer timer = new Timer(TIMER_IS_DAEMON);
     /** The timer task for timeout of getFile in this conversation. */
     final TimerTask getChecksumsTimeoutTask = new GetChecksumsTimerTask();
 
@@ -135,23 +137,19 @@ public class GettingChecksums extends GetChecksumsState {
             monitor.warning("Received unexpected final response from " + response.getPillarID() , ure);
         }
 
-        try {
-            if(isReponseSuccess(response.getResponseInfo())) {
-                monitor.pillarComplete(new ChecksumsCompletePillarEvent(
-                        response.getResultingChecksums(),
-                        conversation.checksumSpecifications,
-                        response.getPillarID(),
-                        "Received checksum result from " + response.getPillarID()));
-                // If calculations in message, then put them into the results map.
-                if(response.getResultingChecksums() != null) {
-                    results.put(response.getPillarID(), response.getResultingChecksums());
-                }
-            } else {
-                monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
-            } 
-        } catch (UnexpectedResponseException ure) {
-            monitor.pillarFailed("Received bad FinalResponse from pillar: " + response.getResponseInfo(), ure);
-        }
+        if(isReponseSuccess(response.getResponseInfo())) {
+            monitor.pillarComplete(new ChecksumsCompletePillarEvent(
+                    response.getResultingChecksums(),
+                    conversation.checksumSpecifications,
+                    response.getPillarID(),
+                    "Received checksum result from " + response.getPillarID()));
+            // If calculations in message, then put them into the results map.
+            if(response.getResultingChecksums() != null) {
+                results.put(response.getPillarID(), response.getResultingChecksums());
+            }
+        } else {
+            monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
+        } 
 
         if(responseStatus.haveAllPillarResponded()) {
             monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.Complete, 
@@ -167,7 +165,7 @@ public class GettingChecksums extends GetChecksumsState {
      * @param frInfo The FinalResponseInfo to be validated.
      * @return Whether the FinalRepsonseInfo tells that the operation has been a success or a failure.
      */
-    private boolean isReponseSuccess(ResponseInfo frInfo) throws UnexpectedResponseException { 
+    private boolean isReponseSuccess(ResponseInfo frInfo) { 
         if(ResponseCode.SUCCESS.equals(frInfo.getResponseCode())) {
             return true;
         }

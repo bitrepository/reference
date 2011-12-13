@@ -24,6 +24,7 @@
  */
 package org.bitrepository.modify.deletefile;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
@@ -32,6 +33,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileReque
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.clienttest.TestEventHandler;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
@@ -79,12 +81,17 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         String checksum = "123checksum321";
         ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
         checksumForPillar.setChecksumType("MD5");
+        ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
+        checksumData.setChecksumSpec(checksumForPillar);
+        checksumData.setChecksumValue(checksum);
+        checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
+
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
-        checksumRequest.setChecksumType("SHA-1");        
+        checksumRequest.setChecksumType("SHA-1");
 
         addStep("Request a file to be deleted on the default pillar.", 
                 "A IdentifyPillarsForDeleteFileRequest should be sent to the pillar.");
-        deleteClient.deleteFile(DEFAULT_FILE_ID, PILLAR1_ID, checksum, checksumForPillar, checksumRequest, testEventHandler, null);
+        deleteClient.deleteFile(DEFAULT_FILE_ID, PILLAR1_ID, checksumData, checksumRequest, testEventHandler, null);
 
         IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {

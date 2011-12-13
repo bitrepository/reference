@@ -24,6 +24,7 @@
  */
 package org.bitrepository.modify.deletefile;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
@@ -37,15 +38,36 @@ public interface DeleteFileClient {
      * Takes checksum and checksum specification as argument to validate the file to delete.
      * @param fileId The id of the file to delete.
      * @param pillarId The id of the pillar, where the file should be deleted.
-     * @param checksum The checksum of the file.
      * @param checksumForPillar The specifications for the checksum of the file.
      * @param eventHandler [OPTIONAL] The handler which should receive notifications of the events occurring in 
      * connection with the pillar communication. This is allowed to be null.
-     * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation call.
+     * In a good case scenario this will give the events: <br/> 
+     * IdentifyPillarsRequestSent, PillarIdentified, PillarSelected, RequestSent, Progress, PillarComplete, Complete
+     * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation 
+     * call.
      * 
      * @throws OperationFailedException If the operation cannot be instantiated.
      */
-    void deleteFile(String fileId, String pillarId, String checksum, ChecksumSpecTYPE checksumForPillar, 
+    void deleteFile(String fileId, String pillarId, ChecksumDataForFileTYPE checksumForPillar, 
+            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) 
+                    throws OperationFailedException;
+    
+    /**
+     * Starts the conversation for deleting a file on a all pillars.
+     * Takes checksum and checksum specification as argument to validate the file to delete.
+     * @param fileId The id of the file to delete.
+     * @param checksumForPillar The specifications for the checksum of the file for the pillar to validate.
+     * @param eventHandler [OPTIONAL] The handler which should receive notifications of the events occurring in 
+     * connection with the pillar communication. This is allowed to be null.
+     * In a good case scenario this will give the events: <br/> 
+     * IdentifyPillarsRequestSent, PillarIdentified (for each pillar), PillarSelected, RequestSent (for each pillar), 
+     * Progress (for each pillar), PillarComplete (for each pillar), Complete
+     * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation 
+     * call.
+     * 
+     * @throws OperationFailedException If the operation cannot be instantiated.
+     */
+    void deleteFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForPillar, 
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) 
                     throws OperationFailedException;
     

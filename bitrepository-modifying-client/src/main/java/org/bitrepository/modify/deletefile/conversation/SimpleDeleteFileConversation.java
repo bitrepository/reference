@@ -24,13 +24,16 @@
  */
 package org.bitrepository.modify.deletefile.conversation;
 
+import java.util.Collection;
 import java.util.UUID;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.modify.deletefile.selector.PillarSelectorForDeleteFile;
 import org.bitrepository.modify.putfile.conversation.IdentifyPillarsForPutFile;
 import org.bitrepository.protocol.conversation.AbstractConversation;
 import org.bitrepository.protocol.conversation.ConversationState;
@@ -51,17 +54,17 @@ public class SimpleDeleteFileConversation extends AbstractConversation {
     /** The ID of the file which should be deleted. */
     final String fileID;
     /** The ID of the pillar to delete the file from. */
-    final String pillarId;
-    /** The checksum of the file to delete.*/
-    final String checksumOfFileToDelete;
+    final Collection<String> pillarId;
     /** The checksums specification for the pillar.*/
-    final ChecksumSpecTYPE checksumSpecOfFileToDelete;
+    final ChecksumDataForFileTYPE checksumForFileToDelete;
     /** The checksum specification requested from the pillar.*/
     final ChecksumSpecTYPE checksumSpecRequested;
     /** The state of the PutFile transaction.*/
     DeleteFileState conversationState;
     /** The audit trail information for the conversation.*/
     final String auditTrailInformation;
+    /** The */
+    final PillarSelectorForDeleteFile pillarSelector;
 
     /**
      * Constructor.
@@ -70,7 +73,7 @@ public class SimpleDeleteFileConversation extends AbstractConversation {
      * @param messageSender The instance to send the messages with.
      * @param settings The settings of the client.
      * @param fileId The id of the file.
-     * @param pillarId The id of the pillar.
+     * @param pillarIds The id of the pillars perform the operation upon.
      * @param checksumOfFileToDelete The checksum of the file to delete.
      * @param checksumSpecForPillar The checksum specifications for the file to delete.
      * @param eventHandler The event handler.
@@ -80,9 +83,8 @@ public class SimpleDeleteFileConversation extends AbstractConversation {
     public SimpleDeleteFileConversation(MessageSender messageSender,
             Settings settings,
             String fileId,
-            String pillarId,
-            String checksumOfFileToDelete,
-            ChecksumSpecTYPE checksumSpecForPillar,
+            Collection<String> pillarIds,
+            ChecksumDataForFileTYPE checksumSpecForPillar,
             ChecksumSpecTYPE checksumSpecRequested,
             EventHandler eventHandler,
             FlowController flowController,
@@ -92,12 +94,12 @@ public class SimpleDeleteFileConversation extends AbstractConversation {
         this.messageSender = messageSender;
         this.settings = settings;
         this.fileID = fileId;
-        this.pillarId = pillarId;
-        this.checksumOfFileToDelete = checksumOfFileToDelete;
-        this.checksumSpecOfFileToDelete = checksumSpecForPillar;
+        this.pillarId = pillarIds;
+        this.checksumForFileToDelete = checksumSpecForPillar;
         this.checksumSpecRequested = checksumSpecRequested;
         this.auditTrailInformation = auditTrailInformation;
         conversationState = new IdentifyPillarsForDeleteFile(this);
+        pillarSelector = new PillarSelectorForDeleteFile(pillarIds);
     }
     
     @Override

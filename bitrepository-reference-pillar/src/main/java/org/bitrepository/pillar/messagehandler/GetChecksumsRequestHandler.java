@@ -215,17 +215,12 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         log.debug("Starting to calculate the checksum of the requested files.");
         
         FileIDs fileids = message.getFileIDs();
-        MessageDigest checksumAlgorithmDigester = null;
-        try {
-            checksumAlgorithmDigester = MessageDigest.getInstance(message.getFileChecksumSpec().getChecksumType());
-        } catch(Exception e) {
-            throw new RuntimeException("Could not retrieve the algorithm for the calculating the checksum.", e);
-        }
+        
         String salt = message.getFileChecksumSpec().getChecksumSalt();
         
         if(fileids.isSetAllFileIDs()) {
             log.debug("Calculating the checksum for all the files.");
-            return calculateChecksumForAllFiles(checksumAlgorithmDigester, salt);
+            return calculateChecksumForAllFiles(message.getFileChecksumSpec().getChecksumType(), salt);
         }
         
         log.debug("Calculating the checksum for specified files: " + fileids.getFileID());
@@ -235,7 +230,8 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
         singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
         singleFileResult.setFileID(fileid);
-        singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, checksumAlgorithmDigester, salt));
+        singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, 
+                message.getFileChecksumSpec().getChecksumType(), salt));
         
         res.add(singleFileResult);
         
@@ -244,12 +240,12 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
     
     /**
      * Method for calculating the checksum on all the files in the archive.
-     * @param checksumAlgorithmDigester The digester with the requested algorithm for calculating the checksums.
+     * @param algorithm The algorithm for calculating the checksums.
      * @param salt The salt of the checksum.
      * @return The list of checksums for requested files. 
      */
     private List<ChecksumDataForChecksumSpecTYPE> calculateChecksumForAllFiles(
-            MessageDigest checksumAlgorithmDigester, String salt) {
+            String algorithm, String salt) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         
         // Go through every file in the archive, calculate the checksum and put it into the results.
@@ -258,7 +254,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
             singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
             singleFileResult.setFileID(fileid);
-            singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, checksumAlgorithmDigester, salt));
+            singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, algorithm, salt));
             
             res.add(singleFileResult);
         }

@@ -32,12 +32,14 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.clienttest.TestEventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
@@ -62,7 +64,7 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         Long FILE_SIZE = 27L;
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
-        String CHECKSUM = "940a51b250e7aa82d8e8ea31217ff267";
+        String CHECKSUM = "58024cfd44cbc23bdfbfec2200eda188";
         ChecksumSpecTYPE DEFAULT_CHECKSUM_TYPE = new ChecksumSpecTYPE();
         DEFAULT_CHECKSUM_TYPE.setChecksumSalt(null);
         DEFAULT_CHECKSUM_TYPE.setChecksumType("MD5");
@@ -155,9 +157,14 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
 
         ChecksumSpecTYPE checksumRequested = new ChecksumSpecTYPE();
         checksumRequested.setChecksumSalt(null);
-        checksumRequested.setChecksumType("SHA-1");
+        checksumRequested.setChecksumType("SHA1");
+        ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
+        checksumData.setChecksumSpec(DEFAULT_CHECKSUM_TYPE);
+        checksumData.setChecksumValue(CHECKSUM);
+        checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
+
         deleteFile.deleteFile(FILE_ID, settings.getReferenceSettings().getPillarSettings().getPillarID(), 
-                CHECKSUM, DEFAULT_CHECKSUM_TYPE, checksumRequested, testEventHandler, "AuditTrail: TESTING!!!");
+                checksumData, checksumRequested, testEventHandler, "AuditTrail: TESTING!!!");
         
         addStep("Validate the sequence of operation events for the DeleteFileClient", 
                 "Should be in correct order.");
