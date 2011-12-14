@@ -10,10 +10,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.text.SimpleDateFormat;
 
@@ -21,17 +19,13 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
-import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,7 +150,6 @@ public class BasicClient {
     }
     
     public Map<String, Map<String, String>> getChecksums(String fileIDsText, String checksumType, String salt) {
-    	Map<String, Map<String, String>> result = null;
     	ChecksumSpecTYPE checksumSpecItem = new ChecksumSpecTYPE();
     	if(salt != null || !salt.equals("")) {
     		checksumSpecItem.setChecksumSalt(salt);	
@@ -165,39 +158,25 @@ public class BasicClient {
     	FileIDs fileIDs = new FileIDs();
     	fileIDs.setFileID(fileIDsText);
 
-    	Map<String, ResultingChecksums> clientResult;
-		try {
-			clientResult = getChecksumClient.getChecksumsBlocking(
-					settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
-					fileIDs, checksumSpecItem, null, eventHandler, "Deliver my checksums pirate garrh");
-
-       	if(clientResult != null) {
-    		result = new HashMap<String, Map<String, String>>();
-    		Set<String> returnedPillarIDs = clientResult.keySet();
-    		for(String pillarID : returnedPillarIDs) {
-    			List<ChecksumDataForChecksumSpecTYPE> items = clientResult.get(pillarID).getChecksumDataItems();
-    			for(ChecksumDataForChecksumSpecTYPE item : items) {
-    				if(!result.containsKey(item.getFileID())) {
-    					Map<String, String> value = new HashMap<String, String>();
-    					value.put(pillarID, item.getChecksumValue());
-    					result.put(item.getFileID(), value);
-    				} else {
-    					result.get(item.getFileID()).put(pillarID, item.getChecksumValue());
-    				}
-    			}
-    		}
-    	}
-		} catch (NoPillarFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OperationTimeOutException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OperationFailedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	return result;
+    	GetChecksumsResults results = new GetChecksumsResults();
+    	GetChecksumsEventHandler handler = new GetChecksumsEventHandler(results, eventHandler);
+    	
+    	try {
+            getChecksumClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
+                    fileIDs, checksumSpecItem, null, handler, "Arf arf, deliver those checksums");
+        } catch (OperationFailedException e1) {
+            // Jonas this should not throw exceptions... bleh!
+        }
+    	
+        try {
+            while(!results.isDone() && !results.hasFailed()) {
+                Thread.sleep(500);
+            }
+        } catch (InterruptedException e) {
+            // Uhm, we got aborted, should return error..
+        }
+    	
+    	return results.getResults();
     }
     
     public GetFileIDsResults getFileIDs(String fileIDsText, boolean allFileIDs) {
@@ -212,16 +191,14 @@ public class BasicClient {
     	    fileIDs.setFileID(fileIDsText);
     	}
     	try {
-			getFileIDsClient.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
-					fileIDs, null, handler, "Deliver my fileIDs garrh");
-		} catch (OperationFailedException e) {
-			//This should not happen Jonas!
-		}
-    	
-		try {
-			while(!results.isDone() && !results.hasFailed()) {
-				Thread.sleep(500);
-			}
+    	    getFileIDsClient.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
+    	            fileIDs, null, handler, "Deliver my fileIDs garrh");
+
+    	    while(!results.isDone() && !results.hasFailed()) {
+    	        Thread.sleep(500);
+    	    }
+	    } catch (OperationFailedException e) {
+	            //This should not happen Jonas!
 		} catch (InterruptedException e) {
 			// Uhm, we got aborted, should return error..
 		}

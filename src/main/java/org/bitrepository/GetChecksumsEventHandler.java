@@ -1,5 +1,6 @@
 package org.bitrepository;
 
+import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
@@ -7,12 +8,12 @@ import org.bitrepository.protocol.eventhandler.OperationEvent;
 /**
  *	Event handler for the asynchronous GetFileIDs method.   
  */
-public class GetFileIDsEventHandler implements EventHandler {
+public class GetChecksumsEventHandler implements EventHandler {
 
 	private EventHandler logger;
-	private GetFileIDsResults results;
+	private GetChecksumsResults results;
 	
-	public GetFileIDsEventHandler(GetFileIDsResults results, EventHandler logger) {
+	public GetChecksumsEventHandler(GetChecksumsResults results, EventHandler logger) {
 		this.logger = logger;
 		this.results = results;
 	}
@@ -20,11 +21,6 @@ public class GetFileIDsEventHandler implements EventHandler {
 	@Override
 	public void handleEvent(OperationEvent event) {
 		logger.handleEvent(event);
-		/*if(event.getType() == OperationEvent.OperationEventType.Complete) {
-			results.done();
-		} else if(event.getType() == OperationEvent.OperationEventType.PillarComplete) {
-			results.addResultsFromPillar((String) event.getState(), ((FileIDsCompletePillarEvent) event).getFileIDs());	
-		}*/
 		switch(event.getType()) {
 		case IdentifyPillarsRequestSent:
 		    break;
@@ -38,7 +34,7 @@ public class GetFileIDsEventHandler implements EventHandler {
 		    break;
 		case PillarComplete:
 		    results.addResultsFromPillar((String) event.getState(), 
-		            ((FileIDsCompletePillarEvent) event).getFileIDs());
+		            ((ChecksumsCompletePillarEvent) event).getChecksums());
 		    break;
 		case Complete:
 		    results.done();
@@ -54,26 +50,7 @@ public class GetFileIDsEventHandler implements EventHandler {
 		    break;
 		case Warning:
 		    break;
-		}
-         
+		}       
 	}
-	
-	/**
-	 * Not quite sure that this will ever be called. 
-	 */
-	/*public void handleEvent(FileIDsCompletePillarEvent event) {
-		logger.handleEvent(event);
-		results.addResultsFromPillar(event.getState(), event.getFileIDs());
-	}*/
-	
-	/**
-	 * Not quite sure that this will ever be called. 
-	 */
-	/*public void handleEvent(OperationFailedEvent event) {
-		logger.handleEvent(event);
-		results.failed();
-	}*/
-	
-
 	
 }

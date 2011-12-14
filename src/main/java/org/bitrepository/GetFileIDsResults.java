@@ -35,7 +35,6 @@ public class GetFileIDsResults {
 					results.put(item.getFileID(), value);
 				}	
 			}
-			
 		}
 	}
 	
