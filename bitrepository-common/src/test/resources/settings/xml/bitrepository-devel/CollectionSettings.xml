@@ -30,15 +30,26 @@
     <DefaultChecksumType>md5</DefaultChecksumType>
     <CollectionDestination>TEST-TOPIC</CollectionDestination>
     <AlarmDestination>TEST-ALARM-TOPIC</AlarmDestination>
+    <Certificates>
+      <FileExchangeServerCertificates>   
+        <FileExchangeServerCertificate></FileExchangeServerCertificate>
+      </FileExchangeServerCertificates>
+      <MessageBusCertificates>      
+        <MessageBusCertificate></MessageBusCertificate>
+      </MessageBusCertificates>
+      <ClientCertificates>
+        <ClientCertificate></ClientCertificate>
+      </ClientCertificates>
+    </Certificates>
     <Permissions>
       <Permission>
-       <User>Me</User>
+       <Certificate>Me</Certificate>
        <OperationType>All</OperationType>     
       </Permission>
     </Permissions>
     <MessageBusConfiguration>
       <Name>MyMessageBus</Name>
-      <URL>failover://(tcp://sandkasse-01.kb.dk:61616)?timeout=10000</URL><!--  -->
+      <URL>failover://(tcp://localhost:61616)?timeout=10000</URL><!--  -->
       <!-- <URL>failover://(tcp://int-bitmag-02.kb.dk:50000,tcp://int-bitmag-01.kb.dk:50000)?timeout=10000</URL> -->
       <Login></Login>
       <Password></Password>

@@ -34,14 +34,6 @@ import org.testng.annotations.Test;
 public class SettingsLoaderTest extends ExtendedTestCase{
     private static final String PATH_TO_SETTINGS = "settings/xml";
 
-    //    @Test(groups = { "regressiontest" })
-    public void testLocalCollectionSettingsLoading() throws Exception {
-        SettingsProvider settingsLoader = 
-                new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_SETTINGS));
-
-        Settings settings = settingsLoader.getSettings("bitrepository-local");
-    }
-
     @Test(groups = { "regressiontest" })
     public void testDevelopmentCollectionSettingsLoading() throws Exception {
         SettingsProvider settingsLoader = 
@@ -50,13 +42,5 @@ public class SettingsLoaderTest extends ExtendedTestCase{
         Settings settings = settingsLoader.getSettings("bitrepository-devel");
         List<String> expectedPillarIDs = Arrays.asList(new String[] {"Pillar1", "Pillar2"});
         Assert.assertEquals(settings.getCollectionSettings().getClientSettings().getPillarIDs(), expectedPillarIDs);
-    }
-
-    //    @Test(groups = { "regressiontest" })
-    public void testIntegrationCollectionSettingsLoading() throws Exception {
-        SettingsProvider settingsLoader = 
-                new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_SETTINGS));
-
-        Settings settings = settingsLoader.getSettings("bitrepository-integration");        
     }
 }
