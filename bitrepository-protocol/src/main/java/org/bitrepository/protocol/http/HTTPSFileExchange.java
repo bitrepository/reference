@@ -51,8 +51,6 @@ import org.bitrepository.protocol.configuration.FileExchangeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.security.util.HostnameChecker;
-
 /**
  * Class for handling the file exchange through the HTTPS protocol.
  */

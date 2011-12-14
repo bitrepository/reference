@@ -26,7 +26,6 @@ package org.bitrepository.access.getfileids;
 
 import java.math.BigInteger;
 import java.net.URL;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import javax.xml.bind.JAXBException;

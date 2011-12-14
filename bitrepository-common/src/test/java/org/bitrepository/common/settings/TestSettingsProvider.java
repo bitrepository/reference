@@ -24,9 +24,6 @@
  */
 package org.bitrepository.common.settings;
 
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.SettingsProvider;
-import org.bitrepository.common.settings.XMLFileSettingsLoader;
 
 /**
  * Helper class for easy access to the settings located in the <code>settings/xml</code> dir.

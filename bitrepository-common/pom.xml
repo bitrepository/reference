@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>bitrepository</artifactId>
@@ -14,15 +15,11 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.6</version>
-      <type>jar</type>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>2.0.1</version>
-      <type>jar</type>
-      <scope>compile</scope>
     </dependency>
     <dependency>
     	<groupId>org.bitrepository</groupId>
@@ -37,9 +34,9 @@
         <directory>src/test/resources</directory>
         <filtering>true</filtering>
       </testResource>
-    </testResources> 
+    </testResources>
     <plugins>
-     <plugin>
+      <plugin>
         <!-- Include remote resources -->
         <artifactId>maven-remote-resources-plugin</artifactId>
         <version>1.2.1</version>
@@ -52,18 +49,17 @@
             </goals>
             <configuration>
               <outputDirectory>${project.build.directory}/collectionsettings</outputDirectory>
-              <attached>false</attached> <!-- If attached is true (the default) the copy-resources step below will 
-              re-include the resources from the last build in the current.  -->              
+              <attached>false</attached> <!-- If attached is true (the default) the copy-resources step below will re-include the resources from the last build in 
+                the current. -->
               <resourceBundles>
                 <resourceBundle>org.bitrepository:bitrepository-collection-settings:${collection.settings.version}</resourceBundle>
               </resourceBundles>
             </configuration>
           </execution>
         </executions>
-      </plugin>  
+      </plugin>
       <plugin>
-        <!--  Copies the jaxb bindings definition to the message xsd dir, in preparation for the xsd -> java class file
-        generation -->
+        <!-- Copies the jaxb bindings definition to the message xsd dir, in preparation for the xsd -> java class file generation -->
         <artifactId>maven-resources-plugin</artifactId>
         <version>2.5</version>
         <executions>
@@ -120,7 +116,7 @@
                 </plugin>
               </plugins>
             </configuration>
-          </execution> 
+          </execution>
           <execution>
             <id>generate-referencesettings-classes</id>
             <goals>

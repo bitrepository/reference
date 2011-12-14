@@ -26,7 +26,6 @@ package org.bitrepository.integration;
 
 import java.net.URL;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;

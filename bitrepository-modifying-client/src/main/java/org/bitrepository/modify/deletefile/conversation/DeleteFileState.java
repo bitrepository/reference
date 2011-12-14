@@ -24,8 +24,6 @@
  */
 package org.bitrepository.modify.deletefile.conversation;
 
-import org.bitrepository.modify.putfile.conversation.PutFileFinished;
-import org.bitrepository.modify.putfile.conversation.SimplePutFileConversation;
 import org.bitrepository.protocol.conversation.ConversationEventMonitor;
 import org.bitrepository.protocol.conversation.ConversationState;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;

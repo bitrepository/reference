@@ -38,8 +38,6 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
-import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
 

@@ -24,8 +24,6 @@
  */
 package org.bitrepository.integrityclient.cache;
 
-import java.util.Date;
-
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;

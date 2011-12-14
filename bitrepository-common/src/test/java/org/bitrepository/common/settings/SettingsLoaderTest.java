@@ -27,9 +27,6 @@ package org.bitrepository.common.settings;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.SettingsProvider;
-import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
