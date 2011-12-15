@@ -92,9 +92,9 @@ public class IdentifyPillarsForDeleteFile extends DeleteFileState {
             identifyTimeoutTask.cancel();
             
             if (conversation.pillarSelector.getSelectedPillars().isEmpty()) {
-                conversation.failConversation("Unable to getChecksums, no pillars were identified");
+                conversation.failConversation("Unable to deleteFile, no pillars were identified");
             }
-            monitor.pillarSelected("Identified pillars for getChecksums", 
+            monitor.pillarSelected("Identified pillars for deleteFile", 
                     conversation.pillarSelector.getSelectedPillars().toString());
             deleteFileFromSelectedPillar();
         }
@@ -123,7 +123,7 @@ public class IdentifyPillarsForDeleteFile extends DeleteFileState {
     }
     
     /**
-     * Method for moving to the next stage: GettingChecksum.
+     * Method for moving to the next stage: DeletingFile.
      */
     protected void deleteFileFromSelectedPillar() {
         identifyTimeoutTask.cancel();

@@ -77,7 +77,7 @@ public class ConversationBasedDeleteFileClient implements DeleteFileClient {
                 + "'. And the audit trail information '" + auditTrailInformation + "'.");
         SimpleDeleteFileConversation conversation = new SimpleDeleteFileConversation(bus, settings, fileId, 
                 Arrays.asList(new String[]{pillarId}), checksumForPillar, checksumRequested, eventHandler, 
-                new FlowController(settings, false), auditTrailInformation);
+                new FlowController(settings), auditTrailInformation);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }
@@ -93,7 +93,7 @@ public class ConversationBasedDeleteFileClient implements DeleteFileClient {
         + "'. And the audit trail information '" + auditTrailInformation + "'.");
         SimpleDeleteFileConversation conversation = new SimpleDeleteFileConversation(bus, settings, fileId, 
                 settings.getCollectionSettings().getClientSettings().getPillarIDs(), checksumForPillar, 
-                checksumRequested, eventHandler, new FlowController(settings, false), auditTrailInformation);
+                checksumRequested, eventHandler, new FlowController(settings), auditTrailInformation);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }

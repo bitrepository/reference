@@ -94,7 +94,7 @@ public abstract class ConversationMediatorTest {
         private Object result = null;
 
         public ConversationStub(MessageSender messageSender, String conversationID) {
-            super(messageSender, conversationID, null, new FlowController(settings, false));
+            super(messageSender, conversationID, null, new FlowController(settings));
         }
 
         @Override

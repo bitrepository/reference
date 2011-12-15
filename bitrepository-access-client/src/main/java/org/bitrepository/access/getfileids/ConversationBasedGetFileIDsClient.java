@@ -83,7 +83,7 @@ public class ConversationBasedGetFileIDsClient implements GetFileIDsClient {
         
         SimpleGetFileIDsConversation conversation = new SimpleGetFileIDsConversation(
                 bus, settings, addressForResult, fileIDs, pillarIDs, eventHandler,  
-                new FlowController(settings, false), auditTrailInformation);
+                new FlowController(settings), auditTrailInformation);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }

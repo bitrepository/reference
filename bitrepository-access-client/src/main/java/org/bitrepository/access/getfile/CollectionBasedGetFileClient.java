@@ -144,7 +144,7 @@ public class CollectionBasedGetFileClient implements GetFileClient {
     private void getFile(MessageBus messageBus, Settings settings, PillarSelectorForGetFile selector, 
             String fileID, URL uploadUrl, EventHandler eventHandler) {
         AbstractConversation  conversation =  new SimpleGetFileConversation(
-                messageBus, settings, selector, fileID, uploadUrl, eventHandler, new FlowController(settings, false));
+                messageBus, settings, selector, fileID, uploadUrl, eventHandler, new FlowController(settings));
         conversationMediator.addConversation(conversation);  
         try {
             conversation.startConversation();
@@ -163,7 +163,7 @@ public class CollectionBasedGetFileClient implements GetFileClient {
             String fileID, URL uploadUrl) 
     throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         SimpleGetFileConversation conversation = new SimpleGetFileConversation(
-                    messageBus, settings, selector, fileID, uploadUrl, null, new FlowController(settings, true));
+                    messageBus, settings, selector, fileID, uploadUrl, null, new FlowController(settings));
         conversationMediator.addConversation(conversation);  
         conversation.startConversation();
     }

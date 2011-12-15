@@ -83,7 +83,7 @@ public abstract class AbstractConversation implements Conversation {
     private final ConversationEventMonitor monitor;
     /** Used for storing exceptions generates as result of a message reception, so it can be thrown to the initial 
      * operation initiater */
-    protected OperationFailedException operationFailedException;
+//    protected OperationFailedException operationFailedException;
     /** Is this conversation a result of a blocking call*/
     protected boolean blocking;
     /** Handles blocks */
@@ -128,11 +128,11 @@ public abstract class AbstractConversation implements Conversation {
     public void startConversation() throws OperationFailedException {
         getConversationState().start();  
         
-        if (flowController.waitForCompletion()) {
-            if (operationFailedException != null) {
-                throw operationFailedException;
-            }
-        }
+//        if (flowController.waitForCompletion()) {
+//            if (operationFailedException != null) {
+//                throw operationFailedException;
+//            }
+//        }
     }
     
     /**

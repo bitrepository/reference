@@ -78,7 +78,7 @@ public class ConversationBasedPutFileClient implements PutFileClient {
         
         try {
             SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
-                    BigInteger.valueOf(sizeOfFile), null, null, eventHandler, new FlowController(settings, false), 
+                    BigInteger.valueOf(sizeOfFile), null, null, eventHandler, new FlowController(settings), 
                     "TODO");
             conversationMediator.addConversation(conversation);
             conversation.startConversation();
@@ -102,7 +102,7 @@ public class ConversationBasedPutFileClient implements PutFileClient {
         try {
             SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
                     BigInteger.valueOf(sizeOfFile), checksumForValidationAtPillar, checksumRequestsForValidation, 
-                    eventHandler, new FlowController(settings, false), auditTrailInformation);
+                    eventHandler, new FlowController(settings), auditTrailInformation);
             conversationMediator.addConversation(conversation);
             conversation.startConversation();
         } catch (OperationFailedException e) {
@@ -119,7 +119,7 @@ public class ConversationBasedPutFileClient implements PutFileClient {
         ArgumentValidator.checkNotNull(fileId, "String fileId");
         
         SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
-                BigInteger.valueOf(sizeOfFile), null, null, null, new FlowController(settings, false), "TODO");
+                BigInteger.valueOf(sizeOfFile), null, null, null, new FlowController(settings), "TODO");
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }

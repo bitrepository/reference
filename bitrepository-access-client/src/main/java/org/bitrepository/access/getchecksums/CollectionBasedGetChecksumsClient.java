@@ -79,48 +79,6 @@ public class CollectionBasedGetChecksumsClient implements GetChecksumsClient {
     }
 
     @Override
-    public Map<String, ResultingChecksums> getChecksumsBlocking(Collection<String> pillarIDs, FileIDs fileIDs, 
-            ChecksumSpecTYPE checksumSpec, URL addressForResult, EventHandler eventHandler, 
-            String auditTrailInformation) throws NoPillarFoundException, OperationTimeOutException, 
-            OperationFailedException {
-        ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "Collection<String> pillarIDs");
-        ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
-        ArgumentValidator.checkNotNull(checksumSpec, "ChecksumSpecTYPE checksumSpec");
-        
-        log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"
-                + pillarIDs + "' with the specifications '" + checksumSpec + "'. "
-                + "The result should be uploaded to '" + addressForResult + "'.");
-
-        SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(
-                bus, settings, addressForResult, fileIDs, checksumSpec, pillarIDs, eventHandler, 
-                new FlowController(settings, true), auditTrailInformation);
-     
-        try {
-            conversationMediator.addConversation(conversation);
-            conversation.startConversation();
-            
-            while(!conversation.hasEnded()) {
-                synchronized(conversation) {
-                    try {
-                        conversation.wait(500);
-                    } catch(InterruptedException e) {
-                        log.debug("Interrupted!", e);
-                    }
-                }
-            }
-            
-            return conversation.getResult();
-        } catch (OperationFailedException e) {
-            if(eventHandler != null) {
-                eventHandler.handleEvent(new DefaultEvent(OperationEventType.Failed, e.getMessage()));
-                return null;
-            } else {
-                throw e;
-            }
-        }
-    }
-
-    @Override
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
             URL addressForResult, EventHandler eventHandler, String auditTrailInformation)
             throws OperationFailedException {
@@ -133,7 +91,7 @@ public class CollectionBasedGetChecksumsClient implements GetChecksumsClient {
                 + "The result should be uploaded to '" + addressForResult + "'.");
         SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(
                 bus, settings, addressForResult, fileIDs, checksumSpec, pillarIDs, eventHandler,  
-                new FlowController(settings, false), auditTrailInformation);
+                new FlowController(settings), auditTrailInformation);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }
