@@ -32,18 +32,18 @@
     <AlarmDestination>TEST-ALARM-TOPIC</AlarmDestination>
     <Certificates>
       <FileExchangeServerCertificates>   
-        <FileExchangeServerCertificate></FileExchangeServerCertificate>
+        <Certificate></Certificate>
       </FileExchangeServerCertificates>
       <MessageBusCertificates>      
-        <MessageBusCertificate></MessageBusCertificate>
+        <Certificate></Certificate>
       </MessageBusCertificates>
       <ClientCertificates>
-        <ClientCertificate></ClientCertificate>
+        <Certificate></Certificate>
       </ClientCertificates>
     </Certificates>
     <Permissions>
       <Permission>
-       <Certificate>Me</Certificate>
+       <Certificate>SMOk</Certificate>
        <OperationType>All</OperationType>     
       </Permission>
     </Permissions>
