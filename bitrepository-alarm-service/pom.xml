@@ -10,14 +10,14 @@
   <name>Bitrepository Alarm Service</name>
   <dependencies>
     <dependency>
-      <groupId>org.bitrepository</groupId>
+      <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-protocol</artifactId>
-      <version>0.5.1-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.bitrepository</groupId>
+      <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-common</artifactId>
-      <version>0.5.1-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
@@ -26,16 +26,16 @@
     </dependency>
     <!-- Test dependencies -->
     <dependency>
-      <groupId>org.bitrepository</groupId>
+      <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-protocol</artifactId>
-      <version>0.5.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.bitrepository</groupId>
+      <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-common</artifactId>
-      <version>0.5.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

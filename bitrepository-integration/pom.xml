@@ -24,46 +24,46 @@
     	<version>0.2</version>
     </dependency>
     <dependency>
-      <groupId>org.bitrepository</groupId>
+      <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-protocol</artifactId>
-      <version>0.5.1-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <!-- THE TEST SCOPE -->
     <dependency>
-      <groupId>org.bitrepository</groupId>
+      <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-access-client</artifactId>
-      <version>0.5.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.bitrepository</groupId>
+      <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-modifying-client</artifactId>
-      <version>0.5.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.bitrepository</groupId>
+      <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-reference-pillar</artifactId>
-      <version>0.5.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.bitrepository</groupId>
+      <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-common</artifactId>
-      <version>0.5.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <type>test-jar</type>
     </dependency>
     <dependency>
-      <groupId>org.bitrepository</groupId>
+      <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-protocol</artifactId>
-      <version>0.5.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.bitrepository</groupId>
+      <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-reference-pillar</artifactId>
-      <version>0.5.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
