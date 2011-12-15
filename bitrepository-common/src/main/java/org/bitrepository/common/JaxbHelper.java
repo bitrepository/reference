@@ -54,39 +54,37 @@ public final class JaxbHelper {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final Validator schemaValidator;
-    private final String prefix;
-    private final String schemaToSchema;
-    /** Hides constructor for this utility class to prevent instantiation */
-    public JaxbHelper(String inputPrefix, String pathToSchema) {
-        ArgumentValidator.checkNotNullOrEmpty(pathToSchema, "pathToSchema");
-        if(inputPrefix == null) {
-            this.prefix = "";
+    private final String pathToSchema;
+    private final String schemaName;
+    
+    /**
+     * Used for creating a JaxbHelper instance for a specific schema.
+     * @param pathToSchema The location of the schema in the classpath.
+     * @param schemaName The name of the schema to use.
+     */
+    public JaxbHelper(String pathToSchema, String schemaName) {
+        ArgumentValidator.checkNotNullOrEmpty(schemaName, "schemaName");
+        if(pathToSchema == null) {
+            this.pathToSchema = "";
         } else {
-            this.prefix = inputPrefix;
+            this.pathToSchema = pathToSchema;
         }
         
-        this.schemaToSchema = pathToSchema;
+        this.schemaName = schemaName;
 
-        InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(prefix + pathToSchema);
+        InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(pathToSchema + schemaName);
         log.debug("Creating JAXBHelper based on schema from: " + 
-                Thread.currentThread().getContextClassLoader().getResource(prefix + pathToSchema));
-        LSResourceResolver resourceResolver = new ResourceResolver(prefix);
+                Thread.currentThread().getContextClassLoader().getResource(pathToSchema + schemaName));
+        LSResourceResolver resourceResolver = new ResourceResolver(pathToSchema);
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         schemaFactory.setResourceResolver(resourceResolver);
         Schema schema;
         try {
             schema = schemaFactory.newSchema(new SAXSource(new InputSource(schemaStream)));
         } catch (SAXException e) {
-            throw new IllegalArgumentException("Unable to parse schema " + pathToSchema, e);
+            throw new IllegalArgumentException("Unable to parse schema " + schemaName, e);
         }
         schemaValidator = schema.newValidator();
-    }
-
-    /**
-     * Gets the path to the schema that the validator uses. 
-     */
-    public String getSchemaPath() {
-        return "" + Thread.currentThread().getContextClassLoader().getResource(prefix + schemaToSchema);
     }
     
     /**
@@ -95,8 +93,7 @@ public final class JaxbHelper {
      * @param xmlroot The root class to deserialize to.
      * @param inputStream The input stream containing the xml data.
      * @return Returns a new object representation of the xml data. 
-     * @throws JAXBException The attempt to load the xml into a new object representation failed
-     * @throws SAXException 
+     * @throws JAXBException The attempt to load the xml into a new object representation failed.
      */
     public <T> T loadXml(Class<T> xmlroot, InputStream inputStream) throws JAXBException {
         ArgumentValidator.checkNotNull(xmlroot, "xmlroot");
