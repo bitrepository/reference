@@ -13,8 +13,6 @@
 </script>
 
     <div class="ui-widget">
-    <h1>Delete file:</h1><br>
-    Dummy delete ;)
     
     <form id="deleteForm" action="javascript:submit()">
         <div>
@@ -22,19 +20,76 @@
             <table border="0">
                 <tr>
                     <td>File ID:</td>
+                    <td>&nbsp;</td>
                     <td><input class="defaultText" title="File ID" id="fileID" type="text"/></td>
                 </tr>
+                <tr>
+                    <td>Pillar ID:</td>
+                    <td>&nbsp;</td>
+                    <td><input class="defaultText" title="Pillar ID" id="pillarID" type="text"/></td>
+                </tr>
+                <tr>
+                    <td>Checksum:</td>
+                    <td>&nbsp;</td>
+                    <td><input id="deleteChecksum" type="text"/></td>
+                </tr>
+                <tr valign="top">
+                    <td>Checksum type:</td>
+                    <td>&nbsp;</td>
+                    <td> 
+                        <input type="radio" name="deleteChecksumType" id="deletemd5ChecksumType" value="md5" checked="yes"/> 
+                        <label for="deletemd5ChecksumType">md5</label>
+                        <input type="radio" name="deleteChecksumType" id="deletesha1ChecksumType" value="sha1"/> 
+                        <label for="deletesha1ChecksumType">sha1</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Salt (optional):</td>
+                    <td>&nbsp;</td>
+                    <td><input type="text" id="deleteChecksumSalt"/></td>
+                </tr>
+                <tr valign="top">
+                    <td>Checksum type:</td>
+                    <td>&nbsp;</td>
+                    <td> 
+                        <input type="radio" name="approveChecksumType" id="approveDisableChecksum" value="disabled" checked="yes"/> 
+                        <label for="approveDisableChecksum">disable</label>
+                        <input type="radio" name="approveChecksumType" id="approvemd5ChecksumType" value="md5"/> 
+                        <label for="approvemd5ChecksumType">md5</label>
+                        <input type="radio" name="approveChecksumType" id="approvesha1ChecksumType" value="sha1"/> 
+                        <label for="approvesha1ChecksumType">sha1</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Salt (optional):</td>
+                    <td>&nbsp;</td>
+                    <td><input type="text" id="approveChecksumSalt"/></td>
+                </tr>
             </table> 
-            <input type="submit" id="auditSubmit" value="Delete file"/>
+            <input type="submit" value="Delete file"/>
         </div>
     </form>
     <div id="status"> </div>
     
-
-    
     <script>
-            $("#deleteForm").submit(function() {
-            $("#status").html("<p>Deleting file!</p>").show();
+        $("#deleteForm").submit(function() {
+            var fileID = $("#fileID").val();
+            fileID = fileID.replace(/\s+/g, '');
+            var pillarID = $("#pillarID").val();
+            pillarID = pillarID.replace(/\s+/g, '');
+            var verifyChecksumVal = $("#deleteChecksum").val();
+            var verifyChecksumType = $("input[name=deleteChecksumType]:checked").val();
+            var verifyChecksumSalt = $("#deleteChecksumSalt").val();
+            var requestChecksumType = $("input[name=approveChecksumType]:checked").val();
+            var requestChecksumSalt = $("#approveChecksumSalt").val();   	
+            	
+            var command = "repo/reposervice/deleteFile/?fileID=" + fileID + "&pillarID=" + pillarID +
+            		"&deleteChecksum=" + verifyChecksumVal + "&deleteChecksumType="+ verifyChecksumType + 
+            		"&deleteChecksumSalt=" + verifyChecksumSalt + "&approveChecksumType=" + requestChecksumType + 
+            		"&approveChecksumSalt=" + requestChecksumSalt;
+            	
+            $('#status').load(command).show();
+            //$("#status").html("<p>Deleting file!</p>").show();
             return true;
         });
     </script> 
@@ -42,7 +97,5 @@
    	<script>
   		function submit() { return ; }
   	</script>
-    
-    
     </div>
 </html>

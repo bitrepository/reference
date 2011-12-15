@@ -258,6 +258,20 @@ public class Reposervice {
     	return sb.toString();
     }
     
+    @GET
+    @Path("deleteFile")
+    @Produces("text/html")
+    public String deleteFile(
+            @QueryParam("fileID") String fileID, @QueryParam("pillarID") String pillarID,
+            @QueryParam("deleteChecksum") String deleteChecksum, 
+            @QueryParam("deleteChecksumType") String deleteChecksumType,
+            @QueryParam("deleteChecksumSalt") String deleteChecksumSalt,
+            @QueryParam("approveChecksumType") String approveChecksumType,
+            @QueryParam("approveChecksumSalt") String approveChecksumSalt) {
+        return client.deleteFile(fileID, pillarID, deleteChecksum, deleteChecksumType, deleteChecksumSalt, 
+                approveChecksumType, approveChecksumSalt);
+    }
+    
 }
 
 //http://localhost:8080/webservice-0.0.1-SNAPSHOT/reposervice/getfile/?fileID=test (tomcat 7)

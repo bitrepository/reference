@@ -19,10 +19,13 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.ModifyComponentFactory;
+import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
@@ -35,6 +38,7 @@ public class BasicClient {
     private GetFileClient getClient;
     private GetChecksumsClient getChecksumClient;
     private GetFileIDsClient getFileIDsClient;
+    private DeleteFileClient deleteFileClient;
     private EventHandler eventHandler;
     private String logFile;
     private Settings settings;
@@ -53,6 +57,7 @@ public class BasicClient {
         getClient = AccessComponentFactory.getInstance().createGetFileClient(settings);
         getChecksumClient = AccessComponentFactory.getInstance().createGetChecksumsClient(settings);
         getFileIDsClient = AccessComponentFactory.getInstance().createGetFileIDsClient(settings);
+        deleteFileClient = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings);
     }
     
     public void shutdown() {
@@ -204,6 +209,48 @@ public class BasicClient {
 		}
 		
     	return results;
+    }
+    
+    public String deleteFile(String fileID, String pillarID, String deleteChecksum, String deleteChecksumType, 
+            String deleteChecksumSalt, String approveChecksumType, String approveChecksumSalt) {
+        if(fileID == null) {
+            return "Missing fileID!";
+        }
+        if(pillarID == null || !settings.getCollectionSettings().getClientSettings().getPillarIDs().contains(pillarID)) {
+            return "Missing or unknown pillarID!";
+        }
+        if(deleteChecksum == null || deleteChecksum.equals("")) {
+            return "Checksum for pillar check is missing";
+        }
+        if(deleteChecksumType == null || deleteChecksumType.equals("")) {
+            return "Checksum type for pillar check is invalid";
+        }
+        ChecksumDataForFileTYPE verifyingChecksum = new ChecksumDataForFileTYPE();
+        verifyingChecksum.setChecksumValue(deleteChecksum);
+        ChecksumSpecTYPE deleteChecksumSpec = new ChecksumSpecTYPE();
+        if(deleteChecksumSalt == null || !deleteChecksumSalt.equals("")) {
+            deleteChecksumSalt = null;
+        }
+        deleteChecksumSpec.setChecksumSalt(deleteChecksumSalt);
+        deleteChecksumSpec.setChecksumType(deleteChecksumType);
+        Date now = new Date();
+        verifyingChecksum.setCalculationTimestamp(XMLGregorianCalendarConverter.asXMLGregorianCalendar(now));
+        verifyingChecksum.setChecksumSpec(deleteChecksumSpec);
+        ChecksumSpecTYPE requestedChecksumSpec = null;
+        log.info("----- Got DeleteFileRequest with approveChecksumtype = " + approveChecksumType);
+        if(approveChecksumType != null && !approveChecksumType.equals("disabled")) {
+            requestedChecksumSpec = new ChecksumSpecTYPE();
+            requestedChecksumSpec.setChecksumType(approveChecksumType);
+            requestedChecksumSpec.setChecksumSalt(approveChecksumSalt);
+        }
+        
+        try {
+        deleteFileClient.deleteFile(fileID, pillarID, verifyingChecksum, requestedChecksumSpec, 
+                eventHandler, "Kick that file");
+        } catch (OperationFailedException e) {
+            //This should not happen Jonas!
+        }
+        return "Deleting file";
     }
     
     private void changeLogFiles() {
