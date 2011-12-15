@@ -3,9 +3,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>bitrepository</artifactId>
-    <groupId>org.bitrepository</groupId>
-    <version>0.5.1-SNAPSHOT</version>
+    <groupId>org.bitrepository.reference</groupId>
+    <artifactId>bitrepository-parent</artifactId>
+    <version>0.6.0-SNAPSHOT</version>
   </parent>
   <artifactId>bitrepository-common</artifactId>
   <name>Bitrepository Common</name>
@@ -22,14 +22,14 @@
       <version>2.0.1</version>
     </dependency>
     <dependency>
-    	<groupId>org.bitrepository</groupId>
-    	<artifactId>bitrepository-collection-settings</artifactId>
-    	<version>${collection.settings.version}</version>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>bitrepository-collection-settings</artifactId>
+      <version>${collection.settings.version}</version>
     </dependency>
   </dependencies>
 
   <build>
-  <testResources>
+    <testResources>
       <testResource>
         <directory>src/test/resources</directory>
         <filtering>true</filtering>

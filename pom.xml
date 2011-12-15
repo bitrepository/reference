@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.bitrepository</groupId>
-  <artifactId>bitrepository</artifactId>
-  <version>0.5.1-SNAPSHOT</version>
+  <groupId>org.bitrepository.reference</groupId>
+  <artifactId>bitrepository-parent</artifactId>
+  <version>0.6.0-SNAPSHOT</version>
 
   <parent>
     <groupId>org.sbforge</groupId>
     <artifactId>sbforge-parent</artifactId>
-    <version>10</version>
+    <version>11</version>
   </parent>
 
   <name>Bitrepository</name>
@@ -71,15 +71,6 @@
     <developer>
       <name>Jonas Lindberg Frellesen</name>
       <email>jolf@kb.dk</email>
-      <organization>kb</organization>
-      <organizationUrl>http://kb.dk</organizationUrl>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Christian Vandel</name>
-      <email>csv@kb.dk</email>
       <organization>kb</organization>
       <organizationUrl>http://kb.dk</organizationUrl>
       <roles>
