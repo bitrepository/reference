@@ -110,10 +110,10 @@ public class MessageReceiver {
     }
     
     /**
-     * Corresponds to the {@link #waitForMessage(Class, long, TimeUnit)} method with a default timeout of 1 second.
+     * Corresponds to the {@link #waitForMessage(Class, long, TimeUnit)} method with a default timeout of 5 second.
      */
     public <T> T waitForMessage(Class<T> messageType) {
-        return waitForMessage(messageType, 3, TimeUnit.SECONDS);
+        return waitForMessage(messageType, 5, TimeUnit.SECONDS);
     }
 
     /**
