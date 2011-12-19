@@ -100,6 +100,7 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
         ipfpfResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
         ipfpfResponse.setMinVersion(VERSION_DEFAULT);
         ipfpfResponse.setVersion(VERSION_DEFAULT);
+        ipfpfResponse.setResponseInfo(IDENTIFY_INFO_DEFAULT);
 
         ipfpfResponse.setPillarChecksumSpec(null);
 
