@@ -26,8 +26,9 @@ package org.bitrepository.integrityclient.collector.eventhandler;
 
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
+import org.bitrepository.integrityclient.cache.IntegrityCache;
 import org.bitrepository.integrityclient.checking.IntegrityChecker;
+import org.bitrepository.integrityclient.checking.IntegrityReport;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
@@ -37,28 +38,31 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles the event from the GetFileIds operations and sends the results into the cache.
  */
-public class GetFileIdsEventHandler implements EventHandler {
-    
+public class IntegrityStorageFileIDsUpdater implements EventHandler {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /** The storage to send the results.*/
-    private CachedIntegrityInformationStorage informationCache;
+    private IntegrityCache informationCache;
     /** The FileIDs to be */
     private final FileIDs fileIDs;
     /** The checker used for checking the integrity of the results.*/
     private final IntegrityChecker integrityChecker;
+    /** The entity used for sending alarms.*/
+    private final IntegrityAlarmDispatcher alarmDispatcher;
     
     /**
      * Constructor.
      * @param informationCache The cache for storing the integrity results.
      * @param integrityChecker The integrity checker for validating the results.
+     * @param alarmDispatcher The dispatcher of alarms. 
      * @param fileIDs The given data to perform the integrity checks upon.
      */
-    public GetFileIdsEventHandler(CachedIntegrityInformationStorage informationCache, 
-            IntegrityChecker integrityChecker, FileIDs fileIDs) {
+    public IntegrityStorageFileIDsUpdater(IntegrityCache informationCache, 
+            IntegrityChecker integrityChecker, IntegrityAlarmDispatcher alarmDispatcher, FileIDs fileIDs) {
         this.informationCache = informationCache;
         this.integrityChecker = integrityChecker;
+        this.alarmDispatcher = alarmDispatcher;
         this.fileIDs = fileIDs;
     }
     
@@ -96,16 +100,28 @@ public class GetFileIdsEventHandler implements EventHandler {
      */
     private void handleFailure(OperationEvent event) {
         log.warn(event.getType() + " : " + event.getState() + " : " + event.getInfo());
-        // TODO ??
+        performIntegrityCheck();
     }
     
     /**
-     * Method for handling a complete. Thus notifying the relevant instance.
+     * Handles a Complete for the whole operation by performing a integrity check on the given checksums.
      * @param event The event that has completed.
      */
     private void handleComplete(OperationEvent event) {
         log.info(event.getType() + " : " + event.getState() + " : " + event.getInfo());
-        
-        integrityChecker.checkFileIDs(fileIDs);
+        performIntegrityCheck();
+    }
+
+    /**
+     * Performs the integrity check, and sends an Alarm if any integrity problems. 
+     */
+    private void performIntegrityCheck() {
+        IntegrityReport report = integrityChecker.checkFileIDs(fileIDs);
+        if(!report.isValid()) {
+            log.warn(report.generateReport());
+            alarmDispatcher.integrityFailed(report);
+        } else {
+            log.debug("No integrity issues found for files '" + report.getFileIDs() + "'");
+        }
     }
 }

@@ -30,17 +30,29 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.bitrepository.common.settings.Settings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Scheduler that uses Timer to trigger events.
  */
 public class TimerIntegrityInformationScheduler implements IntegrityInformationScheduler {
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
+
     /** The timer that schedules events. */
     private final Timer timer;
     /** The period between testing whether triggers have triggered. */
     private final long interval;
     /** The map between the running timertasks and their names.*/
     private Map<String, TimerTask> triggerTimerTasks = new HashMap<String, TimerTask>();
+    
+    /** The name of the timer.*/
+    private final String TIMER_NAME = "Integrity Information Scheduler";
+    /** Whether the timer is a deamon.*/
+    private final boolean TIMER_IS_DEAMON = true;
+    /** A timer delay of 0 seconds.*/
+    private final Long NO_DELAY = 0L;
 
     /** Setup a timer task for triggering all triggers at requested interval.
      *
@@ -48,15 +60,20 @@ public class TimerIntegrityInformationScheduler implements IntegrityInformationS
      */
     public TimerIntegrityInformationScheduler(Settings settings) {
         this.interval = settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval();
-        timer = new Timer("Integrity Information Scheduler", true);
+        timer = new Timer(TIMER_NAME, TIMER_IS_DEAMON);
     }
 
     @Override
-    public void addTrigger(Trigger trigger, String name) {
+    public void putTrigger(String name, Trigger trigger) {
+        if(removeTrigger(name)) {
+            log.info("Recreated trigger named '" + name + "': " + trigger);
+        } else {
+            log.debug("Created a trigger named '" + name + "': " + trigger);
+        }
         TimerTask task = new TriggerTimerTask(trigger);
         // TODO: Should the interval rather be a suggestion from the trigger?
         // TODO: Should triggers be defined in configuration? How?
-        timer.scheduleAtFixedRate(task, 0L, interval);
+        timer.scheduleAtFixedRate(task, NO_DELAY, interval);
         
         triggerTimerTasks.put(name, task);
     }
@@ -72,6 +89,9 @@ public class TimerIntegrityInformationScheduler implements IntegrityInformationS
         return true;
     }
     
+    /**
+     * TimerTask for the triggers.
+     */
     private static class TriggerTimerTask extends TimerTask {
         /** The trigger to test and run. */
         private Trigger trigger;

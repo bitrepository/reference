@@ -76,6 +76,11 @@ public class IntegrityServiceLauncher {
             Settings settings = settingsLoader.getSettings(collectionId);
             SimpleIntegrityService integrityService = new SimpleIntegrityService(settings);
             
+            integrityService.startChecksumIntegrityCheck(timeSinceLastChecksumUpdate, 
+                    settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval());
+            for(String pillarId : settings.getCollectionSettings().getClientSettings().getPillarIDs()) {
+                integrityService.startAllFileIDsIntegrityCheckFromPillar(pillarId, DEFAULT_MAX_TIME_SINCE_UPDATE);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);

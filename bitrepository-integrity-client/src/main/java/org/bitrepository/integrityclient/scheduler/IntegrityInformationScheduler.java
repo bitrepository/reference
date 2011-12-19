@@ -35,7 +35,7 @@ public interface IntegrityInformationScheduler {
      * @param trigger The definition of whether a collection should run, and if so what collection.
      * @param name The name of the trigger.
      */
-    void addTrigger(Trigger trigger, String name);
+    void putTrigger(String name, Trigger trigger);
     
     /**
      * Removes a trigger with the given name.

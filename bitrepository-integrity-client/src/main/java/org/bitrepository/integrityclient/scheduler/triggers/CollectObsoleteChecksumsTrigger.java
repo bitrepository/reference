@@ -31,15 +31,18 @@ import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
-import org.bitrepository.integrityclient.cache.FileIDInfo;
+import org.bitrepository.integrityclient.cache.IntegrityCache;
+import org.bitrepository.integrityclient.cache.FileInfo;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
 
 /**
  * Collects the checksums from the pillars when their latest update has exceeded the interval.
  * The messages will be sent individually for each file.
  */
-public class CollectChecksumsTrigger extends IntervalTrigger {
+public class CollectObsoleteChecksumsTrigger extends IntervalTrigger {
+    /** The audit trail for this trigger.*/
+    private final String AUDIT_TRAIL_INFORMATION = "IntegrityService Scheduling GetChecksums collector";
+    
     /** The informationCollector.*/
     private final IntegrityInformationCollector informationCollector;
     /** The type of checksum for the calculation, e.g. the algorithm and optional salt.*/
@@ -47,7 +50,7 @@ public class CollectChecksumsTrigger extends IntervalTrigger {
     /** The time to exceed. */
     private final long maxTimeToLastUpdate;
     /** The cache with the information about the previously collected integrity information.*/
-    private final CachedIntegrityInformationStorage cache;
+    private final IntegrityCache cache;
     
     /**
      * Constructor.
@@ -57,8 +60,8 @@ public class CollectChecksumsTrigger extends IntervalTrigger {
      * @param informationCollector The initiator of the GetChecksums conversation.
      * @param cache The cache with integrity information.
      */
-    public CollectChecksumsTrigger(long triggerInterval, long maxTimeToLastUpdate, ChecksumSpecTYPE checksumType, 
-            IntegrityInformationCollector informationCollector, CachedIntegrityInformationStorage cache) {
+    public CollectObsoleteChecksumsTrigger(long triggerInterval, long maxTimeToLastUpdate, 
+            ChecksumSpecTYPE checksumType, IntegrityInformationCollector informationCollector, IntegrityCache cache) {
         super(triggerInterval);
         this.informationCollector = informationCollector;
         this.checksumType = checksumType;
@@ -72,12 +75,13 @@ public class CollectChecksumsTrigger extends IntervalTrigger {
         
         // Handle each file id individually.
         for(String fileid : cache.getAllFileIDs()) {
-            Collection<FileIDInfo> fileIDInfos = cache.getFileInfo(fileid);
+            Collection<FileInfo> fileIDInfos = cache.getFileInfos(fileid);
             List<String> pillarsToUpdate = new ArrayList<String>();
             
             // Find the pillars with exceeded update time.
-            for(FileIDInfo fileinfo : fileIDInfos) {
-                if(fileinfo.getDateForLastChecksumCheck().toGregorianCalendar().before(latestUpdate)) {
+            for(FileInfo fileinfo : fileIDInfos) {
+                if(fileinfo.getDateForLastChecksumCheck().toGregorianCalendar().getTimeInMillis() 
+                        < latestUpdate.getTime()) {
                     pillarsToUpdate.add(fileinfo.getPillarId());
                 }
             }
@@ -87,7 +91,7 @@ public class CollectChecksumsTrigger extends IntervalTrigger {
                 FileIDs fileIDs = new FileIDs();
                 fileIDs.setFileID(fileid);
                 informationCollector.getChecksums(pillarsToUpdate, fileIDs, checksumType, 
-                      "IntegrityService Scheduling GetChecksums collector");
+                        AUDIT_TRAIL_INFORMATION);
             }
         }
     }

@@ -33,11 +33,11 @@ import org.bitrepository.common.utils.CalendarUtils;
 /**
  * Class for containing the information about a given file at a given pillar.
  */
-public class FileIDInfo {
+public class FileInfo {
     /** The id of the file.*/
     private final String fileID;
     /** The date for the last check for the file ID.*/
-    private XMLGregorianCalendar fileLastCheck;
+    private XMLGregorianCalendar fileCreationTimestamp;
     /** The checksum of the file.*/
     private String checksum;
     /** The type of checksum, e.g. algorithm and optional salt*/
@@ -56,12 +56,12 @@ public class FileIDInfo {
      * @param checksumLastCheck The date for the last check of the checksum (if null, replaced by Epoch).
      * @param pillarId The id of the pillar (may not be null)
      */
-    public FileIDInfo(String fileID, XMLGregorianCalendar fileLastCheck, String checksum, 
+    public FileInfo(String fileID, XMLGregorianCalendar fileLastCheck, String checksum, 
             ChecksumSpecTYPE checksumType, XMLGregorianCalendar checksumLastCheck, String pillarId) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         this.fileID = fileID;
-        this.fileLastCheck = fileLastCheck;
+        this.fileCreationTimestamp = fileLastCheck;
         this.checksum = checksum;
         this.checksumType = checksumType;
         this.checksumLastCheck = checksumLastCheck;
@@ -69,7 +69,7 @@ public class FileIDInfo {
         
         // If file id date is null, then replace with epoch.
         if(fileLastCheck == null) {
-            this.fileLastCheck = CalendarUtils.getEpoch();
+            this.fileCreationTimestamp = CalendarUtils.getEpoch();
         }
         
         // If checksum date is null, then replace with epoch.
@@ -83,7 +83,7 @@ public class FileIDInfo {
      * @param fileID The id of the file.
      * @param pillarId The id of the pillar.
      */
-    public FileIDInfo(String fileID, String pillarId) {
+    public FileInfo(String fileID, String pillarId) {
         this(fileID, null, null, null, null, pillarId);
     }
     
@@ -98,14 +98,14 @@ public class FileIDInfo {
      * @return The date for the last check of the file. 
      */
     public XMLGregorianCalendar getDateForLastFileIDCheck() {
-        return fileLastCheck;
+        return fileCreationTimestamp;
     }
     
     /**
      * @param dateForLastFielIDCheck The new date for the last check of the file.
      */
     public void setDateForLastFileIDCheck(XMLGregorianCalendar dateForLastFielIDCheck) {
-        this.fileLastCheck = dateForLastFielIDCheck;
+        this.fileCreationTimestamp = dateForLastFielIDCheck;
     }
     
     /**
@@ -159,7 +159,7 @@ public class FileIDInfo {
     
     @Override
     public String toString() {
-        return "Pillar id: " + pillarId + ", File id: " + fileID + " (date: " + fileLastCheck + "), Checksum: " 
+        return "Pillar id: " + pillarId + ", File id: " + fileID + " (date: " + fileCreationTimestamp + "), Checksum: " 
                 + checksum + " (date: " + checksumLastCheck + "), Checksum type: " + checksumType;
     }
 }

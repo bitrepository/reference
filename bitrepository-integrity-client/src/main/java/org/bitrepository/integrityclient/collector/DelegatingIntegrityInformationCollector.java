@@ -30,12 +30,15 @@ import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.integrityclient.cache.IntegrityCache;
 import org.bitrepository.integrityclient.checking.IntegrityChecker;
-import org.bitrepository.integrityclient.collector.eventhandler.GetChecksumsEventHandler;
-import org.bitrepository.integrityclient.collector.eventhandler.GetFileIdsEventHandler;
+import org.bitrepository.integrityclient.collector.eventhandler.IntegrityAlarmDispatcher;
+import org.bitrepository.integrityclient.collector.eventhandler.IntegrityStorageChecksumsUpdater;
+import org.bitrepository.integrityclient.collector.eventhandler.IntegrityStorageFileIDsUpdater;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,13 +50,15 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /** The storage to store data in. */
-    private final CachedIntegrityInformationStorage storage;
+    private final IntegrityCache storage;
     /** The client for retrieving file IDs. */
     private final GetFileIDsClient getFileIDsClient;
     /** The client for retrieving checksums. */
     private final GetChecksumsClient getChecksumsClient;
     /** The checker for the integrity. Should be used, when the collecting has finished to validate the collected.*/
     private final IntegrityChecker checker;
+    /** The alarmDispatcher for sending errors. */
+    private final IntegrityAlarmDispatcher alarmDispatcher;
     
     /**
      * Initialise a delegating integrity information collector.
@@ -62,19 +67,21 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
      * @param getFileIDsClient The client for retrieving file IDs
      * @param getChecksumsClient The client for retrieving checksums
      */
-    public DelegatingIntegrityInformationCollector(CachedIntegrityInformationStorage storage,
+    public DelegatingIntegrityInformationCollector(IntegrityCache storage,
             IntegrityChecker integrityChecker, GetFileIDsClient getFileIDsClient, 
-            GetChecksumsClient getChecksumsClient) {
+            GetChecksumsClient getChecksumsClient, Settings settings, MessageBus messageBus) {
         this.storage = storage;
         this.checker = integrityChecker;
         this.getFileIDsClient = getFileIDsClient;
         this.getChecksumsClient = getChecksumsClient;
+        alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus);
     }
 
     @Override
     public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation) {
         try {
-            EventHandler fileIdsEventHandler = new GetFileIdsEventHandler(storage, checker, fileIDs);
+            EventHandler fileIdsEventHandler = new IntegrityStorageFileIDsUpdater(storage, checker, alarmDispatcher,
+                    fileIDs);
             getFileIDsClient.getFileIDs(pillarIDs, fileIDs, null, fileIdsEventHandler, auditTrailInformation);
         } catch (OperationFailedException e) {
             log.warn("Could not retrieve the file ids '" + fileIDs + "' from '" + pillarIDs + "'", e);
@@ -88,7 +95,8 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType, 
             String auditTrailInformation) {
         try {
-            EventHandler checksumEventHandler = new GetChecksumsEventHandler(storage, checker, fileIDs);
+            EventHandler checksumEventHandler = new IntegrityStorageChecksumsUpdater(storage, checker, alarmDispatcher, 
+                    fileIDs);
             getChecksumsClient.getChecksums(pillarIDs, fileIDs, checksumType, null, checksumEventHandler, 
                     auditTrailInformation);
         } catch (OperationFailedException e) {

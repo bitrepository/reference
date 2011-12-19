@@ -33,7 +33,7 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
  * This is the interface for initiating collecting integrity information from pillars.
  *
  * It is expected to be called from a scheduler that generates events to collect specific data.
- * Results should be stored in the {@link org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage}
+ * Results should be stored in the {@link org.bitrepository.integrityclient.cache.IntegrityCache}
  */
 public interface IntegrityInformationCollector {
     

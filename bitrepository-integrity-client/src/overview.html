@@ -1,0 +1,21 @@
+<body>
+The primary function of the IntegrityService is to perform and schedule integrity tests
+for the different files at a given collection.
+It consists of four different entities:
+<ul>
+  <li>IntegrityCache - The storage of the collected integrity data.</li>
+  <li>IntegrityChecker - The instance for performing the checks for the integrity of the files within the collection.</li>
+  <li>Collector - Collects the integrity data from the pillars by using the clients in the access module.</li>
+  <li>Scheduler - Schedules the collection of integrity data.</li>
+</ul>
+
+These four different entities of the IntegrityService are working together to perform the integrity checks in the following way:
+
+<ul>
+  <li>The scheduler issues an integrity check by calling the collector. This can either be integrity for the checksums or file ids, for one file or all files, and for either a single pillar or all the pillars.</li>
+  <li>The collector instantiates an eventhandler for the given type of integrity check and calls the respective client with this eventhandler.</li>
+  <li>When the results of the respective data collection has been performed by the client in the access module, then the eventhandler inserts the results into the IntgerityCache, and afterwards calls the IntegrityChecker to perform the actual integrity check on the given data-set.</li>
+  <li>The IntegrityChecker then validates the checksums of the file/all files, and issues an alarm if there is any disagreement about the checksum of a given file, or if the file is missing at a given pillar.</li>
+</ul>
+
+</body>

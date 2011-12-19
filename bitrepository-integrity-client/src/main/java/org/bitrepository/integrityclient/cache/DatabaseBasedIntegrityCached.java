@@ -27,38 +27,41 @@ package org.bitrepository.integrityclient.cache;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
+import org.bitrepository.integrityclient.configuration.integrityclientconfiguration.StorageConfiguration;
 
 /**
- * Store of cached integrity information.
+ * A storage of configuration information that is backed by a database.
  */
-public interface CachedIntegrityInformationStorage {
+public class DatabaseBasedIntegrityCached implements IntegrityCache {
     /**
-     * Add file ID data to cache.
-     * @param data The received data.
-     * @param pillarId The id of the pillar the received data comes from.
+     * Initialise storage.
+     *
+     * @param storageConfiguration Contains configuration for storage. Currently URL, user and pass for database.
      */
-    void addFileIDs(FileIDsData data, String pillarId);
+    public DatabaseBasedIntegrityCached(StorageConfiguration storageConfiguration) {}
 
-    /**
-     * Add checksum data to cache.
-     * @param data The received data.
-     * @param pillarId The id of the pillar the received data comes from.
-     */
-    void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, String pillarId);
+    @Override
+    public void addFileIDs(FileIDsData data, String pillardId) {
+        throw new NotImplementedException("TODO implement this.");
+    }
 
-    /**
-     * Retrieves the info from all pillars for a given file id.
-     * @param fileId The id of the file. 
-     * @return The collection of information about this file.
-     */
-    Collection<FileIDInfo> getFileInfo(String fileId);
-    
-    /**
-     * Retrieves all the file ids in the collection.
-     * @return The collection of file ids.
-     */
-    Collection<String> getAllFileIDs();
+    @Override
+    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, 
+            String pillarId) {
+        throw new NotImplementedException("TODO implement this.");
+    }
+
+    @Override
+    public Collection<FileInfo> getFileInfos(String fileId) {
+        throw new NotImplementedException("TODO implement this.");
+    }
+
+    @Override
+    public Collection<String> getAllFileIDs() {
+        throw new NotImplementedException("TODO implement this.");
+    }
 }

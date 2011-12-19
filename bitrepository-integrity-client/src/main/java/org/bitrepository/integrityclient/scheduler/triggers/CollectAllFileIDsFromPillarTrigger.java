@@ -32,11 +32,22 @@ import org.bitrepository.integrityclient.collector.IntegrityInformationCollector
 /**
  * Collects all the fileids from a given pillar.
  */
+/**
+ * Collects all the file ids from a given pillar, put them into the IntegrityCache, and validate them.
+ * It is performed by having the integrity collector updating the integrity cache, and then performing 
+ * the integrity check upon the results.
+ */
 public class CollectAllFileIDsFromPillarTrigger extends IntervalTrigger {
+    /** Sets all the file ids to true.*/
+    private final String SET_ALL_FILE_IDS_TRUE = "true";
+    /** The audit trail for this trigger.*/
+    private final String AUDIT_TRAIL_INFORMATION = "IntegrityService Scheduling GetFileIDs collector";
+    
     /** The informationCollector.*/
-    IntegrityInformationCollector informationCollector;
+    private IntegrityInformationCollector informationCollector;
     /** The id for the pillar, where all the file ids should be collected.*/
-    String pillarId;
+    private String pillarId;
+
     
     /**
      * Constructor.
@@ -44,7 +55,8 @@ public class CollectAllFileIDsFromPillarTrigger extends IntervalTrigger {
      * @param pillarId The id of the pillar.
      * @param informationCollector The initiator of the GetFileIDs conversation.
      */
-    public CollectAllFileIDsFromPillarTrigger(long interval, String pillarId, IntegrityInformationCollector informationCollector) {
+    public CollectAllFileIDsFromPillarTrigger(long interval, String pillarId, 
+            IntegrityInformationCollector informationCollector) {
         super(interval);
         this.informationCollector = informationCollector;
         this.pillarId = pillarId;
@@ -53,9 +65,9 @@ public class CollectAllFileIDsFromPillarTrigger extends IntervalTrigger {
     @Override
     public void run() {
         FileIDs fileIDs = new FileIDs();
-        fileIDs.setAllFileIDs("true");
+        fileIDs.setAllFileIDs(SET_ALL_FILE_IDS_TRUE);
         
         informationCollector.getFileIDs(Arrays.asList(new String[]{pillarId}), fileIDs, 
-                "IntegrityService Scheduling GetFileIDs collector");
+                AUDIT_TRAIL_INFORMATION);
     }
 }

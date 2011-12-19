@@ -32,7 +32,7 @@ import java.util.Map;
 public class InvalidChecksumException extends Exception {
     /** The id of the file involved.*/
     private final String fileId;
-    /** The map of the different cheksums and their count.*/
+    /** The map of the different checksums and their count.*/
     private final Map<String, Integer> checksumsCount;
     
     /**
@@ -48,5 +48,19 @@ public class InvalidChecksumException extends Exception {
     @Override
     public String toString() {
         return "File id: " + fileId + ", checksum counts: " + checksumsCount;
+    }
+    
+    /**
+     * @return The id of the file involved.
+     */
+    public String getFileId() {
+        return fileId;
+    }
+    
+    /**
+     * @return The map of the different checksums and their count.
+     */
+    public Map<String, Integer> getChecksumsCount() {
+        return checksumsCount;
     }
 }

@@ -33,84 +33,70 @@ import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
-import org.bitrepository.integrityclient.cache.FileIDInfo;
+import org.bitrepository.integrityclient.cache.IntegrityCache;
+import org.bitrepository.integrityclient.cache.FileInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * IntegrityChecker that systematically goes through the requested files and validates their integrity.
  */
-public class SystematicIntegrityValidator implements IntegrityChecker {
+public class SimpleIntegrityChecker implements IntegrityChecker {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The cache for */
-    private final CachedIntegrityInformationStorage cache;
+    private final IntegrityCache cache;
     /** The settings.*/
     private final Settings settings;
 
     /**
      * Constructor.
      */
-    public SystematicIntegrityValidator(Settings settings, CachedIntegrityInformationStorage cache) {
+    public SimpleIntegrityChecker(Settings settings, IntegrityCache cache) {
         this.cache = cache;
         this.settings = settings;
     }
     
     @Override
-    public boolean checkFileIDs(FileIDs fileIDs) {
-        log.info("Validating the file ids for the files: '" + fileIDs + "'");
+    public IntegrityReport checkFileIDs(FileIDs fileIDs) {
+        log.info("Validating the files: '" + fileIDs + "'");
         Collection<String> requestedFileIDs = getRequestedFileIDs(fileIDs);
         
-        List<String> invalidFileIDs = new ArrayList<String>();
+        IntegrityReport report = new IntegrityReport(fileIDs);
         
         for(String fileId : requestedFileIDs) {
-            if(!checkFileID(fileId)) {
-                invalidFileIDs.add(fileId);
+            List<String> pillarIds = checkFileID(fileId);
+            if(!pillarIds.isEmpty()) {
+                report.addMissingFile(fileId, pillarIds);
             }
         }
         
-        if(!invalidFileIDs.isEmpty()) {
-            // TODO send an Alarm instead.
-            StringBuilder errMsg = new StringBuilder("Invalid fileids: " + "\n"); 
-            for(String e : invalidFileIDs) {
-                errMsg.append(e.toString());
-                errMsg.append("\n");
-            }
-            log.warn(errMsg.toString());
-            return false;
-//            throw new RuntimeException(errMsg.toString());
+        if(!report.isValid()) {
+            log.warn("Failed the integrity check: " + report.generateReport());
         }
-        return true;
+        
+        return report;
     }
     
     @Override
-    public boolean checkChecksum(FileIDs fileIDs) {
+    public IntegrityReport checkChecksum(FileIDs fileIDs) {
         log.info("Validating the checksum for the files: '" + fileIDs + "'");
         Collection<String> requestedFileIDs = getRequestedFileIDs(fileIDs);
         
-        List<InvalidChecksumException> invalidChecksums = new ArrayList<InvalidChecksumException>();
+        IntegrityReport report = new IntegrityReport(fileIDs);
         
         for(String fileId : requestedFileIDs) {
-            try {
-                checkChecksum(fileId);
-            } catch (InvalidChecksumException e) {
-                invalidChecksums.add(e);
+            Map<String, Integer> checksumResults = checkChecksum(fileId);
+            if(checksumResults.size() > 1) {
+                report.addIncorrectChecksums(fileId, checksumResults);
             }
         }
         
-        if(!invalidChecksums.isEmpty()) {
-            // TODO send an Alarm instead.
-            StringBuilder errMsg = new StringBuilder("Invalid checksums: " + "\n"); 
-            for(InvalidChecksumException e : invalidChecksums) {
-                errMsg.append(e.toString());
-                errMsg.append("\n");
-            }
-            log.warn(errMsg.toString());
-            return false;
-//            throw new RuntimeException(errMsg.toString());
+        if(!report.isValid()) {
+            log.warn("Failed the integrity check: " + report.generateReport());
         }
-        return true;
+        
+        return report;
     }
     
     /**
@@ -129,24 +115,18 @@ public class SystematicIntegrityValidator implements IntegrityChecker {
      * Checks whether all pillars contain a given file id.
      * 
      * @param fileId The id of the file to validate.
-     * @return Whether all the pillars have the given file.
+     * @return The pillars, where the file is missing.
      */
-    private boolean checkFileID(String fileId) {
+    private List<String> checkFileID(String fileId) {
         List<String> unfoundPillars = settings.getCollectionSettings().getClientSettings().getPillarIDs();
         
-        for(FileIDInfo fileinfo : cache.getFileInfo(fileId)) {
-            // validate that it is the requested file id 
-            if(!fileinfo.getFileID().equals(fileId)) {
-                log.warn("Unexpected FileInfo found for file '" + fileId + "': {}", fileinfo);
-                continue;
-            } 
-            
-            unfoundPillars.remove(fileinfo.getPillarId());
-            
-            // TODO check the time?
+        for(FileInfo fileinfo : cache.getFileInfos(fileId)) {
+            if(!unfoundPillars.remove(fileinfo.getPillarId())) {
+                log.warn("Not expected pillar '" + fileinfo.getPillarId() + "' for file '" + fileId + "'");
+            }
         }
         
-        return unfoundPillars.isEmpty();
+        return unfoundPillars;
     }
     
     /**
@@ -155,18 +135,11 @@ public class SystematicIntegrityValidator implements IntegrityChecker {
      * TODO also validate, that all pillars contains the files.
      * 
      * @param fileId The id of the pillar to have its checksums validated. 
-     * @throws InvalidChecksumException If any 
      */
-    private void checkChecksum(String fileId) throws InvalidChecksumException {
+    private Map<String, Integer> checkChecksum(String fileId) {
         Map<String, Integer> checksumCount = new HashMap<String, Integer>();
         
-        for(FileIDInfo fileinfo : cache.getFileInfo(fileId)) {
-            // validate that it is the requested file id 
-            if(!fileinfo.getFileID().equals(fileId)) {
-                log.warn("Unexpected FileInfo found for file '" + fileId + "': {}", fileinfo);
-                continue;
-            } 
-            
+        for(FileInfo fileinfo : cache.getFileInfos(fileId)) {
             // Validate that the checksum has been found.
             String checksum = fileinfo.getChecksum();
             if(checksum == null || checksum.isEmpty()) {
@@ -181,12 +154,8 @@ public class SystematicIntegrityValidator implements IntegrityChecker {
             } else {
                 checksumCount.put(checksum, 1);                
             }
-            
-            // TODO check the time.
         }
         
-        if(checksumCount.size() != 1) {
-            throw new InvalidChecksumException(fileId, checksumCount);
-        } 
+        return checksumCount; 
     }
 }

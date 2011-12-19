@@ -68,7 +68,7 @@ public class SchedulerTest extends ExtendedTestCase {
         Assert.assertEquals(collector.getFileIDsCount(), 0, "No fileids calls at begining.");
         
         addStep("Start the trigger for the FileIDs", "Should start sending requests to the InformationCollector");
-        scheduler.addTrigger(new CollectAllFileIDsFromPillarTrigger(interval, "test-pillar", collector), taskName);
+        scheduler.putTrigger(taskName, new CollectAllFileIDsFromPillarTrigger(interval, "test-pillar", collector));
         
         addStep("Wait 4 * the interval, stop the trigger and validate the results.", 
                 "Should be three or four counts for FileIDs and none for Checksums");
@@ -108,7 +108,7 @@ public class SchedulerTest extends ExtendedTestCase {
         Assert.assertEquals(collector.getFileIDsCount(), 0, "No fileids calls at begining.");
 
         addStep("Start the trigger for the FileIDs", "Should start sending requests to the InformationCollector");
-        scheduler.addTrigger(new CollectAllChecksumsFromPillarTrigger(interval, "test-pillar", new ChecksumSpecTYPE(), collector), taskName);
+        scheduler.putTrigger(taskName, new CollectAllChecksumsFromPillarTrigger(interval, "test-pillar", new ChecksumSpecTYPE(), collector));
         
         addStep("Wait 4 * the interval, stop the trigger and validate the results.", 
                 "Should be three or four counts for Checksums and none for FileIDs");

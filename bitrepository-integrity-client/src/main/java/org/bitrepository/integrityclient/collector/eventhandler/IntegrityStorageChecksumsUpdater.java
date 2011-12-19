@@ -26,8 +26,9 @@ package org.bitrepository.integrityclient.collector.eventhandler;
 
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
+import org.bitrepository.integrityclient.cache.IntegrityCache;
 import org.bitrepository.integrityclient.checking.IntegrityChecker;
+import org.bitrepository.integrityclient.checking.IntegrityReport;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
@@ -37,27 +38,33 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles the event from the GetChecksums operations and sends the results into the cache.
  */
-public class GetChecksumsEventHandler implements EventHandler {
+public class IntegrityStorageChecksumsUpdater implements EventHandler {
     
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /** The storage to send the results.*/
-    private CachedIntegrityInformationStorage informationCache;
+    private IntegrityCache informationCache;
     /** The FileIDs to be */
     private final FileIDs fileIDs;
     /** The checker used for checking the integrity of the results.*/
     private final IntegrityChecker integrityChecker;
+    /** The entity used for sending alarms.*/
+    private final IntegrityAlarmDispatcher alarmDispatcher;
     
     /**
      * Constructor.
-     * @param informationCache The cache for storing the results.
+     * @param informationCache The cache for storing the integrity results.
+     * @param integrityChecker The integrity checker for validating the results.
+     * @param alarmDispatcher The dispatcher of alarms. 
+     * @param fileIDs The given data to perform the integrity checks upon.
      */
-    public GetChecksumsEventHandler(CachedIntegrityInformationStorage informationCache, 
-            IntegrityChecker integrityChecker, FileIDs fileIDs) {
+    public IntegrityStorageChecksumsUpdater(IntegrityCache informationCache, 
+            IntegrityChecker integrityChecker, IntegrityAlarmDispatcher alarmDispatcher, FileIDs fileIDs) {
         this.informationCache = informationCache;
         this.integrityChecker = integrityChecker;
         this.fileIDs = fileIDs;
+        this.alarmDispatcher = alarmDispatcher;
     }
     
     @Override
@@ -81,7 +88,7 @@ public class GetChecksumsEventHandler implements EventHandler {
     }
     
     /**
-     * Handles the results of a operation.
+     * Handles the results of the GetChecksums operation of a single pillar.
      * @param event The event with the results of the completed pillar.
      */
     private void handleChecksumsComplete(ChecksumsCompletePillarEvent event) {
@@ -95,7 +102,7 @@ public class GetChecksumsEventHandler implements EventHandler {
      */
     private void handleFailure(OperationEvent event) {
         log.warn(event.getType() + " : " + event.getState() + " : " + event.getInfo());
-        // TODO ??
+        performIntegrityCheck();
     }
     
     /**
@@ -104,7 +111,19 @@ public class GetChecksumsEventHandler implements EventHandler {
      */
     private void handleComplete(OperationEvent event) {
         log.info(event.getType() + " : " + event.getState() + " : " + event.getInfo());
-        
-        integrityChecker.checkChecksum(fileIDs);
+        performIntegrityCheck();
+    }
+    
+    /**
+     * Performs the integrity check, and sends an Alarm if any integrity problems. 
+     */
+    private void performIntegrityCheck() {
+        IntegrityReport report = integrityChecker.checkChecksum(fileIDs);
+        if(!report.isValid()) {
+            log.warn(report.generateReport());
+            alarmDispatcher.integrityFailed(report);
+        } else {
+            log.debug("No integrity issues found for files '" + report.getFileIDs() + "'");
+        }
     }
 }

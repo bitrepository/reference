@@ -30,40 +30,35 @@ import java.util.List;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
-import org.bitrepository.integrityclient.configuration.integrityclientconfiguration.StorageConfiguration;
 
 /**
- * A storage of configuration information that is backed by a database.
+ * Store of cached integrity information.
  */
-public class DatabaseBackedCachedIntegrityInformationStorage implements CachedIntegrityInformationStorage {
+public interface IntegrityCache {
     /**
-     * Initialise storage.
-     *
-     * @param storageConfiguration Contains configuration for storage. Currently URL, user and pass for database.
+     * Add file ID data to cache.
+     * @param data The received data.
+     * @param pillarId The id of the pillar the received data comes from.
      */
-    public DatabaseBackedCachedIntegrityInformationStorage(StorageConfiguration storageConfiguration) {
-    }
+    void addFileIDs(FileIDsData data, String pillarId);
 
-    @Override
-    public void addFileIDs(FileIDsData data, String pillardId) {
-        // TODO implement
-    }
+    /**
+     * Add checksum data to cache.
+     * @param data The received data.
+     * @param pillarId The id of the pillar the received data comes from.
+     */
+    void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, String pillarId);
 
-    @Override
-    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, 
-            String pillarId) {
-        // TODO implement
-    }
-
-    @Override
-    public Collection<FileIDInfo> getFileInfo(String fileId) {
-        // TODO implement
-        return null;
-    }
-
-    @Override
-    public Collection<String> getAllFileIDs() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    /**
+     * Retrieves the information of a given file id for all pillars.
+     * @param fileId The id of the file. 
+     * @return The collection of information about this file.
+     */
+    Collection<FileInfo> getFileInfos(String fileId);
+    
+    /**
+     * Retrieves all the file ids in the collection.
+     * @return The collection of file ids.
+     */
+    Collection<String> getAllFileIDs();
 }

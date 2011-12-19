@@ -24,12 +24,15 @@
  */
 package org.bitrepository.integrityclient;
 
+import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.integrityclient.cache.IntegrityCache;
 import org.bitrepository.integrityclient.cache.FileBasedIntegrityCache;
 import org.bitrepository.integrityclient.cache.MemoryBasedIntegrityCache;
-import org.bitrepository.integrityclient.checking.SystematicIntegrityValidator;
+import org.bitrepository.integrityclient.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityclient.collector.DelegatingIntegrityInformationCollector;
+import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityclient.scheduler.TimerIntegrityInformationScheduler;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -63,16 +66,23 @@ public class ComponentFactoryTest extends ExtendedTestCase {
 
     @Test(groups = {"regressiontest"})
     public void verifyCollectorFromFactory() throws Exception {
-        Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(messageBus, settings)
-                instanceof DelegatingIntegrityInformationCollector, 
+        IntegrityCache cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage();
+        IntegrityInformationCollector collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
+                cache, 
+                IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache), 
+                AccessComponentFactory.getInstance().createGetFileIDsClient(settings),
+                AccessComponentFactory.getInstance().createGetChecksumsClient(settings),
+                settings, messageBus);
+        Assert.assertTrue(collector instanceof DelegatingIntegrityInformationCollector, 
                 "The default Collector should be the '" + DelegatingIntegrityInformationCollector.class.getName() + "'");
     }
 
     @Test(groups = {"regressiontest"})
     public void verifyIntegrityCheckerFromFactory() throws Exception {
-        Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings)
-                instanceof SystematicIntegrityValidator, 
-                "The default IntegrityChecker should be the '" + SystematicIntegrityValidator.class.getName() + "'");
+        IntegrityCache cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage();
+        Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache)
+                instanceof SimpleIntegrityChecker, 
+                "The default IntegrityChecker should be the '" + SimpleIntegrityChecker.class.getName() + "'");
     }
 
     @Test(groups = {"regressiontest"})

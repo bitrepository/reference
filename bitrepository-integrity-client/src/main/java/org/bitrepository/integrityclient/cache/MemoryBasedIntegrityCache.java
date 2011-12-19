@@ -47,19 +47,7 @@ import org.slf4j.LoggerFactory;
  * 
  * This does not handle anything about CollectionID.
  */
-public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStorage {
-    /** The singleton instance of this class.*/
-    private static MemoryBasedIntegrityCache instance;
-    
-    /** 
-     * @return Retrieves the singleton instance of this class.
-     */
-    public static synchronized MemoryBasedIntegrityCache getInstance() {
-        if(instance == null) {
-            instance = new MemoryBasedIntegrityCache();
-        }
-        return instance;
-    }
+public class MemoryBasedIntegrityCache implements IntegrityCache {
     
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -74,14 +62,14 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
     /**
      * Constructor.
      */
-    private MemoryBasedIntegrityCache() {
+    public MemoryBasedIntegrityCache() {
         log.info("Instantiating " + this.getClass().getSimpleName());
     }
     
     @Override
     public void addFileIDs(FileIDsData data, String pillarId) {
         for(FileIDsDataItem fileId : data.getFileIDsDataItems().getFileIDsDataItem()) {
-            log.debug("Adding/updating fileId " + fileId.getFileID());
+            log.debug("Adding/updating fileId '" + fileId.getFileID() + "' for the pillar '" + pillarId + "'");
             if(!cache.containsKey(fileId.getFileID())) {
                 instantiateFileInfoListForFileId(fileId.getFileID());
             }
@@ -102,14 +90,14 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
         
         fileInfos.updateFileIDs(fileIdData, pillarId);
         cache.put(fileIdData.getFileID(), fileInfos);
-        
     }
     
     @Override
     public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, 
             String pillarId) {
         for(ChecksumDataForChecksumSpecTYPE checksumResult : data) {
-            log.debug("Adding/updating checksums for file '" + checksumResult.getFileID() + "'");
+            log.debug("Adding/updating checksums for file '" + checksumResult.getFileID() + "' for pillar '" 
+                    + pillarId + "'");
             
             if(!cache.containsKey(checksumResult.getFileID())) {
                 instantiateFileInfoListForFileId(checksumResult.getFileID());
@@ -148,7 +136,7 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
     }
     
     @Override
-    public List<FileIDInfo> getFileInfo(String fileId) {
+    public List<FileInfo> getFileInfos(String fileId) {
         return cache.get(fileId).getFileIDInfos();
     }
 
@@ -171,13 +159,13 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
      */
     private class CollectionFileIDInfo {
         /** The collection of FileIDInfos.*/
-        private List<FileIDInfo> fileIDInfos;
+        private List<FileInfo> fileIDInfos;
         
         /**
          * Constructor. Initializes and empty list of FileIDInfos.
          */
         CollectionFileIDInfo() {
-            fileIDInfos = new ArrayList<FileIDInfo>();
+            fileIDInfos = new ArrayList<FileInfo>();
         }
         
         /**
@@ -187,9 +175,9 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
          */
         void updateFileIDs(FileIDsDataItem fileIdData, String pillarId) {
             // Extract current file info or create a new one.
-            FileIDInfo currentInfo = null;
+            FileInfo currentInfo = null;
             for(int i = 0; i < fileIDInfos.size(); i++) {
-                FileIDInfo fileInfo = fileIDInfos.get(i);
+                FileInfo fileInfo = fileIDInfos.get(i);
                 if(fileInfo.getPillarId().equals(pillarId)) {
                     currentInfo = fileInfo;
                     fileIDInfos.remove(i);
@@ -197,7 +185,7 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
                 }
             }
             if(currentInfo == null) {
-                currentInfo = new FileIDInfo(fileIdData.getFileID(), pillarId);
+                currentInfo = new FileInfo(fileIdData.getFileID(), pillarId);
             }
             
             // Update the file info
@@ -219,8 +207,8 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
                 String pillarId) {
             
             // Extract current file info and update it or create a new one.
-            FileIDInfo currentInfo = null;
-            for(FileIDInfo fileInfo : fileIDInfos) {
+            FileInfo currentInfo = null;
+            for(FileInfo fileInfo : fileIDInfos) {
                 if(fileInfo.getPillarId().equals(pillarId)) {
                     currentInfo = fileInfo;
                     fileIDInfos.remove(fileInfo);
@@ -228,7 +216,7 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
             }
             if(currentInfo == null) {
                 // create a new file info
-                currentInfo = new FileIDInfo(checksumData.getFileID(), checksumData.getCalculationTimestamp(), 
+                currentInfo = new FileInfo(checksumData.getFileID(), checksumData.getCalculationTimestamp(), 
                         checksumData.getChecksumValue(), checksumType, checksumData.getCalculationTimestamp(), 
                         pillarId);
             } else {
@@ -246,7 +234,7 @@ public class MemoryBasedIntegrityCache implements CachedIntegrityInformationStor
         /**
          * @return All the FileIDInfos for this given file.
          */
-        List<FileIDInfo> getFileIDInfos() {
+        List<FileInfo> getFileIDInfos() {
             return fileIDInfos;
         }
     }

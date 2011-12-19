@@ -24,12 +24,13 @@
  */
 package org.bitrepository.integrityclient;
 
-import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getchecksums.GetChecksumsClient;
+import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.integrityclient.cache.CachedIntegrityInformationStorage;
+import org.bitrepository.integrityclient.cache.IntegrityCache;
 import org.bitrepository.integrityclient.cache.FileBasedIntegrityCache;
 import org.bitrepository.integrityclient.checking.IntegrityChecker;
-import org.bitrepository.integrityclient.checking.SystematicIntegrityValidator;
+import org.bitrepository.integrityclient.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityclient.collector.DelegatingIntegrityInformationCollector;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityclient.scheduler.IntegrityInformationScheduler;
@@ -67,12 +68,13 @@ public final class IntegrityServiceComponentFactory {
     /** The integrity information collector. */
     private IntegrityInformationCollector integrityInformationCollector;
     /** The integrity information collector. */
-    private CachedIntegrityInformationStorage cachedIntegrityInformationStorage;
+    private IntegrityCache cachedIntegrityInformationStorage;
     /** The integrity checker. */
     private IntegrityChecker integrityChecker;
 
     /**
      * Gets you an <code>IntegrityInformationScheduler</code> that schedules integrity information collection.
+     * @param settings The settings for the information scheduler.
      * @return an <code>IntegrityInformationScheduler</code> that schedules integrity information collection.
      */
     public IntegrityInformationScheduler getIntegrityInformationScheduler(Settings settings) {
@@ -84,14 +86,20 @@ public final class IntegrityServiceComponentFactory {
 
     /**
      * Gets you an <code>IntegrityInformationCollector</code> that collects integrity information.
+     * @param cache The cache for storing the collected results.
+     * @param checker For checking the results of the collected data.
+     * @param getFileIDsClient The client for performing the collecting of the file ids.
+     * @param getChecksumsClient The client for performing the collecting of the checksums.
+     * @param settings The settings for the integrity information collector. 
+     * @param messageBus The messagebus for the communication.
      * @return an <code>IntegrityInformationCollector</code> that collects integrity information.
      */
-    public IntegrityInformationCollector getIntegrityInformationCollector(MessageBus messageBus, Settings settings) {
+    public IntegrityInformationCollector getIntegrityInformationCollector(IntegrityCache cache, 
+            IntegrityChecker checker, GetFileIDsClient getFileIDsClient, GetChecksumsClient getChecksumsClient, 
+            Settings settings, MessageBus messageBus) {
         if (integrityInformationCollector == null) {
-            integrityInformationCollector = new DelegatingIntegrityInformationCollector(
-                    getCachedIntegrityInformationStorage(), getIntegrityChecker(settings),
-                    AccessComponentFactory.getInstance().createGetFileIDsClient(settings),
-                    AccessComponentFactory.getInstance().createGetChecksumsClient(settings));
+            integrityInformationCollector = new DelegatingIntegrityInformationCollector(cache, checker, 
+                    getFileIDsClient, getChecksumsClient, settings, messageBus);
         }
         return integrityInformationCollector;
     }
@@ -99,22 +107,23 @@ public final class IntegrityServiceComponentFactory {
     /**
      * Gets you an <code>IntegrityChecker</code> the can perform the integrity checks.
      * @param settings The settings for this instance. 
+     * @param cache The cache for the integrity system.
      * @return An <code>IntegrityChecker</code> the can perform the integrity checks.
      */
-    public IntegrityChecker getIntegrityChecker(Settings settings) {
+    public IntegrityChecker getIntegrityChecker(Settings settings, IntegrityCache cache) {
         if(integrityChecker == null) {
-            integrityChecker = new SystematicIntegrityValidator(settings, getCachedIntegrityInformationStorage());
+            integrityChecker = new SimpleIntegrityChecker(settings, cache);
         }
         return integrityChecker;
     }
 
     /**
      * Gets you a <code>CachedIntegrityInformationStorage</code> that collects integrity information.
+     * TODO implement the database based integrity cache.
      * @return an <code>CachedIntegrityInformationStorage</code> that collects integrity information.
      */
-    public CachedIntegrityInformationStorage getCachedIntegrityInformationStorage() {
+    public IntegrityCache getCachedIntegrityInformationStorage() {
         if (cachedIntegrityInformationStorage == null) {
-//            cachedIntegrityInformationStorage = MemoryBasedIntegrityCache.getInstance();
             cachedIntegrityInformationStorage = new FileBasedIntegrityCache();
         }
         return cachedIntegrityInformationStorage;
