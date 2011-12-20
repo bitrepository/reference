@@ -23,6 +23,7 @@
     <module>bitrepository-modifying-client</module>
     <module>bitrepository-integrity-client</module>
     <module>bitrepository-alarm-service</module>
+    <module>bitrepository-audit-trail-service</module>
     <module>bitrepository-reference-pillar</module>
     <module>bitrepository-monitoring-service</module>
     <module>bitrepository-integration</module>
@@ -272,6 +273,11 @@
             </lifecycleMappingMetadata>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.8</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -308,7 +314,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.8</version>
         <configuration>
           <aggregate>true</aggregate>
         </configuration>
@@ -339,6 +344,40 @@
       </plugin>
     </plugins>
   </reporting>
+
+  <profiles>
+    <profile>
+      <id>deploy</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <properties>
     <message.xml.version>7-SNAPSHOT</message.xml.version>
