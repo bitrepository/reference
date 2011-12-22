@@ -299,7 +299,7 @@ public class FileStoragedCache {
             checksumType.setChecksumType(items[5]);
             
             if(items.length >= 7) {
-                checksumType.setChecksumSalt(items[6]);
+                checksumType.setChecksumSalt(items[6].getBytes());
             }
             
             res.setChecksumType(checksumType);

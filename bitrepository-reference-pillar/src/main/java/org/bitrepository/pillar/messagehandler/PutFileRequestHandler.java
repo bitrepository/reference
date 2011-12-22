@@ -193,7 +193,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
             checksumData.setChecksumValue(ChecksumUtils.generateChecksum(retrievedFile, 
                     message.getFileChecksumSpec().getChecksumType(), 
-                    message.getFileChecksumSpec().getChecksumType()));
+                    message.getFileChecksumSpec().getChecksumType()).getBytes());
             checksumData.setCalculationTimestamp(CalendarUtils.getNow());
             checksumData.setChecksumSpec(message.getFileChecksumSpec());
             checksumForValidation.setChecksumDataItem(checksumData);

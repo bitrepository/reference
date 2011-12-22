@@ -172,7 +172,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
        
         addStep("Initialise the checksum results data.", "Should be created and put into the cache.");
         ChecksumSpecTYPE checksumtype = new ChecksumSpecTYPE();
-        checksumtype.setChecksumSalt("");
+        checksumtype.setChecksumSalt(null);
         checksumtype.setChecksumType("MD5");
         
         List<ChecksumDataForChecksumSpecTYPE> checksumData = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
@@ -180,7 +180,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
             ChecksumDataForChecksumSpecTYPE checksumCalculation = new ChecksumDataForChecksumSpecTYPE();
             checksumCalculation.setFileID(fileid);
             checksumCalculation.setCalculationTimestamp(CalendarUtils.getNow());
-            checksumCalculation.setChecksumValue("123" + fileid + "123");
+            checksumCalculation.setChecksumValue(new String("123" + fileid + "123").getBytes());
             checksumData.add(checksumCalculation);
         }
         
@@ -215,7 +215,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
        
         addStep("Initialise the checksum results data.", "Should be created and put into the cache.");
         ChecksumSpecTYPE checksumtype = new ChecksumSpecTYPE();
-        checksumtype.setChecksumSalt("");
+        checksumtype.setChecksumSalt(null);
         checksumtype.setChecksumType("MD5");
 
         List<ChecksumDataForChecksumSpecTYPE> checksumData = new ArrayList<ChecksumDataForChecksumSpecTYPE>();        
@@ -223,7 +223,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
             ChecksumDataForChecksumSpecTYPE checksumCalculation = new ChecksumDataForChecksumSpecTYPE();
             checksumCalculation.setFileID(fileid);
             checksumCalculation.setCalculationTimestamp(CalendarUtils.getNow());
-            checksumCalculation.setChecksumValue("123" + fileid + "123");
+            checksumCalculation.setChecksumValue(new String("123" + fileid + "123").getBytes());
             checksumData.add(checksumCalculation);
         }
         
@@ -258,14 +258,14 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
        
         addStep("Initialise the two different checksum results data.", "Should be created and put into the cache for each pillar.");
         ChecksumSpecTYPE checksumtype = new ChecksumSpecTYPE();
-        checksumtype.setChecksumSalt("");
+        checksumtype.setChecksumSalt(null);
         checksumtype.setChecksumType("MD5");
         List<ChecksumDataForChecksumSpecTYPE> checksumData1 = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         for(String fileid : fileids) {
             ChecksumDataForChecksumSpecTYPE checksumCalculation = new ChecksumDataForChecksumSpecTYPE();
             checksumCalculation.setFileID(fileid);
             checksumCalculation.setCalculationTimestamp(CalendarUtils.getNow());
-            checksumCalculation.setChecksumValue("123" + fileid + "123");
+            checksumCalculation.setChecksumValue(new String("123" + fileid + "123").getBytes());
             checksumData1.add(checksumCalculation);
         }
         
@@ -274,7 +274,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
             ChecksumDataForChecksumSpecTYPE checksumCalculation = new ChecksumDataForChecksumSpecTYPE();
             checksumCalculation.setFileID(fileid);
             checksumCalculation.setCalculationTimestamp(CalendarUtils.getNow());
-            checksumCalculation.setChecksumValue("abc" + fileid + "abc");
+            checksumCalculation.setChecksumValue(new String("abc" + fileid + "abc").getBytes());
             checksumData2.add(checksumCalculation);
         }
         

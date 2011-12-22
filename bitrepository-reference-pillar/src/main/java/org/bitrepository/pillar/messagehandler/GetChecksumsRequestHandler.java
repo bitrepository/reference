@@ -216,7 +216,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         
         FileIDs fileids = message.getFileIDs();
         
-        String salt = message.getFileChecksumSpec().getChecksumSalt();
+        byte[] salt = message.getFileChecksumSpec().getChecksumSalt();
         
         if(fileids.isSetAllFileIDs()) {
             log.debug("Calculating the checksum for all the files.");
@@ -231,7 +231,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
         singleFileResult.setFileID(fileid);
         singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, 
-                message.getFileChecksumSpec().getChecksumType(), salt));
+                message.getFileChecksumSpec().getChecksumType(), salt).getBytes());
         
         res.add(singleFileResult);
         
@@ -245,7 +245,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * @return The list of checksums for requested files. 
      */
     private List<ChecksumDataForChecksumSpecTYPE> calculateChecksumForAllFiles(
-            String algorithm, String salt) {
+            String algorithm, byte[] salt) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         
         // Go through every file in the archive, calculate the checksum and put it into the results.
@@ -254,7 +254,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
             singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
             singleFileResult.setFileID(fileid);
-            singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, algorithm, salt));
+            singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, algorithm, salt).getBytes());
             
             res.add(singleFileResult);
         }

@@ -159,7 +159,7 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         checksumRequested.setChecksumType("SHA1");
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumSpec(DEFAULT_CHECKSUM_TYPE);
-        checksumData.setChecksumValue(CHECKSUM);
+        checksumData.setChecksumValue(CHECKSUM.getBytes());
         checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
 
         deleteFile.deleteFile(FILE_ID, settings.getReferenceSettings().getPillarSettings().getPillarID(), 

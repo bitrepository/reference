@@ -143,7 +143,7 @@ public class SimpleIntegrityService {
             checksumType.setChecksumType(checksumAlgorithm);
         }
         
-        checksumType.setChecksumSalt(salt);
+        checksumType.setChecksumSalt(salt.getBytes());
         
         collector.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
                 fileIDs, checksumType, auditTrailInformation);

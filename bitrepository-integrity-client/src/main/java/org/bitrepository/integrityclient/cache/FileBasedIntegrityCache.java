@@ -80,8 +80,8 @@ public class FileBasedIntegrityCache implements IntegrityCache {
         boolean rewrite = false;
         for(ChecksumDataForChecksumSpecTYPE dataItem : data) {
             // Create with no 'file id date' (automatically set to Epoch).
-            FileInfo fileidInfo = new FileInfo(dataItem.getFileID(), null, 
-                    dataItem.getChecksumValue(), checksumType, dataItem.getCalculationTimestamp(), pillarId);
+            FileInfo fileidInfo = new FileInfo(dataItem.getFileID(), null, new String(dataItem.getChecksumValue()), 
+                    checksumType, dataItem.getCalculationTimestamp(), pillarId);
 
             if(fileStorage.containsFileIDInfo(dataItem.getFileID(), pillarId)) {
                 fileStorage.updateFileIDInfoInCache(fileidInfo);

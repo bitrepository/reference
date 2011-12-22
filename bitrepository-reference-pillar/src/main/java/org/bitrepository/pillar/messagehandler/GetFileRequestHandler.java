@@ -214,11 +214,11 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         try {
             ChecksumDataForFileTYPE checksumType = new ChecksumDataForFileTYPE();
             ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
-            csType.setChecksumSalt(salt);
+            csType.setChecksumSalt(salt.getBytes());
             csType.setChecksumType(algorithm);
             checksumType.setChecksumSpec(csType);
             checksumType.setChecksumValue(ChecksumUtils.generateChecksum(file, 
-                    algorithm, salt));
+                    algorithm, salt).getBytes());
             checksumType.setCalculationTimestamp(CalendarUtils.getNow());
 
             return checksumType;

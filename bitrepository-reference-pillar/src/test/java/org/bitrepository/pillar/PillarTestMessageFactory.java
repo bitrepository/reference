@@ -91,7 +91,7 @@ public class PillarTestMessageFactory extends TestMessageFactory {
         ChecksumSpecTYPE csDeliveredSpec = new ChecksumSpecTYPE();
         csDeliveredSpec.setChecksumType("MD5");
         checksumDataForFile.setChecksumSpec(csDeliveredSpec);       
-        checksumDataForFile.setChecksumValue("940a51b250e7aa82d8e8ea31217ff267");
+        checksumDataForFile.setChecksumValue(new String("940a51b250e7aa82d8e8ea31217ff267").getBytes());
         checksumDataForFile.setCalculationTimestamp(CalendarUtils.getNow());
         csdataForNewFile.setChecksumDataItem(checksumDataForFile);
         res.setChecksumsDataForNewFile(csdataForNewFile);

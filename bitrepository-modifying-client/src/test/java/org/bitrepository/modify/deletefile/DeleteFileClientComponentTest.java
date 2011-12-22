@@ -83,7 +83,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         checksumForPillar.setChecksumType("MD5");
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumSpec(checksumForPillar);
-        checksumData.setChecksumValue(checksum);
+        checksumData.setChecksumValue(checksum.getBytes());
         checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
 
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();

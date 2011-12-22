@@ -217,13 +217,13 @@ public class MemoryBasedIntegrityCache implements IntegrityCache {
             if(currentInfo == null) {
                 // create a new file info
                 currentInfo = new FileInfo(checksumData.getFileID(), checksumData.getCalculationTimestamp(), 
-                        checksumData.getChecksumValue(), checksumType, checksumData.getCalculationTimestamp(), 
-                        pillarId);
+                        new String(checksumData.getChecksumValue()), checksumType, 
+                        checksumData.getCalculationTimestamp(), pillarId);
             } else {
                 // Update the existing file info
                 currentInfo.setDateForLastFileIDCheck(checksumData.getCalculationTimestamp());
                 currentInfo.setDateForLastChecksumCheck(checksumData.getCalculationTimestamp());
-                currentInfo.setChecksum(checksumData.getChecksumValue());
+                currentInfo.setChecksum(new String(checksumData.getChecksumValue()));
                 currentInfo.setChecksumType(checksumType);
             }
             

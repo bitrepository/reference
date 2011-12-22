@@ -59,6 +59,23 @@ public final class ChecksumUtils {
      */
     public static String generateChecksum(File file, String algorithm, String salt) {
         try {
+            return generateChecksum(FileUtils.readFile(file), algorithm, salt.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    /**
+     * Calculates the checksum for a file based on the given checksum algorith, where the calculcation is salted.
+     * 
+     * @param file The file to calculate the checksum for.
+     * @param messageDigest The digest algorithm to use for calculating the checksum of the file.
+     * @param salt The string to add in front of the data stream before calculating the checksum. Null or the empty 
+     * string means no salt.
+     * @return The checksum of the file in hexadecimal.
+     */
+    public static String generateChecksum(File file, String algorithm, byte[] salt) {
+        try {
             return generateChecksum(FileUtils.readFile(file), algorithm, salt);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -73,7 +90,7 @@ public final class ChecksumUtils {
      * @param salt The salt for the calculation. 
      * @return The HMAC calculated checksum in hexadecimal.
      */
-    public static String generateChecksum(String content, String algorithm, String salt) {
+    public static String generateChecksum(String content, String algorithm, byte[] salt) {
         try {
             String algorithmName = algorithm.toUpperCase();
             if(!algorithm.startsWith("Hmac")) {
@@ -83,10 +100,10 @@ public final class ChecksumUtils {
             Mac messageAuthenticationCode = Mac.getInstance(algorithmName);
             Key key;
             
-            if(salt == null || salt.isEmpty()) {
+            if(salt == null || salt.length == 0) {
                 key = new SecretKeySpec(new byte[]{0}, algorithmName);
             } else {
-                key = new SecretKeySpec(salt.getBytes(), algorithmName);
+                key = new SecretKeySpec(salt, algorithmName);
             }
             
             messageAuthenticationCode.init(key);
