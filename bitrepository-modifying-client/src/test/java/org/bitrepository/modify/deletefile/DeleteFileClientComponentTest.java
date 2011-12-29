@@ -58,7 +58,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         }
     }
 
-//    @Test(groups={"regressiontest"})
+    @Test(groups={"regressiontest"})
     public void verifyDeleteClientFromFactory() {
         addDescription("Testing the initialization through the ModifyComponentFactory.");
         addStep("Use the ModifyComponentFactory to instantiate a PutFileClient.", 

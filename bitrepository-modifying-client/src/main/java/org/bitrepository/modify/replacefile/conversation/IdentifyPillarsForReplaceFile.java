@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Access
  * 
- * $Id$
- * $HeadURL$
+ * $Id: IdentifyPillarsForDeleteFile.java 639 2011-12-15 10:24:45Z jolf $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-modifying-client/src/main/java/org/bitrepository/modify/deletefile/conversation/IdentifyPillarsForDeleteFile.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -22,25 +22,25 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.modify.deletefile.conversation;
+package org.bitrepository.modify.replacefile.conversation;
 
 import java.math.BigInteger;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.exceptions.NegativeResponseException;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 
 /**
- * The first state of the DeleteFile communication. The identification of the pillars involved.
+ * The first state of the ReplaceFile communication. The identification of the pillars involved.
  */
-public class IdentifyPillarsForDeleteFile extends DeleteFileState {
+public class IdentifyPillarsForReplaceFile extends ReplaceFileState {
     /** Defines that the timer is a daemon thread. */
     private static final Boolean TIMER_IS_DAEMON = true;
     /** The timer. Schedules conversation timeouts for this conversation. */
@@ -52,15 +52,16 @@ public class IdentifyPillarsForDeleteFile extends DeleteFileState {
      * Constructor.
      * @param conversation The conversation in this given state.
      */
-    public IdentifyPillarsForDeleteFile(SimpleDeleteFileConversation conversation) {
+    public IdentifyPillarsForReplaceFile(SimpleReplaceFileConversation conversation) {
         super(conversation);
     }
     
     /**
-     * Starts the conversation by sending the request for identification of the pillars to perform the Delete operation.
+     * Starts the conversation by sending the request for identification of the pillars to perform the ReplaceFile
+     * operation.
      */
     public void start() {
-        IdentifyPillarsForDeleteFileRequest identifyRequest = new IdentifyPillarsForDeleteFileRequest();
+        IdentifyPillarsForReplaceFileRequest identifyRequest = new IdentifyPillarsForReplaceFileRequest();
         identifyRequest.setCorrelationID(conversation.getConversationID());
         identifyRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         identifyRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
@@ -71,63 +72,63 @@ public class IdentifyPillarsForDeleteFile extends DeleteFileState {
         identifyRequest.setTo(conversation.settings.getCollectionDestination());
         conversation.messageSender.sendMessage(identifyRequest);
         
-        monitor.identifyPillarsRequestSent("Identifying pillars for Delete file " + conversation.fileID);
+        monitor.identifyPillarsRequestSent("Identifying pillars for ReplaceFile '" + conversation.fileID + "'");
         timer.schedule(identifyTimeoutTask, 
                 conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());
     }
     
     @Override
-    public synchronized void onMessage(IdentifyPillarsForDeleteFileResponse response) {
+    public synchronized void onMessage(IdentifyPillarsForReplaceFileResponse response) {
         try {
             conversation.pillarSelector.processResponse(response);
-            monitor.pillarIdentified("Received IdentifyPillarsForDeleteFileResponse " + response, 
+            monitor.pillarIdentified("Received IdentifyPillarsForReplaceFileResponse " + response, 
                     response.getPillarID());
         } catch (UnexpectedResponseException e) {
-            monitor.pillarFailed("Unable to handle IdentifyPillarsForDeleteFileResponse, ", e);
+            monitor.pillarFailed("Unable to handle IdentifyPillarsForReplaceFileResponse, ", e);
         } catch (NegativeResponseException e) {
-            monitor.pillarFailed("Negativ IdentifyPillarsForDeleteFileResponse from pillar " + response.getPillarID(), e);
+            monitor.pillarFailed("Negativ IdentifyPillarsForReplaceFileResponse from pillar " + response.getPillarID(), e);
         }
         
         if (conversation.pillarSelector.isFinished()) {
             identifyTimeoutTask.cancel();
             
             if (conversation.pillarSelector.getSelectedPillars().isEmpty()) {
-                conversation.failConversation("Unable to deleteFile, no pillars were identified");
+                conversation.failConversation("Unable to replace file, no pillars were identified");
             }
-            monitor.pillarSelected("Identified pillars for deleteFile", 
+            monitor.pillarSelected("Identified pillars for replace file", 
                     conversation.pillarSelector.getSelectedPillars().toString());
-            deleteFileFromSelectedPillar();
+            replaceFileAtSelectedPillar();
         }
     }
     
     /**
-     * Method for handling the DeleteFileProgressResponse message.
+     * Method for handling the ReplaceFileProgressResponse message.
      * No such message should be received!
-     * @param response The DeleteFileProgressResponse message to handle.
+     * @param response The ReplaceFileProgressResponse message to handle.
      */
     @Override
-    public synchronized void onMessage(DeleteFileProgressResponse response) {
-        monitor.outOfSequenceMessage("Received DeleteFileProgressResponse from " + response.getPillarID() + 
-                " before sending DeleteFileRequest.");
+    public synchronized void onMessage(ReplaceFileProgressResponse response) {
+        monitor.outOfSequenceMessage("Received ReplaceFileProgressResponse from " + response.getPillarID() + 
+                " before sending ReplaceFileRequest.");
     }
     
     /**
-     * Method for handling the DeleteFileFinalResponse message.
+     * Method for handling the ReplaceFileFinalResponse message.
      * No such message should be received!
-     * @param response The DeleteFileFinalResponse message to handle.
+     * @param response The ReplaceFileFinalResponse message to handle.
      */
     @Override
-    public synchronized void onMessage(DeleteFileFinalResponse response) {
-        monitor.outOfSequenceMessage("Received DeleteFileFinalResponse from " + response.getPillarID() + 
-                " before sending DeleteFileRequest.");
+    public synchronized void onMessage(ReplaceFileFinalResponse response) {
+        monitor.outOfSequenceMessage("Received ReplaceFileFinalResponse from " + response.getPillarID() + 
+                " before sending ReplaceFileRequest.");
     }
     
     /**
-     * Method for moving to the next stage: DeletingFile.
+     * Method for moving to the next stage: ReplaceFile.
      */
-    protected void deleteFileFromSelectedPillar() {
+    protected void replaceFileAtSelectedPillar() {
         identifyTimeoutTask.cancel();
-        DeletingFile nextConversationState = new DeletingFile(conversation);
+        ReplacingFile nextConversationState = new ReplacingFile(conversation);
         conversation.conversationState = nextConversationState;
         nextConversationState.start();
     }
@@ -139,7 +140,7 @@ public class IdentifyPillarsForDeleteFile extends DeleteFileState {
         @Override
         public void run() {
             conversation.failConversation(new OperationFailedEvent(
-                    "Timeout for the identification of the pillars for the DeleteFile operation."));
+                    "Timeout for the identification of the pillars for the ReplaceFile operation."));
         }
     }
     

@@ -68,9 +68,14 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -353,6 +358,18 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     @Override
+    public void sendMessage(IdentifyPillarsForReplaceFileRequest content) {
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
+                    content.getCorrelationID(), content);
+    }
+
+    @Override
+    public void sendMessage(IdentifyPillarsForReplaceFileResponse content) {
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
+                    content.getCorrelationID(), content);
+    }
+
+    @Override
     public void sendMessage(PutFileFinalResponse content) {
         sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
@@ -366,6 +383,24 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public void sendMessage(PutFileProgressResponse content) {
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
+                    content.getCorrelationID(), content);
+    }
+
+    @Override
+    public void sendMessage(ReplaceFileFinalResponse content) {
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
+                    content.getCorrelationID(), content);
+    }
+
+    @Override
+    public void sendMessage(ReplaceFileProgressResponse content) {
+        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
+                    content.getCorrelationID(), content);
+    }
+
+    @Override
+    public void sendMessage(ReplaceFileRequest content) {
         sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                     content.getCorrelationID(), content);
     }
@@ -669,6 +704,16 @@ public class ActiveMQMessageBus implements MessageBus {
                     return;
                 }
 
+                if (content.getClass().equals(IdentifyPillarsForReplaceFileResponse.class)) {
+                    listener.onMessage((IdentifyPillarsForReplaceFileResponse) content);
+                    return;
+                }
+
+                if (content.getClass().equals(IdentifyPillarsForReplaceFileRequest.class)) {
+                    listener.onMessage((IdentifyPillarsForReplaceFileRequest) content);
+                    return;
+                }
+
                 if (content.getClass().equals(PutFileFinalResponse.class)) {
                     listener.onMessage((PutFileFinalResponse) content);
                     return;
@@ -681,6 +726,21 @@ public class ActiveMQMessageBus implements MessageBus {
 
                 if (content.getClass().equals(PutFileProgressResponse.class)) {
                     listener.onMessage((PutFileProgressResponse) content);
+                    return;
+                }
+                
+                if (content.getClass().equals(ReplaceFileFinalResponse.class)) {
+                    listener.onMessage((ReplaceFileFinalResponse) content);
+                    return;
+                }
+
+                if (content.getClass().equals(ReplaceFileRequest.class)) {
+                    listener.onMessage((ReplaceFileRequest) content);
+                    return;
+                }
+
+                if (content.getClass().equals(ReplaceFileProgressResponse.class)) {
+                    listener.onMessage((ReplaceFileProgressResponse) content);
                     return;
                 }
                 log.error("Received message of unknown type '" + type + "'\n{}", text);

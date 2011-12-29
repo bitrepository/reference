@@ -52,9 +52,14 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.conversation.AbstractConversation;
@@ -103,7 +108,7 @@ public abstract class ConversationMediatorTest {
         }
 
         @Override
-        public void startConversation() throws OperationFailedException {
+        public void startConversation() {
             hasStarted = true;
         }
 
@@ -227,6 +232,14 @@ public abstract class ConversationMediatorTest {
             messageSender.sendMessage(content); 
         }
         @Override
+        public void sendMessage(IdentifyPillarsForReplaceFileResponse content) { 
+            messageSender.sendMessage(content); 
+        }
+        @Override
+        public void sendMessage(IdentifyPillarsForReplaceFileRequest content) { 
+            messageSender.sendMessage(content); 
+        }
+        @Override
         public void sendMessage(PutFileFinalResponse content) { 
             messageSender.sendMessage(content); 
         }
@@ -236,6 +249,18 @@ public abstract class ConversationMediatorTest {
         }
         @Override
         public void sendMessage(PutFileProgressResponse content) { 
+            messageSender.sendMessage(content); 
+        }
+        @Override
+        public void sendMessage(ReplaceFileFinalResponse content) { 
+            messageSender.sendMessage(content); 
+        }
+        @Override
+        public void sendMessage(ReplaceFileRequest content) { 
+            messageSender.sendMessage(content); 
+        }
+        @Override
+        public void sendMessage(ReplaceFileProgressResponse content) { 
             messageSender.sendMessage(content); 
         }
         

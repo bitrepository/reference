@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Modifying Client
  * 
- * $Id$
- * $HeadURL$
+ * $Id: DeleteFileState.java 633 2011-12-14 09:05:28Z mss $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-modifying-client/src/main/java/org/bitrepository/modify/deletefile/conversation/DeleteFileState.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.modify.deletefile.conversation;
+package org.bitrepository.modify.replacefile.conversation;
 
 import org.bitrepository.protocol.conversation.ConversationEventMonitor;
 import org.bitrepository.protocol.conversation.ConversationState;
@@ -30,11 +30,11 @@ import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
 /**
- * The interface for states of the DeleteFile communication.
+ * The interface for states of the ReplaceFile communication.
  */
-public abstract class DeleteFileState extends AbstractMessageListener implements ConversationState {
+public abstract class ReplaceFileState extends AbstractMessageListener implements ConversationState {
     /** The conversation in the given state.*/
-    protected final SimpleDeleteFileConversation conversation;
+    protected final SimpleReplaceFileConversation conversation;
     /** Handles the mediation of information regarding conversation updates */
     protected final ConversationEventMonitor monitor;
     /** Used for sending messages */
@@ -44,7 +44,7 @@ public abstract class DeleteFileState extends AbstractMessageListener implements
      * Constructor.
      * @param conversation The conversation in the given state.
      */
-    protected DeleteFileState(SimpleDeleteFileConversation conversation) {
+    protected ReplaceFileState(SimpleReplaceFileConversation conversation) {
         this.conversation = conversation;
         this.monitor = conversation.getMonitor();
         this.messageSender = conversation.messageSender;
@@ -54,6 +54,6 @@ public abstract class DeleteFileState extends AbstractMessageListener implements
      * Mark this conversation as ended, and notifies whoever waits for it to end.
      */
     protected void endConversation() {
-        conversation.conversationState = new DeleteFileFinished(conversation);
+        conversation.conversationState = new ReplaceFileFinished(conversation);
     }
 }

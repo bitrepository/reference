@@ -53,9 +53,14 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 
 /** This interface defines a consumer of messages in the bitrepository
  * protocol.
@@ -271,6 +276,20 @@ public interface MessageListener {
      *
      * @param message The message received.
      */
+    void onMessage(IdentifyPillarsForReplaceFileRequest message);
+    
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyPillarsForReplaceFileResponse message);
+    
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
     void onMessage(PutFileFinalResponse message);
     
     /**
@@ -286,4 +305,25 @@ public interface MessageListener {
      * @param message The message received.
      */
     void onMessage(PutFileProgressResponse message);
+    
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(ReplaceFileRequest message);
+    
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(ReplaceFileFinalResponse message);
+    
+    /**
+     * Action to perform upon receiving a message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(ReplaceFileProgressResponse message);
 }

@@ -96,7 +96,6 @@ public class PuttingFile extends PutFileState {
             conversation.messageSender.sendMessage(putMsg);
         }
 
-
         monitor.requestSent("Request to put file " + conversation.fileID + " has been sent to pillars + " +
                 conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs().toString(), 
                 conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs().toString());

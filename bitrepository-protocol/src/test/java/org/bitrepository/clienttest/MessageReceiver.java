@@ -62,9 +62,14 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.jaccept.TestEventManager;
 import org.slf4j.Logger;
@@ -302,6 +307,14 @@ public class MessageReceiver {
             messageModel.addMessage(message);
         }
         @Override
+        public void onMessage(IdentifyPillarsForReplaceFileResponse message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(IdentifyPillarsForReplaceFileRequest message) {
+            messageModel.addMessage(message);
+        }
+        @Override
         public void onMessage(PutFileFinalResponse message) {
             messageModel.addMessage(message);
         }
@@ -310,9 +323,21 @@ public class MessageReceiver {
             messageModel.addMessage(message);
         }
         @Override
+        public void onMessage(ReplaceFileProgressResponse message) {
+            messageModel.addMessage(message);
+        }  
+        @Override
+        public void onMessage(ReplaceFileFinalResponse message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(ReplaceFileRequest message) {
+            messageModel.addMessage(message);
+        }
+        @Override
         public void onMessage(PutFileProgressResponse message) {
             messageModel.addMessage(message);
-        }   
+        }
 
         @Override
         public void onException(JMSException e) {

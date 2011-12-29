@@ -82,7 +82,7 @@ public class ConversationBasedPutFileClient implements PutFileClient {
                     "TODO");
             conversationMediator.addConversation(conversation);
             conversation.startConversation();
-        } catch (OperationFailedException e) {
+        } catch (Exception e) {
             String msg = "Couldn't perform put for '" + fileId + "' at '" + url + "' due to the following error: '"
                     + e.getMessage() + "'.";
             log.error(msg, e);
@@ -98,14 +98,14 @@ public class ConversationBasedPutFileClient implements PutFileClient {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkPositive(sizeOfFile, "long sizeOfFile");
         // TODO add potential regex from collection settings.
-        
+
         try {
             SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
                     BigInteger.valueOf(sizeOfFile), checksumForValidationAtPillar, checksumRequestsForValidation, 
                     eventHandler, new FlowController(settings), auditTrailInformation);
             conversationMediator.addConversation(conversation);
             conversation.startConversation();
-        } catch (OperationFailedException e) {
+        } catch (Exception e) {
             String msg = "Couldn't perform put for '" + fileId + "' at '" + url + "' due to the following error: '"
                     + e.getMessage() + "'.";
             log.error(msg, e);

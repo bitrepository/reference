@@ -27,13 +27,11 @@ package org.bitrepository.modify.deletefile.conversation;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/**
+ * The final state for the DeleteFile operation.
+ */
 public class DeleteFileFinished extends DeleteFileState {
-    /** The log for this class. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
     /**
      * Constructor.
      * @param conversation The conversation in this state.
@@ -44,33 +42,29 @@ public class DeleteFileFinished extends DeleteFileState {
     
     @Override
     public void onMessage(IdentifyPillarsForDeleteFileResponse response) {
-        log.warn("(ConversationID: " + conversation.getConversationID() + ") " 
-                + "Received IdentifyPillarsForPutFileResponse from '" + response.getPillarID() 
+        monitor.warning("Received IdentifyPillarsForPutFileResponse from '" + response.getPillarID() 
                 + "' after the PutFile has ended.");
     }
-
+    
     @Override
     public void onMessage(DeleteFileProgressResponse response) {
-        log.warn("(ConversationID: " + conversation.getConversationID() + ") " 
-                + "Received PutFileProgressResponse from '" + response.getPillarID() 
+        monitor.warning("Received PutFileProgressResponse from '" + response.getPillarID() 
                 + "' after the PutFile has ended.");
     }
-
+    
     @Override
     public void onMessage(DeleteFileFinalResponse response) {
-        log.warn("(ConversationID: " + conversation.getConversationID() + ") " 
-                + "Received PutFileFinalResponse from '" + response.getPillarID() 
+        monitor.warning("Received PutFileFinalResponse from '" + response.getPillarID() 
                 + "' after the PutFile has ended.");
     }
-
+    
     @Override
     public void start() {
         // do nothing.
     }
-
+    
     @Override
     public boolean hasEnded() {
         return true;
     }
-    
 }

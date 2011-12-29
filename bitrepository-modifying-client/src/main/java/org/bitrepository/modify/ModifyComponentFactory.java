@@ -31,6 +31,8 @@ import org.bitrepository.modify.deletefile.ConversationBasedDeleteFileClient;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.ConversationBasedPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
+import org.bitrepository.modify.replacefile.ConversationBasedReplaceFileClient;
+import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.mediator.ConversationMediatorManager;
 
@@ -90,6 +92,17 @@ public final class ModifyComponentFactory {
      */
     public DeleteFileClient retrieveDeleteFileClient(Settings settings) {
         return new ConversationBasedDeleteFileClient(
+                ProtocolComponentFactory.getInstance().getMessageBus(settings), 
+                ConversationMediatorManager.getConversationMediator(settings), 
+                settings);
+    }
+        
+    /**
+     * @param settings The settings for the DeleteFileClient.
+     * @return The requested DeleteClient.
+     */
+    public ReplaceFileClient retrieveReplaceFileClient(Settings settings) {
+        return new ConversationBasedReplaceFileClient(
                 ProtocolComponentFactory.getInstance().getMessageBus(settings), 
                 ConversationMediatorManager.getConversationMediator(settings), 
                 settings);

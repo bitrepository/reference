@@ -55,9 +55,14 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.JaxbHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -235,6 +240,16 @@ public abstract class AbstractMessageListener implements MessageListener {
     }
 
     @Override
+    public void onMessage(IdentifyPillarsForReplaceFileRequest message) {
+        reportUnsupported(message);
+    }
+    
+    @Override
+    public void onMessage(IdentifyPillarsForReplaceFileResponse message) {
+        reportUnsupported(message);
+    }
+
+    @Override
     public void onMessage(PutFileFinalResponse message) {
         reportUnsupported(message);
     }
@@ -248,4 +263,20 @@ public abstract class AbstractMessageListener implements MessageListener {
     public void onMessage(PutFileProgressResponse message) {
         reportUnsupported(message);
     }
+    
+    @Override
+    public void onMessage(ReplaceFileRequest message) {
+        reportUnsupported(message);
+    }
+    
+    @Override
+    public void onMessage(ReplaceFileFinalResponse message) {
+        reportUnsupported(message);
+    }
+    
+    @Override
+    public void onMessage(ReplaceFileProgressResponse message) {
+        reportUnsupported(message);
+    }
+
 }

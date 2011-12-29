@@ -146,11 +146,7 @@ public class CollectionBasedGetFileClient implements GetFileClient {
         AbstractConversation  conversation =  new SimpleGetFileConversation(
                 messageBus, settings, selector, fileID, uploadUrl, eventHandler, new FlowController(settings));
         conversationMediator.addConversation(conversation);  
-        try {
-            conversation.startConversation();
-        } catch (OperationFailedException e) {
-            eventHandler.handleEvent(new OperationFailedEvent("Unable to complete getFile request", e));
-        }
+        conversation.startConversation();
     }
 
     /** 

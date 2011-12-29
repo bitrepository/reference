@@ -52,9 +52,14 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.jaccept.TestEventManager;
@@ -226,6 +231,18 @@ public class MessageBusWrapper implements MessageBus {
     }
 
     @Override
+    public void sendMessage(IdentifyPillarsForReplaceFileRequest content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
+    }
+
+    @Override
+    public void sendMessage(IdentifyPillarsForReplaceFileResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
+    }
+
+    @Override
     public void sendMessage(PutFileFinalResponse content) {
         testEventManager.addStimuli("Sending message: " + content);
         messageBus.sendMessage(content);
@@ -239,6 +256,24 @@ public class MessageBusWrapper implements MessageBus {
 
     @Override
     public void sendMessage(PutFileProgressResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
+    }
+
+    @Override
+    public void sendMessage(ReplaceFileFinalResponse content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
+    }
+
+    @Override
+    public void sendMessage(ReplaceFileRequest content) {
+        testEventManager.addStimuli("Sending message: " + content);
+        messageBus.sendMessage(content);
+    }
+
+    @Override
+    public void sendMessage(ReplaceFileProgressResponse content) {
         testEventManager.addStimuli("Sending message: " + content);
         messageBus.sendMessage(content);
     }

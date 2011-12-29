@@ -53,9 +53,14 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
@@ -118,21 +123,16 @@ public abstract class AbstractConversation implements Conversation {
         return startTime;
     }
 
-    /** Will start the conversation and either:<ol>
+    /** 
+     * Will start the conversation and either:<ol>
      * <li> If no event handler has been defined the method will block until the conversation has finished.</li>
      * <li> If a event handler has been defined the method will return after the conversation is started.</li>
      * </ol>
      * @return 
      */
     @Override
-    public void startConversation() throws OperationFailedException {
+    public void startConversation() {
         getConversationState().start();  
-        
-//        if (flowController.waitForCompletion()) {
-//            if (operationFailedException != null) {
-//                throw operationFailedException;
-//            }
-//        }
     }
     
     /**
@@ -257,6 +257,21 @@ public abstract class AbstractConversation implements Conversation {
     public void onMessage(GetFileProgressResponse message) {
         log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
     }
+    
+    @Override
+    public void onMessage(GetStatusRequest message) {
+        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
+    }
+
+    @Override
+    public void onMessage(GetStatusProgressResponse message) {
+        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
+    }
+
+    @Override
+    public void onMessage(GetStatusFinalResponse message) {
+        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
+    }
 
     @Override
     public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
@@ -309,6 +324,16 @@ public abstract class AbstractConversation implements Conversation {
     }
 
     @Override
+    public void onMessage(IdentifyPillarsForReplaceFileResponse message) {
+        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
+    }
+
+    @Override
+    public void onMessage(IdentifyPillarsForReplaceFileRequest message) {
+        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
+    }
+
+    @Override
     public void onMessage(PutFileFinalResponse message) {
         log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
     }
@@ -322,19 +347,19 @@ public abstract class AbstractConversation implements Conversation {
     public void onMessage(PutFileProgressResponse message) {
         log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
     }
-    
+
     @Override
-    public void onMessage(GetStatusRequest message) {
+    public void onMessage(ReplaceFileFinalResponse message) {
         log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
     }
 
     @Override
-    public void onMessage(GetStatusProgressResponse message) {
+    public void onMessage(ReplaceFileRequest message) {
         log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
     }
 
     @Override
-    public void onMessage(GetStatusFinalResponse message) {
+    public void onMessage(ReplaceFileProgressResponse message) {
         log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
     }
 }

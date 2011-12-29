@@ -59,9 +59,14 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.conversation.Conversation;
 import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
@@ -454,6 +459,28 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     }
 
     @Override
+    public void onMessage(IdentifyPillarsForReplaceFileRequest message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            handleNoConversation(messageCorrelationID);
+        }
+    }
+
+    @Override
+    public void onMessage(IdentifyPillarsForReplaceFileResponse message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            handleNoConversation(messageCorrelationID);
+        }
+    }
+
+    @Override
     public void onMessage(PutFileFinalResponse message) {
         String messageCorrelationID = message.getCorrelationID();
         Conversation conversation = conversations.get(messageCorrelationID);
@@ -486,6 +513,39 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         }
     }
 
+    @Override
+    public void onMessage(ReplaceFileRequest message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            handleNoConversation(messageCorrelationID);
+        }
+    }
+
+    @Override
+    public void onMessage(ReplaceFileFinalResponse message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            handleNoConversation(messageCorrelationID);
+        }
+    }
+
+    @Override
+    public void onMessage(ReplaceFileProgressResponse message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            handleNoConversation(messageCorrelationID);
+        }
+    }
+    
     /**
      * Will clean out obsolete conversations in each run. An obsolete conversation is a conversation which satisfies on 
      * of the following criterias: <ol>

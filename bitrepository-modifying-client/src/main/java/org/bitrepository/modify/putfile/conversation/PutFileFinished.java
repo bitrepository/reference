@@ -34,9 +34,6 @@ import org.slf4j.LoggerFactory;
  * The state for the PutFile communication, where the Put is finished.
  */
 public class PutFileFinished extends PutFileState {
-    /** The log for this class. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
-    
     /**
      * Constructor.
      * @param conversation The conversation in this state.
@@ -47,21 +44,21 @@ public class PutFileFinished extends PutFileState {
     
     @Override
     public void onMessage(IdentifyPillarsForPutFileResponse response) {
-        log.warn("(ConversationID: " + conversation.getConversationID() + ") " 
+        monitor.warning("(ConversationID: " + conversation.getConversationID() + ") " 
                 + "Received IdentifyPillarsForPutFileResponse from '" + response.getPillarID() 
                 + "' after the PutFile has ended.");
     }
 
     @Override
     public void onMessage(PutFileProgressResponse response) {
-        log.warn("(ConversationID: " + conversation.getConversationID() + ") " 
+        monitor.warning("(ConversationID: " + conversation.getConversationID() + ") " 
                 + "Received PutFileProgressResponse from '" + response.getPillarID() 
                 + "' after the PutFile has ended.");
     }
 
     @Override
     public void onMessage(PutFileFinalResponse response) {
-        log.warn("(ConversationID: " + conversation.getConversationID() + ") " 
+        monitor.warning("(ConversationID: " + conversation.getConversationID() + ") " 
                 + "Received PutFileFinalResponse from '" + response.getPillarID() 
                 + "' after the PutFile has ended.");
     }

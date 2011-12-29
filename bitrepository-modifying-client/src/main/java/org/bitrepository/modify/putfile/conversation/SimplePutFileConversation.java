@@ -65,7 +65,7 @@ public class SimplePutFileConversation extends AbstractConversation {
     final ChecksumsDataForNewFile validationChecksums;
     /** The checksums to request from the pillar.*/
     final ChecksumSpecs requestChecksums;
-    
+    /** The audit trail information for this conversation.*/
     final String auditTrailInformation;
     
     /**

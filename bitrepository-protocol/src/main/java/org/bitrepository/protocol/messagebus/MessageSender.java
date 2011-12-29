@@ -50,9 +50,14 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 
 /**
  * Interface for sending messages.
@@ -239,6 +244,20 @@ public interface MessageSender {
      * @param content       The content of the message.
      */
     void sendMessage(IdentifyPillarsForPutFileRequest content);
+    
+    /**
+     * Method for sending a message on a specific destination.
+     *
+     * @param content       The content of the message.
+     */
+    void sendMessage(IdentifyPillarsForReplaceFileRequest content);
+    
+    /**
+     * Method for sending a message on a specific destination.
+     *
+     * @param content       The content of the message.
+     */
+    void sendMessage(IdentifyPillarsForReplaceFileResponse content);
 
     /**
      * Method for sending a message on a specific destination.
@@ -260,4 +279,25 @@ public interface MessageSender {
      * @param content       The content of the message.
      */
     void sendMessage(PutFileProgressResponse content);
+
+    /**
+     * Method for sending a message on a specific destination.
+     *
+     * @param content       The content of the message.
+     */
+    void sendMessage(ReplaceFileFinalResponse content);
+
+    /**
+     * Method for sending a message on a specific destination.
+     *
+     * @param content       The content of the message.
+     */
+    void sendMessage(ReplaceFileRequest content);
+
+    /**
+     * Method for sending a message on a specific destination.
+     *
+     * @param content       The content of the message.
+     */
+    void sendMessage(ReplaceFileProgressResponse content);
 }

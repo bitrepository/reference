@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Modifying Client
  * 
- * $Id$
- * $HeadURL$
+ * $Id: DeletingFile.java 631 2011-12-13 17:56:54Z jolf $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-modifying-client/src/main/java/org/bitrepository/modify/deletefile/conversation/DeletingFile.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.modify.deletefile.conversation;
+package org.bitrepository.modify.replacefile.conversation;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -31,10 +31,10 @@ import java.util.TimerTask;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
@@ -44,59 +44,63 @@ import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
 import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 
 /**
- * Models the behavior of a DeleteFile conversation during the operation phase. That is, it begins with the sending of
- * <code>DeleteFileRequest</code> messages and finishes with the reception of the <code>DeleteFileFinalResponse</code>
- * messages from all responding pillars. 
+ * Models the behavior of a ReplaceFile conversation during the operation phase. That is, it begins with the sending of
+ * <code>ReplaceFileRequest</code> messages and finishes with the reception of the 
+ * <code>ReplaceFileFinalResponse</code> messages from all responding pillars. 
  * 
- * Note that this is only used by the DeleteFileConversation in the same package, therefore the visibility is package 
+ * Note that this is only used by the ReplaceFileConversation in the same package, therefore the visibility is package 
  * protected.
  */
-public class DeletingFile extends DeleteFileState {
+public class ReplacingFile extends ReplaceFileState {
     /** Defines that the timer is a daemon thread. */
     private static final Boolean TIMER_IS_DAEMON = true;
     /** The timer. Schedules conversation timeouts for this conversation. */
     final Timer timer = new Timer(TIMER_IS_DAEMON);
     /** The task to handle the timeouts for the identification. */
-    private TimerTask timerTask = new DeleteTimerTask();
+    private TimerTask timerTask = new ReplaceTimerTask();
 
     /** The pillars, which has not yet answered.*/
     private List<SelectedPillarInfo> pillarsSelectedForRequest; 
     /** The responses for the pillars.*/
-    private final PillarsResponseStatus deleteResponseStatus;
+    private final PillarsResponseStatus replaceResponseStatus;
 
     /**
      * Constructor.
      * @param conversation The conversation in this state.
      * @param pillarDest The destination of the pillar.
      */
-    public DeletingFile(SimpleDeleteFileConversation conversation) {
+    public ReplacingFile(SimpleReplaceFileConversation conversation) {
         super(conversation);
         pillarsSelectedForRequest = conversation.pillarSelector.getSelectedPillars();
-        deleteResponseStatus = new PillarsResponseStatus(conversation.pillarId);
+        replaceResponseStatus = new PillarsResponseStatus(conversation.pillarId);
     }
 
     /**
-     * Method for starting to delete a file on the pillar.
-     * The DeleteFileRequestMessage is created and sent to each of the pillars.
+     * Method for starting to replace a file on the pillar.
+     * The ReplaceFileRequestMessage is created and sent to each of the pillars.
      */
     public void start() {
-        DeleteFileRequest request = new DeleteFileRequest();
-        request.setCorrelationID(conversation.getConversationID());
-        request.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        request.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        request.setCollectionID(conversation.settings.getCollectionID());
-        request.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        // create the message
+        ReplaceFileRequest request = new ReplaceFileRequest();
         request.setAuditTrailInformation(conversation.auditTrailInformation);
-        request.setFileID(conversation.fileID);
-        request.setFileChecksumSpec(conversation.checksumSpecRequested);
         request.setChecksumDataForFile(conversation.checksumForFileToDelete);
+        request.setChecksumDataForNewFile(conversation.checksumForNewFileValidationAtPillar);
+        request.setCollectionID(conversation.settings.getCollectionID());
+        request.setCorrelationID(conversation.getConversationID());
+        request.setFileAddress(conversation.urlOfNewFile.toExternalForm());
+        request.setFileChecksumSpec(conversation.checksumRequestForNewFile);
+        request.setFileID(conversation.fileID);
+        request.setFileSize(BigInteger.valueOf(conversation.sizeOfNewFile));
+        request.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
+        request.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        request.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         
         for(SelectedPillarInfo pillarInfo : pillarsSelectedForRequest) {
             request.setPillarID(pillarInfo.getID());
             request.setTo(pillarInfo.getDestination());
             
             conversation.messageSender.sendMessage(request);
-            monitor.requestSent("Request to delete file " + conversation.fileID + " has been sent to the pillar + " +
+            monitor.requestSent("Request to replace file " + conversation.fileID + " has been sent to the pillar + " +
                     conversation.pillarId, pillarInfo.getID());
         }
 
@@ -105,54 +109,61 @@ public class DeletingFile extends DeleteFileState {
     }
 
     /**
-     * Method for handling the IdentifyPillarsForDeleteFileResponse message.
+     * Method for handling the IdentifyPillarsForReplaceFileResponse message.
      * No such message should be received.
-     * @param response The IdentifyPillarsForDeleteFileResponse message to handle.
+     * @param response The IdentifyPillarsForReplaceFileResponse message to handle.
      */
     @Override
-    public void onMessage(IdentifyPillarsForDeleteFileResponse response) {
-        monitor.debug("Received IdentifyPillarsForDeleteFileResponse from '" + response.getPillarID() 
-                + "' after the DeleteFileRequests has been sent.");
+    public void onMessage(IdentifyPillarsForReplaceFileResponse response) {
+        monitor.debug("Received IdentifyPillarsForReplaceFileResponse from '" + response.getPillarID() 
+                + "' after the ReplaceFileRequests has been sent.");
     }
 
     /**
-     * Handles the DeleteFileProgressResponse message.
+     * Handles the ReplaceFileProgressResponse message.
      * Just logged to it.
      * 
-     * @param response The DeleteFileProgressResponse to be handled by this method.
+     * @param response The ReplaceFileProgressResponse to be handled by this method.
      */
     @Override
-    public void onMessage(DeleteFileProgressResponse response) {
+    public void onMessage(ReplaceFileProgressResponse response) {
         monitor.progress(new PillarOperationEvent(OperationEvent.OperationEventType.Progress, 
-                "Received DeleteFileProgressResponse from pillar " + response.getPillarID() + ": " + 
+                "Received ReplaceFileProgressResponse from pillar " + response.getPillarID() + ": " + 
                         response.getResponseInfo().getResponseText(), response.getPillarID()));
     }
 
+    /**
+     * Handles the ReplaceFileFinalResponse message.
+     * Is validated and removed from the list of pillars who should perform the ReplaceFile operation.
+     * If it is the response from the last responding pillar, then the conversation is complete.
+     * 
+     * @param response The ReplaceFileFinalResponse message to be handled.
+     */
     @Override
-    public void onMessage(DeleteFileFinalResponse response) {
+    public void onMessage(ReplaceFileFinalResponse response) {
         try {
-            deleteResponseStatus.responseReceived(response.getPillarID());
+            replaceResponseStatus.responseReceived(response.getPillarID());
         } catch (UnexpectedResponseException ure) {
             monitor.warning("Received unexpected final response from " + response.getPillarID() , ure);
         }
 
         if(isResponseSuccess(response.getResponseInfo())) {
-            monitor.pillarComplete(new DeleteFileCompletePillarEvent(
+            monitor.pillarComplete(new ReplaceFileCompletePillarEvent(
                     response.getChecksumDataForFile(),
                     response.getPillarID(),
-                    "Received delete file result from " + response.getPillarID()));
+                    "Received replace file result from " + response.getPillarID()));
         } else {
             monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
         }
         
         // Check if the conversation has finished.
-        if(deleteResponseStatus.haveAllPillarResponded()) {
+        if(replaceResponseStatus.haveAllPillarResponded()) {
             timerTask.cancel();
             monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.Complete,
-                    "Finished Delete on all the pillars."));
+                    "Finished the ReplaceFile operation on all the pillars."));
             conversation.getFlowController().unblock();
 
-            DeleteFileFinished finishState = new DeleteFileFinished(conversation);
+            ReplaceFileFinished finishState = new ReplaceFileFinished(conversation);
             conversation.conversationState = finishState;
         }
     }
@@ -175,20 +186,20 @@ public class DeletingFile extends DeleteFileState {
     }
 
     /**
-     * What should we do if something fails during a delete operation.
+     * What should we do if something fails during a replace operation.
      * @param info The information about why is was incomplete.
      */
-    private void handleIncompleteDelete(String info) {
+    private void handleIncompleteReplace(String info) {
         conversation.failConversation(info);
     }
 
     /**
      * Class for handling a timeout for the conversation.
      */
-    private class DeleteTimerTask extends TimerTask {
+    private class ReplaceTimerTask extends TimerTask {
         @Override
         public void run() {
-            handleIncompleteDelete("Timeout occurred for the Deleting of the file.");
+            handleIncompleteReplace("Timeout occurred for the ReplaceFile operation.");
         }
     }
 

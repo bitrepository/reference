@@ -2,8 +2,8 @@
  * #%L
  * Bitrepository Modifying Client
  * 
- * $Id$
- * $HeadURL$
+ * $Id: SimpleDeleteFileConversation.java 633 2011-12-14 09:05:28Z mss $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-modifying-client/src/main/java/org/bitrepository/modify/deletefile/conversation/SimpleDeleteFileConversation.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -22,18 +22,20 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.modify.deletefile.conversation;
+package org.bitrepository.modify.replacefile.conversation;
 
+import java.net.URL;
 import java.util.Collection;
 import java.util.UUID;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.modify.deletefile.selector.PillarSelectorForDeleteFile;
+import org.bitrepository.modify.replacefile.pillarselector.PillarSelectorForReplaceFile;
 import org.bitrepository.protocol.conversation.AbstractConversation;
 import org.bitrepository.protocol.conversation.ConversationState;
 import org.bitrepository.protocol.conversation.FlowController;
@@ -41,29 +43,37 @@ import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
 /**
- * A conversation for the DeleteFile operation.
- * Logic for behaving sanely in DeleteFile conversations.
+ * A conversation for the ReplaceFile operation.
+ * Logic for behaving sanely in ReplaceFile conversations.
  */
-public class SimpleDeleteFileConversation extends AbstractConversation {
+public class SimpleReplaceFileConversation extends AbstractConversation {
     /** The sender to use for dispatching messages */
     final MessageSender messageSender;
     /** The configuration specific to the SLA related to this conversion. */
     final Settings settings;
     
-    /** The ID of the file which should be deleted. */
+    /** The ID of the file which should be replaced. */
     final String fileID;
-    /** The ID of the pillar to delete the file from. */
+    /** The ID of the pillars to replace the file from. */
     final Collection<String> pillarId;
     /** The checksums specification for the pillar.*/
     final ChecksumDataForFileTYPE checksumForFileToDelete;
     /** The checksum specification requested from the pillar.*/
-    final ChecksumSpecTYPE checksumSpecRequested;
+    final ChecksumSpecTYPE checksumRequestedForFileToDelete;
+    /** The url of the new file to replace the old one.*/
+    final URL urlOfNewFile;
+    /** The size of the new file.*/
+    final long sizeOfNewFile;
+    /** The checksum for validating the new file at pillar-side.*/
+    final ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar;
+    /** The request for a checksum of the new file for client-size validation.*/
+    final ChecksumSpecTYPE checksumRequestForNewFile;
     /** The state of the PutFile transaction.*/
-    DeleteFileState conversationState;
+    ReplaceFileState conversationState;
     /** The audit trail information for the conversation.*/
     final String auditTrailInformation;
-    /** The selector for finding the pillar.*/
-    final PillarSelectorForDeleteFile pillarSelector;
+    /** The pillar selector*/
+    final PillarSelectorForReplaceFile pillarSelector;
 
     /**
      * Constructor.
@@ -79,46 +89,55 @@ public class SimpleDeleteFileConversation extends AbstractConversation {
      * @param flowController The flow controller for the conversation.
      * @param auditTrailInformation The audit trail information for the conversation.
      */
-    public SimpleDeleteFileConversation(MessageSender messageSender,
+    public SimpleReplaceFileConversation(MessageSender messageSender,
             Settings settings,
             String fileId,
             Collection<String> pillarIds,
             ChecksumDataForFileTYPE checksumSpecForPillar,
-            ChecksumSpecTYPE checksumSpecRequested,
+            ChecksumSpecTYPE checksumRequestedForFileToDelete,
+            URL url,
+            long sizeOfNewFile,
+            ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar,
+            ChecksumSpecTYPE checksumRequestForNewFile,
             EventHandler eventHandler,
             FlowController flowController,
             String auditTrailInformation) {
         super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
+        ArgumentValidator.checkNotNull(checksumForNewFileValidationAtPillar, "checksumForNewFileValidationAtPillar");
         
         this.messageSender = messageSender;
         this.settings = settings;
         this.fileID = fileId;
         this.pillarId = pillarIds;
         this.checksumForFileToDelete = checksumSpecForPillar;
-        this.checksumSpecRequested = checksumSpecRequested;
+        this.checksumRequestedForFileToDelete = checksumRequestedForFileToDelete;
+        this.urlOfNewFile = url;
+        this.sizeOfNewFile = sizeOfNewFile;
+        this.checksumForNewFileValidationAtPillar = checksumForNewFileValidationAtPillar;
+        this.checksumRequestForNewFile = checksumRequestForNewFile;
         this.auditTrailInformation = auditTrailInformation;
-        conversationState = new IdentifyPillarsForDeleteFile(this);
-        pillarSelector = new PillarSelectorForDeleteFile(pillarIds);
+        conversationState = new IdentifyPillarsForReplaceFile(this);
+        pillarSelector = new PillarSelectorForReplaceFile(pillarIds);
     }
     
     @Override
-    public synchronized void onMessage(IdentifyPillarsForDeleteFileResponse message) {
+    public synchronized void onMessage(IdentifyPillarsForReplaceFileResponse message) {
         conversationState.onMessage(message);
     }
     
     @Override
-    public synchronized void onMessage(DeleteFileProgressResponse message) {
+    public synchronized void onMessage(ReplaceFileProgressResponse message) {
         conversationState.onMessage(message);
     }
     
     @Override
-    public synchronized void onMessage(DeleteFileFinalResponse message) {
+    public synchronized void onMessage(ReplaceFileFinalResponse message) {
         conversationState.onMessage(message);
     }
 
     @Override
     public boolean hasEnded() {
-        return conversationState instanceof DeleteFileFinished;
+        return conversationState instanceof ReplaceFileFinished;
     }
     
     @Override
