@@ -49,7 +49,9 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReq
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -141,8 +143,11 @@ public class PillarMediator extends AbstractMessageListener {
                 new IdentifyPillarsForDeleteFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
         this.handlers.put(DeleteFileRequest.class.getName(), 
                 new DeleteFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+        this.handlers.put(IdentifyPillarsForReplaceFileRequest.class.getName(), 
+                new IdentifyPillarsForReplaceFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+        this.handlers.put(ReplaceFileRequest.class.getName(), 
+                new ReplaceFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
     }
-
     
     /**
      * Method for sending an alarm when a received message does not have a handler.
@@ -345,11 +350,39 @@ public class PillarMediator extends AbstractMessageListener {
 
     @SuppressWarnings("unchecked")
     @Override
+    public void onMessage(IdentifyPillarsForReplaceFileRequest message) {
+        log.info("Received: " + message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+
+        PillarMessageHandler<IdentifyPillarsForReplaceFileRequest> handler = handlers.get(message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        } else {
+            noHandlerAlarm(message.getClass());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public void onMessage(PutFileRequest message) {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         PillarMessageHandler<PutFileRequest> handler = handlers.get(message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        } else {
+            noHandlerAlarm(message.getClass());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onMessage(ReplaceFileRequest message) {
+        log.info("Received: " + message);
+        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
+
+        PillarMessageHandler<ReplaceFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {

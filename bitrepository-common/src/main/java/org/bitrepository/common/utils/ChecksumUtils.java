@@ -25,7 +25,9 @@
 package org.bitrepository.common.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 
@@ -37,17 +39,19 @@ import javax.crypto.spec.SecretKeySpec;
  * Uses the HMAC method for calculating the checksums with salt.
  */
 public final class ChecksumUtils {
-
+    
     /** The magical integer '4'.*/
     private static final int MAGIC_INTEGER_4 = 4;
     /** The magical integer for the hexadecimal '0x0F'.*/
     private static final int MAGIC_INTEGER_OXOF = 0x0F;
-
+    /** The maximal size of the byte array for digest.*/
+    private static final int BYTE_ARRAY_SIZE_FOR_DIGEST = 4096;
+    
     /** 
      * Private constructor. To prevent instantiation of this utility class.
      */
     private ChecksumUtils() { }
-
+    
     /**
      * Calculates the checksum for a file based on the given checksum algorith, where the calculcation is salted.
      * 
@@ -59,7 +63,7 @@ public final class ChecksumUtils {
      */
     public static String generateChecksum(File file, String algorithm, String salt) {
         try {
-            return generateChecksum(FileUtils.readFile(file), algorithm, salt.getBytes());
+            return generateChecksum(new FileInputStream(file), algorithm, salt.getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -76,7 +80,7 @@ public final class ChecksumUtils {
      */
     public static String generateChecksum(File file, String algorithm, byte[] salt) {
         try {
-            return generateChecksum(FileUtils.readFile(file), algorithm, salt);
+            return generateChecksum(new FileInputStream(file), algorithm, salt);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -85,12 +89,14 @@ public final class ChecksumUtils {
     /**
      * Calculates a checksum based on 
      * 
-     * @param content The string to calculate from.
+     * @param content The inputstream for the data to calculate the checksum of.
      * @param algorithm The algorithm to use for calculation. If it is not prefixed with 'Hmac', then it is added.
      * @param salt The salt for the calculation. 
      * @return The HMAC calculated checksum in hexadecimal.
      */
-    public static String generateChecksum(String content, String algorithm, byte[] salt) {
+    public static String generateChecksum(InputStream content, String algorithm, byte[] salt) {
+        byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
+        int bytesRead;
         try {
             String algorithmName = algorithm.toUpperCase();
             if(!algorithm.startsWith("Hmac")) {
@@ -99,16 +105,19 @@ public final class ChecksumUtils {
             
             Mac messageAuthenticationCode = Mac.getInstance(algorithmName);
             Key key;
-            
             if(salt == null || salt.length == 0) {
                 key = new SecretKeySpec(new byte[]{0}, algorithmName);
             } else {
                 key = new SecretKeySpec(salt, algorithmName);
             }
             
+            // digest the content for calculating the checksum.
             messageAuthenticationCode.init(key);
-            byte[] digest = messageAuthenticationCode.doFinal(content.getBytes());
+            while ((bytesRead = content.read(bytes)) > 0) {
+                messageAuthenticationCode.update(bytes, 0, bytesRead);
+            }
             
+            byte[] digest = messageAuthenticationCode.doFinal();
             return toHex(digest);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -124,7 +133,7 @@ public final class ChecksumUtils {
     private static String toHex(byte[] byteArray) {
         // The list of value representations for hexadecimals.
         char[] hexdigit = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-
+        
         StringBuffer sb = new StringBuffer("");
         for (byte b : byteArray) {
             sb.append(hexdigit[(b >> MAGIC_INTEGER_4) & MAGIC_INTEGER_OXOF]);

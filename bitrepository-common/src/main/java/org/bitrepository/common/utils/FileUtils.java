@@ -193,8 +193,7 @@ public final class FileUtils {
             fis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
             
             byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
-            int bytesRead;
-            while ((bytesRead = fis.read(bytes)) > 0) {
+            while (fis.read(bytes) > 0) {
                 res.append(new String(bytes));
             }
         } finally {
