@@ -25,9 +25,11 @@
 package org.bitrepository.modify.putfile;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
@@ -157,25 +159,124 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
     }
+    
+    @Test(groups={"regressiontest"})
+    public void putClientIdentificationTimeout() throws Exception {
+        addDescription("Tests the handling of a failed identification for the PutClient");
+        addStep("Initialise the number of pillars and the PutClient. Sets the identification timeout to 1 sec.", 
+                "Should be OK.");
 
-    // Move to system test, not relevant as component test
-    //@Test(groups={"regressiontest"})
-    @Test(groups={"systemtest"})
-    public void putClientBadURLTester() throws Exception {
-        addDescription("Tests the PutClient. Makes a whole conversation for the put client, for a 'bad' scenario. "
-                + "The URL is not valid, which should give errors in the FinalResponse.");
-        addStep("Initialise the number of pillars and the PutClient.", "Should be OK.");
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(1000L));
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        PutFileClient putClient = createPutFileClient();
+        
+        addStep("Request the putting of a file through the PutClient", 
+                "The identification message should be sent.");
+        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, new Long(testFile.length()), null, 
+                null, testEventHandler, null);
+        
+        IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
+        if(useMockupPillar()) {
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+                    IdentifyPillarsForPutFileRequest.class);
+            Assert.assertEquals(receivedIdentifyRequestMessage, 
+                    messageFactory.createIdentifyPillarsForPutFileRequest(
+                            receivedIdentifyRequestMessage.getCorrelationID(),
+                            receivedIdentifyRequestMessage.getReplyTo(),
+                            receivedIdentifyRequestMessage.getTo(),
+                            DEFAULT_FILE_ID,
+                            receivedIdentifyRequestMessage.getAuditTrailInformation()
+                            ));
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
 
-        URL invalidUrl = new URL("http://sandkasse-01.kb.dk/ERROR/ERROR/ERROR/ERROR/ERROR/ERROR/ERROR/test.xml");
+        addStep("Do not respond. Just await the timeout.", 
+                "Should make send a Failure event to the eventhandler.");
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Failed);        
+    }
+
+    @Test(groups={"regressiontest"})
+    public void putClientOperationTimeout() throws Exception {
+        addDescription("Tests the handling of a failed operation for the PutClient");
+        addStep("Initialise the number of pillars and the PutClient. Sets the operation timeout to 1 sec.", 
+                "Should be OK.");
+
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(1000L));
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        PutFileClient putClient = createPutFileClient();
+        
+        addStep("Request the putting of a file through the PutClient", 
+                "The identification message should be sent.");
+        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, new Long(testFile.length()), null, 
+                null, testEventHandler, null);
+        
+        IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
+        if(useMockupPillar()) {
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+                    IdentifyPillarsForPutFileRequest.class);
+            Assert.assertEquals(receivedIdentifyRequestMessage, 
+                    messageFactory.createIdentifyPillarsForPutFileRequest(
+                            receivedIdentifyRequestMessage.getCorrelationID(),
+                            receivedIdentifyRequestMessage.getReplyTo(),
+                            receivedIdentifyRequestMessage.getTo(),
+                            DEFAULT_FILE_ID,
+                            receivedIdentifyRequestMessage.getAuditTrailInformation()
+                            ));
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+
+        addStep("Make response for the pillar.", "The client should then send the actual PutFileRequest.");
+        PutFileRequest receivedPutFileRequest = null;
+        if(useMockupPillar()) {
+            IdentifyPillarsForPutFileResponse identifyResponse = messageFactory
+                    .createIdentifyPillarsForPutFileResponse(
+                            receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+            messageBus.sendMessage(identifyResponse);
+            receivedPutFileRequest = pillar1Destination.waitForMessage(PutFileRequest.class, 10, TimeUnit.SECONDS);
+            Assert.assertEquals(receivedPutFileRequest, 
+                    messageFactory.createPutFileRequest(
+                            PILLAR1_ID, pillar1DestinationId,
+                            receivedPutFileRequest.getReplyTo(),
+                            receivedPutFileRequest.getCorrelationID(),
+                            receivedPutFileRequest.getFileAddress(),
+                            receivedPutFileRequest.getFileSize(),
+                            DEFAULT_FILE_ID,
+                            receivedPutFileRequest.getAuditTrailInformation()
+                            ));
+        }
+
+        addStep("Validate the steps of the PutClient by going through the events.", "Should be 'PillarIdentified', "
+                + "'PillarSelected' and 'RequestSent'");
+        for(String s : settings.getCollectionSettings().getClientSettings().getPillarIDs()) {
+            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+
+        addStep("Do not respond. Just await the timeout.", 
+                "Should make send a Failure event to the eventhandler.");
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Failed);        
+    }
+    
+    @Test(groups={"regressiontest"})
+    public void putClientPillarFailed() throws Exception {
+        addDescription("Tests the handling of a operation failure for the DeleteClient. ");
+        addStep("Initialise the number of pillars to one", "Should be OK.");
 
         settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 
+        addStep("Ensure that the test-file is placed on the HTTP server.", "Should be removed an reuploaded.");
+
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.", 
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
-        putClient.putFileWithId(invalidUrl, DEFAULT_FILE_ID, new Long(testFile.length()), testEventHandler);
+        putClient.putFileWithId(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, new Long(testFile.length()), testEventHandler);
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
@@ -191,6 +292,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             ));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+
         addStep("Make response for the pillar.", "The client should then send the actual PutFileRequest.");
 
         PutFileRequest receivedPutFileRequest = null;
@@ -220,36 +322,20 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
 
-        addStep("The pillar sends a progress response to the PutClient.", "Should be caught by the event handler.");
-        if(useMockupPillar()) {
-            PutFileProgressResponse putFileProgressResponse = messageFactory.createPutFileProgressResponse(
-                    receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
-            messageBus.sendMessage(putFileProgressResponse);
-        }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
-
-        addStep("Send a 'bad' final response message to the PutClient.", 
-                "Should be caught by the event handler. First a Failed, then a Complete.");
-
+        addStep("Send a failed response message to the PutClient.", 
+                "Should be caught by the event handler. First a PillarFailed, then a Complete.");
         if(useMockupPillar()) {
             PutFileFinalResponse putFileFinalResponse = messageFactory.createPutFileFinalResponse(
                     receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
-            ResponseInfo frInfo = new ResponseInfo();
-            frInfo.setResponseCode(ResponseCode.FAILURE);
-            frInfo.setResponseText("Could not use URL!"); 
-            putFileFinalResponse.setResponseInfo(frInfo);
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.FAILURE);
+            ri.setResponseText("Verifying that a failure can be understood!");
+            putFileFinalResponse.setResponseInfo(ri);
             messageBus.sendMessage(putFileFinalResponse);
         }
-
-        for(int i = 1; i < 2 * settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
-            OperationEventType eventType = testEventHandler.waitForEvent().getType();
-            Assert.assertTrue( (eventType == OperationEventType.PillarFailed)
-                    || (eventType == OperationEventType.Progress),
-                    "Expected either PillarFailed, Progress or PillarComplete, but was: " + eventType);
-        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarFailed);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
     }
-
 
     /**
      * Creates a new test PutFileClient based on the supplied settings. 

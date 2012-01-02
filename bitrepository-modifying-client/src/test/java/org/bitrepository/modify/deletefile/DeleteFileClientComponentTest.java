@@ -24,8 +24,12 @@
  */
 package org.bitrepository.modify.deletefile;
 
+import java.math.BigInteger;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
@@ -137,18 +141,18 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("The pillar sends a progress response to the DeleteClient.", "Should be caught by the event handler.");
         if(useMockupPillar()) {
-            DeleteFileProgressResponse putFileProgressResponse = messageFactory.createDeleteFileProgressResponse(
+            DeleteFileProgressResponse deleteFileProgressResponse = messageFactory.createDeleteFileProgressResponse(
                     receivedDeleteFileRequest, PILLAR1_ID, pillar1DestinationId);
-            messageBus.sendMessage(putFileProgressResponse);
+            messageBus.sendMessage(deleteFileProgressResponse);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
 
         addStep("Send a final response message to the DeleteClient.", 
                 "Should be caught by the event handler. First a PartiallyComplete, then a Complete.");
         if(useMockupPillar()) {
-            DeleteFileFinalResponse putFileFinalResponse = messageFactory.createDeleteFileFinalResponse(
+            DeleteFileFinalResponse deleteFileFinalResponse = messageFactory.createDeleteFileFinalResponse(
                     receivedDeleteFileRequest, PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
-            messageBus.sendMessage(putFileFinalResponse);
+            messageBus.sendMessage(deleteFileFinalResponse);
         }
         for(int i = 1; i < 2* settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             OperationEventType eventType = testEventHandler.waitForEvent().getType();
@@ -158,101 +162,215 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
     }
-//
-//    // Move to system test, not relevant as component test
-//    //@Test(groups={"regressiontest"})
-//    public void putClientBadURLTester() throws Exception {
-//        addDescription("Tests the PutClient. Makes a whole conversation for the put client, for a 'bad' scenario. "
-//                + "The URL is not valid, which should give errors in the FinalResponse.");
-//        addStep("Initialise the number of pillars and the PutClient.", "Should be OK.");
-//
-//        URL invalidUrl = new URL("http://sandkasse-01.kb.dk/ERROR/ERROR/ERROR/ERROR/ERROR/ERROR/ERROR/test.xml");
-//
-//        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-//        PutFileClient putClient = createPutFileClient();
-//
-//        addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.", 
-//                "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
-//        putClient.putFileWithId(invalidUrl, DEFAULT_FILE_ID, new Long(testFile.length()), testEventHandler);
-//
-//        IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
-//        if(useMockupPillar()) {
-//            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
-//                    IdentifyPillarsForPutFileRequest.class);
-//            Assert.assertEquals(receivedIdentifyRequestMessage, 
-//                    messageFactory.createIdentifyPillarsForPutFileRequest(
-//                            receivedIdentifyRequestMessage.getCorrelationID(),
-//                            receivedIdentifyRequestMessage.getReplyTo(),
-//                            receivedIdentifyRequestMessage.getTo()
-//                            ));
-//        }
-//
-//        addStep("Make response for the pillar.", "The client should then send the actual PutFileRequest.");
-//
-//        PutFileRequest receivedPutFileRequest = null;
-//        if(useMockupPillar()) {
-//            IdentifyPillarsForPutFileResponse identifyResponse = messageFactory
-//                    .createIdentifyPillarsForPutFileResponse(
-//                            receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
-//            messageBus.sendMessage(identifyResponse);
-//            receivedPutFileRequest = pillar1Destination.waitForMessage(PutFileRequest.class);
-//            Assert.assertEquals(receivedPutFileRequest, 
-//                    messageFactory.createPutFileRequest(
-//                            PILLAR1_ID, pillar1DestinationId,
-//                            receivedPutFileRequest.getReplyTo(),
-//                            receivedPutFileRequest.getCorrelationID(),
-//                            receivedPutFileRequest.getFileAddress(),
-//                            receivedPutFileRequest.getFileSize(),
-//                            DEFAULT_FILE_ID
-//                            ));
-//        }
-//
-//        addStep("Validate the steps of the PutClient by going through the events.", "Should be 'PillarIdentified', "
-//                + "'PillarSelected' and 'RequestSent'");
-//        for(String s : settings.getCollectionSettings().getClientSettings().getPillarIDs()) {
-//            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
-//        }
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
-//
-//        addStep("The pillar sends a progress response to the PutClient.", "Should be caught by the event handler.");
-//        if(useMockupPillar()) {
-//            PutFileProgressResponse putFileProgressResponse = messageFactory.createPutFileProgressResponse(
-//                    receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
-//            messageBus.sendMessage(putFileProgressResponse);
-//        }
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
-//
-//        addStep("Send a 'bad' final response message to the PutClient.", 
-//                "Should be caught by the event handler. First a Failed, then a Complete.");
-//
-//        if(useMockupPillar()) {
-//            PutFileFinalResponse putFileFinalResponse = messageFactory.createPutFileFinalResponse(
-//                    receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
-//            ResponseInfo frInfo = new ResponseInfo();
-//            frInfo.setResponseCode(ResponseCode.FAILURE);
-//            // TODO has to contain 'Error' to be caught.
-//            frInfo.setResponseText("Error: could not use URL!"); 
-//            putFileFinalResponse.setResponseInfo(frInfo);
-//            messageBus.sendMessage(putFileFinalResponse);
-//        }
-//
-//        for(int i = 1; i < 3* settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
-//            OperationEventType eventType = testEventHandler.waitForEvent().getType();
-//            Assert.assertTrue( (eventType == OperationEventType.Failed)
-//                    || (eventType == OperationEventType.Progress) 
-//                    || (eventType == OperationEventType.PillarComplete),
-//                    "Expected either Failed, Progress or PartiallyComplete, but was: " + eventType);
-//        }
-//        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
-//    }
-//
+
+    @Test(groups={"regressiontest"})
+    public void deleteClientIdentificationTimeout() throws Exception {
+        addDescription("Tests the handling of a failed identification for the DeleteClient");
+        addStep("Initialise the number of pillars and the DeleteClient. Sets the identification timeout to 1 sec.", 
+                "Should be OK.");
+
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(1000L));
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        DeleteFileClient deleteClient = createDeleteFileClient();
+        
+        String checksum = "123checksum321";
+        ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
+        checksumForPillar.setChecksumType("MD5");
+        ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
+        checksumData.setChecksumSpec(checksumForPillar);
+        checksumData.setChecksumValue(checksum.getBytes());
+        checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
+
+        ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
+        checksumRequest.setChecksumType("SHA-1");
+
+        addStep("Request a file to be deleted on the default pillar.", 
+                "A IdentifyPillarsForDeleteFileRequest should be sent to the pillar.");
+        deleteClient.deleteFile(DEFAULT_FILE_ID, PILLAR1_ID, checksumData, checksumRequest, testEventHandler, null);
+        
+        IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = null;
+        if(useMockupPillar()) {
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+                    IdentifyPillarsForDeleteFileRequest.class);
+            Assert.assertEquals(receivedIdentifyRequestMessage, 
+                    messageFactory.createIdentifyPillarsForDeleteFileRequest(
+                            receivedIdentifyRequestMessage.getCorrelationID(),
+                            receivedIdentifyRequestMessage.getReplyTo(),
+                            receivedIdentifyRequestMessage.getTo(), 
+                            DEFAULT_FILE_ID
+                            ));
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+
+        addStep("Do not respond. Just await the timeout.", 
+                "Should make send a Failure event to the eventhandler.");
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Failed);        
+    }
+
+    @Test(groups={"regressiontest"})
+    public void deleteClientOperationTimeout() throws Exception {
+        addDescription("Tests the handling of a failed operation for the DeleteClient");
+        addStep("Initialise the number of pillars and the DeleteClient. Sets the operation timeout to 1 sec.", 
+                "Should be OK.");
+
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(1000L));
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        DeleteFileClient deleteClient = createDeleteFileClient();
+        
+        String checksum = "123checksum321";
+        ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
+        checksumForPillar.setChecksumType("MD5");
+        ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
+        checksumData.setChecksumSpec(checksumForPillar);
+        checksumData.setChecksumValue(checksum.getBytes());
+        checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
+
+        ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
+        checksumRequest.setChecksumType("SHA-1");
+
+        addStep("Request a file to be deleted on the default pillar.", 
+                "A IdentifyPillarsForDeleteFileRequest should be sent to the pillar.");
+        deleteClient.deleteFile(DEFAULT_FILE_ID, PILLAR1_ID, checksumData, checksumRequest, testEventHandler, null);
+
+        IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = null;
+        if(useMockupPillar()) {
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+                    IdentifyPillarsForDeleteFileRequest.class);
+            Assert.assertEquals(receivedIdentifyRequestMessage, 
+                    messageFactory.createIdentifyPillarsForDeleteFileRequest(
+                            receivedIdentifyRequestMessage.getCorrelationID(),
+                            receivedIdentifyRequestMessage.getReplyTo(),
+                            receivedIdentifyRequestMessage.getTo(), 
+                            DEFAULT_FILE_ID
+                            ));
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+
+        addStep("Make response for the pillar.", "The client receive the response, identify the pillar and send the request.");
+
+        DeleteFileRequest receivedDeleteFileRequest = null;
+        if(useMockupPillar()) {
+            IdentifyPillarsForDeleteFileResponse identifyResponse 
+                    = messageFactory.createIdentifyPillarsForDeleteFileResponse(receivedIdentifyRequestMessage, 
+                            PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
+            messageBus.sendMessage(identifyResponse);
+            receivedDeleteFileRequest = pillar1Destination.waitForMessage(DeleteFileRequest.class);
+            Assert.assertEquals(receivedDeleteFileRequest, 
+                    messageFactory.createDeleteFileRequest(
+                            PILLAR1_ID, pillar1DestinationId,
+                            receivedDeleteFileRequest.getReplyTo(),
+                            receivedDeleteFileRequest.getCorrelationID(),
+                            DEFAULT_FILE_ID,
+                            receivedDeleteFileRequest.getChecksumDataForFile(),
+                            receivedDeleteFileRequest.getFileChecksumSpec()
+                            ));
+        }
+
+        addStep("Validate the steps of the DeleteClient by going through the events.", "Should be 'PillarIdentified', "
+                + "'PillarSelected' and 'RequestSent'");
+        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+
+        addStep("Do not respond. Just await the timeout.", 
+                "Should make send a Failure event to the eventhandler.");
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Failed);        
+    }
+    
+    @Test(groups={"regressiontest"})
+    public void deleteClientPillarFailed() throws Exception {
+        addDescription("Tests the handling of a operation failure for the DeleteClient. ");
+        addStep("Initialise the number of pillars to one", "Should be OK.");
+
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        DeleteFileClient deleteClient = createDeleteFileClient();
+        
+        String checksum = "123checksum321";
+        ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
+        checksumForPillar.setChecksumType("MD5");
+        ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
+        checksumData.setChecksumSpec(checksumForPillar);
+        checksumData.setChecksumValue(checksum.getBytes());
+        checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
+
+        ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
+        checksumRequest.setChecksumType("SHA-1");
+
+        addStep("Request a file to be deleted on the default pillar.", 
+                "A IdentifyPillarsForDeleteFileRequest should be sent to the pillar.");
+        deleteClient.deleteFile(DEFAULT_FILE_ID, PILLAR1_ID, checksumData, checksumRequest, testEventHandler, null);
+
+        IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = null;
+        if(useMockupPillar()) {
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+                    IdentifyPillarsForDeleteFileRequest.class);
+            Assert.assertEquals(receivedIdentifyRequestMessage, 
+                    messageFactory.createIdentifyPillarsForDeleteFileRequest(
+                            receivedIdentifyRequestMessage.getCorrelationID(),
+                            receivedIdentifyRequestMessage.getReplyTo(),
+                            receivedIdentifyRequestMessage.getTo(), 
+                            DEFAULT_FILE_ID
+                            ));
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+
+        addStep("Make response for the pillar.", "The client receive the response, identify the pillar and send the request.");
+
+        DeleteFileRequest receivedDeleteFileRequest = null;
+        if(useMockupPillar()) {
+            IdentifyPillarsForDeleteFileResponse identifyResponse 
+                    = messageFactory.createIdentifyPillarsForDeleteFileResponse(receivedIdentifyRequestMessage, 
+                            PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
+            messageBus.sendMessage(identifyResponse);
+            receivedDeleteFileRequest = pillar1Destination.waitForMessage(DeleteFileRequest.class);
+            Assert.assertEquals(receivedDeleteFileRequest, 
+                    messageFactory.createDeleteFileRequest(
+                            PILLAR1_ID, pillar1DestinationId,
+                            receivedDeleteFileRequest.getReplyTo(),
+                            receivedDeleteFileRequest.getCorrelationID(),
+                            DEFAULT_FILE_ID,
+                            receivedDeleteFileRequest.getChecksumDataForFile(),
+                            receivedDeleteFileRequest.getFileChecksumSpec()
+                            ));
+        }
+
+        addStep("Validate the steps of the DeleteClient by going through the events.", "Should be 'PillarIdentified', "
+                + "'PillarSelected' and 'RequestSent'");
+        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+
+        addStep("Send a failed response message to the DeleteClient.", 
+                "Should be caught by the event handler. First a PillarFailed, then a Complete.");
+        if(useMockupPillar()) {
+            DeleteFileFinalResponse deleteFileFinalResponse = messageFactory.createDeleteFileFinalResponse(
+                    receivedDeleteFileRequest, PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.FAILURE);
+            ri.setResponseText("Verifying that a failure can be understood!");
+            deleteFileFinalResponse.setResponseInfo(ri);
+            messageBus.sendMessage(deleteFileFinalResponse);
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarFailed);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+    }
+
     /**
-     * Creates a new test PutFileClient based on the supplied settings. 
+     * Creates a new test DeleteFileClient based on the supplied settings. 
      * 
      * Note that the normal way of creating client through the module factory would reuse components with settings from
      * previous tests.
-     * @return A new PutFileClient(Wrapper).
+     * @return A new DeleteFileClient(Wrapper).
      */
     private DeleteFileClient createDeleteFileClient() {
         MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration());

@@ -30,6 +30,13 @@ import java.net.URL;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
@@ -39,6 +46,7 @@ import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.clienttest.TestEventHandler;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
+import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.mediator.CollectionBasedConversationMediator;
@@ -168,6 +176,222 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                     || (eventType == OperationEventType.Progress),
                     "Expected either PartiallyComplete or Progress, but was: " + eventType);
         }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+    }
+    
+    @Test(groups={"regressiontest"})
+    public void replaceClientIdentificationTimeout() throws Exception {
+        addDescription("Tests the handling of a failed identification for the ReplaceClient");
+        addStep("Initialise the number of pillars and the DeleteClient. Sets the identification timeout to 1 sec.", 
+                "Should be OK.");
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(1000L));
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        ReplaceFileClient replaceClient = createReplaceFileClient();
+        
+        String checksumOld = "123checksum321";
+        String checksumNew = "321checksum123";
+        ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
+        checksumForPillar.setChecksumType("MD5");
+        ChecksumDataForFileTYPE checksumDataOldFile = new ChecksumDataForFileTYPE();
+        checksumDataOldFile.setChecksumSpec(checksumForPillar);
+        checksumDataOldFile.setChecksumValue(checksumOld.getBytes());
+        checksumDataOldFile.setCalculationTimestamp(CalendarUtils.getEpoch());
+        ChecksumDataForFileTYPE checksumDataNewFile = new ChecksumDataForFileTYPE();
+        checksumDataNewFile.setChecksumSpec(checksumForPillar);
+        checksumDataNewFile.setChecksumValue(checksumNew.getBytes());
+        checksumDataNewFile.setCalculationTimestamp(CalendarUtils.getNow());
+        
+        ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
+        checksumRequest.setChecksumType("SHA-1");
+        
+        URL address = httpServer.getURL(DEFAULT_FILE_ID);
+        long size = new Long(testFile.length());
+        
+        addStep("Request a file to be replaced on the default pillar.", 
+                "A IdentifyPillarsForReplaceFileRequest should be sent to the pillar.");
+        replaceClient.replaceFile(DEFAULT_FILE_ID, PILLAR1_ID, checksumDataOldFile, checksumRequest, 
+                address, size, checksumDataNewFile, checksumRequest, testEventHandler, null);
+        
+        IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = null;
+        if(useMockupPillar()) {
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+                    IdentifyPillarsForReplaceFileRequest.class);
+            Assert.assertEquals(receivedIdentifyRequestMessage, 
+                    messageFactory.createIdentifyPillarsForReplaceFileRequest(
+                            receivedIdentifyRequestMessage.getCorrelationID(),
+                            receivedIdentifyRequestMessage.getReplyTo(),
+                            receivedIdentifyRequestMessage.getTo(), 
+                            DEFAULT_FILE_ID, null));
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        
+        addStep("Do not respond. Just await the timeout.", 
+                "Should make send a Failure event to the eventhandler.");
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Failed);        
+    }
+
+    @Test(groups={"regressiontest"})
+    public void replaceClientOperationTimeout() throws Exception {
+        addDescription("Tests the handling of a failed operation for the ReplaceClient");
+        addStep("Initialise the number of pillars and the DeleteClient. Sets the operation timeout to 1 sec.", 
+                "Should be OK.");
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(1000L));
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        ReplaceFileClient replaceClient = createReplaceFileClient();
+        
+        String checksumOld = "123checksum321";
+        String checksumNew = "321checksum123";
+        ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
+        checksumForPillar.setChecksumType("MD5");
+        ChecksumDataForFileTYPE checksumDataOldFile = new ChecksumDataForFileTYPE();
+        checksumDataOldFile.setChecksumSpec(checksumForPillar);
+        checksumDataOldFile.setChecksumValue(checksumOld.getBytes());
+        checksumDataOldFile.setCalculationTimestamp(CalendarUtils.getEpoch());
+        ChecksumDataForFileTYPE checksumDataNewFile = new ChecksumDataForFileTYPE();
+        checksumDataNewFile.setChecksumSpec(checksumForPillar);
+        checksumDataNewFile.setChecksumValue(checksumNew.getBytes());
+        checksumDataNewFile.setCalculationTimestamp(CalendarUtils.getNow());
+        
+        ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
+        checksumRequest.setChecksumType("SHA-1");
+        
+        URL address = httpServer.getURL(DEFAULT_FILE_ID);
+        long size = new Long(testFile.length());
+        
+        addStep("Request a file to be replaced on the default pillar.", 
+                "A IdentifyPillarsForReplaceFileRequest should be sent to the pillar.");
+        replaceClient.replaceFile(DEFAULT_FILE_ID, PILLAR1_ID, checksumDataOldFile, checksumRequest, 
+                address, size, checksumDataNewFile, checksumRequest, testEventHandler, null);
+        
+        IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = null;
+        if(useMockupPillar()) {
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+                    IdentifyPillarsForReplaceFileRequest.class);
+            Assert.assertEquals(receivedIdentifyRequestMessage, 
+                    messageFactory.createIdentifyPillarsForReplaceFileRequest(
+                            receivedIdentifyRequestMessage.getCorrelationID(),
+                            receivedIdentifyRequestMessage.getReplyTo(),
+                            receivedIdentifyRequestMessage.getTo(), 
+                            DEFAULT_FILE_ID, null));
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        
+        addStep("Make response for the pillar.", "The client receive the response, identify the pillar and send the request.");
+        
+        ReplaceFileRequest receivedReplaceFileRequest = null;
+        if(useMockupPillar()) {
+            IdentifyPillarsForReplaceFileResponse identifyResponse = messageFactory.createIdentifyPillarsForReplaceFileResponse(receivedIdentifyRequestMessage, 
+                    PILLAR1_ID, pillar1DestinationId);
+            messageBus.sendMessage(identifyResponse);
+            receivedReplaceFileRequest = pillar1Destination.waitForMessage(ReplaceFileRequest.class);
+            Assert.assertEquals(receivedReplaceFileRequest, 
+                    messageFactory.createReplaceFileRequest(PILLAR1_ID, pillar1DestinationId,
+                            receivedReplaceFileRequest.getReplyTo(),
+                            receivedReplaceFileRequest.getCorrelationID(),
+                            address.toExternalForm(), BigInteger.valueOf(size), DEFAULT_FILE_ID, null,
+                            checksumDataOldFile, checksumDataNewFile, checksumRequest));
+        }
+        
+        addStep("Validate the steps of the ReplaceClient by going through the events.", "Should be 'PillarIdentified', "
+                + "'PillarSelected' and 'RequestSent'");
+        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+        
+        addStep("Do not respond. Just await the timeout.", 
+                "Should make send a Failure event to the eventhandler.");
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Failed);        
+    }
+    
+    @Test(groups={"regressiontest"})
+    public void replaceClientPillarFailed() throws Exception {
+        addDescription("Tests the handling of a operation failure for the ReplaceClient. ");
+        addStep("Initialise the number of pillars to one", "Should be OK.");
+        
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        ReplaceFileClient replaceClient = createReplaceFileClient();
+        
+        String checksumOld = "123checksum321";
+        String checksumNew = "321checksum123";
+        ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
+        checksumForPillar.setChecksumType("MD5");
+        ChecksumDataForFileTYPE checksumDataOldFile = new ChecksumDataForFileTYPE();
+        checksumDataOldFile.setChecksumSpec(checksumForPillar);
+        checksumDataOldFile.setChecksumValue(checksumOld.getBytes());
+        checksumDataOldFile.setCalculationTimestamp(CalendarUtils.getEpoch());
+        ChecksumDataForFileTYPE checksumDataNewFile = new ChecksumDataForFileTYPE();
+        checksumDataNewFile.setChecksumSpec(checksumForPillar);
+        checksumDataNewFile.setChecksumValue(checksumNew.getBytes());
+        checksumDataNewFile.setCalculationTimestamp(CalendarUtils.getNow());
+        
+        ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
+        checksumRequest.setChecksumType("SHA-1");
+        
+        URL address = httpServer.getURL(DEFAULT_FILE_ID);
+        long size = new Long(testFile.length());
+        
+        addStep("Request a file to be replaced on the default pillar.", 
+                "A IdentifyPillarsForReplaceFileRequest should be sent to the pillar.");
+        replaceClient.replaceFile(DEFAULT_FILE_ID, PILLAR1_ID, checksumDataOldFile, checksumRequest, 
+                address, size, checksumDataNewFile, checksumRequest, testEventHandler, null);
+        
+        IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = null;
+        if(useMockupPillar()) {
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+                    IdentifyPillarsForReplaceFileRequest.class);
+            Assert.assertEquals(receivedIdentifyRequestMessage, 
+                    messageFactory.createIdentifyPillarsForReplaceFileRequest(
+                            receivedIdentifyRequestMessage.getCorrelationID(),
+                            receivedIdentifyRequestMessage.getReplyTo(),
+                            receivedIdentifyRequestMessage.getTo(), 
+                            DEFAULT_FILE_ID, null));
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        
+        addStep("Make response for the pillar.", "The client receive the response, identify the pillar and send the request.");
+        
+        ReplaceFileRequest receivedReplaceFileRequest = null;
+        if(useMockupPillar()) {
+            IdentifyPillarsForReplaceFileResponse identifyResponse = messageFactory.createIdentifyPillarsForReplaceFileResponse(receivedIdentifyRequestMessage, 
+                    PILLAR1_ID, pillar1DestinationId);
+            messageBus.sendMessage(identifyResponse);
+            receivedReplaceFileRequest = pillar1Destination.waitForMessage(ReplaceFileRequest.class);
+            Assert.assertEquals(receivedReplaceFileRequest, 
+                    messageFactory.createReplaceFileRequest(PILLAR1_ID, pillar1DestinationId,
+                            receivedReplaceFileRequest.getReplyTo(),
+                            receivedReplaceFileRequest.getCorrelationID(),
+                            address.toExternalForm(), BigInteger.valueOf(size), DEFAULT_FILE_ID, null,
+                            checksumDataOldFile, checksumDataNewFile, checksumRequest));
+        }
+        
+        addStep("Validate the steps of the ReplaceClient by going through the events.", "Should be 'PillarIdentified', "
+                + "'PillarSelected' and 'RequestSent'");
+        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+
+        addStep("Send a failed response message to the ReplaceClient.", 
+                "Should be caught by the event handler. First a PillarFailed, then a Complete.");
+        if(useMockupPillar()) {
+            ReplaceFileFinalResponse replaceFileFinalResponse = messageFactory.createReplaceFileFinalResponse(
+                    receivedReplaceFileRequest, PILLAR1_ID, pillar1DestinationId, checksumDataNewFile);
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.FAILURE);
+            ri.setResponseText("Verifying that a failure can be understood!");
+            replaceFileFinalResponse.setResponseInfo(ri);
+            messageBus.sendMessage(replaceFileFinalResponse);
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarFailed);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
     }
     

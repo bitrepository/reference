@@ -100,8 +100,8 @@ public class PuttingFile extends PutFileState {
                 conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs().toString(), 
                 conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs().toString());
 
-        timer.schedule(timerTask, 
-                conversation.settings.getReferenceSettings().getClientSettings().getConversationTimeout().longValue());
+        timer.schedule(timerTask,
+                conversation.settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue());
     }
 
     /**

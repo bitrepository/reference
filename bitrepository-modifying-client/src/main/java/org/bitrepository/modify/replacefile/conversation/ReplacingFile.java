@@ -105,7 +105,7 @@ public class ReplacingFile extends ReplaceFileState {
         }
 
         timer.schedule(timerTask, 
-                conversation.settings.getReferenceSettings().getClientSettings().getConversationTimeout().longValue());
+                conversation.settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue());
     }
 
     /**
