@@ -42,6 +42,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
+import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.ReferencePillar;
 import org.bitrepository.pillar.ReferencePillarComponentFactory;
@@ -61,9 +62,13 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         settings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-pillar-destination-jolf");
         ReferencePillar pillar = ReferencePillarComponentFactory.getInstance().getPillar(settings);
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
+        String REPLACE_FILE_ADDRES = "http://sandkasse-01.kb.dk/dav/dia.jpg";
         Long FILE_SIZE = 27L;
+        Long REPLACE_FILE_SIZE = 59898L;
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
-        String CHECKSUM = "58024cfd44cbc23bdfbfec2200eda188";
+//        String FILE_ID = DEFAULT_FILE_ID;
+        String CHECKSUM = "324be4dd443b6e1c52d52c5b1a323cd0";
+        String CHECKSUM_NEW_FILE = "c9839fb7921d9b995be4e8a5a09d2481";
         ChecksumSpecTYPE DEFAULT_CHECKSUM_TYPE = new ChecksumSpecTYPE();
         DEFAULT_CHECKSUM_TYPE.setChecksumSalt(null);
         DEFAULT_CHECKSUM_TYPE.setChecksumType("MD5");
@@ -150,20 +155,45 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarComplete);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
 
-        addStep("Create a DeleteFileClient and start a delete operation", 
-                "This should be caught by the pillar");
-        DeleteFileClient deleteFile = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(clientSettings);
+        addStep("Create a ReplaceFileClient at start a replace operation", 
+                "This should be caught and handled by the pillar.");
+        ReplaceFileClient replaceFile = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(clientSettings);
 
         ChecksumSpecTYPE checksumRequested = new ChecksumSpecTYPE();
         checksumRequested.setChecksumSalt(null);
         checksumRequested.setChecksumType("SHA1");
-        ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
-        checksumData.setChecksumSpec(DEFAULT_CHECKSUM_TYPE);
-        checksumData.setChecksumValue(CHECKSUM.getBytes());
-        checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
+        ChecksumDataForFileTYPE checksumDataOldFile = new ChecksumDataForFileTYPE();
+        checksumDataOldFile.setChecksumSpec(DEFAULT_CHECKSUM_TYPE);
+        checksumDataOldFile.setChecksumValue(CHECKSUM.getBytes());
+        checksumDataOldFile.setCalculationTimestamp(CalendarUtils.getEpoch());
+        
+        ChecksumDataForFileTYPE checksumDataNewFile = new ChecksumDataForFileTYPE();
+        checksumDataNewFile.setChecksumSpec(DEFAULT_CHECKSUM_TYPE);
+        checksumDataNewFile.setChecksumValue(CHECKSUM_NEW_FILE.getBytes());
+        checksumDataNewFile.setCalculationTimestamp(CalendarUtils.getEpoch());
+        
+        replaceFile.replaceFile(FILE_ID, settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+                checksumDataOldFile, checksumRequested, new URL(REPLACE_FILE_ADDRES), REPLACE_FILE_SIZE, 
+                checksumDataNewFile, checksumRequested, testEventHandler, "AuditTrail: TESTING!!!");
+        
+        addStep("Validate the sequence of operation events for the ReplaceFileClient", 
+                "Should be in correct order.");
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarComplete);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+
+        
+        addStep("Create a DeleteFileClient and start a delete operation", 
+                "This should be caught by the pillar");
+        DeleteFileClient deleteFile = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(clientSettings);
 
         deleteFile.deleteFile(FILE_ID, settings.getReferenceSettings().getPillarSettings().getPillarID(), 
-                checksumData, checksumRequested, testEventHandler, "AuditTrail: TESTING!!!");
+                checksumDataNewFile, checksumRequested, testEventHandler, "AuditTrail: TESTING!!!");
         
         addStep("Validate the sequence of operation events for the DeleteFileClient", 
                 "Should be in correct order.");
