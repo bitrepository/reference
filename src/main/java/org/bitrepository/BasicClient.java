@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.text.SimpleDateFormat;
 
 import org.bitrepository.access.AccessComponentFactory;
@@ -44,7 +45,7 @@ public class BasicClient {
     private Settings settings;
     private final Logger log = LoggerFactory.getLogger(getClass());
     private ArrayBlockingQueue<String> shortLog;
-
+    private List<URL> completedFiles;
     
     public BasicClient(Settings settings, String logFile) {
         log.debug("---- Basic client instanciated ----");
@@ -52,6 +53,7 @@ public class BasicClient {
         changeLogFiles();
         shortLog = new ArrayBlockingQueue<String>(50);
         eventHandler = new BasicEventHandler(logFile, shortLog);
+        completedFiles = new CopyOnWriteArrayList<URL>();
         this.settings = settings;
         putClient = ModifyComponentFactory.getInstance().retrievePutClient(settings);
         getClient = AccessComponentFactory.getInstance().createGetFileClient(settings);
@@ -82,7 +84,8 @@ public class BasicClient {
         URL url;
         try {
             url = new URL(URLStr);
-            getClient.getFileFromFastestPillar(fileID, url, eventHandler);
+            GetFileEventHandler handler = new GetFileEventHandler(url, completedFiles, eventHandler);
+            getClient.getFileFromFastestPillar(fileID, url, handler);
             return "Fetching '" + fileID + "' from Bitrepository :)";
         } catch (MalformedURLException e) {
             return "The string: '" + URLStr + "' is not a valid URL!";
@@ -157,7 +160,7 @@ public class BasicClient {
     public Map<String, Map<String, String>> getChecksums(String fileIDsText, String checksumType, String salt) {
     	ChecksumSpecTYPE checksumSpecItem = new ChecksumSpecTYPE();
     	if(salt != null || !salt.equals("")) {
-    		checksumSpecItem.setChecksumSalt(salt);	
+    		checksumSpecItem.setChecksumSalt(HexUtils.stringToByteArray(salt));	
     	}
     	checksumSpecItem.setChecksumType(checksumType);
     	FileIDs fileIDs = new FileIDs();
@@ -226,12 +229,12 @@ public class BasicClient {
             return "Checksum type for pillar check is invalid";
         }
         ChecksumDataForFileTYPE verifyingChecksum = new ChecksumDataForFileTYPE();
-        verifyingChecksum.setChecksumValue(deleteChecksum);
+        verifyingChecksum.setChecksumValue(HexUtils.stringToByteArray(deleteChecksum));
         ChecksumSpecTYPE deleteChecksumSpec = new ChecksumSpecTYPE();
         if(deleteChecksumSalt == null || !deleteChecksumSalt.equals("")) {
             deleteChecksumSalt = null;
         }
-        deleteChecksumSpec.setChecksumSalt(deleteChecksumSalt);
+        deleteChecksumSpec.setChecksumSalt(HexUtils.stringToByteArray(deleteChecksumSalt));
         deleteChecksumSpec.setChecksumType(deleteChecksumType);
         Date now = new Date();
         verifyingChecksum.setCalculationTimestamp(XMLGregorianCalendarConverter.asXMLGregorianCalendar(now));
@@ -241,7 +244,7 @@ public class BasicClient {
         if(approveChecksumType != null && !approveChecksumType.equals("disabled")) {
             requestedChecksumSpec = new ChecksumSpecTYPE();
             requestedChecksumSpec.setChecksumType(approveChecksumType);
-            requestedChecksumSpec.setChecksumSalt(approveChecksumSalt);
+            requestedChecksumSpec.setChecksumSalt(HexUtils.stringToByteArray(approveChecksumSalt));
         }
         
         try {
@@ -251,6 +254,16 @@ public class BasicClient {
             //This should not happen Jonas!
         }
         return "Deleting file";
+    }
+    
+    public String getCompletedFiles() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<b>Completed files:</b><br>");
+        for(URL url : completedFiles) {
+            sb.append("<a href=\"" + url.toExternalForm() + "\">" + url.getFile() + "</a> <br>");
+        }
+        
+        return sb.toString();
     }
     
     private void changeLogFiles() {

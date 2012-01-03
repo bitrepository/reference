@@ -11,7 +11,7 @@
     </script>
 
     <div class=ui-widget id=putFileTab>
-        <form id="putFileForm">
+        <form id="putFileForm" action="javascript:submit()">
             <p><b>Put file</b></p>
             <table border="0">
                 <tr>
@@ -55,5 +55,9 @@
             $('#messagediv').load(command).show().fadeOut(5000);
             return true;
         });
-    </script>       
+    </script>   
+    
+    <script>
+        function submit() { return ; }
+    </script>    
 </html>

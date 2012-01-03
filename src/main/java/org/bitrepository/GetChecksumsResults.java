@@ -24,10 +24,10 @@ public class GetChecksumsResults {
 	        synchronized (this) {
 	            if(!results.containsKey(item.getFileID())) {
 	                Map<String, String> value = new HashMap<String, String>();
-	                value.put(pillarID, item.getChecksumValue());
+	                value.put(pillarID, HexUtils.byteArrayToString(item.getChecksumValue()));
 	                results.put(item.getFileID(), value);
 	            } else {
-	                results.get(item.getFileID()).put(pillarID, item.getChecksumValue());
+	                results.get(item.getFileID()).put(pillarID, HexUtils.byteArrayToString(item.getChecksumValue()));
 	            }
             }
         }

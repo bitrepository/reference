@@ -20,11 +20,7 @@ public class GetFileIDsEventHandler implements EventHandler {
 	@Override
 	public void handleEvent(OperationEvent event) {
 		logger.handleEvent(event);
-		/*if(event.getType() == OperationEvent.OperationEventType.Complete) {
-			results.done();
-		} else if(event.getType() == OperationEvent.OperationEventType.PillarComplete) {
-			results.addResultsFromPillar((String) event.getState(), ((FileIDsCompletePillarEvent) event).getFileIDs());	
-		}*/
+
 		switch(event.getType()) {
 		case IdentifyPillarsRequestSent:
 		    break;
@@ -57,23 +53,5 @@ public class GetFileIDsEventHandler implements EventHandler {
 		}
          
 	}
-	
-	/**
-	 * Not quite sure that this will ever be called. 
-	 */
-	/*public void handleEvent(FileIDsCompletePillarEvent event) {
-		logger.handleEvent(event);
-		results.addResultsFromPillar(event.getState(), event.getFileIDs());
-	}*/
-	
-	/**
-	 * Not quite sure that this will ever be called. 
-	 */
-	/*public void handleEvent(OperationFailedEvent event) {
-		logger.handleEvent(event);
-		results.failed();
-	}*/
-	
-
 	
 }

@@ -62,6 +62,16 @@ public class Reposervice {
     }
     
     /**
+     * Lists files that has completed upload from the collection. 
+     */
+    @GET
+    @Path("/getfile/getCompletedFiles/")
+    @Produces("text/html")
+    public String getCompletedFiles() {
+        return client.getCompletedFiles();
+    }
+    
+    /**
      * getLog gets the log of events that has happened since the webclient were started. The log contains a textual description 
      * of all events that has occurred, both successes and failures.  
      * @return The log in a textual format. 

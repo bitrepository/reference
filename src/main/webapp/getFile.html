@@ -12,7 +12,7 @@
     </script>
 	
 	<div class=ui-widget id=getFileTab>
-		<form id="getFileForm">
+		<form id="getFileForm" action="javascript:submit()">
 	        <p><b>Get file</b></p>
 	        <table border="0">
 	            <tr>
@@ -28,7 +28,14 @@
 	    </form>
 	</div>
 	<div id="messagediv"></div>
-	
+	<div id="completedFilesDiv"></div>
+
+    <script>
+        var auto_refresh = setInterval(
+        function() {
+            $('#completedFilesDiv').load('repo/reposervice/getfile/getCompletedFiles/').fadeIn("slow");
+            }, 2500);
+    </script> 
 
     <script>
         $("#getFileForm").submit(function() {
@@ -49,4 +56,8 @@
         return true;
         });
     </script>
+    
+    <script>
+        function submit() { return ; }
+    </script>  
 </html>
