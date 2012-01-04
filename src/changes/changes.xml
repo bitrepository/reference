@@ -12,12 +12,15 @@
       </action>
     </release>
     <release version="0.6.0" date="2011-12-06" description="Update to new reference code version"></release>
-    <release version="0.7.0" date="2011-12-xx" description="Asynchronious clients and delete file">
+    <release version="0.7.0" date="2012-01-04" description="Asynchronious clients and delete file">
       <action dev="Kim" type="Update">
         Change GetChecksums functionality to use a asynchronous calls, rather than the deprecated blocking variants.   
       </action>
       <action dev="Kim" type="add">
         Added real delete file functionality, supports delete file on a single pillar at a time. 
+      </action>
+      <action dev="Kim" type="add">
+        Added functionality to see when a file has been uploaded to destination and link to download it from. 
       </action>
     </release>
   </body>
