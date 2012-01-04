@@ -3,7 +3,7 @@
 
   <groupId>org.bitrepository</groupId>
   <artifactId>bitrepository-webclient</artifactId>
-  <version>0.7</version>
+  <version>0.8-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <parent>
@@ -57,9 +57,9 @@
   </organization>
 
   <scm>
-    <url>https://sbforge.org/fisheye/browse/Bitmagasinet/bitrepository-webclient/tags/bitrepository-webclient-0.7</url>
-    <connection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-webclient/tags/bitrepository-webclient-0.7</connection>
-    <developerConnection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-webclient/tags/bitrepository-webclient-0.7</developerConnection>
+    <url>https://sbforge.org/fisheye/browse/Bitmagasinet/bitrepository-webclient/trunk</url>
+    <connection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-webclient/trunk</connection>
+    <developerConnection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-webclient/trunk</developerConnection>
   </scm>
   
   <dependencies>
