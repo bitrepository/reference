@@ -17,7 +17,7 @@
   <properties>
     <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <bitrepository-version>0.6.0-SNAPSHOT</bitrepository-version>
+    <bitrepository-version>0.6.0</bitrepository-version>
   </properties>
 
   <repositories>

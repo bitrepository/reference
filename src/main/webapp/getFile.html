@@ -31,7 +31,7 @@
 	<div id="completedFilesDiv"></div>
 
     <script>
-        var auto_refresh = setInterval(
+        var auto_completedfiles = setInterval(
         function() {
             $('#completedFilesDiv').load('repo/reposervice/getfile/getCompletedFiles/').fadeIn("slow");
             }, 2500);
