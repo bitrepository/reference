@@ -223,7 +223,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         }        
         FileIDsDataItem fileIDData = new FileIDsDataItem();
         long timestamp = archive.getFile(fileID).lastModified();
-        fileIDData.setCreationTimestamp(CalendarUtils.getFromMillis(timestamp));
+        fileIDData.setLastModificationTime(CalendarUtils.getFromMillis(timestamp));
         fileIDData.setFileID(fileID);
         return fileIDData;
     }

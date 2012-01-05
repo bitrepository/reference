@@ -101,7 +101,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         for(String fileid : fileids) {
             FileIDsDataItem item = new FileIDsDataItem();
             item.setFileID(fileid);
-            item.setCreationTimestamp(CalendarUtils.getNow());
+            item.setLastModificationTime(CalendarUtils.getNow());
             items1.getFileIDsDataItem().add(item);
         }
         fileidsData1.setFileIDsDataItems(items1);
@@ -139,7 +139,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         for(String fileid : fileids) {
             FileIDsDataItem item = new FileIDsDataItem();
             item.setFileID(fileid);
-            item.setCreationTimestamp(CalendarUtils.getNow());
+            item.setLastModificationTime(CalendarUtils.getNow());
             items1.getFileIDsDataItem().add(item);
         }
         fileidsData1.setFileIDsDataItems(items1);

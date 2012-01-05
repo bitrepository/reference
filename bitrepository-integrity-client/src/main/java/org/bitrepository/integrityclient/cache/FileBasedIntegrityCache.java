@@ -57,7 +57,7 @@ public class FileBasedIntegrityCache implements IntegrityCache {
         boolean rewrite = false;
         for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
             FileInfo fileidInfo = new FileInfo(dataItem.getFileID(), pillarId);
-            fileidInfo.setDateForLastFileIDCheck(dataItem.getCreationTimestamp());
+            fileidInfo.setDateForLastFileIDCheck(dataItem.getLastModificationTime());
 
             if(fileStorage.containsFileIDInfo(dataItem.getFileID(), pillarId)) {
                 fileStorage.updateFileIDInfoInCache(fileidInfo);

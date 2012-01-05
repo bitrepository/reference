@@ -4,28 +4,6 @@
     <xjc:serializable />
   </jaxb:globalBindings>
   <jaxb:bindings schemaLocation="BitRepositoryElements.xsd">
-    <jaxb:bindings node="//xs:element[@name='Access']/xs:simpleType">
-      <jaxb:typesafeEnumClass name="Access" />
-    </jaxb:bindings>
-    <jaxb:bindings node="//xs:element[@name='Create']/xs:simpleType">
-      <jaxb:typesafeEnumClass name="Create" />
-    </jaxb:bindings>
-    <jaxb:bindings node="//xs:element[@name='Endanger']/xs:simpleType">
-      <jaxb:typesafeEnumClass name="Endanger" />
-    </jaxb:bindings>
-    <jaxb:bindings node="//xs:element[@name='IntegrityCheck']/xs:simpleType">
-      <jaxb:typesafeEnumClass name="IntegrityCheck" />
-    </jaxb:bindings>
-    <jaxb:bindings node="//xs:element[@name='Modify']/xs:simpleType">
-      <jaxb:typesafeEnumClass name="Modify" />
-    </jaxb:bindings>
-    <jaxb:bindings node="//xs:element[@name='PhysicalMove']/xs:simpleType">
-      <jaxb:typesafeEnumClass name="PhysicalMove" />
-    </jaxb:bindings>
-    <jaxb:bindings node="//xs:element[@name='Remove']/xs:simpleType">
-      <jaxb:typesafeEnumClass name="Remove" />
-    </jaxb:bindings>
-
     <jaxb:bindings node="//xs:element[@name='ActorType']/xs:simpleType">
       <jaxb:typesafeEnumClass name="ActorType" />
     </jaxb:bindings>

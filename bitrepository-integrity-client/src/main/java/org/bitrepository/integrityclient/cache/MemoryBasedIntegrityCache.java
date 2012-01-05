@@ -189,7 +189,7 @@ public class MemoryBasedIntegrityCache implements IntegrityCache {
             }
             
             // Update the file info
-            currentInfo.setDateForLastFileIDCheck(fileIdData.getCreationTimestamp());
+            currentInfo.setDateForLastFileIDCheck(fileIdData.getLastModificationTime());
             
             // put it back into the list and that back into the cache.
             fileIDInfos.add(currentInfo);
