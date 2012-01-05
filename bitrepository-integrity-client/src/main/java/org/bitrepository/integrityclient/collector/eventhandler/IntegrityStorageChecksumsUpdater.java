@@ -67,6 +67,7 @@ public class IntegrityStorageChecksumsUpdater implements EventHandler {
         this.alarmDispatcher = alarmDispatcher;
     }
     
+    @SuppressWarnings("rawtypes")
     @Override
     public void handleEvent(OperationEvent event) {
         if(event.getType().equals(OperationEventType.Failed)) {
@@ -100,6 +101,7 @@ public class IntegrityStorageChecksumsUpdater implements EventHandler {
      * Method for handling a failure.
      * @param event The event that failed.
      */
+    @SuppressWarnings("rawtypes")
     private void handleFailure(OperationEvent event) {
         log.warn(event.getType() + " : " + event.getState() + " : " + event.getInfo());
         performIntegrityCheck();
@@ -109,6 +111,7 @@ public class IntegrityStorageChecksumsUpdater implements EventHandler {
      * Handles a Complete for the whole operation by performing a integrity check on the given checksums.
      * @param event The event that has completed.
      */
+    @SuppressWarnings("rawtypes")
     private void handleComplete(OperationEvent event) {
         log.info(event.getType() + " : " + event.getState() + " : " + event.getInfo());
         performIntegrityCheck();

@@ -48,40 +48,51 @@ public class IntegrityServiceLauncher {
      * @param args <ol>
      * <li> The path to the directory containing the settings. See {@link XMLFileSettingsLoader} for details.</li>
      * <li> The collection ID to load the settings for.</li>
+     * <li> The time for outdated checksums (in millis)</li>
+     * <li> The interval for retrieving all the file ids (in millis)</li>
      * </ol>
      */
-    public static void main(String[] args) throws Exception {
-        String collectionId;
-        String pathToSettings;
-        long timeSinceLastChecksumUpdate;
-        if(args.length >= 2) {
-            collectionId = args[0];
-            pathToSettings = args[1];
-            
-            if(args.length >= 3) {
-                timeSinceLastChecksumUpdate = Long.parseLong(args[2]);
-            } else {
-                timeSinceLastChecksumUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
-            }
-        } else {
-            collectionId = DEFAULT_COLLECTION_ID;
-            pathToSettings = DEFAULT_PATH_TO_SETTINGS;
-            timeSinceLastChecksumUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
-        }
-        
-        
-        SettingsProvider settingsLoader = new SettingsProvider(
-                new XMLFileSettingsLoader(pathToSettings));
+    public static void main(String[] args) {
         try {
+            String collectionId = DEFAULT_COLLECTION_ID;
+            String pathToSettings = DEFAULT_PATH_TO_SETTINGS;
+            long timeSinceLastChecksumUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
+            long timeSinceLastFileIDsUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
+            
+            // first argument the collectionId, and second the path. 
+            if(args.length >= 1) {
+                collectionId = args[0];
+                if(args.length >= 2) {
+                    pathToSettings = args[1];
+                    
+                    // third argument is Checksum update and fourth it the fileids update interval.
+                    if(args.length >= 3) {
+                        timeSinceLastChecksumUpdate = Long.parseLong(args[2]);
+                        if(args.length >= 4) {
+                            timeSinceLastFileIDsUpdate = Long.parseLong(args[3]);
+                        }
+                    }
+                }
+            }
+            
+            SettingsProvider settingsLoader = new SettingsProvider(
+                    new XMLFileSettingsLoader(pathToSettings));
             Settings settings = settingsLoader.getSettings(collectionId);
             SimpleIntegrityService integrityService = new SimpleIntegrityService(settings);
             
             integrityService.startChecksumIntegrityCheck(timeSinceLastChecksumUpdate, 
                     settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval());
             for(String pillarId : settings.getCollectionSettings().getClientSettings().getPillarIDs()) {
-                integrityService.startAllFileIDsIntegrityCheckFromPillar(pillarId, DEFAULT_MAX_TIME_SINCE_UPDATE);
+                integrityService.startAllFileIDsIntegrityCheckFromPillar(pillarId, timeSinceLastFileIDsUpdate);
             }
         } catch (Exception e) {
+            System.out.println("Usage (arguments):");
+            System.out.println("1. The path to the directory containing the settings [DEFAULT: settings/xml]");
+            System.out.println("2. The collection ID to load the settings for [DEFAULT: bitrepository-devel], "
+                    + "must be a subdirectory to the settings directory above.");
+            System.out.println("3. The time for outdated checksums (in millis) [DEFAULT: 604800000 (one week)]");
+            System.out.println("4. The interval for retrieving all the file ids (in millis) [DEFAULT: "
+                    + "604800000 (one week)]");
             e.printStackTrace();
             System.exit(0);
         }

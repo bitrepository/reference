@@ -27,6 +27,7 @@ package org.bitrepository.integrityclient;
 /**
  * Exception thrown on trouble retrieving integrity information.
  */
+@SuppressWarnings("serial")
 public class IntegrityInformationRetrievalException extends RuntimeException {
     /**
      * Create exception for integrity information retrieval error.

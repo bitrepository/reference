@@ -24,7 +24,6 @@
  */
 package org.bitrepository.integrityclient.checking;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,8 +32,8 @@ import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.integrityclient.cache.IntegrityCache;
 import org.bitrepository.integrityclient.cache.FileInfo;
+import org.bitrepository.integrityclient.cache.IntegrityCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

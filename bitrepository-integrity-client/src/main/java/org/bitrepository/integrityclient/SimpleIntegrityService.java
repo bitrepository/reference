@@ -36,7 +36,6 @@ import org.bitrepository.integrityclient.scheduler.triggers.CollectAllChecksumsF
 import org.bitrepository.integrityclient.scheduler.triggers.CollectAllFileIDsFromPillarTrigger;
 import org.bitrepository.integrityclient.scheduler.triggers.CollectObsoleteChecksumsTrigger;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 
 /**
  * Simple integrity service.

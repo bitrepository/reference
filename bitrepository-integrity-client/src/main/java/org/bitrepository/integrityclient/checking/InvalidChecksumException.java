@@ -29,6 +29,7 @@ import java.util.Map;
 /**
  * Exception to wrap the content of a failed checksum validation.
  */
+@SuppressWarnings("serial")
 public class InvalidChecksumException extends Exception {
     /** The id of the file involved.*/
     private final String fileId;

@@ -34,12 +34,17 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityclient.cache.IntegrityCache;
 import org.bitrepository.integrityclient.cache.FileInfo;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Collects the checksums from the pillars when their latest update has exceeded the interval.
  * The messages will be sent individually for each file.
  */
 public class CollectObsoleteChecksumsTrigger extends IntervalTrigger {
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
+
     /** The audit trail for this trigger.*/
     private final String AUDIT_TRAIL_INFORMATION = "IntegrityService Scheduling GetChecksums collector";
     
@@ -88,6 +93,8 @@ public class CollectObsoleteChecksumsTrigger extends IntervalTrigger {
             
             // If any such pillars then collect the checksum of the file from them.
             if(!pillarsToUpdate.isEmpty()) {
+                log.info("Updating obesolete checksum for the file '" + fileid + "' from the pillars '"
+                        + pillarsToUpdate + "'");
                 FileIDs fileIDs = new FileIDs();
                 fileIDs.setFileID(fileid);
                 informationCollector.getChecksums(pillarsToUpdate, fileIDs, checksumType, 
