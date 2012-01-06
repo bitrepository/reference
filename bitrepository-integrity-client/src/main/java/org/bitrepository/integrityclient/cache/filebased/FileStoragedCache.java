@@ -194,7 +194,7 @@ public class FileStoragedCache {
             return res.toString();
         }
         res.append(SEPARATOR);
-        res.append(fileidInfo.getChecksumType().getChecksumSalt());
+        res.append(new String(fileidInfo.getChecksumType().getChecksumSalt()));
 
         return res.toString();
     }

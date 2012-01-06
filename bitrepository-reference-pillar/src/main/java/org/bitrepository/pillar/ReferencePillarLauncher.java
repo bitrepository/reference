@@ -32,7 +32,7 @@ import org.bitrepository.common.settings.XMLFileSettingsLoader;
  * Method for launching the ReferencePillar. 
  * It just loads the configurations and uses them to create the PillarSettings needed for starting the ReferencePillar.
  */
-public class ReferencePillarLauncher {
+public final class ReferencePillarLauncher {
     /** The default path to the collection id during development.*/
     private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
     /** The default path for the settings in the development.*/

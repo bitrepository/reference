@@ -44,6 +44,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
+import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -161,6 +162,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
      * Method for uploading the file to the requested location.
      * @param message The message requesting the GetFile operation.
      */
+    @SuppressWarnings("deprecation")
     protected void uploadToClient(GetFileRequest message) {
         File requestedFile = archive.getFile(message.getFileID());
 
@@ -170,7 +172,8 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
             FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
             fe.uploadToServer(new FileInputStream(requestedFile), new URL(message.getFileAddress()));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new CoordinationLayerException("Could not retrieve the file '" + message.getFileID() + "' from "
+                    + message.getFileAddress() + "'", e);
         }
     }
     

@@ -41,21 +41,21 @@ public interface AuditTrailManager {
      * Method for extracting all the audit trails.
      * @return The all audit trails.
      */
-    public Collection<String> getAllAudits();
+    Collection<String> getAllAudits();
     
     /**
      * Retrieves all the audit trails after a given date.
      * @param date The earliest date for the audit trails.
      * @return The list of audit trails after the date.
      */
-    public Collection<String> getAuditsAfterDate(Date date);
+    Collection<String> getAuditsAfterDate(Date date);
     
     /**
      * Retrieves all the audit trails before a given date.
      * @param date The latest date for the audit trails.
      * @return The list of audit trails prior to the date.
      */
-    public Collection<String> getAuditsBeforeDate(Date date);
+    Collection<String> getAuditsBeforeDate(Date date);
     
     /**
      * Retrieves all the audit trails between two given dates.
@@ -63,5 +63,5 @@ public interface AuditTrailManager {
      * @param end The latest date for the audit trails.
      * @return The list of audit trails prior to the date.
      */
-    public Collection<String> getAuditsBetweenDates(Date start, Date end);
+    Collection<String> getAuditsBetweenDates(Date start, Date end);
 }

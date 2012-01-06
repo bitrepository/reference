@@ -29,6 +29,7 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 /**
  * Exception which wraps bad response information for the validation of the operation requests. 
  */
+@SuppressWarnings("serial")
 public class InvalidMessageException extends RuntimeException {
     /** The ResponseInfo wrapped by this exception. Tells the reason for the exception.*/
     private final ResponseInfo responseInfo;

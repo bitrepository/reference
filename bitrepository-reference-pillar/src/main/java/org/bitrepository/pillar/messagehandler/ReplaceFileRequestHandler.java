@@ -17,6 +17,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
+import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -115,10 +116,10 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         if(!checksum.equals(new String(checksumData.getChecksumValue()))) {
             // Log the different checksums, but do not send the right checksum back!
             log.info("Failed to handle replace operation on file '" + message.getFileID() + "' since the request had "
-                    + "the checksum '" + new String(checksumData.getChecksumValue()) + "' where our local file has the value '"
-                    + checksum + "'. Sending alarm and respond failure.");
+                    + "the checksum '" + new String(checksumData.getChecksumValue()) 
+                    + "' where our local file has the value '" + checksum + "'. Sending alarm and respond failure.");
             String errMsg = "Requested to replace the file '" + message.getFileID() + "' with checksum '"
-                    + checksumData.getChecksumValue() + "', but our file had a different checksum.";
+                    + new String(checksumData.getChecksumValue()) + "', but our file had a different checksum.";
             alarmDispatcher.sendInvalidChecksumAlarm(message, message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
@@ -161,6 +162,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
      * Also validates against the given checksum. Will log a warning, if no checksum for validation is in the request.
      * @param message The request containing the location of the file and the checksum of it.
      */
+    @SuppressWarnings("deprecation")
     private void downloadTheNewFile(ReplaceFileRequest message) {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
@@ -170,7 +172,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
             fileForValidation = archive.downloadFileForValidation(message.getFileID(), 
                     fe.downloadFromServer(new URL(message.getFileAddress())));
         } catch (IOException e) {
-            throw new RuntimeException("Could not download the file '" + message.getFileID() + "' from the url '"
+            throw new CoordinationLayerException("Could not download the file '" + message.getFileID() + "' from the url '"
                     + message.getFileAddress() + "'.", e);
         }
         
@@ -274,7 +276,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
             archive.deleteFile(message.getFileID());
             archive.moveToArchive(message.getFileID());
         } catch (IOException e) {
-            throw new RuntimeException("Could not replace the old file with the new one.", e);
+            throw new CoordinationLayerException("Could not replace the old file with the new one.", e);
         }
     }
     
@@ -292,6 +294,10 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         ri.setResponseCode(ResponseCode.SUCCESS);
         ri.setResponseText("Successfully replaced the file '" + message.getFileID() + "' as requested!");
         response.setResponseInfo(ri);
+        
+        response.setChecksumDataForFile(requestedNewChecksum);
+        log.warn("Can only deliver one of the requested checksums. Choosing the new one: '" + requestedNewChecksum 
+                + "', whereas the old one is: '" + requestedOldChecksum + "'");
         
         messagebus.sendMessage(response);
     }

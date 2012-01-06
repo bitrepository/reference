@@ -49,7 +49,8 @@ public class ReferencePillar {
         
         log.info("Starting the reference pillar!");
         
-        ReferenceArchive archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
+        ReferenceArchive archive = new ReferenceArchive(
+                settings.getReferenceSettings().getPillarSettings().getFileDir());
         new PillarMediator(messageBus, settings, archive);
         log.info("ReferencePillar started!");
     }

@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * Class for handling the identification of this pillar for the purpose of performing the DeleteFile operation.
  */
 public class IdentifyPillarsForDeleteFileRequestHandler 
-        extends PillarMessageHandler<IdentifyPillarsForDeleteFileRequest>{
+        extends PillarMessageHandler<IdentifyPillarsForDeleteFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     

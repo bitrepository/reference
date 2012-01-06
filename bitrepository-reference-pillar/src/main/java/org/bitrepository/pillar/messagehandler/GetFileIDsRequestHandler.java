@@ -54,7 +54,6 @@ import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,21 +144,24 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      */
     private ResultingFileIDs performGetFileIDsOperation(GetFileIDsRequest message) {
         ResultingFileIDs res = new ResultingFileIDs();
-        try {
-            FileIDsData data = retrieveFileIDsData(message.getFileIDs());
-            
-            String resultingAddress = message.getResultAddress();
-            if(resultingAddress == null || resultingAddress.isEmpty()) {
-                res.setFileIDsData(data);
-            } else {
+        FileIDsData data = retrieveFileIDsData(message.getFileIDs());
+        
+        String resultingAddress = message.getResultAddress();
+        if(resultingAddress == null || resultingAddress.isEmpty()) {
+            res.setFileIDsData(data);
+        } else {
+            try {
                 File outputFile = makeTemporaryChecksumFile(message, data);
                 uploadFile(outputFile, resultingAddress);
                 res.setResultAddress(resultingAddress);
+            } catch (Exception e) {
+                ResponseInfo ir = new ResponseInfo();
+                ir.setResponseCode(ResponseCode.FAILURE);
+                ir.setResponseText(e.getMessage());
+                throw new InvalidMessageException(ir, e);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
-
+        
         return res;
     }
     
@@ -168,10 +170,9 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      * 
      * @param fileIDs The requested FileIDs.
      * @return The resulting collection of FileIDs found.
-     * @throws OperationFailedException If not all the requested fileids can be found or one of them is invalid as a 
      * file. 
      */
-    private FileIDsData retrieveFileIDsData(FileIDs fileIDs) throws OperationFailedException {
+    private FileIDsData retrieveFileIDsData(FileIDs fileIDs) {
         if(fileIDs.isSetAllFileIDs()) {
             log.debug("Retrieving the id for all the files.");
             return retrieveAllFileIDs();
@@ -184,9 +185,8 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     /**
      * Retrieves all the fileIDs.
      * @return The list of the ids of all the files in the archive, wrapped in the requested datastructure.
-     * @throws OperationFailedException If a file is invalid (e.g. a directory).
      */
-    private FileIDsData retrieveAllFileIDs() throws OperationFailedException {
+    private FileIDsData retrieveAllFileIDs() {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems fileIDList = new FileIDsDataItems();
         for(String fileID : archive.getAllFileIds()) {
@@ -200,9 +200,8 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      * Retrieves specified fileIDs and whether the files exists as a proper file.
      * @param fileID The requested fileID to find and validate the existence of.
      * @return The list of the ids of the requested files in the archive, wrapped in the requested datastructure.
-     * @throws OperationFailedException If a requested file does not exist or is invalid (e.g. a directory).
      */
-    private FileIDsData retrieveSpecifiedFileIDs(String fileID) throws OperationFailedException {
+    private FileIDsData retrieveSpecifiedFileIDs(String fileID) {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems fileIDList = new FileIDsDataItems();
         fileIDList.getFileIDsDataItem().add(getDataItemForFileID(fileID));            
@@ -214,12 +213,14 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      * Retrieves a given fileID as a FileIDsDataItem after its existence has been validated.
      * @param fileID The fileID to validate and make into a FileIDsDataItem.
      * @return The FileIDsDataItem for the requested fileID.
-     * @throws OperationFailedException If the fileID is not valid.
      */
-    private FileIDsDataItem getDataItemForFileID(String fileID) throws OperationFailedException {
+    private FileIDsDataItem getDataItemForFileID(String fileID) {
         if(!archive.getFile(fileID).isFile()) {
-            throw new OperationFailedException("The file '" + fileID + "' is not valid. It either does not exist or "
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            ri.setResponseText("The file '" + fileID + "' is not valid. It either does not exist or "
                     +" it is a directory instead of a file.");
+            throw new InvalidMessageException(ri);
         }        
         FileIDsDataItem fileIDData = new FileIDsDataItem();
         long timestamp = archive.getFile(fileID).lastModified();
@@ -282,6 +283,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      * @param url The location where the file should be uploaded.
      * @throws Exception If something goes wrong.
      */
+    @SuppressWarnings("deprecation")
     private void uploadFile(File fileToUpload, String url) throws IOException {
         URL uploadUrl = new URL(url);
         

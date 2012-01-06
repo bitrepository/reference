@@ -185,7 +185,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText(errText);
-            throw new InvalidMessageException(fri);
+            throw new InvalidMessageException(fri, e);
         }
     }
     
@@ -281,7 +281,10 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
                 File fileToUpload = makeTemporaryChecksumFile(message, checksumList);
                 uploadFile(fileToUpload, url);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                ResponseInfo ir = new ResponseInfo();
+                ir.setResponseCode(ResponseCode.FAILURE);
+                ir.setResponseText("Could not handle the creation and upload of the results due to: " + e.getMessage());
+                throw new InvalidMessageException(ir, e);
             }
             
             res.setResultAddress(url);
@@ -346,6 +349,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * @param url The location where the file should be uploaded.
      * @throws Exception If something goes wrong.
      */
+    @SuppressWarnings("deprecation")
     private void uploadFile(File fileToUpload, String url) throws IOException {
         URL uploadUrl = new URL(url);
         

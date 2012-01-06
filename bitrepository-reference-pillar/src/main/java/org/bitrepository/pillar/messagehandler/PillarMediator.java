@@ -75,15 +75,15 @@ public class PillarMediator extends AbstractMessageListener {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /** The settings.*/
-    final Settings settings;
+    private final Settings settings;
     /** The messagebus. Package protected on purpose.*/
-    final MessageBus messagebus;
+    private final MessageBus messagebus;
     /** The archive. Package protected on purpose.*/
-    final ReferenceArchive archive;
+    private final ReferenceArchive archive;
     /** The handler of the audits. Package protected on purpose.*/
     private final MemorybasedAuditTrailManager audits;
     /** The dispatcher of alarms. Package protected on purpose.*/
-    final AlarmDispatcher alarmDispatcher;
+    private final AlarmDispatcher alarmDispatcher;
 
     // THE MESSAGE HANDLERS!
     /** The map between the messagenames and their respective handlers.*/
@@ -298,7 +298,8 @@ public class PillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        PillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> handler = handlers.get(message.getClass().getName());
+        PillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> handler 
+                = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {

@@ -29,6 +29,7 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 /**
  * Exception which wraps bad response information for the identifications. 
  */
+@SuppressWarnings("serial")
 public class IdentifyPillarsException extends RuntimeException {
     /** The IdentifyResponseInfo wrapped by this exception. Tells the reason for the exception.*/
     private final ResponseInfo identifyResponseInfo;

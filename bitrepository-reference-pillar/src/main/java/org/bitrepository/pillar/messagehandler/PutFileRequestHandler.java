@@ -41,6 +41,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
+import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -137,6 +138,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
      * Retrieves the actual data, validates it and stores it.
      * @param message The request to for the file to put.
      */
+    @SuppressWarnings("deprecation")
     private void retrieveFile(PutFileRequest message) {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
@@ -146,7 +148,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             fileForValidation = archive.downloadFileForValidation(message.getFileID(), 
                     fe.downloadFromServer(new URL(message.getFileAddress())));
         } catch (IOException e) {
-            throw new RuntimeException("Could not download the file '" + message.getFileID() + "' from the url '"
+            throw new CoordinationLayerException("Could not download the file '" + message.getFileID() + "' from the url '"
                     + message.getFileAddress() + "'.", e);
         }
         
@@ -156,10 +158,10 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             String checksum = ChecksumUtils.generateChecksum(fileForValidation, 
                     csType.getChecksumSpec().getChecksumType(), 
                     csType.getChecksumSpec().getChecksumSalt());
-            if(!checksum.equals(csType.getChecksumValue())) {
-                log.error("Expected checksums '" + csType.getChecksumValue() + "' but the checksum was '" 
+            if(!checksum.equals(new String(csType.getChecksumValue()))) {
+                log.error("Expected checksums '" + new String(csType.getChecksumValue()) + "' but the checksum was '" 
                         + checksum + "'.");
-                throw new IllegalStateException("Wrong checksum! Expected: [" + csType.getChecksumValue() 
+                throw new IllegalStateException("Wrong checksum! Expected: [" + new String(csType.getChecksumValue()) 
                         + "], but calculated: [" + checksum + "]");
             }
         } else {

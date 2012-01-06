@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class for handling the DeleteFile operation.
  */
-public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileRequest>{
+public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
@@ -118,10 +118,10 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         if(!checksum.equals(new String(checksumData.getChecksumValue()))) {
             // Log the different checksums, but do not send the right checksum back!
             log.info("Failed to handle delete operation on file '" + message.getFileID() + "' since the request had "
-                    + "the checksum '" + checksumData.getChecksumValue() + "' where our local file has the value '"
-                    + checksum + "'. Sending alarm and respond failure.");
+                    + "the checksum '" + new String(checksumData.getChecksumValue()) + "' where our local file has "
+                    + "the value '" + checksum + "'. Sending alarm and respond failure.");
             String errMsg = "Requested to delete file '" + message.getFileID() + "' with checksum '"
-                    + checksumData.getChecksumValue() + "', but our file had a different checksum.";
+                    + new String(checksumData.getChecksumValue()) + "', but our file had a different checksum.";
             alarmDispatcher.sendInvalidChecksumAlarm(message, message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
@@ -181,7 +181,10 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         try {
             archive.deleteFile(message.getFileID());
         } catch (Exception e) {
-            throw new RuntimeException("Could not delete the file.", e);
+            ResponseInfo ir = new ResponseInfo();
+            ir.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            ir.setResponseText("Could not delete the file from the archive: " + e.getMessage());
+            throw new InvalidMessageException(ir, e);
         }
     }
 

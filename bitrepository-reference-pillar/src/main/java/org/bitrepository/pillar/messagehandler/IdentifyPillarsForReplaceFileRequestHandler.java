@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * Class for handling the identification of this pillar for the purpose of performing the ReplaceFile operation.
  */
 public class IdentifyPillarsForReplaceFileRequestHandler 
-        extends PillarMessageHandler<IdentifyPillarsForReplaceFileRequest>{
+        extends PillarMessageHandler<IdentifyPillarsForReplaceFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
