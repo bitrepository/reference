@@ -87,7 +87,7 @@ public class PuttingFile extends PutFileState {
         putMsg.setFileID(conversation.fileID);
         putMsg.setFileSize(conversation.fileSize);
         putMsg.setAuditTrailInformation(conversation.auditTrailInformation);
-        putMsg.setChecksumsDataForNewFile(conversation.validationChecksums);
+        putMsg.setChecksumDataForNewFile(conversation.validationChecksums);
 
         // Send the message to each pillar.
         for(Map.Entry<String, String> pillarDest : pillarDestinations.entrySet()) {
@@ -137,7 +137,7 @@ public class PuttingFile extends PutFileState {
         }
 
         if(isResponseSuccess(response.getResponseInfo())) {
-            monitor.pillarComplete(new PutFileCompletePillarEvent(response.getChecksumsDataForNewFile(),
+            monitor.pillarComplete(new PutFileCompletePillarEvent(response.getChecksumDataForNewFile(),
                     response.getPillarID(),
                     "Received checksum result from " + response.getPillarID()));
         } else {

@@ -26,8 +26,8 @@ package org.bitrepository.modify.putfile;
 
 import java.net.URL;
 
-import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 
@@ -69,8 +69,8 @@ public interface PutFileClient {
      * @param auditTrailInformation The audit trail information.
      * @throws OperationFailedException If the operation failed.
      */
-    void putFile(URL url, String fileId, long sizeOfFile, ChecksumsDataForNewFile checksumForValidationAtPillar, 
-            ChecksumSpecs checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation)
+    void putFile(URL url, String fileId, long sizeOfFile, ChecksumDataForFileTYPE checksumForValidationAtPillar, 
+    		ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation)
             throws OperationFailedException;
     
     /**

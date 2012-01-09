@@ -77,7 +77,7 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
         identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         identifyRequest.setTo(conversation.settings.getCollectionDestination());
         identifyRequest.setAuditTrailInformation(conversation.auditTrailInformation);
-        identifyRequest.setFileChecksumSpec(conversation.checksumSpecifications);
+        identifyRequest.setChecksumRequestForExistingFile(conversation.checksumSpecifications);
 
         monitor.identifyPillarsRequestSent("Identifying pillars for getting file " + conversation.fileIDs);
         conversation.messageSender.sendMessage(identifyRequest);

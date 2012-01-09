@@ -31,8 +31,6 @@ import javax.jms.JMSException;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.deletefile.conversation.SimpleDeleteFileConversation;

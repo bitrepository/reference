@@ -126,8 +126,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedDeleteFileRequest.getReplyTo(),
                             receivedDeleteFileRequest.getCorrelationID(),
                             DEFAULT_FILE_ID,
-                            receivedDeleteFileRequest.getChecksumDataForFile(),
-                            receivedDeleteFileRequest.getFileChecksumSpec()
+                            receivedDeleteFileRequest.getChecksumDataForExistingFile(),
+                            receivedDeleteFileRequest.getChecksumRequestForExistingFile()
                             ));
         }
 
@@ -265,8 +265,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedDeleteFileRequest.getReplyTo(),
                             receivedDeleteFileRequest.getCorrelationID(),
                             DEFAULT_FILE_ID,
-                            receivedDeleteFileRequest.getChecksumDataForFile(),
-                            receivedDeleteFileRequest.getFileChecksumSpec()
+                            receivedDeleteFileRequest.getChecksumDataForExistingFile(),
+                            receivedDeleteFileRequest.getChecksumRequestForExistingFile()
                             ));
         }
 
@@ -337,8 +337,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedDeleteFileRequest.getReplyTo(),
                             receivedDeleteFileRequest.getCorrelationID(),
                             DEFAULT_FILE_ID,
-                            receivedDeleteFileRequest.getChecksumDataForFile(),
-                            receivedDeleteFileRequest.getFileChecksumSpec()
+                            receivedDeleteFileRequest.getChecksumDataForExistingFile(),
+                            receivedDeleteFileRequest.getChecksumRequestForExistingFile()
                             ));
         }
 

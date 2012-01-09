@@ -104,7 +104,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         }
         
         // calculate and validate the checksum of the file.
-        ChecksumDataForFileTYPE checksumData = message.getChecksumDataForFile();
+        ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
         ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
         if(checksumType == null) {
             ResponseInfo responseInfo = new ResponseInfo();
@@ -157,7 +157,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
      */
     protected ChecksumDataForFileTYPE calculatedRequestedChecksum(DeleteFileRequest message) {
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
-        ChecksumSpecTYPE checksumType = message.getFileChecksumSpec();
+        ChecksumSpecTYPE checksumType = message.getChecksumRequestForExistingFile();
         
         if(checksumType == null) {
             log.warn("No checksum requested for the file about to be deleted.");
@@ -196,7 +196,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
     protected void sendFinalResponse(DeleteFileRequest message, ChecksumDataForFileTYPE requestedChecksum) {
         // make ProgressResponse to tell that we are handling this.
         DeleteFileFinalResponse fResponse = createDeleteFileFinalResponse(message);
-        fResponse.setChecksumDataForFile(requestedChecksum);
+        fResponse.setChecksumDataForExistingFile(requestedChecksum);
         ResponseInfo frInfo = new ResponseInfo();
         frInfo.setResponseCode(ResponseCode.SUCCESS);
         frInfo.setResponseText("Data delivered.");

@@ -143,7 +143,7 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
         putFileRequest.setFileID(fileId);
         putFileRequest.setAuditTrailInformation(auditTrailInformation);
         
-        putFileRequest.setChecksumsDataForNewFile(null);
+        putFileRequest.setChecksumDataForNewFile(null);
 //        putFileRequest.setChecksumSpecs(null);
         
         return putFileRequest;

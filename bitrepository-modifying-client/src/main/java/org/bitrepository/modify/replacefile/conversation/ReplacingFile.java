@@ -83,12 +83,12 @@ public class ReplacingFile extends ReplaceFileState {
         // create the message
         ReplaceFileRequest request = new ReplaceFileRequest();
         request.setAuditTrailInformation(conversation.auditTrailInformation);
-        request.setChecksumDataForFile(conversation.checksumForFileToDelete);
+        request.setChecksumDataForExistingFile(conversation.checksumForFileToDelete);
         request.setChecksumDataForNewFile(conversation.checksumForNewFileValidationAtPillar);
         request.setCollectionID(conversation.settings.getCollectionID());
         request.setCorrelationID(conversation.getConversationID());
         request.setFileAddress(conversation.urlOfNewFile.toExternalForm());
-        request.setFileChecksumSpec(conversation.checksumRequestForNewFile);
+        request.setChecksumRequestForNewFile(conversation.checksumRequestForNewFile);
         request.setFileID(conversation.fileID);
         request.setFileSize(BigInteger.valueOf(conversation.sizeOfNewFile));
         request.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
@@ -149,7 +149,7 @@ public class ReplacingFile extends ReplaceFileState {
 
         if(isResponseSuccess(response.getResponseInfo())) {
             monitor.pillarComplete(new ReplaceFileCompletePillarEvent(
-                    response.getChecksumDataForFile(),
+                    response.getChecksumDataForNewFile(),
                     response.getPillarID(),
                     "Received replace file result from " + response.getPillarID()));
         } else {

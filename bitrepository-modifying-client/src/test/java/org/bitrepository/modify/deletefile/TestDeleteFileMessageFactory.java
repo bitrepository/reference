@@ -129,8 +129,8 @@ public class TestDeleteFileMessageFactory extends TestMessageFactory{
         deleteFileRequest.setReplyTo(replyTo);
         deleteFileRequest.setCorrelationID(correlationId);
         deleteFileRequest.setFileID(fileId);
-        deleteFileRequest.setChecksumDataForFile(checksumData);
-        deleteFileRequest.setFileChecksumSpec(checksumType);
+        deleteFileRequest.setChecksumDataForExistingFile(checksumData);
+        deleteFileRequest.setChecksumRequestForExistingFile(checksumType);
         
         deleteFileRequest.setAuditTrailInformation(null);
         

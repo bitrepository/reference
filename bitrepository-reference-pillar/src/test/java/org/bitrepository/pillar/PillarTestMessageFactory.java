@@ -29,7 +29,6 @@ import java.util.UUID;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
@@ -86,15 +85,13 @@ public class PillarTestMessageFactory extends TestMessageFactory {
         PutFileRequest res = new PutFileRequest();
         res.setAuditTrailInformation(null);
         
-        ChecksumsDataForNewFile csdataForNewFile = new ChecksumsDataForNewFile();
         ChecksumDataForFileTYPE checksumDataForFile = new ChecksumDataForFileTYPE();
         ChecksumSpecTYPE csDeliveredSpec = new ChecksumSpecTYPE();
         csDeliveredSpec.setChecksumType("MD5");
         checksumDataForFile.setChecksumSpec(csDeliveredSpec);       
         checksumDataForFile.setChecksumValue(new String("940a51b250e7aa82d8e8ea31217ff267").getBytes());
         checksumDataForFile.setCalculationTimestamp(CalendarUtils.getNow());
-        csdataForNewFile.setChecksumDataItem(checksumDataForFile);
-        res.setChecksumsDataForNewFile(csdataForNewFile);
+        res.setChecksumDataForNewFile(checksumDataForFile);
 
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
@@ -102,7 +99,7 @@ public class PillarTestMessageFactory extends TestMessageFactory {
         
         ChecksumSpecTYPE csReturnSpec = new ChecksumSpecTYPE();
         csReturnSpec.setChecksumType("SHA-1");
-        res.setFileChecksumSpec(csReturnSpec);
+        res.setChecksumRequestForNewFile(csReturnSpec);
         
         res.setFileID(fileId);
         res.setFileSize(BigInteger.valueOf(fileSize));
@@ -134,12 +131,12 @@ public class PillarTestMessageFactory extends TestMessageFactory {
         return res;
     }
 
-    public PutFileFinalResponse createPutFileFinalResponse(ChecksumsDataForNewFile checksumNewFile, 
+    public PutFileFinalResponse createPutFileFinalResponse(ChecksumDataForFileTYPE checksumNewFile, 
             String correlationId, String url, String fileId, ResponseInfo frInfo, String pillarId, 
             ChecksumSpecTYPE checksumSpec, String replyTo, String toTopic) {
         PutFileFinalResponse res = new PutFileFinalResponse();
         res.setCollectionID(settings.getCollectionID());
-        res.setChecksumsDataForNewFile(checksumNewFile);
+        res.setChecksumDataForNewFile(checksumNewFile);
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);

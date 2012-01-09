@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
@@ -152,9 +151,9 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
                     + message.getFileAddress() + "'.", e);
         }
         
-        if(message.getChecksumsDataForNewFile() != null
-                && message.getChecksumsDataForNewFile().getChecksumDataItem() != null) {
-            ChecksumDataForFileTYPE csType = message.getChecksumsDataForNewFile().getChecksumDataItem();
+        if(message.getChecksumDataForNewFile() != null) {
+                //&& message.getChecksumDataForNewFile().getChecksumDataItem() != null) {
+        	ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
             String checksum = ChecksumUtils.generateChecksum(fileForValidation, 
                     csType.getChecksumSpec().getChecksumType(), 
                     csType.getChecksumSpec().getChecksumSalt());
@@ -189,23 +188,21 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         fResponse.setResponseInfo(frInfo);
         fResponse.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
 
-        ChecksumsDataForNewFile checksumForValidation = new ChecksumsDataForNewFile();
+        ChecksumDataForFileTYPE checksumForValidation = new ChecksumDataForFileTYPE();
         
-        if(message.getFileChecksumSpec() != null) {
-            ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
-            checksumData.setChecksumValue(ChecksumUtils.generateChecksum(retrievedFile, 
-                    message.getFileChecksumSpec().getChecksumType(), 
-                    message.getFileChecksumSpec().getChecksumType()).getBytes());
-            checksumData.setCalculationTimestamp(CalendarUtils.getNow());
-            checksumData.setChecksumSpec(message.getFileChecksumSpec());
-            checksumForValidation.setChecksumDataItem(checksumData);
+        if(message.getChecksumRequestForNewFile() != null) {
+        	checksumForValidation.setChecksumValue(ChecksumUtils.generateChecksum(retrievedFile, 
+                    message.getChecksumRequestForNewFile().getChecksumType(), 
+                    message.getChecksumRequestForNewFile().getChecksumType()).getBytes());
+        	checksumForValidation.setCalculationTimestamp(CalendarUtils.getNow());
+        	checksumForValidation.setChecksumSpec(message.getChecksumRequestForNewFile());
         } else {
             // TODO is such a request required?
             log.info("No checksum validation requested.");
             checksumForValidation = null;
         }
         
-        fResponse.setChecksumsDataForNewFile(checksumForValidation);
+        fResponse.setChecksumDataForNewFile(checksumForValidation);
 
         // Finish by sending final response.
         log.info("Sending PutFileFinalResponse: " + fResponse);

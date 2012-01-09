@@ -70,7 +70,8 @@ public class TestGetChecksumsMessageFactory extends TestMessageFactory {
         identifyPillarsForGetChecksumsRequest.setTo(toTopic);
         
         identifyPillarsForGetChecksumsRequest.setAuditTrailInformation(receivedIdentifyRequestMessage.getAuditTrailInformation());
-        identifyPillarsForGetChecksumsRequest.setFileChecksumSpec(receivedIdentifyRequestMessage.getFileChecksumSpec());
+        identifyPillarsForGetChecksumsRequest.setChecksumRequestForExistingFile(
+        		receivedIdentifyRequestMessage.getChecksumRequestForExistingFile());
         identifyPillarsForGetChecksumsRequest.setFileIDs(receivedIdentifyRequestMessage.getFileIDs());
         
         return identifyPillarsForGetChecksumsRequest;
@@ -109,7 +110,7 @@ public class TestGetChecksumsMessageFactory extends TestMessageFactory {
         GetChecksumsRequest getChecksumsRequest = createGetChecksumsRequest(pillarId, toTopic);
         getChecksumsRequest.setCorrelationID(receivedGetChecksumsRequest.getCorrelationID());
         getChecksumsRequest.setReplyTo(receivedGetChecksumsRequest.getReplyTo());
-        getChecksumsRequest.setFileChecksumSpec(receivedGetChecksumsRequest.getFileChecksumSpec());
+        getChecksumsRequest.setChecksumRequestForExistingFile(receivedGetChecksumsRequest.getChecksumRequestForExistingFile());
         getChecksumsRequest.setFileIDs(receivedGetChecksumsRequest.getFileIDs());
         getChecksumsRequest.setResultAddress(receivedGetChecksumsRequest.getResultAddress());
         getChecksumsRequest.setAuditTrailInformation(receivedGetChecksumsRequest.getAuditTrailInformation());

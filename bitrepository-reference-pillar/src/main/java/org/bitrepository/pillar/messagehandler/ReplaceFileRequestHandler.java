@@ -100,7 +100,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         }
         
         // validate that a checksum for the old file has been given.
-        ChecksumDataForFileTYPE checksumData = message.getChecksumDataForFile();
+        ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
         ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
         // TODO add a check for a given setting is set to true.
         if(checksumType == null) {
@@ -220,7 +220,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
      * @return The checksum data for the old file in the archive.
      */
     private ChecksumDataForFileTYPE calculateChecksumOnOldFile(ReplaceFileRequest message) {
-        ChecksumSpecTYPE csType = message.getFileChecksumSpec();
+        ChecksumSpecTYPE csType = message.getChecksumRequestForExistingFile();
         if(csType != null) {
             return calculatedChecksumForFile(csType, message.getFileID());
         }
@@ -237,7 +237,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
      */
     private ChecksumDataForFileTYPE calculateChecksumOnNewFile(ReplaceFileRequest message) {
         // TODO insert the new checksum
-        ChecksumSpecTYPE csType = message.getFileChecksumSpec();
+        ChecksumSpecTYPE csType = message.getChecksumRequestForNewFile();
         if(csType != null) {
             return calculatedChecksumForFile(csType, message.getFileID());
         }
@@ -295,7 +295,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         ri.setResponseText("Successfully replaced the file '" + message.getFileID() + "' as requested!");
         response.setResponseInfo(ri);
         
-        response.setChecksumDataForFile(requestedNewChecksum);
+        response.setChecksumDataForNewFile(requestedNewChecksum);
         log.warn("Can only deliver one of the requested checksums. Choosing the new one: '" + requestedNewChecksum 
                 + "', whereas the old one is: '" + requestedOldChecksum + "'");
         

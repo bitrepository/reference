@@ -29,8 +29,8 @@ import java.net.URL;
 
 import javax.jms.JMSException;
 
-import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.putfile.conversation.SimplePutFileConversation;
@@ -92,7 +92,7 @@ public class ConversationBasedPutFileClient implements PutFileClient {
     
     @Override
     public void putFile(URL url, String fileId, long sizeOfFile, 
-            ChecksumsDataForNewFile checksumForValidationAtPillar, ChecksumSpecs checksumRequestsForValidation, 
+    		ChecksumDataForFileTYPE checksumForValidationAtPillar, ChecksumSpecTYPE checksumRequestsForValidation, 
             EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
         ArgumentValidator.checkNotNull(url, "URL url");
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");

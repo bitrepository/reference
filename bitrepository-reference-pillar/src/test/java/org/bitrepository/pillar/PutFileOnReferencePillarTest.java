@@ -100,7 +100,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse,
                 msgFactory.createPutFileFinalResponse(
-                        finalResponse.getChecksumsDataForNewFile(),
+                        finalResponse.getChecksumDataForNewFile(),
                         finalResponse.getCorrelationID(), 
                         finalResponse.getFileAddress(), 
                         finalResponse.getFileID(), 
@@ -112,10 +112,10 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         
         // validating the checksum
         Assert.assertEquals(finalResponse.getFileID(), FILE_ID, "The FileID of this test.");
-        Assert.assertNotNull(finalResponse.getChecksumsDataForNewFile(), "The results should contain a ");
-        ChecksumDataForFileTYPE receivedChecksumData = finalResponse.getChecksumsDataForNewFile().getChecksumDataItem();
+        Assert.assertNotNull(finalResponse.getChecksumDataForNewFile(), "The results should contain a ");
+        ChecksumDataForFileTYPE receivedChecksumData = finalResponse.getChecksumDataForNewFile();
         Assert.assertNotNull(receivedChecksumData.getChecksumSpec());
-        Assert.assertEquals(receivedChecksumData.getChecksumSpec(), putRequest.getFileChecksumSpec(), 
+        Assert.assertEquals(receivedChecksumData.getChecksumSpec(), putRequest.getChecksumRequestForNewFile(), 
                 "Should return the same type of checksum as requested.");
         Assert.assertEquals(receivedChecksumData.getChecksumValue(), FILE_CHECKSUM);
         Assert.assertTrue(receivedChecksumData.getCalculationTimestamp().toGregorianCalendar().getTimeInMillis() > startDate.getTime(), 

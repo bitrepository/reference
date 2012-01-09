@@ -88,8 +88,8 @@ public class DeletingFile extends DeleteFileState {
         request.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         request.setAuditTrailInformation(conversation.auditTrailInformation);
         request.setFileID(conversation.fileID);
-        request.setFileChecksumSpec(conversation.checksumSpecRequested);
-        request.setChecksumDataForFile(conversation.checksumForFileToDelete);
+        request.setChecksumRequestForExistingFile(conversation.checksumSpecRequested);
+        request.setChecksumDataForExistingFile(conversation.checksumForFileToDelete);
         
         for(SelectedPillarInfo pillarInfo : pillarsSelectedForRequest) {
             request.setPillarID(pillarInfo.getID());
@@ -138,7 +138,7 @@ public class DeletingFile extends DeleteFileState {
 
         if(isResponseSuccess(response.getResponseInfo())) {
             monitor.pillarComplete(new DeleteFileCompletePillarEvent(
-                    response.getChecksumDataForFile(),
+                    response.getChecksumDataForExistingFile(),
                     response.getPillarID(),
                     "Received delete file result from " + response.getPillarID()));
         } else {

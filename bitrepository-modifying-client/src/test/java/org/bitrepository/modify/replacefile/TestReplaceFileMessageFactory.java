@@ -146,9 +146,9 @@ public class TestReplaceFileMessageFactory extends TestMessageFactory{
         replaceFileRequest.setFileSize(filesize);
         replaceFileRequest.setFileID(fileId);
         replaceFileRequest.setAuditTrailInformation(auditTrailInformation);
-        replaceFileRequest.setChecksumDataForFile(oldChecksum);
+        replaceFileRequest.setChecksumDataForExistingFile(oldChecksum);
         replaceFileRequest.setChecksumDataForNewFile(newChecksum);
-        replaceFileRequest.setFileChecksumSpec(checksumRequested);
+        replaceFileRequest.setChecksumRequestForNewFile(checksumRequested);
         
         return replaceFileRequest;
     }
@@ -189,7 +189,7 @@ public class TestReplaceFileMessageFactory extends TestMessageFactory{
     public ReplaceFileFinalResponse createReplaceFileFinalResponse(ReplaceFileRequest request,
             String pillarId, String pillarDestinationId, ChecksumDataForFileTYPE checksumData) {
         ReplaceFileFinalResponse finalResponse = new ReplaceFileFinalResponse();
-        finalResponse.setChecksumDataForFile(checksumData);
+        finalResponse.setChecksumDataForNewFile(checksumData);
         finalResponse.setCollectionID(collectionId);
         finalResponse.setCorrelationID(request.getCorrelationID());
         finalResponse.setFileAddress(request.getFileAddress());

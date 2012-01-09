@@ -24,7 +24,7 @@
  */
 package org.bitrepository.modify.putfile.conversation;
 
-import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 
 /**
@@ -32,14 +32,14 @@ import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 */
 public class PutFileCompletePillarEvent extends PillarOperationEvent {
     /** @see #getPutResults(). */
-    private final ChecksumsDataForNewFile result;
+    private final ChecksumDataForFileTYPE result;
     
     /**
      * @param result The result returned by the pillar.
      * @param pillarID The pillar which generated the result
      * @param info Additional information.
      */
-    public PutFileCompletePillarEvent(ChecksumsDataForNewFile result, String pillarID, String info) {
+    public PutFileCompletePillarEvent(ChecksumDataForFileTYPE result, String pillarID, String info) {
         super(OperationEventType.PillarComplete, info, pillarID);
         this.result = result;
     }
@@ -47,7 +47,7 @@ public class PutFileCompletePillarEvent extends PillarOperationEvent {
     /** 
      * @return The checksum result from a single pillar. 
      */
-    public ChecksumsDataForNewFile getChecksums() {
+    public ChecksumDataForFileTYPE getChecksums() {
         return result;
     }
 }

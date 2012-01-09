@@ -92,7 +92,7 @@ public class GettingChecksums extends GetChecksumsState {
         getChecksumsRequest.setCorrelationID(conversation.getConversationID());
         getChecksumsRequest.setFileIDs(conversation.fileIDs);
         getChecksumsRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
-        getChecksumsRequest.setFileChecksumSpec(conversation.checksumSpecifications);
+        getChecksumsRequest.setChecksumRequestForExistingFile(conversation.checksumSpecifications);
         getChecksumsRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         getChecksumsRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         getChecksumsRequest.setAuditTrailInformation(conversation.auditTrailInformation);

@@ -28,8 +28,8 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.UUID;
 
-import org.bitrepository.bitrepositoryelements.ChecksumSpecs;
-import org.bitrepository.bitrepositoryelements.ChecksumsDataForNewFile;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
@@ -62,9 +62,9 @@ public class SimplePutFileConversation extends AbstractConversation {
     /** The state of the PutFile transaction.*/
     PutFileState conversationState;
     /** The checksum of the file, which the pillars should download. Used for validation at pillar-side.*/
-    final ChecksumsDataForNewFile validationChecksums;
+    final ChecksumDataForFileTYPE validationChecksums;
     /** The checksums to request from the pillar.*/
-    final ChecksumSpecs requestChecksums;
+    final ChecksumSpecTYPE requestChecksums;
     /** The audit trail information for this conversation.*/
     final String auditTrailInformation;
     
@@ -89,8 +89,8 @@ public class SimplePutFileConversation extends AbstractConversation {
             URL urlToDownload,
             String fileId,
             BigInteger sizeOfFile,
-            ChecksumsDataForNewFile checksumForValidationAtPillar,
-            ChecksumSpecs checksumRequestsForValidation,
+            ChecksumDataForFileTYPE checksumForValidationAtPillar,
+            ChecksumSpecTYPE checksumRequestsForValidation,
             EventHandler eventHandler,
             FlowController flowController,
             String auditTrailInformation) {

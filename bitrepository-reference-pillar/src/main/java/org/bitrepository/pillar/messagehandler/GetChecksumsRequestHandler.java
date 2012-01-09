@@ -165,7 +165,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      */
     private void validateChecksum(GetChecksumsRequest message) {
         // validate the checksum function
-        ChecksumSpecTYPE checksumSpec = message.getFileChecksumSpec();
+        ChecksumSpecTYPE checksumSpec = message.getChecksumRequestForExistingFile();
         
         // validate that this non-mandatory field has been filled out.
         if(checksumSpec == null || checksumSpec.getChecksumType() == null) {
@@ -216,11 +216,11 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         
         FileIDs fileids = message.getFileIDs();
         
-        byte[] salt = message.getFileChecksumSpec().getChecksumSalt();
+        byte[] salt = message.getChecksumRequestForExistingFile().getChecksumSalt();
         
         if(fileids.isSetAllFileIDs()) {
             log.debug("Calculating the checksum for all the files.");
-            return calculateChecksumForAllFiles(message.getFileChecksumSpec().getChecksumType(), salt);
+            return calculateChecksumForAllFiles(message.getChecksumRequestForExistingFile().getChecksumType(), salt);
         }
         
         log.debug("Calculating the checksum for specified files: " + fileids.getFileID());
@@ -231,7 +231,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
         singleFileResult.setFileID(fileid);
         singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, 
-                message.getFileChecksumSpec().getChecksumType(), salt).getBytes());
+                message.getChecksumRequestForExistingFile().getChecksumType(), salt).getBytes());
         
         res.add(singleFileResult);
         
@@ -400,7 +400,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         res.setMinVersion(MIN_VERSION);
         res.setVersion(VERSION);
         res.setCorrelationID(message.getCorrelationID());
-        res.setFileChecksumSpec(message.getFileChecksumSpec());
+        res.setChecksumRequestForExistingFile(message.getChecksumRequestForExistingFile());
         res.setFileIDs(message.getFileIDs());
         res.setResultAddress(message.getResultAddress());
         res.setTo(message.getReplyTo());
@@ -426,7 +426,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         res.setMinVersion(MIN_VERSION);
         res.setVersion(VERSION);
         res.setCorrelationID(message.getCorrelationID());
-        res.setFileChecksumSpec(message.getFileChecksumSpec());
+        res.setChecksumRequestForExistingFile(message.getChecksumRequestForExistingFile());
         res.setTo(message.getReplyTo());
         res.setCollectionID(settings.getCollectionID());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());

@@ -121,7 +121,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
      * @param message The message with the checksum algorithm to validate.
      */
     public void checkThatTheChecksumFunctionIsAvailable(IdentifyPillarsForGetChecksumsRequest message) {
-        ChecksumSpecTYPE checksumSpec = message.getFileChecksumSpec();
+        ChecksumSpecTYPE checksumSpec = message.getChecksumRequestForExistingFile();
         
         // validate that this non-mandatory field has been filled out.
         if(checksumSpec == null || checksumSpec.getChecksumType() == null) {
@@ -198,7 +198,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         res.setCorrelationID(msg.getCorrelationID());
         res.setFileIDs(msg.getFileIDs());
         res.setTo(msg.getReplyTo());
-        res.setFileChecksumSpec(msg.getFileChecksumSpec());
+        res.setChecksumRequestForExistingFile(msg.getChecksumRequestForExistingFile());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         res.setCollectionID(settings.getCollectionID());
         res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
