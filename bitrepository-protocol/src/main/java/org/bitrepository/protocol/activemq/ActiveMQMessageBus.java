@@ -33,7 +33,6 @@ import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
@@ -70,6 +69,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -202,207 +202,9 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     @Override
-    public void sendMessage(Alarm content) {
+    public void sendMessage(Message content) {
         sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                 content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(DeleteFileFinalResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(DeleteFileProgressResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(DeleteFileRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(GetChecksumsFinalResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(GetChecksumsRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(GetChecksumsProgressResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(GetFileFinalResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(GetFileIDsFinalResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(GetFileIDsRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(GetFileIDsProgressResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(GetFileRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(GetFileProgressResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(GetStatusRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(GetStatusProgressResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(GetStatusFinalResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForGetChecksumsResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForDeleteFileRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForDeleteFileResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForGetChecksumsRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForGetFileIDsRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForGetFileIDsResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForGetFileRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForGetFileResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForPutFileResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForPutFileRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForReplaceFileRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(IdentifyPillarsForReplaceFileResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(PutFileFinalResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(PutFileRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(PutFileProgressResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(ReplaceFileFinalResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(ReplaceFileProgressResponse content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
-    }
-
-    @Override
-    public void sendMessage(ReplaceFileRequest content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
-                    content.getCorrelationID(), content);
     }
 
     /**
@@ -427,7 +229,7 @@ public class ActiveMQMessageBus implements MessageBus {
             MessageProducer producer = addDestinationMessageProducer(destinationID);
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
-            Message msg = producerSession.createTextMessage(xmlContent);
+            javax.jms.Message msg = producerSession.createTextMessage(xmlContent);
             msg.setStringProperty(MESSAGE_TYPE_KEY, content.getClass().getSimpleName());
             msg.setStringProperty(COLLECTION_ID_KEY, collectionID);
             msg.setJMSCorrelationID(correlationID);
@@ -574,17 +376,17 @@ public class ActiveMQMessageBus implements MessageBus {
          * This method acts as a fault barrier for all exceptions from message
          * reception. They are all logged as warnings, but otherwise ignored.
          *
-         * @param message The message received.
+         * @param jmsMessage The message received.
          */
         @Override
-        public void onMessage(final Message message) {
+        public void onMessage(final javax.jms.Message jmsMessage) {
             String type = null;
             String text = null;
 
             Object content;
             try {
-                type = message.getStringProperty(MESSAGE_TYPE_KEY);
-                text = ((TextMessage) message).getText();
+                type = jmsMessage.getStringProperty(MESSAGE_TYPE_KEY);
+                text = ((TextMessage) jmsMessage).getText();
                 jaxbHelper.validate(new ByteArrayInputStream(text.getBytes()));
                 content = jaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
                                              new ByteArrayInputStream(text.getBytes()));
@@ -745,7 +547,7 @@ public class ActiveMQMessageBus implements MessageBus {
                 }
                 log.error("Received message of unknown type '" + type + "'\n{}", text);
             } catch (SAXException e) {
-                log.error("Error validating message " + message, e);
+                log.error("Error validating message " + jmsMessage, e);
             } catch (Exception e) {
                 log.error("Error handling message. Received type was '" + type + "'.\n{}", text, e);
             }

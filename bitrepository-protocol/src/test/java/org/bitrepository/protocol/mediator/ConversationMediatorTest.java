@@ -54,6 +54,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -128,139 +129,7 @@ public abstract class ConversationMediatorTest {
         private MessageListener listener;
 
         @Override
-        public void sendMessage(Alarm content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(DeleteFileFinalResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(DeleteFileProgressResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(DeleteFileRequest content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(GetChecksumsFinalResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(GetChecksumsRequest content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(GetChecksumsProgressResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(GetFileFinalResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(GetFileIDsFinalResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(GetFileIDsRequest content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(GetFileIDsProgressResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(GetFileRequest content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(GetFileProgressResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(GetStatusRequest content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(GetStatusProgressResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(GetStatusFinalResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(IdentifyPillarsForDeleteFileRequest content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(IdentifyPillarsForDeleteFileResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(IdentifyPillarsForGetChecksumsResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(IdentifyPillarsForGetChecksumsRequest content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(IdentifyPillarsForGetFileIDsRequest content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(IdentifyPillarsForGetFileIDsResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(IdentifyPillarsForGetFileRequest content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(IdentifyPillarsForGetFileResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(IdentifyPillarsForPutFileResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(IdentifyPillarsForPutFileRequest content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(IdentifyPillarsForReplaceFileResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(IdentifyPillarsForReplaceFileRequest content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(PutFileFinalResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(PutFileRequest content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(PutFileProgressResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(ReplaceFileFinalResponse content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(ReplaceFileRequest content) { 
-            messageSender.sendMessage(content); 
-        }
-        @Override
-        public void sendMessage(ReplaceFileProgressResponse content) { 
+        public void sendMessage(Message content) { 
             messageSender.sendMessage(content); 
         }
         
