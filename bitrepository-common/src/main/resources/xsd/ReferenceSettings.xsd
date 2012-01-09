@@ -187,15 +187,6 @@
           The settings for the ReplaceFileClient
         </xs:documentation>
       </xs:annotation>
-      <xs:sequence>
-        <xs:element name="IdentificationTimeout" type="xs:nonNegativeInteger">
-          <xs:annotation>
-            <xs:documentation>
-              The timeout for the identification in milliseconds.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
-      </xs:sequence>
     </xs:complexType>
   </xs:element>
 
@@ -206,9 +197,12 @@
             The settings for the Alarm service.
           </xs:documentation>
         </xs:annotation>
+        <xs:sequence>
+          <xs:element name="ID" type="xs:string" />
+        </xs:sequence>
       </xs:complexType>
     </xs:element>
-
+  
     <xs:element name="AuditTrailServiceSettings">
       <xs:complexType>
         <xs:annotation>
@@ -216,6 +210,24 @@
             The settings for the Alarm service.
           </xs:documentation>
         </xs:annotation>
+        <xs:sequence>
+          <xs:element name="ID" type="xs:string" />
+          <xs:element name="Contributors" type="xs:string" maxOccurs="unbounded">
+            <xs:annotation>
+              <xs:documentation>
+                The list of expected audit trail contributers.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="SendAlarmOnMissingContributer" type="xs:boolean" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>
+                Specifies whether the audit trail services should send alarms when contributers defined to be part of
+                the collection, doesn't reply to identify requests. Default is false.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
       </xs:complexType>
     </xs:element>
 
@@ -227,6 +239,7 @@
           </xs:documentation>
         </xs:annotation>
         <xs:sequence>
+          <xs:element name="ID" type="xs:string" />
           <xs:element name="SchedulerInterval" type="xs:long">
             <xs:annotation>
               <xs:documentation xml:lang="en">

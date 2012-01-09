@@ -56,7 +56,7 @@ public class TestGetFileIDsMessageFactory extends TestMessageFactory {
     /**
      * Generate IdentifyPillarsForGetFileIDsRequest test message with specified values.
      * @param correlationID
-     * @param slaID
+     * @param collectionID
      * @param replyTo
      * @param fileIDlist
      * @return test message

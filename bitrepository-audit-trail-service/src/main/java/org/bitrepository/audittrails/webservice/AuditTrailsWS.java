@@ -4,11 +4,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import org.bitrepository.audittrails.client.AuditTrailClient;
+import org.bitrepository.audittrails.store.AuditTrailStore;
 
 public class AuditTrailsWS {
 
-    private AuditTrailClient client;
+    private AuditTrailStore store;
 
     @Path("/reposervice")
     public class Reposervice {
@@ -25,7 +25,7 @@ public class AuditTrailsWS {
         @Path("/putfile/")
         @Produces("text/plain")
         public String getAuditTrails() {
-            return client.getAuditTrails(null, null, null).toString();       
+            return store.getAuditTrails(null, null, null).toString();       
         }
     }
 }

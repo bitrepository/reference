@@ -39,11 +39,11 @@ import org.bitrepository.protocol.TestMessageFactory;
  * ToDo based on example messages.
  */
 public class TestGetFileMessageFactory extends TestMessageFactory {
-    protected final String slaID;
+    protected final String collectionID;
 
-    public TestGetFileMessageFactory(String slaID) {
+    public TestGetFileMessageFactory(String collectionID) {
         super();
-        this.slaID = slaID;
+        this.collectionID = collectionID;
     }
 
     public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileRequest() {
@@ -51,7 +51,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         identifyPillarsForGetFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         identifyPillarsForGetFileRequest.setFileID(FILE_ID_DEFAULT);
         identifyPillarsForGetFileRequest.setMinVersion(VERSION_DEFAULT);
-        identifyPillarsForGetFileRequest.setCollectionID(slaID);
+        identifyPillarsForGetFileRequest.setCollectionID(collectionID);
         identifyPillarsForGetFileRequest.setVersion(VERSION_DEFAULT);
         return identifyPillarsForGetFileRequest;
     }
@@ -103,7 +103,7 @@ public class TestGetFileMessageFactory extends TestMessageFactory {
         getFileRequest.setMinVersion(VERSION_DEFAULT);
         getFileRequest.setVersion(VERSION_DEFAULT);
         getFileRequest.setPillarID(pillarId);
-        getFileRequest.setCollectionID(slaID);
+        getFileRequest.setCollectionID(collectionID);
         getFileRequest.setTo(toTopic);
         return getFileRequest;
     }
