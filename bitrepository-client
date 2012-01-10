@@ -1,13 +1,14 @@
 #!/bin/bash
 
-SERVICEURL="http://int-bitmag-02.kb.dk:8080/bitrepository-webclient-0.0.1-SNAPSHOT/repo/reposervice"
+SERVICEURL="http://localhost:8080/bitrepository-webclient-0.8-SNAPSHOT/repo/reposervice"
 WEBDAVSERVER="http://sandkasse-01.kb.dk/dav/"
 
 do_put() {
 	curl --silent -T "$filename" $WEBDAVSERVER > /dev/null
 	stripedfilename=`basename $filename`
 	filesize=`du -b $filename | cut -f1`
-	command="$SERVICEURL/putfile/?fileID=$stripedfilename&url=$WEBDAVSERVER&fileSize=$filesize"
+	checksum=`md5sum $filename | cut -f1 --delimiter=" "`
+	command="$SERVICEURL/putfile/?fileID=$stripedfilename&url=$WEBDAVSERVER$stripedfilename&fileSize=$filesize&putChecksum=$checksum&putChecksumType=md5"
 	curl --silent $command
 	echo ""
 }
