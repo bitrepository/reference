@@ -69,14 +69,43 @@ public class BasicClient {
         getFileIDsClient.shutdown();
     }
     
-    public String putFile(String fileID, long fileSize, String URLStr) {
+    public String putFile(String fileID, long fileSize, String URLStr, String putChecksum, String putChecksumType,
+    		String putSalt, String approveChecksumType, String approveSalt) {
         URL url;
+        ChecksumDataForFileTYPE checksumDataForNewFile = null;
+        if(putChecksum != null) {
+        	checksumDataForNewFile = new ChecksumDataForFileTYPE();
+        	checksumDataForNewFile.setCalculationTimestamp(XMLGregorianCalendarConverter.asXMLGregorianCalendar(new Date()));
+        	checksumDataForNewFile.setChecksumValue(HexUtils.stringToByteArray(putChecksum));
+        	ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
+        	if(putChecksumType != null) {
+        		checksumSpec.setChecksumType(putChecksumType);
+        	} else {
+        		checksumSpec.setChecksumType("md5");
+        	}
+        	if(putSalt != null) {
+        		checksumSpec.setChecksumSalt(HexUtils.stringToByteArray(putSalt));
+        	}
+        	checksumDataForNewFile.setChecksumSpec(checksumSpec);
+        }
+        
+        ChecksumSpecTYPE checksumRequestForNewFile = null;
+        if(approveChecksumType != null) {
+        	checksumRequestForNewFile = new ChecksumSpecTYPE();
+        	checksumRequestForNewFile.setChecksumType(approveChecksumType);
+        	if(approveSalt != null) {
+        		checksumRequestForNewFile.setChecksumSalt(HexUtils.stringToByteArray(approveSalt));
+        	}
+        }
         try {
             url = new URL(URLStr);
-            putClient.putFileWithId(url, fileID, fileSize, eventHandler);
+            putClient.putFile(url, fileID, fileSize, checksumDataForNewFile, checksumRequestForNewFile, 
+            		eventHandler, "Stuff this Christmas turkey!!");
             return "Placing '" + fileID + "' in Bitrepository :)";
         } catch (MalformedURLException e) {
             return "The string: '" + URLStr + "' is not a valid URL!";
+        } catch (OperationFailedException e) {
+            return "The operation failed..";
         }
     }
     

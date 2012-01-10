@@ -41,8 +41,14 @@ public class Reposervice {
     public String putFile(
             @QueryParam("fileID") String fileID,
             @QueryParam("fileSize") long fileSize,
-            @QueryParam("url") String URL) {
-        return client.putFile(fileID, fileSize, URL);       
+            @QueryParam("url") String URL,
+            @QueryParam("putChecksum") String putChecksum,
+            @QueryParam("putChecksumType") String putChecksumType,
+            @QueryParam("putSalt") String putSalt,
+            @QueryParam("approveChecksumType") String approveChecksumType,
+            @QueryParam("approveSalt") String approveSalt) {
+        return client.putFile(fileID, fileSize, URL, putChecksum, putChecksumType, putSalt, 
+        		approveChecksumType, approveSalt);       
     }
     
     /**

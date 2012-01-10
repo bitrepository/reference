@@ -22,6 +22,11 @@
       <action dev="Kim" type="add">
         Added functionality to see when a file has been uploaded to destination and link to download it from. 
       </action>
+    </release version="0.7.0" date="2012-01-04" description="Improvements">
+    <release>
+      <action dev="Kim" type="update">
+        Updated the putfile functionality to support checksums. 
+      </action>
     </release>
   </body>
 </document>
