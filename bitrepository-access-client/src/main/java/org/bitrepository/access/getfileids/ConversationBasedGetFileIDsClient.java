@@ -74,7 +74,7 @@ public class ConversationBasedGetFileIDsClient implements GetFileIDsClient {
 
     @Override
     public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
-            EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+            EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "Collection<String> pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
         

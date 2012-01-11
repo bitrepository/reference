@@ -121,7 +121,7 @@ public class GettingFileIDs extends GetFileIDsState {
 
     @Override
     public void onMessage(GetFileIDsProgressResponse response) {
-        monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.Progress, 
+        monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.PROGRESS, 
                 "Received progress response for retrieval of file ids " + response.getFileIDs()));
     }
 
@@ -147,7 +147,7 @@ public class GettingFileIDs extends GetFileIDsState {
         }
 
         if(responseStatus.haveAllPillarResponded()) {
-            monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.Complete, 
+            monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE, 
                     "All pillars have delivered their FileIDs."));
             conversation.getFlowController().unblock();
             conversation.conversationState = new GetFileIDsFinished(conversation);

@@ -44,7 +44,7 @@ public class ChecksumsCompletePillarEvent extends PillarOperationEvent {
      */
     public ChecksumsCompletePillarEvent(ResultingChecksums result, ChecksumSpecTYPE checksumType, String pillarID, 
             String info) {
-        super(OperationEventType.PillarComplete, info, pillarID);
+        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID);
         this.result = result;
         this.checksumType = checksumType;
     }

@@ -46,9 +46,6 @@ import org.bitrepository.protocol.messagebus.MessageSender;
  * Logic for behaving sanely in GetFileIDs conversations.
  */
 public class SimpleGetFileIDsConversation extends AbstractConversation {
-
-    /** The sender to use for dispatching messages */
-    final MessageSender messageSender; 
     /** The configuration specific to the BitRepositoryCollection related to this conversion. */
     final Settings settings;
 
@@ -60,7 +57,7 @@ public class SimpleGetFileIDsConversation extends AbstractConversation {
     final PillarSelectorForGetFileIDs selector;
     /** The conversation state (State pattern) */
     GetFileIDsState conversationState;
-    /** The text audittrail information for requesting the operation.*/
+    /** The text audit trail information for requesting the operation.*/
     final String auditTrailInformation;
     
     /**
@@ -77,9 +74,6 @@ public class SimpleGetFileIDsConversation extends AbstractConversation {
             FileIDs fileIds, Collection<String> pillars, EventHandler eventHandler,
             FlowController flowController, String auditTrailInformation) {
         super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
-
-        
-        this.messageSender = messageSender;
         this.settings = settings;
         this.uploadUrl = url;
         this.fileIDs = fileIds;

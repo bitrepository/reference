@@ -125,7 +125,7 @@ public class GettingChecksums extends GetChecksumsState {
 
     @Override
     public void onMessage(GetChecksumsProgressResponse response) {
-        monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.Progress, 
+        monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.PROGRESS, 
                 "Received progress response for retrieval of checksums " + response.getFileIDs() + ": response"));
     }
 
@@ -152,7 +152,7 @@ public class GettingChecksums extends GetChecksumsState {
         } 
 
         if(responseStatus.haveAllPillarResponded()) {
-            monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.Complete, 
+            monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE, 
                     "All pillars have delivered their checksums."));
             conversation.getFlowController().unblock();
             conversation.setResults(results);

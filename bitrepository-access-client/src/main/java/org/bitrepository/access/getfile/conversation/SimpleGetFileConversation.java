@@ -118,5 +118,4 @@ public class SimpleGetFileConversation extends AbstractConversation {
     public ConversationState getConversationState() {
         return conversationState;
     }
-
 }

@@ -31,7 +31,7 @@ import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 /**
  * Super class for the states involved in the GetFileIDs conversation.
  */
-public abstract class GetFileIDsState extends AbstractMessageListener implements ConversationState{
+public abstract class GetFileIDsState extends AbstractMessageListener implements ConversationState {
     /** The conversation, where the state belong.*/
     protected final SimpleGetFileIDsConversation conversation;
     /** Handles the mediation of information regarding conversation updates */

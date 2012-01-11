@@ -91,7 +91,7 @@ class GettingFile extends GetFileState {
      */
     @Override
     public void onMessage(GetFileProgressResponse msg) {
-        monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.Progress, 
+        monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.PROGRESS, 
                 "Received progress response for retrieval of file " + msg.getFileID() + ":\n" + 
                         msg.getResponseInfo()));
     }
@@ -105,7 +105,7 @@ class GettingFile extends GetFileState {
     public void onMessage(GetFileFinalResponse msg) {
         ArgumentValidator.checkNotNull(msg, "GetFileFinalResponse");
         getFileTimeoutTask.cancel();
-        monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.Complete, 
+        monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE, 
                 "Finished getting file " + msg.getFileID() + " from " + msg.getPillarID()));
     }
 
