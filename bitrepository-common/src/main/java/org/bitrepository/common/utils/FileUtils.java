@@ -28,6 +28,7 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.bitrepository.common.ArgumentValidator;
@@ -203,5 +204,43 @@ public final class FileUtils {
         }
         
         return res.toString();
+    }
+    
+    /**
+     * Copies a file from one place to another place.
+     * @param source The source file to copy from.
+     * @param target The target file to copy to.
+     */
+    public static void copyFile(File source, File target) {
+        FileInputStream is = null;
+        FileOutputStream os = null;
+        try {
+            is = new FileInputStream(source);
+            os = new FileOutputStream(target);
+            
+            byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
+            
+            int size;
+            while((size = is.read(bytes)) > 0) {
+                os.write(bytes, 0, size);
+            }
+            
+            os.flush();
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not copy the file '" + source + "' to the destination '"
+                    + target + "'.", e);
+        } finally {
+            // Remember to close the streams.
+            try {
+                if(is != null) {
+                    is.close();
+                } 
+                if(os != null) {
+                    os.close();
+                }
+            } catch (IOException e) {
+                // TODO
+            }
+        }
     }
 }
