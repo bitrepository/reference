@@ -55,6 +55,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -64,6 +65,7 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
+import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,9 +77,9 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T> The result of this conversation.
  */
-public abstract class AbstractConversation implements Conversation {
+public abstract class AbstractConversation extends AbstractMessageListener implements Conversation {
     /** The message bus used for sending messages. */
-    protected final MessageSender messageSender;
+    public final MessageSender messageSender;
     /** The conversation ID. */
     private final String conversationID;
     /** @see Conversation#getStartTime() */
@@ -87,7 +89,7 @@ public abstract class AbstractConversation implements Conversation {
     /** Takes care of publishing update information */
     private final ConversationEventMonitor monitor;
     /** Used for storing exceptions generates as result of a message reception, so it can be thrown to the initial 
-     * operation initiater */
+     * operation initiator */
 //    protected OperationFailedException operationFailedException;
     /** Is this conversation a result of a blocking call*/
     protected boolean blocking;
@@ -167,7 +169,7 @@ public abstract class AbstractConversation implements Conversation {
     }
     
     /**
-     * @return The controller with the responsability of handling blocking
+     * @return The controller with the responsibility of handling blocking
      */
     public FlowController getFlowController() {
         return flowController;
@@ -177,189 +179,4 @@ public abstract class AbstractConversation implements Conversation {
      * @return The state of this conversation.
      */
     public abstract ConversationState getConversationState();
-    
-    @Override
-    public void onMessage(Alarm message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(DeleteFileFinalResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(DeleteFileProgressResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(DeleteFileRequest message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(GetAuditTrailsFinalResponse message) {
-       log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(GetAuditTrailsProgressResponse message) {
-       log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-    
-    @Override
-    public void onMessage(GetAuditTrailsRequest message) {
-       log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(GetChecksumsFinalResponse message) {
-       log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(GetChecksumsRequest message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(GetChecksumsProgressResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(GetFileFinalResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(GetFileIDsFinalResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(GetFileIDsRequest message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(GetFileIDsProgressResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(GetFileRequest message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(GetFileProgressResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-    
-    @Override
-    public void onMessage(GetStatusRequest message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(GetStatusProgressResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(GetStatusFinalResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForDeleteFileResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForGetChecksumsResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForGetChecksumsRequest message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForGetFileIDsResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForGetFileResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForGetFileRequest message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForPutFileResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForPutFileRequest message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForReplaceFileResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForReplaceFileRequest message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(PutFileFinalResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(PutFileRequest message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(PutFileProgressResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(ReplaceFileFinalResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(ReplaceFileRequest message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
-
-    @Override
-    public void onMessage(ReplaceFileProgressResponse message) {
-        log.debug("Received message " + message.getCorrelationID() + " but did not know how to handle it.");
-    }
 }

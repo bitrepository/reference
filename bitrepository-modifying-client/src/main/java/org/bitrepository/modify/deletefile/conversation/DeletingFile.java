@@ -123,7 +123,7 @@ public class DeletingFile extends DeleteFileState {
      */
     @Override
     public void onMessage(DeleteFileProgressResponse response) {
-        monitor.progress(new PillarOperationEvent(OperationEvent.OperationEventType.Progress, 
+        monitor.progress(new PillarOperationEvent(OperationEvent.OperationEventType.PROGRESS, 
                 "Received DeleteFileProgressResponse from pillar " + response.getPillarID() + ": " + 
                         response.getResponseInfo().getResponseText(), response.getPillarID()));
     }
@@ -148,7 +148,7 @@ public class DeletingFile extends DeleteFileState {
         // Check if the conversation has finished.
         if(deleteResponseStatus.haveAllPillarResponded()) {
             timerTask.cancel();
-            monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.Complete,
+            monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE,
                     "Finished Delete on all the pillars."));
             conversation.getFlowController().unblock();
 

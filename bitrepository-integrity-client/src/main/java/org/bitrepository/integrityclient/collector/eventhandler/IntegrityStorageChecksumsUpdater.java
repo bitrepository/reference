@@ -70,12 +70,12 @@ public class IntegrityStorageChecksumsUpdater implements EventHandler {
     @SuppressWarnings("rawtypes")
     @Override
     public void handleEvent(OperationEvent event) {
-        if(event.getType().equals(OperationEventType.Failed)) {
+        if(event.getType().equals(OperationEventType.FAILED)) {
             handleFailure(event);
             return;
         }
         
-        if(event.getType().equals(OperationEventType.Complete)) {
+        if(event.getType().equals(OperationEventType.COMPLETE)) {
             handleComplete(event);
             return;
         }

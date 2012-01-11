@@ -32,7 +32,7 @@ public class OperationFailedEvent implements OperationEvent<Exception> {
     /** @see #getInfo() */
     private final String info;
     /** @see #getType() */
-    private final OperationEventType type = OperationEventType.Failed;
+    private final OperationEventType type = OperationEventType.FAILED;
     /** @see #getState() */
     private final Exception exception;
 

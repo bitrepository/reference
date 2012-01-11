@@ -59,6 +59,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -75,7 +76,7 @@ import org.slf4j.LoggerFactory;
  * This implementation will log received messages as warnings, and throw an
  * exception about these being unsupported.
  */
-public abstract class AbstractMessageListener implements MessageListener {
+public abstract class SimpleAbstractMessageListener implements SimpleMessageListener {
     /** Logger for this class. */
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -95,199 +96,9 @@ public abstract class AbstractMessageListener implements MessageListener {
         throw new UnsupportedOperationException(
                 "The message listener does not accept messages of this type: '" + message.getClass().getName() + "'");
     }
-    
-    @Override
-    public void onMessage(Alarm message) {
-        reportUnsupported(message);
-    }
-    
-    @Override
-    public void onMessage(DeleteFileFinalResponse message) {
-        reportUnsupported(message);
-    }
 
     @Override
-    public void onMessage(DeleteFileProgressResponse message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(DeleteFileRequest message) {
-        reportUnsupported(message);
-    }
-    
-    @Override
-    public void onMessage(GetAuditTrailsFinalResponse message) {
-        reportUnsupported(message);
-    }
-    
-    @Override
-    public void onMessage(GetAuditTrailsProgressResponse message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(GetAuditTrailsRequest message) {
-        reportUnsupported(message);
-    }
-    
-    @Override
-    public void onMessage(GetChecksumsFinalResponse message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(GetChecksumsRequest message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(GetChecksumsProgressResponse message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(GetFileFinalResponse message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(GetFileIDsFinalResponse message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(GetFileIDsRequest message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(GetFileIDsProgressResponse message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(GetFileRequest message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(GetFileProgressResponse message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(GetStatusRequest message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(GetStatusProgressResponse message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(GetStatusFinalResponse message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForDeleteFileResponse message) {
-        reportUnsupported(message);
-    }
-    
-    @Override
-    public void onMessage(IdentifyPillarsForGetChecksumsResponse message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForGetChecksumsRequest message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForGetFileIDsResponse message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForGetFileResponse message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForGetFileRequest message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForPutFileResponse message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForPutFileRequest message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForReplaceFileRequest message) {
-        reportUnsupported(message);
-    }
-    
-    @Override
-    public void onMessage(IdentifyPillarsForReplaceFileResponse message) {
-        reportUnsupported(message);
-    }
-    
-    @Override
-    public void onMessage(IdentifyContributorsForGetAuditTrailsRequest message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(IdentifyContributorsForGetAuditTrailsResponse message) {
-        reportUnsupported(message);
-    }
-    
-    @Override
-    public void onMessage(PutFileFinalResponse message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(PutFileRequest message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(PutFileProgressResponse message) {
-        reportUnsupported(message);
-    }
-    
-    @Override
-    public void onMessage(ReplaceFileRequest message) {
-        reportUnsupported(message);
-    }
-    
-    @Override
-    public void onMessage(ReplaceFileFinalResponse message) {
-        reportUnsupported(message);
-    }
-    
-    @Override
-    public void onMessage(ReplaceFileProgressResponse message) {
+    public void onMessage(Message message) {
         reportUnsupported(message);
     }
 }

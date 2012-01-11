@@ -123,7 +123,7 @@ public class PuttingFile extends PutFileState {
      */
     @Override
     public void onMessage(PutFileProgressResponse response) {
-        monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.Progress, 
+        monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.PROGRESS, 
                 "Received PutFileProgressResponse from pillar " + response.getPillarID() + ": " + 
                         response.getResponseInfo().getResponseText()));
     }
@@ -147,7 +147,7 @@ public class PuttingFile extends PutFileState {
         // Check if the conversation has finished.
         if(putResponseStatus.haveAllPillarResponded()) {
             timerTask.cancel();
-            monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.Complete,
+            monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE,
                     "Finished put on all the pillars."));
 
             PutFileFinished finishState = new PutFileFinished(conversation);

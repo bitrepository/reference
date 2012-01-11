@@ -52,6 +52,8 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
@@ -64,6 +66,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -189,7 +192,10 @@ public class MessageReceiver {
         public String toString() {
             return "TestMessageHandler [listenerName=" + listenerName + "]";
         }
-        
+
+        public void onMessage(Message message) {
+            messageModel.addMessage(message);
+        }
         @Override
         public void onMessage(Alarm message) {
             messageModel.addMessage(message);
@@ -312,6 +318,14 @@ public class MessageReceiver {
         }
         @Override
         public void onMessage(IdentifyPillarsForReplaceFileRequest message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(IdentifyContributorsForGetAuditTrailsRequest message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(IdentifyContributorsForGetAuditTrailsResponse message) {
             messageModel.addMessage(message);
         }
         @Override

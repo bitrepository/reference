@@ -48,18 +48,18 @@ public interface OperationEvent<T> {
      * </ol>
      */
     public enum OperationEventType {
-        IdentifyPillarsRequestSent,
-        PillarIdentified,
-        PillarSelected,
-        RequestSent,
-        Progress,
-        PillarComplete,
-        Complete, 
-        PillarFailed,
-        Failed,
-        NoPillarFound,
-        IdentifyPillarTimeout, 
-        Warning 
+        IDENTIFY_REQUEST_SENT,
+        COMPONENT_IDENTIFIED,
+        IDENTIFICATION_COMPLETE,
+        REQUEST_SENT,
+        PROGRESS,
+        COMPONENT_COMPLETE,
+        COMPLETE, 
+        COMPONENT_FAILED,
+        FAILED,
+        NO_COMPONENT_FOUND,
+        IDENTIFY_TIMEOUT, 
+        WARNING 
     }
     
     /**

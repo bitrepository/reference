@@ -43,6 +43,8 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
@@ -55,6 +57,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -326,4 +329,18 @@ public interface MessageListener {
      * @param message The message received.
      */
     void onMessage(ReplaceFileProgressResponse message);
+
+    /**
+     * Action to perform upon receiving a general message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyContributorsForGetAuditTrailsRequest message);
+    
+    /**
+     * Action to perform upon receiving a general message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyContributorsForGetAuditTrailsResponse message);
 }

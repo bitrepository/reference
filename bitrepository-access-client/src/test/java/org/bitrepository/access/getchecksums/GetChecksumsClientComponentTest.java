@@ -123,7 +123,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
                             collectionDestinationID));
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.", 
                 "The callback listener should notify of the response and the client should send a GetChecksumsRequest "
@@ -140,10 +140,10 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         }
 
         for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
 
         addStep("The pillar sends a getChecksumsProgressResponse to the GetChecksumsClient.", 
                 "The GetChecksumsClient should notify about the response through the callback interface."); 
@@ -153,7 +153,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(getChecksumsProgressResponse);
         }
         
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PROGRESS);
 
         addStep("The resulting file is uploaded to the indicated url and the pillar sends a final response upload message", 
                 "The GetChecksumsClient notifies that the file is ready through the callback listener and the uploaded file is present.");
@@ -168,8 +168,8 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(completeMsg);
         }
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarComplete);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
     }
     
     @Test(groups = {"regressiontest"})
@@ -204,10 +204,10 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         if (useMockupPillar()) {
             collectionDestination.waitForMessage(IdentifyPillarsForGetChecksumsRequest.class);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Wait for at least 3 seconds", "An IdentifyPillarTimeout event should be received");
-        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.Failed);
+        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.FAILED);
     }
 
     @Test(groups = {"regressiontest"})
@@ -247,7 +247,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
                             collectionDestinationID));
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.", 
                 "The callback listener should notify of the response and the client should send a GetChecksumsRequest "
@@ -262,12 +262,12 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             Assert.assertEquals(receivedGetChecksumsRequest, 
                     testMessageFactory.createGetChecksumsRequest(receivedGetChecksumsRequest,PILLAR1_ID, pillar1DestinationId));
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
         
         addStep("Wait for at least 3 seconds", "An IdentifyPillarTimeout event should be received");
-        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.Failed);
+        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.FAILED);
     }
     
     @Test(groups = {"regressiontest"})
@@ -305,7 +305,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
                             collectionDestinationID));
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.", 
                 "The callback listener should notify of the response and the client should send a GetChecksumsRequest "
@@ -322,10 +322,10 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         }
 
         for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
 
         addStep("Send a error that the file cannot be found.", "Should trigger a 'event failed'.");
         if (useMockupPillar()) {
@@ -341,8 +341,8 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(completeMsg);
         }
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarFailed);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
     }
 
     /**

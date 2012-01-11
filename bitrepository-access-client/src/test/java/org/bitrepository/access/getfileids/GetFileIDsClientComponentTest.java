@@ -123,7 +123,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
                     testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage, 
                             collectionDestinationID));
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.", 
                 "The callback listener should notify of the response and the client should send a GetFileIDsRequest "
@@ -140,10 +140,10 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         }
 
         for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
 
         addStep("The pillar sends a getFileIDsProgressResponse to the GetFileIDsClient.", 
                 "The GetFileIDsClient should notify about the response through the callback interface."); 
@@ -153,7 +153,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(getFileIDsProgressResponse);
         }
         
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PROGRESS);
 
         addStep("The resulting file is uploaded to the indicated url and the pillar sends a final response upload message", 
                 "The GetFileIDsClient notifies that the file is ready through the callback listener and the uploaded file is present.");
@@ -172,7 +172,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
                 "Should be a FileIDsCompletePillarEvent with the ResultingFileIDs containing only the URL.");
         for(String pillar : settings.getCollectionSettings().getClientSettings().getPillarIDs()) {
             FileIDsCompletePillarEvent event = (FileIDsCompletePillarEvent) testEventHandler.waitForEvent();
-            Assert.assertEquals(event.getType(), OperationEventType.PillarComplete);
+            Assert.assertEquals(event.getType(), OperationEventType.COMPONENT_COMPLETE);
             ResultingFileIDs resFileIDs = event.getFileIDs();
             Assert.assertNotNull(resFileIDs, "The ResultingFileIDs may not be null.");
             Assert.assertTrue(resFileIDs.getResultAddress().contains(deliveryUrl.toExternalForm()), 
@@ -181,7 +181,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
             Assert.assertNull(resFileIDs.getFileIDsData(), "No FileIDsData should be returned.");
         }
         
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
     }
     
     @Test(groups = {"regressiontest"})
@@ -219,7 +219,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
                     testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage, 
                             collectionDestinationID));
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.", 
                 "The callback listener should notify of the response and the client should send a GetFileIDsRequest "
@@ -236,10 +236,10 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         }
 
         for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
 
         addStep("The pillar sends a getFileIDsProgressResponse to the GetFileIDsClient.", 
                 "The GetFileIDsClient should notify about the response through the callback interface."); 
@@ -249,7 +249,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(getFileIDsProgressResponse);
         }
         
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Progress);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PROGRESS);
 
         addStep("The resulting file is uploaded to the indicated url and the pillar sends a final response upload message", 
                 "The GetFileIDsClient notifies that the file is ready through the callback listener and the uploaded file is present.");
@@ -277,7 +277,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
                 "Should be a FileIDsCompletePillarEvent with the ResultingFileIDs containing the list of fileids.");
         for(String pillar : settings.getCollectionSettings().getClientSettings().getPillarIDs()) {
             FileIDsCompletePillarEvent event = (FileIDsCompletePillarEvent) testEventHandler.waitForEvent();
-            Assert.assertEquals(event.getType(), OperationEventType.PillarComplete);
+            Assert.assertEquals(event.getType(), OperationEventType.COMPONENT_COMPLETE);
             ResultingFileIDs resFileIDs = event.getFileIDs();
             Assert.assertNotNull(resFileIDs, "The ResultingFileIDs may not be null.");
             Assert.assertNull(resFileIDs.getResultAddress(), "The results should be sent back through the message, "
@@ -287,7 +287,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
                     1, "Response should contain same amount of fileids as requested.");
         }
         
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
     }
     
     @Test(groups = {"regressiontest"})
@@ -322,10 +322,10 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         if (useMockupPillar()) {
             collectionDestination.waitForMessage(IdentifyPillarsForGetFileIDsRequest.class);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Wait for at least 3 seconds", "An IdentifyPillarTimeout event should be received");
-        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.Failed);
+        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.FAILED);
     }
 
     @Test(groups = {"regressiontest"})
@@ -366,7 +366,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
                     testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage, 
                             collectionDestinationID));
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.", 
                 "The callback listener should notify of the response and the client should send a GetFileIDsRequest "
@@ -381,12 +381,12 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
             Assert.assertEquals(receivedGetFileIDsRequest, 
                     testMessageFactory.createGetFileIDsRequest(receivedGetFileIDsRequest,PILLAR1_ID, pillar1DestinationId));
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
         
         addStep("Wait for at least 3 seconds", "An IdentifyPillarTimeout event should be received");
-        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.Failed);
+        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.FAILED);
     }
     
     @Test(groups = {"regressiontest"})
@@ -424,7 +424,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
                     testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage, 
                             collectionDestinationID));
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IdentifyPillarsRequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.", 
                 "The callback listener should notify of the response and the client should send a GetFileIDsRequest "
@@ -441,10 +441,10 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         }
 
         for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarIdentified);
+            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarSelected);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.RequestSent);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
 
         addStep("Send a error that the file cannot be found.", "Should trigger a 'event failed'.");
         if (useMockupPillar()) {
@@ -460,8 +460,8 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(completeMsg);
         }
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PillarFailed);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.Complete);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
     }
 
     

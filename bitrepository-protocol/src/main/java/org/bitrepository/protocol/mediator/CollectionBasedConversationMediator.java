@@ -49,6 +49,8 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
@@ -61,6 +63,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -139,6 +142,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
                 "conversation.");
     }
 
+    
     @Override
     public void onMessage(Alarm message) {
         String messageCorrelationID = message.getCorrelationID();
@@ -471,6 +475,29 @@ public class CollectionBasedConversationMediator implements ConversationMediator
 
     @Override
     public void onMessage(IdentifyPillarsForReplaceFileResponse message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            handleNoConversation(messageCorrelationID);
+        }
+    }
+    
+    @Override
+    public void onMessage(IdentifyContributorsForGetAuditTrailsRequest message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            handleNoConversation(messageCorrelationID);
+        }
+    }
+    
+
+    @Override
+    public void onMessage(IdentifyContributorsForGetAuditTrailsResponse message) {
         String messageCorrelationID = message.getCorrelationID();
         Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {

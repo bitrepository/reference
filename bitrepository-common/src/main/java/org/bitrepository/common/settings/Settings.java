@@ -75,6 +75,13 @@ public class Settings {
     public Permissions getPermissions() {
         return getCollectionSettings().getProtocolSettings().getPermissions();
     }
+    
+    /**
+     * Wraps the {@link org.bitrepository.settings.collectionsettings.ClientSettings#getIdentificationTimeout()} method.
+     */
+    public long getIdentificationTimeout() {
+        return getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue();
+    }
       
     /**
      * @return The settings specific to the reference code for a collection.

@@ -69,9 +69,9 @@ public interface Conversation extends MessageListener {
     long getStartTime();
     
     /**
-     * @throws ConversationTimedOutException 
+     * Starts the conversation.
      */
-    void startConversation() throws OperationFailedException;
+    void startConversation();
     
     /**
      * Ends the conversation. This means setting any relevant conversation state.
