@@ -1,3 +1,6 @@
+
+<%@page import="org.bitrepository.webservice.ServiceUrlFactory" %>
+<%@page import="org.bitrepository.webservice.ServiceUrl" %>
 <html>
 <link type="text/css" href="css/ui-lightness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" />	
 <script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
@@ -26,7 +29,8 @@
                 </tr>
                 <tr>
                     <td>Fileaddress:</td>
-                    <td> <input type="text" id="putFileaddr" value="http://sandkasse-01.kb.dk/dav/"/></td>
+                    <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
+                    <td> <input type="text" id="putFileaddr" value="<%= su.getDefaultHttpServerUrl() %>"/></td>
                 </tr>
                 <tr>
                     <td>Filesize:</td>

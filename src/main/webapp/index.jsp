@@ -47,12 +47,12 @@
 
 <div id="tabs">
 	<ul>
-		<li><a href="getFile.html">Get file</a></li>
-		<li><a href="putFile.html">Put file</a></li>
+		<li><a href="getFile.jsp">Get file</a></li>
+		<li><a href="putFile.jsp">Put file</a></li>
 		<li><a href="getChecksum.html">Get checksum</a></li>
     	<li><a href="getFileID.html">Get fileID</a></li>
     	<li><a href="deleteFile.html">Delete file</a></li>
-    	<li><a href="replaceFile.html">Replace file</a></li>
+    	<li><a href="replaceFile.jsp">Replace file</a></li>
     	<li><a href="configuration.html">Configuration</a></li>
         <li><a href="<%= su.getAlarmServiceUrl() %>">Alarms</a></li>
         <li><a href="<%= su.getAuditTrailServiceUrl() %>">Audit</a></li>
