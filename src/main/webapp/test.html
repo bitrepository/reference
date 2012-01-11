@@ -1,0 +1,33 @@
+
+<%@page import="org.bitrepository.webservice.ServiceUrlFactory" %>
+<%@page import="org.bitrepository.webservice.ServiceUrl" %>
+<html>
+<head>
+<title>JSP Example</title>
+</head>
+<body bgcolor="ffffcc">
+<center>
+<h2>Date and Time</h2>
+<%  
+java.util.Date today = new java.util.Date();
+out.println("Today's date is: "+today);
+%>
+<br>
+Test to see if configuration class for service urls works
+<br>
+Alarm service url: 
+<% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
+<%= su.getAlarmServiceUrl() %>
+<br>
+AuditTrail service url: 
+<%= su.getAuditTrailServiceUrl() %>
+<br>
+Integrity service url: 
+<%= su.getIntegrityServiceUrl() %>
+<br>
+Default http server url: 
+<%= su.getDefaultHttpServerUrl() %>
+<br>
+</center>     
+</body>     
+</html>  

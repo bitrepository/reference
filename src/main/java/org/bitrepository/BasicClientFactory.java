@@ -8,6 +8,7 @@ import java.util.Properties;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.webservice.ServiceUrl;
 
 public class BasicClientFactory {
     private static BasicClient client;
@@ -26,6 +27,7 @@ public class BasicClientFactory {
      */
     public synchronized static void init(String configurationDir) {
     	confDir = configurationDir;
+    	ServiceUrl.init(configurationDir);
     }
     
     /**
