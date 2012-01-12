@@ -22,34 +22,34 @@ public class GetFileIDsEventHandler implements EventHandler {
 		logger.handleEvent(event);
 
 		switch(event.getType()) {
-		case IdentifyPillarsRequestSent:
+		case IDENTIFY_REQUEST_SENT:
 		    break;
-		case PillarIdentified:
+		case COMPONENT_IDENTIFIED:
 		    break;
-		case PillarSelected:
+		case IDENTIFICATION_COMPLETE:
 		    break;
-		case RequestSent:
+		case REQUEST_SENT:
 		    break;
-		case Progress:
+		case PROGRESS:
 		    break;
-		case PillarComplete:
+		case COMPONENT_COMPLETE:
 		    results.addResultsFromPillar((String) event.getState(), 
 		            ((FileIDsCompletePillarEvent) event).getFileIDs());
 		    break;
-		case Complete:
-		    results.done();
+		case COMPLETE:
+			results.done();
 		    break;
-		case PillarFailed:
+		case COMPONENT_FAILED:
 		    break;
-		case Failed:
+		case FAILED:
 		    results.failed();
 		    break;
-		case NoPillarFound:
+		case NO_COMPONENT_FOUND:
 		    break;
-		case IdentifyPillarTimeout: 
+		case IDENTIFY_TIMEOUT: 
 		    break;
-		case Warning:
-		    break;
+		case WARNING:
+			break;
 		}
          
 	}

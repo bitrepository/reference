@@ -1,7 +1,6 @@
 package org.bitrepository;
 
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
 
@@ -22,33 +21,33 @@ public class GetChecksumsEventHandler implements EventHandler {
 	public void handleEvent(OperationEvent event) {
 		logger.handleEvent(event);
 		switch(event.getType()) {
-		case IdentifyPillarsRequestSent:
+		case IDENTIFY_REQUEST_SENT:
 		    break;
-		case PillarIdentified:
+		case COMPONENT_IDENTIFIED:
 		    break;
-		case PillarSelected:
+		case IDENTIFICATION_COMPLETE:
 		    break;
-		case RequestSent:
+		case REQUEST_SENT:
 		    break;
-		case Progress:
+		case PROGRESS:
 		    break;
-		case PillarComplete:
+		case COMPONENT_COMPLETE:
 		    results.addResultsFromPillar((String) event.getState(), 
 		            ((ChecksumsCompletePillarEvent) event).getChecksums());
 		    break;
-		case Complete:
+		case COMPLETE:
 		    results.done();
 		    break;
-		case PillarFailed:
+		case COMPONENT_FAILED:
 		    break;
-		case Failed:
+		case FAILED:
 		    results.failed();
 		    break;
-		case NoPillarFound:
+		case NO_COMPONENT_FOUND:
 		    break;
-		case IdentifyPillarTimeout: 
+		case IDENTIFY_TIMEOUT: 
 		    break;
-		case Warning:
+		case WARNING:
 		    break;
 		}       
 	}

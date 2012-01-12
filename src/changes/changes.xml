@@ -30,6 +30,12 @@
       <action dev="Kim" type="Add">
         Made service urls configurable. 
       </action>
+      <action dev="Kim" type="Update">
+        Updated the code to work with new event definitions. 
+      </action>
+      <action dev="Kim" type="Update">
+        Update to message-xml 8. 
+      </action>
     </release>
   </body>
 </document>

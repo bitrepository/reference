@@ -54,7 +54,7 @@
     	<li><a href="deleteFile.html">Delete file</a></li>
     	<li><a href="replaceFile.jsp">Replace file</a></li>
     	<li><a href="configuration.html">Configuration</a></li>
-        <li><a href="<%= su.getAlarmServiceUrl() %>">Alarms</a></li>
+        <li><a href="alarmService.jsp">Alarms</a></li>
         <li><a href="<%= su.getAuditTrailServiceUrl() %>">Audit</a></li>
         <li><a href="<%= su.getIntegrityServiceUrl() %>">Integrity check</a></li>
 	</ul>

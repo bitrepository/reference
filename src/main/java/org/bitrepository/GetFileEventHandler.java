@@ -24,33 +24,32 @@ public class GetFileEventHandler implements EventHandler {
 	@Override
 	public void handleEvent(OperationEvent event) {
 		logger.handleEvent(event);
-
 		switch(event.getType()) {
-		case IdentifyPillarsRequestSent:
+		case IDENTIFY_REQUEST_SENT:
 		    break;
-		case PillarIdentified:
+		case COMPONENT_IDENTIFIED:
 		    break;
-		case PillarSelected:
+		case IDENTIFICATION_COMPLETE:
 		    break;
-		case RequestSent:
+		case REQUEST_SENT:
 		    break;
-		case Progress:
+		case PROGRESS:
 		    break;
-		case PillarComplete:
+		case COMPONENT_COMPLETE:
 		    break;
-		case Complete:
-		    completedFiles.add(url);
+		case COMPLETE:
+			completedFiles.add(url);
 		    break;
-		case PillarFailed:
+		case COMPONENT_FAILED:
 		    break;
-		case Failed:
+		case FAILED:
 		    break;
-		case NoPillarFound:
+		case NO_COMPONENT_FOUND:
 		    break;
-		case IdentifyPillarTimeout: 
+		case IDENTIFY_TIMEOUT: 
 		    break;
-		case Warning:
-		    break;
+		case WARNING:
+			break;
 		}
          
 	}
