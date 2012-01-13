@@ -119,10 +119,10 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
 
             addStep("Insert description of ALARM_CODE and ALARM_MESSAGE in message send to handler", 
             "Should sent to log.");
-            Alarm desc = new Alarm();
-            desc.setAlarmCode(AlarmcodeType.COMPONENT_FAILURE);
-            desc.setAlarmText(ALARM_MESSAGE);
-            alarmMsg.setAlarmDescription(desc);
+            Alarm alarm = new Alarm();
+            alarm.setAlarmCode(AlarmcodeType.COMPONENT_FAILURE);
+            alarm.setAlarmText(ALARM_MESSAGE);
+            alarmMsg.setAlarm(alarm);
             handler.handleAlarm(alarmMsg);
 
             addStep("Tests whether it has been written to the LOG", "Should be found in the outputstream");
@@ -184,10 +184,10 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
 
         addStep("Insert description of ALARM_CODE and ALARM_MESSAGE in message send to handler", 
         "Should sent to log.");
-        Alarm desc = new Alarm();
-        desc.setAlarmCode(AlarmcodeType.COMPONENT_FAILURE);
-        desc.setAlarmText(ALARM_MESSAGE);
-        msg.setAlarmDescription(desc);
+        Alarm alarm = new Alarm();
+        alarm.setAlarmCode(AlarmcodeType.COMPONENT_FAILURE);
+        alarm.setAlarmText(ALARM_MESSAGE);
+        msg.setAlarm(alarm);
         handler.handleAlarm(msg);
 
         addStep("Tests the handling of other objects, in this case an exception", "Should be written to the log.");

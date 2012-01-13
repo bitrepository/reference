@@ -171,9 +171,9 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
         addStep("Creating a message of size '" + payload.length() + "' bytes", 
         "Should be allowed");
         AlarmMessage message = ExampleMessageFactory.createMessage(AlarmMessage.class);
-        Alarm description = new Alarm();
-        description.setAlarmText(payload.toString());
-        message.setAlarmDescription(description);
+        Alarm alarm = new Alarm();
+        alarm.setAlarmText(payload.toString());
+        message.setAlarm(alarm);
         return message;
     }
 
