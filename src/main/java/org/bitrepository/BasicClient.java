@@ -28,6 +28,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
+import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
@@ -40,6 +41,7 @@ public class BasicClient {
     private GetChecksumsClient getChecksumClient;
     private GetFileIDsClient getFileIDsClient;
     private DeleteFileClient deleteFileClient;
+    private ReplaceFileClient replaceFileClient;
     private EventHandler eventHandler;
     private String logFile;
     private Settings settings;
@@ -257,17 +259,8 @@ public class BasicClient {
         if(deleteChecksumType == null || deleteChecksumType.equals("")) {
             return "Checksum type for pillar check is invalid";
         }
-        ChecksumDataForFileTYPE verifyingChecksum = new ChecksumDataForFileTYPE();
-        verifyingChecksum.setChecksumValue(HexUtils.stringToByteArray(deleteChecksum));
-        ChecksumSpecTYPE deleteChecksumSpec = new ChecksumSpecTYPE();
-        if(deleteChecksumSalt == null || !deleteChecksumSalt.equals("")) {
-            deleteChecksumSalt = null;
-        }
-        deleteChecksumSpec.setChecksumSalt(HexUtils.stringToByteArray(deleteChecksumSalt));
-        deleteChecksumSpec.setChecksumType(deleteChecksumType);
-        Date now = new Date();
-        verifyingChecksum.setCalculationTimestamp(XMLGregorianCalendarConverter.asXMLGregorianCalendar(now));
-        verifyingChecksum.setChecksumSpec(deleteChecksumSpec);
+        ChecksumDataForFileTYPE verifyingChecksum = makeChecksumData(deleteChecksum, deleteChecksumType, 
+        		deleteChecksumSalt);
         ChecksumSpecTYPE requestedChecksumSpec = null;
         log.info("----- Got DeleteFileRequest with approveChecksumtype = " + approveChecksumType);
         if(approveChecksumType != null && !approveChecksumType.equals("disabled")) {
@@ -283,6 +276,62 @@ public class BasicClient {
             //This should not happen Jonas!
         }
         return "Deleting file";
+    }
+    
+    public String replaceFile(String fileID, String pillarID, String oldFileChecksum, String oldFileChecksumType,
+    		String oldFileChecksumSalt, String oldFileRequestChecksumType, String oldFileRequestChecksumSalt,
+    		String urlStr, long newFileSize, String newFileChecksum, String newFileChecksumType,
+    		String newFileChecksumSalt, String newFileRequestChecksumType, String newFileRequestChecksumSalt) {
+    	if(fileID == null) {
+            return "Missing fileID!";
+        }
+        if(pillarID == null || !settings.getCollectionSettings().getClientSettings().getPillarIDs().contains(pillarID)) {
+            return "Missing or unknown pillarID!";
+        }
+        if(oldFileChecksum == null || oldFileChecksum.equals("")) {
+            return "Checksum for pillar check of old file is missing";
+        }
+        if(oldFileChecksumType == null || oldFileChecksumType.equals("")) {
+            return "Checksum type for pillar check of old file is invalid";
+        }
+        if(newFileChecksum == null || newFileChecksum.equals("")) {
+            return "Checksum for pillar check of new file is missing";
+        }
+        if(newFileChecksumType == null || newFileChecksumType.equals("")) {
+            return "Checksum type for pillar check of new file is invalid";
+        }
+        if(urlStr == null || urlStr.equals("")) {
+        	return "A valid fileaddress is missing.";
+        }
+        URL url;
+        ChecksumDataForFileTYPE oldFileChecksumData = makeChecksumData(oldFileChecksum, oldFileChecksumType,
+        		oldFileChecksumSalt);
+        ChecksumDataForFileTYPE newFileChecksumData = makeChecksumData(newFileChecksum, newFileChecksumType,
+        		newFileChecksumSalt);
+        ChecksumSpecTYPE oldFileChecksumRequest = null;
+        if(oldFileRequestChecksumType != null && !oldFileRequestChecksumType.equals("disabled")) {
+        	oldFileChecksumRequest = new ChecksumSpecTYPE();
+        	oldFileChecksumRequest.setChecksumType(oldFileRequestChecksumType);
+        	oldFileChecksumRequest.setChecksumSalt(HexUtils.stringToByteArray(oldFileRequestChecksumSalt));
+        }
+        ChecksumSpecTYPE newFileChecksumRequest = null;
+        if(newFileRequestChecksumType != null && !newFileRequestChecksumType.equals("disabled")) {
+        	newFileChecksumRequest = new ChecksumSpecTYPE();
+        	newFileChecksumRequest.setChecksumType(newFileRequestChecksumType);
+        	newFileChecksumRequest.setChecksumSalt(HexUtils.stringToByteArray(newFileRequestChecksumSalt));
+        }
+        
+        try {
+        	url = new URL(urlStr);
+        	replaceFileClient.replaceFile(fileID, pillarID, oldFileChecksumData, oldFileChecksumRequest, url, 
+        			newFileSize, newFileChecksumData, newFileChecksumRequest, eventHandler, "Swap away!");
+        } catch (MalformedURLException e) {
+            return "The string: '" + urlStr + "' is not a valid URL!";
+        } catch (OperationFailedException e) {
+            //This should not happen Jonas!
+        }
+        
+    	return "Replacing file";
     }
     
     public String getCompletedFiles() {
@@ -301,6 +350,21 @@ public class BasicClient {
         String newName = logFile + "-" + date;
         System.out.println("Moving old log file to: " + newName);
         oldLogFile.renameTo(new File(newName));
+    }
+    
+    private ChecksumDataForFileTYPE makeChecksumData(String checksum, String checksumType, String checksumSalt) {
+        ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
+        checksumData.setChecksumValue(HexUtils.stringToByteArray(checksum));
+        ChecksumSpecTYPE deleteChecksumSpec = new ChecksumSpecTYPE();
+        if(checksumSalt == null || !checksumSalt.equals("")) {
+        	checksumSalt = null;
+        }
+        deleteChecksumSpec.setChecksumSalt(HexUtils.stringToByteArray(checksumSalt));
+        deleteChecksumSpec.setChecksumType(checksumType);
+        Date now = new Date();
+        checksumData.setCalculationTimestamp(XMLGregorianCalendarConverter.asXMLGregorianCalendar(now));
+        checksumData.setChecksumSpec(deleteChecksumSpec);
+        return checksumData;
     }
     
 }

@@ -287,7 +287,28 @@ public class Reposervice {
         return client.deleteFile(fileID, pillarID, deleteChecksum, deleteChecksumType, deleteChecksumSalt, 
                 approveChecksumType, approveChecksumSalt);
     }
-    
+
+    @GET
+    @Path("replaceFile")
+    @Produces("text/html")
+    public String replaceFile(
+            @QueryParam("fileID") String fileID, @QueryParam("pillarID") String pillarID,
+            @QueryParam("oldFileChecksum") String oldFileChecksum, 
+            @QueryParam("oldFileChecksumType") String oldFileChecksumType,
+            @QueryParam("oldFileChecksumSalt") String oldFileChecksumSalt,
+            @QueryParam("oldFileRequestChecksumType") String oldFileRequestChecksumType,
+            @QueryParam("oldFileRequestChecksumSalt") String oldFileRequestChecksumSalt,
+            @QueryParam("url") String url, @QueryParam("fileSize") String fileSize,  
+            @QueryParam("newFileChecksum") String newFileChecksum, 
+            @QueryParam("newFileChecksumType") String newFileChecksumType,
+            @QueryParam("newFileChecksumSalt") String newFileChecksumSalt,
+            @QueryParam("newFileRequestChecksumType") String newFileRequestChecksumType,
+            @QueryParam("newFileRequestChecksumSalt") String newFileRequestChecksumSalt) {
+        return client.replaceFile(fileID, pillarID, oldFileChecksum, oldFileChecksumType, oldFileChecksumSalt, 
+        		oldFileRequestChecksumType, oldFileRequestChecksumSalt, url, Long.parseLong(fileSize), newFileChecksum, 
+        		newFileChecksumType, newFileChecksumSalt, newFileRequestChecksumType, newFileRequestChecksumSalt);
+    }
+
 }
 
 //http://localhost:8080/webservice-0.0.1-SNAPSHOT/reposervice/getfile/?fileID=test (tomcat 7)
