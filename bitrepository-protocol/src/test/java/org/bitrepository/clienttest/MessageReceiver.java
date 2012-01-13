@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
@@ -197,7 +197,7 @@ public class MessageReceiver {
             messageModel.addMessage(message);
         }
         @Override
-        public void onMessage(Alarm message) {
+        public void onMessage(AlarmMessage message) {
             messageModel.addMessage(message);
         }
         @Override

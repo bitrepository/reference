@@ -25,7 +25,7 @@
 package org.bitrepository.alarm.handler;
 
 import org.bitrepository.alarm.AlarmHandler;
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class AlarmLogger implements AlarmHandler {
     public AlarmLogger() { }
     
     @Override
-    public void handleAlarm(Alarm msg) {
+    public void handleAlarm(AlarmMessage msg) {
         log.info("ALARM: " + msg.toString());
     }
     

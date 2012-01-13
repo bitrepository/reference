@@ -39,7 +39,7 @@ import org.bitrepository.alarm.AlarmException;
 import org.bitrepository.alarm.AlarmHandler;
 import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration;
 import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration.MailingConfiguration;
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,8 +80,8 @@ public class AlarmMailer implements AlarmHandler {
     }
     
     @Override
-    public void handleAlarm(Alarm msg) {
-        String subject = "Received alarm '" + msg.getAlarmDescription() + "'";
+    public void handleAlarm(AlarmMessage msg) {
+        String subject = "Received alarm '" + msg.getAlarm() + "'";
         log.info(subject + ":\n{}", msg.toString());
         sendMail(subject, msg.toString());
     }

@@ -26,7 +26,7 @@ package org.bitrepository.protocol.messagebus;
 
 import javax.xml.bind.JAXBException;
 
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
@@ -97,7 +97,7 @@ public abstract class AbstractMessageListener implements MessageListener {
     }
     
     @Override
-    public void onMessage(Alarm message) {
+    public void onMessage(AlarmMessage message) {
         reportUnsupported(message);
     }
     

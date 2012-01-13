@@ -2,6 +2,7 @@ package org.bitrepository.protocol.messagebus;
 
 import org.bitrepository.bitrepositorymessages.Message;
 
+
 public interface SimpleMessageListener {
 
     /**

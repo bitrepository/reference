@@ -24,7 +24,7 @@
  */
 package org.bitrepository.alarm;
 
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 
 /**
  * Simple AlarmHandler for testing what the latest alarm was. 
@@ -34,7 +34,7 @@ public class TestAlarmHandler implements AlarmHandler {
     private String latestAlarmMessage;
     
     /** The latest alarm.*/
-    private Alarm latestAlarm;
+    private AlarmMessage latestAlarm;
     
     /**
      * Constructor.
@@ -42,7 +42,7 @@ public class TestAlarmHandler implements AlarmHandler {
     public TestAlarmHandler() {}
     
     @Override
-    public void handleAlarm(Alarm msg) {
+    public void handleAlarm(AlarmMessage msg) {
         latestAlarm = msg;
         latestAlarmMessage = msg.toString();
     }
@@ -56,7 +56,7 @@ public class TestAlarmHandler implements AlarmHandler {
      * Method for retrieving the latest Alarm message received.
      * @return The latest Alarm received.
      */
-    public Alarm getLatestAlarm() {
+    public AlarmMessage getLatestAlarm() {
         return latestAlarm;
     }
 

@@ -27,17 +27,8 @@ package org.bitrepository.pillar.messagehandler;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bitrepository.bitrepositoryelements.AlarmConcerning;
-import org.bitrepository.bitrepositoryelements.AlarmConcerning.Components;
-import org.bitrepository.bitrepositoryelements.AlarmDescription;
+import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmcodeType;
-import org.bitrepository.bitrepositoryelements.ComponentTYPE;
-import org.bitrepository.bitrepositoryelements.ComponentTYPE.ComponentType;
-import org.bitrepository.bitrepositoryelements.PriorityCodeType;
-import org.bitrepository.bitrepositoryelements.RiskAreaType;
-import org.bitrepository.bitrepositoryelements.RiskImpactScoreType;
-import org.bitrepository.bitrepositoryelements.RiskProbabilityScoreType;
-import org.bitrepository.bitrepositoryelements.RiskTYPE;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -54,7 +45,6 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.audit.MemorybasedAuditTrailManager;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
@@ -158,32 +148,12 @@ public class PillarMediator extends AbstractMessageListener {
         String msg = "Cannot handle message of type '" + message.getClass().getCanonicalName() + "'";
         log.warn(msg + ": " + message.toString());
         
-        // create the Concerning part of the alarm.
-        AlarmConcerning ac = new AlarmConcerning();
-        ac.setMessages(msg);
-        ac.setFileInformation(null);
-        Components comps = new Components();
-        ComponentTYPE compType = new ComponentTYPE();
-        compType.setComponentComment("ReferencePillar");
-        compType.setComponentID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        compType.setComponentType(ComponentType.PILLAR);
-        comps.getContributor().add(compType);
-        comps.getDataTransmission().add(settings.getMessageBusConfiguration().toString());
-        ac.setComponents(comps);
-        
         // create a descriptor.
-        AlarmDescription ad = new AlarmDescription();
+        Alarm ad = new Alarm();
         ad.setAlarmCode(AlarmcodeType.FAILED_OPERATION);
         ad.setAlarmText(msg);
-        ad.setOrigDateTime(CalendarUtils.getNow());
-        ad.setPriority(PriorityCodeType.OTHER);
-        RiskTYPE rt = new RiskTYPE();
-        rt.setRiskArea(RiskAreaType.AVAILABILITY);
-        rt.setRiskImpactScore(RiskImpactScoreType.HIGH_IMPACT);
-        rt.setRiskProbabilityScore(RiskProbabilityScoreType.MEDIUM_PROPABILITY);
-        ad.setRisk(rt);
         
-        alarmDispatcher.sendAlarm(ac, ad);
+        alarmDispatcher.sendAlarm(ad);
     }
     
     @Override

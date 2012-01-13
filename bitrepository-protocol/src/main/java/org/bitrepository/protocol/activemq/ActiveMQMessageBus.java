@@ -37,11 +37,10 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import javax.xml.bind.JAXBException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.util.ByteArrayInputStream;
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
@@ -54,9 +53,6 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
@@ -391,8 +387,8 @@ public class ActiveMQMessageBus implements MessageBus {
                 content = jaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
                                              new ByteArrayInputStream(text.getBytes()));
                 log.debug("Received message: " + text);
-                if(content.getClass().equals(Alarm.class)){
-                	listener.onMessage((Alarm) content);
+                if(content.getClass().equals(AlarmMessage.class)){
+                	listener.onMessage((AlarmMessage) content);
                 	return;
                 }
                 

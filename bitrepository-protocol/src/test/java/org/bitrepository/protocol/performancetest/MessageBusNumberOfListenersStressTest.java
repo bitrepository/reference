@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.protocol.ExampleMessageFactory;
 import org.bitrepository.protocol.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
@@ -77,7 +77,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
     private static int idReached = -1;
 
     /** The message to send back and forth over the message bus.*/
-    private static Alarm alarmMessage;
+    private static AlarmMessage alarmMessage;
 
     /** The message bus instance for sending the messages.*/
     private static MessageBus bus;
@@ -104,7 +104,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         sendMoreMessages = true;
 
         addStep("Define the message to send.", "Should retrieve the Alarm message from examples and set the To.");
-        alarmMessage = ExampleMessageFactory.createMessage(Alarm.class);
+        alarmMessage = ExampleMessageFactory.createMessage(AlarmMessage.class);
         alarmMessage.setTo(QUEUE);
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
@@ -137,7 +137,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         sendMoreMessages = true;
 
         addStep("Define the message to send.", "Should retrieve the Alarm message from examples and set the To.");
-        alarmMessage = ExampleMessageFactory.createMessage(Alarm.class);
+        alarmMessage = ExampleMessageFactory.createMessage(AlarmMessage.class);
         alarmMessage.setTo(QUEUE);
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
@@ -300,7 +300,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         }
 
         @Override
-        public void onMessage(Alarm message) {
+        public void onMessage(AlarmMessage message) {
             count++;
             int receivedId = Integer.parseInt(message.getCorrelationID());
             handleMessageDistribution(receivedId);

@@ -5,22 +5,21 @@ import java.util.TreeSet;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.bitrepository.bitrepositoryelements.AuditTrailData;
-import org.bitrepository.bitrepositoryelements.AuditTrailDataItem;
-import org.bitrepository.bitrepositoryelements.ComponentTYPE;
+import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 
 public class SimpleStore implements AuditTrailStore{
-    private Set<AuditTrailDataItem> auditTrails = 
-            new TreeSet<AuditTrailDataItem>();
+    private Set<AuditTrailEvent> auditTrails = 
+            new TreeSet<AuditTrailEvent>();
     
     @Override
-    public AuditTrailDataItem[] getAuditTrails(XMLGregorianCalendar starttime, XMLGregorianCalendar endtime, String url) {
-        return (AuditTrailDataItem[])auditTrails.toArray(new AuditTrailDataItem[auditTrails.size()]);
+    public AuditTrailEvent[] getAuditTrails(XMLGregorianCalendar starttime, XMLGregorianCalendar endtime, String url) {
+        return (AuditTrailEvent[])auditTrails.toArray(new AuditTrailEvent[auditTrails.size()]);
     }
 
     @Override
-    public void addAuditTrails(AuditTrailData newAuditTrails) {
-        for (AuditTrailDataItem event : newAuditTrails.getAuditTrailDataItem()) {
+    public void addAuditTrails(AuditTrailEvents newAuditTrails) {
+        for (AuditTrailEvent event : newAuditTrails.getAuditTrailEvent()) {
             auditTrails.add(event);
         }
     }

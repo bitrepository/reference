@@ -26,7 +26,7 @@ package org.bitrepository.protocol;
 
 import java.util.Date;
 
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.clienttest.MessageReceiver;
 import org.bitrepository.common.JaxbHelper;
@@ -119,8 +119,8 @@ public class MessageBusTest extends ExtendedTestCase {
         
         //Test data
         String topicname = "BusActivityTest";
-        Alarm content = 
-            ExampleMessageFactory.createMessage(Alarm.class);
+        AlarmMessage content = 
+            ExampleMessageFactory.createMessage(AlarmMessage.class);
 
         addStep("Make a connection to the message bus and add two listeners", "No exceptions should be thrown");
         MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settings);
@@ -174,7 +174,7 @@ public class MessageBusTest extends ExtendedTestCase {
             MessageBus bus2 = new ActiveMQMessageBus(embeddedMBConfig);
 
             addStep("Creating a test message to send.", "The interface is tested elsewhere and should work.");
-            Alarm message1 = ExampleMessageFactory.createMessage(Alarm.class);
+            AlarmMessage message1 = ExampleMessageFactory.createMessage(AlarmMessage.class);
             Assert.assertNotNull(message1);
             message1.setTo(QUEUE);
             message1.setCorrelationID("1");
@@ -209,7 +209,7 @@ public class MessageBusTest extends ExtendedTestCase {
             Assert.assertNull(listener2.getMessage(), "The second message listener should not have received a message.");
 
             addStep("Create a new message and send it over the other message bus.", "Should be allowed.");
-            Alarm message2 = ExampleMessageFactory.createMessage(Alarm.class);
+            AlarmMessage message2 = ExampleMessageFactory.createMessage(AlarmMessage.class);
             message2.setTo(QUEUE);
             message2.setCorrelationID("2");
             bus2.sendMessage(message2);
@@ -231,8 +231,8 @@ public class MessageBusTest extends ExtendedTestCase {
             Assert.assertNotNull(listener1.getMessage(), "The first message listener should have received a message.");
             Assert.assertEquals(listener1.getMessage().getClass(), message1.getClass());
 
-            Assert.assertEquals(((Alarm) listener1.getMessage()).getCorrelationID(), "1");
-            Assert.assertEquals(((Alarm) listener2.getMessage()).getCorrelationID(), "2");
+            Assert.assertEquals(((AlarmMessage) listener1.getMessage()).getCorrelationID(), "1");
+            Assert.assertEquals(((AlarmMessage) listener2.getMessage()).getCorrelationID(), "2");
 
         } finally {
             broker.stop();
@@ -334,7 +334,7 @@ public class MessageBusTest extends ExtendedTestCase {
             }
         }
         @Override
-        public final void onMessage(Alarm message) {
+        public final void onMessage(AlarmMessage message) {
             this.message = message;
         }
 

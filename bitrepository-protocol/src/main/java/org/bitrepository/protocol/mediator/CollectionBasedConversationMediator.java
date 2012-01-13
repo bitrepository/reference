@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
@@ -63,7 +63,6 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
-import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -144,7 +143,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
 
     
     @Override
-    public void onMessage(Alarm message) {
+    public void onMessage(AlarmMessage message) {
         String messageCorrelationID = message.getCorrelationID();
         Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {

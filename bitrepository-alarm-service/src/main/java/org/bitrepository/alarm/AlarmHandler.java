@@ -24,7 +24,7 @@
  */
 package org.bitrepository.alarm;
 
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 
 /**
  * Interface for alarm handling.
@@ -35,7 +35,7 @@ public interface AlarmHandler {
      * Handle the actual alarm messages.
      * @param msg The message to handle.
      */
-    public void handleAlarm(Alarm msg);
+    public void handleAlarm(AlarmMessage msg);
     
     /**
      * Handler for anything else than a AlarmMessage.

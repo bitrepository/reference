@@ -26,7 +26,7 @@ package org.bitrepository.protocol.performancetest;
 
 import java.util.Date;
 
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.protocol.ExampleMessageFactory;
 import org.bitrepository.protocol.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
@@ -190,7 +190,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         @Override
         public void run() {
             try {
-                Alarm message = ExampleMessageFactory.createMessage(Alarm.class);
+                AlarmMessage message = ExampleMessageFactory.createMessage(AlarmMessage.class);
                 message.setTo(QUEUE);
                 for(int i = 0; i < numberOfMessages; i++) {
                     message.setCorrelationID(id + ":" + i);
@@ -245,7 +245,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         }
 
         @Override
-        public void onMessage(Alarm message) {
+        public void onMessage(AlarmMessage message) {
             count++;
             if(count >= NUMBER_OF_MESSAGES) {
                 stopSending = new Date();

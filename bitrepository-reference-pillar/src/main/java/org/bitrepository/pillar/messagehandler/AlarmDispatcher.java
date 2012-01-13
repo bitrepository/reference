@@ -29,20 +29,10 @@ import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
 
-import org.bitrepository.bitrepositoryelements.AlarmConcerning;
-import org.bitrepository.bitrepositoryelements.AlarmConcerning.Components;
-import org.bitrepository.bitrepositoryelements.AlarmConcerning.FileInformation;
-import org.bitrepository.bitrepositoryelements.AlarmDescription;
+import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmcodeType;
-import org.bitrepository.bitrepositoryelements.ComponentTYPE;
-import org.bitrepository.bitrepositoryelements.ComponentTYPE.ComponentType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.PriorityCodeType;
-import org.bitrepository.bitrepositoryelements.RiskAreaType;
-import org.bitrepository.bitrepositoryelements.RiskImpactScoreType;
-import org.bitrepository.bitrepositoryelements.RiskProbabilityScoreType;
-import org.bitrepository.bitrepositoryelements.RiskTYPE;
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
@@ -97,24 +87,12 @@ public class AlarmDispatcher {
             return;
         }
         
-        // create the Concerning part of the alarm.
-        AlarmConcerning ac = createAlarmConcerning();
-        ac.setMessages(exception.getMessage());
-        ac.setFileInformation(null);
-        
         // create a descriptor.
-        AlarmDescription ad = new AlarmDescription();
+        Alarm ad = new Alarm();
         ad.setAlarmCode(AlarmcodeType.FAILED_OPERATION); //TODO Jonas see if this should be changed to another type
         ad.setAlarmText(exception.getMessage());
-        ad.setOrigDateTime(CalendarUtils.getNow());
-        ad.setPriority(PriorityCodeType.OTHER);
-        RiskTYPE rt = new RiskTYPE();
-        rt.setRiskArea(RiskAreaType.CONFIDENTIALITY);
-        rt.setRiskImpactScore(RiskImpactScoreType.CRITICAL_IMPACT);
-        rt.setRiskProbabilityScore(RiskProbabilityScoreType.HIGH_PROPABILITY);
-        ad.setRisk(rt);
         
-        sendAlarm(ac, ad);
+        sendAlarm(ad);
     }
     
     /**
@@ -132,25 +110,13 @@ public class AlarmDispatcher {
         
         log.error("Sending alarm for RunTimeException", exception);
         
-        // create the Concerning part of the alarm.
-        AlarmConcerning ac = createAlarmConcerning();
-        ac.setMessages(exception.getMessage());
-        ac.setFileInformation(null);
-        
         // create a descriptor.
-        AlarmDescription ad = new AlarmDescription();
-        ad.setAlarmCode(AlarmcodeType.COMPONENT_FAILURE);
-        ad.setAlarmText(exception.getMessage());
-        ad.setOrigDateTime(CalendarUtils.getNow());
-        ad.setPriority(PriorityCodeType.MANUAL_CHECK);
-        RiskTYPE rt = new RiskTYPE();
-        // TODO missing types: RiskAreaType.UNKNOWN, RiskImpactScoreType.UNKNOWN, RiskProbabilityScoreType.UNKNOWN 
-        rt.setRiskArea(RiskAreaType.SAFETY);
-        rt.setRiskImpactScore(RiskImpactScoreType.MEDIUM_IMPACT);
-        rt.setRiskProbabilityScore(RiskProbabilityScoreType.HIGH_PROPABILITY);
-        ad.setRisk(rt);
+        Alarm alarm = new Alarm();
+        alarm.setAlarmCode(AlarmcodeType.COMPONENT_FAILURE);
+        alarm.setAlarmText(exception.getMessage());
+        alarm.setAlarmRaiser(settings.getReferenceSettings().getPillarSettings().getPillarID());
         
-        sendAlarm(ac, ad);
+        sendAlarm(alarm);
     }
 
     /**
@@ -158,31 +124,20 @@ public class AlarmDispatcher {
      * @param alarmConcerning What the alarm is concerning.
      * @param alarmDescription The description of the alarm, e.g. What caused the alarm.
      */
-    public void sendAlarm(AlarmConcerning alarmConcerning, AlarmDescription alarmDescription) {
-        ArgumentValidator.checkNotNull(alarmConcerning, "alarmConcerning");
-        ArgumentValidator.checkNotNull(alarmDescription, "alarmDescription");
+    public void sendAlarm(Alarm alarm) {
+        ArgumentValidator.checkNotNull(alarm, "alarm");
+        AlarmMessage message = new AlarmMessage();
+        alarm.setAlarmRaiser(settings.getReferenceSettings().getPillarSettings().getPillarID());
+        alarm.setOrigDateTime(CalendarUtils.getNow());
         
-        log.warn("Sending alarm, concerning: '" + alarmConcerning + "', with description: '" + alarmDescription + "'");
+        message.setCollectionID(settings.getCollectionID());
+        message.setCorrelationID(UUID.randomUUID().toString());
+        message.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
+        message.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        message.setTo(settings.getAlarmDestination());
+        message.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         
-        Alarm alarm = new Alarm();
-        
-        ComponentTYPE ct = new ComponentTYPE();
-        ct.setComponentComment("ReferencePillar");
-        ct.setComponentID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        ct.setComponentType(ComponentType.PILLAR);
-        alarm.setAlarmRaiser(ct);
-        
-        alarm.setAlarmConcerning(alarmConcerning);
-        alarm.setAlarmDescription(alarmDescription);
-        
-        alarm.setCollectionID(settings.getCollectionID());
-        alarm.setCorrelationID(UUID.randomUUID().toString());
-        alarm.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        alarm.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
-        alarm.setTo(settings.getAlarmDestination());
-        alarm.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        
-        messageBus.sendMessage(alarm);
+        messageBus.sendMessage(message);
     }
     
     /**
@@ -192,63 +147,10 @@ public class AlarmDispatcher {
      * @param alarmText
      */
     public void sendInvalidChecksumAlarm(Object message, String fileId, String alarmText) {
-        AlarmConcerning alarmConcerning = new AlarmConcerning();
-        
-        Components components = new Components();
-        ComponentTYPE componentType = new ComponentTYPE();
-        componentType.setComponentComment("ReferencePillar");
-        componentType.setComponentID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        componentType.setComponentType(ComponentType.PILLAR);
-        components.getContributor().add(componentType);
-        alarmConcerning.setComponents(components);
-        
-        FileInformation fileInformation = new FileInformation();
-        FileIDs fileIDs = new FileIDs();
-        fileIDs.setFileID(fileId);
-        fileInformation.setFileIDs(fileIDs);
-        alarmConcerning.setFileInformation(fileInformation);
-
-        JaxbHelper jaxbHelper = new JaxbHelper(XSD_CLASSPATH, XSD_BR_MESSAGE);
-        try {
-            alarmConcerning.setMessages(jaxbHelper.serializeToXml(message));
-        } catch (JAXBException e) {
-            log.warn("Could not serialize the message: " + message.toString(), e);
-            alarmConcerning.setMessages(message.toString());
-        }
-        
-        AlarmDescription alarmDescription = new AlarmDescription();
-        alarmDescription.setAlarmCode(AlarmcodeType.CHECKSUM);
-        alarmDescription.setAlarmText(alarmText);
-        alarmDescription.setOrigDateTime(CalendarUtils.getNow());
-        alarmDescription.setPriority(PriorityCodeType.CHECKSUM_ERROR);
-        
-        RiskTYPE riskType = new RiskTYPE();
-        riskType.setRiskArea(RiskAreaType.CONFIDENTIALITY);
-        riskType.setRiskImpactScore(RiskImpactScoreType.HIGH_IMPACT);
-        riskType.setRiskProbabilityScore(RiskProbabilityScoreType.MEDIUM_PROPABILITY);
-        
-        alarmDescription.setRisk(riskType);
-    }
-
-
-    /**
-     * Creates the generic AlarmConcerning for the ReferencePillar.
-     * Is missing:
-     * <br/> - Messages
-     * <br/> - FileInformation
-     * @return The generic AlarmConcerning.
-     */
-    private AlarmConcerning createAlarmConcerning() {
-        AlarmConcerning ac = new AlarmConcerning();
-        Components comps = new Components();
-        ComponentTYPE compType = new ComponentTYPE();
-        compType.setComponentComment("ReferencePillar");
-        compType.setComponentID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        compType.setComponentType(ComponentType.PILLAR);
-        comps.getContributor().add(compType);
-        comps.getDataTransmission().add(settings.getMessageBusConfiguration().toString());
-        ac.setComponents(comps);
-
-        return ac;
+        Alarm alarm = new Alarm();
+        alarm.setAlarmCode(AlarmcodeType.CHECKSUM);
+        alarm.setAlarmText(alarmText);
+        alarm.setOrigDateTime(CalendarUtils.getNow());
+        sendAlarm(alarm);
     }
 }

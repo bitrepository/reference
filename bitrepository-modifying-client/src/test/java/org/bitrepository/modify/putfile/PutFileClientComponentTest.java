@@ -26,10 +26,8 @@ package org.bitrepository.modify.putfile;
 
 import java.io.File;
 import java.math.BigInteger;
-import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;

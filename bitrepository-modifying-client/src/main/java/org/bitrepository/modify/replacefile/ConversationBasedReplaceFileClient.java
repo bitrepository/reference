@@ -33,7 +33,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.modify.deletefile.conversation.SimpleDeleteFileConversation;
 import org.bitrepository.modify.replacefile.conversation.SimpleReplaceFileConversation;
 import org.bitrepository.protocol.conversation.FlowController;
 import org.bitrepository.protocol.eventhandler.EventHandler;

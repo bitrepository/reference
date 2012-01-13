@@ -27,25 +27,16 @@ package org.bitrepository.integrityclient.collector.eventhandler;
 import java.math.BigInteger;
 import java.util.UUID;
 
-import org.bitrepository.bitrepositoryelements.AlarmConcerning;
-import org.bitrepository.bitrepositoryelements.AlarmConcerning.FileInformation;
-import org.bitrepository.bitrepositoryelements.AlarmDescription;
+import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmcodeType;
-import org.bitrepository.bitrepositoryelements.ComponentTYPE;
-import org.bitrepository.bitrepositoryelements.PriorityCodeType;
-import org.bitrepository.bitrepositoryelements.RiskAreaType;
-import org.bitrepository.bitrepositoryelements.RiskImpactScoreType;
-import org.bitrepository.bitrepositoryelements.RiskProbabilityScoreType;
-import org.bitrepository.bitrepositoryelements.RiskTYPE;
-import org.bitrepository.bitrepositoryelements.AlarmConcerning.Components;
-import org.bitrepository.bitrepositoryelements.ComponentTYPE.ComponentType;
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityclient.checking.IntegrityReport;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.hibernate.type.ComponentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,72 +76,37 @@ public class IntegrityAlarmDispatcher {
      * @param report The report to base the alarm upon.
      */
     public void integrityFailed(IntegrityReport report) {
-        AlarmConcerning ac = new AlarmConcerning();
-        Components comps = new Components();
-        ComponentTYPE compType = new ComponentTYPE();
-        compType.setComponentComment("IntegrityService");
-        compType.setComponentID("IntegrityService");
-        compType.setComponentType(ComponentType.COORLAYER);
-        comps.getContributor().add(compType);
-        comps.getDataTransmission().add(settings.getMessageBusConfiguration().toString());
-        ac.setComponents(comps);
-        ac.setMessages(report.generateReport());
-        FileInformation fi = new FileInformation();
-        fi.setFileIDs(report.getFileIDs());
-        ac.setFileInformation(fi);
-        
-        AlarmDescription ad = new AlarmDescription();
+        Alarm ad = new Alarm();
         ad.setAlarmCode(AlarmcodeType.INCONSISTENT_REQUEST);
         ad.setAlarmText(report.generateReport());
-        ad.setOrigDateTime(CalendarUtils.getNow());
-        if(!report.getChecksumErrors().isEmpty()) {
-            ad.setPriority(PriorityCodeType.CHECKSUM_ERROR);
-        } else if(!report.getMissingFileIDs().isEmpty()) {
-            ad.setPriority(PriorityCodeType.MISSING_IDS);
-        } else {
-            // TODO ???
-            ad.setPriority(PriorityCodeType.MANUAL_CHECK);
-        }
-        
-        RiskTYPE rt = new RiskTYPE();
-        // TODO missing types: RiskAreaType.UNKNOWN, RiskImpactScoreType.UNKNOWN, RiskProbabilityScoreType.UNKNOWN 
-        rt.setRiskArea(RiskAreaType.SAFETY);
-        rt.setRiskImpactScore(RiskImpactScoreType.HIGH_IMPACT);
-        rt.setRiskProbabilityScore(RiskProbabilityScoreType.VERY_HIGH_PROPABILITY);
-        ad.setRisk(rt);
-        
-        sendAlarm(ac, ad);
+        sendAlarm(ad);
     }
     
     /**
      * Method for sending an Alarm when something bad happens.
      * @param alarmConcerning What the alarm is concerning.
-     * @param alarmDescription The description of the alarm, e.g. What caused the alarm.
+     * @param alarm The description of the alarm, e.g. What caused the alarm.
      */
-    public void sendAlarm(AlarmConcerning alarmConcerning, AlarmDescription alarmDescription) {
-        ArgumentValidator.checkNotNull(alarmConcerning, "alarmConcerning");
-        ArgumentValidator.checkNotNull(alarmDescription, "alarmDescription");
+    public void sendAlarm(Alarm alarm) {
+        ArgumentValidator.checkNotNull(alarm, "alarm");
+
+        alarm.setAlarmRaiser("IntegrityService");
+        alarm.setOrigDateTime(CalendarUtils.getNow());
         
-        log.warn("Sending alarm, concerning: '" + alarmConcerning + "', with description: '" + alarmDescription + "'");
+        log.warn("Sending alarm: " + alarm);
         
-        Alarm alarm = new Alarm();
+        AlarmMessage message = new AlarmMessage();
         
-        ComponentTYPE ct = new ComponentTYPE();
-        ct.setComponentComment("IntegrityService");
-        ct.setComponentID("IntegrityService");
-        ct.setComponentType(ComponentType.COORLAYER);
-        alarm.setAlarmRaiser(ct);
         
-        alarm.setAlarmConcerning(alarmConcerning);
-        alarm.setAlarmDescription(alarmDescription);
+        message.setAlarm(alarm);
         
-        alarm.setCollectionID(settings.getCollectionID());
-        alarm.setCorrelationID(UUID.randomUUID().toString());
-        alarm.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        alarm.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
-        alarm.setTo(settings.getAlarmDestination());
-        alarm.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
+        message.setCollectionID(settings.getCollectionID());
+        message.setCorrelationID(UUID.randomUUID().toString());
+        message.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
+        message.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        message.setTo(settings.getAlarmDestination());
+        message.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         
-        messageBus.sendMessage(alarm);
+        messageBus.sendMessage(message);
     }
 }

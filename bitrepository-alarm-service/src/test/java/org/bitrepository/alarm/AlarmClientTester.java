@@ -32,9 +32,9 @@ import org.bitrepository.alarm.handler.AlarmLogger;
 import org.bitrepository.alarm.handler.AlarmMailer;
 import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration;
 import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration.MailingConfiguration;
-import org.bitrepository.bitrepositoryelements.AlarmDescription;
+import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmcodeType;
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.protocol.ExampleMessageFactory;
@@ -76,7 +76,7 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
         Assert.assertNull(alarmHandler.getLatestAlarmMessage(), "No alarms sent yet, thus latest alarm should be null.");
         
         addStep("Create and send a message for the AlarmClient to handle", "");
-        Alarm alarmMsg = ExampleMessageFactory.createMessage(Alarm.class);
+        AlarmMessage alarmMsg = ExampleMessageFactory.createMessage(AlarmMessage.class);
         alarmMsg.setTo(QUEUE);
         messageBus.sendMessage(alarmMsg);
         
@@ -111,7 +111,7 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
 
             addStep("Initalise handler, AlarmMessage and constants", "Should not be problematic.");
             AlarmHandler handler = new AlarmLogger();
-            Alarm alarmMsg = ExampleMessageFactory.createMessage(Alarm.class);
+            AlarmMessage alarmMsg = ExampleMessageFactory.createMessage(AlarmMessage.class);
 
             String ALARM_MESSAGE = "REGRESSION-TEST";
             String EXCEPTION_MESSAGE = "Can you handle this??";
@@ -119,7 +119,7 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
 
             addStep("Insert description of ALARM_CODE and ALARM_MESSAGE in message send to handler", 
             "Should sent to log.");
-            AlarmDescription desc = new AlarmDescription();
+            Alarm desc = new Alarm();
             desc.setAlarmCode(AlarmcodeType.COMPONENT_FAILURE);
             desc.setAlarmText(ALARM_MESSAGE);
             alarmMsg.setAlarmDescription(desc);
@@ -177,14 +177,14 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
         conf.setMailServer("sbforge.org");
         aconf.setMailingConfiguration(conf);
         AlarmHandler handler = new AlarmMailer(aconf);
-        Alarm msg = ExampleMessageFactory.createMessage(Alarm.class);
+        AlarmMessage msg = ExampleMessageFactory.createMessage(AlarmMessage.class);
 
         String ALARM_MESSAGE = "REGRESSION-TEST";
         String EXCEPTION_MESSAGE = "Can you handle this??";
 
         addStep("Insert description of ALARM_CODE and ALARM_MESSAGE in message send to handler", 
         "Should sent to log.");
-        AlarmDescription desc = new AlarmDescription();
+        Alarm desc = new Alarm();
         desc.setAlarmCode(AlarmcodeType.COMPONENT_FAILURE);
         desc.setAlarmText(ALARM_MESSAGE);
         msg.setAlarmDescription(desc);

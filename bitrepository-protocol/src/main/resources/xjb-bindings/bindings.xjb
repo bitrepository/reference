@@ -4,14 +4,6 @@
     <xjc:serializable />
   </jaxb:globalBindings>
   <jaxb:bindings schemaLocation="BitRepositoryElements.xsd">
-    <jaxb:bindings node="//xs:element[@name='ActorType']/xs:simpleType">
-      <jaxb:typesafeEnumClass name="ActorType" />
-    </jaxb:bindings>
-
-    <jaxb:bindings node="//xs:element[@name='ComponentType']/xs:simpleType">
-      <jaxb:typesafeEnumClass name="ComponentType" />
-    </jaxb:bindings>
-
     <jaxb:bindings node="//xs:simpleType[@name='ALARMCODE_TYPE']">
       <jaxb:typesafeEnumClass name="AlarmcodeType">
         <jaxb:typesafeEnumMember value="500" name="COMPONENT_FAILURE" />
@@ -37,49 +29,6 @@
         <jaxb:typesafeEnumMember value="402" name="DUPLICATE_FILE" />
         <jaxb:typesafeEnumMember value="403" name="REQUEST_NOT_UNDERSTOOD" />
         <jaxb:typesafeEnumMember value="404" name="FILE_NOT_FOUND" />
-      </jaxb:typesafeEnumClass>
-    </jaxb:bindings>
-
-
-    <!--jaxb:bindings node="//xs:simpleType[@name='FileID_TYPE']"> <jaxb:typesafeEnumClass name="FileIDType" /> </jaxb:bindings -->
-
-
-    <!--jaxb:bindings node="//xs:simpleType[@name='PillarID_TYPE']"> <jaxb:typesafeEnumClass name="PillarIDType" /> </jaxb:bindings> -->
-    <jaxb:bindings node="//xs:simpleType[@name='PriorityCode_TYPE']">
-      <jaxb:typesafeEnumClass name="PriorityCodeType">
-        <jaxb:typesafeEnumMember value="1" name="MANUAL_CHECK" />
-        <jaxb:typesafeEnumMember value="2" name="MISSING_IDS" />
-        <jaxb:typesafeEnumMember value="3" name="CHECKSUM_ERROR" />
-        <jaxb:typesafeEnumMember value="4" name="OTHER" />
-      </jaxb:typesafeEnumClass>
-    </jaxb:bindings>
-
-    <jaxb:bindings node="//xs:simpleType[@name='RiskArea_TYPE']">
-      <jaxb:typesafeEnumClass name="RiskAreaType">
-        <jaxb:typesafeEnumMember value="1" name="AVAILABILITY" />
-        <jaxb:typesafeEnumMember value="2" name="SAFETY" />
-        <jaxb:typesafeEnumMember value="3" name="CONFIDENTIALITY" />
-      </jaxb:typesafeEnumClass>
-    </jaxb:bindings>
-    <jaxb:bindings node="//xs:simpleType[@name='RiskImpactScore_TYPE']">
-      <jaxb:typesafeEnumClass name="RiskImpactScoreType">
-        <jaxb:typesafeEnumMember value="0" name="MINIMAL_PROPABILITY" />
-        <jaxb:typesafeEnumMember value="1" name="NEGLIGIBLE_IMPACT" />
-        <jaxb:typesafeEnumMember value="2" name="SUPERFICIAL_IMPACT" />
-        <jaxb:typesafeEnumMember value="3" name="MEDIUM_IMPACT" />
-        <jaxb:typesafeEnumMember value="4" name="HIGH_IMPACT" />
-        <jaxb:typesafeEnumMember value="5" name="CRITICAL_IMPACT" />
-        <jaxb:typesafeEnumMember value="6" name="CATACLYSMIC_IMPACT" />
-      </jaxb:typesafeEnumClass>
-    </jaxb:bindings>
-    <jaxb:bindings node="//xs:simpleType[@name='RiskProbabilityScore_TYPE']">
-      <jaxb:typesafeEnumClass name="RiskProbabilityScoreType">
-        <jaxb:typesafeEnumMember value="1" name="MINIMAL_PROPABILITY" />
-        <jaxb:typesafeEnumMember value="2" name="VERY_LOW_PROPABILITY" />
-        <jaxb:typesafeEnumMember value="3" name="LOW_PROPABILITY" />
-        <jaxb:typesafeEnumMember value="4" name="MEDIUM_PROPABILITY" />
-        <jaxb:typesafeEnumMember value="5" name="HIGH_PROPABILITY" />
-        <jaxb:typesafeEnumMember value="6" name="VERY_HIGH_PROPABILITY" />
       </jaxb:typesafeEnumClass>
     </jaxb:bindings>
 

@@ -24,7 +24,7 @@
  */
 package org.bitrepository.alarm;
 
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
 
@@ -50,7 +50,7 @@ public class AlarmMessageReceiver extends AbstractMessageListener {
     }
 
     @Override
-    public void onMessage(Alarm msg) {
+    public void onMessage(AlarmMessage msg) {
         handler.handleAlarm(msg);
     }
     

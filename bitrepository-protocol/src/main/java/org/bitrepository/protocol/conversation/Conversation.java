@@ -25,8 +25,6 @@
 package org.bitrepository.protocol.conversation;
 
 import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
-import org.bitrepository.protocol.exceptions.ConversationTimedOutException;
-import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageListener;
 
 /**

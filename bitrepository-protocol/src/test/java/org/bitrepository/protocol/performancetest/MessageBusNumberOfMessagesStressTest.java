@@ -26,7 +26,7 @@ package org.bitrepository.protocol.performancetest;
 
 import java.util.Date;
 
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.protocol.ExampleMessageFactory;
 import org.bitrepository.protocol.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
@@ -193,13 +193,13 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
          * @throws Exception If a problem with creating the message occurs.
          */
         public void startSending() throws Exception {
-            Alarm message = ExampleMessageFactory.createMessage(Alarm.class);
+            AlarmMessage message = ExampleMessageFactory.createMessage(AlarmMessage.class);
             message.setTo(QUEUE);
             bus.sendMessage(message);
         }
 
         @Override
-        public void onMessage(Alarm message) {
+        public void onMessage(AlarmMessage message) {
             count++;
             bus.sendMessage(message);
         }

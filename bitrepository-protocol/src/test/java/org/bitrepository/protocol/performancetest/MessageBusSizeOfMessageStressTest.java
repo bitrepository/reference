@@ -26,8 +26,8 @@ package org.bitrepository.protocol.performancetest;
 
 import java.util.Date;
 
-import org.bitrepository.bitrepositoryelements.AlarmDescription;
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositoryelements.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.protocol.ExampleMessageFactory;
 import org.bitrepository.protocol.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
@@ -79,7 +79,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
             addStep("Initialise the messagelistener", "Should be allowed.");
             listener = new ResendMessageListener(conf);
 
-            Alarm message = getTestMessage();
+            AlarmMessage message = getTestMessage();
 
             addStep("Start sending at '" + new Date() + "'", "Should just be waiting.");
             listener.startSending(message);
@@ -129,7 +129,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
             addStep("Initialise the messagelistener", "Should be allowed.");
             listener = new ResendMessageListener(conf);
 
-            Alarm message = getTestMessage();
+            AlarmMessage message = getTestMessage();
 
             addStep("Start sending at '" + new Date() + "'", "Should just be waiting.");
             listener.startSending(message);
@@ -161,7 +161,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
         }
     }
 
-    private Alarm getTestMessage() throws Exception {
+    private AlarmMessage getTestMessage() throws Exception {
         addStep("Creating the payload of the message.", "should be OK.");
         StringBuilder payload = new StringBuilder();
         for(int i = 0; i < NUMBER_OF_REPEATS_OF_BUFFER_TEXT; i++) {
@@ -170,8 +170,8 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
 
         addStep("Creating a message of size '" + payload.length() + "' bytes", 
         "Should be allowed");
-        Alarm message = ExampleMessageFactory.createMessage(Alarm.class);
-        AlarmDescription description = new AlarmDescription();
+        AlarmMessage message = ExampleMessageFactory.createMessage(AlarmMessage.class);
+        Alarm description = new Alarm();
         description.setAlarmText(payload.toString());
         message.setAlarmDescription(description);
         return message;
@@ -218,13 +218,13 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
          * Starts sending messages.
          * @throws Exception If a problem with creating the message occurs.
          */
-        public void startSending(Alarm message) throws Exception {
+        public void startSending(AlarmMessage message) throws Exception {
             message.setTo(QUEUE);
             bus.sendMessage(message);
         }
 
         @Override
-        public void onMessage(Alarm message) {
+        public void onMessage(AlarmMessage message) {
             count++;
             bus.sendMessage(message);
         }

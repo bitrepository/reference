@@ -26,6 +26,7 @@ package org.bitrepository.protocol.exceptions;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 
+
 /**
  * Used to indicate that an unexpected response has been received.
  */
