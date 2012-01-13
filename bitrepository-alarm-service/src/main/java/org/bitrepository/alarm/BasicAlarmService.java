@@ -27,6 +27,8 @@ package org.bitrepository.alarm;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jms.JMSException;
+
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,5 +58,15 @@ public class BasicAlarmService implements AlarmService {
         log.info("Adding handler '" + handler.getClass().getName() + "' for alarms on the queue '"
                 + queue + "'.");
         mediator.add(new AlarmMessageReceiver(messagebus, queue, handler));
+    }
+    
+    @Override
+    public void shutdown() {
+        try {
+            messagebus.close();
+            // TODO Kill any lingering timer threads
+        } catch (JMSException e) {
+            log.info("Error during shutdown of messagebus ", e);
+        }
     }
 }

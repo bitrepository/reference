@@ -35,4 +35,9 @@ public interface AlarmService {
      * @param queue The queue to listen to the Alarm messages to handle.
      */
     public void addHandler(AlarmHandler handler, String queue);
+    
+    /**
+     * Method to perform a graceful shutdown of the client.
+     */
+    void shutdown();
 }

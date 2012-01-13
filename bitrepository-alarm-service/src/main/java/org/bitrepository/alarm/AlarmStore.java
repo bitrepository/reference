@@ -20,7 +20,7 @@ public class AlarmStore {
 	}
 	
 	public void shutdown() {
-		// empty, but should should down the alarmService...
+		alarmService.shutdown();
 	}
 	
 	public String getShortList() {
