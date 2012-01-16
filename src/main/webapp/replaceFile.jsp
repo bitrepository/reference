@@ -109,7 +109,7 @@
             <input type="submit" value="Replace file"/>
         </form> 
 
-    <div id="status"></div>
+    <div id="status"> </div>
         
     <script>
         $("#replaceForm").submit(function() {
@@ -132,7 +132,7 @@
             	
             var command = "repo/reposervice/replaceFile/?fileID=" + fileID + "&pillarID=" + pillarID +
                     "&oldFileChecksum=" + oldFileChecksumVal + "&oldFileChecksumType="+ oldFileChecksumType + 
-                    "&oldFileChecksumSalt=" + oldFileChecksumSalt + "&oldFileRequestChecksumType=" + oldFileRequestChecksumSalt; + 
+                    "&oldFileChecksumSalt=" + oldFileChecksumSalt + "&oldFileRequestChecksumType=" + oldFileRequestChecksumSalt + 
                     "&oldFileRequestChecksumSalt=" + oldFileRequestChecksumSalt + "&url=" + fileAddress + "&fileSize=" + fileSize +
                     "&newFileChecksum=" + newFileChecksumVal + "&newFileChecksumType="+ newFileChecksumType + 
                     "&newFileChecksumSalt=" + newFileChecksumSalt + "&newFileRequestChecksumType=" + newFileRequestChecksumSalt + 
