@@ -5,10 +5,10 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositoryelements.AlarmcodeType;
-import org.bitrepository.bitrepositoryelements.ComponentTYPE;
-import org.bitrepository.bitrepositoryelements.ComponentTYPE.ComponentType;
+import org.bitrepository.bitrepositoryelements.Alarm;
+
 
 
 /** 
@@ -18,17 +18,17 @@ import org.bitrepository.bitrepositoryelements.ComponentTYPE.ComponentType;
 public class AlarmStoreDataItem {
 
 	private XMLGregorianCalendar date;
-	private ComponentTYPE raiser;
+	private String raiserID;
 	private AlarmcodeType alarmCode;
 	private String alarmText;
 	
 	/**
 	 * Private constructor to be used when creating a AlarmStoreDataItem by deserializing from a string. 
 	 */
-	private AlarmStoreDataItem(XMLGregorianCalendar date, ComponentTYPE raiser, AlarmcodeType alarmCode,
+	private AlarmStoreDataItem(XMLGregorianCalendar date, String raiser, AlarmcodeType alarmCode,
 			String alarmText) {
 		this.date = date;
-		this.raiser = raiser;
+		this.raiserID = raiser;
 		this.alarmCode = alarmCode;
 		this.alarmText = alarmText;
 	}
@@ -38,11 +38,12 @@ public class AlarmStoreDataItem {
 	 * @param Alarm Alarm obbject to build the AlarmStoreDataItem from.
 	 * @return The fresh AlarmStoreDataItem object. 
 	 */
-	public AlarmStoreDataItem(Alarm message) {
-		date = message.getAlarmDescription().getOrigDateTime();
-		raiser = message.getAlarmRaiser();
-		alarmCode = message.getAlarmDescription().getAlarmCode();
-		alarmText = message.getAlarmDescription().getAlarmText();
+	public AlarmStoreDataItem(AlarmMessage message) {
+		Alarm alarm = message.getAlarm();
+		date = alarm.getOrigDateTime();
+		raiserID = alarm.getAlarmRaiser();
+		alarmCode = alarm.getAlarmCode();
+		alarmText = alarm.getAlarmText();
 	}
 	
 	/**
@@ -54,7 +55,7 @@ public class AlarmStoreDataItem {
 		sb.append("<tr><td>");
 		sb.append(date.toString());
 		sb.append("</td><td>");
-		sb.append(raiser.toString());
+		sb.append(raiserID);
 		sb.append("</td><td>");
 		sb.append(alarmCode.toString());
 		sb.append("</td><td>");
@@ -68,7 +69,7 @@ public class AlarmStoreDataItem {
 	 * @return The string representation of the object.   
 	 */
 	public String serialize() {
-		return date.toString() + " #!# " + raiser.toString() + " #!# " + alarmCode.toString() + " #!# " + alarmText;
+		return date.toString() + " #!# " + raiserID + " #!# " + alarmCode.toString() + " #!# " + alarmText;
 	}
 	
 	/**
@@ -78,7 +79,7 @@ public class AlarmStoreDataItem {
 	 */
 	public static AlarmStoreDataItem deserialize(String data) throws IllegalArgumentException {
 		XMLGregorianCalendar date;
-		ComponentTYPE raiser;
+		String raiser;
 		AlarmcodeType alarmCode;
 		String alarmText;
 		
@@ -88,10 +89,7 @@ public class AlarmStoreDataItem {
 		}
 		try {
 			date = DatatypeFactory.newInstance().newXMLGregorianCalendar(st.nextToken());
-			// TODO fix this mess..
-			raiser = new ComponentTYPE();
-			raiser.setComponentID("Lost-in-conversion!");
-			raiser.setComponentType(ComponentType.PILLAR);
+			raiser = st.nextToken();
 			alarmCode = AlarmcodeType.valueOf(st.nextToken());
 			alarmText = st.nextToken();
 			return new AlarmStoreDataItem(date, raiser, alarmCode, alarmText);

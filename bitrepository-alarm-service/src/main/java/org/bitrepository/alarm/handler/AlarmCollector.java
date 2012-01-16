@@ -9,7 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import org.bitrepository.bitrepositorymessages.Alarm;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.alarm.AlarmHandler;
 import org.bitrepository.alarm.AlarmStoreDataItem;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class AlarmCollector implements AlarmHandler {
 	}
 	
 	@Override
-    public void handleAlarm(Alarm msg) {
+    public void handleAlarm(AlarmMessage msg) {
 		AlarmStoreDataItem item = new AlarmStoreDataItem(msg);
 		BufferedWriter out;
         try {
