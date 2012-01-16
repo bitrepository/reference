@@ -9,12 +9,12 @@
 
     <script>
         $(function() {
-            $("#replaceFileForm").buttonset();
+            $("#replaceForm").buttonset();
         });
     </script>
 
     <div class=ui-widget>
-        <form id="replaceFileForm" action="javascript:submit()">
+        <form id="replaceForm" action="javascript:submit()">
             <p><b>Replace file</b></p>
             <table border="0">
                 <tr>
@@ -112,7 +112,7 @@
     <div id="status"></div>
         
     <script>
-        $("#replaceFileForm").submit(function() {
+        $("#replaceForm").submit(function() {
             var fileID = $("#fileID").val();
             fileID = fileID.replace(/\s+/g, '');
             var pillarID = $("#pillarID").val();
@@ -132,8 +132,8 @@
             	
             var command = "repo/reposervice/replaceFile/?fileID=" + fileID + "&pillarID=" + pillarID +
                     "&oldFileChecksum=" + oldFileChecksumVal + "&oldFileChecksumType="+ oldFileChecksumType + 
-                    "&oldFileChecksumSalt=" + oldFileChecksumSalt + "&oldFileRequestChecksumType=" + oldFileRequestChecksumSalt + 
-                    "&oldFileRequestChecksumSalt=" + oldFileRequestChecksumSalt + "&ufl=" + fileAddress + "&fileSize=" fileSize +
+                    "&oldFileChecksumSalt=" + oldFileChecksumSalt + "&oldFileRequestChecksumType=" + oldFileRequestChecksumSalt; + 
+                    "&oldFileRequestChecksumSalt=" + oldFileRequestChecksumSalt + "&url=" + fileAddress + "&fileSize=" + fileSize +
                     "&newFileChecksum=" + newFileChecksumVal + "&newFileChecksumType="+ newFileChecksumType + 
                     "&newFileChecksumSalt=" + newFileChecksumSalt + "&newFileRequestChecksumType=" + newFileRequestChecksumSalt + 
                     "&newFileRequestChecksumSalt=" + newFileRequestChecksumSalt;
@@ -143,7 +143,7 @@
         });
     </script> 
         
-   	<script>
+	<script>
   		function submit() { return ; }
   	</script>     
     </div>
