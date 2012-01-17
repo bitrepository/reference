@@ -104,8 +104,8 @@
             }
             var command = "repo/reposervice/putfile/?fileID=" + fileName + "&url=" + fileAddr + "&fileSize=" + fileSize +
             		"&putChecksum=" + verifyChecksumVal + "&putChecksumType=" + verifyChecksumType + "&putSalt=" + 
-            		verifyChecksumSalt + "&approveChecksumType=" + requestChecksumType + "&approveSalt=" + 
-            		requestChecksumSalt;
+            		verifyChecksumSalt + "&approveChecksumType=" + approveChecksumType + "&approveSalt=" + 
+            		approveChecksumSalt;
             $('#messagediv').load(command).show().fadeOut(5000);
             return true;
         });

@@ -62,6 +62,7 @@ public class BasicClient {
         getChecksumClient = AccessComponentFactory.getInstance().createGetChecksumsClient(settings);
         getFileIDsClient = AccessComponentFactory.getInstance().createGetFileIDsClient(settings);
         deleteFileClient = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings);
+        replaceFileClient = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings);
     }
     
     public void shutdown() {
@@ -69,6 +70,8 @@ public class BasicClient {
         getClient.shutdown();
         getChecksumClient.shutdown();
         getFileIDsClient.shutdown();
+        deleteFileClient.shutdown();
+        replaceFileClient.shutdown();
     }
     
     public String putFile(String fileID, long fileSize, String URLStr, String putChecksum, String putChecksumType,
