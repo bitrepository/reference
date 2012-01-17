@@ -1,0 +1,32 @@
+<assembly>
+    <!--id>sbpillar</id-->
+    <formats>
+        <format>zip</format>
+    </formats>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <useTransitiveFiltering>true</useTransitiveFiltering>
+        </dependencySet>
+    </dependencySets>
+
+    <fileSets>
+        <fileSet>
+            <outputDirectory>conf</outputDirectory>
+            <directory>src/main/resources</directory>
+            <excludes>
+            	<exclude>xjb-bindings/</exclude>           
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>bin</outputDirectory>
+            <directory>src/main/scripts</directory>
+            <fileMode>0755</fileMode>
+            <filtered>true</filtered>
+        </fileSet>
+    </fileSets>
+
+
+</assembly>
+
