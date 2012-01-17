@@ -108,7 +108,7 @@
     </site>
   </distributionManagement>
 
-  <description>The Bitrepository system enables longterm preservation of data in a distributed, highly redundant 
+  <description>The Bit Repository system enables long-term preservation of data in a distributed, highly redundant 
   architecture. The data integrity is ensured by using multiple, independently developed data storage systems (﻿Pillars) 
   across different organizations, together with functionality for maintaining the ﻿integrity of the data over time. 
   </description>
@@ -120,9 +120,9 @@
   </organization>
 
   <scm>
-    <url>https://sbforge.org/fisheye/browse/Bitmagasinet/bitrepository-reference/trunk/</url>
-    <connection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk</connection>
-    <developerConnection>scm:svn:https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk</developerConnection>
+    <url>https://sbforge.org/fisheye/browse/bitrepository-reference</url>
+    <connection>scm:git:https://sbforge.org/fisheye/git/bitrepository-reference.git</connection>
+    <developerConnection>scm:git:https://sbforge.org/fisheye/git/bitrepository-reference.git</developerConnection>
   </scm>
 
   <dependencies>
