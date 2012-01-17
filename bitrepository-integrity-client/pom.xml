@@ -4,9 +4,11 @@
     <artifactId>bitrepository-parent</artifactId>
     <version>0.6.1-SNAPSHOT</version>
   </parent>
+  
   <modelVersion>4.0.0</modelVersion>
   <artifactId>bitrepository-integrity-client</artifactId>
   <name>Bitrepository Integrity Client</name>
+  <packaging>war</packaging>
   <description>Integrity functionality consists of regularly collecting information about the data in the various
         pillars, and ensuring that the data are consistent. In case of inconsistency, integrity functionality ensures
         processes for raising alarms and restoring consistency.
@@ -42,6 +44,7 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
+    
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-common</artifactId>
@@ -49,8 +52,34 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
+    
+    <dependency>
+      <groupId>javax</groupId>
+      <artifactId>javaee-web-api</artifactId>
+      <version>6.0</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-server</artifactId>
+      <version>1.8</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+      <version>1.1</version>
+    </dependency>
   </dependencies>
-    <build>
+   <!--  <build>
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -75,6 +104,6 @@
                 </configuration>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
 
 </project>
