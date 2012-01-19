@@ -2,8 +2,8 @@
  * #%L
  * bitrepository-access-client
  * *
- * $Id$
- * $HeadURL$
+ * $Id: PutFileRequestHandler.java 687 2012-01-09 12:56:47Z ktc $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/main/java/org/bitrepository/pillar/messagehandler/PutFileRequestHandler.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -147,8 +147,8 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             fileForValidation = archive.downloadFileForValidation(message.getFileID(), 
                     fe.downloadFromServer(new URL(message.getFileAddress())));
         } catch (IOException e) {
-            throw new CoordinationLayerException("Could not download the file '" + message.getFileID() + "' from the url '"
-                    + message.getFileAddress() + "'.", e);
+            throw new CoordinationLayerException("Could not download the file '" + message.getFileID() 
+                    + "' from the url '" + message.getFileAddress() + "'.", e);
         }
         
         if(message.getChecksumDataForNewFile() != null) {
@@ -193,9 +193,10 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         if(message.getChecksumRequestForNewFile() != null) {
         	checksumForValidation.setChecksumValue(ChecksumUtils.generateChecksum(retrievedFile, 
                     message.getChecksumRequestForNewFile().getChecksumType(), 
-                    message.getChecksumRequestForNewFile().getChecksumType()).getBytes());
+                    message.getChecksumRequestForNewFile().getChecksumSalt()).getBytes());
         	checksumForValidation.setCalculationTimestamp(CalendarUtils.getNow());
         	checksumForValidation.setChecksumSpec(message.getChecksumRequestForNewFile());
+            log.info("Requested checksum calculated: " + checksumForValidation);
         } else {
             // TODO is such a request required?
             log.info("No checksum validation requested.");

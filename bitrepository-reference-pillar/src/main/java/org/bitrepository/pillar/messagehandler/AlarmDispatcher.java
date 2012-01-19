@@ -27,14 +27,10 @@ package org.bitrepository.pillar.messagehandler;
 import java.math.BigInteger;
 import java.util.UUID;
 
-import javax.xml.bind.JAXBException;
-
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmcodeType;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.ProtocolConstants;
