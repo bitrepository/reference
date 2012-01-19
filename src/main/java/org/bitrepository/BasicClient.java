@@ -32,6 +32,8 @@ import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
+import org.bitrepository.utils.HexUtils;
+import org.bitrepository.utils.XMLGregorianCalendarConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

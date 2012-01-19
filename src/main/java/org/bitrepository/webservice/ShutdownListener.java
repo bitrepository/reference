@@ -5,6 +5,7 @@ import javax.servlet.ServletContextListener;
 
 import org.bitrepository.BasicClient;
 import org.bitrepository.BasicClientFactory;
+import org.bitrepository.utils.LogbackConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,12 +24,16 @@ public class ShutdownListener implements ServletContextListener {
      */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        log.debug("Initializing servlet context");
         String confDir = sce.getServletContext().getInitParameter("configurationDir");
         if(confDir == null) {
         	throw new RuntimeException("No configuration directory specified!");
         }
         log.debug("Configuration dir = " + confDir);
+        try {
+			new LogbackConfigLoader(confDir + "/logback.xml");
+		} catch (Exception e) {
+			log.info("Failed to read log configuration file. Falling back to default.");
+		} 
         BasicClientFactory.init(confDir);
         BasicClient client = BasicClientFactory.getInstance();
         log.debug("Servlet context initialized");

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
+import org.bitrepository.utils.HexUtils;
 
 public class GetChecksumsResults {
 

@@ -1,4 +1,4 @@
-package org.bitrepository;
+package org.bitrepository.utils;
 
 import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;

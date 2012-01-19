@@ -1,4 +1,4 @@
-package org.bitrepository;
+package org.bitrepository.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
