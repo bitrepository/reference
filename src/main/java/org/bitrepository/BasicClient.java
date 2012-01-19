@@ -361,10 +361,9 @@ public class BasicClient {
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumValue(HexUtils.stringToByteArray(checksum));
         ChecksumSpecTYPE deleteChecksumSpec = new ChecksumSpecTYPE();
-        if(checksumSalt == null || !checksumSalt.equals("")) {
-        	checksumSalt = null;
+        if(checksumSalt != null && !checksumSalt.equals("")) {
+        	deleteChecksumSpec.setChecksumSalt(HexUtils.stringToByteArray(checksumSalt));	
         }
-        deleteChecksumSpec.setChecksumSalt(HexUtils.stringToByteArray(checksumSalt));
         deleteChecksumSpec.setChecksumType(checksumType);
         Date now = new Date();
         checksumData.setCalculationTimestamp(XMLGregorianCalendarConverter.asXMLGregorianCalendar(now));
