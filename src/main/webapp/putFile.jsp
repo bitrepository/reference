@@ -6,6 +6,7 @@
 <script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="defaultText.js"></script>
+<script type="text/javascript" src="functions.js"></script>
 
 	<script>
 	    $(function() {
@@ -74,7 +75,7 @@
             <input type="submit" value="Put file"/>
         </form> 
     </div>
-    <div id="messagediv"></div>
+    <div id="putMessagediv"></div>
         
     <script>
         $("#putFileForm").submit(function() {
@@ -88,15 +89,19 @@
             var approveChecksumSalt = $("#approveChecksumSalt").val();      
     
             if (fileName == "") {
-                //$('#messagediv').html("<p2>Invalid filename!</p2>").show().fadeOut(5000);
+                //$('#putMessagediv').html("<p2>Invalid filename!</p2>").show();
                 return false;
             }
             if (fileAddr == "") {
-                //$('#messagediv').html("<p2>Invalid address!</p2>").show().fadeOut(5000);
+                //$('#putMessagediv').html("<p2>Invalid address!</p2>").show();
+                return false;
+            }
+            if(!is_int(fileSize)) {
+                $('#putMessagediv').html("<p2>Invalid filesize!</p2>").show();
                 return false;
             }
             if(fileSize == "") {
-                //$('#messagediv').html("<p2>Invalid filesize!</p2>").show().fadeOut(5000);
+                //$('#putMessagediv').html("<p2>Invalid filesize!</p2>").show();
                 return false;
             }
             if(approveChecksumSalt == "disabled") {
@@ -106,7 +111,7 @@
             		"&putChecksum=" + verifyChecksumVal + "&putChecksumType=" + verifyChecksumType + "&putSalt=" + 
             		verifyChecksumSalt + "&approveChecksumType=" + approveChecksumType + "&approveSalt=" + 
             		approveChecksumSalt;
-            $('#messagediv').load(command).show().fadeOut(5000);
+            $('#putMessagediv').load(command).show();
             return true;
         });
     </script>   

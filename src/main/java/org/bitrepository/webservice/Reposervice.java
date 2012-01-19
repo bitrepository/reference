@@ -247,6 +247,9 @@ public class Reposervice {
     		@QueryParam("fileIDs") String fileIDs,
     		@QueryParam("allFileIDs") boolean allFileIDs) {
     	GetFileIDsResults results = client.getFileIDs(fileIDs, allFileIDs);
+    	if(results.getResults() == null) {
+    		return "<p>Get file ID's provided no results.</p>";
+    	}
     	StringBuilder sb = new StringBuilder();
     	sb.append("<html><head><style> #good{background-color:#31B404;} #bad{background-color:#B40404;} " +
     			"td{padding: 5px;}</style></head><body>"); 

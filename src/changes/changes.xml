@@ -40,5 +40,10 @@
         Added support for replace file functionality
       </action>
     </release>
+    <release version="0.9.0" date="2012-02-xx" description="Logging..">
+      <action dev="Kim" type="Add">
+        Added possibility of specifying logback settings. 
+      </action>
+    </release>
   </body>
 </document>
