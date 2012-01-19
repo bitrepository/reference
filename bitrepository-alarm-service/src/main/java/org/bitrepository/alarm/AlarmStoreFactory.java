@@ -53,8 +53,7 @@ public class AlarmStoreFactory {
     	Properties properties = new Properties();
     	try {
     		String propertiesFile = confDir + "/" + CONFIGFILE;
-    		BufferedReader reader
-    		   = new BufferedReader(new FileReader(propertiesFile));
+    		BufferedReader reader = new BufferedReader(new FileReader(propertiesFile));
     		properties.load(reader);
     		
             System.setProperty("javax.net.ssl.keyStore", 

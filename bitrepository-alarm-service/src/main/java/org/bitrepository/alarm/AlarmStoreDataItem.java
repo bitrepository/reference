@@ -82,15 +82,17 @@ public class AlarmStoreDataItem {
 		String raiser;
 		AlarmcodeType alarmCode;
 		String alarmText;
+		String dateStr;
 		
 		StringTokenizer st = new StringTokenizer(data, "#!#");
 		if(st.countTokens() != 4) {
 			throw new IllegalArgumentException("The input string did not contain excatly 4 tokens");
 		}
 		try {
-			date = DatatypeFactory.newInstance().newXMLGregorianCalendar(st.nextToken());
+			dateStr = st.nextToken();
+			date = DatatypeFactory.newInstance().newXMLGregorianCalendar(dateStr.trim());
 			raiser = st.nextToken();
-			alarmCode = AlarmcodeType.valueOf(st.nextToken());
+			alarmCode = AlarmcodeType.valueOf(st.nextToken().trim());
 			alarmText = st.nextToken();
 			return new AlarmStoreDataItem(date, raiser, alarmCode, alarmText);
 		} catch (DatatypeConfigurationException e) {

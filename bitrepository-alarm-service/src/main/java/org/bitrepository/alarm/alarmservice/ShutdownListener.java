@@ -5,6 +5,8 @@ import javax.servlet.ServletContextListener;
 
 import org.bitrepository.alarm.AlarmStore;
 import org.bitrepository.alarm.AlarmStoreFactory;
+import org.bitrepository.alarm.utils.LogbackConfigLoader;
+import org.bitrepository.common.ConfigurationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,12 +25,17 @@ public class ShutdownListener implements ServletContextListener {
      */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        log.debug("Initializing servlet context");
         String confDir = sce.getServletContext().getInitParameter("alarmServiceConfDir");
         if(confDir == null) {
         	throw new RuntimeException("No configuration directory specified!");
         }
         log.debug("Configuration dir = " + confDir);
+        System.setProperty(ConfigurationFactory.CONFIGURATION_DIR_SYSTEM_PROPERTY, confDir);
+        try {
+			new LogbackConfigLoader(confDir + "/logback.xml");
+		} catch (Exception e) {
+			log.info("Failed to read log configuration file. Falling back to default.");
+		} 
         AlarmStoreFactory.init(confDir);
         AlarmStore alarmStore = AlarmStoreFactory.getInstance();
         log.debug("Servlet context initialized");
