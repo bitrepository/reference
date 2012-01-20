@@ -24,9 +24,11 @@
  */
 package org.bitrepository.common.settings;
 
+import java.util.List;
+
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
-import org.bitrepository.settings.collectionsettings.Permissions;
+import org.bitrepository.settings.collectionsettings.Permission;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
 
 /**
@@ -72,8 +74,8 @@ public class Settings {
     /**
      * Wraps the {@link org.bitrepository.settings.collectionsettings.ProtocolSettings#getPermissions()} method.
      */
-    public Permissions getPermissions() {
-        return getCollectionSettings().getProtocolSettings().getPermissions();
+    public List<Permission> getPermissions() {
+        return getCollectionSettings().getPermissionSet().getPermission();
     }
     
     /**

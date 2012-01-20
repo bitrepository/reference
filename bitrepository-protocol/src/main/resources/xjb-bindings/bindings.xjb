@@ -4,19 +4,7 @@
     <xjc:serializable />
   </jaxb:globalBindings>
   <jaxb:bindings schemaLocation="BitRepositoryElements.xsd">
-    <jaxb:bindings node="//xs:simpleType[@name='ALARMCODE_TYPE']">
-      <jaxb:typesafeEnumClass name="AlarmcodeType">
-        <jaxb:typesafeEnumMember value="500" name="COMPONENT_FAILURE" />
-        <jaxb:typesafeEnumMember value="501" name="INCONSISTENT_REQUEST" />
-        <jaxb:typesafeEnumMember value="502" name="CHECKSUM" />
-        <jaxb:typesafeEnumMember value="503" name="FAILED_TRANSFER" />
-        <jaxb:typesafeEnumMember value="504" name="FAILED_OPERATION" />
-        <jaxb:typesafeEnumMember value="505" name="INVALID_MESSAGE" />
-        <jaxb:typesafeEnumMember value="506" name="INVALID_MESSAGE_VERSION" />
-        <jaxb:typesafeEnumMember value="507" name="TIMEOUT" />
-      </jaxb:typesafeEnumClass>
-    </jaxb:bindings>
-
+  
     <jaxb:bindings node="//xs:simpleType[@name='ResponseCode_TYPE']">
       <jaxb:typesafeEnumClass name="ResponseCode">
         <jaxb:typesafeEnumMember value="200" name="IDENTIFICATION_POSITIVE" />

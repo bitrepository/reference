@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
-import org.bitrepository.bitrepositoryelements.AlarmcodeType;
+import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -150,7 +150,7 @@ public class PillarMediator extends AbstractMessageListener {
         
         // create a descriptor.
         Alarm ad = new Alarm();
-        ad.setAlarmCode(AlarmcodeType.FAILED_OPERATION);
+        ad.setAlarmCode(AlarmCode.FAILED_OPERATION);
         ad.setAlarmText(msg);
         
         alarmDispatcher.sendAlarm(ad);

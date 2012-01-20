@@ -162,8 +162,6 @@ public class MessageBusTest extends ExtendedTestCase {
             MessageBusConfiguration config = new MessageBusConfiguration();
             config.setURL("tcp://sandkasse-01.kb.dk:61616");
             config.setName("kb-test-messagebus");
-            config.setLogin("");
-            config.setPassword("");
 
             addStep("Initiating the connection to the messagebus based on the first configuration", 
             "This should definitly be allowed.");

@@ -6,7 +6,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.bitrepositoryelements.AlarmcodeType;
+import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.Alarm;
 
 
@@ -19,13 +19,13 @@ public class AlarmStoreDataItem {
 
 	private XMLGregorianCalendar date;
 	private String raiserID;
-	private AlarmcodeType alarmCode;
+	private AlarmCode alarmCode;
 	private String alarmText;
 	
 	/**
 	 * Private constructor to be used when creating a AlarmStoreDataItem by deserializing from a string. 
 	 */
-	private AlarmStoreDataItem(XMLGregorianCalendar date, String raiser, AlarmcodeType alarmCode,
+	private AlarmStoreDataItem(XMLGregorianCalendar date, String raiser, AlarmCode alarmCode,
 			String alarmText) {
 		this.date = date;
 		this.raiserID = raiser;
@@ -80,7 +80,7 @@ public class AlarmStoreDataItem {
 	public static AlarmStoreDataItem deserialize(String data) throws IllegalArgumentException {
 		XMLGregorianCalendar date;
 		String raiser;
-		AlarmcodeType alarmCode;
+		AlarmCode alarmCode;
 		String alarmText;
 		
 		StringTokenizer st = new StringTokenizer(data, "#!#");
@@ -90,7 +90,7 @@ public class AlarmStoreDataItem {
 		try {
 			date = DatatypeFactory.newInstance().newXMLGregorianCalendar(st.nextToken());
 			raiser = st.nextToken();
-			alarmCode = AlarmcodeType.valueOf(st.nextToken());
+			alarmCode = AlarmCode.valueOf(st.nextToken());
 			alarmText = st.nextToken();
 			return new AlarmStoreDataItem(date, raiser, alarmCode, alarmText);
 		} catch (DatatypeConfigurationException e) {
