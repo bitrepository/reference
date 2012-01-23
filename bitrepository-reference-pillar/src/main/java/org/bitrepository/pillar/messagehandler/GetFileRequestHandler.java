@@ -95,7 +95,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.OPERATION_FAILED);
+            fri.setResponseCode(ResponseCode.OPERATION_FAILURE);
             fri.setResponseText("Error: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
@@ -116,7 +116,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
             log.warn("The file '" + message.getFileID() + "' has been requested, but we do not have that file!");
             // Then tell the mediator, that we failed.
             ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            fri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             fri.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
                     + "not have that file!");
             throw new InvalidMessageException(fri);
@@ -184,7 +184,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         // make ProgressResponse to tell that we are handling this.
         GetFileFinalResponse fResponse = createGetFileFinalResponse(message);
         ResponseInfo frInfo = new ResponseInfo();
-        frInfo.setResponseCode(ResponseCode.SUCCESS);
+        frInfo.setResponseCode(ResponseCode.REQUEST_COMPLETED);
         frInfo.setResponseText("Data delivered.");
         fResponse.setResponseInfo(frInfo);
 

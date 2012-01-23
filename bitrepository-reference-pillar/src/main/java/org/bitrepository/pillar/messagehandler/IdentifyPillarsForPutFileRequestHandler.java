@@ -94,7 +94,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
         
         if(archive.hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE);
+            irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
             irInfo.setResponseText("The file '" + message.getFileID() 
                     + "' already exists within the archive.");
             
@@ -119,7 +119,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
                 - settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
         if(useableSizeLeft < fileSize.longValue()) {
             ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FAILURE);
+            irInfo.setResponseCode(ResponseCode.GENERAL_FAILURE);
             irInfo.setResponseText("Not enough space left in this pillar. Requires '" 
                     + fileSize.longValue() + "' but has only '" + useableSizeLeft + "'");
             

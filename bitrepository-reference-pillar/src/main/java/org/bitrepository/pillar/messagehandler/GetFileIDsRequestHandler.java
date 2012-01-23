@@ -98,7 +98,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         } catch (RuntimeException e) {
             log.warn("Internal RuntimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.OPERATION_FAILED);
+            fri.setResponseCode(ResponseCode.OPERATION_FAILURE);
             fri.setResponseText("GetFileIDs operation failed with the exception: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
@@ -156,7 +156,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
                 res.setResultAddress(resultingAddress);
             } catch (Exception e) {
                 ResponseInfo ir = new ResponseInfo();
-                ir.setResponseCode(ResponseCode.FAILURE);
+                ir.setResponseCode(ResponseCode.GENERAL_FAILURE);
                 ir.setResponseText(e.getMessage());
                 throw new InvalidMessageException(ir, e);
             }
@@ -217,7 +217,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     private FileIDsDataItem getDataItemForFileID(String fileID) {
         if(!archive.getFile(fileID).isFile()) {
             ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            ri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             ri.setResponseText("The file '" + fileID + "' is not valid. It either does not exist or "
                     +" it is a directory instead of a file.");
             throw new InvalidMessageException(ri);
@@ -302,7 +302,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         GetFileIDsFinalResponse fResponse = createFinalResponse(message);
         
         ResponseInfo fri = new ResponseInfo();
-        fri.setResponseCode(ResponseCode.SUCCESS);
+        fri.setResponseCode(ResponseCode.REQUEST_COMPLETED);
         fri.setResponseText("Finished locating the requested files.");
         fResponse.setResponseInfo(fri);
         fResponse.setResultingFileIDs(results);

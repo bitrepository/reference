@@ -29,6 +29,7 @@ import java.util.Arrays;
 
 import org.bitrepository.access.getfile.TestGetFileMessageFactory;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
+import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.testng.Assert;
@@ -38,13 +39,13 @@ import org.testng.annotations.Test;
 public class FastestPillarSelectorForGetFileTest {
     private static final PillarStub slowPillar = 
         new PillarStub("slowPillar", "slowPillarTopic", new BigInteger("1"), 
-                TimeMeasureTYPE.TimeMeasureUnit.HOURS);
+                TimeMeasureUnit.HOURS);
     private static final PillarStub fastPillar = 
         new PillarStub("fastPillar", "fastPillarTopic", new BigInteger("2"), 
-                TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
+                TimeMeasureUnit.MILLISECONDS);
     private static final PillarStub mediumPillar = 
         new PillarStub("mediumPillar", "mediumPillarTopic", new BigInteger("1000"), 
-                TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
+                TimeMeasureUnit.MILLISECONDS);
     private static final String[] PILLAR_IDS = 
         new String[] { slowPillar.pillarID, fastPillar.pillarID, mediumPillar.pillarID};
     private FastestPillarSelectorForGetFile selector;
@@ -104,14 +105,14 @@ public class FastestPillarSelectorForGetFileTest {
         private final String pillarID;
         private final String pillarTopic;
         private final BigInteger timeToDeliverValue;
-        private final TimeMeasureTYPE.TimeMeasureUnit timeToDeliverUnit;
+        private final TimeMeasureUnit timeToDeliverUnit;
 
         private static final TestGetFileMessageFactory messageFactory = 
             new TestGetFileMessageFactory("FastestPillarSelectorForGetFileTest");
 
         public PillarStub(String pillarID, String pillarTopic,
                 BigInteger timeToDeliverValue, 
-                TimeMeasureTYPE.TimeMeasureUnit timeToDeliverUnit) {
+                TimeMeasureUnit timeToDeliverUnit) {
             this.pillarID = pillarID;
             this.pillarTopic = pillarTopic;
             this.timeToDeliverValue = timeToDeliverValue;

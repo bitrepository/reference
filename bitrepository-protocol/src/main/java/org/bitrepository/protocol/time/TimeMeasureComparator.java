@@ -29,7 +29,7 @@ import java.util.Comparator;
 import java.util.UnknownFormatConversionException;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
+import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.bitrepository.common.ArgumentValidator;
 
 /** Used for comparing {@link TimeMeasureTYPE} objects.*/
@@ -54,16 +54,16 @@ public final class TimeMeasureComparator {
         return convertToMilliSeconds(time1).compareTo(convertToMilliSeconds(time2));
     }
     
-    /** Normalizes <code>TimeMeasureTYPE</code> into miliseconds.
+    /** Normalizes <code>TimeMeasureTYPE</code> into milliseconds.
      * 
      * @param timeMeasure The time measure to convert
-     * @return The time measure in miliseconds
-     * @throws UnknownFormatConversionException Unable to interprete the supplied timeMeasure.
+     * @return The time measure in milliseconds
+     * @throws UnknownFormatConversionException Unable to interpret the supplied timeMeasure.
      */
     private static BigInteger convertToMilliSeconds(TimeMeasureTYPE timeMeasure) throws UnknownFormatConversionException {
-        if(timeMeasure.getTimeMeasureUnit().equals(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS)) {
+        if(TimeMeasureUnit.MILLISECONDS.equals(timeMeasure.getTimeMeasureUnit())) {
             return timeMeasure.getTimeMeasureValue();
-        } else if ((timeMeasure.getTimeMeasureUnit().equals(TimeMeasureUnit.HOURS))) {
+        } else if ((TimeMeasureUnit.HOURS.equals(timeMeasure.getTimeMeasureUnit()))) {
             return timeMeasure.getTimeMeasureValue().multiply(new BigInteger("3600000"));     
         } else {
             throw new UnknownFormatConversionException ("Unable to compare times, unknown unit " + 

@@ -84,7 +84,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
     private void checkThatRequestedFileAreAvailable(IdentifyPillarsForDeleteFileRequest message) {
         if(!archive.hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("Could not find the requested file to delete.");
             throw new IdentifyPillarsException(irInfo);
         }

@@ -104,7 +104,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         // Throw exception if any files are missing.
         if(!missingFiles.isEmpty()) {
             ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
             
             throw new IdentifyPillarsException(irInfo);

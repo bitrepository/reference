@@ -333,7 +333,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     receivedGetChecksumsRequest, PILLAR1_ID, pillar1DestinationId);
             
             ResponseInfo rfInfo = new ResponseInfo();
-            rfInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            rfInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             rfInfo.setResponseText("No such file.");
             completeMsg.setResponseInfo(rfInfo);
             completeMsg.setResultingChecksums(null);
