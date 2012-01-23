@@ -172,8 +172,8 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
             fileForValidation = archive.downloadFileForValidation(message.getFileID(), 
                     fe.downloadFromServer(new URL(message.getFileAddress())));
         } catch (IOException e) {
-            throw new CoordinationLayerException("Could not download the file '" + message.getFileID() + "' from the url '"
-                    + message.getFileAddress() + "'.", e);
+            throw new CoordinationLayerException("Could not download the file '" + message.getFileID() 
+                    + "' from the url '" + message.getFileAddress() + "'.", e);
         }
         
         ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();

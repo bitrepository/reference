@@ -27,7 +27,7 @@ package org.bitrepository.pillar;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.bitrepository.protocol.messagebus.MessageBus;
 
 /**
  * Component factory for this module.
@@ -69,12 +69,14 @@ public final class ReferencePillarComponentFactory {
 
     /**
      * Method for retrieving a reference pillar.
+     * @param messageBus The messageBus for the reference pillar.
      * @param settings The settings for the pillar.
      * @return The reference requested pillar.
      */
-    public ReferencePillar getPillar(Settings settings) {
+    public ReferencePillar getPillar(MessageBus messagebus, Settings settings) {
         ArgumentValidator.checkNotNull(settings, "settings");
+        ArgumentValidator.checkNotNull(messagebus, "messagebus");
         
-        return new ReferencePillar(MessageBusManager.getMessageBus(settings), settings);
+        return new ReferencePillar(messagebus, settings);
     }
 }

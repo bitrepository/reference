@@ -2,8 +2,8 @@
  * #%L
  * Bitmagasin integrationstest
  * 
- * $Id$
- * $HeadURL$
+ * $Id: ReferencePillarLauncher.java 685 2012-01-06 16:35:17Z jolf $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/main/java/org/bitrepository/pillar/ReferencePillarLauncher.java $
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -27,6 +27,7 @@ package org.bitrepository.pillar;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
  * Method for launching the ReferencePillar. 
@@ -64,7 +65,8 @@ public final class ReferencePillarLauncher {
                 new XMLFileSettingsLoader(pathToSettings));
         try {
             Settings settings = settingsLoader.getSettings(collectionId);
-            ReferencePillarComponentFactory.getInstance().getPillar(settings);
+            ReferencePillarComponentFactory.getInstance().getPillar(MessageBusManager.getMessageBus(settings), 
+                    settings);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);

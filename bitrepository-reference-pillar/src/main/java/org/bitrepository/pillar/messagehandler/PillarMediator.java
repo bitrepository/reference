@@ -360,4 +360,16 @@ public class PillarMediator extends AbstractMessageListener {
             noHandlerAlarm(message.getClass());
         }
     }
+
+    /**
+    * Closes the mediator by removing all the message handlers.
+    */
+    @SuppressWarnings("rawtypes")
+    public void close() {
+        handlers.clear();
+        handlers = new HashMap<String, PillarMessageHandler>(); 
+        // removes to both the general topic and the local queue.
+        messagebus.removeListener(settings.getCollectionDestination(), this);
+        messagebus.removeListener(settings.getReferenceSettings().getPillarSettings().getReceiverDestination(), this);
+    }
 }
