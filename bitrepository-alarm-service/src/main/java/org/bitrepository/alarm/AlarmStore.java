@@ -37,25 +37,8 @@ public class AlarmStore {
 		alarmService.shutdown();
 	}
 	
-	public String getShortList() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("<table id=\"users\" class=\"ui-widget ui-widget-content\">\n");
-		sb.append("<thead>\n");
-		sb.append("<tr class=\"ui-widget-header\">\n");
-		sb.append("<th width=\"70\">Date</th>\n");
-		sb.append("<th width=\"80\">Raiser</th>\n");
-		sb.append("<th width=\"80\">Alarm code</th>\n");
-		sb.append("<th>Description</th>\n");
-		sb.append("</tr>\n");
-		sb.append("</thead>\n");
-		sb.append("<tbody>\n");
-		for(AlarmStoreDataItem item : shortAlarmList) {
-			sb.append(item.toString());	
-			sb.append("\n");
-		}
-		sb.append("</tbody>\n");
-		sb.append("</table>\n");
-		return sb.toString();
+	public ArrayBlockingQueue<AlarmStoreDataItem> getShortList() {
+		return shortAlarmList;
 	}
 	
 	public String getFullList() {
