@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
+import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
@@ -191,7 +192,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
             IdentifyPillarsForGetFileResponse averageReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
                     receivedIdentifyRequestMessage, averagePillarID, pillar2DestinationId);
             TimeMeasureTYPE averageTime = new TimeMeasureTYPE();
-            averageTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
+            averageTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
             averageTime.setTimeMeasureValue(BigInteger.valueOf(100L));
             averageReply.setTimeToDeliver(averageTime);
             messageBus.sendMessage(averageReply);
@@ -199,7 +200,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
             IdentifyPillarsForGetFileResponse fastReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
                     receivedIdentifyRequestMessage, fastPillarID, pillar1DestinationId);
             TimeMeasureTYPE fastTime = new TimeMeasureTYPE();
-            fastTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
+            fastTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
             fastTime.setTimeMeasureValue(BigInteger.valueOf(10L));
             fastReply.setTimeToDeliver(fastTime);
             messageBus.sendMessage(fastReply);
@@ -208,7 +209,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                     receivedIdentifyRequestMessage, slowPillarID, pillar2DestinationId);
             TimeMeasureTYPE slowTime = new TimeMeasureTYPE();
             slowTime.setTimeMeasureValue(BigInteger.valueOf(1L));
-            slowTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.HOURS);
+            slowTime.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
             slowReply.setTimeToDeliver(slowTime);
             messageBus.sendMessage(slowReply);
 
@@ -262,7 +263,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
             IdentifyPillarsForGetFileResponse averageReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
                     receivedIdentifyRequestMessage, averagePillarID, pillar2DestinationId);
             TimeMeasureTYPE averageTime = new TimeMeasureTYPE();
-            averageTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
+            averageTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
             averageTime.setTimeMeasureValue(BigInteger.valueOf(100L));
             averageReply.setTimeToDeliver(averageTime);
             messageBus.sendMessage(averageReply);
@@ -270,7 +271,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
             IdentifyPillarsForGetFileResponse fastReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
                     receivedIdentifyRequestMessage, fastPillarID, pillar1DestinationId);
             TimeMeasureTYPE fastTime = new TimeMeasureTYPE();
-            fastTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
+            fastTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
             fastTime.setTimeMeasureValue(BigInteger.valueOf(10L));
             fastReply.setTimeToDeliver(fastTime);
             messageBus.sendMessage(fastReply);
@@ -381,7 +382,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 "The client should generate 1 PillarIdentified event followed by a operation failed event.");
         IdentifyPillarsForGetFileResponse pillar1Response = testMessageFactory.createIdentifyPillarsForGetFileResponse(
                 receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId); 
-        pillar1Response.getResponseInfo().setResponseCode(ResponseCode.FILE_NOT_FOUND);
+        pillar1Response.getResponseInfo().setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
         pillar1Response.getResponseInfo().setResponseText("File " + 
                 receivedIdentifyRequestMessage.getFileID() + " not present on this pillar " + PILLAR1_ID);
         messageBus.sendMessage(pillar1Response);
@@ -413,14 +414,14 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
         IdentifyPillarsForGetFileResponse pillar1Response = testMessageFactory.createIdentifyPillarsForGetFileResponse(
                 receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId); 
-        pillar1Response.getResponseInfo().setResponseCode(ResponseCode.FILE_NOT_FOUND);
+        pillar1Response.getResponseInfo().setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
         pillar1Response.getResponseInfo().setResponseText("File " + 
                 receivedIdentifyRequestMessage.getFileID() + "not present on this pillar " );
         messageBus.sendMessage(pillar1Response);
 
         IdentifyPillarsForGetFileResponse pillar2Response = testMessageFactory.createIdentifyPillarsForGetFileResponse(
                 receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId); 
-        pillar2Response.getResponseInfo().setResponseCode(ResponseCode.FILE_NOT_FOUND);
+        pillar2Response.getResponseInfo().setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
         pillar2Response.getResponseInfo().setResponseText("File " + 
                 receivedIdentifyRequestMessage.getFileID() + "not present on this pillar " );
         messageBus.sendMessage(pillar2Response);

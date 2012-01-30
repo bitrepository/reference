@@ -83,14 +83,9 @@ public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandle
      * @param message The request for the identification for the GetFileRequest operation.
      */
     private void checkThatFileIsAvailable(IdentifyPillarsForGetFileRequest message) {
-        if(message.getFileID() == null) {
-            log.debug("No fileid given in the identification request.");
-            return;
-        }
-        
         if(!archive.hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("The file '" + message.getFileID() 
                     + "' does not exist within the archive.");
             

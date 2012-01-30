@@ -28,7 +28,7 @@ import java.math.BigInteger;
 import java.util.UUID;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
-import org.bitrepository.bitrepositoryelements.AlarmcodeType;
+import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
@@ -77,7 +77,7 @@ public class IntegrityAlarmDispatcher {
      */
     public void integrityFailed(IntegrityReport report) {
         Alarm ad = new Alarm();
-        ad.setAlarmCode(AlarmcodeType.INCONSISTENT_REQUEST);
+        ad.setAlarmCode(AlarmCode.INCONSISTENT_REQUEST);
         ad.setAlarmText(report.generateReport());
         sendAlarm(ad);
     }

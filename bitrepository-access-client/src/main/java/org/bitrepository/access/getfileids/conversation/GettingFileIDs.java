@@ -160,7 +160,7 @@ public class GettingFileIDs extends GetFileIDsState {
      * @return Whether the FinalRepsonseInfo tells that the operation has been a success or a failure.
      */
     private boolean isReponseSuccess(ResponseInfo frInfo) throws UnexpectedResponseException { 
-        if(ResponseCode.SUCCESS.equals(frInfo.getResponseCode())) {
+        if(ResponseCode.REQUEST_COMPLETED.equals(frInfo.getResponseCode())) {
             return true;
         } 
         return false;

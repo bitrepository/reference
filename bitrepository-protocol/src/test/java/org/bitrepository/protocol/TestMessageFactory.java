@@ -29,6 +29,7 @@ import java.math.BigInteger;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
+import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 
 /**
  * Abstract message factory for use in tests, which are suppose to be subclasses by functionality specific factories.
@@ -42,8 +43,8 @@ public abstract class TestMessageFactory {
     public static final String FILE_ID_DEFAULT = "default-test-file.txt";
     protected static final BigInteger VERSION_DEFAULT = BigInteger.valueOf(1L);
 
-    protected static final TimeMeasureTYPE.TimeMeasureUnit TIME_MEASURE_UNIT_DEFAULT =
-        TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS;
+    protected static final TimeMeasureUnit TIME_MEASURE_UNIT_DEFAULT =
+        TimeMeasureUnit.MILLISECONDS;
     protected static final BigInteger TIME_MEASURE_VALUE_DEFAULT = BigInteger.valueOf(1000L);
     protected static final ResponseCode RESPONSE_CODE_DEFAULT = ResponseCode.REQUEST_ACCEPTED;
     protected static final ResponseCode IDENTIFY_RESPONSE_CODE_DEFAULT 
@@ -72,7 +73,7 @@ public abstract class TestMessageFactory {
 
     protected static final ResponseInfo FINAL_INFO_DEFAULT = new ResponseInfo();
     static {
-        FINAL_INFO_DEFAULT.setResponseCode(ResponseCode.SUCCESS);
+        FINAL_INFO_DEFAULT.setResponseCode(ResponseCode.REQUEST_COMPLETED);
         FINAL_INFO_DEFAULT.setResponseText("We have liftoff");
     }
 

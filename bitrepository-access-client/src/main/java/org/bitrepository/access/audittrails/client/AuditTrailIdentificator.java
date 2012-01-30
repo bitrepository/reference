@@ -2,7 +2,6 @@ package org.bitrepository.access.audittrails.client;
 
 import java.util.List;
 
-import org.bitrepository.access.audittrails.ComponentDestination;
 import org.bitrepository.protocol.client.BitrepositoryClient;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 

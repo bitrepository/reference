@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
-import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.conversation.AbstractConversation;

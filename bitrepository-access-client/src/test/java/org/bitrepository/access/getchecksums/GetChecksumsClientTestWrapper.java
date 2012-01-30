@@ -26,15 +26,11 @@ package org.bitrepository.access.getchecksums;
 
 import java.net.URL;
 import java.util.Collection;
-import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
-import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 import org.jaccept.TestEventManager;
 
 /**

@@ -27,6 +27,7 @@ package org.bitrepository.protocol.time;
 import java.math.BigInteger;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
+import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -38,11 +39,11 @@ public class TimeMeasureComparatorTest {
     public void testCompareMilliSeconds() {
         TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
         referenceTime.setTimeMeasureValue(new BigInteger("2"));
-        referenceTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
+        referenceTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
         
         TimeMeasureTYPE compareTime = new TimeMeasureTYPE();
         compareTime.setTimeMeasureValue(new BigInteger("3"));
-        compareTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
+        compareTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
         
         Assert.assertTrue(TimeMeasureComparator.compare(referenceTime, compareTime) < 0, referenceTime + 
                 " should be smaller than " + compareTime);
@@ -60,11 +61,11 @@ public class TimeMeasureComparatorTest {
     public void testCompareMilliSecondsToHours() {
         TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
         referenceTime.setTimeMeasureValue(new BigInteger("7200000"));
-        referenceTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.MILLISECONDS);
+        referenceTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
         
         TimeMeasureTYPE compareTime = new TimeMeasureTYPE();
         compareTime.setTimeMeasureValue(new BigInteger("3"));
-        compareTime.setTimeMeasureUnit(TimeMeasureTYPE.TimeMeasureUnit.HOURS);
+        compareTime.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
         
         Assert.assertTrue(TimeMeasureComparator.compare(referenceTime, compareTime) < 0, referenceTime + 
                 " should be smaller than " + compareTime);

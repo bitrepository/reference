@@ -53,9 +53,7 @@ import org.xml.sax.SAXException;
 public final class JaxbHelper {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private final Validator schemaValidator;
-    private final String pathToSchema;
-    private final String schemaName;
+    private final Schema schema;
     
     /**
      * Used for creating a JaxbHelper instance for a specific schema.
@@ -65,12 +63,8 @@ public final class JaxbHelper {
     public JaxbHelper(String pathToSchema, String schemaName) {
         ArgumentValidator.checkNotNullOrEmpty(schemaName, "schemaName");
         if(pathToSchema == null) {
-            this.pathToSchema = "";
-        } else {
-            this.pathToSchema = pathToSchema;
+            pathToSchema = "";
         }
-        
-        this.schemaName = schemaName;
 
         InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(pathToSchema + schemaName);
         log.debug("Creating JAXBHelper based on schema from: " + 
@@ -78,13 +72,11 @@ public final class JaxbHelper {
         LSResourceResolver resourceResolver = new ResourceResolver(pathToSchema);
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         schemaFactory.setResourceResolver(resourceResolver);
-        Schema schema;
         try {
             schema = schemaFactory.newSchema(new SAXSource(new InputSource(schemaStream)));
         } catch (SAXException e) {
             throw new IllegalArgumentException("Unable to parse schema " + schemaName, e);
         }
-        schemaValidator = schema.newValidator();
     }
     
     /**
@@ -110,6 +102,7 @@ public final class JaxbHelper {
      * @throws IOException Problems accessing the input stream.
      */
     public void validate(InputStream inputStream) throws SAXException, IOException {
+        Validator schemaValidator = schema.newValidator();
         schemaValidator.validate(new SAXSource(new InputSource(inputStream)));
     }
 

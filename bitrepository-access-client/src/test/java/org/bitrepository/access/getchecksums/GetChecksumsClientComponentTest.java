@@ -26,12 +26,9 @@ package org.bitrepository.access.getchecksums;
 
 import java.math.BigInteger;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -44,10 +41,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReq
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.clienttest.TestEventHandler;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.bitrepository.protocol.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.protocol.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -60,19 +55,14 @@ import org.testng.annotations.Test;
  */
 public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
     private TestGetChecksumsMessageFactory testMessageFactory;
-    private TestFileStore pillar1FileStore;
-    private TestFileStore pillar2FileStore;
     
     private ChecksumSpecTYPE DEFAULT_CHECKSUM_SPECS;
-    private String DEFAULT_CHECKSUM_VALUE = "940a51b250e7aa82d8e8ea31217ff267";
     
     @BeforeMethod (alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
         if (useMockupPillar()) {
             testMessageFactory = new TestGetChecksumsMessageFactory(
                     settings.getCollectionID());
-            pillar1FileStore = new TestFileStore("Pillar1", TestFileStore.DEFAULT_TEST_FILE);
-//            pillar2FileStore = new TestFileStore("Pillar2", TestFileStore.DEFAULT_TEST_FILE);
         }
         DEFAULT_CHECKSUM_SPECS = new ChecksumSpecTYPE();
         DEFAULT_CHECKSUM_SPECS.setChecksumSalt(null);
@@ -333,7 +323,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     receivedGetChecksumsRequest, PILLAR1_ID, pillar1DestinationId);
             
             ResponseInfo rfInfo = new ResponseInfo();
-            rfInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            rfInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             rfInfo.setResponseText("No such file.");
             completeMsg.setResponseInfo(rfInfo);
             completeMsg.setResultingChecksums(null);

@@ -4,36 +4,6 @@
     <xjc:serializable />
   </jaxb:globalBindings>
   <jaxb:bindings schemaLocation="BitRepositoryElements.xsd">
-    <jaxb:bindings node="//xs:simpleType[@name='ALARMCODE_TYPE']">
-      <jaxb:typesafeEnumClass name="AlarmcodeType">
-        <jaxb:typesafeEnumMember value="500" name="COMPONENT_FAILURE" />
-        <jaxb:typesafeEnumMember value="501" name="INCONSISTENT_REQUEST" />
-        <jaxb:typesafeEnumMember value="502" name="CHECKSUM" />
-        <jaxb:typesafeEnumMember value="503" name="FAILED_TRANSFER" />
-        <jaxb:typesafeEnumMember value="504" name="FAILED_OPERATION" />
-        <jaxb:typesafeEnumMember value="505" name="INVALID_MESSAGE" />
-        <jaxb:typesafeEnumMember value="506" name="INVALID_MESSAGE_VERSION" />
-        <jaxb:typesafeEnumMember value="507" name="TIMEOUT" />
-      </jaxb:typesafeEnumClass>
-    </jaxb:bindings>
-
-    <jaxb:bindings node="//xs:simpleType[@name='ResponseCode_TYPE']">
-      <jaxb:typesafeEnumClass name="ResponseCode">
-        <jaxb:typesafeEnumMember value="200" name="IDENTIFICATION_POSITIVE" />
-        <jaxb:typesafeEnumMember value="201" name="REQUEST_ACCEPTED" />
-        <jaxb:typesafeEnumMember value="202" name="BUFFERING_SUCCESSFUL" />
-        <jaxb:typesafeEnumMember value="203" name="FILE_FOUND" />
-        <jaxb:typesafeEnumMember value="204" name="SUCCESS" />
-        <jaxb:typesafeEnumMember value="400" name="FAILURE" />
-        <jaxb:typesafeEnumMember value="401" name="OPERATION_FAILED" />
-        <jaxb:typesafeEnumMember value="402" name="DUPLICATE_FILE" />
-        <jaxb:typesafeEnumMember value="403" name="REQUEST_NOT_UNDERSTOOD" />
-        <jaxb:typesafeEnumMember value="404" name="FILE_NOT_FOUND" />
-      </jaxb:typesafeEnumClass>
-    </jaxb:bindings>
-
-    <jaxb:bindings node="//xs:element[@name='TimeMeasureUnit']/xs:simpleType">
-      <jaxb:typesafeEnumClass name="TimeMeasureUnit" />
-    </jaxb:bindings>
+  
   </jaxb:bindings>
 </jaxb:bindings>

@@ -166,7 +166,7 @@ public class GettingChecksums extends GetChecksumsState {
      * @return Whether the FinalRepsonseInfo tells that the operation has been a success or a failure.
      */
     private boolean isReponseSuccess(ResponseInfo frInfo) { 
-        if(ResponseCode.SUCCESS.equals(frInfo.getResponseCode())) {
+        if(ResponseCode.REQUEST_COMPLETED.equals(frInfo.getResponseCode())) {
             return true;
         }
         return false;

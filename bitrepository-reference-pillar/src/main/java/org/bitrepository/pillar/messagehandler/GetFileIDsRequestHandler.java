@@ -2,8 +2,8 @@
  * #%L
  * bitrepository-access-client
  * *
- * $Id$
- * $HeadURL$
+ * $Id: GetFileIDsRequestHandler.java 685 2012-01-06 16:35:17Z jolf $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/main/java/org/bitrepository/pillar/messagehandler/GetFileIDsRequestHandler.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -30,7 +30,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
@@ -98,7 +100,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         } catch (RuntimeException e) {
             log.warn("Internal RuntimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.OPERATION_FAILED);
+            fri.setResponseCode(ResponseCode.OPERATION_FAILURE);
             fri.setResponseText("GetFileIDs operation failed with the exception: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
@@ -115,8 +117,39 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         // Validate the message.
         validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
-        
+
+        checkThatAllRequestedFilesAreAvailable(message);
+
         log.debug("Message '" + message.getCorrelationID() + "' validated and accepted.");
+    }
+    
+    /**
+     * Validates that all the requested files in the filelist are present. 
+     * Otherwise an {@link InvalidMessageException} with the appropriate errorcode is thrown.
+     * @param message The message containing the list files. An empty filelist is expected 
+     * when "AllFiles" or the parameter option is used.
+     */
+    public void checkThatAllRequestedFilesAreAvailable(GetFileIDsRequest message) {
+        FileIDs fileids = message.getFileIDs();
+        if(fileids == null) {
+            log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
+            return;
+        }
+        
+        List<String> missingFiles = new ArrayList<String>();
+        String fileID = fileids.getFileID();
+        if(fileID != null && !fileID.isEmpty() && !archive.hasFile(fileID)) {
+            missingFiles.add(fileID);
+        }
+        
+        // Throw exception if any files are missing.
+        if(!missingFiles.isEmpty()) {
+            ResponseInfo irInfo = new ResponseInfo();
+            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
+            irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
+            
+            throw new InvalidMessageException(irInfo);
+        }
     }
     
     /**
@@ -156,7 +189,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
                 res.setResultAddress(resultingAddress);
             } catch (Exception e) {
                 ResponseInfo ir = new ResponseInfo();
-                ir.setResponseCode(ResponseCode.FAILURE);
+                ir.setResponseCode(ResponseCode.GENERAL_FAILURE);
                 ir.setResponseText(e.getMessage());
                 throw new InvalidMessageException(ir, e);
             }
@@ -217,7 +250,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     private FileIDsDataItem getDataItemForFileID(String fileID) {
         if(!archive.getFile(fileID).isFile()) {
             ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            ri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             ri.setResponseText("The file '" + fileID + "' is not valid. It either does not exist or "
                     +" it is a directory instead of a file.");
             throw new InvalidMessageException(ri);
@@ -302,7 +335,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         GetFileIDsFinalResponse fResponse = createFinalResponse(message);
         
         ResponseInfo fri = new ResponseInfo();
-        fri.setResponseCode(ResponseCode.SUCCESS);
+        fri.setResponseCode(ResponseCode.REQUEST_COMPLETED);
         fri.setResponseText("Finished locating the requested files.");
         fResponse.setResponseInfo(fri);
         fResponse.setResultingFileIDs(results);

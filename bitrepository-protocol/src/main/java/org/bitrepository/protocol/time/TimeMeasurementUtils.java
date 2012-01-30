@@ -27,7 +27,7 @@ package org.bitrepository.protocol.time;
 import java.math.BigInteger;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE.TimeMeasureUnit;
+import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 
 /**
  * Provides helper method for accessing {@link TimeMeasurementTYPE} objects. 

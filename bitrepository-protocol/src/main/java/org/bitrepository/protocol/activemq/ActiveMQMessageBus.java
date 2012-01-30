@@ -142,9 +142,7 @@ public class ActiveMQMessageBus implements MessageBus {
         this.configuration = messageBusConfiguration;
         jaxbHelper = new JaxbHelper("xsd/", schemaLocation); 
         // Retrieve factory for connection
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getLogin(),
-                                                                                    configuration.getPassword(),
-                                                                                    configuration.getURL());
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getURL());
 
         try {
             // create and start the connection

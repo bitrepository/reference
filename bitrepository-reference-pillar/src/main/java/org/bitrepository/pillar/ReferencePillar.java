@@ -2,8 +2,8 @@
  * #%L
  * Bitmagasin integrationstest
  * 
- * $Id$
- * $HeadURL$
+ * $Id: ReferencePillar.java 685 2012-01-06 16:35:17Z jolf $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/main/java/org/bitrepository/pillar/ReferencePillar.java $
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -24,6 +24,8 @@
  */
 package org.bitrepository.pillar;
 
+import javax.jms.JMSException;
+
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.messagehandler.PillarMediator;
@@ -37,6 +39,12 @@ import org.slf4j.LoggerFactory;
 public class ReferencePillar {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
+    /** The messagebus for the pillar.*/
+    private final MessageBus messageBus;
+    /** The mediator for the messages.*/
+    private final PillarMediator mediator;
+    /** The archive for the data.*/
+    private final ReferenceArchive archive;
 
     /**
      * Constructor.
@@ -47,11 +55,31 @@ public class ReferencePillar {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         
+        this.messageBus = messageBus;
+        
         log.info("Starting the reference pillar!");
         
-        ReferenceArchive archive = new ReferenceArchive(
-                settings.getReferenceSettings().getPillarSettings().getFileDir());
-        new PillarMediator(messageBus, settings, archive);
+        archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
+        mediator = new PillarMediator(messageBus, settings, archive);
         log.info("ReferencePillar started!");
+    }
+    
+    /**
+     * Closes the ReferencePillar.
+     */
+    public void close() {
+        try {
+            mediator.close();
+            messageBus.close();
+        } catch (JMSException e) {
+            log.warn("Could not close the messagebus.", e);
+        }
+    }
+    
+    /**
+     * @return The mediator connected to this reference pillar.
+     */
+    public PillarMediator getMediator() {
+        return mediator;
     }
 }

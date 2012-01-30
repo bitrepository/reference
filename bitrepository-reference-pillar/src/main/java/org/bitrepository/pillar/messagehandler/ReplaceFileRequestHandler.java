@@ -74,7 +74,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.OPERATION_FAILED);
+            fri.setResponseCode(ResponseCode.OPERATION_FAILURE);
             fri.setResponseText("Error: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
@@ -93,7 +93,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         // Validate, that we have the requested file.
         if(!archive.hasFile(message.getFileID())) {
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            responseInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             responseInfo.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
                     + "not have that file!");
             throw new InvalidMessageException(responseInfo);
@@ -105,7 +105,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         // TODO add a check for a given setting is set to true.
         if(checksumType == null) {
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD);
+            responseInfo.setResponseCode(ResponseCode.REQUEST_READ_FAILURE);
             responseInfo.setResponseText("A checksum for replacing a file is required!");
             throw new InvalidMessageException(responseInfo);
         }
@@ -123,7 +123,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
             alarmDispatcher.sendInvalidChecksumAlarm(message, message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.FAILURE);
+            responseInfo.setResponseCode(ResponseCode.GENERAL_FAILURE);
             responseInfo.setResponseText(errMsg);
             throw new InvalidMessageException(responseInfo);
         }
@@ -134,7 +134,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
                     + "' bytes, but we only have '" + archive.sizeLeftInArchive() + "' bytes left.";
             log.warn(errMsg);
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.OPERATION_FAILED);
+            responseInfo.setResponseCode(ResponseCode.OPERATION_FAILURE);
             responseInfo.setResponseText(errMsg);
             throw new InvalidMessageException(responseInfo);
         }
@@ -172,8 +172,8 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
             fileForValidation = archive.downloadFileForValidation(message.getFileID(), 
                     fe.downloadFromServer(new URL(message.getFileAddress())));
         } catch (IOException e) {
-            throw new CoordinationLayerException("Could not download the file '" + message.getFileID() + "' from the url '"
-                    + message.getFileAddress() + "'.", e);
+            throw new CoordinationLayerException("Could not download the file '" + message.getFileID() 
+                    + "' from the url '" + message.getFileAddress() + "'.", e);
         }
         
         ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
@@ -291,7 +291,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         ReplaceFileFinalResponse response = createFinalResponse(message);
         
         ResponseInfo ri = new ResponseInfo();
-        ri.setResponseCode(ResponseCode.SUCCESS);
+        ri.setResponseCode(ResponseCode.REQUEST_COMPLETED);
         ri.setResponseText("Successfully replaced the file '" + message.getFileID() + "' as requested!");
         response.setResponseInfo(ri);
         

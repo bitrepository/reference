@@ -356,7 +356,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
             DeleteFileFinalResponse deleteFileFinalResponse = messageFactory.createDeleteFileFinalResponse(
                     receivedDeleteFileRequest, PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
             ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.FAILURE);
+            ri.setResponseCode(ResponseCode.GENERAL_FAILURE);
             ri.setResponseText("Verifying that a failure can be understood!");
             deleteFileFinalResponse.setResponseInfo(ri);
             messageBus.sendMessage(deleteFileFinalResponse);

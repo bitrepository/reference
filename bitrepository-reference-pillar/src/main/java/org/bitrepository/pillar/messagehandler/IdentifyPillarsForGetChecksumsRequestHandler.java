@@ -108,7 +108,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         // Throw exception if any files are missing.
         if(!missingFiles.isEmpty()) {
             ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND);
+            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
             
             throw new IdentifyPillarsException(irInfo);
@@ -134,7 +134,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         } catch (NoSuchAlgorithmException e) {
             log.warn("Could not instantiate the given messagedigester for calculating a checksum.", e);
             ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FAILURE);
+            irInfo.setResponseCode(ResponseCode.GENERAL_FAILURE);
             irInfo.setResponseText("The algorithm '" + checksumSpec.getChecksumType() 
                     + "' cannot be found. Exception: " + e.getLocalizedMessage());
             throw new IdentifyPillarsException(irInfo, e);

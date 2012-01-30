@@ -37,7 +37,6 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.conversation.AbstractConversation;
 import org.bitrepository.protocol.conversation.FlowController;
 import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.exceptions.NoPillarFoundException;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.exceptions.OperationTimeOutException;

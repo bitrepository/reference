@@ -24,35 +24,15 @@
   #L%
   -->
   
-<CollectionSettings xmlns="http://bitrepository.org/settings/${collection.settings.version}/CollectionSettings.xsd">
+<CollectionSettings xmlns="http://bitrepository.org/settings/0.5-SNAPSHOT/CollectionSettings.xsd">
   <CollectionID>TEST</CollectionID>
   <ProtocolSettings>
     <DefaultChecksumType>md5</DefaultChecksumType>
     <CollectionDestination>TEST-TOPIC</CollectionDestination>
     <AlarmDestination>TEST-ALARM-TOPIC</AlarmDestination>
-    <Certificates>
-      <FileExchangeServerCertificates>   
-        <Certificate></Certificate>
-      </FileExchangeServerCertificates>
-      <MessageBusCertificates>      
-        <Certificate></Certificate>
-      </MessageBusCertificates>
-      <ClientCertificates>
-        <Certificate></Certificate>
-      </ClientCertificates>
-    </Certificates>
-    <Permissions>
-      <Permission>
-       <Certificate>SMOk</Certificate>
-       <OperationType>All</OperationType>     
-      </Permission>
-    </Permissions>
     <MessageBusConfiguration>
       <Name>MyMessageBus</Name>
-      <URL>failover://(tcp://sandkasse-01.kb.dk:61616)?timeout=10000</URL><!--  -->
-      <!-- <URL>failover://(tcp://int-bitmag-02.kb.dk:50000,tcp://int-bitmag-01.kb.dk:50000)?timeout=10000</URL> -->
-      <Login></Login>
-      <Password></Password>
+      <URL>failover://(tcp://sandkasse-01.kb.dk:61616)?timeout=10000</URL>
     </MessageBusConfiguration>
   </ProtocolSettings>
   
@@ -68,16 +48,5 @@
     <AuditTrailLevel>MEDIUM</AuditTrailLevel>
     <AlarmLevel>ERROR</AlarmLevel>
   </PillarSettings>
-  
-  <DeleteFileSettings></DeleteFileSettings>
-  <GetAuditTrailSettings></GetAuditTrailSettings>
-  <GetChecksumsSettings></GetChecksumsSettings>
-  <GetFileSettings></GetFileSettings>
-  <GetFileIDsSettings></GetFileIDsSettings>
-  <GetStatusSettings></GetStatusSettings>
-  <PutFileSettings></PutFileSettings>
-  <ReplaceFileSettings>
-   <IdentificationTimeout>10000</IdentificationTimeout> 
-  </ReplaceFileSettings>
   
 </CollectionSettings>

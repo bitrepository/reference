@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
-import org.bitrepository.bitrepositoryelements.AlarmcodeType;
+import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -150,7 +150,7 @@ public class PillarMediator extends AbstractMessageListener {
         
         // create a descriptor.
         Alarm ad = new Alarm();
-        ad.setAlarmCode(AlarmcodeType.FAILED_OPERATION);
+        ad.setAlarmCode(AlarmCode.FAILED_OPERATION);
         ad.setAlarmText(msg);
         
         alarmDispatcher.sendAlarm(ad);
@@ -359,5 +359,17 @@ public class PillarMediator extends AbstractMessageListener {
         } else {
             noHandlerAlarm(message.getClass());
         }
+    }
+
+    /**
+    * Closes the mediator by removing all the message handlers.
+    */
+    @SuppressWarnings("rawtypes")
+    public void close() {
+        handlers.clear();
+        handlers = new HashMap<String, PillarMessageHandler>(); 
+        // removes to both the general topic and the local queue.
+        messagebus.removeListener(settings.getCollectionDestination(), this);
+        messagebus.removeListener(settings.getReferenceSettings().getPillarSettings().getReceiverDestination(), this);
     }
 }

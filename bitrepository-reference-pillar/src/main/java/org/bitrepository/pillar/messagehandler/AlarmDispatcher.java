@@ -27,14 +27,11 @@ package org.bitrepository.pillar.messagehandler;
 import java.math.BigInteger;
 import java.util.UUID;
 
-import javax.xml.bind.JAXBException;
-
 import org.bitrepository.bitrepositoryelements.Alarm;
-import org.bitrepository.bitrepositoryelements.AlarmcodeType;
+import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.ProtocolConstants;
@@ -42,7 +39,6 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 /**
  * The class for dispatching alarms.
  */
@@ -89,7 +85,7 @@ public class AlarmDispatcher {
         
         // create a descriptor.
         Alarm ad = new Alarm();
-        ad.setAlarmCode(AlarmcodeType.FAILED_OPERATION); //TODO Jonas see if this should be changed to another type
+        ad.setAlarmCode(AlarmCode.FAILED_OPERATION); //TODO Jonas see if this should be changed to another type
         ad.setAlarmText(exception.getMessage());
         
         sendAlarm(ad);
@@ -112,7 +108,7 @@ public class AlarmDispatcher {
         
         // create a descriptor.
         Alarm alarm = new Alarm();
-        alarm.setAlarmCode(AlarmcodeType.COMPONENT_FAILURE);
+        alarm.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
         alarm.setAlarmText(exception.getMessage());
         alarm.setAlarmRaiser(settings.getReferenceSettings().getPillarSettings().getPillarID());
         
@@ -148,7 +144,7 @@ public class AlarmDispatcher {
      */
     public void sendInvalidChecksumAlarm(Object message, String fileId, String alarmText) {
         Alarm alarm = new Alarm();
-        alarm.setAlarmCode(AlarmcodeType.CHECKSUM);
+        alarm.setAlarmCode(AlarmCode.CHECKSUM_ALARM);
         alarm.setAlarmText(alarmText);
         alarm.setOrigDateTime(CalendarUtils.getNow());
         sendAlarm(alarm);
