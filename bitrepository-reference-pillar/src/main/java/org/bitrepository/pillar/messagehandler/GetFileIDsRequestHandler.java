@@ -160,7 +160,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         GetFileIDsProgressResponse pResponse = createProgressResponse(message);
         
         ResponseInfo prInfo = new ResponseInfo();
-        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED);
+        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Operation accepted. Starting to locate files.");
         pResponse.setResponseInfo(prInfo);
 
@@ -189,7 +189,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
                 res.setResultAddress(resultingAddress);
             } catch (Exception e) {
                 ResponseInfo ir = new ResponseInfo();
-                ir.setResponseCode(ResponseCode.GENERAL_FAILURE);
+                ir.setResponseCode(ResponseCode.OPERATION_FAILURE);
                 ir.setResponseText(e.getMessage());
                 throw new InvalidMessageException(ir, e);
             }

@@ -125,7 +125,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         // Needs to fill in: AuditTrailInformation, PillarChecksumSpec, ProgressResponseInfo
         pResponse.setPillarChecksumSpec(null);
         ResponseInfo prInfo = new ResponseInfo();
-        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED);
+        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Started to receive date.");  
         pResponse.setResponseInfo(prInfo);
 

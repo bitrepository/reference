@@ -108,7 +108,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
         if(checksumType == null) {
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.REQUEST_READ_FAILURE);
+            responseInfo.setResponseCode(ResponseCode.OPERATION_FAILURE);
             responseInfo.setResponseText("A checksum for deletion is required!");
             throw new InvalidMessageException(responseInfo);
         }
@@ -125,7 +125,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
             alarmDispatcher.sendInvalidChecksumAlarm(message, message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.GENERAL_FAILURE);
+            responseInfo.setResponseCode(ResponseCode.OPERATION_FAILURE);
             responseInfo.setResponseText(errMsg);
             throw new InvalidMessageException(responseInfo);
         }
@@ -141,7 +141,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         
         // set missing variables in the message: ResponseInfo
         ResponseInfo prInfo = new ResponseInfo();
-        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED);
+        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Starting to delete the file.");
         pResponse.setResponseInfo(prInfo);
 

@@ -105,7 +105,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         // TODO add a check for a given setting is set to true.
         if(checksumType == null) {
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.REQUEST_READ_FAILURE);
+            responseInfo.setResponseCode(ResponseCode.OPERATION_FAILURE);
             responseInfo.setResponseText("A checksum for replacing a file is required!");
             throw new InvalidMessageException(responseInfo);
         }
@@ -123,7 +123,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
             alarmDispatcher.sendInvalidChecksumAlarm(message, message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.GENERAL_FAILURE);
+            responseInfo.setResponseCode(ResponseCode.OPERATION_FAILURE);
             responseInfo.setResponseText(errMsg);
             throw new InvalidMessageException(responseInfo);
         }
@@ -150,7 +150,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         log.debug(responseText);
         
         ResponseInfo responseInfo = new ResponseInfo();
-        responseInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED);
+        responseInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED_PROGRESS);
         responseInfo.setResponseText(responseText);
         
         response.setResponseInfo(responseInfo);
@@ -205,7 +205,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         log.debug(responseText);
         
         ResponseInfo responseInfo = new ResponseInfo();
-        responseInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED);
+        responseInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED_PROGRESS);
         responseInfo.setResponseText(responseText);
         
         response.setResponseInfo(responseInfo);
