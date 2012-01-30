@@ -37,9 +37,11 @@ import javax.mail.internet.MimeMessage;
 
 import org.bitrepository.alarm.AlarmException;
 import org.bitrepository.alarm.AlarmHandler;
-import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration;
-import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration.MailingConfiguration;
+//import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration;
+//import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration.MailingConfiguration;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.settings.referencesettings.*;
+import org.bitrepository.settings.referencesettings.MailingConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,10 +53,7 @@ public class AlarmMailer implements AlarmHandler {
     
     /** The logger to log the Alarms.*/
     private Logger log = LoggerFactory.getLogger(this.getClass());
-    
-    /** The configuration for mailing the messages.*/
-    private final MailingConfiguration config;
-    
+        
     /** The message receiver.*/
     private final String messageReceiver;
     /** The message sender.*/
@@ -72,9 +71,9 @@ public class AlarmMailer implements AlarmHandler {
     /**
      * Constructor.
      */
-    public AlarmMailer(AlarmConfiguration conf) {
-        this.config = conf.getMailingConfiguration();
-        this.messageReceiver = config.getMailReceiver();
+    public AlarmMailer(AlarmServiceSettings settings) {
+    	MailingConfiguration config = settings.getMailingConfiguration();
+    	this.messageReceiver = config.getMailReceiver();
         this.messageSender = config.getMailSender();
         this.mailServer = config.getMailServer();
     }

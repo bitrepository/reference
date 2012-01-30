@@ -19,6 +19,12 @@ public class AlarmStoreFactory {
     private static final String TRUSTSTOREFILE = "org.bitrepository.webclient.truststorefile";
     private static final String TRUSTSTOREPASSWD = "org.bitrepository.webclient.truststorepassword";
     private static final String ALARMSTOREFILE = "org.bitrepository.webclient.alarmstorefile";
+    private static final String JAVA_KEYSTORE_PROP = "javax.net.ssl.keyStore";
+    private static final String JAVA_KEYSTOREPASS_PROP = "javax.net.ssl.keyStorePassword";
+    private static final String JAVA_TRUSTSTORE_PROP = "javax.net.ssl.trustStore";
+    private static final String JAVA_TRUSTSTOREPASS_PROP = "javax.net.ssl.trustStorePassword";
+    private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
+
     
     /**
      * Set the configuration directory. 
@@ -38,9 +44,9 @@ public class AlarmStoreFactory {
         		throw new RuntimeException("No configuration dir has been set!");
         	}
         	SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
-            Settings settings = settingsLoader.getSettings("bitrepository-devel");	 
-            loadProperties();
+            Settings settings = settingsLoader.getSettings(DEFAULT_COLLECTION_ID);	 
             try {
+            	loadProperties();
                 alarmStore = new AlarmStore(settings, alarmStoreFile);
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -49,26 +55,17 @@ public class AlarmStoreFactory {
         return alarmStore;
     } 
     
-    private static void loadProperties() {
+    private static void loadProperties() throws IOException {
     	Properties properties = new Properties();
-    	try {
-    		String propertiesFile = confDir + "/" + CONFIGFILE;
-    		BufferedReader reader = new BufferedReader(new FileReader(propertiesFile));
-    		properties.load(reader);
-    		
-            System.setProperty("javax.net.ssl.keyStore", 
-            		properties.getProperty(KEYSTOREFILE));
-            System.setProperty("javax.net.ssl.keyStorePassword", 
-            		properties.getProperty(KEYSTOREPASSWD));
-            System.setProperty("javax.net.ssl.trustStore", 
-            		properties.getProperty(TRUSTSTOREFILE));
-            System.setProperty("javax.net.ssl.trustStorePassword", 
-            		properties.getProperty(TRUSTSTOREPASSWD));
-            alarmStoreFile = properties.getProperty(ALARMSTOREFILE);
-        } catch (IOException e) {
-            //will just fail setting keystore stuff and we won't be able to connect over ssl
-        	// not a big deal..
-        }
+    	String propertiesFile = confDir + "/" + CONFIGFILE;
+    	BufferedReader propertiesReader = new BufferedReader(new FileReader(propertiesFile));
+    	properties.load(propertiesReader);
+
+    	System.setProperty(JAVA_KEYSTORE_PROP, properties.getProperty(KEYSTOREFILE));
+    	System.setProperty(JAVA_KEYSTOREPASS_PROP, properties.getProperty(KEYSTOREPASSWD));
+    	System.setProperty(JAVA_TRUSTSTORE_PROP, properties.getProperty(TRUSTSTOREFILE));
+    	System.setProperty(JAVA_TRUSTSTOREPASS_PROP, properties.getProperty(TRUSTSTOREPASSWD));
+    	alarmStoreFile = properties.getProperty(ALARMSTOREFILE);
     }
     
 }

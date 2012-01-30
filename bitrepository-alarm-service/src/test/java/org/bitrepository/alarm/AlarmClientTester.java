@@ -30,8 +30,8 @@ import java.util.Date;
 import org.apache.kahadb.util.ByteArrayOutputStream;
 import org.bitrepository.alarm.handler.AlarmLogger;
 import org.bitrepository.alarm.handler.AlarmMailer;
-import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration;
-import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration.MailingConfiguration;
+import org.bitrepository.settings.referencesettings.MailingConfiguration;
+import org.bitrepository.settings.referencesettings.AlarmServiceSettings;
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
@@ -170,13 +170,13 @@ public class AlarmClientTester extends DefaultFixtureClientTest {
     public void mailingAlarmHandler() throws Exception {
         addDescription("Testing the MailingAlarmHandler");
         addStep("Initialising the variables for the test.", "Should be OK");
-        AlarmConfiguration aconf = new AlarmConfiguration();
+        AlarmServiceSettings asettings = new AlarmServiceSettings();
         MailingConfiguration conf = new MailingConfiguration();
         conf.setMailReceiver("error@sbforge.org");
         conf.setMailSender("error@sbforge.org");
         conf.setMailServer("sbforge.org");
-        aconf.setMailingConfiguration(conf);
-        AlarmHandler handler = new AlarmMailer(aconf);
+        asettings.setMailingConfiguration(conf);
+        AlarmHandler handler = new AlarmMailer(asettings);
         AlarmMessage msg = ExampleMessageFactory.createMessage(AlarmMessage.class);
 
         String ALARM_MESSAGE = "REGRESSION-TEST";
