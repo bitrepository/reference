@@ -326,7 +326,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
             PutFileFinalResponse putFileFinalResponse = messageFactory.createPutFileFinalResponse(
                     receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
             ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.GENERAL_FAILURE);
+            ri.setResponseCode(ResponseCode.OPERATION_FAILURE);
             ri.setResponseText("Verifying that a failure can be understood!");
             putFileFinalResponse.setResponseInfo(ri);
             messageBus.sendMessage(putFileFinalResponse);

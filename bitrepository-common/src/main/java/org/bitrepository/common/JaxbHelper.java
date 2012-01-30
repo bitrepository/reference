@@ -118,7 +118,7 @@ public final class JaxbHelper {
         return baos.toString();
     }
 
-    public static class ResourceResolver implements LSResourceResolver {
+    private static class ResourceResolver implements LSResourceResolver {
         private final String prefix;
         private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -133,8 +133,7 @@ public final class JaxbHelper {
             if (systemId == null) {
                 return null;
             }
-            log.info("Looking up systemId '" + systemId + "'. Other params: type: '" + type + "', namespaceURI: '" + namespaceURI + "', publicId: '" + publicId + "', baseURI: '" + baseURI + "'");
-
+            
             URL schema = Thread.currentThread().getContextClassLoader().getResource(prefix + systemId);
             LSInput input = new MyLSInput(schema);
             input.setBaseURI(baseURI);

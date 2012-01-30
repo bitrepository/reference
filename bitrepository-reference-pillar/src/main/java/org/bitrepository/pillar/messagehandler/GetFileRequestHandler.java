@@ -137,7 +137,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         // AuditTrailInformation, ChecksumsDataForBitRepositoryFile, FileSize, ProgressResponseInfo
         pResponse.setFileSize(BigInteger.valueOf(requestedFile.length()));
         ResponseInfo prInfo = new ResponseInfo();
-        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED);
+        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Started to retrieve data.");
         pResponse.setResponseInfo(prInfo);
         if(USE_CHECKSUM) {

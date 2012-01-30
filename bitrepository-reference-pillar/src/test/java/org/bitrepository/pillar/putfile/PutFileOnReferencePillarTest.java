@@ -185,7 +185,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Validate that the identification has failed.", 
                 "The response info should give 'FAILURE'");
-        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), ResponseCode.GENERAL_FAILURE);
+        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_FAILURE);
     }
     
     @Test( groups = {"pillartest"})
