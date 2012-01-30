@@ -199,6 +199,7 @@
         </xs:annotation>
         <xs:sequence>
           <xs:element name="ID" type="xs:string" />
+          <xs:element ref="MailingConfiguration" minOccurs="0"/>
         </xs:sequence>
       </xs:complexType>
     </xs:element>
@@ -244,6 +245,34 @@
             <xs:annotation>
               <xs:documentation xml:lang="en">
                 The amount of milliseconds between each time the scheduler collects integrity information.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="MailingConfiguration">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="MailReceiver" type="xs:string">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The receiver of the mail. Several receiver will be split by a comma: ','.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="MailSender" type="xs:string">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The sender of the mail.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="MailServer" type="xs:string">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The server where the mail is sent from.
               </xs:documentation>
             </xs:annotation>
           </xs:element>
