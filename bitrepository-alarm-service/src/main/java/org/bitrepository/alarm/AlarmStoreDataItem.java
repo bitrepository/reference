@@ -92,11 +92,7 @@ public class AlarmStoreDataItem {
 			dateStr = st.nextToken();
 			date = DatatypeFactory.newInstance().newXMLGregorianCalendar(dateStr.trim());
 			raiser = st.nextToken();
-<<<<<<< HEAD
-			alarmCode = AlarmcodeType.valueOf(st.nextToken().trim());
-=======
-			alarmCode = AlarmCode.valueOf(st.nextToken());
->>>>>>> 5af44301f764e32d5b5a0fc5be554f9cdfecf176
+			alarmCode = AlarmCode.valueOf(st.nextToken().trim());
 			alarmText = st.nextToken();
 			return new AlarmStoreDataItem(date, raiser, alarmCode, alarmText);
 		} catch (DatatypeConfigurationException e) {
