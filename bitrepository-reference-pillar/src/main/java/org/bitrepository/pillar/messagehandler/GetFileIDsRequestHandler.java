@@ -100,7 +100,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         } catch (RuntimeException e) {
             log.warn("Internal RuntimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText("GetFileIDs operation failed with the exception: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
@@ -160,7 +160,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         GetFileIDsProgressResponse pResponse = createProgressResponse(message);
         
         ResponseInfo prInfo = new ResponseInfo();
-        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED_PROGRESS);
+        prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Operation accepted. Starting to locate files.");
         pResponse.setResponseInfo(prInfo);
 
@@ -189,7 +189,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
                 res.setResultAddress(resultingAddress);
             } catch (Exception e) {
                 ResponseInfo ir = new ResponseInfo();
-                ir.setResponseCode(ResponseCode.OPERATION_FAILURE);
+                ir.setResponseCode(ResponseCode.FAILURE);
                 ir.setResponseText(e.getMessage());
                 throw new InvalidMessageException(ir, e);
             }
@@ -335,7 +335,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         GetFileIDsFinalResponse fResponse = createFinalResponse(message);
         
         ResponseInfo fri = new ResponseInfo();
-        fri.setResponseCode(ResponseCode.REQUEST_COMPLETED);
+        fri.setResponseCode(ResponseCode.OPERATION_COMPLETED);
         fri.setResponseText("Finished locating the requested files.");
         fResponse.setResponseInfo(fri);
         fResponse.setResultingFileIDs(results);

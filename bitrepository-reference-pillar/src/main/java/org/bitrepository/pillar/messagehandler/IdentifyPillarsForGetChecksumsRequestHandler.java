@@ -134,7 +134,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         } catch (NoSuchAlgorithmException e) {
             log.warn("Could not instantiate the given messagedigester for calculating a checksum.", e);
             ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            irInfo.setResponseCode(ResponseCode.FAILURE);
             irInfo.setResponseText("The algorithm '" + checksumSpec.getChecksumType() 
                     + "' cannot be found. Exception: " + e.getLocalizedMessage());
             throw new IdentifyPillarsException(irInfo, e);

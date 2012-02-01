@@ -103,7 +103,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText("Error: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
@@ -172,7 +172,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             String errText = "No checksumSpec in the request. Needs an algorithm to calculate checksums!";
             log.warn(errText);
             ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText(errText);
             throw new InvalidMessageException(fri);
         }
@@ -183,7 +183,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             String errText = "Could not instantiate the given messagedigester for calculating a checksum.";
             log.warn(errText, e);
             ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText(errText);
             throw new InvalidMessageException(fri, e);
         }
@@ -197,7 +197,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         GetChecksumsProgressResponse pResponse = createProgressResponse(message);
         
         ResponseInfo prInfo = new ResponseInfo();
-        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED_PROGRESS);
+        prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Operation accepted. Starting to calculate checksums.");
         pResponse.setResponseInfo(prInfo);
 
@@ -282,7 +282,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
                 uploadFile(fileToUpload, url);
             } catch (Exception e) {
                 ResponseInfo ir = new ResponseInfo();
-                ir.setResponseCode(ResponseCode.OPERATION_FAILURE);
+                ir.setResponseCode(ResponseCode.FAILURE);
                 ir.setResponseText("Could not handle the creation and upload of the results due to: " + e.getMessage());
                 throw new InvalidMessageException(ir, e);
             }
@@ -368,7 +368,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         GetChecksumsFinalResponse fResponse = createFinalResponse(message);
         
         ResponseInfo fri = new ResponseInfo();
-        fri.setResponseCode(ResponseCode.REQUEST_COMPLETED);
+        fri.setResponseCode(ResponseCode.OPERATION_COMPLETED);
         fri.setResponseText("Successfully calculated the requested checksums.");
         fResponse.setResponseInfo(fri);
         fResponse.setResultingChecksums(results);

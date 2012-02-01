@@ -87,7 +87,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText("Error: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
@@ -125,7 +125,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         // Needs to fill in: AuditTrailInformation, PillarChecksumSpec, ProgressResponseInfo
         pResponse.setPillarChecksumSpec(null);
         ResponseInfo prInfo = new ResponseInfo();
-        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED_PROGRESS);
+        prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Started to receive date.");  
         pResponse.setResponseInfo(prInfo);
 
@@ -183,7 +183,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
 
         // insert: AuditTrailInformation, ChecksumsDataForNewFile, FinalResponseInfo, PillarChecksumSpec
         ResponseInfo frInfo = new ResponseInfo();
-        frInfo.setResponseCode(ResponseCode.REQUEST_COMPLETED);
+        frInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);
         frInfo.setResponseText("The put has be finished.");
         fResponse.setResponseInfo(frInfo);
         fResponse.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR

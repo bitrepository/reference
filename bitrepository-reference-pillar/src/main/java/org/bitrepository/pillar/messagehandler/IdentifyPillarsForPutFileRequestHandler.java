@@ -119,7 +119,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandle
                 - settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
         if(useableSizeLeft < fileSize.longValue()) {
             ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            irInfo.setResponseCode(ResponseCode.FAILURE);
             irInfo.setResponseText("Not enough space left in this pillar. Requires '" 
                     + fileSize.longValue() + "' but has only '" + useableSizeLeft + "'");
             

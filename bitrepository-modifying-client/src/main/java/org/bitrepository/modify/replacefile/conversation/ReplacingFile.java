@@ -178,7 +178,7 @@ public class ReplacingFile extends ReplaceFileState {
         if(frInfo == null || frInfo.getResponseCode() == null) {
             return false;
         } else {
-            if(ResponseCode.REQUEST_COMPLETED.equals(frInfo.getResponseCode())) {
+            if(ResponseCode.OPERATION_COMPLETED.equals(frInfo.getResponseCode())) {
                 return true;
             } 
         }

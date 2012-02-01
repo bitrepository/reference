@@ -131,7 +131,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Retrieve the FinalResponse for the put request", "The put response should be sent by the pillar.");
         PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.
-                REQUEST_COMPLETED);
+                OPERATION_COMPLETED);
         
         Assert.assertEquals(finalResponse,
                 msgFactory.createPutFileFinalResponse(
@@ -185,7 +185,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Validate that the identification has failed.", 
                 "The response info should give 'FAILURE'");
-        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_FAILURE);
+        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), ResponseCode.FAILURE);
     }
     
     @Test( groups = {"pillartest"})
@@ -302,7 +302,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Validate that the response contains the correct information.", 
                 "Should deliver a OPERATION_FAILED with both the correct and the wrong checksum.");
         ResponseInfo ir = finalResponse.getResponseInfo();
-        Assert.assertEquals(ir.getResponseCode(), ResponseCode.OPERATION_FAILURE);
+        Assert.assertEquals(ir.getResponseCode(), ResponseCode.FAILURE);
         
         Assert.assertTrue(ir.getResponseText().contains(CORRECT_FILE_CHECKSUM_MD5), 
                 "The response should contain the actual checksum '" + CORRECT_FILE_CHECKSUM_MD5 + "', but was: '"

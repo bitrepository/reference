@@ -95,7 +95,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText("Error: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
@@ -137,7 +137,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         // AuditTrailInformation, ChecksumsDataForBitRepositoryFile, FileSize, ProgressResponseInfo
         pResponse.setFileSize(BigInteger.valueOf(requestedFile.length()));
         ResponseInfo prInfo = new ResponseInfo();
-        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED_PROGRESS);
+        prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Started to retrieve data.");
         pResponse.setResponseInfo(prInfo);
         if(USE_CHECKSUM) {
@@ -184,7 +184,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         // make ProgressResponse to tell that we are handling this.
         GetFileFinalResponse fResponse = createGetFileFinalResponse(message);
         ResponseInfo frInfo = new ResponseInfo();
-        frInfo.setResponseCode(ResponseCode.REQUEST_COMPLETED);
+        frInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);
         frInfo.setResponseText("Data delivered.");
         fResponse.setResponseInfo(frInfo);
 

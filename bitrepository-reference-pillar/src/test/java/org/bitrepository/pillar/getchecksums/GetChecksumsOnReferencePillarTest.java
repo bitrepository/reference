@@ -130,7 +130,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         addStep("Retrieve the FinalResponse for the GetChecksums request", 
                 "The GetChecksums response should be sent by the pillar.");
         GetChecksumsFinalResponse finalResponse = clientTopic.waitForMessage(GetChecksumsFinalResponse.class);
-        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.REQUEST_COMPLETED);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         
         Assert.assertEquals(finalResponse,
                 msgFactory.createGetChecksumsFinalResponse(

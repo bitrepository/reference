@@ -46,7 +46,7 @@ public abstract class TestMessageFactory {
     protected static final TimeMeasureUnit TIME_MEASURE_UNIT_DEFAULT =
         TimeMeasureUnit.MILLISECONDS;
     protected static final BigInteger TIME_MEASURE_VALUE_DEFAULT = BigInteger.valueOf(1000L);
-    protected static final ResponseCode RESPONSE_CODE_DEFAULT = ResponseCode.REQUEST_ACCEPTED_PROGRESS;
+    protected static final ResponseCode RESPONSE_CODE_DEFAULT = ResponseCode.OPERATION_ACCEPTED_PROGRESS;
     protected static final ResponseCode IDENTIFY_RESPONSE_CODE_DEFAULT 
             = ResponseCode.IDENTIFICATION_POSITIVE;
     protected static final String RESPONSE_TEXT_DEFAULT = "Message request has been received and is expected to be met successfully";
@@ -73,7 +73,7 @@ public abstract class TestMessageFactory {
 
     protected static final ResponseInfo FINAL_INFO_DEFAULT = new ResponseInfo();
     static {
-        FINAL_INFO_DEFAULT.setResponseCode(ResponseCode.REQUEST_COMPLETED);
+        FINAL_INFO_DEFAULT.setResponseCode(ResponseCode.OPERATION_COMPLETED);
         FINAL_INFO_DEFAULT.setResponseText("We have liftoff");
     }
 

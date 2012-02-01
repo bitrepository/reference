@@ -380,7 +380,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
             ReplaceFileFinalResponse replaceFileFinalResponse = messageFactory.createReplaceFileFinalResponse(
                     receivedReplaceFileRequest, PILLAR1_ID, pillar1DestinationId, checksumDataNewFile);
             ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            ri.setResponseCode(ResponseCode.FAILURE);
             ri.setResponseText("Verifying that a failure can be understood!");
             replaceFileFinalResponse.setResponseInfo(ri);
             messageBus.sendMessage(replaceFileFinalResponse);

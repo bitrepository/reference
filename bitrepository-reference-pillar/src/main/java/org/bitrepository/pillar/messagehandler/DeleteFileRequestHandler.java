@@ -78,7 +78,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText("Error: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
@@ -108,7 +108,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
         if(checksumType == null) {
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            responseInfo.setResponseCode(ResponseCode.FAILURE);
             responseInfo.setResponseText("A checksum for deletion is required!");
             throw new InvalidMessageException(responseInfo);
         }
@@ -125,7 +125,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
             alarmDispatcher.sendInvalidChecksumAlarm(message, message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            responseInfo.setResponseCode(ResponseCode.FAILURE);
             responseInfo.setResponseText(errMsg);
             throw new InvalidMessageException(responseInfo);
         }
@@ -141,7 +141,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         
         // set missing variables in the message: ResponseInfo
         ResponseInfo prInfo = new ResponseInfo();
-        prInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED_PROGRESS);
+        prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Starting to delete the file.");
         pResponse.setResponseInfo(prInfo);
 
@@ -198,7 +198,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         DeleteFileFinalResponse fResponse = createDeleteFileFinalResponse(message);
         fResponse.setChecksumDataForExistingFile(requestedChecksum);
         ResponseInfo frInfo = new ResponseInfo();
-        frInfo.setResponseCode(ResponseCode.REQUEST_COMPLETED);
+        frInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);
         frInfo.setResponseText("Data delivered.");
         fResponse.setResponseInfo(frInfo);
 

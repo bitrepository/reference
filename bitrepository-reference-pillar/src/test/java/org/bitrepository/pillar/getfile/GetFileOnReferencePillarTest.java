@@ -131,7 +131,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Retrieve the FinalResponse for the GetFile request", 
                 "The GetFile response should be sent by the pillar.");
         GetFileFinalResponse finalResponse = clientTopic.waitForMessage(GetFileFinalResponse.class);
-        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.REQUEST_COMPLETED);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         
         Assert.assertEquals(finalResponse,
                 msgFactory.createGetFileFinalResponse(

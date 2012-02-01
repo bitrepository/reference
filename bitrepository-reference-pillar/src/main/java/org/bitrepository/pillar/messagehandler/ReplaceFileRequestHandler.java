@@ -74,7 +74,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText("Error: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
@@ -105,7 +105,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         // TODO add a check for a given setting is set to true.
         if(checksumType == null) {
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            responseInfo.setResponseCode(ResponseCode.FAILURE);
             responseInfo.setResponseText("A checksum for replacing a file is required!");
             throw new InvalidMessageException(responseInfo);
         }
@@ -123,7 +123,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
             alarmDispatcher.sendInvalidChecksumAlarm(message, message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            responseInfo.setResponseCode(ResponseCode.FAILURE);
             responseInfo.setResponseText(errMsg);
             throw new InvalidMessageException(responseInfo);
         }
@@ -134,7 +134,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
                     + "' bytes, but we only have '" + archive.sizeLeftInArchive() + "' bytes left.";
             log.warn(errMsg);
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.OPERATION_FAILURE);
+            responseInfo.setResponseCode(ResponseCode.FAILURE);
             responseInfo.setResponseText(errMsg);
             throw new InvalidMessageException(responseInfo);
         }
@@ -150,7 +150,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         log.debug(responseText);
         
         ResponseInfo responseInfo = new ResponseInfo();
-        responseInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED_PROGRESS);
+        responseInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         responseInfo.setResponseText(responseText);
         
         response.setResponseInfo(responseInfo);
@@ -205,7 +205,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         log.debug(responseText);
         
         ResponseInfo responseInfo = new ResponseInfo();
-        responseInfo.setResponseCode(ResponseCode.REQUEST_ACCEPTED_PROGRESS);
+        responseInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         responseInfo.setResponseText(responseText);
         
         response.setResponseInfo(responseInfo);
@@ -291,7 +291,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         ReplaceFileFinalResponse response = createFinalResponse(message);
         
         ResponseInfo ri = new ResponseInfo();
-        ri.setResponseCode(ResponseCode.REQUEST_COMPLETED);
+        ri.setResponseCode(ResponseCode.OPERATION_COMPLETED);
         ri.setResponseText("Successfully replaced the file '" + message.getFileID() + "' as requested!");
         response.setResponseInfo(ri);
         
