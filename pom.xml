@@ -371,7 +371,7 @@
   </profiles>
 
   <properties>
-    <message.xml.version>12-SNAPSHOT</message.xml.version>
+    <message.xml.version>12</message.xml.version>
     <collection.settings.version>0.5</collection.settings.version>
     <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
   </properties>
