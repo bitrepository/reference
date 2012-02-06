@@ -103,7 +103,11 @@ public class SimpleReplaceFileConversation extends AbstractConversation {
             FlowController flowController,
             String auditTrailInformation) {
         super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
-        ArgumentValidator.checkNotNull(checksumForNewFileValidationAtPillar, "checksumForNewFileValidationAtPillar");
+        ArgumentValidator.checkNotNull(checksumForNewFileValidationAtPillar, 
+                "ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar");
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+        ArgumentValidator.checkNotNullOrEmpty(pillarIds, "Collection<String> pillarIds");
+        ArgumentValidator.checkNotNull(url, "url");
         
         this.messageSender = messageSender;
         this.settings = settings;

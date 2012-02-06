@@ -42,6 +42,9 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A conversation based implementation of the ReplaceFileClient.
+ */
 public class ConversationBasedReplaceFileClient implements ReplaceFileClient {
     /** The log for this class.*/
     private final Logger log = LoggerFactory.getLogger(this.getClass());

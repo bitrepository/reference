@@ -31,23 +31,44 @@ import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 * Contains the result of a ReplaceFile request sent to a single pillar.
 */
 public class ReplaceFileCompletePillarEvent extends PillarOperationEvent {
-    /** @see #getChecksums(). */
-    private final ChecksumDataForFileTYPE result;
+    /** @see #getChecksumForDeletedFile(). */
+    private final ChecksumDataForFileTYPE deletedFileChecksum;
+    /** @see #getChecksumForNewFile(). */
+    private final ChecksumDataForFileTYPE newFileChecksum;
     
     /**
-     * @param result The result returned by the pillar.
+     * @param deletedFile The results of the checksum request for the deleted file from the pillar.
+     * @param newFile The results of the checksum request for the new file from the pillar.
      * @param pillarID The pillar which generated the result
      * @param info Additional information.
      */
-    public ReplaceFileCompletePillarEvent(ChecksumDataForFileTYPE result, String pillarID, String info) {
+    public ReplaceFileCompletePillarEvent(ChecksumDataForFileTYPE deletedFile, ChecksumDataForFileTYPE newFile, 
+            String pillarID, String info) {
         super(OperationEventType.COMPONENT_COMPLETE, info, pillarID);
-        this.result = result;
+        this.newFileChecksum = newFile;
+        this.deletedFileChecksum = deletedFile;
     }
 
     /** 
-     * @return The checksum result from a single pillar. 
+     * @return The checksum result for the deleted file from a single pillar. 
      */
-    public ChecksumDataForFileTYPE getChecksums() {
-        return result;
+    public ChecksumDataForFileTYPE getChecksumForDeletedFile() {
+        return deletedFileChecksum;
+    }
+    
+    /** 
+     * @return The checksum result for the new file from a single pillar. 
+     */
+    public ChecksumDataForFileTYPE getChecksumForNewFile() {
+        return newFileChecksum;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuffer res = new StringBuffer();
+        res.append(super.toString());
+        res.append(", checksum for new file: '" + newFileChecksum + "'");
+        res.append(", checksum for deleted file: '" + deletedFileChecksum + "'");
+        return  res.toString();
     }
 }
