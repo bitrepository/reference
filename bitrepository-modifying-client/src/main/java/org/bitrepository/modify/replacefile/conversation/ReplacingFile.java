@@ -85,10 +85,11 @@ public class ReplacingFile extends ReplaceFileState {
         request.setAuditTrailInformation(conversation.auditTrailInformation);
         request.setChecksumDataForExistingFile(conversation.checksumForFileToDelete);
         request.setChecksumDataForNewFile(conversation.checksumForNewFileValidationAtPillar);
+        request.setChecksumRequestForExistingFile(conversation.checksumRequestedForFileToDelete);
+        request.setChecksumRequestForNewFile(conversation.checksumRequestForNewFile);
         request.setCollectionID(conversation.settings.getCollectionID());
         request.setCorrelationID(conversation.getConversationID());
         request.setFileAddress(conversation.urlOfNewFile.toExternalForm());
-        request.setChecksumRequestForNewFile(conversation.checksumRequestForNewFile);
         request.setFileID(conversation.fileID);
         request.setFileSize(BigInteger.valueOf(conversation.sizeOfNewFile));
         request.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
@@ -121,7 +122,6 @@ public class ReplacingFile extends ReplaceFileState {
 
     /**
      * Handles the ReplaceFileProgressResponse message.
-     * Just logged to it.
      * 
      * @param response The ReplaceFileProgressResponse to be handled by this method.
      */
@@ -129,7 +129,7 @@ public class ReplacingFile extends ReplaceFileState {
     public void onMessage(ReplaceFileProgressResponse response) {
         monitor.progress(new PillarOperationEvent(OperationEvent.OperationEventType.PROGRESS, 
                 "Received ReplaceFileProgressResponse from pillar " + response.getPillarID() + ": " + 
-                        response.getResponseInfo().getResponseText(), response.getPillarID()));
+                        response.getResponseInfo().toString(), response.getPillarID()));
     }
 
     /**
@@ -149,6 +149,7 @@ public class ReplacingFile extends ReplaceFileState {
 
         if(isResponseSuccess(response.getResponseInfo())) {
             monitor.pillarComplete(new ReplaceFileCompletePillarEvent(
+                    response.getChecksumDataForExistingFile(),
                     response.getChecksumDataForNewFile(),
                     response.getPillarID(),
                     "Received replace file result from " + response.getPillarID()));
@@ -170,19 +171,11 @@ public class ReplacingFile extends ReplaceFileState {
     
     /**
      * Method for validating the FinalResponseInfo.
-     * @param frInfo The FinalResponseInfo to be validated.
+     * @param responseInfo The FinalResponseInfo to be validated.
      * @return Whether the FinalRepsonseInfo tells that the operation has been a success or a failure.
      */
-    private boolean isResponseSuccess(ResponseInfo frInfo) {
-        // validate the response info.
-        if(frInfo == null || frInfo.getResponseCode() == null) {
-            return false;
-        } else {
-            if(ResponseCode.OPERATION_COMPLETED.equals(frInfo.getResponseCode())) {
-                return true;
-            } 
-        }
-        return false;
+    private boolean isResponseSuccess(ResponseInfo responseInfo) {
+        return ResponseCode.OPERATION_COMPLETED.equals(responseInfo.getResponseCode());
     }
 
     /**
