@@ -36,6 +36,24 @@
       <artifactId>hibernate-core</artifactId>
       <version>3.3.2.GA</version>
     </dependency>
+    
+    <!-- Hook up the other loggers to use SLF4J -->
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    
     <!--  Test dependencies -->
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
@@ -44,7 +62,6 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-common</artifactId>
@@ -52,27 +69,23 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    
     <dependency>
       <groupId>javax</groupId>
       <artifactId>javaee-web-api</artifactId>
       <version>6.0</version>
       <scope>provided</scope>
     </dependency>
-    
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.5</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-server</artifactId>
       <version>1.8</version>
     </dependency>
-
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>

@@ -120,7 +120,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.6.4</version>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
@@ -372,7 +372,8 @@
 
   <properties>
     <message.xml.version>12</message.xml.version>
-    <collection.settings.version>0.5</collection.settings.version>
+    <collection.settings.version>0.6-SNAPSHOT</collection.settings.version>
     <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
+    <slf4j.version>1.6.4</slf4j.version>
   </properties>
 </project>
