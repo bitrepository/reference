@@ -51,7 +51,7 @@ public class BasicClient {
     private List<URL> completedFiles;
     
     public BasicClient(Settings settings, String logFile) {
-        log.debug("---- Basic client instanciated ----");
+        log.debug("---- Basic client instanciating ----");
         this.logFile = logFile;
         changeLogFiles();
         shortLog = new ArrayBlockingQueue<String>(50);
@@ -64,6 +64,8 @@ public class BasicClient {
         getFileIDsClient = AccessComponentFactory.getInstance().createGetFileIDsClient(settings);
         deleteFileClient = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings);
         replaceFileClient = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings);
+        log.debug("---- Basic client instanciated ----");
+
     }
     
     public void shutdown() {
