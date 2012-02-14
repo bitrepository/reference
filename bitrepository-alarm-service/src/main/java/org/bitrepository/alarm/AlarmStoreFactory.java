@@ -10,21 +10,38 @@ import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 
 public class AlarmStoreFactory {
+	/** The instance of the alarmStore */
     private static AlarmStore alarmStore;
+    /** Member to hold the directory path of where the configuration files are located. */
     private static String confDir; 
+    /** Member to hold the name of the file which persists alarms, once read from propperties */
     private static String alarmStoreFile;
+    /** The propperties file holding implementation specifics for the alarm service. */
     private static final String CONFIGFILE = "alarmservice.properties"; 
+    /** Property key for keystore file path setting */
     private static final String KEYSTOREFILE = "org.bitrepository.webclient.keystorefile";
+    /** Property key for keystore file password setting */
     private static final String KEYSTOREPASSWD = "org.bitrepository.webclient.keystorepassword";
+    /** Property key for truststore file path setting */
     private static final String TRUSTSTOREFILE = "org.bitrepository.webclient.truststorefile";
+    /** Property key for truststore file password setting */
     private static final String TRUSTSTOREPASSWD = "org.bitrepository.webclient.truststorepassword";
+    /** Property key for the propperty holding the path the file persisting alarms */
     private static final String ALARMSTOREFILE = "org.bitrepository.webclient.alarmstorefile";
+    /** Java environment propperty for setting keystore file */
     private static final String JAVA_KEYSTORE_PROP = "javax.net.ssl.keyStore";
+    /** Java environment propperty for setting keystore password */
     private static final String JAVA_KEYSTOREPASS_PROP = "javax.net.ssl.keyStorePassword";
+    /** Java environment propperty for setting truststore file */
     private static final String JAVA_TRUSTSTORE_PROP = "javax.net.ssl.trustStore";
+    /** Java environment propperty for setting truststore password */
     private static final String JAVA_TRUSTSTOREPASS_PROP = "javax.net.ssl.trustStorePassword";
+    /** Default collection settings identifier (used to build the path the collection and referencesettings */
     private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
 
+    private AlarmStoreFactory() {
+    	//Empty constructor
+    }
     
     /**
      * Set the configuration directory. 
@@ -38,7 +55,7 @@ public class AlarmStoreFactory {
      *	Factory method to get a singleton instance of BasicClient
      *	@return The BasicClient instance or a null in case of trouble.  
      */
-    public synchronized static AlarmStore getInstance() {
+    public synchronized static AlarmStore getAlarmStore() {
         if(alarmStore == null) {
         	if(confDir == null) {
         		throw new RuntimeException("No configuration dir has been set!");

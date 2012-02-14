@@ -17,7 +17,7 @@ public class RestAlarmService {
     private AlarmStore alarmStore;
     
     public RestAlarmService() {
-        alarmStore = AlarmStoreFactory.getInstance();
+        alarmStore = AlarmStoreFactory.getAlarmStore();
     }
     
     /**

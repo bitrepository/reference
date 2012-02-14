@@ -21,7 +21,9 @@ public class ShutdownListener implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
-     * Do initialization work  
+     * Performs work required to bring up the alarm service. 
+     * This includes setting up locations of configuration directories and initializing the AlarmStore 
+     * so it is connected to the messagebus and ready. 
      */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -37,16 +39,17 @@ public class ShutdownListener implements ServletContextListener {
 			log.info("Failed to read log configuration file. Falling back to default.");
 		} 
         AlarmStoreFactory.init(confDir);
-        AlarmStore alarmStore = AlarmStoreFactory.getInstance();
+        AlarmStore alarmStore = AlarmStoreFactory.getAlarmStore();
         log.debug("Servlet context initialized");
     }
 
     /**
-     * Do teardown work. 
+     * Does the work of shutting the alarm service down gracefully. 
+     * This is done by calling the Alarm Store's shutdown method. 
      */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        AlarmStore alarmStore = AlarmStoreFactory.getInstance();
+        AlarmStore alarmStore = AlarmStoreFactory.getAlarmStore();
         alarmStore.shutdown(); 
         log.debug("Servlet context destroyed");
     }
