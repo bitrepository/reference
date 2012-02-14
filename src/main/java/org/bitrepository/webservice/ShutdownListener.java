@@ -40,7 +40,8 @@ public class ShutdownListener implements ServletContextListener {
     }
 
     /**
-     * Do teardown work. 
+     * Does work of shutting the webclient down in a graceful maner. 
+     * This is done by calling BasicClient's shutdown method.  
      */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
