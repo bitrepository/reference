@@ -63,12 +63,12 @@ public class IdentifyPillarsForDeleteFileRequestHandler
 
         try {
             validateBitrepositoryCollectionId(message.getCollectionID());
-            checkThatRequestedFileAreAvailable(message);
-            respondSuccesfullIdentification(message);
+            checkThatRequestedFileIsAvailable(message);
+            respondSuccessfulIdentification(message);
         } catch (IllegalArgumentException e) {
             alarmDispatcher.handleIllegalArgumentException(e);
         } catch (IdentifyPillarsException e) {
-            log.warn("Unsuccessfull identification for the GetChecksums operation.", e);
+            log.warn("Unsuccessful identification for the DeleteFile operation.", e);
             respondUnsuccessfulIdentification(message, e);
         } catch (RuntimeException e) {
             alarmDispatcher.handleRuntimeExceptions(e);
@@ -81,7 +81,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
      * @param message The message containing the id of the file. If no file id is given, then a warning is logged, 
      * but the operation is accepted.
      */
-    private void checkThatRequestedFileAreAvailable(IdentifyPillarsForDeleteFileRequest message) {
+    private void checkThatRequestedFileIsAvailable(IdentifyPillarsForDeleteFileRequest message) {
         if(!archive.hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
@@ -94,7 +94,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
      * Method for making a successful response to the identification.
      * @param message The request message to respond to.
      */
-    private void respondSuccesfullIdentification(IdentifyPillarsForDeleteFileRequest message) {
+    private void respondSuccessfulIdentification(IdentifyPillarsForDeleteFileRequest message) {
         // Create the response.
         IdentifyPillarsForDeleteFileResponse reply = createIdentifyPillarsForDeleteFileResponse(message);
         

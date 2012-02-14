@@ -1,3 +1,27 @@
+/*
+ * #%L
+ * Bitrepository Reference Pillar
+ * 
+ * $Id$
+ * $HeadURL$
+ * %%
+ * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.pillar.messagehandler;
 
 import java.io.File;
@@ -55,7 +79,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
 
     @Override
     void handleMessage(ReplaceFileRequest message) {
-        ArgumentValidator.checkNotNull(message, "DeleteFileRequest message");
+        ArgumentValidator.checkNotNull(message, "ReplaceFileRequest message");
 
         try {
             validateMessage(message);
@@ -99,6 +123,19 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
             throw new InvalidMessageException(responseInfo);
         }
         
+        // validate, that we have enough space for the new file.
+        long useableSizeLeft = archive.sizeLeftInArchive()
+                - settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
+        if(useableSizeLeft < message.getFileSize().longValue()) {
+            String errMsg = "Not enough space left on device. Requires '" + message.getFileSize().longValue()
+                    + "' bytes, but we only have '" + archive.sizeLeftInArchive() + "' bytes left.";
+            log.warn(errMsg);
+            ResponseInfo responseInfo = new ResponseInfo();
+            responseInfo.setResponseCode(ResponseCode.FAILURE);
+            responseInfo.setResponseText(errMsg);
+            throw new InvalidMessageException(responseInfo);
+        }
+        
         // validate that a checksum for the old file has been given.
         ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
         ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
@@ -126,18 +163,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
             responseInfo.setResponseCode(ResponseCode.FAILURE);
             responseInfo.setResponseText(errMsg);
             throw new InvalidMessageException(responseInfo);
-        }
-        
-        // validate, that we have enough space for the new file.
-        if(archive.sizeLeftInArchive() < message.getFileSize().longValue()) {
-            String errMsg = "Not enough space left on device. Requires '" + message.getFileSize().longValue()
-                    + "' bytes, but we only have '" + archive.sizeLeftInArchive() + "' bytes left.";
-            log.warn(errMsg);
-            ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.FAILURE);
-            responseInfo.setResponseText(errMsg);
-            throw new InvalidMessageException(responseInfo);
-        }
+        }        
     }
     
     /**
@@ -190,7 +216,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
             }
         } else {
             // TODO is such a checksum required?
-            log.warn("No checksums for validating the retrieved file.");
+            log.warn("No checksum for validating the new file.");
         }
     }
 
@@ -218,6 +244,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
      * @param message The message containing the request for the checksum to be calculated, along with the 
      * specification about which algorithm and salt to use.
      * @return The checksum data for the old file in the archive.
+     * If no checksum specification for the 'old' file has been defined, then an null is returned.
      */
     private ChecksumDataForFileTYPE calculateChecksumOnOldFile(ReplaceFileRequest message) {
         ChecksumSpecTYPE csType = message.getChecksumRequestForExistingFile();
@@ -234,6 +261,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
      * @param message The message containing the request for the checksum to be calculated, along with the 
      * specification about which algorithm and salt to use.
      * @return The checksum data for the new file in the archive.
+     * If no checksum specification for the 'old' file has been defined, then an null is returned.
      */
     private ChecksumDataForFileTYPE calculateChecksumOnNewFile(ReplaceFileRequest message) {
         // TODO insert the new checksum
@@ -267,14 +295,13 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
     /**
      * Replaces the old file with the new one. This is done by moving the old file from the archive to the retain 
      * directory, and then moving the new file from the temporary area into the archive.
-     * @param message
+     * @param message The message with the request for the file to be replaced.
      */
     private void replaceTheFile(ReplaceFileRequest message) {
         try {
             log.info("Replacing the file '" + message.getFileID() + "' in the archive with the one in the "
                     + "temporary area.");
-            archive.deleteFile(message.getFileID());
-            archive.moveToArchive(message.getFileID());
+            archive.replaceFile(message.getFileID());
         } catch (IOException e) {
             throw new CoordinationLayerException("Could not replace the old file with the new one.", e);
         }
@@ -296,8 +323,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         response.setResponseInfo(ri);
         
         response.setChecksumDataForNewFile(requestedNewChecksum);
-        log.warn("Can only deliver one of the requested checksums. Choosing the new one: '" + requestedNewChecksum 
-                + "', whereas the old one is: '" + requestedOldChecksum + "'");
+        response.setChecksumDataForExistingFile(requestedOldChecksum);
         
         messagebus.sendMessage(response);
     }

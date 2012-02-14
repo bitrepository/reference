@@ -174,13 +174,13 @@ public class ReferenceArchive implements FileStore {
     }
 
     @Override
-    public void deleteFile(String fileID) throws IOException {
+    public void deleteFile(String fileID) throws FileNotFoundException {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
         // Move old file to retain area.
         File oldFile = new File(fileDir, fileID);
         if(!oldFile.isFile()) {
-            throw new FileNotFoundException("Cannot locate the file to replace '" + oldFile.getAbsolutePath() + "'!");
+            throw new FileNotFoundException("Cannot locate the file to delete '" + oldFile.getAbsolutePath() + "'!");
         }
         File retainFile = new File(retainDir, fileID);
         
@@ -190,6 +190,32 @@ public class ReferenceArchive implements FileStore {
         }
         
         FileUtils.moveFile(oldFile, retainFile);
+    }
+    
+    /**
+     * The replace operation atomically.
+     * Validates that the old file and the new file exists, then deletes the old file (moves it to retain dir) and 
+     * moves the new file to the fileDir (from the tmpDir).
+     * 
+     * @param fileID The id of the file to perform the replace function upon.
+     * @throws FileNotFoundException If the new file with the given fileID does not exist within the tmpDir, or if the 
+     * old file with the given fileID does not exist within the fileDir. 
+     */
+    public synchronized void replaceFile(String fileID) throws FileNotFoundException {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        
+        File oldFile = new File(fileDir, fileID);
+        if(!oldFile.isFile()) {
+            throw new FileNotFoundException("Cannot locate the file to be replaced '" + oldFile.getAbsolutePath() 
+                    + "'.");
+        }
+        File newFile = new File(tmpDir, fileID);
+        if(!oldFile.isFile()) {
+            throw new FileNotFoundException("Cannot locate the file to replace '" + newFile.getAbsolutePath() + "'.");
+        }
+        
+        deleteFile(fileID);
+        moveToArchive(fileID);
     }
     
     /**

@@ -1,3 +1,27 @@
+/*
+ * #%L
+ * Bitrepository Reference Pillar
+ * 
+ * $Id$
+ * $HeadURL$
+ * %%
+ * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.pillar.messagehandler;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -35,16 +59,16 @@ public class IdentifyPillarsForReplaceFileRequestHandler
 
     @Override
     void handleMessage(IdentifyPillarsForReplaceFileRequest message) {
-        ArgumentValidator.checkNotNull(message, "IdentifyPillarsForDeleteFileRequest message");
+        ArgumentValidator.checkNotNull(message, "IdentifyPillarsForReplaceFileRequest message");
 
         try {
             validateBitrepositoryCollectionId(message.getCollectionID());
             checkThatRequestedFileIsAvailable(message);
-            respondSuccesfullIdentification(message);
+            respondSuccessfulIdentification(message);
         } catch (IllegalArgumentException e) {
             alarmDispatcher.handleIllegalArgumentException(e);
         } catch (IdentifyPillarsException e) {
-            log.warn("Unsuccessfull identification for the GetChecksums operation.", e);
+            log.warn("Unsuccessful identification for the ReplaceFile operation.", e);
             respondUnsuccessfulIdentification(message, e);
         } catch (RuntimeException e) {
             alarmDispatcher.handleRuntimeExceptions(e);
@@ -54,8 +78,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
     /**
      * Validates that the requested files are present in the archive. 
      * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
-     * @param message The message containing the id of the file. If no file id is given, then a warning is logged, 
-     * but the operation is accepted.
+     * @param message The message containing the id of the file. 
      */
     public void checkThatRequestedFileIsAvailable(IdentifyPillarsForReplaceFileRequest message) {
         if(!archive.hasFile(message.getFileID())) {
@@ -70,7 +93,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
      * Method for making a successful response to the identification.
      * @param message The request message to respond to.
      */
-    private void respondSuccesfullIdentification(IdentifyPillarsForReplaceFileRequest message) {
+    private void respondSuccessfulIdentification(IdentifyPillarsForReplaceFileRequest message) {
         // Create the response.
         IdentifyPillarsForReplaceFileResponse reply = createIdentifyPillarsForReplaceFileResponse(message);
         
@@ -96,7 +119,6 @@ public class IdentifyPillarsForReplaceFileRequestHandler
             IdentifyPillarsException cause) {
         IdentifyPillarsForReplaceFileResponse reply = createIdentifyPillarsForReplaceFileResponse(message);
         
-        reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
         reply.setResponseInfo(cause.getResponseInfo());
         
         messagebus.sendMessage(reply);
