@@ -41,9 +41,13 @@ import org.bitrepository.bitrepositoryelements.Alarm;
  */
 public class AlarmStoreDataItem {
 
+	/** Representation of the items date and time */
 	private XMLGregorianCalendar date;
+	/** Identifier of the component which raised the alarm */
 	private String raiserID;
+	/** The alarm code of the item */
 	private AlarmCode alarmCode;
+	/** The human readable text message of the alarm */
 	private String alarmText;
 	
 	/**

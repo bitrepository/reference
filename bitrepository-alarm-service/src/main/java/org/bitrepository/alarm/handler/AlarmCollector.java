@@ -39,10 +39,15 @@ import org.bitrepository.alarm.AlarmStoreDataItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Implementation of the AlarmHandler interface. 
+ * AlarmCollector holds the most recent alarms in memory and persists alarms
+ * so nothing should be lost after a restart of the service.  
+ */
 public class AlarmCollector implements AlarmHandler {
 
 	private static final int MAXALARMENTRIES = 10;
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private String alarmStoreFile;
 	private ArrayBlockingQueue<AlarmStoreDataItem> shortAlarmList;
 	
@@ -57,11 +62,14 @@ public class AlarmCollector implements AlarmHandler {
 		AlarmStoreDataItem item = new AlarmStoreDataItem(msg);
 		BufferedWriter out;
         try {
-            out = new BufferedWriter(new FileWriter(alarmStoreFile, true));
-            out.write(item.serialize() + "\n");
-            out.flush();
+        	synchronized (alarmStoreFile) {
+				out = new BufferedWriter(new FileWriter(alarmStoreFile, true));
+	            out.write(item.serialize() + "\n");
+	            out.flush();
+        	}
             addAlarmItemToShortList(item);
         } catch (IOException e) {
+        	log.debug(e.getMessage());
         }
 		
 	}
@@ -81,32 +89,36 @@ public class AlarmCollector implements AlarmHandler {
         	try {
 				shortAlarmList.take();
 			} catch (InterruptedException e) {
+				log.debug(e.getMessage());
 			}
         }
 	}
 	
 	/**
-	 * Method to populate the shortAlarmList with alarms from log.. 
+	 * Method to populate the shortAlarmList with alarms from file.. 
 	 */
 	private void populateShortAlarmList() {
-        File file = new File(alarmStoreFile);
-        try {
-            FileReader fr = new FileReader(alarmStoreFile);
-            BufferedReader br = new BufferedReader(fr);
-            String line;
-            while ((line = br.readLine()) != null) {
-            	try {
-            	AlarmStoreDataItem item = AlarmStoreDataItem.deserialize(line);
-            	addAlarmItemToShortList(item);
-            	} catch (IllegalArgumentException e) {
-            		log.debug("Seems to have caught a badly formatted line", e);
-            	}
-            }
-        } catch (FileNotFoundException e) {
-            log.debug("Unable find log file... '" + file.getAbsolutePath() + "'");
-        } catch (IOException e) {
-            log.debug("Unable to read log... '" + file.getAbsolutePath() + "'");
-        }
+		synchronized (alarmStoreFile) {
+	        File file = new File(alarmStoreFile);
+	        try {
+	
+	            FileReader fr = new FileReader(alarmStoreFile);
+	            BufferedReader br = new BufferedReader(fr);
+	            String line;
+	            while ((line = br.readLine()) != null) {
+	            	try {
+	            	AlarmStoreDataItem item = AlarmStoreDataItem.deserialize(line);
+	            	addAlarmItemToShortList(item);
+	            	} catch (IllegalArgumentException e) {
+	            		log.debug("Seems to have caught a badly formatted line", e);
+	            	}
+	            }
+	        } catch (FileNotFoundException e) {
+	            log.debug("Unable find alarm file... '" + file.getAbsolutePath() + "'");
+	        } catch (IOException e) {
+	            log.debug("Unable to read alarm file... '" + file.getAbsolutePath() + "'");
+	        }
+		}
 	}
 
 }
