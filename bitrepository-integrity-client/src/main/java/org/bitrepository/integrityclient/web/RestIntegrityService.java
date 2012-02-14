@@ -5,7 +5,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 @Path("/IntegrityService")
-public class webservice {
+public class RestIntegrityService {
 
     @GET
     @Path("/hello/")
