@@ -34,13 +34,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AlarmStore {
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private AlarmService alarmService;
 	private String alarmStoreFile;
 	private AlarmCollector collector;
 	private AlarmMailer mailer;
-    private ArrayBlockingQueue<AlarmStoreDataItem> shortAlarmList;
-	
+	private ArrayBlockingQueue<AlarmStoreDataItem> shortAlarmList;
+
 	AlarmStore(Settings settings, String alarmStoreFile) {
 		this.alarmStoreFile = alarmStoreFile;
 		shortAlarmList = new ArrayBlockingQueue<AlarmStoreDataItem>(20);
@@ -54,18 +54,19 @@ public class AlarmStore {
 		} else {
 			log.info("ReferenceSettings contained no mailer configuration, no alarm mailer added.");
 		}
-		
+
 	}
-	
+
 	public void shutdown() {
 		alarmService.shutdown();
 	}
-	
+
 	public ArrayBlockingQueue<AlarmStoreDataItem> getShortList() {
 		return shortAlarmList;
 	}
-	
+
 	public String getFullList() {
+		// TODO BITMAG-425
 		return "<p>Delivery of full list is not yet implemented..</p>";
 	}
 }

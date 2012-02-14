@@ -82,7 +82,7 @@ public class AlarmStoreFactory {
     public synchronized static AlarmStore getAlarmStore() {
         if(alarmStore == null) {
         	if(confDir == null) {
-        		throw new RuntimeException("No configuration dir has been set!");
+        		throw new IllegalStateException("No configuration dir has been set!");
         	}
         	SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
             Settings settings = settingsLoader.getSettings(DEFAULT_COLLECTION_ID);	 
