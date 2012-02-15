@@ -24,44 +24,84 @@
  */
 package org.bitrepository.integrityclient.cache;
 
+import java.sql.Connection;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
-import org.bitrepository.integrityclient.configuration.integrityclientconfiguration.StorageConfiguration;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.integrityclient.cache.database.DatabaseStoragedCache;
 
 /**
  * A storage of configuration information that is backed by a database.
  */
 public class DatabaseBasedIntegrityCached implements IntegrityCache {
+    /** The settings for the database cache. */
+    private final Settings settings;
+    
+    private final DatabaseStoragedCache store;
+    
     /**
-     * Initialise storage.
+     * Initialize storage.
      *
      * @param storageConfiguration Contains configuration for storage. Currently URL, user and pass for database.
      */
-    public DatabaseBasedIntegrityCached(StorageConfiguration storageConfiguration) {}
-
+    public DatabaseBasedIntegrityCached(Settings settings, Connection dbConnection) {
+        this.settings = settings;
+        this.settings.getReferenceSettings().getIntegrityServiceSettings();
+        
+        // TODO load connection from settings.
+        this.store = new DatabaseStoragedCache(dbConnection);
+    }
+    
     @Override
-    public void addFileIDs(FileIDsData data, String pillardId) {
-        throw new NotImplementedException("TODO implement this.");
+    public void addFileIDs(FileIDsData data, String pillarId) {
+        store.updateFileIDs(data, pillarId);
     }
 
     @Override
     public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, 
             String pillarId) {
-        throw new NotImplementedException("TODO implement this.");
+        store.updateChecksumData(data, checksumType, pillarId);
     }
 
     @Override
     public Collection<FileInfo> getFileInfos(String fileId) {
+        // TODO
         throw new NotImplementedException("TODO implement this.");
     }
 
     @Override
     public Collection<String> getAllFileIDs() {
-        throw new NotImplementedException("TODO implement this.");
+        return store.getAllFileIDs();
+    }
+
+    @Override
+    public long getNumberOfFiles(String pillarId) {
+        return store.getNumberOfExistingFilesForAPillar(pillarId);
+    }
+
+    @Override
+    public long getNumberOfMissingFiles(String pillarId) {
+        return store.getNumberOfMissingFilesForAPillar(pillarId);
+    }
+
+    @Override
+    public Date getLatestFileUpdate(String pillarId) {
+        return store.getLastFileListUpdate(pillarId);
+    }
+
+    @Override
+    public long getNumberOfChecksumErrors(String pillarId) {
+        return store.getNumberOfChecksumErrorsForAPillar(pillarId);
+    }
+
+    @Override
+    public Date getLatestChecksumUpdate(String pillarId) {
+        return store.getLastChecksumUpdate(pillarId);
     }
 }

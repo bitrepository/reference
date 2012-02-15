@@ -25,6 +25,7 @@
 package org.bitrepository.integrityclient.cache;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
@@ -61,4 +62,34 @@ public interface IntegrityCache {
      * @return The collection of file ids.
      */
     Collection<String> getAllFileIDs();
+    
+    /**
+     * @param pillarId The pillar.
+     * @return Retrieves the number of files in the state 'EXISTING' at a given pillar.
+     */
+    long getNumberOfFiles(String pillarId);
+    
+    /**
+     * @param pillarId The pillar.
+     * @return Retrieves the number of files in the state 'MISSING' at a given pillar.
+     */
+    long getNumberOfMissingFiles(String pillarId);
+    
+    /**
+     * @param pillarId The pillar.
+     * @return The latest update for the file list.
+     */
+    Date getLatestFileUpdate(String pillarId);
+    
+    /**
+     * @param pillarId The pillar.
+     * @return The number of files with checksum state 'ERROR' for the given pillar.
+     */
+    long getNumberOfChecksumErrors(String pillarId);
+    
+    /**
+     * @param pillarId
+     * @return
+     */
+    Date getLatestChecksumUpdate(String pillarId);
 }

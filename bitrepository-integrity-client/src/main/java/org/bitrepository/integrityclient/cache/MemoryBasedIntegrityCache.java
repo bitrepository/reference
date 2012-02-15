@@ -27,6 +27,7 @@ package org.bitrepository.integrityclient.cache;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -237,5 +238,35 @@ public class MemoryBasedIntegrityCache implements IntegrityCache {
         List<FileInfo> getFileIDInfos() {
             return fileIDInfos;
         }
+    }
+
+    @Override
+    public long getNumberOfFiles(String pillarId) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public long getNumberOfMissingFiles(String pillarId) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public Date getLatestFileUpdate(String pillarId) {
+        // TODO Auto-generated method stub
+        return new Date(0);
+    }
+
+    @Override
+    public long getNumberOfChecksumErrors(String pillarId) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public Date getLatestChecksumUpdate(String pillarId) {
+        // TODO Auto-generated method stub
+        return new Date(0);
     }
 }

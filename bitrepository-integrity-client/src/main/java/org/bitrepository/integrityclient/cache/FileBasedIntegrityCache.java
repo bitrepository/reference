@@ -25,6 +25,7 @@
 package org.bitrepository.integrityclient.cache;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
@@ -114,5 +115,35 @@ public class FileBasedIntegrityCache implements IntegrityCache {
      */
     public void clearCache() {
         fileStorage.clearCache();
+    }
+
+    @Override
+    public long getNumberOfFiles(String pillarId) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public long getNumberOfMissingFiles(String pillarId) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public Date getLatestFileUpdate(String pillarId) {
+        // TODO Auto-generated method stub
+        return new Date(0);
+    }
+
+    @Override
+    public long getNumberOfChecksumErrors(String pillarId) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public Date getLatestChecksumUpdate(String pillarId) {
+        // TODO Auto-generated method stub
+        return new Date(0);
     }
 }

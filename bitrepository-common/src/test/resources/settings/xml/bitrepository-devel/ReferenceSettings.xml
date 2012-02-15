@@ -57,5 +57,6 @@
   <IntegrityServiceSettings>
     <ID>integrity-service</ID>
     <SchedulerInterval>600000</SchedulerInterval>
+    <DatabaseUrl>jdbc:derby:integritydb</DatabaseUrl>
   </IntegrityServiceSettings>
 </ReferenceSettings>
