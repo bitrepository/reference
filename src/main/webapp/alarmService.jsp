@@ -8,12 +8,18 @@
 <script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="defaultText.js"></script>
 
+<% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
+    <script>
+        $(function() {
+            $('#alarmsContent').load('<%= su.getAlarmServiceUrl() %>/alarm/AlarmService/getShortAlarmList/').fadeIn("slow");
+        });
+    </script>
+
     <div id="alarm-container" class="ui-widget">
         <h1>Alarms:</h1> <br>
         <div id=alarmsContent>
     </div>
 
-    <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
     <script>
         var auto_getalarms = setInterval(
         function() {

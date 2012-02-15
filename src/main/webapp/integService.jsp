@@ -12,7 +12,9 @@
 <script>
     $(function() {
         $('#integritySetup').load('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getSchedulerSetup/').fadeIn("slow");
-        $("#integForm").buttonset();
+        $('#integrityStatus').load('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getIntegrityStatus/').fadeIn("slow");
+        $("#fileIDCheckForm").buttonset();
+        $("#checksumCheckForm").buttonset();
     });
 </script>
 
@@ -22,6 +24,19 @@
         <hr>
         <h1>Integrity service configuration:</h1>
         <div id=integritySetup></div>
+        <div id=integrityStarter>
+            <form id="fileIDCheckForm" action="javascript:submit()">
+                Start fileID check on pillar:
+                <input class="defaultText" title="pillarID" id="fileIDCheckPillarID" type="text"/>
+                <input type="submit" value="Start"/>
+            </form>
+            <br>        
+            <form id="checksumCheckForm" action="javascript:submit()">
+                Start fileID check on pillar:
+                <input class="defaultText" title="pillarID" id="checksumCheckPillarID" type="text"/>
+                <input type="submit" value="Start"/>
+            </form>
+        </div>
         <div id="actionStatus"> </div>
     </div>
     
@@ -33,8 +48,23 @@
     </script> 
     
     <script>
-            $("#integForm").submit(function() {
-            $("#status").html("<p>Integrity process started!</p>").show();
+        $("#fileIDCheckForm").submit(function() {
+            var ID = $("#fileIDCheckPillarID").val();
+            $('#actionStatus').load(
+                '<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/startFileIDCheckFromPillar/',
+                {pillarID: ID}
+                ).fadeIn("slow");
+            return true;
+        });
+    </script> 
+
+    <script>
+        $("#checksumCheckForm").submit(function() {
+            var ID = $("#checksumCheckPillarID").val();
+            $('#actionStatus').load(
+                '<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/startChecksumCheckFromPillar/',
+                {pillarID: ID}
+                ).fadeIn("slow");
             return true;
         });
     </script> 

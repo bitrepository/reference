@@ -30,15 +30,17 @@
 
     <script>
 	$(function() {
-		$( "#tabs" ).tabs({
-			ajaxOptions: {
-				error: function( xhr, status, index, anchor ) {
-					$( anchor.hash ).html("Wonkers, something went wrong.. Sorry");
-				}
-			}
-		});
+	   $('#logdiv').load('repo/reposervice/getShortHtmlLog/').fadeIn("slow");
+	   $( "#tabs" ).tabs({
+	       ajaxOptions: {
+	           error: function( xhr, status, index, anchor ) {
+	               $( anchor.hash ).html("Wonkers, something went wrong.. Sorry");
+		      }
+	       }
+	   });
 	});
 	</script>
+	
 	<script>
         var auto_refresh = setInterval(
 	    function() {
@@ -60,13 +62,13 @@
         <li><a href="alarmService.jsp">Alarms</a></li>
         <li><a href="<%= su.getAuditTrailServiceUrl() %>">Audit</a></li>
         <li><a href="integService.jsp">Integrity check</a></li>
+        <li><a href="getStatus.html">Status</a></li>
 	</ul>
 </div>
 
 <div id="log"  class="ui-widget">
   <div id="logdiv" class="ui-widget-content"></div>
-  <a href="repo/reposervice/getHtmlLog/"
-        class="ui-widget-content"> Get full log</a> 
+  <a href="repo/reposervice/getHtmlLog/" class="ui-widget-content"> Get full log</a> 
 </div>
 
 </html>
