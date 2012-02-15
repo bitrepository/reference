@@ -87,7 +87,7 @@ public class MessageBusTest extends IntegrationTest {
                 jaxbHelper.serializeToXml(listener.getMessage()));
     }
 
-    @Test(groups = {"test-first"})
+    @Test(groups = {"regressiontest"})
     public final void twoListenersForTopic() throws Exception {
         addDescription("Verifies that two listeners on the same topic both receive the message");
 
@@ -119,7 +119,7 @@ public class MessageBusTest extends IntegrationTest {
         receiver2.waitForMessage(content.getClass());
     }
 
-    @Test(groups = { "specificationonly" })
+    @Test(groups = { "regressiontest" })
     public final void twoMessageBusConnectionTest() throws Exception {
         addDescription("Verifies that we are switch to a second message bus. "
                 + "Awaiting introduction of robustness issue");
@@ -233,7 +233,7 @@ public class MessageBusTest extends IntegrationTest {
      * reflects that
      * @throws Exception
      */
-    @Test(groups = {"test-first", "connectiontest"})
+    @Test(groups = {"regressiontest"})
     public final void localBrokerTest() throws Exception {
         addDescription("Tests the possibility for starting the broker locally,"
                 + " and using it for communication by sending a simple message"
