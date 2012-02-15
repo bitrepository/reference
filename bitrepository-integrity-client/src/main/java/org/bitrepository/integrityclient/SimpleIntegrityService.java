@@ -24,6 +24,8 @@
  */
 package org.bitrepository.integrityclient;
 
+import java.util.Date;
+
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -146,5 +148,50 @@ public class SimpleIntegrityService {
         
         collector.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
                 fileIDs, checksumType, auditTrailInformation);
+    }
+    
+    /**
+     * @param pillarId The pillar which has the files.
+     * @return The number of files on the given pillar.
+     */
+    public long getNumberOfFiles(String pillarId) {
+        // TODO
+        return 0;
+    }
+    
+    /**
+     * @param pillarId The pillar which might be missing some files.
+     * @return The number of files missing for the given pillar.
+     */
+    public long getNumberOfMissingFiles(String pillarId) {
+        // TODO
+        return 0;
+    }
+    
+    /**
+     * @param pillarId The pillar which has its file list updated.
+     * @return The timestamp for the latest file list update for the given pillar.
+     */
+    public Date getDateForLastFileUpdate(String pillarId) {
+        // TODO
+        return new Date(0);
+    }
+    
+    /**
+     * @param pillarId The pillar which might contain files with checksum error.
+     * @return The number of files with checksum error at the given pillar.
+     */
+    public long getNumberOfChecksumErrors(String pillarId) {
+        // TODO
+        return 0;
+    }
+    
+    /**
+     * @param pillarId The pillar.
+     * @return The date for the latest checksum update for the given pillar.
+     */
+    public Date getDateForLastChecksumUpdate(String pillarId){
+        // TODO
+        return new Date(0);
     }
 }

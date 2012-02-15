@@ -1,3 +1,27 @@
+/*
+ * #%L
+ * Bitrepository Alarm Service
+ * 
+ * $Id$
+ * $HeadURL$
+ * %%
+ * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.alarm.alarmservice;
 
 import javax.servlet.ServletContextEvent;
@@ -21,7 +45,9 @@ public class ShutdownListener implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
-     * Do initialization work  
+     * Performs work required to bring up the alarm service. 
+     * This includes setting up locations of configuration directories and initializing the AlarmStore 
+     * so it is connected to the messagebus and ready. 
      */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -37,16 +63,17 @@ public class ShutdownListener implements ServletContextListener {
 			log.info("Failed to read log configuration file. Falling back to default.");
 		} 
         AlarmStoreFactory.init(confDir);
-        AlarmStore alarmStore = AlarmStoreFactory.getInstance();
+        AlarmStore alarmStore = AlarmStoreFactory.getAlarmStore();
         log.debug("Servlet context initialized");
     }
 
     /**
-     * Do teardown work. 
+     * Does the work of shutting the alarm service down gracefully. 
+     * This is done by calling the Alarm Store's shutdown method. 
      */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        AlarmStore alarmStore = AlarmStoreFactory.getInstance();
+        AlarmStore alarmStore = AlarmStoreFactory.getAlarmStore();
         alarmStore.shutdown(); 
         log.debug("Servlet context destroyed");
     }
