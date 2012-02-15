@@ -44,7 +44,7 @@ public final class MessageBusManager {
      * @param configuration
      * @return
      */
-    public static MessageBus getMessageBus(Settings settings) {
+    public synchronized static MessageBus getMessageBus(Settings settings) {
         String collectionID = settings.getCollectionID();
         if (!messageBusMap.containsKey(collectionID)) {
             MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration());
