@@ -145,19 +145,37 @@ public class ActiveMQMessageBus implements MessageBus {
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getURL());
 
         try {
-            // create and start the connection
             connection = connectionFactory.createConnection();
-
             connection.setExceptionListener(new MessageBusExceptionListener());
-            connection.start();
-
+            
             producerSession = connection.createSession(TRANSACTED, ACKNOWLEDGE_MODE);
             consumerSession = connection.createSession(TRANSACTED, ACKNOWLEDGE_MODE);
+            
+            startListeningForMessages();
             
         } catch (JMSException e) {
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
         log.debug("ActiveMQConnection initialized for '" + configuration + "'.");
+    }
+    
+    /**
+     * Start to listen for message on the message bus. This is done in a separate thread to avoid blocking, 
+     * so the main thread can continue without having to wait for the messagebus listening to start.
+     */
+    private void startListeningForMessages() {
+        Thread connectionStarter = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    connection.start();
+                } catch (Exception e) {
+                    log.error("Unable to start listening on the message bus", e);
+                }
+            }               
+        });
+        connectionStarter.start();
+
     }
 
     @Override
