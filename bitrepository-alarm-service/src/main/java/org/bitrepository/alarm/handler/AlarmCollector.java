@@ -69,14 +69,14 @@ public class AlarmCollector implements AlarmHandler {
         	}
             addAlarmItemToShortList(item);
         } catch (IOException e) {
-        	log.debug(e.getMessage());
+        	log.debug("", e);
         }
 		
 	}
 
 	@Override
 	public void handleOther(Object msg) {
-		log.info("Got something other than an alarm messge: " + msg);
+		log.warn("Got something other than an alarm messge: " + msg);
 
 	}
 	
@@ -114,9 +114,10 @@ public class AlarmCollector implements AlarmHandler {
 	            	}
 	            }
 	        } catch (FileNotFoundException e) {
-	            log.debug("Unable find alarm file... '" + file.getAbsolutePath() + "'");
+	            log.info("Unable find alarm file, might be because it's the first run " +
+	            		"(file: '" + file.getAbsolutePath() + "')", e);
 	        } catch (IOException e) {
-	            log.debug("Unable to read alarm file... '" + file.getAbsolutePath() + "'");
+	            log.error("Unable to read alarm file... '" + file.getAbsolutePath() + "'", e);
 	        }
 		}
 	}

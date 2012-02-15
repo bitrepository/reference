@@ -49,7 +49,7 @@ public class AlarmStoreDataItem {
 	private AlarmCode alarmCode;
 	/** The human readable text message of the alarm */
 	private String alarmText;
-	
+
 	/**
 	 * Private constructor to be used when creating a AlarmStoreDataItem by deserializing from a string. 
 	 */
@@ -60,7 +60,7 @@ public class AlarmStoreDataItem {
 		this.alarmCode = alarmCode;
 		this.alarmText = alarmText;
 	}
-	
+
 	/**
 	 * Publicly accessible  constructor.
 	 * @param Alarm Alarm obbject to build the AlarmStoreDataItem from.
@@ -73,7 +73,7 @@ public class AlarmStoreDataItem {
 		alarmCode = alarm.getAlarmCode();
 		alarmText = alarm.getAlarmText();
 	}
-	
+
 	/**
 	 * toString method to deliver a HTML representation of the alarm. 
 	 * @return A string containing a HTML table row presenting the alarm.  
@@ -91,7 +91,7 @@ public class AlarmStoreDataItem {
 		sb.append("</td></tr>");
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Method for serializing the object to a string representation so it can be persisted to disk.
 	 * @return The string representation of the object.   
@@ -99,7 +99,7 @@ public class AlarmStoreDataItem {
 	public String serialize() {
 		return date.toString() + " #!# " + raiserID + " #!# " + alarmCode.toString() + " #!# " + alarmText;
 	}
-	
+
 	/**
 	 * Method for deserializing the string representation of a AlarmStoreDataItem object to a java object. 
 	 * @param String String representation of a AlarmStoreDataItem
@@ -111,7 +111,7 @@ public class AlarmStoreDataItem {
 		AlarmCode alarmCode;
 		String alarmText;
 		String dateStr;
-		
+
 		StringTokenizer st = new StringTokenizer(data, "#!#");
 		if(st.countTokens() != 4) {
 			throw new IllegalArgumentException("The input string did not contain excatly 4 tokens");
@@ -127,5 +127,5 @@ public class AlarmStoreDataItem {
 			throw new IllegalArgumentException("The date token is invalid");
 		}
 	}
-	
+
 }
