@@ -28,6 +28,7 @@ import java.io.File;
 import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
@@ -69,7 +70,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
         csSpec.setChecksumSalt(null);
-        csSpec.setChecksumType("md5");
+        csSpec.setChecksumType(ChecksumType.MD5);
         
         addStep("Initialize the pillar.", "Should not be a problem.");
         ReferencePillarComponentFactory.getInstance().getPillar(messageBus, settings);
@@ -155,7 +156,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
 
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
         csSpec.setChecksumSalt(null);
-        csSpec.setChecksumType("md5");
+        csSpec.setChecksumType(ChecksumType.MD5);
         
         addStep("Initialize the pillar.", "Should not be a problem.");
         ReferencePillarComponentFactory.getInstance().getPillar(messageBus, settings);
@@ -197,7 +198,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
         csSpec.setChecksumSalt(null);
-        csSpec.setChecksumType("md5");
+        csSpec.setChecksumType(ChecksumType.MD5);
         
         addStep("Initialize the pillar.", "Should not be a problem.");
         ReferencePillarComponentFactory.getInstance().getPillar(messageBus, settings);

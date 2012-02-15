@@ -33,6 +33,7 @@ import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.clienttest.TestEventHandler;
 import org.bitrepository.common.settings.Settings;
@@ -71,7 +72,7 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         String CHECKSUM_NEW_FILE = "c9839fb7921d9b995be4e8a5a09d2481";
         ChecksumSpecTYPE DEFAULT_CHECKSUM_TYPE = new ChecksumSpecTYPE();
         DEFAULT_CHECKSUM_TYPE.setChecksumSalt(null);
-        DEFAULT_CHECKSUM_TYPE.setChecksumType("MD5");
+        DEFAULT_CHECKSUM_TYPE.setChecksumType(ChecksumType.MD5);
 
         
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
@@ -161,7 +162,7 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
 
         ChecksumSpecTYPE checksumRequested = new ChecksumSpecTYPE();
         checksumRequested.setChecksumSalt(null);
-        checksumRequested.setChecksumType("SHA1");
+        checksumRequested.setChecksumType(ChecksumType.SHA1);
         ChecksumDataForFileTYPE checksumDataOldFile = new ChecksumDataForFileTYPE();
         checksumDataOldFile.setChecksumSpec(DEFAULT_CHECKSUM_TYPE);
         checksumDataOldFile.setChecksumValue(CHECKSUM.getBytes());

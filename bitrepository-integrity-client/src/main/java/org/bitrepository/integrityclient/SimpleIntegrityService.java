@@ -28,6 +28,7 @@ import java.util.Date;
 
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityclient.cache.IntegrityCache;
@@ -86,8 +87,8 @@ public class SimpleIntegrityService {
     public void startChecksumIntegrityCheck(long millisSinceLastUpdate, long intervalBetweenChecks) {
         // Default checksum used.
         ChecksumSpecTYPE checksumType = new ChecksumSpecTYPE();
-        checksumType.setChecksumType(
-                settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType());
+        checksumType.setChecksumType(ChecksumType.fromValue(
+                settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType()));
         
         CollectObsoleteChecksumsTrigger trigger = new CollectObsoleteChecksumsTrigger(intervalBetweenChecks, millisSinceLastUpdate, 
                 checksumType, collector, cache);
@@ -114,8 +115,8 @@ public class SimpleIntegrityService {
      */
     public void startAllChecksumsIntegrityCheckFromPillar(String pillarId, long intervalBetweenCollecting) {
         ChecksumSpecTYPE checksumType = new ChecksumSpecTYPE();
-        checksumType.setChecksumType(
-                settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType());
+        checksumType.setChecksumType(ChecksumType.fromValue(
+                settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType()));
         
         CollectAllChecksumsFromPillarTrigger trigger = new CollectAllChecksumsFromPillarTrigger(
                 intervalBetweenCollecting, pillarId, checksumType, collector);
@@ -138,10 +139,10 @@ public class SimpleIntegrityService {
         
         ChecksumSpecTYPE checksumType = new ChecksumSpecTYPE();
         if(checksumAlgorithm == null || checksumAlgorithm.isEmpty()) {
-            checksumType.setChecksumType(
-                    settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType());
+            checksumType.setChecksumType(ChecksumType.fromValue(
+                    settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType()));
         } else {
-            checksumType.setChecksumType(checksumAlgorithm);
+            checksumType.setChecksumType(ChecksumType.fromValue(checksumAlgorithm));
         }
         
         checksumType.setChecksumSalt(salt.getBytes());

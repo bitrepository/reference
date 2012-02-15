@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
@@ -37,8 +38,8 @@ import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.integrityclient.cache.IntegrityCache;
 import org.bitrepository.integrityclient.cache.FileBasedIntegrityCache;
+import org.bitrepository.integrityclient.cache.IntegrityCache;
 import org.bitrepository.integrityclient.cache.MemoryBasedIntegrityCache;
 import org.bitrepository.integrityclient.checking.IntegrityChecker;
 import org.bitrepository.integrityclient.checking.SimpleIntegrityChecker;
@@ -173,7 +174,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         addStep("Initialise the checksum results data.", "Should be created and put into the cache.");
         ChecksumSpecTYPE checksumtype = new ChecksumSpecTYPE();
         checksumtype.setChecksumSalt(null);
-        checksumtype.setChecksumType("MD5");
+        checksumtype.setChecksumType(ChecksumType.MD5);
         
         List<ChecksumDataForChecksumSpecTYPE> checksumData = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         for(String fileid : fileids) {
@@ -216,7 +217,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         addStep("Initialise the checksum results data.", "Should be created and put into the cache.");
         ChecksumSpecTYPE checksumtype = new ChecksumSpecTYPE();
         checksumtype.setChecksumSalt(null);
-        checksumtype.setChecksumType("MD5");
+        checksumtype.setChecksumType(ChecksumType.MD5);
 
         List<ChecksumDataForChecksumSpecTYPE> checksumData = new ArrayList<ChecksumDataForChecksumSpecTYPE>();        
         for(String fileid : fileids) {
@@ -259,7 +260,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         addStep("Initialise the two different checksum results data.", "Should be created and put into the cache for each pillar.");
         ChecksumSpecTYPE checksumtype = new ChecksumSpecTYPE();
         checksumtype.setChecksumSalt(null);
-        checksumtype.setChecksumType("MD5");
+        checksumtype.setChecksumType(ChecksumType.MD5);
         List<ChecksumDataForChecksumSpecTYPE> checksumData1 = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         for(String fileid : fileids) {
             ChecksumDataForChecksumSpecTYPE checksumCalculation = new ChecksumDataForChecksumSpecTYPE();

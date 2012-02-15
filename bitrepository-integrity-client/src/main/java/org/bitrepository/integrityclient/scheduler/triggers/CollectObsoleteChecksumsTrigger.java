@@ -31,8 +31,8 @@ import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.integrityclient.cache.IntegrityCache;
 import org.bitrepository.integrityclient.cache.FileInfo;
+import org.bitrepository.integrityclient.cache.IntegrityCache;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

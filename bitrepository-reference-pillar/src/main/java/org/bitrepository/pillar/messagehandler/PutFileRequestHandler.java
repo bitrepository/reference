@@ -155,7 +155,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
                 //&& message.getChecksumDataForNewFile().getChecksumDataItem() != null) {
         	ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
             String checksum = ChecksumUtils.generateChecksum(fileForValidation, 
-                    csType.getChecksumSpec().getChecksumType(), 
+                    csType.getChecksumSpec().getChecksumType().value(), 
                     csType.getChecksumSpec().getChecksumSalt());
             if(!checksum.equals(new String(csType.getChecksumValue()))) {
                 log.error("Expected checksums '" + new String(csType.getChecksumValue()) + "' but the checksum was '" 
@@ -192,7 +192,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         
         if(message.getChecksumRequestForNewFile() != null) {
         	checksumForValidation.setChecksumValue(ChecksumUtils.generateChecksum(retrievedFile, 
-                    message.getChecksumRequestForNewFile().getChecksumType(), 
+                    message.getChecksumRequestForNewFile().getChecksumType().value(), 
                     message.getChecksumRequestForNewFile().getChecksumSalt()).getBytes());
         	checksumForValidation.setCalculationTimestamp(CalendarUtils.getNow());
         	checksumForValidation.setChecksumSpec(message.getChecksumRequestForNewFile());

@@ -28,6 +28,7 @@ import java.math.BigInteger;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
@@ -84,14 +85,14 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         
         String checksum = "123checksum321";
         ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
-        checksumForPillar.setChecksumType("MD5");
+        checksumForPillar.setChecksumType(ChecksumType.MD5);
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumSpec(checksumForPillar);
         checksumData.setChecksumValue(checksum.getBytes());
         checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
 
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
-        checksumRequest.setChecksumType("SHA-1");
+        checksumRequest.setChecksumType(ChecksumType.SHA1);
 
         addStep("Request a file to be deleted on the default pillar.", 
                 "A IdentifyPillarsForDeleteFileRequest should be sent to the pillar.");
@@ -177,14 +178,14 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         
         String checksum = "123checksum321";
         ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
-        checksumForPillar.setChecksumType("MD5");
+        checksumForPillar.setChecksumType(ChecksumType.MD5);
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumSpec(checksumForPillar);
         checksumData.setChecksumValue(checksum.getBytes());
         checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
 
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
-        checksumRequest.setChecksumType("SHA-1");
+        checksumRequest.setChecksumType(ChecksumType.SHA1);
 
         addStep("Request a file to be deleted on the default pillar.", 
                 "A IdentifyPillarsForDeleteFileRequest should be sent to the pillar.");
@@ -223,14 +224,14 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         
         String checksum = "123checksum321";
         ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
-        checksumForPillar.setChecksumType("MD5");
+        checksumForPillar.setChecksumType(ChecksumType.MD5);
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumSpec(checksumForPillar);
         checksumData.setChecksumValue(checksum.getBytes());
         checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
 
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
-        checksumRequest.setChecksumType("SHA-1");
+        checksumRequest.setChecksumType(ChecksumType.SHA1);
 
         addStep("Request a file to be deleted on the default pillar.", 
                 "A IdentifyPillarsForDeleteFileRequest should be sent to the pillar.");
@@ -295,14 +296,14 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         
         String checksum = "123checksum321";
         ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
-        checksumForPillar.setChecksumType("MD5");
+        checksumForPillar.setChecksumType(ChecksumType.MD5);
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumSpec(checksumForPillar);
         checksumData.setChecksumValue(checksum.getBytes());
         checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
 
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
-        checksumRequest.setChecksumType("SHA-1");
+        checksumRequest.setChecksumType(ChecksumType.SHA1);
 
         addStep("Request a file to be deleted on the default pillar.", 
                 "A IdentifyPillarsForDeleteFileRequest should be sent to the pillar.");

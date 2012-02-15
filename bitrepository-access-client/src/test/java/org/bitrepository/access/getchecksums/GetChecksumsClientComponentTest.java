@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -66,7 +67,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         }
         DEFAULT_CHECKSUM_SPECS = new ChecksumSpecTYPE();
         DEFAULT_CHECKSUM_SPECS.setChecksumSalt(null);
-        DEFAULT_CHECKSUM_SPECS.setChecksumType("MD5");
+        DEFAULT_CHECKSUM_SPECS.setChecksumType(ChecksumType.MD5);
     }
 
     @Test(groups = {"regressiontest"})

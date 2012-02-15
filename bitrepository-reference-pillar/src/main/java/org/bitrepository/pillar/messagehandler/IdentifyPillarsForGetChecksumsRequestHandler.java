@@ -130,7 +130,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         }
         
         try {
-            ChecksumUtils.verifyAlgorithm(checksumSpec.getChecksumType());
+            ChecksumUtils.verifyAlgorithm(checksumSpec.getChecksumType().value());
         } catch (NoSuchAlgorithmException e) {
             log.warn("Could not instantiate the given messagedigester for calculating a checksum.", e);
             ResponseInfo irInfo = new ResponseInfo();
