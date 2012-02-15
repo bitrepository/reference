@@ -149,6 +149,7 @@ public class TestReplaceFileMessageFactory extends TestMessageFactory{
         replaceFileRequest.setChecksumDataForExistingFile(oldChecksum);
         replaceFileRequest.setChecksumDataForNewFile(newChecksum);
         replaceFileRequest.setChecksumRequestForNewFile(checksumRequested);
+        replaceFileRequest.setChecksumRequestForExistingFile(checksumRequested);
         
         return replaceFileRequest;
     }

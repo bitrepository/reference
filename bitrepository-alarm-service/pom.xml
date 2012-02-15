@@ -53,6 +53,24 @@
       <artifactId>mail</artifactId>
       <version>1.4.2</version>
     </dependency>
+    
+    <!-- Hook up the other loggers to use SLF4J -->
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.bitrepository.reference</groupId>

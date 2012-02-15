@@ -30,8 +30,6 @@ import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.clienttest.MessageReceiver;
 import org.bitrepository.common.JaxbHelper;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
@@ -39,37 +37,16 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.jaccept.TestEventManager;
-import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
  * Class for testing the interface with the message bus.
  */
-public class MessageBusTest extends ExtendedTestCase {
+public class MessageBusTest extends IntegrationTest {
     /** The time to wait when sending a message before it definitely should 
      * have been consumed by a listener.*/
     static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
-    
-    /** The settings to use for this test */
-    private Settings settings;
-    /** Serializer and validator */
-    
-    /**
-     * Defines the standard BitRepositoryCollection configuration
-     * @param testMethod Used to grap the name of the test method used for naming.
-     * @throws Exception Something fishy happened. 
-     */
-    @BeforeMethod(alwaysRun = true)
-    public void beforeMethodSetup() throws Exception {
-        setupSettings();
-    }
-    
-    protected void setupSettings() throws Exception {
-        settings = TestSettingsProvider.getSettings(); 
-        
-    }
 
     @Test(groups = { "regressiontest" })
     public final void messageBusConnectionTest() {
@@ -80,7 +57,7 @@ public class MessageBusTest extends ExtendedTestCase {
         Assert.assertNotNull(ProtocolComponentFactory.getInstance().getMessageBus(settings));
     }
 
-    @Test(groups = { "failing" })
+    @Test(groups = { "regressiontest" })
     public final void busActivityTest() throws Exception {
         addDescription("Tests whether it is possible to create a message listener, " +
                 "and then set it to listen to the topic. Then puts a message" +
@@ -92,11 +69,10 @@ public class MessageBusTest extends ExtendedTestCase {
         IdentifyPillarsForGetFileRequest content = 
             ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);
         TestMessageListener listener = new TestMessageListener();
-        MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settings);
-        Assert.assertNotNull(con);
-        con.addListener("BusActivityTest", listener);
+        Assert.assertNotNull(messageBus);
+        messageBus.addListener("BusActivityTest", listener);
         content.setTo("BusActivityTest");
-        con.sendMessage(content);
+        messageBus.sendMessage(content);
 
         synchronized(this) {
             try {
@@ -252,7 +228,8 @@ public class MessageBusTest extends ExtendedTestCase {
     }
 
     /**
-     * Temporary reverting to test-first, because of difficulty in changing messagebus at run time. This perhaps
+     * Temporary reverting to test-first, because of difficulty in changing 
+     * messagebus at run time. This perhaps
      * reflects that
      * @throws Exception
      */
