@@ -39,7 +39,8 @@ public class IntegrityServiceFactory {
     private static final String JAVA_TRUSTSTORE_PROP = "javax.net.ssl.trustStore";
     /** Java environment property for setting truststore password */
     private static final String JAVA_TRUSTSTOREPASS_PROP = "javax.net.ssl.trustStorePassword";
-    
+    /** The time of one week.*/
+    private static final long DEFAULT_MAX_TIME_SINCE_UPDATE = 604800000;
     
     private IntegrityServiceFactory() {
     	//Empty constructor 
@@ -65,10 +66,17 @@ public class IntegrityServiceFactory {
         	}
         	SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
             Settings settings = settingsLoader.getSettings(DEFAULT_COLLECTION_ID);	 
+            long timeSinceLastChecksumUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
+            long timeSinceLastFileIDsUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
             try {
             	loadProperties();
             	SimpleIntegrityService simpleIntegrityService = new SimpleIntegrityService(settings);
                 integrityService = new IntegrityService(simpleIntegrityService, settings);
+                simpleIntegrityService.startChecksumIntegrityCheck(timeSinceLastChecksumUpdate, 
+                        settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval());
+                for(String pillarId : settings.getCollectionSettings().getClientSettings().getPillarIDs()) {
+                    simpleIntegrityService.startAllFileIDsIntegrityCheckFromPillar(pillarId, timeSinceLastFileIDsUpdate);
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

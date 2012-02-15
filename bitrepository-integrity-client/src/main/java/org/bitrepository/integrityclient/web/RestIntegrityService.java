@@ -54,6 +54,17 @@ public class RestIntegrityService {
     @Path("/getSchedulerSetup/")
     @Produces("text/html")
     public String getSchedulerSetup() {
-    	return "wooo scheduler setup";
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("<table class=\"ui-widget ui-widget-content\">\n");
+		sb.append("<thead>\n");
+		sb.append("<tr class=\"ui-widget-header\">\n");
+		sb.append("<th width=\"200\">Configuration name</th>\n");
+		sb.append("<th>Value</th>\n");
+		sb.append("</tr>\n");
+		sb.append("</thead>\n");
+		sb.append("<tbody>\n");
+    	sb.append("<tr><td>Scheduler interval</td><td>" + service.getSchedulingInterval() + "</td></tr>\n");
+    	sb.append("</table>\n");
+    	return sb.toString();
     }
 }

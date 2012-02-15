@@ -42,5 +42,9 @@ public class IntegrityService {
     public Date getDateForLastChecksumUpdate(String pillarID) {
     	return service.getDateForLastChecksumUpdate(pillarID);
     }
+    
+    public long getSchedulingInterval() {
+    	return settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval();
+    }
 
 }
