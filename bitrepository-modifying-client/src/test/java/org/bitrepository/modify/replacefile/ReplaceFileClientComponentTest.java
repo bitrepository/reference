@@ -30,6 +30,7 @@ import java.net.URL;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
@@ -91,7 +92,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         String checksumOld = "123checksum321";
         String checksumNew = "321checksum123";
         ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
-        checksumForPillar.setChecksumType("MD5");
+        checksumForPillar.setChecksumType(ChecksumType.MD5);
         ChecksumDataForFileTYPE checksumDataOldFile = new ChecksumDataForFileTYPE();
         checksumDataOldFile.setChecksumSpec(checksumForPillar);
         checksumDataOldFile.setChecksumValue(checksumOld.getBytes());
@@ -102,7 +103,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         checksumDataNewFile.setCalculationTimestamp(CalendarUtils.getNow());
         
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
-        checksumRequest.setChecksumType("SHA-1");
+        checksumRequest.setChecksumType(ChecksumType.SHA1);
         
         URL address = httpServer.getURL(DEFAULT_FILE_ID);
         long size = new Long(testFile.length());
@@ -187,7 +188,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         String checksumOld = "123checksum321";
         String checksumNew = "321checksum123";
         ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
-        checksumForPillar.setChecksumType("MD5");
+        checksumForPillar.setChecksumType(ChecksumType.MD5);
         ChecksumDataForFileTYPE checksumDataOldFile = new ChecksumDataForFileTYPE();
         checksumDataOldFile.setChecksumSpec(checksumForPillar);
         checksumDataOldFile.setChecksumValue(checksumOld.getBytes());
@@ -198,7 +199,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         checksumDataNewFile.setCalculationTimestamp(CalendarUtils.getNow());
         
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
-        checksumRequest.setChecksumType("SHA-1");
+        checksumRequest.setChecksumType(ChecksumType.SHA1);
         
         URL address = httpServer.getURL(DEFAULT_FILE_ID);
         long size = new Long(testFile.length());
@@ -240,7 +241,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         String checksumOld = "123checksum321";
         String checksumNew = "321checksum123";
         ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
-        checksumForPillar.setChecksumType("MD5");
+        checksumForPillar.setChecksumType(ChecksumType.MD5);
         ChecksumDataForFileTYPE checksumDataOldFile = new ChecksumDataForFileTYPE();
         checksumDataOldFile.setChecksumSpec(checksumForPillar);
         checksumDataOldFile.setChecksumValue(checksumOld.getBytes());
@@ -251,7 +252,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         checksumDataNewFile.setCalculationTimestamp(CalendarUtils.getNow());
         
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
-        checksumRequest.setChecksumType("SHA-1");
+        checksumRequest.setChecksumType(ChecksumType.SHA1);
         
         URL address = httpServer.getURL(DEFAULT_FILE_ID);
         long size = new Long(testFile.length());
@@ -316,7 +317,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         String checksumOld = "123checksum321";
         String checksumNew = "321checksum123";
         ChecksumSpecTYPE checksumForPillar = new ChecksumSpecTYPE();
-        checksumForPillar.setChecksumType("MD5");
+        checksumForPillar.setChecksumType(ChecksumType.MD5);
         ChecksumDataForFileTYPE checksumDataOldFile = new ChecksumDataForFileTYPE();
         checksumDataOldFile.setChecksumSpec(checksumForPillar);
         checksumDataOldFile.setChecksumValue(checksumOld.getBytes());
@@ -327,7 +328,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         checksumDataNewFile.setCalculationTimestamp(CalendarUtils.getNow());
         
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
-        checksumRequest.setChecksumType("SHA-1");
+        checksumRequest.setChecksumType(ChecksumType.SHA1);
         
         URL address = httpServer.getURL(DEFAULT_FILE_ID);
         long size = new Long(testFile.length());

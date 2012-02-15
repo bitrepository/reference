@@ -149,7 +149,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         
         // calculate and validate the checksum of the file.
         String checksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), 
-                checksumType.getChecksumType(), checksumType.getChecksumSalt());
+                checksumType.getChecksumType().value(), checksumType.getChecksumSalt());
         if(!checksum.equals(new String(checksumData.getChecksumValue()))) {
             // Log the different checksums, but do not send the right checksum back!
             log.info("Failed to handle replace operation on file '" + message.getFileID() + "' since the request had "
@@ -205,7 +205,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
         if(csType != null) {
             String checksum = ChecksumUtils.generateChecksum(fileForValidation, 
-                    csType.getChecksumSpec().getChecksumType(), 
+                    csType.getChecksumSpec().getChecksumType().value(), 
                     csType.getChecksumSpec().getChecksumSalt());
             String requestedChecksum = new String(csType.getChecksumValue());
             if(!checksum.equals(requestedChecksum)) {
@@ -283,7 +283,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         
         String checksum = ChecksumUtils.generateChecksum(archive.getFile(fileId), 
-                checksumType.getChecksumType(), checksumType.getChecksumSalt());
+                checksumType.getChecksumType().value(), checksumType.getChecksumSalt());
         
         res.setChecksumSpec(checksumType);
         res.setCalculationTimestamp(CalendarUtils.getNow());

@@ -7,8 +7,6 @@ import java.util.Properties;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
-import org.bitrepository.integrityclient.IntegrityService;
-import org.bitrepository.integrityclient.SimpleIntegrityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

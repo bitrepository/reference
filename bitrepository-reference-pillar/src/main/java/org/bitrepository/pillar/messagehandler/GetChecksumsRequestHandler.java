@@ -42,6 +42,7 @@ import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetChecksumsResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -178,7 +179,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         }
         
         try {
-            MessageDigest.getInstance(checksumSpec.getChecksumType());
+            MessageDigest.getInstance(checksumSpec.getChecksumType().value());
         } catch (NoSuchAlgorithmException e) {
             String errText = "Could not instantiate the given messagedigester for calculating a checksum.";
             log.warn(errText, e);
@@ -231,7 +232,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
         singleFileResult.setFileID(fileid);
         singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, 
-                message.getChecksumRequestForExistingFile().getChecksumType(), salt).getBytes());
+                message.getChecksumRequestForExistingFile().getChecksumType().value(), salt).getBytes());
         
         res.add(singleFileResult);
         
@@ -245,7 +246,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * @return The list of checksums for requested files. 
      */
     private List<ChecksumDataForChecksumSpecTYPE> calculateChecksumForAllFiles(
-            String algorithm, byte[] salt) {
+            ChecksumType algorithm, byte[] salt) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         
         // Go through every file in the archive, calculate the checksum and put it into the results.
@@ -254,7 +255,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
             singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
             singleFileResult.setFileID(fileid);
-            singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, algorithm, salt).getBytes());
+            singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, algorithm.value(), salt).getBytes());
             
             res.add(singleFileResult);
         }

@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.settings.collectionsettings.CollectionSettings;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

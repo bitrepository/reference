@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityclient.cache.FileInfo;
 import org.slf4j.Logger;
@@ -320,7 +321,7 @@ public class FileStoragedCache {
         // The checksum type. 6'th argument is algorithm and 7'th argument is the optional salt.
         if(items.length >= 6) {
             ChecksumSpecTYPE checksumType = new ChecksumSpecTYPE();
-            checksumType.setChecksumType(items[5]);
+            checksumType.setChecksumType(ChecksumType.fromValue(items[5]));
             
             if(items.length >= 7) {
                 checksumType.setChecksumSalt(items[6].getBytes());

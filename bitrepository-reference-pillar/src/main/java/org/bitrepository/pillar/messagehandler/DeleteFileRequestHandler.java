@@ -114,7 +114,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         }
         
         String checksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), 
-                checksumType.getChecksumType(), checksumType.getChecksumSalt());
+                checksumType.getChecksumType().value(), checksumType.getChecksumSalt());
         if(!checksum.equals(new String(checksumData.getChecksumValue()))) {
             // Log the different checksums, but do not send the right checksum back!
             log.info("Failed to handle delete operation on file '" + message.getFileID() + "' since the request had "
@@ -164,7 +164,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
             return null;
         }
         String checksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), 
-                checksumType.getChecksumType(), checksumType.getChecksumSalt());
+                checksumType.getChecksumType().value(), checksumType.getChecksumSalt());
         
         res.setChecksumSpec(checksumType);
         res.setCalculationTimestamp(CalendarUtils.getNow());

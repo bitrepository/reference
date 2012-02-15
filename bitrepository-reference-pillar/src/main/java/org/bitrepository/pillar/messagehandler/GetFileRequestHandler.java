@@ -32,6 +32,7 @@ import java.net.URL;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
@@ -217,7 +218,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
             ChecksumDataForFileTYPE checksumType = new ChecksumDataForFileTYPE();
             ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
             csType.setChecksumSalt(salt.getBytes());
-            csType.setChecksumType(algorithm);
+            csType.setChecksumType(ChecksumType.fromValue(algorithm));
             checksumType.setChecksumSpec(csType);
             checksumType.setChecksumValue(ChecksumUtils.generateChecksum(file, 
                     algorithm, salt).getBytes());

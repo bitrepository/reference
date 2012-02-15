@@ -2,7 +2,10 @@ package org.bitrepository.integrityclient.web;
 
 import java.util.List;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
@@ -67,4 +70,21 @@ public class RestIntegrityService {
     	sb.append("</table>\n");
     	return sb.toString();
     }
+    
+    @POST
+    @Path("/startFileIDCheckFromPillar/")
+    @Consumes("application/x-www-form-urlencoded")
+    @Produces("text/html")
+    public String startFileIDCheckFromPillar(@FormParam ("pillarID") String pillarID) {
+    	return "Starting collection of fileID's from pillar: " + pillarID + "\n";
+    }
+    
+    @POST
+    @Path("/startChecksumCheckFromPillar/")
+    @Consumes("application/x-www-form-urlencoded")
+    @Produces("text/html")
+    public String startChecksumCheckFromPillar(@FormParam ("pillarID") String pillarID) {
+    	return "Starting collection of checksums from pillar: " + pillarID + "\n";
+    }
+    
 }

@@ -36,7 +36,6 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityclient.checking.IntegrityReport;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.hibernate.type.ComponentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

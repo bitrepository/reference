@@ -29,6 +29,7 @@ import java.util.UUID;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
@@ -87,7 +88,7 @@ public class PillarTestMessageFactory extends TestMessageFactory {
         
         ChecksumDataForFileTYPE checksumDataForFile = new ChecksumDataForFileTYPE();
         ChecksumSpecTYPE csDeliveredSpec = new ChecksumSpecTYPE();
-        csDeliveredSpec.setChecksumType("MD5");
+        csDeliveredSpec.setChecksumType(ChecksumType.MD5);
         checksumDataForFile.setChecksumSpec(csDeliveredSpec);       
         checksumDataForFile.setChecksumValue(new String("940a51b250e7aa82d8e8ea31217ff267").getBytes());
         checksumDataForFile.setCalculationTimestamp(CalendarUtils.getNow());
@@ -98,7 +99,7 @@ public class PillarTestMessageFactory extends TestMessageFactory {
         res.setFileAddress(url);
         
         ChecksumSpecTYPE csReturnSpec = new ChecksumSpecTYPE();
-        csReturnSpec.setChecksumType("SHA-1");
+        csReturnSpec.setChecksumType(ChecksumType.SHA1);
         res.setChecksumRequestForNewFile(csReturnSpec);
         
         res.setFileID(fileId);
