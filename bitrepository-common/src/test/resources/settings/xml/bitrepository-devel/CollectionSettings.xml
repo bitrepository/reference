@@ -28,6 +28,8 @@
   <CollectionID>TEST</CollectionID>
   <ProtocolSettings>
     <DefaultChecksumType>md5</DefaultChecksumType>
+    <RequireMessageAuthentication>true</RequireMessageAuthentication>
+    <RequireOperationAuthorization>true</RequireOperationAuthorization>
     <CollectionDestination>TEST-TOPIC</CollectionDestination>
     <AlarmDestination>TEST-ALARM-TOPIC</AlarmDestination>
     <MessageBusConfiguration>
@@ -44,7 +46,7 @@
   </ClientSettings>
 
   <PillarSettings>
-    <ProgressResponseMandatory>false</ProgressResponseMandatory>
+    <RequestAcceptedProgressMandatory>false</RequestAcceptedProgressMandatory>
     <AuditTrailLevel>MEDIUM</AuditTrailLevel>
     <AlarmLevel>ERROR</AlarmLevel>
   </PillarSettings>
