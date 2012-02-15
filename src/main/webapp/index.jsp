@@ -20,6 +20,9 @@
         input.text { margin-bottom:12px; width:95%; padding: .4em; }
         fieldset { padding:0; border:0; margin-top:25px; }
         h1 { font-size: 1.2em; margin: .6em 0; }
+        div#integrity-container { width: 800px; margin: 20px 0; }
+        div#integrity-container table { margin: 1em 0; border-collapse: collapse; width: 100%; }
+        div#integrity-container table td, div#integrity-container table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
         div#alarm-container { width: 920px; margin: 20px 0; }
         div#alarm-container table { margin: 1em 0; border-collapse: collapse; width: 100%; }
         div#alarm-container table td, div#alarm-container table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
@@ -56,7 +59,7 @@
     	<li><a href="configuration.html">Configuration</a></li>
         <li><a href="alarmService.jsp">Alarms</a></li>
         <li><a href="<%= su.getAuditTrailServiceUrl() %>">Audit</a></li>
-        <li><a href="<%= su.getIntegrityServiceUrl() %>">Integrity check</a></li>
+        <li><a href="integService.jsp">Integrity check</a></li>
 	</ul>
 </div>
 
