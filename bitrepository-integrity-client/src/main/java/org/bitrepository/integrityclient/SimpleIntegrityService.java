@@ -155,8 +155,7 @@ public class SimpleIntegrityService {
      * @return The number of files on the given pillar.
      */
     public long getNumberOfFiles(String pillarId) {
-        // TODO
-        return 0;
+        return cache.getNumberOfFiles(pillarId);
     }
     
     /**
@@ -164,8 +163,7 @@ public class SimpleIntegrityService {
      * @return The number of files missing for the given pillar.
      */
     public long getNumberOfMissingFiles(String pillarId) {
-        // TODO
-        return 0;
+        return cache.getNumberOfFiles(pillarId);
     }
     
     /**
@@ -173,8 +171,7 @@ public class SimpleIntegrityService {
      * @return The timestamp for the latest file list update for the given pillar.
      */
     public Date getDateForLastFileUpdate(String pillarId) {
-        // TODO
-        return new Date(0);
+        return cache.getLatestFileUpdate(pillarId);
     }
     
     /**
@@ -182,8 +179,7 @@ public class SimpleIntegrityService {
      * @return The number of files with checksum error at the given pillar.
      */
     public long getNumberOfChecksumErrors(String pillarId) {
-        // TODO
-        return 0;
+        return cache.getNumberOfChecksumErrors(pillarId);
     }
     
     /**
@@ -191,7 +187,6 @@ public class SimpleIntegrityService {
      * @return The date for the latest checksum update for the given pillar.
      */
     public Date getDateForLastChecksumUpdate(String pillarId){
-        // TODO
-        return new Date(0);
+        return cache.getLatestChecksumUpdate(pillarId);
     }
 }

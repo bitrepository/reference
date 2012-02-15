@@ -17,13 +17,13 @@ create table tableversions (
 );
 
 insert into tableversions ( tablename, version )
-            value ( 'fileinfo', 1);
+            values ( 'fileinfo', 1);
 insert into tableversions ( tablename, version )
-            value ( 'file', 1);
+            values ( 'files', 1);
 insert into tableversions ( tablename, version )
-            value ( 'pillar', 1);
+            values ( 'pillar', 1);
 insert into tableversions ( tablename, version )
-            value ( 'checksum', 1);
+            values ( 'checksum', 1);
 
 --*************************************************************************--
 -- Name:     fileinfo
@@ -34,18 +34,23 @@ insert into tableversions ( tablename, version )
 -- Expected entry count: Very, very many.
 --*************************************************************************--
 create table fileinfo (
-    guid bigint not null generated always as indentity primary key,
+    guid bigint not null generated always as identity primary key,
                                  -- The unique id for a specific file on a specific pillar.
     file_guid bigint not null,   -- The guid for the file.
     pillar_guid bigint not null, -- The guid for the pillar.
-    checksum_spec bigint,        -- The guid for the specific checksum, which
+    checksum_guid bigint,        -- The guid for the specific checksum, which
                                  -- was used for the latest checksum calculation.
     checksum varchar(100),       -- The checksum for the given file on the given pillar.
-    last_file_update date,       -- The last time a 'GetFileIDs' for the fileinfo has been answered.
-    last_checksum_update date    -- The date for the latest checksum calculation.
+    last_file_update timestamp,  -- The last time a 'GetFileIDs' for the fileinfo has been answered.
+    last_checksum_update timestamp,
+                                 -- The date for the latest checksum calculation.
+    file_state int,              -- The state of the file. 0 For EXISTING, 1 for MISSING, 
+                                 -- and everything else for UNKNOWN.
+    checksum_state int           -- Checksum integrity state. Either 0 for VALID, 1 for INCONSISTENT,
+                                 -- and everything else for UNKNOWN.
 );
 
-create index fileindex on fileinfo ( file_guid);
+create index fileguidindex on fileinfo ( file_guid );
 create index filepillarindex on fileinfo ( file_guid, pillar_guid );
 create index checksumdateindex on fileinfo ( last_checksum_update );
 
@@ -55,16 +60,18 @@ create index checksumdateindex on fileinfo ( last_checksum_update );
 -- Purpose:  Keeps track of the names of the files within the system.
 -- Expected entry count: Very, very many.
 --*************************************************************************--
-create table file (
+create table files (
     file_guid bigint not null generated always as identity primary key,
                                  -- The guid for a given file.
     file_id varchar (255) not null,
                                  -- The id for the file.
-    creation_date date,          -- The date for the creation of the file.
+    creation_date date           -- The date for the creation of the file.
+                                 -- Or the time where it was first seen by
+                                 -- the integrity client.
 );
 
-create index fileindex on file ( file_id );
-create index filedateindex on file ( creation_date );
+create index fileindex on files ( file_id );
+create index filedateindex on files ( file_id, creation_date );
 
 --*************************************************************************--
 -- Name:     pillar
@@ -75,10 +82,15 @@ create index filedateindex on file ( creation_date );
 create table pillar (
     pillar_guid bigint not null generated always as identity primary key,
                                  -- The GUID for the pillar.
-    pillar_id not null,          -- The id of the pillar.
-    checksum_spec_guid bigint    -- If it is a ChecksumPillar, then this 
+    pillar_id varchar(100) not null,
+                                 -- The id of the pillar.
+    checksum_spec_guid bigint,   -- If it is a ChecksumPillar, then this 
                                  -- would be refering to the type of checksum
                                  -- the pillar is using.
+    last_file_update timestamp,  -- Latest filelist update.
+    last_checksum_update timestamp
+                                 -- The latest timestamp for the checksum check
+                                 -- for all of the files on the pillar.
 );
 
 create index pillarindex on pillar ( pillar_id );
@@ -95,7 +107,7 @@ create table checksumspec (
                                  -- The guid for this checksum specification.
     checksum_algorithm varchar(100) not null,
                                  -- The name of the algorithm for the checksum.
-    checksum_salt varchar(100) not null,
+    checksum_salt varchar(100) not null
                                  -- The salt for the checksum calculation.
 );
 
