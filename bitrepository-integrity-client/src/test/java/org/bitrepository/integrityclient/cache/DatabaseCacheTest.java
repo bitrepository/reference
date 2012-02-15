@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
@@ -101,7 +102,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
     private ChecksumSpecTYPE getChecksumSpec() {
         ChecksumSpecTYPE res = new ChecksumSpecTYPE();
         res.setChecksumSalt(new byte[0]);
-        res.setChecksumType("MD5");
+        res.setChecksumType(ChecksumType.MD5);
         return res;
     }
     
