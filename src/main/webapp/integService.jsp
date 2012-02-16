@@ -20,20 +20,34 @@
 
     <div id=integrity-container class="ui-widget">
         <h1>Integrity service configuration:</h1>
-        <div id=integritySetup></div>
-        <div id=integrityStarter>
-            <form id="fileIDCheckForm" action="javascript:submit()">
-                Start fileID check on pillar:
-                <input class="defaultText" title="pillarID" id="fileIDCheckPillarID" type="text"/>
-                <input type="submit" value="Start"/>
-            </form>
-            <br>        
-            <form id="checksumCheckForm" action="javascript:submit()">
-                Start fileID check on pillar:
-                <input class="defaultText" title="pillarID" id="checksumCheckPillarID" type="text"/>
-                <input type="submit" value="Start"/>
-            </form>
-        </div>
+        <table>
+            <tr valign="top">
+                <td><div id=integritySetup></div></td>
+                <td width="550">
+                    <table>
+                        <tr valign="top">
+                            <td>Start fileID check on pillar:</td>
+                            <td>
+                                <form id="fileIDCheckForm" action="javascript:submit()">
+                                    <input class="defaultText" title="pillarID" id="fileIDCheckPillarID" type="text"/>
+                                    <input type="submit" value="Start"/>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <td>Start checksum check on pillar:</td>
+                            <td>
+                                <form id="checksumCheckForm" action="javascript:submit()">
+                                    <input class="defaultText" title="pillarID" id="checksumCheckPillarID" type="text"/>
+                                    <input type="submit" value="Start"/>
+                                </form>
+                            </td>
+                        </tr>  
+                    </table>      
+                </td>
+            </tr>
+        </table>
+        
         <div id="actionStatus"> </div>
         <hr>
         <h1>Integrity status:</h1>
