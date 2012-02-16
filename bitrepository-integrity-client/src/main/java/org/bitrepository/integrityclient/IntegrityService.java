@@ -24,6 +24,7 @@
  */
 package org.bitrepository.integrityclient;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -69,4 +70,7 @@ public class IntegrityService {
     	return settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval();
     }
 
+    public Collection<String> getScheduledTasks() {
+        return service.getScheduledTasks();
+    }
 }

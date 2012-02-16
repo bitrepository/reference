@@ -35,11 +35,16 @@
     <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
     <init-param>
       <param-name>com.sun.jersey.config.property.packages</param-name>
-      <param-value>org.bitrepository.webservice</param-value>
+      <param-value>org.bitrepository.audittrails.webservice</param-value>
     </init-param>
   </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>Audit-Trails</servlet-name>
+    <url-pattern>/audittrails/*</url-pattern>
+  </servlet-mapping>
 
   <listener>
-    <listener-class>org.bitrepository.webservice.ShutdownListener</listener-class>
+    <listener-class>org.bitrepository.audittrails.webservice.ShutdownListener</listener-class>
   </listener>
 </web-app>

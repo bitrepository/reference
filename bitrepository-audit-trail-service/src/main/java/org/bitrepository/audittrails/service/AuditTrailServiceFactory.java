@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitrepository Integrity Client
+ * Bitrepository Audit Trail Service
  * 
  * $Id$
  * $HeadURL$
@@ -22,8 +22,33 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityclient.cache.database;
+package org.bitrepository.audittrails.service;
 
-public class Constants {
+public class AuditTrailServiceFactory {
     
+    private static AuditTrailService auditTrailService;
+    private static String configurationDir;
+    
+    /**
+     * Private constructor as the class is meant to be used in a static way.
+     */
+    private AuditTrailServiceFactory() {
+        
+    }
+    
+    
+    public static void init(String confDir) {
+        configurationDir = confDir;
+    }
+    
+    /**
+     * Factory method to retrieve AuditTrailService  
+     */
+    public synchronized static AuditTrailService getAuditTrailService() {
+        if(auditTrailService == null) {
+            auditTrailService = new AuditTrailService();
+        }
+        
+        return auditTrailService;
+    }
 }

@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityclient.cache.database;
+package org.bitrepository.common.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

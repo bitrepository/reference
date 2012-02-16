@@ -25,6 +25,9 @@
 package org.bitrepository.integrityclient.cache.database;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,9 +35,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.database.DatabaseUtils;
+import org.bitrepository.common.database.DerbyDBConnector;
+import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.integrityclient.cache.FileInfo;
+
+import static org.bitrepository.integrityclient.cache.database.DatabaseConstants.*;
 
 /**
  * Handles the communication with the database.
@@ -77,7 +87,8 @@ public class DatabaseStoragedCache {
         
         // TODO should be the oldest file list date for all the files within the pillar.
         // update the 'last file update' for this pillar.
-        String sql = "UPDATE pillar SET last_file_update = ? WHERE pillar_guid = ?";
+        String sql = "UPDATE " + PILLAR_TABLE + " SET " + PILLAR_LAST_FILE_UPDATE + " = ? WHERE " + PILLAR_GUID 
+                + " = ?";
         DatabaseUtils.executeStatement(dbConnection, sql, new Date(), pillarGuid);
     }
     
@@ -102,15 +113,53 @@ public class DatabaseStoragedCache {
         
         // TODO should be the oldest checksum date for any file within the pillar.
         // update the 'last checksum update' for this pillar.
-        String sql = "UPDATE pillar SET last_checksum_update = ? WHERE pillar_guid = ?";
+        String sql = "UPDATE " + PILLAR_TABLE + " SET " + PILLAR_LAST_CHECKSUM_UPDATE + " = ? WHERE pillar_guid = ?";
         DatabaseUtils.executeStatement(dbConnection, sql, new Date(), pillarGuid);
+    }
+    
+    /**
+     * Retrieves all the FileInfo information for a given file id.
+     * @param fileId The id of the file.
+     * @return The list of information about this file.
+     */
+    public List<FileInfo> getFileInfosForFile(String fileId) {
+        
+        long file_guid = retrieveFileGuid(fileId);
+        List<FileInfo> res = new ArrayList<FileInfo>();
+        String sql = "SELECT " + FI_LAST_FILE_UPDATE + ", " + FI_CHECKSUM + ", " + FI_CHECKSUM_GUID + ", "
+                + FI_LAST_CHECKSUM_UPDATE + ", " + FI_PILLAR_GUID + " FROM " + FILE_INFO_TABLE + " WHERE " 
+                + FI_FILE_GUID + " = ?";
+        
+        try {
+            ResultSet dbResult = DatabaseUtils.selectObject(dbConnection, sql, file_guid);
+            
+            while(dbResult.next()) {
+                
+                Date lastFileCheck = dbResult.getDate(1);
+                String checksum = dbResult.getString(2);
+                long checksumGuid = dbResult.getLong(3);
+                Date lastChecksumCheck = dbResult.getDate(4);
+                long pillarGuid = dbResult.getLong(5);
+                
+                String pillarId = retrievePillarFromGuid(pillarGuid);
+                ChecksumSpecTYPE checksumType = retrieveChecksumSpecFromGuid(checksumGuid);
+                
+                FileInfo f = new FileInfo(fileId, CalendarUtils.getXmlGregorianCalendar(lastFileCheck), checksum, 
+                        checksumType, CalendarUtils.getXmlGregorianCalendar(lastChecksumCheck), pillarId);
+                res.add(f);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not retrieve the FileInfo for '" + fileId + "' with the SQL '"
+                    + sql + "'.", e);
+        }
+        return res;
     }
     
     /**
      * @return The list of all the file ids within the database.
      */
     public List<String> getAllFileIDs() {
-        String sql = "SELECT file_id FROM files";
+        String sql = "SELECT " + FILES_ID + " FROM " + FILES_TABLE;
         return DatabaseUtils.selectStringList(dbConnection, sql, new Object[0]);
     }
     
@@ -121,8 +170,9 @@ public class DatabaseStoragedCache {
      */
     public int getNumberOfExistingFilesForAPillar(String pillarId) {
         Long pillarGuid = retrievePillarGuid(pillarId);
-        String sql = "SELECT COUNT(*) FROM fileinfo WHERE pillar_guid = ? AND file_state = ?";
-        return DatabaseUtils.selectIntValue(dbConnection, sql, pillarGuid, FileState.EXISTING);
+        String sql = "SELECT COUNT(*) FROM " + FILE_INFO_TABLE + " WHERE " + FI_PILLAR_GUID + " = ? AND "
+                + FI_FILE_STATE + " = ?";
+        return DatabaseUtils.selectIntValue(dbConnection, sql, pillarGuid, FileState.EXISTING.ordinal());
     }
     
     /**
@@ -132,8 +182,9 @@ public class DatabaseStoragedCache {
      */
     public int getNumberOfMissingFilesForAPillar(String pillarId) {
         Long pillarGuid = retrievePillarGuid(pillarId);
-        String sql = "SELECT COUNT(*) FROM fileinfo WHERE pillar_guid = ? AND file_state = ?";
-        return DatabaseUtils.selectIntValue(dbConnection, sql, pillarGuid, FileState.MISSING);
+        String sql = "SELECT COUNT(*) FROM " + FILE_INFO_TABLE + " WHERE " + FI_PILLAR_GUID + " = ? AND "
+                + FI_FILE_STATE + " = ?";
+        return DatabaseUtils.selectIntValue(dbConnection, sql, pillarGuid, FileState.MISSING.ordinal());
     }
     
     /**
@@ -141,7 +192,7 @@ public class DatabaseStoragedCache {
      * @return The latest file list update for the given pillar.
      */
     public Date getLastFileListUpdate(String pillarId) {
-        String sql = "SELECT last_file_update FROM pillar WHERE pillar_id = ?";
+        String sql = "SELECT " + PILLAR_LAST_FILE_UPDATE + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ?";
         return DatabaseUtils.selectDateValue(dbConnection, sql, pillarId);
     }
 
@@ -152,8 +203,9 @@ public class DatabaseStoragedCache {
      */
     public int getNumberOfChecksumErrorsForAPillar(String pillarId) {
         Long pillarGuid = retrievePillarGuid(pillarId);
-        String sql = "SELECT COUNT(*) FROM fileinfo WHERE pillar_guid = ? AND checksum_state = ?";
-        return DatabaseUtils.selectIntValue(dbConnection, sql, pillarGuid, ChecksumState.INCONSISTENT);
+        String sql = "SELECT COUNT(*) FROM " + FILE_INFO_TABLE + " WHERE " + FI_PILLAR_GUID + " = ? AND "
+                + FI_CHECKSUM_STATE + " = ?";
+        return DatabaseUtils.selectIntValue(dbConnection, sql, pillarGuid, ChecksumState.INCONSISTENT.ordinal());
     }
 
     /**
@@ -161,7 +213,8 @@ public class DatabaseStoragedCache {
      * @return The latest checksum update for the given pillar.
      */
     public Date getLastChecksumUpdate(String pillarId) {
-        String sql = "SELECT last_checksum_update FROM pillar WHERE pillar_id = ?";
+        String sql = "SELECT " + PILLAR_LAST_CHECKSUM_UPDATE + " FROM " + PILLAR_TABLE + " WHERE "
+                + PILLAR_ID + " = ?";
         return DatabaseUtils.selectDateValue(dbConnection, sql, pillarId);
     }
 
@@ -172,22 +225,26 @@ public class DatabaseStoragedCache {
      * @param filelistTimestamp The timestamp for when the file was latest modified.
      */
     private void updateFileInfoLastFileUpdateTimestamp(long pillarGuid, long fileGuid, Date filelistTimestamp) {
-        String retrievalSql = "SELECT guid FROM fileinfo WHERE pillar_guid = ? AND file_guid = ?";
+        String retrievalSql = "SELECT " + FI_GUID + " FROM " + FILE_INFO_TABLE + " WHERE " + FI_PILLAR_GUID 
+                + " = ? AND " + FI_FILE_GUID + " = ?";
         Long guid = DatabaseUtils.selectLongValue(dbConnection, retrievalSql, pillarGuid, fileGuid);
         
         // if guid is null, then make new entry. Otherwise validate / update.
         if(guid == null) {
-            String insertSql = "INSERT INTO fileinfo ( pillar_guid, file_guid, last_file_update, file_state, "
-                    + "checksum_state) VALUES ( ?, ?, ?, ?, ? )";
+            String insertSql = "INSERT INTO " + FILE_INFO_TABLE + " ( " + FI_PILLAR_GUID + ", " + FI_FILE_GUID + ", "
+                    + FI_LAST_FILE_UPDATE + ", " + FI_FILE_STATE + ", " + FI_CHECKSUM_STATE + ") VALUES "
+                    + "( ?, ?, ?, ?, ? )";
             DatabaseUtils.executeStatement(dbConnection, insertSql, pillarGuid, fileGuid, filelistTimestamp,
                     FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
         } else {
-            String validateSql = "SELECT last_file_update FROM fileinfo WHERE guid = ?";
+            String validateSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE + " WHERE " + FI_GUID 
+                    + " = ?";
             Date existingDate = DatabaseUtils.selectDateValue(dbConnection, validateSql, guid);
             
             // Only insert the date, if it is newer than the recorded one.
             if(existingDate == null || existingDate.getTime() < filelistTimestamp.getTime()) {
-                String updateSql = "UPDATE fileinfo SET last_file_update = ? WHERE guid = ?";
+                String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_FILE_UPDATE + " = ? WHERE "
+                        + FI_GUID + " = ?";
                 DatabaseUtils.executeStatement(dbConnection, updateSql, filelistTimestamp, guid);
             }
         }
@@ -206,23 +263,27 @@ public class DatabaseStoragedCache {
         Long fileGuid = retrieveFileGuid(data.getFileID());
 
         // TODO what if there already is a entry, but with a different checksum?
-        String retrievalSql = "SELECT guid FROM fileinfo WHERE pillar_guid = ? AND file_guid = ?";
+        String retrievalSql = "SELECT " + FI_GUID + " FROM " + FILE_INFO_TABLE + " WHERE " + FI_PILLAR_GUID 
+                + " = ? AND " + FI_FILE_GUID + " = ?";
         Long guid = DatabaseUtils.selectLongValue(dbConnection, retrievalSql, pillarGuid, fileGuid);
         
         // if guid is null, then make new entry. Otherwise validate / update.
         if(guid == null) {
-            String insertSql = "INSERT INTO fileinfo ( pillar_guid, file_guid, checksum_guid, last_checksum_update, "
-                    + "checksum, file_state, checksum_state ) VALUES ( ?, ?, ?, ?, ? )";
+            String insertSql = "INSERT INTO " + FILE_INFO_TABLE + " ( " + FI_PILLAR_GUID + ", " + FI_FILE_GUID + ", " 
+                    + FI_CHECKSUM_GUID + ", " + FI_LAST_CHECKSUM_UPDATE + ", " + FI_CHECKSUM + ", " + FI_FILE_STATE 
+                    + ", " + FI_CHECKSUM_STATE + ") VALUES ( ?, ?, ?, ?, ? )";
             DatabaseUtils.executeStatement(dbConnection, insertSql, pillarGuid, fileGuid, checksumGuid, csTimestamp,
                     checksum, FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
         } else {
-            String validateSql = "SELECT last_checksum_update FROM fileinfo WHERE guid = ?";
+            String validateSql = "SELECT " + FI_LAST_CHECKSUM_UPDATE + " FROM " + FILE_INFO_TABLE + " WHERE " 
+                    + FI_GUID + " = ?";
             Date existingDate = DatabaseUtils.selectDateValue(dbConnection, validateSql, guid);
             
             // Only update, if it has a newer checksum timestamp than the recorded one.
             if(existingDate == null || existingDate.getTime() < csTimestamp.getTime()) {
-                String updateSql = "UPDATE fileinfo SET checksum_guid = ?, last_checksum_update = ?, checksum = ?, "
-                        + "file_state = ?, checksum_state = ? WHERE guid = ?";
+                String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_CHECKSUM_GUID + " = ?, "
+                        + FI_LAST_CHECKSUM_UPDATE + " = ?, " + FI_CHECKSUM + " = ?, " + FI_FILE_STATE + " = ?, "
+                        + FI_CHECKSUM_STATE + " = ? WHERE " + FI_GUID + " = ?";
                 DatabaseUtils.executeStatement(dbConnection, updateSql, checksumGuid, csTimestamp, checksum, 
                         FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal(), guid);
             }
@@ -240,7 +301,7 @@ public class DatabaseStoragedCache {
             insertFileID(fileId);
         }
         
-        String sql = "SELECT file_guid FROM files WHERE file_id = ?";
+        String sql = "SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ?";
         return DatabaseUtils.selectLongValue(dbConnection, sql, fileId);
     }
     
@@ -249,7 +310,8 @@ public class DatabaseStoragedCache {
      * @param fileId The id of the file to insert.
      */
     private void insertFileID(String fileId) {
-        String sql = "INSERT INTO files ( file_id, creation_date ) VALUES ( ?, ? )";
+        String sql = "INSERT INTO " + FILES_TABLE + " ( " + FILES_ID + ", " + FILES_CREATION_DATE 
+                + " ) VALUES ( ?, ? )";
         DatabaseUtils.executeStatement(dbConnection, sql, fileId, new Date());
     }
     
@@ -259,7 +321,7 @@ public class DatabaseStoragedCache {
      */
     private boolean containsFileID(String fileId) {
         // Retrieve the amount of times the file id is within 'files' table.
-        String sql = "SELECT COUNT(*) FROM files WHERE file_id = ?";
+        String sql = "SELECT COUNT(*) FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ?";
         int count = DatabaseUtils.selectIntValue(dbConnection, sql, fileId);
 
         // Handle the different cases for count.
@@ -269,7 +331,8 @@ public class DatabaseStoragedCache {
         case 1:
             return true;
             default:
-                throw new IllegalStateException("Found more than 1");
+                throw new IllegalStateException("Found more than 1 entry in the 'files' table with the id '"
+                        + fileId + "'.");
         }    
     }
     
@@ -279,13 +342,22 @@ public class DatabaseStoragedCache {
      * @return The guid of the pillar with the given id.
      */
     private long retrievePillarGuid(String pillarId) {
-        ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         if(!containsPillarID(pillarId)) {
             insertPillarID(pillarId);
         }
         
-        String sql = "SELECT pillar_guid FROM pillar WHERE pillar_id = ?";
+        String sql = "SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ?";
         return DatabaseUtils.selectLongValue(dbConnection, sql, pillarId);
+    }
+    
+    /**
+     * Retrieves the id of the pillar with the given guid.
+     * @param guid The guid of the pillar, whose id should be retrieved.
+     * @return The id of the requested pillar.
+     */
+    private String retrievePillarFromGuid(long guid) {
+        String sql = "SELECT " + PILLAR_ID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_GUID + " = ?";
+        return DatabaseUtils.selectStringValue(dbConnection, sql, guid);
     }
     
     /**
@@ -293,7 +365,7 @@ public class DatabaseStoragedCache {
      * @param pillarId The id of the pillar which are to be inserted into the 'pillar' table.
      */
     private void insertPillarID(String pillarId) {
-        String sql = "INSERT INTO pillar ( pillar_id ) VALUES ( ? )";
+        String sql = "INSERT INTO " + PILLAR_TABLE +" ( " + PILLAR_ID + " ) VALUES ( ? )";
         DatabaseUtils.executeStatement(dbConnection, sql, pillarId);
     }
     
@@ -303,7 +375,7 @@ public class DatabaseStoragedCache {
      */
     private boolean containsPillarID(String pillarId) {
         // Retrieve the amount of times the pillar id is within 'pillar' table.
-        String sql = "SELECT COUNT(*) FROM pillar WHERE pillar_id = ?";
+        String sql = "SELECT COUNT(*) FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ?";
         int count = DatabaseUtils.selectIntValue(dbConnection, sql, pillarId);
 
         // Handle the different cases for count.
@@ -313,8 +385,34 @@ public class DatabaseStoragedCache {
         case 1:
             return true;
             default:
-                throw new IllegalStateException("Found more than 1");
+                throw new IllegalStateException("Found more than 1 entry in the 'pillar' table with id '"
+                        + pillarId + "'.");
         }    
+    }
+    
+    /**
+     * Retrieves the checksum specification for a given checksum spec guid.
+     * @param checksumGuid The guid of the checksum specification to be retrieved.
+     * @return The requested checksum specification.
+     */
+    public ChecksumSpecTYPE retrieveChecksumSpecFromGuid(long checksumGuid) {
+        try {
+            String sql = "SELECT " + CHECKSUM_ALGORITHM + ", " + CHECKSUM_SALT + " FROM " + CHECKSUM_TABLE + " WHERE "
+                    + CHECKSUM_GUID + " = ?";
+            ResultSet dbResult = DatabaseUtils.selectObject(dbConnection, sql, checksumGuid);
+            if(!dbResult.next()) {
+                throw new IllegalStateException("No checksum specification for the guid '" + checksumGuid 
+                        + "' found with the SQL '" + sql + "'.");
+            }
+            ChecksumSpecTYPE res = new ChecksumSpecTYPE();
+            
+            res.setChecksumType(ChecksumType.fromValue(dbResult.getString(1)));
+            res.setChecksumSalt(dbResult.getString(2).getBytes());
+            
+            return res;
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot retrive the requested checksum specification.", e);
+        }
     }
     
     /**
@@ -328,8 +426,9 @@ public class DatabaseStoragedCache {
             insertChecksumSpec(checksumType);
         }
         
-        String sql = "SELECT checksum_guid FROM checksumspec WHERE checksum_algorithm = ? AND checksum_salt = ?";
-        return DatabaseUtils.selectLongValue(dbConnection, sql, checksumType.getChecksumType(), 
+        String sql = "SELECT " + CHECKSUM_GUID + " FROM " + CHECKSUM_TABLE + " WHERE " + CHECKSUM_ALGORITHM 
+                + " = ? AND " + CHECKSUM_SALT + " = ?";
+        return DatabaseUtils.selectLongValue(dbConnection, sql, checksumType.getChecksumType().toString(), 
                 new String(checksumType.getChecksumSalt()));
     }
     
@@ -338,8 +437,9 @@ public class DatabaseStoragedCache {
      * @param checksumType The checksum specification to insert into the 'checksum' table.
      */
     private void insertChecksumSpec(ChecksumSpecTYPE checksumType) {
-        String sql = "INSERT INTO checksumspec ( checksum_algorithm, checksum_salt ) VALUES ( ?, ? )";
-        DatabaseUtils.executeStatement(dbConnection, sql, checksumType.getChecksumType(),
+        String sql = "INSERT INTO " + CHECKSUM_TABLE + " ( " + CHECKSUM_ALGORITHM + ", " + CHECKSUM_SALT 
+                + " ) VALUES ( ?, ? )";
+        DatabaseUtils.executeStatement(dbConnection, sql, checksumType.getChecksumType().toString(),
                 new String(checksumType.getChecksumSalt()));
     }
     
@@ -349,8 +449,9 @@ public class DatabaseStoragedCache {
      */
     private boolean containsChecksumSpec(ChecksumSpecTYPE checksumType) {
         // Retrieve the amount of times the checksum type and checksum salt is within 'checksumspec' table.
-        String sql = "SELECT COUNT(*) FROM checksumspec WHERE checksum_algorithm = ? AND checksum_salt = ?";
-        int count = DatabaseUtils.selectIntValue(dbConnection, sql, checksumType.getChecksumType(),
+        String sql = "SELECT COUNT(*) FROM " + CHECKSUM_TABLE + " WHERE " + CHECKSUM_ALGORITHM + " = ? AND "
+                + CHECKSUM_SALT + " = ?";
+        int count = DatabaseUtils.selectIntValue(dbConnection, sql, checksumType.getChecksumType().toString(),
                 new String(checksumType.getChecksumSalt()));
 
         // Handle the different cases for count.

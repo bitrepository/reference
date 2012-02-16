@@ -24,6 +24,7 @@
  */
 package org.bitrepository.integrityclient;
 
+import java.util.Collection;
 import java.util.Date;
 
 import org.bitrepository.access.AccessComponentFactory;
@@ -149,6 +150,14 @@ public class SimpleIntegrityService {
         
         collector.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
                 fileIDs, checksumType, auditTrailInformation);
+    }
+    
+    /**
+     * Retrieves all the scheduled tasks in the system, which are running.
+     * @return The names of the tasks, which are scheduled by the system.
+     */
+    public Collection<String> getScheduledTasks() {
+        return scheduler.getTriggerNames();
     }
     
     /**
