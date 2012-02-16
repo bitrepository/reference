@@ -24,6 +24,8 @@
  */
 package org.bitrepository.integrityclient.scheduler;
 
+import java.util.Collection;
+
 /**
  * Interface for scheduling integrity information collection.
  *
@@ -44,4 +46,9 @@ public interface IntegrityInformationScheduler {
      * @return Whether the trigger was successfully found and removed. 
      */
     boolean removeTrigger(String name);
+    
+    /**
+     * @return The list of all the triggers.
+     */
+    Collection<String> getTriggerNames();
 }
