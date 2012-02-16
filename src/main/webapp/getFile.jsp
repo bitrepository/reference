@@ -25,7 +25,7 @@
 	            <tr>
 	                <td>Fileaddress:</td>
 	                <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
-	                <td> <input type="text" name="fileaddr" id="getFileaddr" value="<%= su.getDefaultHttpServerUrl() %>"/></td>
+	                <td> <input type="text" class="inputURL" name="fileaddr" id="getFileaddr" value="<%= su.getDefaultHttpServerUrl() %>"/></td>
 	            </tr>
 	        </table> 
 	        <input type="submit" value="Get file"/>

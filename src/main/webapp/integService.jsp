@@ -19,9 +19,6 @@
 </script>
 
     <div id=integrity-container class="ui-widget">
-        <h1>Integrity status:</h1>
-        <div id=integrityStatus></div>
-        <hr>
         <h1>Integrity service configuration:</h1>
         <div id=integritySetup></div>
         <div id=integrityStarter>
@@ -38,6 +35,10 @@
             </form>
         </div>
         <div id="actionStatus"> </div>
+        <hr>
+        <h1>Integrity status:</h1>
+        <div id=integrityStatus></div>
+        
     </div>
     
     <script>

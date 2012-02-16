@@ -16,7 +16,7 @@
     </script>
 
     <div id="alarm-container" class="ui-widget">
-        <h1>Alarms:</h1> <br>
+        <h1>Alarms:</h1>
         <div id=alarmsContent>
     </div>
 

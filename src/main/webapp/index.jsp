@@ -12,17 +12,22 @@
 	<style media="screen" type="text/css">
 	    body, td, input, textarea { font-family: 'Trebuchet MS'; }
 	    .tableMain { border: solid 1px #a1a1a1; background-color: #f1f1f1; }
-	    .defaultText { width: 300px; }
+	    .defaultText { width: 250px; }
 	    .defaultTextActive { color: #a1a1a1; font-style: italic; }
+	    .inputURL { width: 250px; }
+	     .dateInput { width: 100px; }
     </style>
     <style>
         body { font-size: 80%; }
-        input.text { margin-bottom:12px; width:95%; padding: .4em; }
+        input.text { margin-bottom:12px; padding: .4em; }
         fieldset { padding:0; border:0; margin-top:25px; }
         h1 { font-size: 1.2em; margin: .6em 0; }
-        div#integrity-container { width: 800px; margin: 20px 0; }
+        div#integrity-container { width: 1200px; margin: 20px 0; }
         div#integrity-container table { margin: 1em 0; border-collapse: collapse; width: 100%; }
         div#integrity-container table td, div#integrity-container table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
+        div#audit-container { width: 1200px; margin: 20px 0; }
+        div#audit-container table { margin: 1em 0; border-collapse: collapse; width: 100%; }
+        div#audit-container table td, div#audit-container table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
         div#alarm-container { width: 920px; margin: 20px 0; }
         div#alarm-container table { margin: 1em 0; border-collapse: collapse; width: 100%; }
         div#alarm-container table td, div#alarm-container table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
@@ -60,7 +65,7 @@
     	<li><a href="replaceFile.jsp">Replace file</a></li>
     	<li><a href="configuration.html">Configuration</a></li>
         <li><a href="alarmService.jsp">Alarms</a></li>
-        <li><a href="<%= su.getAuditTrailServiceUrl() %>">Audit</a></li>
+        <li><a href="auditService.jsp">Audit Trails</a></li>
         <li><a href="integService.jsp">Integrity check</a></li>
         <li><a href="getStatus.html">Status</a></li>
 	</ul>
