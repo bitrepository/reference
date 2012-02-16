@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityclient.cache.database;
+package org.bitrepository.common.database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,6 +37,9 @@ import org.bitrepository.common.ArgumentValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Utility class for operating on databases.
+ */
 public class DatabaseUtils {
     /** The log.*/
     private static Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
@@ -147,6 +150,58 @@ public class DatabaseUtils {
         }
     }
     
+    /**
+     * Retrieves the result-set corresponding to an unspecified object.
+     * E.g. a set of several objects.
+     * @param dbConnection The connection to the database.
+     * @param query The SQL query to be executed on the database.
+     * @param args The arguments for the SQL statement.
+     * @return The requested result set.
+     */
+    public static ResultSet selectObject(Connection dbConnection, String query, Object... args) {
+        try {
+            PreparedStatement ps = createPreparedStatement(dbConnection, query, args);
+            
+            return ps.executeQuery();            
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not execute the query '" + query + "' on database '"
+                    + dbConnection + "'", e);
+        }        
+    }
+    
+    /**
+     * Retrieves a single String value from the database through the given query and arguments.
+     * @param dbConnection The connection to the database.
+     * @param query The query to extract the String value.
+     * @param args The arguments for the statement.
+     * @return The requested string value, or null if no such value could be found.
+     */
+    public static String selectStringValue(Connection dbConnection, String query, Object... args) {
+        try {
+            PreparedStatement ps = createPreparedStatement(dbConnection, query, args);
+            
+            ResultSet rs = ps.executeQuery();
+            
+            if(!rs.next()) {
+                log.info("No string was found for the query '" + query + "'. A null has been returned.");
+                return null;
+            }
+            
+            return rs.getString(1);
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not execute the query '" + query + "' on database '"
+                    + dbConnection + "'", e);
+        }
+    }
+    
+    /**
+     * Retrieves a list of string values from the database based on a given query and arguments.
+     * 
+     * @param dbConnection The connection to the database.
+     * @param query The SQL query for retrieving the strings.
+     * @param args The arguments for the statement.
+     * @return The requested list of strings. If no strings were found, then the list is empty.
+     */
     public static List<String> selectStringList(Connection dbConnection, String query, Object... args) {
         try {
             List<String> res = new ArrayList<String>();
@@ -161,10 +216,15 @@ public class DatabaseUtils {
         } catch (SQLException e) {
             throw new IllegalStateException("Could not execute the query '" + query + "' on database '"
                     + dbConnection + "'", e);
-            
         }
     }
 
+    /**
+     * 
+     * @param dbConnection
+     * @param query
+     * @param args
+     */
     public static void executeStatement(Connection dbConnection, String query, Object... args) {
         try {
             PreparedStatement ps = createPreparedStatement(dbConnection, query, args);

@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
@@ -71,8 +70,7 @@ public class DatabaseBasedIntegrityCached implements IntegrityCache {
 
     @Override
     public Collection<FileInfo> getFileInfos(String fileId) {
-        // TODO
-        throw new NotImplementedException("TODO implement this.");
+        return store.getFileInfosForFile(fileId);
     }
 
     @Override

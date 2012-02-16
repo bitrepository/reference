@@ -36,11 +36,11 @@ import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.common.database.DerbyDBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityclient.cache.database.DatabaseStoragedCache;
-import org.bitrepository.integrityclient.cache.database.DerbyDBConnector;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -71,21 +71,33 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         cache.updateFileIDs(getFileIDsData(fileId), pillarId);
         cache.updateChecksumData(getChecksumResults(fileId), getChecksumSpec(), pillarId);
         
-//        Long fileGuid = cache.retrieveFileGuid(fileId);
-//        Assert.assertNotNull(fileGuid);
-//        System.out.println("File: " + fileId + " : " + fileGuid);
-//        
-//        Long pillarGuid = cache.retrievePillarGuid(pillarId);
-//        Assert.assertNotNull(pillarGuid);
-//        System.out.println("Pillar: " + pillarId + " : " + pillarGuid);
-//        
-//        Long checksumGuid = cache.retrieveChecksumSpecGuid(getChecksumSpec());
-//        Assert.assertNotNull(checksumGuid);
-//        System.out.println("checksumSpec: " + getChecksumSpec() + " : " + checksumGuid);
-//        
         List<String> fileIDs = cache.getAllFileIDs();
         Assert.assertNotNull(fileIDs);
         System.out.println(fileIDs);
+        
+        List<FileInfo> fileInfos = cache.getFileInfosForFile(fileId);
+        Assert.assertNotNull(fileIDs);
+        System.out.println(fileInfos);
+        
+        Date lastChecksumUpdate = cache.getLastChecksumUpdate(pillarId);
+        Assert.assertNotNull(lastChecksumUpdate);
+        System.out.println(lastChecksumUpdate);
+        
+        Date lastFileUpdate = cache.getLastFileListUpdate(pillarId);
+        Assert.assertNotNull(lastFileUpdate);
+        System.out.println(lastFileUpdate);
+        
+        int numberOfChecksumErrors = cache.getNumberOfChecksumErrorsForAPillar(pillarId);
+        Assert.assertNotNull(numberOfChecksumErrors);
+        System.out.println(numberOfChecksumErrors);
+
+        int numberOfExistingFiles = cache.getNumberOfExistingFilesForAPillar(pillarId);
+        Assert.assertNotNull(numberOfExistingFiles);
+        System.out.println(numberOfExistingFiles);
+
+        int numberOfMissingFiles = cache.getNumberOfMissingFilesForAPillar(pillarId);
+        Assert.assertNotNull(numberOfMissingFiles);
+        System.out.println(numberOfMissingFiles);
     }
     
     private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileId) {
