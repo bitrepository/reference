@@ -93,8 +93,8 @@ public class RestAuditTrailService {
     		@FormParam ("reportingComponent") String reportingComponent,
     		@FormParam ("actor") String actor,
     		@FormParam ("action") String action) {
-    	//List<AuditTrailEvents> = service.queryAuditTrailEvents(fromDate, toDate, fileID, reportingComponent, actor, action);
-    	return "Querying..\n";
+    	//List<AuditTrailEvent> = service.queryAuditTrailEvents(fromDate, toDate, fileID, reportingComponent, actor, action);
+    	return getAllAuditTrails();
     }
     	
 }
