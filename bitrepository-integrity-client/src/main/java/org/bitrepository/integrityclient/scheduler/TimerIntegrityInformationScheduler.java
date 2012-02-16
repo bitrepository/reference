@@ -24,6 +24,7 @@
  */
 package org.bitrepository.integrityclient.scheduler;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -87,6 +88,11 @@ public class TimerIntegrityInformationScheduler implements IntegrityInformationS
         
         task.cancel();
         return true;
+    }
+    
+    @Override
+    public Collection<String> getTriggerNames() {
+       return triggerTimerTasks.keySet(); 
     }
     
     /**
