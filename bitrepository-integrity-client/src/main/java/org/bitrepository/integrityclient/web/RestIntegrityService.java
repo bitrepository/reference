@@ -49,15 +49,15 @@ public class RestIntegrityService {
     @Produces("text/html")
     public String getIntegrityStatus() {
     	StringBuilder sb = new StringBuilder();
-		sb.append("<table id=\"users\" class=\"ui-widget ui-widget-content\">\n");
+		sb.append("<table class=\"ui-widget ui-widget-content\">\n");
 		sb.append("<thead>\n");
 		sb.append("<tr class=\"ui-widget-header\">\n");
 		sb.append("<th width=\"100\">PillarID</th>\n");
 		sb.append("<th width=\"100\">Total number of files</th>\n");
 		sb.append("<th width=\"100\">Number of missing files</th>\n");
-		sb.append("<th width=\"100\">Last file list update</th>\n");
+		sb.append("<th width=\"100\">Last file list retrieval</th>\n");
 		sb.append("<th width=\"100\">Number of checksum errors</th>\n");
-		sb.append("<th>Last checksum update</th>\n");
+		sb.append("<th>Last checksum retrieval</th>\n");
 		sb.append("</tr>\n");
 		sb.append("</thead>\n");
 		sb.append("<tbody>\n");
