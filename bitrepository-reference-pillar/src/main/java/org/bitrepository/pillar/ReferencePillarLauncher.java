@@ -56,6 +56,9 @@ public final class ReferencePillarLauncher {
         if(args.length >= 2) {
             collectionId = args[0];
             pathToSettings = args[1];
+        } else if(args.length == 1) {
+            pathToSettings = args[0];
+            collectionId = ".";
         } else {
             collectionId = DEFAULT_COLLECTION_ID;
             pathToSettings = DEFAULT_PATH_TO_SETTINGS;

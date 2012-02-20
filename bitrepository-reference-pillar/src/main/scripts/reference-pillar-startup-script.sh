@@ -29,7 +29,19 @@ cd ..
 
 # Export the variables, classpaths and dependencies.
 set PWD=´pwd´
-export CLASSPATH=lib/activemq-all-5.4.3.jar:lib/bitrepository-collection-settings-0.4.jar:lib/bitrepository-common-0.8-SNAPSHOT.jar:lib/bitrepository-common-0.8-SNAPSHOT-tests.jar:lib/bitrepository-protocol-0.8-SNAPSHOT.jar:lib/bitrepository-reference-pillar-0.8-SNAPSHOT.jar:lib/commons-io-2.0.1.jar:lib/commons-lang-2.6.jar:lib/dom4j-1.6.1.jar:lib/jaccept-core-0.2.jar:lib/jaxb2-basics-runtime-0.6.2.jar:lib/jentity-core-0.2.jar:lib/junit-3.8.1.jar:lib/log4j-1.2.14.jar:lib/logback-classic-0.9.29.jar:lib/logback-core-0.9.29.jar:lib/slf4j-api-1.6.2.jar;
+
+# check whether any processes already are running.
+PIDS=$(ps -wwfe | grep org.bitrepository.pillar.ReferencePillarLauncher | grep -v grep | grep $PWD/conf | awk "{print \$2}")
+if [ -n "$PIDS" ] ; then
+    echo Application already running.
+    exit -1;
+fi;
+
+export LOGBACK="-Dlogback.configurationFile=conf/logback.xml"
+export CLASSPATH=`echo \`ls lib/*\` | sed s/' '/:/g`
+
+export SSL_DEPENDENCIES="-Djavax.net.ssl.keyStore=conf/key.store -Djavax.net.ssl.keyStorePassword=123456 -Djavax.net.ssl.trustStore=conf/trust.store -Djavax.net.ssl.trustStorePassword=123456"
 
 # Launch the application
-java -cp $CLASSPATH org.bitrepository.pillar.ReferencePillarLauncher . $PWD/conf
+echo java -cp $CLASSPATH $LOGBACK $SSL_DEPENDENCIES org.bitrepository.pillar.ReferencePillarLauncher $PWD/conf
+java -cp $CLASSPATH $LOGBACK $SSL_DEPENDENCIES org.bitrepository.pillar.ReferencePillarLauncher $PWD/conf > ReferencePillar.start 2>&1 &
