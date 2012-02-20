@@ -43,10 +43,10 @@
                     <td>Checksum type:</td>
                     <td>&nbsp;</td>
                     <td> 
-                        <input type="radio" name="putChecksumType" id="putmd5ChecksumType" value="md5" checked="yes"/> 
-                        <label for="putmd5ChecksumType">md5</label>
-                        <input type="radio" name="putChecksumType" id="putsha1ChecksumType" value="sha1"/> 
-                        <label for="putsha1ChecksumType">sha1</label>
+                        <input type="radio" name="putChecksumType" id="putmd5ChecksumType" value="MD5" checked="yes"/> 
+                        <label for="putmd5ChecksumType">MD5</label>
+                        <input type="radio" name="putChecksumType" id="putsha1ChecksumType" value="SHA1"/> 
+                        <label for="putsha1ChecksumType">SHA1</label>
                     </td>
                 </tr>
                 <tr>
@@ -60,10 +60,10 @@
                     <td> 
                         <input type="radio" name="approveChecksumType" id="approveDisableChecksum" value="disabled" checked="yes"/> 
                         <label for="approveDisableChecksum">disable</label>
-                        <input type="radio" name="approveChecksumType" id="approvemd5ChecksumType" value="md5"/> 
-                        <label for="approvemd5ChecksumType">md5</label>
-                        <input type="radio" name="approveChecksumType" id="approvesha1ChecksumType" value="sha1"/> 
-                        <label for="approvesha1ChecksumType">sha1</label>
+                        <input type="radio" name="approveChecksumType" id="approvemd5ChecksumType" value="MD5"/> 
+                        <label for="approvemd5ChecksumType">MD5</label>
+                        <input type="radio" name="approveChecksumType" id="approvesha1ChecksumType" value="SHA1"/> 
+                        <label for="approvesha1ChecksumType">SHA1</label>
                     </td>
                 </tr>
                 <tr>

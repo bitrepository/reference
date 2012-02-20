@@ -45,5 +45,9 @@
         Added possibility of specifying logback settings. 
       </action>
     </release>
+    <release version="0.10.0" date="2012-02-20" description="Extending service support">
+      <action dev="Kim" type="Update"> Update to new reference code. </action>
+      <action dev="Kim" type="add"> Add support for new reference services (integrity and audittrail services). </action>
+    </release>
   </body>
 </document>

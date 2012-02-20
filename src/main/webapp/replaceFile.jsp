@@ -49,19 +49,19 @@
                     <td>Old file checksum type:</td>
                     <td>&nbsp;</td>
                     <td>                        
-                        <input type="radio" name="oldFileChecksumType" id="oldFilemd5ChecksumType" value="md5" checked="yes"/> 
-                        <label for="oldFilemd5ChecksumType">md5</label>
-                        <input type="radio" name="oldFileChecksumType" id="oldFilesha1ChecksumType" value="sha1"/> 
-                        <label for="oldFilesha1ChecksumType">sha1</label>
+                        <input type="radio" name="oldFileChecksumType" id="oldFilemd5ChecksumType" value="MD5" checked="yes"/> 
+                        <label for="oldFilemd5ChecksumType">MD5</label>
+                        <input type="radio" name="oldFileChecksumType" id="oldFilesha1ChecksumType" value="SHA1"/> 
+                        <label for="oldFilesha1ChecksumType">SHA1</label>
                     </td>
                     <td>&nbsp;&nbsp;</td>
                     <td>New file checksum type:</td>
                     <td>&nbsp;</td>
                     <td>                        
-                        <input type="radio" name="newFileChecksumType" id="newFilemd5ChecksumType" value="md5" checked="yes"/> 
-                        <label for="newFilemd5ChecksumType">md5</label>
-                        <input type="radio" name="newFileChecksumType" id="newFilesha1ChecksumType" value="sha1"/> 
-                        <label for="newFilesha1ChecksumType">sha1</label>
+                        <input type="radio" name="newFileChecksumType" id="newFilemd5ChecksumType" value="MD5" checked="yes"/> 
+                        <label for="newFilemd5ChecksumType">MD5</label>
+                        <input type="radio" name="newFileChecksumType" id="newFilesha1ChecksumType" value="SHA1"/> 
+                        <label for="newFilesha1ChecksumType">SHA1</label>
                     </td>
                 </tr>
                 <tr>
@@ -79,10 +79,10 @@
                     <td>
                         <input type="radio" name="oldFileRequestChecksumType" id="oldFileRequestDisableChecksum" value="disabled" checked="yes"/> 
                         <label for="oldFileRequestDisableChecksum">disable</label>
-                        <input type="radio" name="oldFileRequestChecksumType" id="oldFileRequestmd5ChecksumType" value="md5"/> 
-                        <label for="oldFileRequestmd5ChecksumType">md5</label>
-                        <input type="radio" name="oldFileRequestChecksumType" id="oldFileRequestsha1ChecksumType" value="sha1"/> 
-                        <label for="oldFileRequestsha1ChecksumType">sha1</label>
+                        <input type="radio" name="oldFileRequestChecksumType" id="oldFileRequestmd5ChecksumType" value="MD5"/> 
+                        <label for="oldFileRequestmd5ChecksumType">MD5</label>
+                        <input type="radio" name="oldFileRequestChecksumType" id="oldFileRequestsha1ChecksumType" value="SHA1"/> 
+                        <label for="oldFileRequestsha1ChecksumType">SHA1</label>
                     </td>
                     <td>&nbsp;&nbsp;</td>
                     <td>New file checksum request type: (optional):</td>
@@ -90,10 +90,10 @@
                     <td>
                         <input type="radio" name="newFileRequestChecksumType" id="newFileRequestDisableChecksum" value="disabled" checked="yes"/> 
                         <label for="newFileRequestDisableChecksum">disable</label>
-                        <input type="radio" name="newFileRequestChecksumType" id="newFileRequestmd5ChecksumType" value="md5"/> 
-                        <label for="newFileRequestmd5ChecksumType">md5</label>
-                        <input type="radio" name="newFileRequestChecksumType" id="newFileRequestsha1ChecksumType" value="sha1"/> 
-                        <label for="newFileRequestsha1ChecksumType">sha1</label>
+                        <input type="radio" name="newFileRequestChecksumType" id="newFileRequestmd5ChecksumType" value="MD5"/> 
+                        <label for="newFileRequestmd5ChecksumType">MD5</label>
+                        <input type="radio" name="newFileRequestChecksumType" id="newFileRequestsha1ChecksumType" value="SHA1"/> 
+                        <label for="newFileRequestsha1ChecksumType">SHA1</label>
                     </td>
                 </tr>
                 <tr>
