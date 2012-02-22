@@ -30,10 +30,16 @@ import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Utility class for calendar issues. 
  */
 public final class CalendarUtils {
+    /** The log.*/
+    private static Logger log = LoggerFactory.getLogger(CalendarUtils.class);
+
     /**
      * Private constructor to prevent instantiation of utility class.
      */
@@ -46,11 +52,12 @@ public final class CalendarUtils {
      */
     public static XMLGregorianCalendar getXmlGregorianCalendar(Date date) {
         GregorianCalendar gc = new GregorianCalendar();
-        gc.setTime(date);
         try {
+            gc.setTime(date);
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.warn("Could not convert the date '" + date + "' into the xml format.", e);
+            return getEpoch();
         }
     }
     

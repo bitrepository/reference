@@ -74,7 +74,7 @@ public class DatabaseStoragedCache {
         ArgumentValidator.checkNotNull(data, "FileIDsData data");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         
-        log.debug("Updating the file ids '" + data + "' for pillar '" + pillarId + "'");
+        log.info("Updating the file ids '" + data + "' for pillar '" + pillarId + "'");
         Long pillarGuid = retrievePillarGuid(pillarId);
         
         for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
@@ -205,7 +205,7 @@ public class DatabaseStoragedCache {
         Long pillarGuid = retrievePillarGuid(pillarId);
         String sql = "SELECT COUNT(*) FROM " + FILE_INFO_TABLE + " WHERE " + FI_PILLAR_GUID + " = ? AND "
                 + FI_CHECKSUM_STATE + " = ?";
-        return DatabaseUtils.selectIntValue(dbConnection, sql, pillarGuid, ChecksumState.INCONSISTENT.ordinal());
+        return DatabaseUtils.selectIntValue(dbConnection, sql, pillarGuid, ChecksumState.ERROR.ordinal());
     }
 
     /**
@@ -216,6 +216,75 @@ public class DatabaseStoragedCache {
         String sql = "SELECT " + PILLAR_LAST_CHECKSUM_UPDATE + " FROM " + PILLAR_TABLE + " WHERE "
                 + PILLAR_ID + " = ?";
         return DatabaseUtils.selectDateValue(dbConnection, sql, pillarId);
+    }
+    
+    /**
+     * Sets a specific file to missing at a given pillar.
+     * @param fileId The id of the file, which is missing at the pillar.
+     * @param pillarId The id of the pillar which is missing the file.
+     */
+    public void setFileMissing(String fileId, String pillarId) {
+        String sqlSelect = "SELECT " + FI_GUID + " FROM " + FILE_INFO_TABLE + " WHERE " + FI_FILE_GUID + " = "
+                + "( SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ? ) AND " 
+                + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID 
+                + " = ? )";
+        Long guid = DatabaseUtils.selectLongValue(dbConnection, sqlSelect, fileId, pillarId);
+        
+        if(guid == null || guid < 1) {
+            String insertSql = "INSERT INTO " + FILE_INFO_TABLE + " ( " + FI_PILLAR_GUID + ", " + FI_FILE_GUID + ", "
+                    + FI_LAST_FILE_UPDATE + ", " + FI_LAST_CHECKSUM_UPDATE + ", " + FI_FILE_STATE + ", " 
+                    + FI_CHECKSUM_STATE + ") VALUES ( ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " 
+                    + PILLAR_ID + " = ? ), ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ? ) , ?, ?, ?, ? )";
+            DatabaseUtils.executeStatement(dbConnection, insertSql, pillarId, fileId, new Date(0),
+                    new Date(0), FileState.MISSING.ordinal(), ChecksumState.UNKNOWN.ordinal());
+        } else {
+            String sqlUpdate = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? WHERE " + FI_GUID 
+                    + " = ? ";
+            DatabaseUtils.executeStatement(dbConnection, sqlUpdate, FileState.MISSING.ordinal(), guid);
+        }
+    }
+    
+    /**
+     * Sets a specific file have checksum errors at a given pillar.
+     * @param fileId The id of the file, which has checksum error at the pillar.
+     * @param pillarId The id of the pillar which has checksum error on the file.
+     */
+    public void setChecksumError(String fileId, String pillarId) {
+        log.info("Sets invalid checksum for file '" + fileId + "' for pillar '" + pillarId + "'");
+        String sqlSelect = "SELECT " + FI_GUID + " FROM " + FILE_INFO_TABLE + " WHERE " + FI_FILE_GUID + " = "
+                + "( SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ? ) AND " 
+                + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID 
+                + " = ? )";
+        Long guid = DatabaseUtils.selectLongValue(dbConnection, sqlSelect, fileId, pillarId);
+        
+        if(guid == null || guid < 1) {
+            String insertSql = "INSERT INTO " + FILE_INFO_TABLE + " ( " + FI_PILLAR_GUID + ", " + FI_FILE_GUID + ", "
+                    + FI_LAST_FILE_UPDATE + ", " + FI_LAST_CHECKSUM_UPDATE + ", " + FI_FILE_STATE + ", " 
+                    + FI_CHECKSUM_STATE + ") VALUES ( ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " 
+                    + PILLAR_ID + " = ? ), ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID 
+                    + " = ? ) , ?, ?, ?, ? )";
+            DatabaseUtils.executeStatement(dbConnection, insertSql, pillarId, fileId, new Date(0),
+                    new Date(0), FileState.UNKNOWN.ordinal(), ChecksumState.ERROR.ordinal());
+        } else {
+            String sqlUpdate = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_CHECKSUM_STATE + " = ? WHERE " + FI_GUID 
+                    + " = ? ";
+            DatabaseUtils.executeStatement(dbConnection, sqlUpdate, ChecksumState.ERROR.ordinal(), guid);
+        }
+    }
+
+    /**
+     * Sets a specific file have checksum errors at a given pillar.
+     * If the pillar does not have the given file, then it is ignored by the database.
+     * @param fileId The id of the file, which has checksum error at the pillar.
+     * @param pillarId The id of the pillar which has checksum error on the file.
+     */
+    public void setChecksumValid(String fileId, String pillarId) {
+        log.info("Sets valid checksum for file '" + fileId + "' for pillar '" + pillarId + "'");
+        String sql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_CHECKSUM_STATE + " = ? WHERE " + FI_PILLAR_GUID 
+                + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " 
+                    + PILLAR_ID + " = ? ) AND " + FI_FILE_GUID + " = ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE 
+                    + " WHERE " + FILES_ID + " = ? )";
+        DatabaseUtils.executeStatement(dbConnection, sql, ChecksumState.VALID.ordinal(), pillarId, fileId);
     }
 
     /**
@@ -231,21 +300,26 @@ public class DatabaseStoragedCache {
         
         // if guid is null, then make new entry. Otherwise validate / update.
         if(guid == null) {
+            log.debug("Inserting new file info for file update.");
             String insertSql = "INSERT INTO " + FILE_INFO_TABLE + " ( " + FI_PILLAR_GUID + ", " + FI_FILE_GUID + ", "
-                    + FI_LAST_FILE_UPDATE + ", " + FI_FILE_STATE + ", " + FI_CHECKSUM_STATE + ") VALUES "
-                    + "( ?, ?, ?, ?, ? )";
+                    + FI_LAST_FILE_UPDATE + ", " + FI_LAST_CHECKSUM_UPDATE + ", " + FI_FILE_STATE + ", " + FI_CHECKSUM_STATE + ") VALUES "
+                    + "( ?, ?, ?, ?, ?, ? )";
             DatabaseUtils.executeStatement(dbConnection, insertSql, pillarGuid, fileGuid, filelistTimestamp,
-                    FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
+                    new Date(0), FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
         } else {
+            log.debug("Updating existing entry.");
             String validateSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE + " WHERE " + FI_GUID 
                     + " = ?";
             Date existingDate = DatabaseUtils.selectDateValue(dbConnection, validateSql, guid);
             
             // Only insert the date, if it is newer than the recorded one.
             if(existingDate == null || existingDate.getTime() < filelistTimestamp.getTime()) {
-                String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_FILE_UPDATE + " = ? WHERE "
-                        + FI_GUID + " = ?";
-                DatabaseUtils.executeStatement(dbConnection, updateSql, filelistTimestamp, guid);
+                String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_FILE_UPDATE + " = ?, " 
+                        + FI_FILE_STATE + " = ? WHERE " + FI_GUID + " = ?";
+                DatabaseUtils.executeStatement(dbConnection, updateSql, filelistTimestamp, 
+                        FileState.EXISTING.ordinal(), guid);
+            } else {
+                log.info("The existing entry has a newer date than the entry.");
             }
         }
     }
@@ -271,7 +345,7 @@ public class DatabaseStoragedCache {
         if(guid == null) {
             String insertSql = "INSERT INTO " + FILE_INFO_TABLE + " ( " + FI_PILLAR_GUID + ", " + FI_FILE_GUID + ", " 
                     + FI_CHECKSUM_GUID + ", " + FI_LAST_CHECKSUM_UPDATE + ", " + FI_CHECKSUM + ", " + FI_FILE_STATE 
-                    + ", " + FI_CHECKSUM_STATE + ") VALUES ( ?, ?, ?, ?, ? )";
+                    + ", " + FI_CHECKSUM_STATE + ") VALUES ( ?, ?, ?, ?, ?, ?, ? )";
             DatabaseUtils.executeStatement(dbConnection, insertSql, pillarGuid, fileGuid, checksumGuid, csTimestamp,
                     checksum, FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
         } else {
@@ -395,14 +469,15 @@ public class DatabaseStoragedCache {
      * @param checksumGuid The guid of the checksum specification to be retrieved.
      * @return The requested checksum specification.
      */
-    public ChecksumSpecTYPE retrieveChecksumSpecFromGuid(long checksumGuid) {
+    private ChecksumSpecTYPE retrieveChecksumSpecFromGuid(long checksumGuid) {
         try {
             String sql = "SELECT " + CHECKSUM_ALGORITHM + ", " + CHECKSUM_SALT + " FROM " + CHECKSUM_TABLE + " WHERE "
                     + CHECKSUM_GUID + " = ?";
             ResultSet dbResult = DatabaseUtils.selectObject(dbConnection, sql, checksumGuid);
             if(!dbResult.next()) {
-                throw new IllegalStateException("No checksum specification for the guid '" + checksumGuid 
-                        + "' found with the SQL '" + sql + "'.");
+                log.warn("No checksum specification for the guid '" + checksumGuid 
+                        + "' found with the SQL '" + sql + "'. A null is returned.");
+                return null;
             }
             ChecksumSpecTYPE res = new ChecksumSpecTYPE();
             

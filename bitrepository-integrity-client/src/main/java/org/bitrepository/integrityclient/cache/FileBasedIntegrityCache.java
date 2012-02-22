@@ -146,4 +146,22 @@ public class FileBasedIntegrityCache implements IntegrityCache {
         // TODO Auto-generated method stub
         return new Date(0);
     }
+
+    @Override
+    public void setFileMissing(String fileId, Collection<String> pillarIds) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void setChecksumError(String fileId, Collection<String> pillarIds) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void setChecksumAgreement(String fileId, Collection<String> pillarIds) {
+        // TODO Auto-generated method stub
+        
+    }
 }

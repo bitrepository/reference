@@ -25,11 +25,15 @@
 package org.bitrepository.common.utils;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.ConfigurationException;
@@ -204,6 +208,40 @@ public final class FileUtils {
         }
         
         return res.toString();
+    }
+    
+    /**
+     * Reads a file and puts the lines into a list.
+     * 
+     * @param file The file to read from.
+     * @return The list of lines from the file.
+     * @throws IOException If some input/output error occurs.
+     */
+    public static List<String> readLinesFromFile(File file) throws IOException {
+        ArgumentValidator.checkNotNull(file, "file");
+        
+        FileInputStream fis = null;
+        BufferedReader reader = null;
+        List<String> res = new ArrayList<String>();
+        
+        try {
+            fis = new FileInputStream(file);
+            reader = new BufferedReader(new InputStreamReader(fis));
+            
+            String line;
+            while ((line = reader.readLine()) != null) {
+                res.add(line);
+            }
+        } finally {
+            if(reader != null) {
+                reader.close();
+            }
+            if (fis != null) {
+                fis.close();
+            }
+        }
+        
+        return res;
     }
     
     /**

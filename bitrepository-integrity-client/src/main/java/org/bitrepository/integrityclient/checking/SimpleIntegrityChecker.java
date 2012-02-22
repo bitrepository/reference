@@ -24,6 +24,7 @@
  */
 package org.bitrepository.integrityclient.checking;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,14 +65,19 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
         IntegrityReport report = new IntegrityReport(fileIDs);
         
         for(String fileId : requestedFileIDs) {
+            log.info("File check on file '" + fileId + "'");
             List<String> pillarIds = checkFileID(fileId);
             if(!pillarIds.isEmpty()) {
+                log.info("File '" + fileId + "' is missing at " + pillarIds);
+                cache.setFileMissing(fileId, pillarIds);
                 report.addMissingFile(fileId, pillarIds);
+            } else {
+                log.info("The file '" + fileId + "' is not missing anywhere!");
             }
         }
         
         if(!report.isValid()) {
-            log.warn("Failed the integrity check: " + report.generateReport());
+            log.warn("Found errors in the integrity check: " + report.generateReport());
         }
         
         return report;
@@ -85,14 +91,14 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
         IntegrityReport report = new IntegrityReport(fileIDs);
         
         for(String fileId : requestedFileIDs) {
-            Map<String, Integer> checksumResults = checkChecksum(fileId);
+            Map<String, Integer> checksumResults = validateChecksumAndGetCount(fileId);
             if(checksumResults.size() > 1) {
                 report.addIncorrectChecksums(fileId, checksumResults);
             }
         }
         
         if(!report.isValid()) {
-            log.warn("Failed the integrity check: " + report.generateReport());
+            log.warn("Found errors in the integrity check: " + report.generateReport());
         }
         
         return report;
@@ -135,15 +141,17 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
      * 
      * @param fileId The id of the pillar to have its checksums validated. 
      */
-    private Map<String, Integer> checkChecksum(String fileId) {
+    private Map<String, Integer> validateChecksumAndGetCount(String fileId) {
         Map<String, Integer> checksumCount = new HashMap<String, Integer>();
         
-        for(FileInfo fileinfo : cache.getFileInfos(fileId)) {
+        
+        Map<String, String> checksums = getChecksums(fileId);
+        for(Map.Entry<String, String> checksumForPillar : checksums.entrySet()) {
             // Validate that the checksum has been found.
-            String checksum = fileinfo.getChecksum();
+            String checksum = checksumForPillar.getValue();
             if(checksum == null || checksum.isEmpty()) {
-                log.warn("The file '" + fileId + "' is missing checksum at '" + fileinfo.getPillarId() 
-                        + "'. Ignoring: {}", fileinfo);
+                log.warn("The file '" + fileId + "' is missing checksum at '" + checksumForPillar.getKey() 
+                        + "'. Ignoring: {}", checksumForPillar);
                 continue;
             }
             
@@ -155,6 +163,72 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
             }
         }
         
+        // Vote if necessary and tell the cache of the results.
+        if(checksumCount.size() > 1) {
+            log.trace("Has to vote for the checksum on file '" + fileId + "'");
+            String chosenChecksum = voteForChecksum(checksumCount);
+            
+            if(chosenChecksum == null) {
+                cache.setChecksumError(fileId, checksums.keySet());
+            } else {
+                List<String> missingPillars = new ArrayList<String>();
+                List<String> presentPillars = new ArrayList<String>();
+                
+                for(Map.Entry<String, String> checksumForPillar : checksums.entrySet()) {
+                    if(!checksumForPillar.getValue().equals(chosenChecksum)) {
+                        missingPillars.add(checksumForPillar.getKey());
+                    } else {
+                        presentPillars.add(checksumForPillar.getKey());
+                    }
+                }
+                
+                cache.setChecksumError(fileId, missingPillars);
+                cache.setChecksumAgreement(fileId, presentPillars);
+            }
+        } else {
+            cache.setChecksumAgreement(fileId, checksums.keySet());
+        }
+        
         return checksumCount; 
+    }
+    
+    /**
+     * Votes for finding the checksum.
+     * 
+     * @param checksumCounts A map between the checksum and the amount of times it has been seen in the system.
+     * @return The checksum with the largest amount of votes. Null is returned, if no singe checksum has the largest
+     * number of votes.
+     */
+    private String voteForChecksum(Map<String, Integer> checksumCounts) {
+        log.trace("Voting between: " + checksumCounts);
+        String chosenChecksum = null;
+        Integer largest = 0;
+        for(Map.Entry<String, Integer> checksumCount : checksumCounts.entrySet()) {
+            if(checksumCount.getValue().compareTo(largest) > 0) {
+                chosenChecksum = checksumCount.getKey();
+                largest = checksumCount.getValue();
+            } else 
+            // Two with largest => no chosen.
+            if(checksumCount.getValue().compareTo(largest) == 0) {
+                chosenChecksum = null;
+            }
+        }
+        log.trace("Voting result: " + chosenChecksum);
+        return chosenChecksum;
+    }
+    
+    /**
+     * Retrieves a mapping between the pillar ids and their checksums for a given file.
+     * @param fileId The id of the file.
+     * @return The map between the pillar ids and their checksum of this given file.
+     */
+    private Map<String, String> getChecksums(String fileId) {
+        Map<String, String> checksums = new HashMap<String, String>();
+        
+        for(FileInfo fileinfo : cache.getFileInfos(fileId)) {
+            checksums.put(fileinfo.getPillarId(), fileinfo.getChecksum());
+        }
+        
+        return checksums;
     }
 }
