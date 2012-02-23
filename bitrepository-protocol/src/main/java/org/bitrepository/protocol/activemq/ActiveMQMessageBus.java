@@ -101,7 +101,7 @@ public class ActiveMQMessageBus implements MessageBus {
     /** The default acknowledge mode. */
     public static final int ACKNOWLEDGE_MODE = Session.AUTO_ACKNOWLEDGE;
     /** Default transacted. */
-    public static final boolean TRANSACTED = true;
+    public static final boolean TRANSACTED = false;
 
     /** The variable to separate the parts of the consumer key. */
     private static final String CONSUMER_KEY_SEPARATOR = "#";
@@ -248,7 +248,6 @@ public class ActiveMQMessageBus implements MessageBus {
             msg.setJMSReplyTo(getDestination(replyTo, producerSession));
 
             producer.send(msg);
-            producerSession.commit();
         } catch (SAXException e) {
             throw new CoordinationLayerException("Rejecting to send invalid message: " + xmlContent, e);
         } catch (Exception e) {
