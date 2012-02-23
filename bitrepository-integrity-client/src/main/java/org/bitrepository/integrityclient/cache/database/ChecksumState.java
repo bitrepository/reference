@@ -31,7 +31,7 @@ public enum ChecksumState {
     /** When the checksum of the given file is correct (e.g. won the vote).*/
     VALID,
     /** When the checksum of the given file is incorrect (e.g. lost the vote).*/
-    INCONSISTENT,
+    ERROR,
     /** When no vote for the checksum has been performed.*/
     UNKNOWN;
     
@@ -43,7 +43,7 @@ public enum ChecksumState {
     public static ChecksumState fromOrdinal(Integer i) {
         switch (i) {
             case 0: return VALID;
-            case 1: return INCONSISTENT;
+            case 1: return ERROR;
             default: return UNKNOWN;
         }
     }

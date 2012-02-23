@@ -30,6 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -220,10 +221,11 @@ public class DatabaseUtils {
     }
 
     /**
-     * 
-     * @param dbConnection
-     * @param query
-     * @param args
+     * Executing a given statement, which should not return any results.
+     * This is intended to be used especially for UPDATE commands.
+     * @param dbConnection The connection to the database.
+     * @param query The SQL query to execute.
+     * @param args The arguments for the SQL statement.
      */
     public static void executeStatement(Connection dbConnection, String query, Object... args) {
         try {
@@ -249,6 +251,7 @@ public class DatabaseUtils {
      */
     private static PreparedStatement createPreparedStatement(Connection dbConnection, String query, Object... args) 
             throws SQLException {
+        log.trace("Preparing the statement: '" + query + "' with arguments '" + Arrays.asList(args) + "'");
         PreparedStatement s = dbConnection.prepareStatement(query);
         int i = 1;
         for (Object arg : args) {

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 
 public class IntegrityServiceFactory {
-
+    
     private Logger log = LoggerFactory.getLogger(IntegrityServiceFactory.class);
     private static String confDir;
     private static IntegrityService integrityService;
@@ -68,7 +68,7 @@ public class IntegrityServiceFactory {
      * Private constructor, use static getInstance method to get instance.
      */
     private IntegrityServiceFactory() {
-    	//Empty constructor 
+        //Empty constructor 
     }
     
     
@@ -77,7 +77,7 @@ public class IntegrityServiceFactory {
      * Should only be run at initialization time. 
      */
     public synchronized static void init(String configurationDir) {
-    	confDir = configurationDir;
+        confDir = configurationDir;
     }
     
     /**
@@ -86,21 +86,22 @@ public class IntegrityServiceFactory {
      */
     public synchronized static IntegrityService getIntegrityService() {
         if(integrityService == null) {
-        	if(confDir == null) {
-        		throw new RuntimeException("No configuration dir has been set!");
-        	}
-        	SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
+            if(confDir == null) {
+                throw new RuntimeException("No configuration dir has been set!");
+            }
+            SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
             Settings settings = settingsLoader.getSettings(DEFAULT_COLLECTION_ID);	 
             long timeSinceLastChecksumUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
             long timeSinceLastFileIDsUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
             try {
-            	loadProperties();
-            	SimpleIntegrityService simpleIntegrityService = new SimpleIntegrityService(settings);
+                loadProperties();
+                SimpleIntegrityService simpleIntegrityService = new SimpleIntegrityService(settings);
                 integrityService = new IntegrityService(simpleIntegrityService, settings);
                 simpleIntegrityService.startChecksumIntegrityCheck(timeSinceLastChecksumUpdate, 
                         settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval());
                 for(String pillarId : settings.getCollectionSettings().getClientSettings().getPillarIDs()) {
-                    simpleIntegrityService.startAllFileIDsIntegrityCheckFromPillar(pillarId, timeSinceLastFileIDsUpdate);
+                    simpleIntegrityService.startAllFileIDsIntegrityCheckFromPillar(pillarId, 
+                            timeSinceLastFileIDsUpdate);
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -110,14 +111,14 @@ public class IntegrityServiceFactory {
     } 
     
     private static void loadProperties() throws IOException {
-    	Properties properties = new Properties();
-    	String propertiesFile = confDir + "/" + CONFIGFILE;
-    	BufferedReader propertiesReader = new BufferedReader(new FileReader(propertiesFile));
-    	properties.load(propertiesReader);
-
-    	System.setProperty(JAVA_KEYSTORE_PROP, properties.getProperty(KEYSTOREFILE));
-    	System.setProperty(JAVA_KEYSTOREPASS_PROP, properties.getProperty(KEYSTOREPASSWD));
-    	System.setProperty(JAVA_TRUSTSTORE_PROP, properties.getProperty(TRUSTSTOREFILE));
-    	System.setProperty(JAVA_TRUSTSTOREPASS_PROP, properties.getProperty(TRUSTSTOREPASSWD));
+        Properties properties = new Properties();
+        String propertiesFile = confDir + "/" + CONFIGFILE;
+        BufferedReader propertiesReader = new BufferedReader(new FileReader(propertiesFile));
+        properties.load(propertiesReader);
+        
+        System.setProperty(JAVA_KEYSTORE_PROP, properties.getProperty(KEYSTOREFILE));
+        System.setProperty(JAVA_KEYSTOREPASS_PROP, properties.getProperty(KEYSTOREPASSWD));
+        System.setProperty(JAVA_TRUSTSTORE_PROP, properties.getProperty(TRUSTSTOREFILE));
+        System.setProperty(JAVA_TRUSTSTOREPASS_PROP, properties.getProperty(TRUSTSTOREPASSWD));
     }
 }
