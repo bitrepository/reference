@@ -64,6 +64,9 @@ public class IntegrityServiceFactory {
     /** The time of one week.*/
     private static final long DEFAULT_MAX_TIME_SINCE_UPDATE = 604800000;
     
+    /**
+     * Private constructor, use static getInstance method to get instance.
+     */
     private IntegrityServiceFactory() {
     	//Empty constructor 
     }
