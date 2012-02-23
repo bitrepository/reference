@@ -77,7 +77,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
     public void removeFileCache() {
         File fileCache = new File(FileBasedIntegrityCache.DEFAULT_FILE_NAME);
         if(fileCache.isFile()) {
-            System.out.println("Deleting the file '" + fileCache + "'");
+            addStep("Deleting the file '" + fileCache + "'", "Cleaning up after the test.");
             fileCache.delete();
         }
     }

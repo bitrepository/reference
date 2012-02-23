@@ -24,16 +24,21 @@
  */
 package org.bitrepository.integrityclient.cache;
 
+import java.io.File;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.derby.tools.ij;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
+import org.bitrepository.common.database.DerbyDBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityclient.cache.database.DatabaseStoragedCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A storage of configuration information that is backed by a database.
@@ -42,19 +47,80 @@ public class DatabaseBasedIntegrityCached implements IntegrityCache {
     /** The settings for the database cache. */
     private final Settings settings;
     
+    /** The database store. The interface to the functions of the database. */
     private final DatabaseStoragedCache store;
+    
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(this.getClass());
     
     /**
      * Initialize storage.
      *
      * @param storageConfiguration Contains configuration for storage. Currently URL, user and pass for database.
      */
-    public DatabaseBasedIntegrityCached(Settings settings, Connection dbConnection) {
+    public DatabaseBasedIntegrityCached(Settings settings) {
         this.settings = settings;
         this.settings.getReferenceSettings().getIntegrityServiceSettings();
         
-        // TODO load connection from settings.
+        Connection dbConnection = initDatabaConnection();
         this.store = new DatabaseStoragedCache(dbConnection);
+    }
+    
+    /**
+     * Retrieve the access to the database. If it cannot be done, then it is automatically attempted to instantiate 
+     * the database based on the SQL script.
+     * @return The connection to the database.
+     */
+    private Connection initDatabaConnection() {
+        try {
+            Connection dbConnection = DerbyDBConnector.getEmbeddedDBConnection(
+                    settings.getReferenceSettings().getIntegrityServiceSettings().getDatabaseUrl());
+            return dbConnection;
+        } catch (Exception e) {
+            log.warn("Could not instantiate the database with the url '"
+                    + settings.getReferenceSettings().getIntegrityServiceSettings().getDatabaseUrl() + "'", e);
+        }
+        
+        log.info("Trying to instantiate the database.");
+        File sqlDatabaseFile = new File("src/main/resources/integrityDB.sql");
+        
+        if(!sqlDatabaseFile.isFile()) {
+            throw new IllegalStateException("Could not find the file with the sql for the database at '" 
+                    + sqlDatabaseFile.getAbsolutePath() + "'.");
+        }
+        
+        // Use the derby tool 'ij' to create the database.
+        try {
+            ij.main(new String[]{sqlDatabaseFile.getAbsolutePath()});
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not instantiate the database.");
+        }
+        
+        synchronized(this) {
+            try {
+                this.wait(2000);
+            } catch (Exception e) {
+                log.warn("interrupted in creation of the database", e);
+            }
+        }
+        
+        // Connect to the new instantiated database.
+        try { 
+            Connection dbConnection = DerbyDBConnector.getEmbeddedDBConnection(
+                    settings.getReferenceSettings().getIntegrityServiceSettings().getDatabaseUrl());
+            return dbConnection;
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not instantiate the database with the url '"
+                    + settings.getReferenceSettings().getIntegrityServiceSettings().getDatabaseUrl() + "'", e);
+        }
+    }
+    
+    /**
+     * Retrieve the interface to the database, which stores the integrity data.
+     * @return The database store.
+     */
+    public DatabaseStoragedCache getStore() {
+        return store;
     }
     
     @Override
@@ -101,5 +167,29 @@ public class DatabaseBasedIntegrityCached implements IntegrityCache {
     @Override
     public Date getLatestChecksumUpdate(String pillarId) {
         return store.getLastChecksumUpdate(pillarId);
+    }
+
+    @Override
+    public void setFileMissing(String fileId, Collection<String> pillarIds) {
+        log.info("Setting file '" + fileId + "' to be missing at '" + pillarIds + "'.");
+        for(String pillarId : pillarIds) {
+            store.setFileMissing(fileId, pillarId);
+        }
+    }
+
+    @Override
+    public void setChecksumError(String fileId, Collection<String> pillarIds) {
+        log.info("Setting file '" + fileId + "' to have a bad checksum at '" + pillarIds + "'.");
+        for(String pillarId : pillarIds) {
+            store.setChecksumError(fileId, pillarId);
+        }
+    }
+
+    @Override
+    public void setChecksumAgreement(String fileId, Collection<String> pillarIds) {
+        log.info("Setting file '" + fileId + "' to have a valid checksum at '" + pillarIds + "'.");
+        for(String pillarId : pillarIds) {
+            store.setChecksumValid(fileId, pillarId);
+        }
     }
 }

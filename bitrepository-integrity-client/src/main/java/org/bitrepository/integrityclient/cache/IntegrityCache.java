@@ -92,4 +92,25 @@ public interface IntegrityCache {
      * @return
      */
     Date getLatestChecksumUpdate(String pillarId);
+    
+    /**
+     * Sets the file to be missing at the given pillars.
+     * @param fileId The id of the file, which is missing at some pillars.
+     * @param pillarIds The ids of the pillars, where the file is missing.
+     */
+    void setFileMissing(String fileId, Collection<String> pillarIds);
+    
+    /**
+     * Sets the checksum state of the file to be erroneous at the given pillars.
+     * @param fileId The id of the file, which has erroneous checksum at some pillars.
+     * @param pillarIds The ids of the pillars, where the file has a erroneous checksum.
+     */
+    void setChecksumError(String fileId, Collection<String> pillarIds);
+    
+    /**
+     * Sets the checksum state of the file to be valid at the given pillars.
+     * @param fileId The id of the file, which has valid checksum at some pillars.
+     * @param pillarIds The ids of the pillars, where the file has a valid checksum.
+     */
+    void setChecksumAgreement(String fileId, Collection<String> pillarIds);
 }
