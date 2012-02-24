@@ -47,8 +47,7 @@ public abstract class TestMessageFactory {
         TimeMeasureUnit.MILLISECONDS;
     protected static final BigInteger TIME_MEASURE_VALUE_DEFAULT = BigInteger.valueOf(1000L);
     protected static final ResponseCode RESPONSE_CODE_DEFAULT = ResponseCode.OPERATION_ACCEPTED_PROGRESS;
-    protected static final ResponseCode IDENTIFY_RESPONSE_CODE_DEFAULT 
-            = ResponseCode.IDENTIFICATION_POSITIVE;
+    protected static final ResponseCode IDENTIFY_RESPONSE_CODE_DEFAULT = ResponseCode.IDENTIFICATION_POSITIVE;
     protected static final String RESPONSE_TEXT_DEFAULT = "Message request has been received and is expected to be met successfully";
     protected static final String COMPLETE_CODE_DEFAULT = "480";
     protected static final String COMPLETE_TEXT_DEFAULT = "successful completion";

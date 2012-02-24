@@ -28,6 +28,8 @@ import java.io.File;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
@@ -88,7 +90,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.", 
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
-        putClient.putFileWithId(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, new Long(testFile.length()), testEventHandler);
+        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, new Long(testFile.length()), 
+                (ChecksumDataForFileTYPE) null, (ChecksumSpecTYPE) null, testEventHandler, "TEST-AUDIT-TRAIL");
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
@@ -261,8 +264,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     }
     
     @Test(groups={"regressiontest"})
-    public void putClientPillarFailed() throws Exception {
-        addDescription("Tests the handling of a operation failure for the DeleteClient. ");
+    public void putClientPillarOperationFailed() throws Exception {
+        addDescription("Tests the handling of a operation failure for the PutClient. ");
         addStep("Initialise the number of pillars to one", "Should be OK.");
 
         settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
@@ -274,7 +277,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.", 
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
-        putClient.putFileWithId(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, new Long(testFile.length()), testEventHandler);
+        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, new Long(testFile.length()), 
+                (ChecksumDataForFileTYPE) null, (ChecksumSpecTYPE) null, testEventHandler, "TEST-AUDIT-TRAIL");
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
@@ -332,6 +336,63 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(putFileFinalResponse);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
+    }
+    
+    @Test(groups={"regressiontest"})
+    public void putClientPillarIdentificationFailed() throws Exception {
+        addDescription("Tests the handling of a identification failure for the PutClient. ");
+        addStep("Initialise the number of pillars to one", "Should be OK.");
+
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        PutFileClient putClient = createPutFileClient();
+
+        addStep("Ensure that the test-file is placed on the HTTP server.", "Should be removed an reuploaded.");
+
+        addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.", 
+                "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
+        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, new Long(testFile.length()), 
+                (ChecksumDataForFileTYPE) null, (ChecksumSpecTYPE) null, testEventHandler, "TEST-AUDIT-TRAIL");
+
+        IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
+        if(useMockupPillar()) {
+            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+                    IdentifyPillarsForPutFileRequest.class);
+            Assert.assertEquals(receivedIdentifyRequestMessage, 
+                    messageFactory.createIdentifyPillarsForPutFileRequest(
+                            receivedIdentifyRequestMessage.getCorrelationID(),
+                            receivedIdentifyRequestMessage.getReplyTo(),
+                            receivedIdentifyRequestMessage.getTo(),
+                            DEFAULT_FILE_ID,
+                            receivedIdentifyRequestMessage.getAuditTrailInformation()
+                            ));
+        }
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+
+        addStep("Make bad identification response for the pillar.", "The client should handle the bad identification.");
+
+        if(useMockupPillar()) {
+            IdentifyPillarsForPutFileResponse identifyResponse = messageFactory
+                    .createIdentifyPillarsForPutFileResponse(
+                            receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+            
+            // Set to failed
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
+            ri.setResponseText("Testing the handling of 'DUPLICATE FILE' identification.");
+            identifyResponse.setResponseInfo(ri);
+            
+            messageBus.sendMessage(identifyResponse);
+        }
+        
+        addStep("The client handling the bad identification.", "Should go through the states '"
+                + OperationEventType.COMPONENT_FAILED + "', '" + OperationEventType.IDENTIFICATION_COMPLETE + "', '"
+                + OperationEventType.WARNING + "', '" + OperationEventType.COMPLETE + "'");
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.WARNING);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
     }
 

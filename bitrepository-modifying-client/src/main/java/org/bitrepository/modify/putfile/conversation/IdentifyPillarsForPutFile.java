@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
@@ -95,13 +97,10 @@ public class IdentifyPillarsForPutFile extends PutFileState {
     public synchronized void onMessage(IdentifyPillarsForPutFileResponse response) {
         try {
             identifyResponseStatus.responseReceived(response.getPillarID());
-            pillarDestinations.put(response.getPillarID(), response.getReplyTo());
+            validateIdentificationResponse(response);
         } catch (UnexpectedResponseException e) {
             monitor.invalidMessage("Unexcepted response from " + response.getPillarID() + " : " + e.getMessage());
         }
-
-        monitor.pillarIdentified("Identified the pillar '" + response.getPillarID() + "' for Put.", 
-                response.getPillarID());
 
         // Check if ready to go to next state.
         if(identifyResponseStatus.haveAllPillarResponded()) {
@@ -112,6 +111,27 @@ public class IdentifyPillarsForPutFile extends PutFileState {
             PuttingFile newState = new PuttingFile(conversation, pillarDestinations);
             conversation.conversationState = newState;
             newState.start();
+        }
+    }
+    
+    /**
+     * Method for validating the ResponseInfo from a pillar.
+     * If the response is positive, then the pillar is selected for the PutFile operation. 
+     * @param response The identification response to validate.
+     */
+    private void validateIdentificationResponse(IdentifyPillarsForPutFileResponse response) {
+        ResponseInfo rInfo = response.getResponseInfo();
+        
+        if(rInfo.getResponseCode() == ResponseCode.IDENTIFICATION_POSITIVE) {
+            monitor.debug("Positive identification from pillar '" + response.getPillarID() + "' received: " + rInfo);
+            
+            pillarDestinations.put(response.getPillarID(), response.getReplyTo());
+            monitor.pillarIdentified("Identified the pillar '" + response.getPillarID() + "' for Put.", 
+                    response.getPillarID());
+        } else {
+            String errMsg = "Negative identification from pillar '" + response.getPillarID() + "' received: " + rInfo;
+            monitor.pillarFailed(errMsg);
+            monitor.debug(errMsg);
         }
     }
 

@@ -50,55 +50,37 @@ import org.slf4j.LoggerFactory;
 public class ConversationBasedPutFileClient implements PutFileClient {
     /** The log for this class.*/
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-
+    
     /** The mediator for the conversations for the PutFileClient.*/
     private final ConversationMediator conversationMediator;
     /** The message bus for communication.*/
     private final MessageBus bus;
     /** The settings. */
     private Settings settings;
-
+    
     /**
      * Constructor.
      * @param messageBus The messagebus for communication.
      * @param settings The configurations and settings.
      */
-    public ConversationBasedPutFileClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings) {
+    public ConversationBasedPutFileClient(MessageBus messageBus, ConversationMediator conversationMediator, 
+            Settings settings) {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         this.conversationMediator = conversationMediator;;
         this.bus = messageBus;
         this.settings = settings;
     }
-
-    @Override
-    public void putFileWithId(URL url, String fileId, long sizeOfFile, EventHandler eventHandler) {
-        ArgumentValidator.checkNotNull(url, "URL url");
-        ArgumentValidator.checkNotNull(fileId, "String fileId");
-        
-        try {
-            SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
-                    BigInteger.valueOf(sizeOfFile), null, null, eventHandler, new FlowController(settings), 
-                    "TODO");
-            conversationMediator.addConversation(conversation);
-            conversation.startConversation();
-        } catch (Exception e) {
-            String msg = "Couldn't perform put for '" + fileId + "' at '" + url + "' due to the following error: '"
-                    + e.getMessage() + "'.";
-            log.error(msg, e);
-            eventHandler.handleEvent(new DefaultEvent(OperationEventType.FAILED, msg));
-        }
-    }
     
     @Override
-    public void putFile(URL url, String fileId, long sizeOfFile, 
-    		ChecksumDataForFileTYPE checksumForValidationAtPillar, ChecksumSpecTYPE checksumRequestsForValidation, 
-            EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+    public void putFile(URL url, String fileId, long sizeOfFile, ChecksumDataForFileTYPE checksumForValidationAtPillar,
+            ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation) 
+                    throws OperationFailedException {
         ArgumentValidator.checkNotNull(url, "URL url");
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkPositive(sizeOfFile, "long sizeOfFile");
         // TODO add potential regex from collection settings.
-
+        
         try {
             SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
                     BigInteger.valueOf(sizeOfFile), checksumForValidationAtPillar, checksumRequestsForValidation, 
@@ -111,17 +93,6 @@ public class ConversationBasedPutFileClient implements PutFileClient {
             log.error(msg, e);
             eventHandler.handleEvent(new DefaultEvent(OperationEventType.FAILED, msg));
         }
-    }
-    
-    @Override
-    public void putFileWithId(URL url, String fileId, long sizeOfFile) throws OperationFailedException {
-        ArgumentValidator.checkNotNull(url, "URL url");
-        ArgumentValidator.checkNotNull(fileId, "String fileId");
-        
-        SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
-                BigInteger.valueOf(sizeOfFile), null, null, null, new FlowController(settings), "TODO");
-        conversationMediator.addConversation(conversation);
-        conversation.startConversation();
     }
     
     @Override
