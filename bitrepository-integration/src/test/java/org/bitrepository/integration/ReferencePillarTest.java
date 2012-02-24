@@ -89,7 +89,8 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create a putclient and start a put operation.", 
                 "This should be caught by the pillar.");
         PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(clientSettings);
-        putClient.putFileWithId(new URL(FILE_ADDRESS), FILE_ID, FILE_SIZE, testEventHandler);
+        putClient.putFile(new URL(FILE_ADDRESS), FILE_ID, FILE_SIZE, 
+                (ChecksumDataForFileTYPE) null, (ChecksumSpecTYPE) null, testEventHandler, "TEST-AUDIT-TRAIL");
         
         addStep("Validate the sequence of operations event for the putclient", "Shoud be in correct order.");
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);

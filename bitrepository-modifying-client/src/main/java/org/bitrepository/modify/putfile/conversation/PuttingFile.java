@@ -51,7 +51,7 @@ public class PuttingFile extends PutFileState {
     /** The timer. Schedules conversation timeouts for this conversation. */
     final Timer timer = new Timer(TIMER_IS_DAEMON);
     /** The task to handle the timeouts for the identification. */
-    private TimerTask timerTask = new PutTimerTask();
+    private TimerTask timerTask = null;
 
     /**The responses for the pillars.*/
     final PillarsResponseStatus putResponseStatus;
@@ -76,6 +76,13 @@ public class PuttingFile extends PutFileState {
      * The PutFileRequestMessage is created and sent to each of the pillars.
      */
     public void start() {
+        if(pillarDestinations.isEmpty()) {
+            monitor.warning("No pillars selected for the put operation '" + conversation.getConversationID() 
+                    + "' of file '" + conversation.fileID + "' from url '" + conversation.downloadUrl.toExternalForm()
+                    + "'.");
+            finishOperation();
+        }
+        
         // Create the message.
         PutFileRequest putMsg = new PutFileRequest();
         putMsg.setCorrelationID(conversation.getConversationID());
@@ -100,6 +107,7 @@ public class PuttingFile extends PutFileState {
                 conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs().toString(), 
                 conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs().toString());
 
+        timerTask = new PutTimerTask();
         timer.schedule(timerTask,
                 conversation.settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue());
     }
@@ -146,13 +154,22 @@ public class PuttingFile extends PutFileState {
 
         // Check if the conversation has finished.
         if(putResponseStatus.haveAllPillarResponded()) {
-            timerTask.cancel();
-            monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE,
-                    "Finished put on all the pillars."));
-
-            PutFileFinished finishState = new PutFileFinished(conversation);
-            conversation.conversationState = finishState;
+            finishOperation();
         }
+    }
+    
+    /**
+     * Finishes the operation by given telling the monitor and going to the next and state 'PutFileFinished'.
+     */
+    private void finishOperation() {
+        if(timerTask != null) {
+            timerTask.cancel();
+        }
+        monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE,
+                "Finished put on all the pillars."));
+
+        PutFileFinished finishState = new PutFileFinished(conversation);
+        conversation.conversationState = finishState;
     }
     
     /**

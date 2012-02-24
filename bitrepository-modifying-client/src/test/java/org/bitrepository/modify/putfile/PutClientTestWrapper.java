@@ -52,18 +52,6 @@ public class PutClientTestWrapper implements PutFileClient {
     }
 
     @Override
-    public void putFileWithId(URL url, String fileId, long fileSize, EventHandler eventHandler) {
-        testEventManager.addStimuli("Calling PutFileWithId(" + url + ", " + fileId + ", " + fileSize + ", eventHandler)");
-        wrappedPutClient.putFileWithId(url, fileId, fileSize, eventHandler);
-    }
-    
-    @Override
-    public void putFileWithId(URL url, String fileId, long fileSize) throws OperationFailedException {
-        testEventManager.addStimuli("Calling PutFileWithId(" + url + ", " + fileId + ", " + fileSize + ", eventHandler)");
-        wrappedPutClient.putFileWithId(url, fileId, fileSize);
-    }
-
-    @Override
     public void putFile(URL url, String fileId, long sizeOfFile, ChecksumDataForFileTYPE checksumForValidationAtPillar,
             ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation)
             throws OperationFailedException {

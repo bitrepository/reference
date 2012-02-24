@@ -42,27 +42,6 @@ public interface PutFileClient {
      * @param url The URL where the file to be put is located.
      * @param fileId The id of the file.
      * @param sizeOfFile The number of bytes the file requires.
-     * @param eventHandler The EventHandler for the operation.
-     */
-    @Deprecated
-    void putFileWithId(URL url, String fileId, long sizeOfFile, EventHandler eventHandler);
-
-    /**
-     * Method for performing the put operation.
-     * 
-     * @param url The URL where the file to be put is located.
-     * @param fileId The id of the file.
-     * @param sizeOfFile The number of bytes the file requires.
-     */
-    @Deprecated
-    void putFileWithId(URL url, String fileId, long sizeOfFile) throws OperationFailedException;
-    
-    /**
-     * Method for performing the put operation.
-     * 
-     * @param url The URL where the file to be put is located.
-     * @param fileId The id of the file.
-     * @param sizeOfFile The number of bytes the file requires.
      * @param checksumForValidationAtPillar The checksum for validating at pillar side.
      * @param checksumRequestsForValidation The checksum for validating at client side.
      * @param eventHandler The EventHandler for the operation.
@@ -70,8 +49,8 @@ public interface PutFileClient {
      * @throws OperationFailedException If the operation failed.
      */
     void putFile(URL url, String fileId, long sizeOfFile, ChecksumDataForFileTYPE checksumForValidationAtPillar, 
-    		ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation)
-            throws OperationFailedException;
+            ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation)
+                    throws OperationFailedException;
     
     /**
      * Method to perform a graceful shutdown of the client.
