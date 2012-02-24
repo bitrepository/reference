@@ -24,6 +24,7 @@
  */
 package org.bitrepository.integrityclient.checking;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,9 +40,9 @@ public class IntegrityReport {
     private boolean valid = true;
     /** The FileIDs for the report.*/
     private FileIDs fileIDs;
-    /** Any bad results for checksum validation. Map between the fileId and results of the checksum check, whereas the
-     * results of the checksum check is a map between each checksum value and their count.*/
-    private Map<String, Map<String, Integer>> checksumResults = new HashMap<String, Map<String, Integer>>();
+    /** A mapping between files and a list of pillars, where the file has a bad checksum. */
+    private Map<String, Collection<String>> checksumErrors = new HashMap<String, Collection<String>>();
+    
     /** The files which are missing.*/
     private Map<String, List<String>> missingFileIDs = new HashMap<String, List<String>>();
     
@@ -71,8 +72,8 @@ public class IntegrityReport {
     /**
      * @return The map of checksum errors. Empty if no such errors.
      */
-    public Map<String, Map<String, Integer>> getChecksumErrors() {
-        return checksumResults;
+    public Map<String, Collection<String>> getChecksumErrors() {
+        return checksumErrors;
     }
     
     /**
@@ -86,10 +87,10 @@ public class IntegrityReport {
      * Insert the checksum results, when a checksum disagreement occurs.
      * This means that the integrity check found an error.
      * @param fileId The id of the file for the checksum disagreement.
-     * @param checksums The map of different checksums and their count.
+     * @param pillars The list of pillars, where file has a bad checksum.
      */
-    public void addIncorrectChecksums(String fileId, Map<String, Integer> checksums) {
-        checksumResults.put(fileId, checksums);
+    public void addIncorrectChecksums(String fileId, Collection<String> pillars) {
+        checksumErrors.put(fileId, pillars);
         valid = false;
     }
     
@@ -115,13 +116,12 @@ public class IntegrityReport {
         
         res.append("Invalid integrity on " + fileIDs + "\n");
         
-        if(!checksumResults.isEmpty()) {
+        if(!checksumErrors.isEmpty()) {
             res.append("Checksum errors: \n");
-            for(Map.Entry<String, Map<String, Integer>> checksumErrors : checksumResults.entrySet()) {
-                res.append(checksumErrors.getKey());
-                for(Map.Entry<String, Integer> csError : checksumErrors.getValue().entrySet()) {
-                    res.append(" : " + csError.getValue() + " '" + csError.getKey() + "' ");
-                }
+            for(Map.Entry<String, Collection<String>> fileErrorAtPillars : checksumErrors.entrySet()) {
+                res.append(fileErrorAtPillars.getKey());
+                res.append(" : ");
+                res.append(fileErrorAtPillars.getValue());
                 res.append("\n");
             }
         }

@@ -91,10 +91,7 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
         IntegrityReport report = new IntegrityReport(fileIDs);
         
         for(String fileId : requestedFileIDs) {
-            Map<String, Integer> checksumResults = validateChecksumAndGetCount(fileId);
-            if(checksumResults.size() > 1) {
-                report.addIncorrectChecksums(fileId, checksumResults);
-            }
+            validateChecksums(fileId, report);
         }
         
         if(!report.isValid()) {
@@ -140,11 +137,11 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
      * TODO also validate, that all pillars contains the files.
      * 
      * @param fileId The id of the pillar to have its checksums validated. 
+     * @param report The report, where errors and inconsistencies  are reported.
      */
-    private Map<String, Integer> validateChecksumAndGetCount(String fileId) {
+    private void validateChecksums(String fileId, IntegrityReport report) {
+        // Maps between pillar and checksum, and between checksum and count of the given checksum.
         Map<String, Integer> checksumCount = new HashMap<String, Integer>();
-        
-        
         Map<String, String> checksums = getChecksums(fileId);
         for(Map.Entry<String, String> checksumForPillar : checksums.entrySet()) {
             // Validate that the checksum has been found.
@@ -170,6 +167,7 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
             
             if(chosenChecksum == null) {
                 cache.setChecksumError(fileId, checksums.keySet());
+                report.addIncorrectChecksums(fileId, checksums.values());
             } else {
                 List<String> missingPillars = new ArrayList<String>();
                 List<String> presentPillars = new ArrayList<String>();
@@ -182,14 +180,13 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
                     }
                 }
                 
-                cache.setChecksumError(fileId, missingPillars);
                 cache.setChecksumAgreement(fileId, presentPillars);
+                cache.setChecksumError(fileId, missingPillars);
+                report.addIncorrectChecksums(fileId, missingPillars);
             }
         } else {
             cache.setChecksumAgreement(fileId, checksums.keySet());
         }
-        
-        return checksumCount; 
     }
     
     /**

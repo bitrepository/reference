@@ -44,6 +44,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityclient.cache.database.DatabaseStoragedCache;
+import org.bitrepository.integrityclient.checking.IntegrityReport;
 import org.bitrepository.integrityclient.checking.SimpleIntegrityChecker;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -60,7 +61,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
     }
     
 //    @Test(groups = {"regressiontest"})
-//    @Test(groups = {"databasetest"})
+    @Test(groups = {"databasetest"})
     public void connectionTest() throws Exception {
         addDescription("Testing the connection to the integrity database.");
         addStep("Setup the variables and constants.", "Should be ok.");
@@ -68,6 +69,8 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         String fileId = "TEST-FILE-ID-" + new Date().getTime();
         String fileId2 = "CONSISTEN-FILE-ID";
         String pillarId = "MY-TEST-PILLAR";
+        
+        clearDatabase(url);
         
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
         settings.getReferenceSettings().getIntegrityServiceSettings().setDatabaseUrl(url);
@@ -125,7 +128,6 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         String fileId2 = "ANOTHER-TEST-FILE-ID"; //-" + new Date().getTime();
         String pillarId1 = "integrityCheckTest-1";
         String pillarId2 = "integrityCheckTest-2";
-        String pillarId3 = "integrityCheckTest-3";
         
         clearDatabase(url);
         
@@ -177,7 +179,92 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         
         Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId1), 1, "They should disagree upon one.");
         Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId2), 1, "They should disagree upon one.");
+    }
+    
+    @Test(groups = {"databasetest"})
+    public void integrityCheckForChecksumTest() throws Exception {
+        addDescription("Testing whether the integrity check can perform different checksum votes, "
+                + "select a winner and find a draw.");
+        addStep("Setup variables and constants.", "Should not be a problem.");
+        String url = "jdbc:derby:integritydb";
+        String fileId1 = "GOOD-CASE-EVERYBODY-AGREE"; 
+        String fileId2 = "BAD-CASE-EVERYBODY-DISAGREE"; 
+        String fileId3 = "VOTE-WINNER-CASE"; 
+        String pillarId1 = "pillar-1";
+        String pillarId2 = "pillar-2";
+        String pillarId3 = "pillar-3";
         
+        clearDatabase(url);
+        
+        addStep("Setup database cache and integrity checker", "Should not be a problem");
+        settings.getReferenceSettings().getIntegrityServiceSettings().setDatabaseUrl(url);
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId1);
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId2);
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId3);
+        DatabaseBasedIntegrityCached cache = new DatabaseBasedIntegrityCached(settings);
+        SimpleIntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
+        
+        FileIDs fileIds = new FileIDs();
+        
+        addStep("Create checksum data and populate the cache with the good case scenario where the file has "
+                + "same checksum on every pillar.", "Should be inserted into database.");
+        List<ChecksumDataForChecksumSpecTYPE> csGood = getChecksumResults(fileId1, "good-checksum");
+        cache.addChecksums(csGood, getChecksumSpec(), pillarId1);
+        cache.addChecksums(csGood, getChecksumSpec(), pillarId2);
+        cache.addChecksums(csGood, getChecksumSpec(), pillarId3);
+
+        addStep("Performing the checksum check on the good case.", "Should not find any checksum errors.");
+        printDatabase(url);
+        fileIds.setFileID(fileId1);
+        IntegrityReport report1 = checker.checkChecksum(fileIds);
+        printDatabase(url);
+        
+        Assert.assertTrue(report1.isValid(), "There should have been found no checksum errors.");
+        Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId1), 0, "They should disagree upon one.");
+        Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId2), 0, "They should disagree upon one.");
+        Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId3), 0, "They should disagree upon one.");
+
+        addStep("Create checksum data and populate the cache with the good case scenario where the file has "
+                + "same checksum on every pillar.", "Should be inserted into database.");
+        List<ChecksumDataForChecksumSpecTYPE> csBad1 = getChecksumResults(fileId2, "bad-checksum-1");
+        List<ChecksumDataForChecksumSpecTYPE> csBad2 = getChecksumResults(fileId2, "bad-checksum-2");
+        List<ChecksumDataForChecksumSpecTYPE> csBad3 = getChecksumResults(fileId2, "bad-checksum-3");
+        cache.addChecksums(csBad1, getChecksumSpec(), pillarId1);
+        cache.addChecksums(csBad2, getChecksumSpec(), pillarId2);
+        cache.addChecksums(csBad3, getChecksumSpec(), pillarId3);
+
+        addStep("Performing the checksum check on the bad case.", "All pillars should have checksum errors.");
+        printDatabase(url);
+        fileIds.setFileID(fileId2);
+        IntegrityReport report2 = checker.checkChecksum(fileIds);
+        printDatabase(url);
+        
+        Assert.assertFalse(report2.isValid(), "There should have been found checksum errors in every pillar.");
+        Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId1), 1, "They should disagree upon one.");
+        Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId2), 1, "They should disagree upon one.");
+        Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId3), 1, "They should disagree upon one.");
+
+        addStep("Create checksum data and populate the cache with the good case scenario where the file has "
+                + "same checksum on every pillar.", "Should be inserted into database.");
+        List<ChecksumDataForChecksumSpecTYPE> csVoteWin = getChecksumResults(fileId3, "win-checksum");
+        List<ChecksumDataForChecksumSpecTYPE> csVoteLoss = getChecksumResults(fileId3, "loss-checksum");
+        cache.addChecksums(csVoteWin, getChecksumSpec(), pillarId1);
+        cache.addChecksums(csVoteWin, getChecksumSpec(), pillarId2);
+        cache.addChecksums(csVoteLoss, getChecksumSpec(), pillarId3);
+
+        addStep("Performing the checksum check on the vote case.", "Should only be a checksum error at pillar3.");
+        printDatabase(url);
+        fileIds.setFileID(fileId3);
+        IntegrityReport report3 = checker.checkChecksum(fileIds);
+        printDatabase(url);
+        
+        Assert.assertFalse(report3.isValid(), "There should have been found one checksum error, at pillar3.");
+        Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId1), 1, "They should disagree upon one.");
+        Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId2), 1, "They should disagree upon one.");
+        Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId3), 2, 
+                "Pillar 3 should have another checksum error.");
+
     }
     
     private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileId, String checksum) {
@@ -230,8 +317,8 @@ public class DatabaseCacheTest extends ExtendedTestCase {
     
     /**
      * Cleans up the database after use.
-     * @param url
-     * @throws Exception
+     * @param url The URL to the database.
+     * @throws Exception If anything goes bad.
      */
     private void clearDatabase(String url) throws Exception {
         Connection con = DerbyDBConnector.getEmbeddedDBConnection(url);
