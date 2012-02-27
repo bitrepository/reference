@@ -8,4 +8,8 @@ public class OperationAuthorizationException extends Exception {
     public OperationAuthorizationException(String message) {
         super(message);
     }
+    
+    public OperationAuthorizationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

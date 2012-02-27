@@ -30,6 +30,10 @@ import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.bitrepository.settings.collectionsettings.InfrastructurePermission;
 import org.bitrepository.settings.collectionsettings.Permission;
 import org.bitrepository.settings.collectionsettings.PermissionSet;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.CMSProcessableByteArray;
+import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMReader;
 import org.bouncycastle.util.encoders.Base64;
@@ -52,6 +56,7 @@ public class SecurityManager {
     private final MessageAuthenticator authenticator;
     private final MessageSigner signer;
     private final OperationAuthorizor authorizer;
+    private final PermissionStore permissionStore;
     private static int aliasID = 0;
     private KeyStore keyStore;
     private PrivateKeyEntry privateKeyEntry;
@@ -60,12 +65,13 @@ public class SecurityManager {
      * Constructor for the class. 
      */
     public SecurityManager(CollectionSettings collectionSettings, String privateKeyFile, MessageAuthenticator authenticator,
-            MessageSigner signer, OperationAuthorizor authorizer) {
+            MessageSigner signer, OperationAuthorizor authorizer, PermissionStore permissionStore) {
         this.privateKeyFile = privateKeyFile;
         this.collectionSettings = collectionSettings;
         this.authenticator = authenticator;
         this.signer = signer;
         this.authorizer = authorizer;
+        this.permissionStore = permissionStore;
         initialize();
     }
     
@@ -116,7 +122,16 @@ public class SecurityManager {
     public void authorizeOperation(String operationType, String messageData, String signature) 
             throws OperationAuthorizationException {
         if(collectionSettings.getProtocolSettings().isRequireOperationAuthorization()) {
-            // call authorizer to authorize operation
+            byte[] decodeSig = Base64.decode(signature.getBytes());
+            CMSSignedData s;
+            try {
+                s = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes()), decodeSig);
+            } catch (CMSException e) {
+                throw new RuntimeException(e);
+            }
+    
+            SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
+            authorizer.authorizeOperation(operationType, signer.getSID());
         }
     }
     
@@ -130,6 +145,7 @@ public class SecurityManager {
             keyStore.load(null);
             loadPrivateKey(privateKeyFile);
             loadInfrastructureCertificates(collectionSettings.getPermissionSet());
+            permissionStore.loadPermissions(collectionSettings.getPermissionSet());
             setupDefaultSSLContext();
         } catch (Exception e) {
             throw new RuntimeException(e);

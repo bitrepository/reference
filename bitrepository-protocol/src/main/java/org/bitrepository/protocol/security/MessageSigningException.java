@@ -5,7 +5,7 @@ package org.bitrepository.protocol.security;
  */
 public class MessageSigningException extends Exception {
 
-    public MessageSigningException(String message) {
-        super(message);
+    public MessageSigningException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
