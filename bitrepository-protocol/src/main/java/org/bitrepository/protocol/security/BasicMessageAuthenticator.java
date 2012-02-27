@@ -38,7 +38,7 @@ public class BasicMessageAuthenticator implements MessageAuthenticator {
             byte[] decodedSig = Base64.decode(signatureData); 
             CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(messageData), decodedSig);
             SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
-            signingCert = permissionStore.getCeritificate(signer.getSID());
+            signingCert = permissionStore.getCertificate(signer.getSID());
             
             if(!signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider("BC").build(signingCert))) {
                 throw new MessageAuthenticationException("Signature does not match the message. Indicated certificate " +

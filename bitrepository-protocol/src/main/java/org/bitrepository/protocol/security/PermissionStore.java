@@ -69,7 +69,7 @@ public class PermissionStore {
      * @return X509Certificate the certificate represented by the SignerId
      * @throws PermissionStoreException if no certificate can be found based on the SignerId 
      */
-    public X509Certificate getCeritificate(SignerId signer) throws PermissionStoreException {
+    public X509Certificate getCertificate(SignerId signer) throws PermissionStoreException {
         CertificateID certificateID = new CertificateID(signer.getIssuer(), signer.getSerialNumber());
         CertificatePermission permission = permissionMap.get(certificateID);
         if(permission != null) {
@@ -117,4 +117,5 @@ public class PermissionStore {
             return certificate;
         }   
     }
+
 }
