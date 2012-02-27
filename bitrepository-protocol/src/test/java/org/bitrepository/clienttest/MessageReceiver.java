@@ -156,7 +156,9 @@ public class MessageReceiver {
         private Map<Class<?>, BlockingQueue<?>> messageMap = new HashMap<Class<?>, BlockingQueue<?>>();
 
         private <T> void addMessage(T message) {
-            testEventManager.addResult(name + " received message: " + message);
+            if(testEventManager != null) {
+                testEventManager.addResult(name + " received message: " + message);
+            }
             @SuppressWarnings("unchecked")
             BlockingQueue<T> queue = (BlockingQueue<T>)getMessageQueue(message.getClass());
             queue.add(message);
