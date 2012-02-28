@@ -1,10 +1,11 @@
 #!/bin/bash
 
-SERVICEURL="http://localhost:8080/bitrepository-webclient-0.8-SNAPSHOT/repo/reposervice"
-WEBDAVSERVER="http://sandkasse-01.kb.dk/dav/"
+SERVICEURL="http://bitmag-stage01:9350/bitrepository-webclient/repo/reposervice"
+WEBDAVSERVER="https://bitmag-stage01.statsbiblioteket.dk/dav/stage-a/"
+CURLPARMS="-E ./mycert.pem --cacert ./mycert.pem"
 
 do_put() {
-	curl --silent -T "$filename" $WEBDAVSERVER > /dev/null
+	curl $CURLPARMS --silent -T "$filename" $WEBDAVSERVER > /dev/null
 	stripedfilename=`basename $filename`
 	filesize=`du -b $filename | cut -f1`
 	checksum=`md5sum $filename | cut -f1 --delimiter=" "`
@@ -25,16 +26,16 @@ do_get() {
 }
 
 do_getchecksum() {
-	command="$SERVICEURL/getChecksums/?fileIDs=$filename&checksumType=$checksumType&salt=$salt"
+	command="$SERVICEURL/getChecksums/?fileID=$filename&checksumType=$checksumType&salt=$salt"
 	curl --silent $command
 }
 
 do_webserver_remove_file() {
-	curl --silent -X DELETE $WEBDAVSERVER$filename > /dev/null 
+	curl $CURLPARMS --silent -X DELETE $WEBDAVSERVER$filename > /dev/null 
 }
 
 do_webserver_get_file() {
-	curl --silent $WEBDAVSERVER$filename > $filename
+	curl $CURLPARMS --silent $WEBDAVSERVER$filename > $filename
 }
 
 
