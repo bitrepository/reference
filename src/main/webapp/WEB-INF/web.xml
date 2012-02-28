@@ -3,7 +3,7 @@
    	<display-name>Bitrepository webservice</display-name>
    
  	<welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>index.html</welcome-file>
 		<welcome-file>index-v1.html</welcome-file>
 	</welcome-file-list>
 	
@@ -22,7 +22,7 @@
  	</servlet-mapping>
  	
  	<listener>
-		<listener-class>org.bitrepository.webservice.ShutdownListener</listener-class>
+		<listener-class>org.bitrepository.webservice.WebclientContextListener</listener-class>
 	</listener>
  	
 </web-app>

@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * 		of the basic client, so everything is setup before the first users start using the webservice. 
  * 2) In time shut the service down in a proper manner, so no threads will be orphaned.   
  */
-public class ShutdownListener implements ServletContextListener {
+public class WebclientContextListener implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
@@ -40,7 +40,7 @@ public class ShutdownListener implements ServletContextListener {
     }
 
     /**
-     * Does work of shutting the webclient down in a graceful maner. 
+     * Does work of shutting the webclient down in a graceful manner. 
      * This is done by calling BasicClient's shutdown method.  
      */
     @Override
