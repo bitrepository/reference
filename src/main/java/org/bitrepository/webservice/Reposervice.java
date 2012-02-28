@@ -47,14 +47,14 @@ public class Reposervice {
             @QueryParam("putSalt") String putSalt,
             @QueryParam("approveChecksumType") String approveChecksumType,
             @QueryParam("approveSalt") String approveSalt) {
-        if(fileID == null || fileID.isEmpty()) {
-            return "Failure: missing fileID."; 
-        }
-        if(URL == null || URL.isEmpty()) {
-            return "Failure: missing url.";
-        }
+        try {
+        WebserviceInputChecker.checkFileIDParameter(fileID);
+        WebserviceInputChecker.checkURLParameter(URL);
         return client.putFile(fileID, fileSize, URL, putChecksum, putChecksumType, putSalt, 
-        		approveChecksumType, approveSalt);       
+        		approveChecksumType, approveSalt);    
+        } catch (WebserviceInputCheckException e) {
+            return e.getMessage();
+        }
     }
     
     /**
@@ -70,13 +70,13 @@ public class Reposervice {
     public String getFile(
             @QueryParam("fileID") String fileID,
             @QueryParam("url") String URL) {
-        if(fileID == null || fileID.isEmpty()) {
-            return "Failure: missing fileID."; 
-        }
-        if(URL == null || URL.isEmpty()) {
-            return "Failure: missing url.";
-        }
-        return client.getFile(fileID, URL);       
+        try {
+            WebserviceInputChecker.checkFileIDParameter(fileID);
+            WebserviceInputChecker.checkURLParameter(URL);
+            return client.getFile(fileID, URL);
+        } catch (WebserviceInputCheckException e) {
+            return e.getMessage();
+        }            
     }
     
     /**
@@ -153,16 +153,17 @@ public class Reposervice {
     @Path("getChecksumsHtml")
     @Produces("text/html")
     public String getChecksumsHtml(
-    		@QueryParam("fileIDs") String fileIDs,
+    		@QueryParam("fileID") String fileID,
     		@QueryParam("checksumType") String checksumType,
     		@QueryParam("salt") String salt) {
-    	if(fileIDs == null || fileIDs.isEmpty()) {
-    	    return "<html><body><b>Missing fileIDs parameter</b></body></html>";
-    	}
-    	if(checksumType == null || checksumType.isEmpty()) {
-    	    return "<html><body><b>Missing checksumType parameter</b></body></html>";
-    	}
-    	Map<String, Map<String, String>> result = client.getChecksums(fileIDs, checksumType, salt);
+        try {
+            WebserviceInputChecker.checkFileIDParameter(fileID);
+            WebserviceInputChecker.checkChecksumTypeParameter(checksumType);
+        } catch (WebserviceInputCheckException e) {
+            return "<html><body><b>" + e.getMessage() + "</b></body></html>";
+        }
+        
+    	Map<String, Map<String, String>> result = client.getChecksums(fileID, checksumType, salt);
     	if(result == null) {
     		return "<html><body><b>Failed!</b></body></html>";
     	}
@@ -172,8 +173,8 @@ public class Reposervice {
     	ArrayList <String> pillarIDList = new ArrayList<String>();
     	
     	sb.append("<tr> <td><b>File Id:</b></td><td>&nbsp;</td>");
-    	for(String fileID : returnedFileIDs) {
-    		Set<String> pillarIDs = result.get(fileID).keySet();
+    	for(String fileId : returnedFileIDs) {
+    		Set<String> pillarIDs = result.get(fileId).keySet();
     		for(String pillarID : pillarIDs) {
     			pillarIDList.add(pillarID);
     			sb.append("<td><b>Checksums from " + pillarID + ":</b></td>");
@@ -181,7 +182,7 @@ public class Reposervice {
     		break;
     	}
     	sb.append("</tr>");
-    	for(String fileID : returnedFileIDs) {
+    	for(String fileId : returnedFileIDs) {
     		sb.append("<tr> <td> " + fileID + "</td><td>&nbsp;</td>"); 
     		for(String pillarID : pillarIDList) {
     			if(result.get(fileID).containsKey(pillarID)) {
@@ -211,16 +212,17 @@ public class Reposervice {
     @Path("getChecksums")
     @Produces("text/plain")
     public String getChecksums(
-    		@QueryParam("fileIDs") String fileIDs,
+    		@QueryParam("fileIDs") String fileID,
     		@QueryParam("checksumType") String checksumType,
     		@QueryParam("salt") String salt) {
-        if(fileIDs == null || fileIDs.isEmpty()) {
-            return "Missing fileIDs parameter";
+        try {
+            WebserviceInputChecker.checkFileIDParameter(fileID);
+            WebserviceInputChecker.checkChecksumTypeParameter(checksumType);
+        } catch (WebserviceInputCheckException e) {
+            return e.getMessage();
         }
-        if(checksumType == null || checksumType.isEmpty()) {
-            return "Missing checksumType parameter";
-        }
-    	Map<String, Map<String, String>> result = client.getChecksums(fileIDs, checksumType, salt);
+
+    	Map<String, Map<String, String>> result = client.getChecksums(fileID, checksumType, salt);
     	if(result == null) {
     		return "Failed!";
     	}
@@ -229,8 +231,8 @@ public class Reposervice {
     	ArrayList <String> pillarIDList = new ArrayList<String>();
     	
     	sb.append("FileID \t");
-    	for(String fileID : returnedFileIDs) {
-    		Set<String> pillarIDs = result.get(fileID).keySet();
+    	for(String fileId : returnedFileIDs) {
+    		Set<String> pillarIDs = result.get(fileId).keySet();
     		for(String pillarID : pillarIDs) {
     			pillarIDList.add(pillarID);
     			sb.append(pillarID + "\t");
@@ -238,7 +240,7 @@ public class Reposervice {
     		break;
     	}
     	sb.append("\n");
-    	for(String fileID : returnedFileIDs) {
+    	for(String fileId : returnedFileIDs) {
     		sb.append(fileID + "\t"); 
     		for(String pillarID : pillarIDList) {
     			if(result.get(fileID).containsKey(pillarID)) {
@@ -309,12 +311,13 @@ public class Reposervice {
             @QueryParam("deleteChecksumSalt") String deleteChecksumSalt,
             @QueryParam("approveChecksumType") String approveChecksumType,
             @QueryParam("approveChecksumSalt") String approveChecksumSalt) {
-        if(fileID == null || fileID.isEmpty()) {
-            return "Failure: missing fileID."; 
+        try {
+            WebserviceInputChecker.checkFileIDParameter(fileID);
+            WebserviceInputChecker.checkPillarIDParameter(pillarID);
+        } catch (WebserviceInputCheckException e) {
+            return e.getMessage();
         }
-        if(pillarID == null || pillarID.isEmpty()) {
-            return "Failure: missing pillarID."; 
-        }
+
         return client.deleteFile(fileID, pillarID, deleteChecksum, deleteChecksumType, deleteChecksumSalt, 
                 approveChecksumType, approveChecksumSalt);
     }
@@ -335,14 +338,22 @@ public class Reposervice {
             @QueryParam("newFileChecksumSalt") String newFileChecksumSalt,
             @QueryParam("newFileRequestChecksumType") String newFileRequestChecksumType,
             @QueryParam("newFileRequestChecksumSalt") String newFileRequestChecksumSalt) {
-        if(fileID == null || fileID.isEmpty()) {
-            return "Failure: missing fileID."; 
-        }
-        if(pillarID == null || pillarID.isEmpty()) {
-            return "Failure: missing pillarID."; 
-        }
-        if(url == null || url.isEmpty()) {
-            return "Failure: missing url."; 
+        try {
+            WebserviceInputChecker.checkFileIDParameter(fileID);
+            WebserviceInputChecker.checkPillarIDParameter(pillarID);
+            WebserviceInputChecker.checkURLParameter(url);
+            WebserviceInputChecker.checkChecksumTypeParameter(oldFileChecksumType);
+            WebserviceInputChecker.checkChecksumParameter(oldFileChecksum);
+            WebserviceInputChecker.checkSaltParameter(oldFileChecksumSalt);
+            WebserviceInputChecker.checkChecksumTypeParameter(oldFileRequestChecksumType);
+            WebserviceInputChecker.checkSaltParameter(oldFileRequestChecksumSalt);
+            WebserviceInputChecker.checkChecksumTypeParameter(newFileChecksumType);
+            WebserviceInputChecker.checkChecksumParameter(newFileChecksum);
+            WebserviceInputChecker.checkSaltParameter(newFileChecksumSalt);
+            WebserviceInputChecker.checkSaltParameter(newFileRequestChecksumSalt);
+            WebserviceInputChecker.checkChecksumTypeParameter(newFileRequestChecksumType);
+        } catch (WebserviceInputCheckException e) {
+            return e.getMessage();
         }
         return client.replaceFile(fileID, pillarID, oldFileChecksum, oldFileChecksumType, oldFileChecksumSalt, 
         		oldFileRequestChecksumType, oldFileRequestChecksumSalt, url, Long.parseLong(fileSize), newFileChecksum, 
