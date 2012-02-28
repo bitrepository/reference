@@ -42,7 +42,7 @@
  	</servlet-mapping>
  	
     <listener>
-		<listener-class>org.bitrepository.alarm.alarmservice.ShutdownListener</listener-class>
+		<listener-class>org.bitrepository.alarm.alarmservice.AlarmServiceContextListener</listener-class>
 	</listener>
  	
 </web-app>
