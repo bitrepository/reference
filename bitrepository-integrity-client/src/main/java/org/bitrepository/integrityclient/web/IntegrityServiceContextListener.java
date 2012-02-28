@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * 		of the basic client, so everything is setup before the first users start using the webservice. 
  * 2) In time shut the service down in a proper manner, so no threads will be orphaned.   
  */
-public class ShutdownListener implements ServletContextListener {
+public class IntegrityServiceContextListener implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
