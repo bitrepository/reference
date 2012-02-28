@@ -47,6 +47,12 @@ public class Reposervice {
             @QueryParam("putSalt") String putSalt,
             @QueryParam("approveChecksumType") String approveChecksumType,
             @QueryParam("approveSalt") String approveSalt) {
+        if(fileID == null || fileID.isEmpty()) {
+            return "Failure: missing fileID."; 
+        }
+        if(URL == null || URL.isEmpty()) {
+            return "Failure: missing url.";
+        }
         return client.putFile(fileID, fileSize, URL, putChecksum, putChecksumType, putSalt, 
         		approveChecksumType, approveSalt);       
     }
@@ -64,6 +70,12 @@ public class Reposervice {
     public String getFile(
             @QueryParam("fileID") String fileID,
             @QueryParam("url") String URL) {
+        if(fileID == null || fileID.isEmpty()) {
+            return "Failure: missing fileID."; 
+        }
+        if(URL == null || URL.isEmpty()) {
+            return "Failure: missing url.";
+        }
         return client.getFile(fileID, URL);       
     }
     
@@ -144,7 +156,12 @@ public class Reposervice {
     		@QueryParam("fileIDs") String fileIDs,
     		@QueryParam("checksumType") String checksumType,
     		@QueryParam("salt") String salt) {
-    	
+    	if(fileIDs == null || fileIDs.isEmpty()) {
+    	    return "<html><body><b>Missing fileIDs parameter</b></body></html>";
+    	}
+    	if(checksumType == null || checksumType.isEmpty()) {
+    	    return "<html><body><b>Missing checksumType parameter</b></body></html>";
+    	}
     	Map<String, Map<String, String>> result = client.getChecksums(fileIDs, checksumType, salt);
     	if(result == null) {
     		return "<html><body><b>Failed!</b></body></html>";
@@ -197,7 +214,12 @@ public class Reposervice {
     		@QueryParam("fileIDs") String fileIDs,
     		@QueryParam("checksumType") String checksumType,
     		@QueryParam("salt") String salt) {
-    	
+        if(fileIDs == null || fileIDs.isEmpty()) {
+            return "Missing fileIDs parameter";
+        }
+        if(checksumType == null || checksumType.isEmpty()) {
+            return "Missing checksumType parameter";
+        }
     	Map<String, Map<String, String>> result = client.getChecksums(fileIDs, checksumType, salt);
     	if(result == null) {
     		return "Failed!";
@@ -287,6 +309,12 @@ public class Reposervice {
             @QueryParam("deleteChecksumSalt") String deleteChecksumSalt,
             @QueryParam("approveChecksumType") String approveChecksumType,
             @QueryParam("approveChecksumSalt") String approveChecksumSalt) {
+        if(fileID == null || fileID.isEmpty()) {
+            return "Failure: missing fileID."; 
+        }
+        if(pillarID == null || pillarID.isEmpty()) {
+            return "Failure: missing pillarID."; 
+        }
         return client.deleteFile(fileID, pillarID, deleteChecksum, deleteChecksumType, deleteChecksumSalt, 
                 approveChecksumType, approveChecksumSalt);
     }
@@ -307,6 +335,15 @@ public class Reposervice {
             @QueryParam("newFileChecksumSalt") String newFileChecksumSalt,
             @QueryParam("newFileRequestChecksumType") String newFileRequestChecksumType,
             @QueryParam("newFileRequestChecksumSalt") String newFileRequestChecksumSalt) {
+        if(fileID == null || fileID.isEmpty()) {
+            return "Failure: missing fileID."; 
+        }
+        if(pillarID == null || pillarID.isEmpty()) {
+            return "Failure: missing pillarID."; 
+        }
+        if(url == null || url.isEmpty()) {
+            return "Failure: missing url."; 
+        }
         return client.replaceFile(fileID, pillarID, oldFileChecksum, oldFileChecksumType, oldFileChecksumSalt, 
         		oldFileRequestChecksumType, oldFileRequestChecksumSalt, url, Long.parseLong(fileSize), newFileChecksum, 
         		newFileChecksumType, newFileChecksumSalt, newFileRequestChecksumType, newFileRequestChecksumSalt);
