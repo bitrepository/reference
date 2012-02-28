@@ -1,5 +1,7 @@
 package org.bitrepository.protocol.security;
 
+import java.io.UnsupportedEncodingException;
+
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.settings.Settings;
@@ -12,12 +14,15 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.util.encoders.Base64;
 import org.jaccept.structure.ExtendedTestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class SecurityManagerTest extends ExtendedTestCase  {
-    
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private static final String testData = "Hello world!";
     
     private static final String signature = "MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgMFADCABgkqhkiG9w0BBwEAADGB1zCB1AIBATAuMCExCzAJBgNVBAYTAkRLMRIwEAYDVQQDDAljbGllbnQtMTMCCQDMZo0ssJ6s7zANBglghkgBZQMEAgMFADANBgkqhkiG9w0BAQEFAASBgHhp9p/wAHX8zAEIamAnyIywpI0wBYvR62pkLIrHwpTgsnjFpJRZPYYiF1egsIcy7ZjQrkh4UtMRLZyGbzk/GeuExdSrj66gAG4j8NeS7Ekp1zb16SUH8bKu/H83PqLxYBvIyEks3lMKu5T76Bmwa9x32H2zpzJjSqLRZCNgwQnBAAAAAAAA";
@@ -49,12 +54,27 @@ public class SecurityManagerTest extends ExtendedTestCase  {
             "77h9LapqyJ8S1GSKHr8=\n" +
             "-----END CERTIFICATE-----\n";
     
+    private static final String signingCert = 
+            "-----BEGIN CERTIFICATE-----\n" +
+            "MIIBuTCCASICCQDkYepx9PPiZTANBgkqhkiG9w0BAQUFADAhMQswCQYDVQQGEwJE\n" + 
+            "SzESMBAGA1UEAwwJY2xpZW50LTE5MB4XDTExMTAyMTA5MjAwMloXDTE0MDcxNzA5\n" +
+            "MjAwMlowITELMAkGA1UEBhMCREsxEjAQBgNVBAMMCWNsaWVudC0xOTCBnzANBgkq\n" +
+            "hkiG9w0BAQEFAAOBjQAwgYkCgYEAwEKO1j00Pqvjnz1vy1uYqvFfog9v0IRu4izw\n" +
+            "Iu08bJFg5t4fLWOyGHiVipf+gJNjGjnpEk1Hxw3by+g9WmGGkmbEg+7LNIpt6GYE\n" +
+            "U88WCobyZPnych7+WHMFSXgdboNfc7nay3h/KA4ugUE0fGSfJNtGizQEal/R/ZPQ\n" +
+            "aOGVu8cCAwEAATANBgkqhkiG9w0BAQUFAAOBgQCLQlPI6kQnwxk+BgwGaB7Lx880\n" +
+            "DCSOT5baDyyL+VsdoXN7vPuwYlZkMEfP3VcSM47gS2O6UglmuTKtYeWwpwGThyKx\n" +
+            "jjiq5zw/JpS9+0WT+rE9MR2havPycSOf8hYFBSqN3PSFMmIGWM1VaONa7mal9arh\n" +
+            "2LUhJmUulxjtOw4ZLA==\n" +
+            "-----END CERTIFICATE-----\n";
+    
     private static final String KEYFILE = "./target/test-classes/client-19.pem";
     private SecurityManager securityManager;
+    private PermissionStore permissionStore;
     
     @BeforeMethod(alwaysRun = true)
     public void setUp() throws Exception {
-        PermissionStore permissionStore = new PermissionStore();
+        permissionStore = new PermissionStore();
         MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
         OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
         MessageSigner messageSigner = new BasicMessageSigner();
@@ -96,30 +116,96 @@ public class SecurityManagerTest extends ExtendedTestCase  {
     @Test(groups = {"regressiontest"})
     public void positiveSigningAuthenticationRoundtripTest() throws Exception {
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating is succedes.");
-    }    
+        addStep("Sign a chunck of data.", "Data is signed succesfully");
+        String signature = null;
+        try {
+            signature = securityManager.signMessage(testData);
+        } catch (MessageSigningException e) {
+            Assert.fail("Failed signing test data!", e);
+        }
+        permissionStore.loadPermissions(getSigningCertPermission());
+        
+        String signatureString = new String(Base64.encode(signature.getBytes("UTF-8")));
+        log.info("Signature for testdata is: " + signatureString);
+        
+        addStep("Check signature matches the data ", "Signature and data matches");
+        try {
+            securityManager.authenticateMessage(testData, signatureString);
+        } catch (MessageAuthenticationException e) {
+           Assert.fail("Failed authenticating test data!", e);
+        }  
+    }
+        
 
     @Test(groups = {"regressiontest"})
     public void negativeSigningAuthenticationRoundtripUnkonwnCertificateTest() throws Exception {
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating it fails due to " +
         		"a unknown certificate.");
+        addStep("Sign a chunck of data.", "Data is signed succesfully");
+        String signature = null;
+        try {
+            signature = securityManager.signMessage(testData);
+        } catch (MessageSigningException e) {
+            Assert.fail("Failed signing test data!", e);
+        }
+        String signatureString = new String(Base64.encode(signature.getBytes("UTF-8")));
+        log.info("Signature for testdata is: " + signatureString);
+        
+        addStep("Check signature matches the data", "Signature cant be matched as certificate is unknown.");
+        try {
+            securityManager.authenticateMessage(testData, signatureString);
+            Assert.fail("Authentication did not fail as expected");
+        } catch (MessageAuthenticationException e) {
+            log.info(e.getMessage());
+        }  
     }   
     
     @Test(groups = {"regressiontest"})
     public void negativeSigningAuthenticationRoundtripBadDataTest() throws Exception {
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating it fails " +
         		"due to bad data");
+        addDescription("Tests that a roundtrip of signing a request and afterwards authenticating is succedes.");
+        addStep("Sign a chunck of data.", "Data is signed succesfully");
+        String signature = null;
+        try {
+            signature = securityManager.signMessage(testData);
+        } catch (MessageSigningException e) {
+            Assert.fail("Failed signing test data!", e);
+        }
+        permissionStore.loadPermissions(getSigningCertPermission());
+        
+        String signatureString = new String(Base64.encode(signature.getBytes("UTF-8")));
+        log.info("Signature for testdata is: " + signatureString);
+        
+        addStep("Check signature matches the data ", "Signature and data matches does not match");
+        String corruptData = testData + "foobar";
+        try {
+            securityManager.authenticateMessage(corruptData, signatureString);
+            Assert.fail("Authentication did not fail as expected!");
+        } catch (MessageAuthenticationException e) {
+            log.info(e.getMessage());
+        }  
     }
     
-    private PermissionSet getDefaultPermissions() {
+    private PermissionSet getDefaultPermissions() throws UnsupportedEncodingException {
         PermissionSet permissions = new PermissionSet();  
         Permission perm1 = new Permission();
-        perm1.setCertificate(positiveCert.getBytes());
+        perm1.setCertificate(positiveCert.getBytes("UTF-8"));
         perm1.getOperationPermission().add(OperationPermission.GET_FILE);
         Permission perm2 = new Permission();
-        perm2.setCertificate(negativeCert.getBytes());
+        perm2.setCertificate(negativeCert.getBytes("UTF-8"));
         permissions.getPermission().add(perm1);
         permissions.getPermission().add(perm2);
 
+        return permissions;
+    }
+    
+    private PermissionSet getSigningCertPermission() throws UnsupportedEncodingException {
+        PermissionSet permissions = new PermissionSet();  
+        Permission signingCertPerm = new Permission();
+        signingCertPerm.setCertificate(signingCert.getBytes("UTF-8"));
+        signingCertPerm.getOperationPermission().add(OperationPermission.ALL);   
+        permissions.getPermission().add(signingCertPerm); 
         return permissions;
     }
 }

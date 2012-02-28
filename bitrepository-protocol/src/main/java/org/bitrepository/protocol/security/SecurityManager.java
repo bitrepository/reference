@@ -146,6 +146,7 @@ public class SecurityManager {
             loadPrivateKey(privateKeyFile);
             loadInfrastructureCertificates(collectionSettings.getPermissionSet());
             permissionStore.loadPermissions(collectionSettings.getPermissionSet());
+            signer.setPrivateKeyEntry(privateKeyEntry);
             setupDefaultSSLContext();
         } catch (Exception e) {
             throw new RuntimeException(e);
