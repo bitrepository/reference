@@ -313,12 +313,3 @@ public class Reposervice {
     }
 
 }
-
-//http://localhost:8080/webservice-0.0.1-SNAPSHOT/reposervice/getfile/?fileID=test (tomcat 7)
-//http://localhost:8080/webservice-0.0.1-SNAPSHOT/reposervice/getLog/
-//http://localhost:8080/webservice-0.0.1-SNAPSHOT/reposervice/getfile/?fileID=bah&url=http://sandkasse-01.kb.dk/dav/foobarbaz
-
-
-
-
-
