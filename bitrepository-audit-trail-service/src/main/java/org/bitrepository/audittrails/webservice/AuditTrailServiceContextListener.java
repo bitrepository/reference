@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * 		of the basic client, so everything is setup before the first users start using the webservice. 
  * 2) In time shut the service down in a proper manner, so no threads will be orphaned.   
  */
-public class ShutdownListener implements ServletContextListener {
+public class AuditTrailServiceContextListener implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
     
     /**
@@ -48,18 +48,18 @@ public class ShutdownListener implements ServletContextListener {
      */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        String confDir = sce.getServletContext().getInitParameter("integrityServiceConfDir");
-        if(confDir == null) {
-            throw new RuntimeException("No configuration directory specified!");
-        }
-        log.debug("Configuration dir = " + confDir);
-        System.setProperty(ConfigurationFactory.CONFIGURATION_DIR_SYSTEM_PROPERTY, confDir);
+        //String confDir = sce.getServletContext().getInitParameter("integrityServiceConfDir");
+        //if(confDir == null) {
+        //    throw new RuntimeException("No configuration directory specified!");
+        //}
+        //log.debug("Configuration dir = " + confDir);
+        //System.setProperty(ConfigurationFactory.CONFIGURATION_DIR_SYSTEM_PROPERTY, confDir);
         //try {
         //new LogbackConfigLoader(confDir + "/logback.xml");
         //	} catch (Exception e) {
         //	log.info("Failed to read log configuration file. Falling back to default.");
         //	} 
-        AuditTrailServiceFactory.init(confDir);
+        //AuditTrailServiceFactory.init(confDir);
         AuditTrailService service = AuditTrailServiceFactory.getAuditTrailService();
         log.debug("Servlet context initialized");
     }
