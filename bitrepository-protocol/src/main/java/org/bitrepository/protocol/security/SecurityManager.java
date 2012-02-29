@@ -50,19 +50,36 @@ import org.slf4j.LoggerFactory;
  */
 public class SecurityManager {
     private final Logger log = LoggerFactory.getLogger(SecurityManager.class);
+    /** Default password for the in-memory keystore */
     private final static String defaultPassword = "123456";
+    /** path to file containing the components private key and certificate */
     private final String privateKeyFile;
+    /** CollectionSettings */
     private final CollectionSettings collectionSettings;
+    /** Object to authenticate messages */
     private final MessageAuthenticator authenticator;
+    /** Object to sign messages */
     private final MessageSigner signer;
+    /** Object to authorize operations */
     private final OperationAuthorizor authorizer;
+    /** Object storing permissions and certificates */
     private final PermissionStore permissionStore;
+    /** int value to keep track of the next keystore alias */
     private static int aliasID = 0;
-    private KeyStore keyStore;
+    /** In memory keyStore */
+    private KeyStore keyStore; 
+    /** Member for holding the PrivateKeyEntry containing the from privateKeyFile loaded key and certificate */
     private PrivateKeyEntry privateKeyEntry;
     
     /**
-     * Constructor for the class. 
+     * Constructor for the SecurityManager.
+     * @param collectionSettings, the collection settings to retrieve settings from
+     * @param privateKeyFile, path to the file containing the components private key and certificate, may be null if not using
+     *        certificates and encryption.
+     * @param authenticator, MessageAuthenticator for authenticating messages
+     * @param signer, MessageSigner for signing messages.
+     * @param authorizer, OperationAuthorizer to authorize operations
+     * @param permissionStore, the PermissionStore to hold certificates and adjoining permissions  
      */
     public SecurityManager(CollectionSettings collectionSettings, String privateKeyFile, MessageAuthenticator authenticator,
             MessageSigner signer, OperationAuthorizor authorizer, PermissionStore permissionStore) {
@@ -77,35 +94,35 @@ public class SecurityManager {
     
     /**
      * Method to authenticate a message. 
-     * @param String message, the message that needs to be authenticated. 
-     * @param String signature, the signature belonging to the message. 
+     * @param message, the message that needs to be authenticated. 
+     * @param signature, the signature belonging to the message. 
      * @throws MessageAuthenticationException in case of failure.
      */
     public void authenticateMessage(String message, String signature) throws MessageAuthenticationException {
         if(collectionSettings.getProtocolSettings().isRequireMessageAuthentication()) {
             try {
-                byte[] decodedSig = Base64.decode(signature.getBytes("UTF-8"));
-                byte[] decodeMessage = message.getBytes("UTF-8");
+                byte[] decodedSig = Base64.decode(signature.getBytes(SecurityModuleConstants.defaultEncodingType));
+                byte[] decodeMessage = message.getBytes(SecurityModuleConstants.defaultEncodingType);
                 authenticator.authenticateMessage(decodeMessage, decodedSig);
             } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException("UTF-8 encoding not supported");
+                throw new RuntimeException(SecurityModuleConstants.defaultEncodingType + " encoding not supported");
             }
         }
     }
     
     /**
      * Method to sign a message
-     * @param String message, the message to sign
+     * @param message, the message to sign
      * @return String the signature for the message, or null if authentication is disabled. 
      * @throws MessageSigningException if signing of the message fails.   
      */
     public String signMessage(String message) throws MessageSigningException {
         if(collectionSettings.getProtocolSettings().isRequireMessageAuthentication()) {
             try {
-                byte[] signature = signer.signMessage(message.getBytes("UTF-8"));
+                byte[] signature = signer.signMessage(message.getBytes(SecurityModuleConstants.defaultEncodingType));
                 return new String(Base64.encode(signature));   
             } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException("UTF-8 encoding not supported");
+                throw new RuntimeException(SecurityModuleConstants.defaultEncodingType + " encoding not supported");
             }           
         } else { 
             return null;
@@ -114,9 +131,9 @@ public class SecurityManager {
     
     /**
      * Method to authorize an operation 
-     * @param String operationType, the type of operation that is to be authorized. 
-     * @param String messageData, the data of the message request. 
-     * @param String signature, the signature belonging to the message request. 
+     * @param operationType, the type of operation that is to be authorized. 
+     * @param messageData, the data of the message request. 
+     * @param signature, the signature belonging to the message request. 
      * @throws OperationAuthorizationException in case of failure. 
      */
     public void authorizeOperation(String operationType, String messageData, String signature) 
@@ -141,7 +158,7 @@ public class SecurityManager {
     private void initialize() {
         Security.addProvider(new BouncyCastleProvider());
         try {
-            keyStore = KeyStore.getInstance("BKS");
+            keyStore = KeyStore.getInstance(SecurityModuleConstants.keyStoreType);
             keyStore.load(null);
             loadPrivateKey(privateKeyFile);
             loadInfrastructureCertificates(collectionSettings.getPermissionSet());
@@ -154,7 +171,8 @@ public class SecurityManager {
     }
     
     /**
-     * Alias generator for the keystore entries. 
+     * Alias generator for the keystore entries.
+     * @return returns a String containing the alias for the next keystore entry 
      */
     private String getNewAlias() {
         return "" + aliasID++;
@@ -162,6 +180,7 @@ public class SecurityManager {
     
     /**
      * Attempts to load the pillars private key and certificate from a PEM formatted file. 
+     * @param privateKeyFile, path to the file containing the components private key and certificate, may be null
      * @throws IOException if the file cannot be found or read. 
      * @throws KeyStoreException if there is problems with adding the privateKeyEntry to keyStore
      * @throws CertificateExpiredException if the certificate has expired 
@@ -171,7 +190,7 @@ public class SecurityManager {
             CertificateExpiredException, CertificateNotYetValidException {
         PrivateKey privKey = null;
         X509Certificate privCert = null;
-        if(!(new File(privateKeyFile)).exists()) {
+        if(!(new File(privateKeyFile)).isFile()) {
             log.info("Key file with private key and certificate does not exist!");
             return;
         }
@@ -196,7 +215,8 @@ public class SecurityManager {
         } else {
             privCert.checkValidity();
             privateKeyEntry = new PrivateKeyEntry(privKey, new Certificate[] {privCert});
-            keyStore.setEntry("PrivateKey", privateKeyEntry, new KeyStore.PasswordProtection(defaultPassword.toCharArray()));
+            keyStore.setEntry(SecurityModuleConstants.privateKeyAlias, privateKeyEntry, 
+                    new KeyStore.PasswordProtection(defaultPassword.toCharArray()));
         }
     }
 
@@ -209,16 +229,31 @@ public class SecurityManager {
         ByteArrayInputStream bs;
         for(Permission permission : permissions.getPermission()) {
             if(permission.getInfrastructurePermission().contains(InfrastructurePermission.MESSAGE_BUS_SERVER)) {
-                bs = new ByteArrayInputStream(permission.getCertificate());
-                X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(bs);
-                keyStore.setEntry(getNewAlias(), new KeyStore.TrustedCertificateEntry(certificate), null);
+                try {
+                    bs = new ByteArrayInputStream(permission.getCertificate());
+                    X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
+                            SecurityModuleConstants.CertificateType).generateCertificate(bs);
+                    keyStore.setEntry(getNewAlias(), new KeyStore.TrustedCertificateEntry(certificate), 
+                            SecurityModuleConstants.nullProtectionParameter);
+                    
+                    bs.close();
+                } catch (IOException e) {
+                    
+                }
             }
             if(permission.getInfrastructurePermission().contains(InfrastructurePermission.FILE_EXCHANGE_SERVER)) {
-                bs = new ByteArrayInputStream(permission.getCertificate());
-                X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(bs);
-                keyStore.setEntry(getNewAlias(), new KeyStore.TrustedCertificateEntry(certificate), null);
+                try {
+                    bs = new ByteArrayInputStream(permission.getCertificate());
+                    X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
+                            SecurityModuleConstants.CertificateType).generateCertificate(bs);
+                    keyStore.setEntry(getNewAlias(), new KeyStore.TrustedCertificateEntry(certificate), 
+                            SecurityModuleConstants.nullProtectionParameter);
+                    bs.close();
+                } catch (IOException e) {
+                    log.debug("Failed closing ByteArrayInputStream", e);
+                }
             }
-        }
+        }      
     }
     
     /**
@@ -233,12 +268,12 @@ public class SecurityManager {
         TrustManagerFactory tmf;
         KeyManagerFactory kmf;
         SSLContext context;
-        tmf = TrustManagerFactory.getInstance("SunX509");
+        tmf = TrustManagerFactory.getInstance(SecurityModuleConstants.keyTrustStoreAlgorithm);
         tmf.init(keyStore);
-        kmf = KeyManagerFactory.getInstance("SunX509");
+        kmf = KeyManagerFactory.getInstance(SecurityModuleConstants.keyTrustStoreAlgorithm);
         kmf.init(keyStore, defaultPassword.toCharArray());
-        context = SSLContext.getInstance("TLS");
-        context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+        context = SSLContext.getInstance(SecurityModuleConstants.defaultSSLProtocol);
+        context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), SecurityModuleConstants.defaultRandom);
         SSLContext.setDefault(context);
     }
 }

@@ -15,6 +15,9 @@ import org.bouncycastle.util.encoders.Base64;
  */
 public class BasicMessageAuthenticator implements MessageAuthenticator {
 
+    /**
+     * Non-infrastructure certificates and permission store  
+     */
     private final PermissionStore permissionStore;
     
     /**
@@ -27,9 +30,9 @@ public class BasicMessageAuthenticator implements MessageAuthenticator {
     
     /**
      * Attempts to authenticate the message based on a signature. 
-     * @param byte[] messageData, the data that is to be authenticated
-     * @param byte[] signatureData, the signature that of the data to be authenticated.
-     * @throws MessageAuthenticationException in case authenticatetion fails.  
+     * @param messageData, the data that is to be authenticated
+     * @param signatureData, the signature that of the data to be authenticated.
+     * @throws MessageAuthenticationException in case authentication fails.  
      */
     @Override
     public void authenticateMessage(byte[] messageData, byte[] signatureData) throws MessageAuthenticationException {
@@ -40,7 +43,7 @@ public class BasicMessageAuthenticator implements MessageAuthenticator {
             SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
             signingCert = permissionStore.getCertificate(signer.getSID());
             
-            if(!signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider("BC").build(signingCert))) {
+            if(!signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityModuleConstants.BC).build(signingCert))) {
                 throw new MessageAuthenticationException("Signature does not match the message. Indicated certificate " +
                         "did not sign message. Certificate issuer: " + signingCert.getIssuerX500Principal().getName() +
                         ", serial: " + signingCert.getSerialNumber());  
@@ -50,7 +53,7 @@ public class BasicMessageAuthenticator implements MessageAuthenticator {
         } catch (CMSException e) {
             throw new RuntimeException(e);
         } catch (PermissionStoreException e) {
-            throw new MessageAuthenticationException(e.getMessage());
+            throw new MessageAuthenticationException(e.getMessage(), e);
         }
     }
 
