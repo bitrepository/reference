@@ -19,7 +19,7 @@ import org.testng.annotations.Test;
 
 public class SecurityManagerTest extends ExtendedTestCase  {
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private SecurityManager securityManager;
+    private BasicSecurityManager securityManager;
     private PermissionStore permissionStore;
     
     @BeforeMethod(alwaysRun = true)
@@ -30,7 +30,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         MessageSigner messageSigner = new BasicMessageSigner();
         Settings settings = TestSettingsProvider.reloadSettings();
         settings.getCollectionSettings().setPermissionSet(SecurityTestConstants.getDefaultPermissions());
-        securityManager = new SecurityManager(settings.getCollectionSettings(), 
+        securityManager = new BasicSecurityManager(settings.getCollectionSettings(), 
                         SecurityTestConstants.getKeyFile(), 
                         authenticator, 
                         messageSigner, 

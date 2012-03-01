@@ -48,8 +48,8 @@ import org.slf4j.LoggerFactory;
  * - Signature generation 
  * - Authorization of operations
  */
-public class SecurityManager {
-    private final Logger log = LoggerFactory.getLogger(SecurityManager.class);
+public class BasicSecurityManager {
+    private final Logger log = LoggerFactory.getLogger(BasicSecurityManager.class);
     /** Default password for the in-memory keystore */
     private final static String defaultPassword = "123456";
     /** path to file containing the components private key and certificate */
@@ -81,7 +81,7 @@ public class SecurityManager {
      * @param authorizer, OperationAuthorizer to authorize operations
      * @param permissionStore, the PermissionStore to hold certificates and adjoining permissions  
      */
-    public SecurityManager(CollectionSettings collectionSettings, String privateKeyFile, MessageAuthenticator authenticator,
+    public BasicSecurityManager(CollectionSettings collectionSettings, String privateKeyFile, MessageAuthenticator authenticator,
             MessageSigner signer, OperationAuthorizor authorizer, PermissionStore permissionStore) {
         this.privateKeyFile = privateKeyFile;
         this.collectionSettings = collectionSettings;
