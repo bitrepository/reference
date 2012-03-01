@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.bitrepository.settings.collectionsettings.InfrastructurePermission;
 import org.bitrepository.settings.collectionsettings.OperationPermission;
 import org.bitrepository.settings.collectionsettings.PermissionSet;
 import org.bitrepository.settings.collectionsettings.Permission;
@@ -64,6 +65,21 @@ public class PermissionStore {
                     } catch (IOException e) {
                         log.debug("Failed to close ByteArrayInputStream", e);
                     }
+                } else if(permission.getInfrastructurePermission().contains(InfrastructurePermission.MESSAGE_SIGNER)) {
+                    ByteArrayInputStream bs = new ByteArrayInputStream(permission.getCertificate());
+                    X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
+                            SecurityModuleConstants.CertificateType).generateCertificate(bs);
+                    CertificateID certID = new CertificateID(certificate.getIssuerX500Principal(), certificate.getSerialNumber());
+                    CertificatePermission certificatePermission = new CertificatePermission(certificate, 
+                            new HashSet<OperationPermission>());
+                    permissionMap.put(certID, certificatePermission);
+                    try {
+                        bs.close();
+                    } catch (IOException e) {
+                        log.debug("Failed to close ByteArrayInputStream", e);
+                    }
+                } else {
+                    // Noting to do here
                 }
             }
         } else {
