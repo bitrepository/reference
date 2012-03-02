@@ -222,7 +222,7 @@
   <properties>
     <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <bitrepository-version>0.9</bitrepository-version>
+    <bitrepository-version>0.10-SNAPSHOT</bitrepository-version>
     <slf4j.version>1.6.4</slf4j.version>
   </properties>
 

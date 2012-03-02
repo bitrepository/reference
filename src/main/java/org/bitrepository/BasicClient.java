@@ -16,6 +16,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.text.SimpleDateFormat;
 
+import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.GetFileClient;
@@ -46,12 +47,13 @@ public class BasicClient {
     private ReplaceFileClient replaceFileClient;
     private EventHandler eventHandler;
     private String logFile;
+    private SecurityManager securityManager;
     private Settings settings;
     private final Logger log = LoggerFactory.getLogger(getClass());
     private ArrayBlockingQueue<String> shortLog;
     private List<URL> completedFiles;
     
-    public BasicClient(Settings settings, String logFile) {
+    public BasicClient(Settings settings, SecurityManager securityManager, String logFile) {
         log.debug("---- Basic client instanciating ----");
         this.logFile = logFile;
         changeLogFiles();
@@ -59,12 +61,13 @@ public class BasicClient {
         eventHandler = new BasicEventHandler(logFile, shortLog);
         completedFiles = new CopyOnWriteArrayList<URL>();
         this.settings = settings;
-        putClient = ModifyComponentFactory.getInstance().retrievePutClient(settings);
-        getClient = AccessComponentFactory.getInstance().createGetFileClient(settings);
-        getChecksumClient = AccessComponentFactory.getInstance().createGetChecksumsClient(settings);
-        getFileIDsClient = AccessComponentFactory.getInstance().createGetFileIDsClient(settings);
-        deleteFileClient = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings);
-        replaceFileClient = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings);
+        this.securityManager = securityManager;
+        putClient = ModifyComponentFactory.getInstance().retrievePutClient(settings, this.securityManager);
+        getClient = AccessComponentFactory.getInstance().createGetFileClient(settings, this.securityManager);
+        getChecksumClient = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, this.securityManager);
+        getFileIDsClient = AccessComponentFactory.getInstance().createGetFileIDsClient(settings, this.securityManager);
+        deleteFileClient = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, this.securityManager);
+        replaceFileClient = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings, this.securityManager);
         log.debug("---- Basic client instanciated ----");
 
     }
