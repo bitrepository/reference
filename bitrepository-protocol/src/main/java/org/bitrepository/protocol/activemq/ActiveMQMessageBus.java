@@ -77,6 +77,7 @@ import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.MessageAuthenticationException;
+import org.bitrepository.protocol.security.OperationAuthorizationException;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.slf4j.Logger;
@@ -409,10 +410,11 @@ public class ActiveMQMessageBus implements MessageBus {
                 type = jmsMessage.getStringProperty(MESSAGE_TYPE_KEY);
                 signature = jmsMessage.getStringProperty(MESSAGE_SIGNATURE_KEY);
                 text = ((TextMessage) jmsMessage).getText();
-                securityManager.authenticateMessage(text, signature);
                 jaxbHelper.validate(new ByteArrayInputStream(text.getBytes()));
                 content = jaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
                                              new ByteArrayInputStream(text.getBytes()));
+                securityManager.authenticateMessage(text, signature);
+                securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature);
                 log.debug("Received message: " + text);
                 if(content.getClass().equals(AlarmMessage.class)){
                 	listener.onMessage((AlarmMessage) content);
@@ -572,6 +574,8 @@ public class ActiveMQMessageBus implements MessageBus {
             } catch (SAXException e) {
                 log.error("Error validating message " + jmsMessage, e);
             } catch (MessageAuthenticationException e) {
+                log.error(e.getMessage(), e);
+            } catch (OperationAuthorizationException e) {
                 log.error(e.getMessage(), e);
             } catch (Exception e) {
                 log.error("Error handling message. Received type was '" + type + "'.\n{}", text, e);

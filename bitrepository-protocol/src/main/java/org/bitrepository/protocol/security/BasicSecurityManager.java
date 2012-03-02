@@ -148,7 +148,13 @@ public class BasicSecurityManager implements SecurityManager {
             }
     
             SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
-            authorizer.authorizeOperation(operationType, signer.getSID());
+            try {
+                authorizer.authorizeOperation(operationType, signer.getSID());    
+            } catch (UnregisteredPermissionException e) {
+                log.info(e.getMessage(), e);
+            }
+            
+            
         }
     }
     
