@@ -37,6 +37,8 @@ import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.security.DummySecurityManager;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -109,15 +111,17 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
         MessageBusConfiguration conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+        /** The mocked SecurityManager */
+        SecurityManager securityManager = new DummySecurityManager();
         LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
 
         try {
             addStep("Start the broker and initialise the listeners.", 
             "Connections should be established.");
             broker.start();
-            bus = new ActiveMQMessageBus(conf);
+            bus = new ActiveMQMessageBus(conf, securityManager);
 
-            testListeners(conf);
+            testListeners(conf, securityManager);
         } finally {
             if(broker != null) {
                 broker.stop();
@@ -142,22 +146,24 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
         MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
+        /** The mocked SecurityManager */
+        SecurityManager securityManager = new DummySecurityManager();
 
         addStep("Start the broker and initialise the listeners.", 
         "Connections should be established.");
-        bus = new ActiveMQMessageBus(conf);
+        bus = new ActiveMQMessageBus(conf, securityManager);
 
-        testListeners(conf);
+        testListeners(conf, securityManager);
     }
 
 
-    public void testListeners(MessageBusConfiguration conf) throws Exception {
+    public void testListeners(MessageBusConfiguration conf, SecurityManager securityManager) throws Exception {
         List<NotificationMessageListener> listeners = new ArrayList<NotificationMessageListener>(NUMBER_OF_LISTENERS);
 
         try {
             addStep("Initialise the message listeners.", "Should be created and connected to the message bus.");
             for(int i = 0; i < NUMBER_OF_LISTENERS; i++) {
-                listeners.add(new NotificationMessageListener(conf));
+                listeners.add(new NotificationMessageListener(conf, securityManager));
             }
 
             addStep("Wait for setup", "We wait!");
@@ -277,8 +283,8 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
          * Constructor.
          * @param confs The configurations for declaring the message bus.
          */
-        public NotificationMessageListener(MessageBusConfiguration conf) {
-            this.bus = new ActiveMQMessageBus(conf);
+        public NotificationMessageListener(MessageBusConfiguration conf, SecurityManager securityManager) {
+            this.bus = new ActiveMQMessageBus(conf, securityManager);
             this.count = 0;
 
             bus.addListener(QUEUE, this);

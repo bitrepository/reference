@@ -38,9 +38,11 @@ public class AlarmStoreFactory {
     private static AlarmStore alarmStore;
     /** Member to hold the directory path of where the configuration files are located. */
     private static String confDir; 
-    /** Member to hold the name of the file which persists alarms, once read from propperties */
+    /** Member to hold the name of the file which persists alarms, once read from properties */
     private static String alarmStoreFile;
-    /** The propperties file holding implementation specifics for the alarm service. */
+    /** Member to hold the name of the file which persists alarms, once read from properties */
+    private static String privateKeyFile;
+    /** The properties file holding implementation specifics for the alarm service. */
     private static final String CONFIGFILE = "alarmservice.properties"; 
     /** Property key for keystore file path setting */
     private static final String KEYSTOREFILE = "org.bitrepository.webclient.keystorefile";
@@ -88,7 +90,7 @@ public class AlarmStoreFactory {
             Settings settings = settingsLoader.getSettings(DEFAULT_COLLECTION_ID);	 
             try {
             	loadProperties();
-                alarmStore = new AlarmStore(settings, alarmStoreFile);
+                alarmStore = new AlarmStore(settings, alarmStoreFile, privateKeyFile);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

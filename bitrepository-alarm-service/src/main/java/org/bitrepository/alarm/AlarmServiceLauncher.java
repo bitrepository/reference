@@ -47,7 +47,7 @@ public class AlarmServiceLauncher {
      * @param args 
      */
     public static void main(String[] args) {
-        String collectionId;
+  /*      String collectionId;
         String pathToSettings;
         if(args.length >= 2) {
             collectionId = args[0];
@@ -70,6 +70,6 @@ public class AlarmServiceLauncher {
             System.out.println("Use with two arguments: AlarmServiceLauncher 'pathToSettings' "
                     + "'bitrepository collection id'");
             System.exit(0);
-        }
+        }*/
     }
 }

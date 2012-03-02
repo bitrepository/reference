@@ -33,6 +33,8 @@ import org.bitrepository.protocol.bus.MessageBusWrapper;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
 import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.bitrepository.protocol.http.EmbeddedHttpServer;
+import org.bitrepository.protocol.security.DummySecurityManager;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.jaccept.TestEventManager;
 import org.jaccept.gui.ComponentTestFrame;
@@ -65,10 +67,12 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected MessageReceiver alarmDestination; 
 
     protected Settings settings;
+    public SecurityManager securityManager;
 
     @BeforeClass (alwaysRun = true)
     public void setupTest() throws Exception {
         setupSettings();
+        securityManager = new DummySecurityManager();
         setupMessageBus();
         setupHttpServer();
     }
@@ -137,7 +141,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
             broker.start(); 
         }
         messageBus = new MessageBusWrapper(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings), testEventManager);
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), testEventManager);
     }
 
     /**

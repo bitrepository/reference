@@ -73,6 +73,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.conversation.Conversation;
 import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,10 +100,10 @@ public class CollectionBasedConversationMediator implements ConversationMediator
      * @param messagebus The message bus to mediate messages on.
      * @param listenerDestination The destinations to mediate messages for.
      */
-    public CollectionBasedConversationMediator(Settings settings) {
+    public CollectionBasedConversationMediator(Settings settings, SecurityManager securityManager) {
         log.debug("Initializing the CollectionBasedConversationMediator");
         this.conversations = Collections.synchronizedMap(new HashMap<String, Conversation>());
-        MessageBusManager.getMessageBus(settings).
+        MessageBusManager.getMessageBus(settings, securityManager).
             addListener(settings.getReferenceSettings().getClientSettings().getReceiverDestination(), this);
         this.settings = settings;
         cleanTimer = new Timer(true);

@@ -40,6 +40,7 @@ import org.bitrepository.integrityclient.scheduler.triggers.CollectAllChecksumsF
 import org.bitrepository.integrityclient.scheduler.triggers.CollectAllFileIDsFromPillarTrigger;
 import org.bitrepository.integrityclient.scheduler.triggers.CollectObsoleteChecksumsTrigger;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.security.SecurityManager;
 
 /**
  * Simple integrity service.
@@ -67,17 +68,17 @@ public class SimpleIntegrityService {
      * Constructor.
      * @param settings The settings for the service.
      */
-    public SimpleIntegrityService(Settings settings) {
+    public SimpleIntegrityService(Settings settings, SecurityManager securityManager) {
         this.settings = settings;
         this.cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage();
         this.scheduler = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settings);
         this.checker = IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache);
         this.collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
                 cache, checker, 
-                AccessComponentFactory.getInstance().createGetFileIDsClient(settings),
-                AccessComponentFactory.getInstance().createGetChecksumsClient(settings),
+                AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager),
+                AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager),
                 settings,
-                ProtocolComponentFactory.getInstance().getMessageBus(settings));
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager));
     }
     
     /**

@@ -68,7 +68,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Testing the initialization through the ModifyComponentFactory.");
         addStep("Use the ModifyComponentFactory to instantiate a PutFileClient.", 
                 "It should be an instance of SimplePutFileClient");
-        DeleteFileClient dfc = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings);
+        DeleteFileClient dfc = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, securityManager);
         Assert.assertTrue(dfc instanceof ConversationBasedDeleteFileClient, "The DeleteFileClient '" + dfc 
                 + "' should be instance of '" + ConversationBasedDeleteFileClient.class.getName() + "'");
     }
@@ -374,8 +374,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
      * @return A new DeleteFileClient(Wrapper).
      */
     private DeleteFileClient createDeleteFileClient() {
-        MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration());
-        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings);
+        MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
+        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
         return new DeleteClientTestWrapper(new ConversationBasedDeleteFileClient(
                 messageBus, conversationMediator, settings)
         , testEventManager);

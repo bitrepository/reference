@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.security.SecurityManager;
 
 /** 
  * Get your <code>ConversationMediator</code> here.
@@ -47,10 +48,10 @@ public class ConversationMediatorManager {
      * @param collectionID The collectionID to find settings for.
      * @return The settings for the indicated CollectionID
      */
-    public static synchronized ConversationMediator getConversationMediator(Settings settings) {
+    public static synchronized ConversationMediator getConversationMediator(Settings settings, SecurityManager securityManager) {
         String collectionID = settings.getCollectionID();
         if (!mediatorMap.containsKey(collectionID)) {
-            ConversationMediator mediator = new CollectionBasedConversationMediator(settings);
+            ConversationMediator mediator = new CollectionBasedConversationMediator(settings, securityManager);
             mediatorMap.put(collectionID, mediator);
         }
         return mediatorMap.get(collectionID);

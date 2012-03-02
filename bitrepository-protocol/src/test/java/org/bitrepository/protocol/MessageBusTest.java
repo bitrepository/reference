@@ -54,7 +54,7 @@ public class MessageBusTest extends IntegrationTest {
         addStep("Get a connection to the message bus from the "
                 + "<i>MessageBusConnection</i> connection class",
         "No exceptions should be thrown");
-        Assert.assertNotNull(ProtocolComponentFactory.getInstance().getMessageBus(settings));
+        Assert.assertNotNull(ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager));
     }
 
     @Test(groups = { "regressiontest" })
@@ -99,7 +99,7 @@ public class MessageBusTest extends IntegrationTest {
             ExampleMessageFactory.createMessage(AlarmMessage.class);
 
         addStep("Make a connection to the message bus and add two listeners", "No exceptions should be thrown");
-        MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settings);
+        MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
         Assert.assertNotNull(con);
 
         MessageReceiver receiver1 = new MessageReceiver("receiver1", testEventManager);
@@ -141,11 +141,11 @@ public class MessageBusTest extends IntegrationTest {
 
             addStep("Initiating the connection to the messagebus based on the first configuration", 
             "This should definitly be allowed.");
-            MessageBus bus1 = new ActiveMQMessageBus(config);
+            MessageBus bus1 = new ActiveMQMessageBus(config, securityManager);
 
             addStep("Initiating the connection to the messagebus based on the second configuration", 
             "It should be possible to have several message busses at the same time.");
-            MessageBus bus2 = new ActiveMQMessageBus(embeddedMBConfig);
+            MessageBus bus2 = new ActiveMQMessageBus(embeddedMBConfig, securityManager);
 
             addStep("Creating a test message to send.", "The interface is tested elsewhere and should work.");
             AlarmMessage message1 = ExampleMessageFactory.createMessage(AlarmMessage.class);
@@ -270,7 +270,7 @@ public class MessageBusTest extends IntegrationTest {
             addStep("Connecting to the bus, and then connect to the local bus.", 
                     "Info-level logs should be seen here for both connections. "
                     + "Only the last is used.");
-            MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settings);
+            MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
 
             addStep("Make a listener for the messagebus and make it listen. "
                     + "Then send a message for the message listener to catch.",

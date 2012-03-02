@@ -31,6 +31,15 @@ import java.util.Properties;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.protocol.security.BasicMessageAuthenticator;
+import org.bitrepository.protocol.security.BasicMessageSigner;
+import org.bitrepository.protocol.security.BasicOperationAuthorizor;
+import org.bitrepository.protocol.security.BasicSecurityManager;
+import org.bitrepository.protocol.security.MessageAuthenticator;
+import org.bitrepository.protocol.security.MessageSigner;
+import org.bitrepository.protocol.security.OperationAuthorizor;
+import org.bitrepository.protocol.security.PermissionStore;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +49,17 @@ public class IntegrityServiceFactory {
     private Logger log = LoggerFactory.getLogger(IntegrityServiceFactory.class);
     private static String confDir;
     private static IntegrityService integrityService;
+    private static String privateKeyFile;
+    private static MessageAuthenticator authenticator;
+    private static MessageSigner signer;
+    private static OperationAuthorizor authorizer;
+    private static PermissionStore permissionStore;
+    private static SecurityManager securityManager;
     
     /** Default collection settings identifier (used to build the path the collection and referencesettings */
     private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
     /** The properties file holding implementation specifics for the alarm service. */
-    private static final String CONFIGFILE = "integrity.properties"; 
+    private static final String CONFIGFILE = "integrity.properties";
     /** Property key for keystore file path setting */
     private static final String KEYSTOREFILE = "org.bitrepository.webclient.keystorefile";
     /** Property key for keystore file password setting */
@@ -95,7 +110,13 @@ public class IntegrityServiceFactory {
             long timeSinceLastFileIDsUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
             try {
                 loadProperties();
-                SimpleIntegrityService simpleIntegrityService = new SimpleIntegrityService(settings);
+                permissionStore = new PermissionStore();
+                authenticator = new BasicMessageAuthenticator(permissionStore);
+                signer = new BasicMessageSigner();
+                authorizer = new BasicOperationAuthorizor(permissionStore);
+                securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
+                        authenticator, signer, authorizer, permissionStore);
+                SimpleIntegrityService simpleIntegrityService = new SimpleIntegrityService(settings, securityManager);
                 integrityService = new IntegrityService(simpleIntegrityService, settings);
                 simpleIntegrityService.startChecksumIntegrityCheck(timeSinceLastChecksumUpdate, 
                         settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval());

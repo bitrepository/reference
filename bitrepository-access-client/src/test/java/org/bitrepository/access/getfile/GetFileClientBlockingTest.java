@@ -45,7 +45,7 @@ public class GetFileClientBlockingTest extends AbstractGetFileClientTest  {
         
         settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(defaultTime);
         GetFileClient getFileClient = 
-            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(settings), 
+            new GetFileClientTestWrapper(AccessComponentFactory.getInstance().createGetFileClient(settings, securityManager), 
                     testEventManager);
         try {
             getFileClient.getFileFromSpecificPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), "Invalid pillar");

@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * - Signature generation 
  * - Authorization of operations
  */
-public class BasicSecurityManager {
+public class BasicSecurityManager implements SecurityManager {
     private final Logger log = LoggerFactory.getLogger(BasicSecurityManager.class);
     /** Default password for the in-memory keystore */
     private final static String defaultPassword = "123456";

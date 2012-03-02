@@ -28,6 +28,15 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.bitrepository.protocol.security.BasicMessageAuthenticator;
+import org.bitrepository.protocol.security.BasicMessageSigner;
+import org.bitrepository.protocol.security.BasicOperationAuthorizor;
+import org.bitrepository.protocol.security.BasicSecurityManager;
+import org.bitrepository.protocol.security.MessageAuthenticator;
+import org.bitrepository.protocol.security.MessageSigner;
+import org.bitrepository.protocol.security.OperationAuthorizor;
+import org.bitrepository.protocol.security.PermissionStore;
+import org.bitrepository.protocol.security.SecurityManager;
 
 /**
  * Method for launching the ReferencePillar. 
@@ -38,6 +47,12 @@ public final class ReferencePillarLauncher {
     private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
     /** The default path for the settings in the development.*/
     private static final String DEFAULT_PATH_TO_SETTINGS = "settings/xml";
+    /**  Objects for the Security module. */
+    private static MessageAuthenticator authenticator;
+    private static MessageSigner signer;
+    private static OperationAuthorizor authorizer;
+    private static PermissionStore permissionStore;
+    private static SecurityManager securityManager;
 
     /**
      * Private constructor. To prevent instantiation of this utility class.
@@ -53,6 +68,7 @@ public final class ReferencePillarLauncher {
     public static void main(String[] args) {
         String collectionId;
         String pathToSettings;
+        String privateKeyFile = "foobar";
         if(args.length >= 2) {
             collectionId = args[0];
             pathToSettings = args[1];
@@ -68,7 +84,14 @@ public final class ReferencePillarLauncher {
                 new XMLFileSettingsLoader(pathToSettings));
         try {
             Settings settings = settingsLoader.getSettings(collectionId);
-            ReferencePillarComponentFactory.getInstance().getPillar(MessageBusManager.getMessageBus(settings), 
+            permissionStore = new PermissionStore();
+            authenticator = new BasicMessageAuthenticator(permissionStore);
+            signer = new BasicMessageSigner();
+            authorizer = new BasicOperationAuthorizor(permissionStore);
+            securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
+                    authenticator, signer, authorizer, permissionStore);
+            
+            ReferencePillarComponentFactory.getInstance().getPillar(MessageBusManager.getMessageBus(settings, securityManager), 
                     settings);
         } catch (Exception e) {
             e.printStackTrace();

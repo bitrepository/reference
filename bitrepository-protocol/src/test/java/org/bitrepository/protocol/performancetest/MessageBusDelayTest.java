@@ -16,6 +16,8 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.bitrepository.protocol.security.DummySecurityManager;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.BeforeClass;
@@ -24,6 +26,8 @@ import org.testng.annotations.Test;
 public class MessageBusDelayTest extends ExtendedTestCase {
     private final String destination = "DelayPerformanceTestDestination";
     private Settings settings;
+    /** The mocked SecurityManager */
+    private SecurityManager securityManager;
     
     protected TestEventManager testEventManager = TestEventManager.getInstance();
     
@@ -35,6 +39,7 @@ public class MessageBusDelayTest extends ExtendedTestCase {
     @BeforeClass (alwaysRun = true)
     public void setup() {
         settings = TestSettingsProvider.reloadSettings();
+        securityManager = new DummySecurityManager();
     }
     
     
@@ -49,7 +54,7 @@ public class MessageBusDelayTest extends ExtendedTestCase {
         addDescription("This test has the purpose of sending a lot of messages and calculating some statistics "
                 + "on the delay between the sending and the receival of the message.");
         addStep("Setup the variables and connections for the test.", "Should connect to the messagebus.");
-        MessageBus messageBus = MessageBusManager.getMessageBus(settings);
+        MessageBus messageBus = MessageBusManager.getMessageBus(settings, securityManager);
         MessageReceiver destinationReceiver;
         destinationReceiver = new MessageReceiver("Performance test topic receiver", null); //testEventManager);
         messageBus.addListener(destination, destinationReceiver.getMessageListener());

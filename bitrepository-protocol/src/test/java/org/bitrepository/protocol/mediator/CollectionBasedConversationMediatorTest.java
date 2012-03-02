@@ -32,6 +32,6 @@ public class CollectionBasedConversationMediatorTest extends ConversationMediato
 
     @Override
     ConversationMediator createMediator(Settings settings) {
-        return new CollectionBasedConversationMediator(settings);
+        return new CollectionBasedConversationMediator(settings, securityManager);
     }
 }

@@ -81,7 +81,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
 
     @Test(groups = {"regressiontest"})
     public void verifyGetFileIDsClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileIDsClient(settings) 
+        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager) 
                 instanceof ConversationBasedGetFileIDsClient, 
                 "The default GetFileClient from the Access factory should be of the type '" + 
                         ConversationBasedGetFileIDsClient.class.getName() + "'.");
@@ -473,8 +473,8 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
      * @return A new GetFileIDsClient(Wrapper).
      */
     private GetFileIDsClient createGetFileIDsClient() {
-        MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration());
-        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings);
+        MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
+        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
         return new GetFileIDsClientTestWrapper(new ConversationBasedGetFileIDsClient(
                 messageBus, conversationMediator, settings), testEventManager);
     }
