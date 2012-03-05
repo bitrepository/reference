@@ -38,7 +38,6 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.settings.referencesettings.MailingConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +64,7 @@ public class AlarmStore {
         securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
                 authenticator, signer, authorizer, permissionStore);
 		alarmService = AlarmComponentFactory.getInstance().getAlarmService(settings, securityManager);
-		collector = new AlarmCollector(alarmStoreFile, shortAlarmList);
+		collector = new AlarmCollector(this.alarmStoreFile, shortAlarmList);
 		alarmService.addHandler(collector, settings.getAlarmDestination()); 
 		if(settings.getReferenceSettings().getAlarmServiceSettings().getMailingConfiguration() != null) {
 			mailer = new AlarmMailer(settings.getReferenceSettings().getAlarmServiceSettings());
