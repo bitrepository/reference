@@ -43,7 +43,7 @@ public class AlarmStoreFactory {
     /** Member to hold the name of the file which holds the components private key and certificate */
     private static String privateKeyFile;
     /** Property key to tell where to locate the path and filename to the private key file. */
-    private static final String PRIVATE_KEY_FILE = "org.bitrepository.webclient.privateKeyFile";
+    private static final String PRIVATE_KEY_FILE = "org.bitrepository.alarm-service.privateKeyFile";
     /** The properties file holding implementation specifics for the alarm service. */
     private static final String CONFIGFILE = "alarmservice.properties"; 
     /** Property key for the property holding the path the file persisting alarms */

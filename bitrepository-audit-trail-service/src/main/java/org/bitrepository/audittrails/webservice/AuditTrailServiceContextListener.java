@@ -29,7 +29,7 @@ import javax.servlet.ServletContextListener;
 
 import org.bitrepository.audittrails.service.AuditTrailService;
 import org.bitrepository.audittrails.service.AuditTrailServiceFactory;
-import org.bitrepository.common.ConfigurationFactory;
+import org.bitrepository.audittrails.utils.LogbackConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,18 +48,18 @@ public class AuditTrailServiceContextListener implements ServletContextListener 
      */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        //String confDir = sce.getServletContext().getInitParameter("integrityServiceConfDir");
-        //if(confDir == null) {
-        //    throw new RuntimeException("No configuration directory specified!");
-        //}
-        //log.debug("Configuration dir = " + confDir);
+        String confDir = sce.getServletContext().getInitParameter("auditTrailServiceConfDir");
+        if(confDir == null) {
+            throw new RuntimeException("No configuration directory specified!");
+        }
+        log.debug("Configuration dir = " + confDir);
         //System.setProperty(ConfigurationFactory.CONFIGURATION_DIR_SYSTEM_PROPERTY, confDir);
-        //try {
-        //new LogbackConfigLoader(confDir + "/logback.xml");
-        //	} catch (Exception e) {
-        //	log.info("Failed to read log configuration file. Falling back to default.");
-        //	} 
-        //AuditTrailServiceFactory.init(confDir);
+        try {
+            new LogbackConfigLoader(confDir + "/logback.xml");
+        } catch (Exception e) {
+        	log.info("Failed to read log configuration file. Falling back to default.");
+        } 
+        AuditTrailServiceFactory.init(confDir);
         AuditTrailService service = AuditTrailServiceFactory.getAuditTrailService();
         log.debug("Servlet context initialized");
     }
