@@ -60,22 +60,8 @@ public class IntegrityServiceFactory {
     private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
     /** The properties file holding implementation specifics for the alarm service. */
     private static final String CONFIGFILE = "integrity.properties";
-    /** Property key for keystore file path setting */
-    private static final String KEYSTOREFILE = "org.bitrepository.webclient.keystorefile";
-    /** Property key for keystore file password setting */
-    private static final String KEYSTOREPASSWD = "org.bitrepository.webclient.keystorepassword";
-    /** Property key for truststore file path setting */
-    private static final String TRUSTSTOREFILE = "org.bitrepository.webclient.truststorefile";
-    /** Property key for truststore file password setting */
-    private static final String TRUSTSTOREPASSWD = "org.bitrepository.webclient.truststorepassword";
-    /** Java environment property for setting keystore file */
-    private static final String JAVA_KEYSTORE_PROP = "javax.net.ssl.keyStore";
-    /** Java environment property for setting keystore password */
-    private static final String JAVA_KEYSTOREPASS_PROP = "javax.net.ssl.keyStorePassword";
-    /** Java environment property for setting truststore file */
-    private static final String JAVA_TRUSTSTORE_PROP = "javax.net.ssl.trustStore";
-    /** Java environment property for setting truststore password */
-    private static final String JAVA_TRUSTSTOREPASS_PROP = "javax.net.ssl.trustStorePassword";
+    /** Property key to tell where to locate the path and filename to the private key file. */
+    private static final String PRIVATE_KEY_FILE = "org.bitrepository.integrity-service.privateKeyFile";
     /** The time of one week.*/
     private static final long DEFAULT_MAX_TIME_SINCE_UPDATE = 604800000;
     
@@ -85,7 +71,6 @@ public class IntegrityServiceFactory {
     private IntegrityServiceFactory() {
         //Empty constructor 
     }
-    
     
     /**
      * Set the configuration directory. 
@@ -136,10 +121,6 @@ public class IntegrityServiceFactory {
         String propertiesFile = confDir + "/" + CONFIGFILE;
         BufferedReader propertiesReader = new BufferedReader(new FileReader(propertiesFile));
         properties.load(propertiesReader);
-        
-        System.setProperty(JAVA_KEYSTORE_PROP, properties.getProperty(KEYSTOREFILE));
-        System.setProperty(JAVA_KEYSTOREPASS_PROP, properties.getProperty(KEYSTOREPASSWD));
-        System.setProperty(JAVA_TRUSTSTORE_PROP, properties.getProperty(TRUSTSTOREFILE));
-        System.setProperty(JAVA_TRUSTSTOREPASS_PROP, properties.getProperty(TRUSTSTOREPASSWD));
+        privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
     }
 }
