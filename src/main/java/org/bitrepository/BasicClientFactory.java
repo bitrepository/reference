@@ -28,10 +28,6 @@ public class BasicClientFactory {
     private static String logFile;
     private static String privateKeyFile;
     private static final String CONFIGFILE = "webclient.properties"; 
-   /* private static final String KEYSTOREFILE = "org.bitrepository.webclient.keystorefile";
-    private static final String KEYSTOREPASSWD = "org.bitrepository.webclient.keystorepassword";
-    private static final String TRUSTSTOREFILE = "org.bitrepository.webclient.truststorefile";
-    private static final String TRUSTSTOREPASSWD = "org.bitrepository.webclient.truststorepassword";*/
     private static final String LOGFILE = "org.bitrepository.webclient.logfile";
     private static final String PRIVATE_KEY_FILE = "org.bitrepository.webclient.privateKeyFile";
     
@@ -67,37 +63,28 @@ public class BasicClientFactory {
             try {
                 client = new BasicClient(settings, securityManager, logFile);
             } catch (Exception e) {
-            	//won't handle..
+                log.error(e.getMessage(), e);
                 throw new RuntimeException(e);
             }
         }
         return client;
          
     } 
-    
+    /**
+     * Load properties from configuration file 
+     */
     private static void loadProperties() {
     	Properties properties = new Properties();
     	try {
     		String propertiesFile = confDir + "/" + CONFIGFILE;
-    		BufferedReader reader
-    		   = new BufferedReader(new FileReader(propertiesFile));
+    		BufferedReader reader = new BufferedReader(new FileReader(propertiesFile));
     		properties.load(reader);
-    		
-            /*System.setProperty("javax.net.ssl.keyStore", 
-            		properties.getProperty(KEYSTOREFILE));
-            System.setProperty("javax.net.ssl.keyStorePassword", 
-            		properties.getProperty(KEYSTOREPASSWD));
-            System.setProperty("javax.net.ssl.trustStore", 
-            		properties.getProperty(TRUSTSTOREFILE));
-            System.setProperty("javax.net.ssl.trustStorePassword", 
-            		properties.getProperty(TRUSTSTOREPASSWD));*/
+ 
             logFile = properties.getProperty(LOGFILE);
             privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new RuntimeException(e);
-            //will just fail setting keystore stuff and we won't be able to connect over ssl
-        	// not a big deal..
         }
     }
     
