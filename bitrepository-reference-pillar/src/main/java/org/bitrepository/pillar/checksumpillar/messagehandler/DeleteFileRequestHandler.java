@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.messagehandler;
+package org.bitrepository.pillar.checksumpillar.messagehandler;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -34,17 +34,16 @@ import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.pillar.ReferenceArchive;
+import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for handling the DeleteFile operation.
+ * Class for handling the DeleteFile operation for the checksum pillar.
  */
-public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileRequest> {
+public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<DeleteFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
@@ -56,8 +55,8 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
      * @param referenceArchive The archive for the data.
      */
     protected DeleteFileRequestHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher,
-            ReferenceArchive referenceArchive) {
-        super(settings, messageBus, alarmDispatcher, referenceArchive);
+            ChecksumCache refCache) {
+        super(settings, messageBus, alarmDispatcher, refCache);
     }
 
     @Override
@@ -93,9 +92,27 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         // Validate the message.
         validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
+        
+        // validate the checksum types
+        try {
+            validateChecksumSpec(message.getChecksumRequestForExistingFile());
+        } catch (IllegalArgumentException e) {
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
+            ri.setResponseText(e.getMessage());
+            throw new InvalidMessageException(ri, e);
+        }
+        try {
+            validateChecksumSpec(message.getChecksumDataForExistingFile().getChecksumSpec());
+        } catch (IllegalArgumentException e) {
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
+            ri.setResponseText(e.getMessage());
+            throw new InvalidMessageException(ri, e);
+        }
 
         // Validate, that we have the requested file.
-        if(!archive.hasFile(message.getFileID())) {
+        if(!cache.hasFile(message.getFileID())) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             responseInfo.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
@@ -106,6 +123,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         // calculate and validate the checksum of the file.
         ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
         ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
+        // TODO this should only be validated, if it is required by the CollectionSettings.
         if(checksumType == null) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);
@@ -113,8 +131,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
             throw new InvalidMessageException(responseInfo);
         }
         
-        String checksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), 
-                checksumType.getChecksumType().value(), checksumType.getChecksumSalt());
+        String checksum = cache.getChecksum(message.getFileID());
         if(!checksum.equals(new String(checksumData.getChecksumValue()))) {
             // Log the different checksums, but do not send the right checksum back!
             log.info("Failed to handle delete operation on file '" + message.getFileID() + "' since the request had "
@@ -142,7 +159,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         // set missing variables in the message: ResponseInfo
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-        prInfo.setResponseText("Starting to delete the file.");
+        prInfo.setResponseText("Starting to delete the file entry.");
         pResponse.setResponseInfo(prInfo);
 
         // Send the ProgressResponse
@@ -163,8 +180,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
             log.warn("No checksum requested for the file about to be deleted.");
             return null;
         }
-        String checksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), 
-                checksumType.getChecksumType().value(), checksumType.getChecksumSalt());
+        String checksum = cache.getChecksum(message.getFileID());
         
         res.setChecksumSpec(checksumType);
         res.setCalculationTimestamp(CalendarUtils.getNow());
@@ -179,11 +195,11 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
      */
     protected void deleteTheFile(DeleteFileRequest message) {
         try {
-            archive.deleteFile(message.getFileID());
+            cache.deleteEntry(message.getFileID());
         } catch (Exception e) {
             ResponseInfo ir = new ResponseInfo();
             ir.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            ir.setResponseText("Could not delete the file from the archive: " + e.getMessage());
+            ir.setResponseText("Could not delete the file from the checksum cache: " + e.getMessage());
             throw new InvalidMessageException(ir, e);
         }
     }

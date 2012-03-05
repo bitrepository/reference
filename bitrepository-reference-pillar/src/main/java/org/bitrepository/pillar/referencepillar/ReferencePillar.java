@@ -22,13 +22,13 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar;
+package org.bitrepository.pillar.referencepillar;
 
 import javax.jms.JMSException;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.messagehandler.PillarMediator;
+import org.bitrepository.pillar.referencepillar.messagehandler.PillarMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

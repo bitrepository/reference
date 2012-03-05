@@ -22,11 +22,12 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar;
+package org.bitrepository.pillar.referencepillar;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.pillar.PillarComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
@@ -68,7 +69,7 @@ public final class ReferencePillarLauncher {
                 new XMLFileSettingsLoader(pathToSettings));
         try {
             Settings settings = settingsLoader.getSettings(collectionId);
-            ReferencePillarComponentFactory.getInstance().getPillar(MessageBusManager.getMessageBus(settings), 
+            PillarComponentFactory.getInstance().getReferencePillar(MessageBusManager.getMessageBus(settings), 
                     settings);
         } catch (Exception e) {
             e.printStackTrace();

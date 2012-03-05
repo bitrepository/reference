@@ -40,8 +40,8 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.ReferencePillar;
-import org.bitrepository.pillar.ReferencePillarComponentFactory;
+import org.bitrepository.pillar.PillarComponentFactory;
+import org.bitrepository.pillar.referencepillar.ReferencePillar;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -63,7 +63,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         }
         
         if(pillar == null) {
-            pillar = ReferencePillarComponentFactory.getInstance().getPillar(messageBus, settings);
+            pillar = PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
         } else {
             FileUtils.retrieveDirectory(dir.getAbsolutePath());
             FileUtils.retrieveSubDirectory(dir, "fileDir");

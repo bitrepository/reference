@@ -32,11 +32,11 @@
  * The {@link org.bitrepository.pillar.PillarMessageListener} provides the basic interface for receiving the different
  * message handled by the reference pillar.
  * <p/>
- * The {@link org.bitrepository.pillar.ReferenceArchive} handles the deposit of the files. When retrieving a file, it 
+ * The {@link org.bitrepository.pillar.referencepillar.ReferenceArchive} handles the deposit of the files. When retrieving a file, it 
  * is downloaded to the 'tmp' directory, and when the files is completed, then it is moved to a directory for the given
  * SLA.
  * <p/>
- * The actual implementation of the reference pillar is in the {@link org.bitrepository.pillar.ReferencePillar} class.
+ * The actual implementation of the reference pillar is in the {@link org.bitrepository.pillar.referencepillar.ReferencePillar} class.
  * <p/>
  * Automatical creation of the response message for the reference pillar is done in the 
  * {@link org.bitrepository.pillar.ReferencePillarMessageFactory} class.

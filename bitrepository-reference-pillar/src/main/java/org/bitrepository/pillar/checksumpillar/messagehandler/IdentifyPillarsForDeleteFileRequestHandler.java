@@ -1,7 +1,7 @@
 /*
  * #%L
- * bitrepository-access-client
- * *
+ * Bitrepository Reference Pillar
+ * 
  * $Id$
  * $HeadURL$
  * %%
@@ -22,30 +22,27 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.messagehandler;
+package org.bitrepository.pillar.checksumpillar.messagehandler;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.ReferenceArchive;
+import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
+import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.time.TimeMeasurementUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for handling the identification of this pillar for the purpose of performing the GetFileIDs operation.
+ * Class for handling the identification of this pillar for the purpose of performing the DeleteFile operation.
  */
-public class IdentifyPillarsForGetFileIDsRequestHandler 
-        extends PillarMessageHandler<IdentifyPillarsForGetFileIDsRequest> {
+public class IdentifyPillarsForDeleteFileRequestHandler 
+        extends ChecksumPillarMessageHandler<IdentifyPillarsForDeleteFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
@@ -56,26 +53,23 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
      * @param alarmDispatcher The dispatcher of alarms.
      * @param referenceArchive The archive for the data.
      */
-    public IdentifyPillarsForGetFileIDsRequestHandler(Settings settings, MessageBus messageBus,
-            AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
-        super(settings, messageBus, alarmDispatcher, referenceArchive);
+    protected IdentifyPillarsForDeleteFileRequestHandler(Settings settings, MessageBus messageBus,
+            AlarmDispatcher alarmDispatcher, ChecksumCache refCache) {
+        super(settings, messageBus, alarmDispatcher, refCache);
     }
-    
-    /**
-     * Handles the identification messages for the GetFileIDs operation.
-     * @param message The IdentifyPillarsForGetFileIDsRequest message to handle.
-     */
-    public void handleMessage(IdentifyPillarsForGetFileIDsRequest message) {
-        ArgumentValidator.checkNotNull(message, "IdentifyPillarsForGetFileIDsRequest message");
+
+    @Override
+    void handleMessage(IdentifyPillarsForDeleteFileRequest message) {
+        ArgumentValidator.checkNotNull(message, "IdentifyPillarsForDeleteFileRequest message");
 
         try {
             validateBitrepositoryCollectionId(message.getCollectionID());
-            checkThatAllRequestedFilesAreAvailable(message);
-            respondSuccesfullIdentification(message);
+            checkThatRequestedFileIsAvailable(message);
+            respondSuccessfulIdentification(message);
         } catch (IllegalArgumentException e) {
             alarmDispatcher.handleIllegalArgumentException(e);
         } catch (IdentifyPillarsException e) {
-            log.warn("Unsuccessfull identification for the GetFileIDs.", e);
+            log.warn("Unsuccessful identification for the DeleteFile operation.", e);
             respondUnsuccessfulIdentification(message, e);
         } catch (RuntimeException e) {
             alarmDispatcher.handleRuntimeExceptions(e);
@@ -83,42 +77,30 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
     }
     
     /**
-     * Validates that all the requested files in the filelist are present. 
+     * Validates that the requested files are present in the archive. 
      * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
-     * @param message The message containing the list files. An empty filelist is expected 
-     * when "AllFiles" or the parameter option is used.
+     * @param message The message containing the id of the file. If no file id is given, then a warning is logged, 
+     * but the operation is accepted.
      */
-    public void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetFileIDsRequest message) {
-        FileIDs fileids = message.getFileIDs();
-        if(fileids == null) {
-            log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
-            return;
-        }
-        
-        List<String> missingFiles = new ArrayList<String>();
-        String fileID = fileids.getFileID();
-        if(fileID != null && !fileID.isEmpty() && !archive.hasFile(fileID)) {
-            missingFiles.add(fileID);
-        }
-        
-        // Throw exception if any files are missing.
-        if(!missingFiles.isEmpty()) {
+    private void checkThatRequestedFileIsAvailable(IdentifyPillarsForDeleteFileRequest message) {
+        if(!cache.hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
-            
+            irInfo.setResponseText("Could not find the requested file to delete.");
             throw new IdentifyPillarsException(irInfo);
         }
     }
-    
+
     /**
-     * Makes a response to the successful identification.
+     * Method for making a successful response to the identification.
      * @param message The request message to respond to.
      */
-    private void respondSuccesfullIdentification(IdentifyPillarsForGetFileIDsRequest message) {
+    private void respondSuccessfulIdentification(IdentifyPillarsForDeleteFileRequest message) {
         // Create the response.
-        IdentifyPillarsForGetFileIDsResponse reply = createIdentifyPillarsForGetFileIDsResponse(message);
+        IdentifyPillarsForDeleteFileResponse reply = createIdentifyPillarsForDeleteFileResponse(message);
         
+        // set the missing variables in the reply:
+        // TimeToDeliver, IdentifyResponseInfo (ignore PillarChecksumSpec)
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
                 settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
@@ -127,44 +109,41 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
         reply.setResponseInfo(irInfo);
         
-        // Send resulting file.
         messagebus.sendMessage(reply);
     }
     
     /**
-     * Sending a bad response with the 
+     * Sends a bad response with the given cause.
      * @param message The identification request to respond to.
-     * @param cause The cause of the unsuccessful identification (e.g. which files are missing).
+     * @param cause The cause of the bad identification (e.g. which file is missing).
      */
-    private void respondUnsuccessfulIdentification(IdentifyPillarsForGetFileIDsRequest message, 
+    private void respondUnsuccessfulIdentification(IdentifyPillarsForDeleteFileRequest message, 
             IdentifyPillarsException cause) {
-        IdentifyPillarsForGetFileIDsResponse reply = createIdentifyPillarsForGetFileIDsResponse(message);
+        IdentifyPillarsForDeleteFileResponse reply = createIdentifyPillarsForDeleteFileResponse(message);
         
+        reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
         reply.setResponseInfo(cause.getResponseInfo());
         
-        // Set to maximum time to indicate that it is a bad reply.
-        reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
-        
         messagebus.sendMessage(reply);
     }
     
     /**
-     * Creates a IdentifyPillarsForGetFileIDsResponse based on a 
-     * IdentifyPillarsForGetFileIDsRequest. The following fields are not inserted:
+     * Creates a IdentifyPillarsForDeleteFileResponse based on a 
+     * IdentifyPillarsForDeleteFileRequest. The following fields are not inserted:
      * <br/> - TimeToDeliver
-     * <br/> - IdentifyResponseInfo
+     * <br/> - ResponseInfo
+     * <br/> - PillarChecksumSpec
      * 
-     * @param msg The IdentifyPillarsForGetFileIDsRequest to base the response on.
+     * @param msg The IdentifyPillarsForDeleteFileRequest to base the response on.
      * @return The response to the request.
      */
-    private IdentifyPillarsForGetFileIDsResponse createIdentifyPillarsForGetFileIDsResponse(
-            IdentifyPillarsForGetFileIDsRequest msg) {
-        IdentifyPillarsForGetFileIDsResponse res 
-                = new IdentifyPillarsForGetFileIDsResponse();
+    private IdentifyPillarsForDeleteFileResponse createIdentifyPillarsForDeleteFileResponse(
+            IdentifyPillarsForDeleteFileRequest msg) {
+        IdentifyPillarsForDeleteFileResponse res = new IdentifyPillarsForDeleteFileResponse();
         res.setMinVersion(MIN_VERSION);
         res.setVersion(VERSION);
         res.setCorrelationID(msg.getCorrelationID());
-        res.setFileIDs(msg.getFileIDs());
+        res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         res.setCollectionID(settings.getCollectionID());

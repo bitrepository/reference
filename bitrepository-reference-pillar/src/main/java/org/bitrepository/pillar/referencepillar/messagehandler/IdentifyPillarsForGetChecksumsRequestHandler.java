@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.messagehandler;
+package org.bitrepository.pillar.referencepillar.messagehandler;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -37,8 +37,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRes
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
+import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.time.TimeMeasurementUtils;
 import org.slf4j.Logger;

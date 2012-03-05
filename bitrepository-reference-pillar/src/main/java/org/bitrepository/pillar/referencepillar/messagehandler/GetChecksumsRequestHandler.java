@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.messagehandler;
+package org.bitrepository.pillar.referencepillar.messagehandler;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,8 +55,8 @@ import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.pillar.ReferenceArchive;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
+import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;

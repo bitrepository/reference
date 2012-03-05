@@ -31,7 +31,7 @@ cd ..
 set PWD=´pwd´
 
 # check whether any processes already are running.
-PIDS=$(ps -wwfe | grep org.bitrepository.pillar.ReferencePillarLauncher | grep -v grep | grep $PWD/conf | awk "{print \$2}")
+PIDS=$(ps -wwfe | org.bitrepository.pillar.referencepillar.ReferencePillarLauncher | grep -v grep | grep $PWD/conf | awk "{print \$2}")
 if [ -n "$PIDS" ] ; then
     echo Application already running.
     exit -1;
@@ -43,5 +43,5 @@ export CLASSPATH=`echo \`ls lib/*\` | sed s/' '/:/g`
 export SSL_DEPENDENCIES="-Djavax.net.ssl.keyStore=conf/key.store -Djavax.net.ssl.keyStorePassword=123456 -Djavax.net.ssl.trustStore=conf/trust.store -Djavax.net.ssl.trustStorePassword=123456"
 
 # Launch the application
-echo java -cp $CLASSPATH $LOGBACK $SSL_DEPENDENCIES org.bitrepository.pillar.ReferencePillarLauncher $PWD/conf
-java -cp $CLASSPATH $LOGBACK $SSL_DEPENDENCIES org.bitrepository.pillar.ReferencePillarLauncher $PWD/conf > ReferencePillar.start 2>&1 &
+echo java -cp $CLASSPATH $LOGBACK $SSL_DEPENDENCIES org.bitrepository.pillar.referencepillar.ReferencePillarLauncher $PWD/conf
+java -cp $CLASSPATH $LOGBACK $SSL_DEPENDENCIES org.bitrepository.pillar.referencepillar.ReferencePillarLauncher $PWD/conf > ReferencePillar.start 2>&1 &

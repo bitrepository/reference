@@ -27,24 +27,26 @@ package org.bitrepository.pillar;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.checksumpillar.ChecksumPillar;
+import org.bitrepository.pillar.referencepillar.ReferencePillar;
 import org.bitrepository.protocol.messagebus.MessageBus;
 
 /**
  * Component factory for this module.
  */
-public final class ReferencePillarComponentFactory {
+public final class PillarComponentFactory {
     /** The singleton instance. */
-    private static ReferencePillarComponentFactory instance;
+    private static PillarComponentFactory instance;
 
     /**
      * Instantiation of this singleton.
      *
      * @return The singleton instance of this factory class.
      */
-    public static synchronized ReferencePillarComponentFactory getInstance() {
+    public static synchronized PillarComponentFactory getInstance() {
         // ensure singleton.
         if(instance == null) {
-            instance = new ReferencePillarComponentFactory();
+            instance = new PillarComponentFactory();
         }
         return instance;
     }
@@ -55,7 +57,7 @@ public final class ReferencePillarComponentFactory {
     /**
      * Private constructor for initialization of the singleton.
      */
-    private ReferencePillarComponentFactory() {
+    private PillarComponentFactory() {
         moduleCharacter = new ModuleCharacteristics("reference-pillar");
     }
 
@@ -73,10 +75,24 @@ public final class ReferencePillarComponentFactory {
      * @param settings The settings for the pillar.
      * @return The reference requested pillar.
      */
-    public ReferencePillar getPillar(MessageBus messagebus, Settings settings) {
+    public ReferencePillar getReferencePillar(MessageBus messagebus, Settings settings) {
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(messagebus, "messagebus");
         
         return new ReferencePillar(messagebus, settings);
     }
+    
+    /**
+     * Method for retrieving a checksum pillar.
+     * @param messageBus The messageBus for the checksum pillar.
+     * @param settings The settings for the pillar.
+     * @return The reference requested checksum pillar.
+     */
+    public ChecksumPillar getChecksumPillar(MessageBus messagebus, Settings settings) {
+        ArgumentValidator.checkNotNull(settings, "settings");
+        ArgumentValidator.checkNotNull(messagebus, "messagebus");
+        
+        return new ChecksumPillar(messagebus, settings);
+    }
+
 }

@@ -37,8 +37,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.ReferencePillar;
-import org.bitrepository.pillar.ReferencePillarComponentFactory;
+import org.bitrepository.pillar.PillarComponentFactory;
+import org.bitrepository.pillar.referencepillar.ReferencePillar;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -63,7 +63,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         }
         
         if(pillar != null) {
-            pillar = ReferencePillarComponentFactory.getInstance().getPillar(messageBus, settings);
+            pillar = PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
         }
     }
     

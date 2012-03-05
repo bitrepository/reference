@@ -38,7 +38,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReq
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.ReferencePillarComponentFactory;
+import org.bitrepository.pillar.PillarComponentFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -73,7 +73,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         csSpec.setChecksumType(ChecksumType.MD5);
         
         addStep("Initialize the pillar.", "Should not be a problem.");
-        ReferencePillarComponentFactory.getInstance().getPillar(messageBus, settings);
+        PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
         
         addStep("Move the test file into the file directory.", "Should be all-right");
         File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
@@ -159,7 +159,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         csSpec.setChecksumType(ChecksumType.MD5);
         
         addStep("Initialize the pillar.", "Should not be a problem.");
-        ReferencePillarComponentFactory.getInstance().getPillar(messageBus, settings);
+        PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
 
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
@@ -201,7 +201,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         csSpec.setChecksumType(ChecksumType.MD5);
         
         addStep("Initialize the pillar.", "Should not be a problem.");
-        ReferencePillarComponentFactory.getInstance().getPillar(messageBus, settings);
+        PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
 
         addStep("Create and send the actual GetChecksums message to the pillar.", 
                 "Should be received and handled by the pillar.");

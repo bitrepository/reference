@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar;
+package org.bitrepository.pillar.referencepillar;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
