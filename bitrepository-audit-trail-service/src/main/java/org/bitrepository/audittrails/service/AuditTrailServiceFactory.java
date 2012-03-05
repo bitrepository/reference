@@ -29,6 +29,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.SettingsProvider;
+import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
 import org.bitrepository.protocol.security.BasicOperationAuthorizor;
@@ -54,6 +57,8 @@ public class AuditTrailServiceFactory {
     private static final String CONFIGFILE = "audittrails.properties";
     /** Property key to tell where to locate the path and filename to the private key file. */
     private static final String PRIVATE_KEY_FILE = "org.bitrepository.audit-trail-service.privateKeyFile";
+    /** Default collection settings identifier (used to build the path the collection and referencesettings */
+    private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
     
     /**
      * Private constructor as the class is meant to be used in a static way.
@@ -72,14 +77,20 @@ public class AuditTrailServiceFactory {
      */
     public synchronized static AuditTrailService getAuditTrailService() {
         if(auditTrailService == null) {
-            loadProperties();
-            permissionStore = new PermissionStore();
-            authenticator = new BasicMessageAuthenticator(permissionStore);
-            signer = new BasicMessageSigner();
-            authorizer = new BasicOperationAuthorizor(permissionStore);
-            securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
-                    authenticator, signer, authorizer, permissionStore);
-            auditTrailService = new AuditTrailService();
+            SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(configurationDir));
+            Settings settings = settingsLoader.getSettings(DEFAULT_COLLECTION_ID);
+            try {
+                loadProperties();
+                permissionStore = new PermissionStore();
+                authenticator = new BasicMessageAuthenticator(permissionStore);
+                signer = new BasicMessageSigner();
+                authorizer = new BasicOperationAuthorizor(permissionStore);
+                securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
+                        authenticator, signer, authorizer, permissionStore);
+                auditTrailService = new AuditTrailService();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         
         return auditTrailService;
