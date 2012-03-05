@@ -6,6 +6,10 @@ package org.bitrepository.protocol.security;
  */
 public class PermissionStoreException extends Exception {
 
+    /** 
+     * Constructor for PermissionStoreException
+     * @param message, the reason for creating the exception.
+     */
     public PermissionStoreException(String message) {
         super(message);
     }

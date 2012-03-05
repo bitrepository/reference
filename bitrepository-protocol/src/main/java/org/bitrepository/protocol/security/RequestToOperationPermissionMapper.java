@@ -26,56 +26,62 @@ import org.bitrepository.settings.collectionsettings.OperationPermission;
  * the permissions required to allowed execution of the operation. 
  */
 public class RequestToOperationPermissionMapper {
-	private final Map<String, List<OperationPermission>> mapping;
-	
-	/**
-	 * Constructor for the class. Initiates the default permission mappings.  
-	 */
-	public RequestToOperationPermissionMapper() {
-		mapping = new HashMap<String, List<OperationPermission>>();
-		ArrayList<OperationPermission> requiredPermissions = new ArrayList<OperationPermission>();
-		requiredPermissions.add(OperationPermission.ALL);
-		requiredPermissions.add(OperationPermission.GET_FILE);
-		mapping.put(IdentifyPillarsForGetFileRequest.class.getSimpleName(), requiredPermissions);
-		mapping.put(GetFileRequest.class.getSimpleName(), requiredPermissions);
-		requiredPermissions = new ArrayList<OperationPermission>();
-		requiredPermissions.add(OperationPermission.ALL);
-		requiredPermissions.add(OperationPermission.PUT_FILE);
-		mapping.put(IdentifyPillarsForPutFileRequest.class.getSimpleName(), requiredPermissions);
-		mapping.put(PutFileRequest.class.getSimpleName(), requiredPermissions);
-		requiredPermissions = new ArrayList<OperationPermission>();
-		requiredPermissions.add(OperationPermission.ALL);
-		requiredPermissions.add(OperationPermission.GET_FILE_I_DS);
-		mapping.put(IdentifyPillarsForGetFileIDsRequest.class.getSimpleName(), requiredPermissions);
-		mapping.put(GetFileIDsRequest.class.getSimpleName(), requiredPermissions);
-		requiredPermissions = new ArrayList<OperationPermission>();
-		requiredPermissions.add(OperationPermission.ALL);
-		requiredPermissions.add(OperationPermission.GET_CHECKSUMS);
-		mapping.put(IdentifyPillarsForGetChecksumsRequest.class.getSimpleName(), requiredPermissions);
-		mapping.put(GetChecksumsRequest.class.getSimpleName(), requiredPermissions);
-		requiredPermissions = new ArrayList<OperationPermission>();
-		requiredPermissions.add(OperationPermission.ALL);
-		requiredPermissions.add(OperationPermission.GET_AUDIT_TRAILS);
-		mapping.put(IdentifyContributorsForGetAuditTrailsRequest.class.getSimpleName(), requiredPermissions);
-		mapping.put(GetAuditTrailsRequest.class.getSimpleName(), requiredPermissions);
-		requiredPermissions = new ArrayList<OperationPermission>();
-		requiredPermissions.add(OperationPermission.ALL);
-		requiredPermissions.add(OperationPermission.DELETE_FILE);
-		mapping.put(IdentifyPillarsForDeleteFileRequest.class.getSimpleName(), requiredPermissions);
-		mapping.put(DeleteFileRequest.class.getSimpleName(), requiredPermissions);
-		requiredPermissions = new ArrayList<OperationPermission>();
-		requiredPermissions.add(OperationPermission.ALL);
-		requiredPermissions.add(OperationPermission.REPLACE_FILE);
-		mapping.put(IdentifyPillarsForReplaceFileRequest.class.getSimpleName(), requiredPermissions);
-		mapping.put(ReplaceFileRequest.class.getSimpleName(), requiredPermissions);
-	}
-	
-	/**
-	 * Get the required permission for the given operation type (bitrepository message request type) 
-	 */
-	public List<OperationPermission> getRequiredPermissions(String operationType) {
-		return mapping.get(operationType);
-	}
+    /** Mapping from MessageRequest type to a list of permissions */
+    private final Map<String, List<OperationPermission>> mapping;
+
+    /**
+     * Constructor for the class. Initiates the default permission mappings.  
+     */
+    public RequestToOperationPermissionMapper() {
+        mapping = new HashMap<String, List<OperationPermission>>();
+        ArrayList<OperationPermission> requiredPermissions = new ArrayList<OperationPermission>();
+        requiredPermissions.add(OperationPermission.ALL);
+        requiredPermissions.add(OperationPermission.GET_FILE);
+        mapping.put(IdentifyPillarsForGetFileRequest.class.getSimpleName(), requiredPermissions);
+        mapping.put(GetFileRequest.class.getSimpleName(), requiredPermissions);
+        requiredPermissions = new ArrayList<OperationPermission>();
+        requiredPermissions.add(OperationPermission.ALL);
+        requiredPermissions.add(OperationPermission.PUT_FILE);
+        mapping.put(IdentifyPillarsForPutFileRequest.class.getSimpleName(), requiredPermissions);
+        mapping.put(PutFileRequest.class.getSimpleName(), requiredPermissions);
+        requiredPermissions = new ArrayList<OperationPermission>();
+        requiredPermissions.add(OperationPermission.ALL);
+        requiredPermissions.add(OperationPermission.GET_FILE_I_DS);
+        mapping.put(IdentifyPillarsForGetFileIDsRequest.class.getSimpleName(), requiredPermissions);
+        mapping.put(GetFileIDsRequest.class.getSimpleName(), requiredPermissions);
+        requiredPermissions = new ArrayList<OperationPermission>();
+        requiredPermissions.add(OperationPermission.ALL);
+        requiredPermissions.add(OperationPermission.GET_CHECKSUMS);
+        mapping.put(IdentifyPillarsForGetChecksumsRequest.class.getSimpleName(), requiredPermissions);
+        mapping.put(GetChecksumsRequest.class.getSimpleName(), requiredPermissions);
+        requiredPermissions = new ArrayList<OperationPermission>();
+        requiredPermissions.add(OperationPermission.ALL);
+        requiredPermissions.add(OperationPermission.GET_AUDIT_TRAILS);
+        mapping.put(IdentifyContributorsForGetAuditTrailsRequest.class.getSimpleName(), requiredPermissions);
+        mapping.put(GetAuditTrailsRequest.class.getSimpleName(), requiredPermissions);
+        requiredPermissions = new ArrayList<OperationPermission>();
+        requiredPermissions.add(OperationPermission.ALL);
+        requiredPermissions.add(OperationPermission.DELETE_FILE);
+        mapping.put(IdentifyPillarsForDeleteFileRequest.class.getSimpleName(), requiredPermissions);
+        mapping.put(DeleteFileRequest.class.getSimpleName(), requiredPermissions);
+        requiredPermissions = new ArrayList<OperationPermission>();
+        requiredPermissions.add(OperationPermission.ALL);
+        requiredPermissions.add(OperationPermission.REPLACE_FILE);
+        mapping.put(IdentifyPillarsForReplaceFileRequest.class.getSimpleName(), requiredPermissions);
+        mapping.put(ReplaceFileRequest.class.getSimpleName(), requiredPermissions);
+    }
+
+    /**
+     * Get the required permission for the given operation type (bitrepository message request type) 
+     * @throws UnregisteredPermissionException 
+     */
+    public List<OperationPermission> getRequiredPermissions(String operationType) throws UnregisteredPermissionException {
+        List<OperationPermission> permissions = mapping.get(operationType);
+        if(permissions == null) {
+            throw new UnregisteredPermissionException("No permissions has been registered for: " + operationType);
+        }
+        return permissions;
+    }
 }
 
 

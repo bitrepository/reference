@@ -53,7 +53,7 @@ public class IntegrityServiceLauncher {
      * </ol>
      */
     public static void main(String[] args) {
-        try {
+        /*try {
             String collectionId = DEFAULT_COLLECTION_ID;
             String pathToSettings = DEFAULT_PATH_TO_SETTINGS;
             long timeSinceLastChecksumUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
@@ -95,6 +95,6 @@ public class IntegrityServiceLauncher {
                     + "604800000 (one week)]");
             e.printStackTrace();
             System.exit(0);
-        }
+        }*/
     }
 }

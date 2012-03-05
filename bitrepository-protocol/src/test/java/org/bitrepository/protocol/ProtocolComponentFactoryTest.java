@@ -28,15 +28,20 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.security.DummySecurityManager;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class ProtocolComponentFactoryTest {
     private Settings settings;
+    /** The mocked SecurityManager */
+    private SecurityManager securityManager;
     
     @BeforeMethod(alwaysRun = true)
     public void beforeMethodSetup() throws Exception {
         setupSettings();
+        securityManager = new DummySecurityManager();
     }
     
     protected void setupSettings() throws Exception {
@@ -50,6 +55,6 @@ public class ProtocolComponentFactoryTest {
      */
     public void getMessageTest() throws Exception {
         MessageBus bus =
-            ProtocolComponentFactory.getInstance().getMessageBus(settings);
+            ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
     }
 }

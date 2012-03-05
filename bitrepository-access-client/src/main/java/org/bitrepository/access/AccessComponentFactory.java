@@ -34,6 +34,7 @@ import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.mediator.ConversationMediatorManager;
+import org.bitrepository.protocol.security.SecurityManager;
 
 /**
  * Factory class for the access module.
@@ -80,10 +81,10 @@ public final class AccessComponentFactory {
      * @param settings The settings for the GetFileClient.
      * @return A GetFileClient.
      */
-    public GetFileClient createGetFileClient(Settings settings) {
+    public GetFileClient createGetFileClient(Settings settings, SecurityManager securityManager) {
         return new CollectionBasedGetFileClient(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings), 
-                ConversationMediatorManager.getConversationMediator(settings), 
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
+                ConversationMediatorManager.getConversationMediator(settings, securityManager), 
                 settings);
     }
     
@@ -92,10 +93,10 @@ public final class AccessComponentFactory {
      * @param settings The settings for the GetChecksumsClient.
      * @return The GetChecksumsClient
      */
-    public GetChecksumsClient createGetChecksumsClient(Settings settings) {
+    public GetChecksumsClient createGetChecksumsClient(Settings settings, SecurityManager securityManager) {
         return new CollectionBasedGetChecksumsClient(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings), 
-                ConversationMediatorManager.getConversationMediator(settings),
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
+                ConversationMediatorManager.getConversationMediator(settings, securityManager),
                 settings);
     }
 
@@ -104,10 +105,10 @@ public final class AccessComponentFactory {
      *
      * @return A GetFileIDsClient.
      */
-    public GetFileIDsClient createGetFileIDsClient(Settings settings) {
+    public GetFileIDsClient createGetFileIDsClient(Settings settings, SecurityManager securityManager) {
         return new ConversationBasedGetFileIDsClient(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings), 
-                ConversationMediatorManager.getConversationMediator(settings),
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
+                ConversationMediatorManager.getConversationMediator(settings, securityManager),
                 settings);
     }
 }

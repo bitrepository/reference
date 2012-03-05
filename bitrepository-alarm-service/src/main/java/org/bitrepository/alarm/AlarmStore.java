@@ -29,7 +29,15 @@ import java.util.concurrent.ArrayBlockingQueue;
 import org.bitrepository.alarm.handler.AlarmCollector;
 import org.bitrepository.alarm.handler.AlarmMailer;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.settings.referencesettings.MailingConfiguration;
+import org.bitrepository.protocol.security.BasicMessageAuthenticator;
+import org.bitrepository.protocol.security.BasicMessageSigner;
+import org.bitrepository.protocol.security.BasicOperationAuthorizor;
+import org.bitrepository.protocol.security.BasicSecurityManager;
+import org.bitrepository.protocol.security.MessageAuthenticator;
+import org.bitrepository.protocol.security.MessageSigner;
+import org.bitrepository.protocol.security.OperationAuthorizor;
+import org.bitrepository.protocol.security.PermissionStore;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,12 +48,23 @@ public class AlarmStore {
 	private AlarmCollector collector;
 	private AlarmMailer mailer;
 	private ArrayBlockingQueue<AlarmStoreDataItem> shortAlarmList;
+    private static MessageAuthenticator authenticator;
+    private static MessageSigner signer;
+    private static OperationAuthorizor authorizer;
+    private static PermissionStore permissionStore;
+    private static SecurityManager securityManager;
 
-	AlarmStore(Settings settings, String alarmStoreFile) {
+	AlarmStore(Settings settings, String alarmStoreFile, String privateKeyFile) {
 		this.alarmStoreFile = alarmStoreFile;
 		shortAlarmList = new ArrayBlockingQueue<AlarmStoreDataItem>(20);
-		alarmService = AlarmComponentFactory.getInstance().getAlarmService(settings);
-		collector = new AlarmCollector(alarmStoreFile, shortAlarmList);
+		permissionStore = new PermissionStore();
+        authenticator = new BasicMessageAuthenticator(permissionStore);
+        signer = new BasicMessageSigner();
+        authorizer = new BasicOperationAuthorizor(permissionStore);
+        securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
+                authenticator, signer, authorizer, permissionStore);
+		alarmService = AlarmComponentFactory.getInstance().getAlarmService(settings, securityManager);
+		collector = new AlarmCollector(this.alarmStoreFile, shortAlarmList);
 		alarmService.addHandler(collector, settings.getAlarmDestination()); 
 		if(settings.getReferenceSettings().getAlarmServiceSettings().getMailingConfiguration() != null) {
 			mailer = new AlarmMailer(settings.getReferenceSettings().getAlarmServiceSettings());

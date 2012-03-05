@@ -10,11 +10,13 @@ import org.bouncycastle.cms.SignerId;
  */
 public class BasicOperationAuthorizor implements OperationAuthorizor {
 
+    /** Mapper from operation type to needed permission */
     private RequestToOperationPermissionMapper requestToPermissionMapper;
+    /** Non-infrastructure certificates and permission store */
     private final PermissionStore permissionStore;
     
     /**
-     * Public contstrutor
+     * Public constructor
      * @param PermissionStore permissionStore which holds the permissions to check against. 
      */
     public BasicOperationAuthorizor(PermissionStore permissionStore) {
@@ -24,13 +26,15 @@ public class BasicOperationAuthorizor implements OperationAuthorizor {
     
     /**
      * Method to determine whether an operation is allow
-     * @param String operationType, the type of operation to authorize 
-     * @param SignerId the signerId of the certificate used to create the signature belonging to the request 
+     * @param operationType, the type of operation to authorize 
+     * @param signer the signerId of the certificate used to create the signature belonging to the request 
      * which is to be authorized.  
      * @throws OperationAuthorizationException if authorization fails
+     * @throws UnregisteredPermissionException 
      */
     @Override
-    public void authorizeOperation(String operationType, SignerId signer) throws OperationAuthorizationException {
+    public void authorizeOperation(String operationType, SignerId signer) throws OperationAuthorizationException, 
+            UnregisteredPermissionException {
         List<OperationPermission> permissions = requestToPermissionMapper.getRequiredPermissions(operationType);
         for(OperationPermission permission : permissions) {
             try {

@@ -76,6 +76,9 @@ import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
+import org.bitrepository.protocol.security.MessageAuthenticationException;
+import org.bitrepository.protocol.security.OperationAuthorizationException;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +101,8 @@ public class ActiveMQMessageBus implements MessageBus {
     public static final String MESSAGE_TYPE_KEY = "org.bitrepository.messages.type";
     /** The key for storing the BitRepositoryCollectionID in a string property in the message headers. */
     public static final String COLLECTION_ID_KEY = "org.bitrepository.messages.collectionid";
+    /** The key for storing the message type in a string property in the message headers. */
+    public static final String MESSAGE_SIGNATURE_KEY = "org.bitrepository.messages.signature";
     /** The default acknowledge mode. */
     public static final int ACKNOWLEDGE_MODE = Session.AUTO_ACKNOWLEDGE;
     /** Default transacted. */
@@ -129,6 +134,7 @@ public class ActiveMQMessageBus implements MessageBus {
     private String schemaLocation = "BitRepositoryMessages.xsd";
     private final JaxbHelper jaxbHelper;
     private final Connection connection;
+    private final SecurityManager securityManager;
     
     /**
      * Use the {@link org.bitrepository.protocol.ProtocolComponentFactory} to get a handle on a instance of
@@ -137,9 +143,10 @@ public class ActiveMQMessageBus implements MessageBus {
      *
      * @param messageBusConfigurations The properties for the connection.
      */
-    public ActiveMQMessageBus(MessageBusConfiguration messageBusConfiguration) {
+    public ActiveMQMessageBus(MessageBusConfiguration messageBusConfiguration, SecurityManager securityManager) {
         log.debug("Initializing ActiveMQConnection to '" + messageBusConfiguration + "'.");
         this.configuration = messageBusConfiguration;
+        this.securityManager = securityManager;
         jaxbHelper = new JaxbHelper("xsd/", schemaLocation); 
         // Retrieve factory for connection
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getURL());
@@ -242,6 +249,9 @@ public class ActiveMQMessageBus implements MessageBus {
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
             javax.jms.Message msg = producerSession.createTextMessage(xmlContent);
+            String stringData = ((TextMessage) msg).getText();
+            String messageSignature = securityManager.signMessage(stringData);
+            msg.setStringProperty(MESSAGE_SIGNATURE_KEY, messageSignature);
             msg.setStringProperty(MESSAGE_TYPE_KEY, content.getClass().getSimpleName());
             msg.setStringProperty(COLLECTION_ID_KEY, collectionID);
             msg.setJMSCorrelationID(correlationID);
@@ -393,14 +403,18 @@ public class ActiveMQMessageBus implements MessageBus {
         public void onMessage(final javax.jms.Message jmsMessage) {
             String type = null;
             String text = null;
-
+            String signature = null;
+            
             Object content;
             try {
                 type = jmsMessage.getStringProperty(MESSAGE_TYPE_KEY);
+                signature = jmsMessage.getStringProperty(MESSAGE_SIGNATURE_KEY);
                 text = ((TextMessage) jmsMessage).getText();
                 jaxbHelper.validate(new ByteArrayInputStream(text.getBytes()));
                 content = jaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
                                              new ByteArrayInputStream(text.getBytes()));
+                securityManager.authenticateMessage(text, signature);
+                securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature);
                 log.debug("Received message: " + text);
                 if(content.getClass().equals(AlarmMessage.class)){
                 	listener.onMessage((AlarmMessage) content);
@@ -559,6 +573,10 @@ public class ActiveMQMessageBus implements MessageBus {
                 log.error("Received message of unknown type '" + type + "'\n{}", text);
             } catch (SAXException e) {
                 log.error("Error validating message " + jmsMessage, e);
+            } catch (MessageAuthenticationException e) {
+                log.error(e.getMessage(), e);
+            } catch (OperationAuthorizationException e) {
+                log.error(e.getMessage(), e);
             } catch (Exception e) {
                 log.error("Error handling message. Received type was '" + type + "'.\n{}", text, e);
             }

@@ -73,7 +73,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Testing the initialization through the ModifyComponentFactory.");
         addStep("Use the ModifyComponentFactory to instantiate a ReplaceFileClient.", 
                 "It should be an instance of ConversationBasedReplaceFileClient");
-        ReplaceFileClient rfc = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings);
+        ReplaceFileClient rfc = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings, securityManager);
         Assert.assertTrue(rfc instanceof ConversationBasedReplaceFileClient, "The ReplaceFileClient '" + rfc 
                 + "' should be instance of '" + ConversationBasedReplaceFileClient.class.getName() + "'");
     }
@@ -398,8 +398,8 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
      * @return A new PutFileClient(Wrapper).
      */
     private ReplaceFileClient createReplaceFileClient() {
-        MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration());
-        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings);
+        MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
+        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
         return new ReplaceClientTestWrapper(new ConversationBasedReplaceFileClient(
                 messageBus, conversationMediator, settings), testEventManager);
     }

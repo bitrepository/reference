@@ -35,6 +35,7 @@ import org.bitrepository.modify.replacefile.ConversationBasedReplaceFileClient;
 import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.mediator.ConversationMediatorManager;
+import org.bitrepository.protocol.security.SecurityManager;
 
 /**
  * Factory class for the access module. 
@@ -79,10 +80,10 @@ public final class ModifyComponentFactory {
      * Method for initialising the PutClient.
      * @return The configured PutClient.
      */
-    public PutFileClient retrievePutClient(Settings settings) {
+    public PutFileClient retrievePutClient(Settings settings, SecurityManager securityManager) {
         return new ConversationBasedPutFileClient(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings), 
-                ConversationMediatorManager.getConversationMediator(settings), 
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
+                ConversationMediatorManager.getConversationMediator(settings, securityManager), 
                 settings);
     }
     
@@ -90,10 +91,10 @@ public final class ModifyComponentFactory {
      * @param settings The settings for the DeleteFileClient.
      * @return The requested DeleteClient.
      */
-    public DeleteFileClient retrieveDeleteFileClient(Settings settings) {
+    public DeleteFileClient retrieveDeleteFileClient(Settings settings, SecurityManager securityManager) {
         return new ConversationBasedDeleteFileClient(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings), 
-                ConversationMediatorManager.getConversationMediator(settings), 
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
+                ConversationMediatorManager.getConversationMediator(settings, securityManager), 
                 settings);
     }
         
@@ -101,10 +102,10 @@ public final class ModifyComponentFactory {
      * @param settings The settings for the DeleteFileClient.
      * @return The requested DeleteClient.
      */
-    public ReplaceFileClient retrieveReplaceFileClient(Settings settings) {
+    public ReplaceFileClient retrieveReplaceFileClient(Settings settings, SecurityManager securityManager) {
         return new ConversationBasedReplaceFileClient(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings), 
-                ConversationMediatorManager.getConversationMediator(settings), 
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
+                ConversationMediatorManager.getConversationMediator(settings, securityManager), 
                 settings);
     }
 }

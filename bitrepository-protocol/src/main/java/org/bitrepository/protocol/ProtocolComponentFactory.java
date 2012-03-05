@@ -31,6 +31,7 @@ import org.bitrepository.protocol.configuration.ProtocolConfiguration;
 import org.bitrepository.protocol.http.HTTPFileExchange;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.bitrepository.protocol.security.SecurityManager;
 
 /**
  * Provides access to the different component in the protocol module (Spring/IOC wannabe)
@@ -76,8 +77,8 @@ public final class ProtocolComponentFactory {
      * already exists for the collection ID defined in the settings, the existing instance is returned.
      * @return The messagebus for this collection.
      */
-    public MessageBus getMessageBus(Settings settings) {
-        return MessageBusManager.getMessageBus(settings);
+    public MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+        return MessageBusManager.getMessageBus(settings, securityManager);
     }
 
     /**

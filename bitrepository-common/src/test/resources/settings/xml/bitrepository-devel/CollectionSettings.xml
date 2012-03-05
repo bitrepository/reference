@@ -28,8 +28,8 @@
   <CollectionID>TEST</CollectionID>
   <ProtocolSettings>
     <DefaultChecksumType>md5</DefaultChecksumType>
-    <RequireMessageAuthentication>true</RequireMessageAuthentication>
-    <RequireOperationAuthorization>true</RequireOperationAuthorization>
+    <RequireMessageAuthentication>false</RequireMessageAuthentication>
+    <RequireOperationAuthorization>false</RequireOperationAuthorization>
     <CollectionDestination>TEST-TOPIC</CollectionDestination>
     <AlarmDestination>TEST-ALARM-TOPIC</AlarmDestination>
     <MessageBusConfiguration>

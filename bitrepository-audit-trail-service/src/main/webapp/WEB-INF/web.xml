@@ -45,6 +45,6 @@
   </servlet-mapping>
 
   <listener>
-    <listener-class>org.bitrepository.audittrails.webservice.ShutdownListener</listener-class>
+    <listener-class>org.bitrepository.audittrails.webservice.AuditTrailServiceContextListener</listener-class>
   </listener>
 </web-app>

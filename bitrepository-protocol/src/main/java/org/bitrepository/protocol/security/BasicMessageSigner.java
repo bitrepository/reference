@@ -1,11 +1,8 @@
 package org.bitrepository.protocol.security;
 
-import java.io.IOException;
 import java.security.KeyStore.PrivateKeyEntry;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
-import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
@@ -20,8 +17,13 @@ import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
  */
 public class BasicMessageSigner implements MessageSigner {
 
+    /** Constant to indicate whether to used attached or detached mode for signing.*/
+    private final static boolean USE_ATTACHED_MODE = false;
+    /** Container for the private key and certificate needed to sign messages*/
     private PrivateKeyEntry privateKeyEntry;
+    /** SignerInfoBuilder used in the signing process. */
     private JcaSignerInfoGeneratorBuilder builder;
+    /** Content signer used to sign messages */
     private ContentSigner sha512Signer;
     
     /**
@@ -34,10 +36,10 @@ public class BasicMessageSigner implements MessageSigner {
         }
         this.privateKeyEntry = privateKeyEntry;
         try {
-            sha512Signer = new JcaContentSignerBuilder("SHA512withRSA").setProvider("BC").build(
-                    privateKeyEntry.getPrivateKey());
+            sha512Signer = new JcaContentSignerBuilder(SecurityModuleConstants.SignatureType)
+                    .setProvider(SecurityModuleConstants.BC).build(privateKeyEntry.getPrivateKey());
             builder = new JcaSignerInfoGeneratorBuilder(
-                    new JcaDigestCalculatorProviderBuilder().setProvider("BC").build());
+                    new JcaDigestCalculatorProviderBuilder().setProvider(SecurityModuleConstants.BC).build());
             builder.setDirectSignature(true);
         } catch (OperatorCreationException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -46,8 +48,8 @@ public class BasicMessageSigner implements MessageSigner {
     
     /**
      * Creates the CMS signature for a message. 
-     * @param byte[] messageData, the message data that is to be signed. 
-     * @return byte[] the CMS signature for the message. 
+     * @param messageData, the message data that is to be signed. 
+     * @return the CMS signature for the message. 
      * @throws MessageSigningException in case signing fails. 
      */
     @Override
@@ -58,16 +60,10 @@ public class BasicMessageSigner implements MessageSigner {
         try {
             CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
             gen.addSignerInfoGenerator(builder.build(sha512Signer, (X509Certificate)privateKeyEntry.getCertificate()));
-            CMSSignedData signedData = gen.generate(new CMSProcessableByteArray(messageData), false /*detached*/);
+            CMSSignedData signedData = gen.generate(new CMSProcessableByteArray(messageData), USE_ATTACHED_MODE);
 
             return signedData.getEncoded();
-        } catch (OperatorCreationException e) {
-            throw new MessageSigningException(e.getMessage(), e);
-        } catch (CertificateEncodingException e) {
-            throw new MessageSigningException(e.getMessage(), e);
-        } catch (CMSException e) {
-            throw new MessageSigningException(e.getMessage(), e);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new MessageSigningException(e.getMessage(), e);
         }
     }

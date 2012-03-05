@@ -42,7 +42,7 @@
  	</servlet-mapping>
  	
     <listener>
-		<listener-class>org.bitrepository.integrityclient.web.ShutdownListener</listener-class>
+		<listener-class>org.bitrepository.integrityclient.web.IntegrityServiceContextListener</listener-class>
 	</listener>
  	
 </web-app>

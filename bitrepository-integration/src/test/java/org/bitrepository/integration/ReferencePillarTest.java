@@ -88,7 +88,7 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Create a putclient and start a put operation.", 
                 "This should be caught by the pillar.");
-        PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(clientSettings);
+        PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(clientSettings, securityManager);
         putClient.putFile(new URL(FILE_ADDRESS), FILE_ID, FILE_SIZE, 
                 (ChecksumDataForFileTYPE) null, (ChecksumSpecTYPE) null, testEventHandler, "TEST-AUDIT-TRAIL");
         
@@ -103,8 +103,10 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Create a GetFileClient and start a get operation", 
                 "This should be caught by the pillar");
-        GetFileClient getClient = AccessComponentFactory.getInstance().createGetFileClient(clientSettings);
-        getClient.getFileFromSpecificPillar(FILE_ID, new URL(FILE_ADDRESS), settings.getReferenceSettings().getPillarSettings().getPillarID(), testEventHandler);
+        GetFileClient getClient = AccessComponentFactory.getInstance().createGetFileClient(clientSettings,
+                securityManager);
+        getClient.getFileFromSpecificPillar(FILE_ID, new URL(FILE_ADDRESS), 
+                settings.getReferenceSettings().getPillarSettings().getPillarID(), testEventHandler);
         
         addStep("Validate the sequence of operations event for the GetFileClient", 
                 "Shoud be in correct order.");
@@ -117,7 +119,8 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Create a GetChecksumsClient and start a get operation", 
                 "This should be caught by the pillar");
-        GetChecksumsClient getChecksums = AccessComponentFactory.getInstance().createGetChecksumsClient(clientSettings);
+        GetChecksumsClient getChecksums = AccessComponentFactory.getInstance().createGetChecksumsClient(clientSettings,
+                securityManager);
         FileIDs fileIDsForGetChecksums = new FileIDs();
         fileIDsForGetChecksums.setFileID(FILE_ID);
         
@@ -138,7 +141,8 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Create a GetFileIDsClient and start a get operation", 
                 "This should be caught by the pillar");
-        GetFileIDsClient getFileIDs = AccessComponentFactory.getInstance().createGetFileIDsClient(clientSettings);
+        GetFileIDsClient getFileIDs = AccessComponentFactory.getInstance().createGetFileIDsClient(clientSettings, 
+                securityManager);
         FileIDs fileIdsForGetFileIDs = new FileIDs();
         fileIdsForGetFileIDs.setFileID(FILE_ID);
         
@@ -159,7 +163,8 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
 
         addStep("Create a ReplaceFileClient at start a replace operation", 
                 "This should be caught and handled by the pillar.");
-        ReplaceFileClient replaceFile = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(clientSettings);
+        ReplaceFileClient replaceFile = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(clientSettings, 
+                securityManager);
 
         ChecksumSpecTYPE checksumRequested = new ChecksumSpecTYPE();
         checksumRequested.setChecksumSalt(null);
@@ -192,7 +197,8 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Create a DeleteFileClient and start a delete operation", 
                 "This should be caught by the pillar");
-        DeleteFileClient deleteFile = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(clientSettings);
+        DeleteFileClient deleteFile = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(clientSettings,
+                securityManager);
 
         deleteFile.deleteFile(FILE_ID, settings.getReferenceSettings().getPillarSettings().getPillarID(), 
                 checksumDataNewFile, checksumRequested, testEventHandler, "AuditTrail: TESTING!!!");

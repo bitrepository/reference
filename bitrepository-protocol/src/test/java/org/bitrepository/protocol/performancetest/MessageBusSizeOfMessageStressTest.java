@@ -34,6 +34,8 @@ import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.security.DummySecurityManager;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -185,6 +187,8 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
     private class ResendMessageListener extends AbstractMessageListener {
         /** The message bus.*/
         private final MessageBus bus;
+        /** The mocked SecurityManager */
+        private SecurityManager securityManager = new DummySecurityManager();
         /** The amount of messages received.*/
         private int count;
 
@@ -193,7 +197,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
          * @param confs The configurations for declaring the messagebus.
          */
         public ResendMessageListener(MessageBusConfiguration conf) {
-            this.bus = new ActiveMQMessageBus(conf);
+            this.bus = new ActiveMQMessageBus(conf, securityManager);
             this.count = 0;
 
             bus.addListener(QUEUE, this);

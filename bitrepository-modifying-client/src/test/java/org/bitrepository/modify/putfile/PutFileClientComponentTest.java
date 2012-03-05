@@ -71,7 +71,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Testing the initialization through the ModifyComponentFactory.");
         addStep("Use the ModifyComponentFactory to instantiate a PutFileClient.", 
                 "It should be an instance of SimplePutFileClient");
-        PutFileClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(settings);
+        PutFileClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager);
         Assert.assertTrue(pfc instanceof ConversationBasedPutFileClient, "The PutFileClient '" + pfc + "' should be instance of '" 
                 + ConversationBasedPutFileClient.class.getName() + "'");
     }
@@ -404,8 +404,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
      * @return A new PutFileClient(Wrapper).
      */
     private PutFileClient createPutFileClient() {
-        MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration());
-        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings);
+        MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
+        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
         return new PutClientTestWrapper(new ConversationBasedPutFileClient(
                 messageBus, conversationMediator, settings)
         , testEventManager);

@@ -36,6 +36,8 @@ import org.bitrepository.integrityclient.collector.IntegrityInformationCollector
 import org.bitrepository.integrityclient.scheduler.TimerIntegrityInformationScheduler;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.security.DummySecurityManager;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -48,11 +50,13 @@ public class ComponentFactoryTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
     MessageBus messageBus;
+    SecurityManager securityManager;
     
     @BeforeClass (alwaysRun = true)
     public void setup() {
         settings = TestSettingsProvider.reloadSettings();
-        messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings);
+        securityManager = new DummySecurityManager();
+        messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
     }
     
     @Test(groups = {"regressiontest"})
@@ -70,8 +74,8 @@ public class ComponentFactoryTest extends ExtendedTestCase {
         IntegrityInformationCollector collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
                 cache, 
                 IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache), 
-                AccessComponentFactory.getInstance().createGetFileIDsClient(settings),
-                AccessComponentFactory.getInstance().createGetChecksumsClient(settings),
+                AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager),
+                AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager),
                 settings, messageBus);
         Assert.assertTrue(collector instanceof DelegatingIntegrityInformationCollector, 
                 "The default Collector should be the '" + DelegatingIntegrityInformationCollector.class.getName() + "'");

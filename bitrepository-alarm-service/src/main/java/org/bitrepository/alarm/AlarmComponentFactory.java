@@ -30,6 +30,7 @@ import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.bitrepository.protocol.security.SecurityManager;
 
 /**
  * Factory for the Alarm client module.
@@ -85,9 +86,9 @@ public final class AlarmComponentFactory {
      * @param settings The settings for the AlarmClient.
      * @return The AlarmClient.
      */
-    public AlarmService getAlarmService(Settings settings) {
+    public AlarmService getAlarmService(Settings settings, SecurityManager securityManager) {
         try {
-            MessageBus bus = MessageBusManager.getMessageBus(settings);
+            MessageBus bus = MessageBusManager.getMessageBus(settings, securityManager);
             AlarmService service = new BasicAlarmService(bus);
             
             return service;

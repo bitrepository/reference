@@ -35,6 +35,8 @@ import org.bitrepository.protocol.conversation.FlowController;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.protocol.security.DummySecurityManager;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.Test;
 
 /**
@@ -43,6 +45,7 @@ import org.testng.annotations.Test;
 @Test
 public abstract class ConversationMediatorTest {
     protected Settings settings = TestSettingsProvider.getSettings(); 
+    protected SecurityManager securityManager = new DummySecurityManager();
 
     /**
      * Validates the core mediator functionality of delegating messages from the message bus to the relevant 

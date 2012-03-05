@@ -155,8 +155,8 @@ public class AuditTrailIdentificatorTest extends DefaultFixtureClientTest {
      * @return A new GetFileClient(Wrapper).
      */
     private AuditTrailIdentificator createAuditTrailIdentificator() {
-        MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration());
-        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings);
+        MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
+        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
         return new AuditTrailIdentificatorTestWrapper(new ConversationBasedAuditTrailIdentificator(
                 settings, conversationMediator, messageBus)
         , testEventManager);

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitrepository Audit Trail Service
+ * Bitrepository Alarm Service
  * 
  * $Id$
  * $HeadURL$
@@ -22,13 +22,14 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.audittrails.webservice;
+package org.bitrepository.alarm.alarmservice;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.bitrepository.audittrails.service.AuditTrailService;
-import org.bitrepository.audittrails.service.AuditTrailServiceFactory;
+import org.bitrepository.alarm.AlarmStore;
+import org.bitrepository.alarm.AlarmStoreFactory;
+import org.bitrepository.alarm.utils.LogbackConfigLoader;
 import org.bitrepository.common.ConfigurationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,38 +41,41 @@ import org.slf4j.LoggerFactory;
  * 		of the basic client, so everything is setup before the first users start using the webservice. 
  * 2) In time shut the service down in a proper manner, so no threads will be orphaned.   
  */
-public class ShutdownListener implements ServletContextListener {
+public class AlarmServiceContextListener implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
-    
+
     /**
-     * Do initialization work  
+     * Performs work required to bring up the alarm service. 
+     * This includes setting up locations of configuration directories and initializing the AlarmStore 
+     * so it is connected to the messagebus and ready. 
      */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        String confDir = sce.getServletContext().getInitParameter("integrityServiceConfDir");
+        String confDir = sce.getServletContext().getInitParameter("alarmServiceConfDir");
         if(confDir == null) {
-            throw new RuntimeException("No configuration directory specified!");
+        	throw new RuntimeException("No configuration directory specified!");
         }
         log.debug("Configuration dir = " + confDir);
         System.setProperty(ConfigurationFactory.CONFIGURATION_DIR_SYSTEM_PROPERTY, confDir);
-        //try {
-        //new LogbackConfigLoader(confDir + "/logback.xml");
-        //	} catch (Exception e) {
-        //	log.info("Failed to read log configuration file. Falling back to default.");
-        //	} 
-        AuditTrailServiceFactory.init(confDir);
-        AuditTrailService service = AuditTrailServiceFactory.getAuditTrailService();
+        try {
+			new LogbackConfigLoader(confDir + "/logback.xml");
+		} catch (Exception e) {
+			log.info("Failed to read log configuration file. Falling back to default.");
+		} 
+        AlarmStoreFactory.init(confDir);
+        AlarmStore alarmStore = AlarmStoreFactory.getAlarmStore();
         log.debug("Servlet context initialized");
     }
-    
+
     /**
-     * Do teardown work. 
+     * Does the work of shutting the alarm service down gracefully. 
+     * This is done by calling the Alarm Store's shutdown method. 
      */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        // Method that's run when the war file is undeployed. 
-        // Can be used to shut everything down nicely..
+        AlarmStore alarmStore = AlarmStoreFactory.getAlarmStore();
+        alarmStore.shutdown(); 
         log.debug("Servlet context destroyed");
     }
-    
+
 }

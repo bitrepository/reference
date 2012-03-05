@@ -36,6 +36,8 @@ import org.bitrepository.integrityclient.scheduler.triggers.CollectAllChecksumsF
 import org.bitrepository.integrityclient.scheduler.triggers.CollectAllFileIDsFromPillarTrigger;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.security.DummySecurityManager;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -44,12 +46,14 @@ import org.testng.annotations.Test;
 public class SchedulerTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
+    SecurityManager securityManager;
     MessageBus messageBus;
     
     @BeforeClass (alwaysRun = true)
     public void setup() {
         settings = TestSettingsProvider.reloadSettings();
-        messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings);
+        securityManager = new DummySecurityManager();
+        messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
     }
     
     @Test(groups = {"regressiontest"})
