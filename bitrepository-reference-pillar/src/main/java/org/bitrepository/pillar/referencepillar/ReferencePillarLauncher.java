@@ -100,7 +100,7 @@ public final class ReferencePillarLauncher {
             System.err.println("Could not instantiate the security manager.");
             e.printStackTrace();
             System.exit(-1);
-        }        
+        }
         
         try {
             PillarComponentFactory.getInstance().getReferencePillar(MessageBusManager.getMessageBus(settings, 

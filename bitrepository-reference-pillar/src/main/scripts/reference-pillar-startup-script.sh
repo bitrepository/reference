@@ -31,7 +31,7 @@ cd ..
 set PWD=´pwd´
 
 # check whether any processes already are running.
-PIDS=$(ps -wwfe | org.bitrepository.pillar.referencepillar.ReferencePillarLauncher | grep -v grep | grep $PWD/conf | awk "{print \$2}")
+PIDS=$(ps -wwfe | grep org.bitrepository.pillar.referencepillar.ReferencePillarLauncher | grep -v grep | grep $PWD/conf | awk "{print \$2}")
 if [ -n "$PIDS" ] ; then
     echo Application already running.
     exit -1;
