@@ -72,7 +72,6 @@ public class IntegrityServiceFactory {
         //Empty constructor 
     }
     
-    
     /**
      * Set the configuration directory. 
      * Should only be run at initialization time. 

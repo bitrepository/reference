@@ -30,6 +30,7 @@ import javax.servlet.ServletContextListener;
 import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.integrityclient.IntegrityService;
 import org.bitrepository.integrityclient.IntegrityServiceFactory;
+import org.bitrepository.integrityclient.utils.LogbackConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,11 +55,11 @@ public class IntegrityServiceContextListener implements ServletContextListener {
 	    }
 	    log.debug("Configuration dir = " + confDir);
 	    System.setProperty(ConfigurationFactory.CONFIGURATION_DIR_SYSTEM_PROPERTY, confDir);
-	    //try {
-			//new LogbackConfigLoader(confDir + "/logback.xml");
-	//	} catch (Exception e) {
-		//	log.info("Failed to read log configuration file. Falling back to default.");
-	//	} 
+	    try {
+			new LogbackConfigLoader(confDir + "/logback.xml");
+		} catch (Exception e) {
+			log.info("Failed to read log configuration file. Falling back to default.");
+		} 
 	    IntegrityServiceFactory.init(confDir);
 	    IntegrityService service = IntegrityServiceFactory.getIntegrityService();
         log.debug("Servlet context initialized");
