@@ -73,7 +73,7 @@ import org.slf4j.LoggerFactory;
 public class BasicSecurityManager implements SecurityManager {
     private final Logger log = LoggerFactory.getLogger(BasicSecurityManager.class);
     /** Default password for the in-memory keystore */
-    private final static String defaultPassword = "123456";
+    private static final String defaultPassword = "123456";
     /** path to file containing the components private key and certificate */
     private final String privateKeyFile;
     /** CollectionSettings */
@@ -132,7 +132,7 @@ public class BasicSecurityManager implements SecurityManager {
                 byte[] decodeMessage = message.getBytes(SecurityModuleConstants.defaultEncodingType);
                 authenticator.authenticateMessage(decodeMessage, decodedSig);
             } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(SecurityModuleConstants.defaultEncodingType + " encoding not supported");
+                throw new SecurityModuleException(SecurityModuleConstants.defaultEncodingType + " encoding not supported", e);
             }
         }
     }
@@ -149,7 +149,7 @@ public class BasicSecurityManager implements SecurityManager {
                 byte[] signature = signer.signMessage(message.getBytes(SecurityModuleConstants.defaultEncodingType));
                 return new String(Base64.encode(signature));   
             } catch (UnsupportedEncodingException e) {
-                throw new SecurityModuleException(SecurityModuleConstants.defaultEncodingType + " encoding not supported");
+                throw new SecurityModuleException(SecurityModuleConstants.defaultEncodingType + " encoding not supported", e);
             }           
         } else { 
             return null;
@@ -243,10 +243,11 @@ public class BasicSecurityManager implements SecurityManager {
                 log.debug("Key for PrivateKeyEntry found");
                 privKey = (PrivateKey) pemObj;
             } else {
-
+                log.debug("Got something, thats not X509Certificate or PrivateKey. Class: " + pemObj.getClass().getSimpleName());
             }
             pemObj = pemReader.readObject();
         }
+        pemReader.close();
         if(privKey == null || privCert == null ) {
             log.info("No material to create private key entry found!");
         } else {

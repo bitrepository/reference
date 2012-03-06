@@ -32,5 +32,5 @@ public interface MessageAuthenticator {
      * @param signatureData, the signature to authenticate the message from
      * @throws MessageAuthenticationException in case authentication fails. 
      */
-    public abstract void authenticateMessage(byte[] messageData, byte[] signatureData) throws MessageAuthenticationException;
+    abstract void authenticateMessage(byte[] messageData, byte[] signatureData) throws MessageAuthenticationException;
 }

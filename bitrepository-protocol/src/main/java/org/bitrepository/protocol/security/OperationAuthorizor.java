@@ -35,7 +35,7 @@ public interface OperationAuthorizor {
      * @throws OperationAuthorizationException if the authorization fails.  
      * @throws UnregisteredPermissionException 
      */
-    public abstract void authorizeOperation(String operationType, SignerId signer) throws OperationAuthorizationException, 
+    abstract void authorizeOperation(String operationType, SignerId signer) throws OperationAuthorizationException, 
             UnregisteredPermissionException;
 
 }
