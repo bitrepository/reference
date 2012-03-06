@@ -200,7 +200,7 @@ public class BasicClient {
     
     public Map<String, Map<String, String>> getChecksums(String fileIDsText, String checksumType, String salt) {
     	ChecksumSpecTYPE checksumSpecItem = new ChecksumSpecTYPE();
-    	if(salt != null || !salt.equals("")) {
+    	if(salt != null && !salt.equals("")) {
     		checksumSpecItem.setChecksumSalt(HexUtils.stringToByteArray(salt));	
     	}
     	checksumSpecItem.setChecksumType(ChecksumType.fromValue(checksumType));

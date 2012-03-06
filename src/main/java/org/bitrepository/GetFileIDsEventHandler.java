@@ -17,7 +17,8 @@ public class GetFileIDsEventHandler implements EventHandler {
 		this.results = results;
 	}
 	
-	@Override
+	@SuppressWarnings("rawtypes")
+    @Override
 	public void handleEvent(OperationEvent event) {
 		logger.handleEvent(event);
 

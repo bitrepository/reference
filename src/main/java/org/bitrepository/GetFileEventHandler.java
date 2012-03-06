@@ -21,7 +21,8 @@ public class GetFileEventHandler implements EventHandler {
 		this.url = url;
 	}
 	
-	@Override
+	@SuppressWarnings("rawtypes")
+    @Override
 	public void handleEvent(OperationEvent event) {
 		logger.handleEvent(event);
 		switch(event.getType()) {

@@ -22,6 +22,7 @@ public class WebclientContextListener implements ServletContextListener {
     /**
      * Do initialization work  
      */
+    @SuppressWarnings("unused")
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         String confDir = sce.getServletContext().getInitParameter("configurationDir");

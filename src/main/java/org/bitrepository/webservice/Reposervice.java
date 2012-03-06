@@ -183,10 +183,10 @@ public class Reposervice {
     	}
     	sb.append("</tr>");
     	for(String fileId : returnedFileIDs) {
-    		sb.append("<tr> <td> " + fileID + "</td><td>&nbsp;</td>"); 
+    		sb.append("<tr> <td> " + fileId + "</td><td>&nbsp;</td>"); 
     		for(String pillarID : pillarIDList) {
-    			if(result.get(fileID).containsKey(pillarID)) {
-    				sb.append("<td> " + result.get(fileID).get(pillarID) + " </td>");	
+    			if(result.get(fileId).containsKey(pillarID)) {
+    				sb.append("<td> " + result.get(fileId).get(pillarID) + " </td>");	
     			} else {
     				sb.append("<td> unknown </td>");
     			}
@@ -241,10 +241,10 @@ public class Reposervice {
     	}
     	sb.append("\n");
     	for(String fileId : returnedFileIDs) {
-    		sb.append(fileID + "\t"); 
+    		sb.append(fileId + "\t"); 
     		for(String pillarID : pillarIDList) {
-    			if(result.get(fileID).containsKey(pillarID)) {
-    				sb.append(result.get(fileID).get(pillarID) + "\t");	
+    			if(result.get(fileId).containsKey(pillarID)) {
+    				sb.append(result.get(fileId).get(pillarID) + "\t");	
     			} else {
     				sb.append("unknown \t");
     			}
