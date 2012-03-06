@@ -1,3 +1,24 @@
+/*
+ * #%L
+ * Bitrepository Protocol
+ * %%
+ * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.protocol.performancetest;
 
 import java.io.File;
@@ -6,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
@@ -24,7 +44,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class MessageBusDelayTest extends ExtendedTestCase {
-    private final String destination = "DelayPerformanceTestDestination";
     private Settings settings;
     /** The mocked SecurityManager */
     private SecurityManager securityManager;
@@ -32,6 +51,8 @@ public class MessageBusDelayTest extends ExtendedTestCase {
     protected TestEventManager testEventManager = TestEventManager.getInstance();
     
     private static final int PERFORMANCE_COUNT = 1000;
+    
+    private static final int NUMBER_OF_TESTS = 100;
     
     private static final boolean WRITE_RESULTS_TO_DISC = true;
 //    private static final boolean WRITE_RESULTS_TO_DISC = false;
@@ -44,9 +65,13 @@ public class MessageBusDelayTest extends ExtendedTestCase {
     
     
     @Test( groups = {"StressTest"} )
-    public void test10Times() throws Exception {
-        for(int i = 0; i < 100; i++) {
-            performStatisticalAnalysisOfMessageDelay();
+    public void testManyTimes() throws Exception {
+        for(int i = 0; i < NUMBER_OF_TESTS; i++) {
+            try {
+                performStatisticalAnalysisOfMessageDelay();
+            } catch (Exception e) {
+                System.err.println("Unknown exception caught: " + e);
+            }
         }
     }
     
@@ -56,6 +81,7 @@ public class MessageBusDelayTest extends ExtendedTestCase {
         addStep("Setup the variables and connections for the test.", "Should connect to the messagebus.");
         MessageBus messageBus = MessageBusManager.getMessageBus(settings, securityManager);
         MessageReceiver destinationReceiver;
+        String destination = "DelayPerformanceTestDestination-" + new Date().getTime();
         destinationReceiver = new MessageReceiver("Performance test topic receiver", null); //testEventManager);
         messageBus.addListener(destination, destinationReceiver.getMessageListener());
         
@@ -67,8 +93,11 @@ public class MessageBusDelayTest extends ExtendedTestCase {
         for(int i = 0; i < PERFORMANCE_COUNT; i++) {
             Date before = new Date();
             messageBus.sendMessage(message);
-            AlarmMessage received = destinationReceiver.waitForMessage(AlarmMessage.class, 10, TimeUnit.SECONDS);
+            AlarmMessage received = destinationReceiver.waitForMessage(AlarmMessage.class, 100, TimeUnit.SECONDS);
             Date after = new Date();
+            if(received == null) {
+                System.err.println("No message received within 100 seconds");
+            }
             
             long delay = after.getTime() - before.getTime();
             delayList.add(delay);

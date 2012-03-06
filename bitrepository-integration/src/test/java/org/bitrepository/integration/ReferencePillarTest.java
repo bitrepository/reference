@@ -45,7 +45,7 @@ import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.ReferencePillarComponentFactory;
+import org.bitrepository.pillar.PillarComponentFactory;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -61,7 +61,7 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         addDescription("Tests the put functionality of the reference pillar.");
         addStep("Set up constants and variables.", "Should not fail here!");
         settings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-pillar-destination-jolf");
-        ReferencePillarComponentFactory.getInstance().getPillar(messageBus, settings);
+        PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         String REPLACE_FILE_ADDRES = "http://sandkasse-01.kb.dk/dav/dia.jpg";
         Long FILE_SIZE = 27L;

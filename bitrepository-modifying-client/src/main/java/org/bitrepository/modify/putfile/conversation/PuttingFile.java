@@ -81,6 +81,7 @@ public class PuttingFile extends PutFileState {
                     + "' of file '" + conversation.fileID + "' from url '" + conversation.downloadUrl.toExternalForm()
                     + "'.");
             finishOperation();
+            return;
         }
         
         // Create the message.
