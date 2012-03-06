@@ -47,6 +47,7 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.bitrepository.settings.collectionsettings.InfrastructurePermission;
 import org.bitrepository.settings.collectionsettings.Permission;
@@ -104,6 +105,11 @@ public class BasicSecurityManager implements SecurityManager {
      */
     public BasicSecurityManager(CollectionSettings collectionSettings, String privateKeyFile, MessageAuthenticator authenticator,
             MessageSigner signer, OperationAuthorizor authorizer, PermissionStore permissionStore) {
+        ArgumentValidator.checkNotNull(collectionSettings, "collectionSettings");
+        ArgumentValidator.checkNotNull(authenticator, "authenticator");
+        ArgumentValidator.checkNotNull(signer, "signer");
+        ArgumentValidator.checkNotNull(authorizer, "authorizer");
+        ArgumentValidator.checkNotNull(permissionStore, "permissionStore");
         this.privateKeyFile = privateKeyFile;
         this.collectionSettings = collectionSettings;
         this.authenticator = authenticator;
@@ -143,7 +149,7 @@ public class BasicSecurityManager implements SecurityManager {
                 byte[] signature = signer.signMessage(message.getBytes(SecurityModuleConstants.defaultEncodingType));
                 return new String(Base64.encode(signature));   
             } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(SecurityModuleConstants.defaultEncodingType + " encoding not supported");
+                throw new SecurityModuleException(SecurityModuleConstants.defaultEncodingType + " encoding not supported");
             }           
         } else { 
             return null;
@@ -165,7 +171,7 @@ public class BasicSecurityManager implements SecurityManager {
             try {
                 s = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes()), decodeSig);
             } catch (CMSException e) {
-                throw new RuntimeException(e);
+                throw new SecurityModuleException(e.getMessage(), e);
             }
     
             SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
@@ -181,6 +187,10 @@ public class BasicSecurityManager implements SecurityManager {
     
     /**
      * Do initialization work
+     * - Creates keystore
+     * - Loads private key and certificate
+     * - Loads permissions and certificates
+     * - Sets up SSLContext
      */
     private void initialize() {
         Security.addProvider(new BouncyCastleProvider());
@@ -193,7 +203,7 @@ public class BasicSecurityManager implements SecurityManager {
             signer.setPrivateKeyEntry(privateKeyEntry);
             setupDefaultSSLContext();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new SecurityModuleException(e.getMessage(), e);
         } 
     }
     

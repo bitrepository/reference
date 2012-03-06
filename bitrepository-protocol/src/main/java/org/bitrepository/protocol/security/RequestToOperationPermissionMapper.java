@@ -60,31 +60,37 @@ public class RequestToOperationPermissionMapper {
         requiredPermissions.add(OperationPermission.GET_FILE);
         mapping.put(IdentifyPillarsForGetFileRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(GetFileRequest.class.getSimpleName(), requiredPermissions);
+        
         requiredPermissions = new ArrayList<OperationPermission>();
         requiredPermissions.add(OperationPermission.ALL);
         requiredPermissions.add(OperationPermission.PUT_FILE);
         mapping.put(IdentifyPillarsForPutFileRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(PutFileRequest.class.getSimpleName(), requiredPermissions);
+        
         requiredPermissions = new ArrayList<OperationPermission>();
         requiredPermissions.add(OperationPermission.ALL);
         requiredPermissions.add(OperationPermission.GET_FILE_I_DS);
         mapping.put(IdentifyPillarsForGetFileIDsRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(GetFileIDsRequest.class.getSimpleName(), requiredPermissions);
+        
         requiredPermissions = new ArrayList<OperationPermission>();
         requiredPermissions.add(OperationPermission.ALL);
         requiredPermissions.add(OperationPermission.GET_CHECKSUMS);
         mapping.put(IdentifyPillarsForGetChecksumsRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(GetChecksumsRequest.class.getSimpleName(), requiredPermissions);
+        
         requiredPermissions = new ArrayList<OperationPermission>();
         requiredPermissions.add(OperationPermission.ALL);
         requiredPermissions.add(OperationPermission.GET_AUDIT_TRAILS);
         mapping.put(IdentifyContributorsForGetAuditTrailsRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(GetAuditTrailsRequest.class.getSimpleName(), requiredPermissions);
+        
         requiredPermissions = new ArrayList<OperationPermission>();
         requiredPermissions.add(OperationPermission.ALL);
         requiredPermissions.add(OperationPermission.DELETE_FILE);
         mapping.put(IdentifyPillarsForDeleteFileRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(DeleteFileRequest.class.getSimpleName(), requiredPermissions);
+        
         requiredPermissions = new ArrayList<OperationPermission>();
         requiredPermissions.add(OperationPermission.ALL);
         requiredPermissions.add(OperationPermission.REPLACE_FILE);
