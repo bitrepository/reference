@@ -38,8 +38,8 @@ public class BasicMessageAuthenticator implements MessageAuthenticator {
     public void authenticateMessage(byte[] messageData, byte[] signatureData) throws MessageAuthenticationException {
         X509Certificate signingCert;
         try {
-            byte[] decodedSig = Base64.decode(signatureData); 
-            CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(messageData), decodedSig);
+     //       byte[] decodedSig = Base64.decode(signatureData); 
+            CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(messageData), signatureData);
             SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
             signingCert = permissionStore.getCertificate(signer.getSID());
             
