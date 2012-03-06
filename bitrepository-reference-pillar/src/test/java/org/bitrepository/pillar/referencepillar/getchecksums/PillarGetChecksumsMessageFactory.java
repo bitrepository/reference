@@ -22,33 +22,36 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.getfileids;
+package org.bitrepository.pillar.referencepillar.getchecksums;
 
 import java.util.UUID;
 
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
+import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.TestMessageFactory;
 
-public class PillarGetFileIDsMessageFactory extends TestMessageFactory {
+public class PillarGetChecksumsMessageFactory extends TestMessageFactory {
 
     final Settings settings;
     
-    public PillarGetFileIDsMessageFactory(Settings pSettings) {
+    public PillarGetChecksumsMessageFactory(Settings pSettings) {
         this.settings = pSettings;
     }
     
-    public IdentifyPillarsForGetFileIDsRequest createIdentifyPillarsForGetFileIDsRequest(String replyTo, FileIDs fileId) {
-        IdentifyPillarsForGetFileIDsRequest res = new IdentifyPillarsForGetFileIDsRequest();
+    public IdentifyPillarsForGetChecksumsRequest createIdentifyPillarsForGetChecksumsRequest( 
+            ChecksumSpecTYPE csSpec, String replyTo, FileIDs fileId) {
+        IdentifyPillarsForGetChecksumsRequest res = new IdentifyPillarsForGetChecksumsRequest();
         res.setAuditTrailInformation(null);
+        res.setChecksumRequestForExistingFile(csSpec);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFileIDs(fileId);
@@ -60,28 +63,31 @@ public class PillarGetFileIDsMessageFactory extends TestMessageFactory {
         return res;
     }
 
-    public IdentifyPillarsForGetFileIDsResponse createIdentifyPillarsForGetFileIDsResponse(
-            String correlationId, FileIDs fileId, String replyTo, String pillarId, 
+    public IdentifyPillarsForGetChecksumsResponse createIdentifyPillarsForGetChecksumsResponse(
+            ChecksumSpecTYPE csSpec, String correlationId, FileIDs fileId, String replyTo, String pillarId, 
             TimeMeasureTYPE timeToDeliver, String toTopic, ResponseInfo responseInfo) {
-        IdentifyPillarsForGetFileIDsResponse res = new IdentifyPillarsForGetFileIDsResponse();
+        IdentifyPillarsForGetChecksumsResponse res = new IdentifyPillarsForGetChecksumsResponse();
+        res.setChecksumRequestForExistingFile(csSpec);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
         res.setMinVersion(VERSION_DEFAULT);
+        res.setPillarChecksumSpec(null);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setTimeToDeliver(timeToDeliver);
         res.setTo(toTopic);
         res.setVersion(VERSION_DEFAULT);
-        
+
         return res;
     }
     
-    public GetFileIDsRequest createGetFileIDsRequest(String correlationId, FileIDs fileId, String pillarId,  
-            String replyTo, String url, String toTopic) {
-        GetFileIDsRequest res = new GetFileIDsRequest();
+    public GetChecksumsRequest createGetChecksumsRequest(ChecksumSpecTYPE csSpec, String correlationId, FileIDs fileId,
+            String pillarId, String replyTo, String url, String toTopic) {
+        GetChecksumsRequest res = new GetChecksumsRequest();
         res.setAuditTrailInformation(null);
+        res.setChecksumRequestForExistingFile(csSpec);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
@@ -91,13 +97,15 @@ public class PillarGetFileIDsMessageFactory extends TestMessageFactory {
         res.setResultAddress(url);
         res.setTo(toTopic);
         res.setVersion(VERSION_DEFAULT);
-        
+
         return res;
     }
 
-    public GetFileIDsProgressResponse createGetFileIDsProgressResponse(String correlationId, FileIDs fileId, 
-            String pillarId, String replyTo, ResponseInfo prInfo, String url, String toTopic) {
-        GetFileIDsProgressResponse res = new GetFileIDsProgressResponse();
+    public GetChecksumsProgressResponse createGetChecksumsProgressResponse(ChecksumSpecTYPE csSpec, 
+            String correlationId, FileIDs fileId, String pillarId, String replyTo, ResponseInfo prInfo, String url, 
+            String toTopic) {
+        GetChecksumsProgressResponse res = new GetChecksumsProgressResponse();
+        res.setChecksumRequestForExistingFile(csSpec);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
@@ -108,24 +116,25 @@ public class PillarGetFileIDsMessageFactory extends TestMessageFactory {
         res.setResultAddress(url);
         res.setTo(toTopic);
         res.setVersion(VERSION_DEFAULT);
-        
+
         return res;
     }
 
-    public GetFileIDsFinalResponse createGetFileIDsFinalResponse(String correlationId, FileIDs fileId, 
-            String pillarId, String replyTo, ResponseInfo frInfo, ResultingFileIDs results, String toTopic) {
-        GetFileIDsFinalResponse res = new GetFileIDsFinalResponse();
+    public GetChecksumsFinalResponse createGetChecksumsFinalResponse(ChecksumSpecTYPE csSpec, String correlationId, 
+            FileIDs fileId, String pillarId, String replyTo, ResponseInfo frInfo, ResultingChecksums results, 
+            String toTopic) {
+        GetChecksumsFinalResponse res = new GetChecksumsFinalResponse();
+        res.setChecksumRequestForExistingFile(csSpec);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
-        res.setFileIDs(fileId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(frInfo);
-        res.setResultingFileIDs(results);
+        res.setResultingChecksums(results);
         res.setTo(toTopic);
         res.setVersion(VERSION_DEFAULT);
-        
+
         return res;
     }
     

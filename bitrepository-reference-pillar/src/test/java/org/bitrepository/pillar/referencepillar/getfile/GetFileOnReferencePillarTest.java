@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.getfile;
+package org.bitrepository.pillar.referencepillar.getfile;
 
 import java.io.File;
 import java.util.Date;

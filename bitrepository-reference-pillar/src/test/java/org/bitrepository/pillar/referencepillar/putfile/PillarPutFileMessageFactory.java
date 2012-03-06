@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.putfile;
+package org.bitrepository.pillar.referencepillar.putfile;
 
 import java.math.BigInteger;
 import java.util.UUID;

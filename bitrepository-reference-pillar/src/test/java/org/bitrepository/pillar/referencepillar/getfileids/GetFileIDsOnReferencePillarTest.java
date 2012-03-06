@@ -22,23 +22,22 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.getchecksums;
+package org.bitrepository.pillar.referencepillar.getfileids;
 
 import java.io.File;
 import java.util.Date;
 
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.PillarComponentFactory;
+import org.bitrepository.pillar.referencepillar.ReferencePillar;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -46,12 +45,13 @@ import org.testng.annotations.Test;
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
-public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest {
-    PillarGetChecksumsMessageFactory msgFactory;
+public class GetFileIDsOnReferencePillarTest extends DefaultFixturePillarTest {
+    PillarGetFileIDsMessageFactory msgFactory;
+    ReferencePillar pillar = null;
     
     @BeforeMethod (alwaysRun=true)
-    public void initialiseGetChecksumsTests() throws Exception {
-        msgFactory = new PillarGetChecksumsMessageFactory(settings);
+    public void initialiseGetFileIDsTests() throws Exception {
+        msgFactory = new PillarGetFileIDsMessageFactory(settings);
         File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
         if(dir.exists()) {
             FileUtils.delete(dir);
@@ -59,18 +59,14 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
     }
     
     @Test( groups = {"pillartest"})
-    public void pillarGetChecksumsTestSuccessCase() throws Exception {
-        addDescription("Tests the GetChecksums functionality of the reference pillar for the successful scenario.");
+    public void pillarGetFileIDsTestSuccessCase() throws Exception {
+        addDescription("Tests the GetFileIDs functionality of the reference pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String CS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
+        String FILE_IDS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
-        
-        ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
-        csSpec.setChecksumSalt(null);
-        csSpec.setChecksumType(ChecksumType.MD5);
         
         addStep("Initialize the pillar.", "Should not be a problem.");
         PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
@@ -86,17 +82,16 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForGetChecksumsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetChecksumsRequest(
-                csSpec, clientDestinationId, fileids);
+        IdentifyPillarsForGetFileIDsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileIDsRequest(
+                clientDestinationId, fileids);
         messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
-        IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientTopic.waitForMessage(
-                IdentifyPillarsForGetChecksumsResponse.class);
+        IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+                IdentifyPillarsForGetFileIDsResponse.class);
         Assert.assertEquals(receivedIdentifyResponse, 
-                msgFactory.createIdentifyPillarsForGetChecksumsResponse(
-                        csSpec,
+                msgFactory.createIdentifyPillarsForGetFileIDsResponse(
                         identifyRequest.getCorrelationID(),
                         fileids, 
                         receivedIdentifyResponse.getReplyTo(),
@@ -107,73 +102,66 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
         
-        addStep("Create and send the actual GetChecksums message to the pillar.", 
+        addStep("Create and send the actual GetFileIDs message to the pillar.", 
                 "Should be received and handled by the pillar.");
-        GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
-                csSpec, receivedIdentifyResponse.getCorrelationID(), fileids, pillarId, 
-                clientDestinationId, CS_DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
-        messageBus.sendMessage(getChecksumsRequest);
+        GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
+                receivedIdentifyResponse.getCorrelationID(), fileids, pillarId, 
+                clientDestinationId, FILE_IDS_DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
+        messageBus.sendMessage(getFileIDsRequest);
         
-        addStep("Retrieve the ProgressResponse for the GetChecksums request", 
-                "The GetChecksums progress response should be sent by the pillar.");
-        GetChecksumsProgressResponse progressResponse = clientTopic.waitForMessage(GetChecksumsProgressResponse.class);
+        addStep("Retrieve the ProgressResponse for the GetFileIDs request", 
+                "The GetFileIDs progress response should be sent by the pillar.");
+        GetFileIDsProgressResponse progressResponse = clientTopic.waitForMessage(GetFileIDsProgressResponse.class);
         Assert.assertEquals(progressResponse,
-                msgFactory.createGetChecksumsProgressResponse(
-                        csSpec, 
+                msgFactory.createGetFileIDsProgressResponse(
                         identifyRequest.getCorrelationID(), 
                         fileids, 
                         pillarId, 
                         progressResponse.getReplyTo(), 
                         progressResponse.getResponseInfo(), 
-                        CS_DELIVERY_ADDRESS,
+                        FILE_IDS_DELIVERY_ADDRESS,
                         progressResponse.getTo()));
         
-        addStep("Retrieve the FinalResponse for the GetChecksums request", 
-                "The GetChecksums response should be sent by the pillar.");
-        GetChecksumsFinalResponse finalResponse = clientTopic.waitForMessage(GetChecksumsFinalResponse.class);
+        addStep("Retrieve the FinalResponse for the GetFileIDs request", 
+                "The GetFileIDs response should be sent by the pillar.");
+        GetFileIDsFinalResponse finalResponse = clientTopic.waitForMessage(GetFileIDsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         
         Assert.assertEquals(finalResponse,
-                msgFactory.createGetChecksumsFinalResponse(
-                        csSpec,
+                msgFactory.createGetFileIDsFinalResponse(
                         identifyRequest.getCorrelationID(), 
                         fileids,
                         pillarId, 
                         finalResponse.getReplyTo(), 
                         finalResponse.getResponseInfo(), 
-                        finalResponse.getResultingChecksums(),
+                        finalResponse.getResultingFileIDs(),
                         finalResponse.getTo()));
     }
     
     @Test( groups = {"pillartest"})
-    public void pillarGetChecksumsTestFailedNoSuchFile() throws Exception {
-        addDescription("Tests that the ReferencePillar is able to reject a GetChecksums requests for a file, which it does not have.");
+    public void pillarGetFileIDsTestFailedNoSuchFile() throws Exception {
+        addDescription("Tests that the ReferencePillar is able to reject a GetFileIDs requests for a file, which it does not have.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
-
-        ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
-        csSpec.setChecksumSalt(null);
-        csSpec.setChecksumType(ChecksumType.MD5);
         
         addStep("Initialize the pillar.", "Should not be a problem.");
         PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
-
+        
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForGetChecksumsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetChecksumsRequest(
-                csSpec, clientDestinationId, fileids);
+        IdentifyPillarsForGetFileIDsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileIDsRequest(
+                clientDestinationId, fileids);
         messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
-        IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientTopic.waitForMessage(
-                IdentifyPillarsForGetChecksumsResponse.class);
+        IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+                IdentifyPillarsForGetFileIDsResponse.class);
         Assert.assertEquals(receivedIdentifyResponse, 
-                msgFactory.createIdentifyPillarsForGetChecksumsResponse(
-                        csSpec,
+                msgFactory.createIdentifyPillarsForGetFileIDsResponse(
                         identifyRequest.getCorrelationID(),
                         fileids, 
                         receivedIdentifyResponse.getReplyTo(),
@@ -185,45 +173,39 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
                 ResponseCode.FILE_NOT_FOUND_FAILURE);        
     }
     
-    @Test(groups = {"pillartest"})
-    public void pillarGetChecksumsTestFailedNoSuchFileInOperation() throws Exception {
-        addDescription("Tests that the ReferencePillar is able to reject a GetChecksums requests for a file, " +
-                "which it does not have. But this time at the GetChecksums message.");
+    @Test( groups = {"pillartest"})
+    public void pillarGetFileIDsTestFailedNoSuchFileInOperation() throws Exception {
+        addDescription("Tests that the ReferencePillar is able to reject a GetFileIDs requests for a file, " +
+                "which it does not have. But this time at the GetFileIDs message.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String CS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
+        String FILE_IDS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
         String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
         
-        ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
-        csSpec.setChecksumSalt(null);
-        csSpec.setChecksumType(ChecksumType.MD5);
-        
         addStep("Initialize the pillar.", "Should not be a problem.");
         PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
-
-        addStep("Create and send the actual GetChecksums message to the pillar.", 
-                "Should be received and handled by the pillar.");
-        GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
-                csSpec, msgFactory.getNewCorrelationID(), fileids, pillarId, 
-                clientDestinationId, CS_DELIVERY_ADDRESS, pillarDestinationId);
-        messageBus.sendMessage(getChecksumsRequest);
         
-        addStep("Retrieve the FinalResponse for the GetChecksums request", 
-                "The GetChecksums response should be sent by the pillar.");
-        GetChecksumsFinalResponse finalResponse = clientTopic.waitForMessage(GetChecksumsFinalResponse.class);
+        addStep("Create and send the GetFileIDs request message.", "Should be caught and handled by the pillar.");
+        GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
+                msgFactory.getNewCorrelationID(), fileids, pillarId, 
+                clientDestinationId, FILE_IDS_DELIVERY_ADDRESS, pillarDestinationId);
+        messageBus.sendMessage(getFileIDsRequest);
+        
+        addStep("Retrieve the FinalResponse for the GetFileIDs request", 
+                "The GetFileIDs response should be sent by the pillar.");
+        GetFileIDsFinalResponse finalResponse = clientTopic.waitForMessage(GetFileIDsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
         
         Assert.assertEquals(finalResponse,
-                msgFactory.createGetChecksumsFinalResponse(
-                        csSpec,
-                        getChecksumsRequest.getCorrelationID(), 
+                msgFactory.createGetFileIDsFinalResponse(
+                        getFileIDsRequest.getCorrelationID(), 
                         fileids,
                         pillarId, 
                         finalResponse.getReplyTo(), 
                         finalResponse.getResponseInfo(), 
-                        finalResponse.getResultingChecksums(),
-                        finalResponse.getTo()));
+                        finalResponse.getResultingFileIDs(),
+                        finalResponse.getTo()));      
     }
 }

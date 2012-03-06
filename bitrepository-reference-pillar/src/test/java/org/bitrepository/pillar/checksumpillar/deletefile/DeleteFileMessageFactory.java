@@ -22,39 +22,46 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.getchecksums;
+package org.bitrepository.pillar.checksumpillar.deletefile;
 
 import java.util.UUID;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
+import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.TestMessageFactory;
 
-public class PillarGetChecksumsMessageFactory extends TestMessageFactory {
+public class DeleteFileMessageFactory extends TestMessageFactory {
 
     final Settings settings;
     
-    public PillarGetChecksumsMessageFactory(Settings pSettings) {
+    public DeleteFileMessageFactory(Settings pSettings) {
         this.settings = pSettings;
     }
     
-    public IdentifyPillarsForGetChecksumsRequest createIdentifyPillarsForGetChecksumsRequest( 
-            ChecksumSpecTYPE csSpec, String replyTo, FileIDs fileId) {
-        IdentifyPillarsForGetChecksumsRequest res = new IdentifyPillarsForGetChecksumsRequest();
-        res.setAuditTrailInformation(null);
-        res.setChecksumRequestForExistingFile(csSpec);
+    public IdentifyPillarsForDeleteFileRequest createIdentifyPillarsForDeleteFileRequest( 
+            String auditTrail, String replyTo, String fileId) {
+        IdentifyPillarsForDeleteFileRequest res = new IdentifyPillarsForDeleteFileRequest();
+        
+        res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
-        res.setFileIDs(fileId);
+        res.setFileID(fileId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setTo(settings.getCollectionDestination());
@@ -63,75 +70,72 @@ public class PillarGetChecksumsMessageFactory extends TestMessageFactory {
         return res;
     }
 
-    public IdentifyPillarsForGetChecksumsResponse createIdentifyPillarsForGetChecksumsResponse(
-            ChecksumSpecTYPE csSpec, String correlationId, FileIDs fileId, String replyTo, String pillarId, 
+    public IdentifyPillarsForDeleteFileResponse createIdentifyPillarsForDeleteFileResponse(
+            ChecksumSpecTYPE pillarCsSpec, String correlationId, String fileId, String replyTo, String pillarId, 
             TimeMeasureTYPE timeToDeliver, String toTopic, ResponseInfo responseInfo) {
-        IdentifyPillarsForGetChecksumsResponse res = new IdentifyPillarsForGetChecksumsResponse();
-        res.setChecksumRequestForExistingFile(csSpec);
+        IdentifyPillarsForDeleteFileResponse res = new IdentifyPillarsForDeleteFileResponse();
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
-        res.setFileIDs(fileId);
+        res.setFileID(fileId);
         res.setMinVersion(VERSION_DEFAULT);
-        res.setPillarChecksumSpec(null);
+        res.setPillarChecksumSpec(pillarCsSpec);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setTimeToDeliver(timeToDeliver);
         res.setTo(toTopic);
         res.setVersion(VERSION_DEFAULT);
-
+        
         return res;
     }
     
-    public GetChecksumsRequest createGetChecksumsRequest(ChecksumSpecTYPE csSpec, String correlationId, FileIDs fileId,
-            String pillarId, String replyTo, String url, String toTopic) {
-        GetChecksumsRequest res = new GetChecksumsRequest();
-        res.setAuditTrailInformation(null);
+    public DeleteFileRequest createGetDeleteFile(String auditTrail, ChecksumDataForFileTYPE csData,
+            ChecksumSpecTYPE csSpec, String correlationId, String fileId, String pillarId, String replyTo, String url, 
+            String toTopic) {
+        DeleteFileRequest res = new DeleteFileRequest();
+        res.setAuditTrailInformation(auditTrail);
+        res.setChecksumDataForExistingFile(csData);
         res.setChecksumRequestForExistingFile(csSpec);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
-        res.setFileIDs(fileId);
+        res.setFileID(fileId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
-        res.setResultAddress(url);
         res.setTo(toTopic);
         res.setVersion(VERSION_DEFAULT);
 
         return res;
     }
 
-    public GetChecksumsProgressResponse createGetChecksumsProgressResponse(ChecksumSpecTYPE csSpec, 
-            String correlationId, FileIDs fileId, String pillarId, String replyTo, ResponseInfo prInfo, String url, 
-            String toTopic) {
-        GetChecksumsProgressResponse res = new GetChecksumsProgressResponse();
-        res.setChecksumRequestForExistingFile(csSpec);
+    public DeleteFileProgressResponse createGetDeleteFileResponse(String correlationId, String fileId, String pillarId,
+            String replyTo, ResponseInfo prInfo, String url, String toTopic) {
+        DeleteFileProgressResponse res = new DeleteFileProgressResponse();
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
-        res.setFileIDs(fileId);
+        res.setFileID(fileId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(prInfo);
-        res.setResultAddress(url);
         res.setTo(toTopic);
         res.setVersion(VERSION_DEFAULT);
-
+        
         return res;
     }
 
-    public GetChecksumsFinalResponse createGetChecksumsFinalResponse(ChecksumSpecTYPE csSpec, String correlationId, 
-            FileIDs fileId, String pillarId, String replyTo, ResponseInfo frInfo, ResultingChecksums results, 
+    public DeleteFileFinalResponse createDeleteFileFinalResponse(ChecksumDataForFileTYPE csData, String correlationId, 
+            String fileId, String pillarId, String replyTo, ResponseInfo frInfo, ResultingChecksums results, 
             String toTopic) {
-        GetChecksumsFinalResponse res = new GetChecksumsFinalResponse();
-        res.setChecksumRequestForExistingFile(csSpec);
+        DeleteFileFinalResponse res = new DeleteFileFinalResponse();
+        res.setChecksumDataForExistingFile(csData);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
+        res.setFileID(fileId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(frInfo);
-        res.setResultingChecksums(results);
         res.setTo(toTopic);
         res.setVersion(VERSION_DEFAULT);
 
