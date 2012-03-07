@@ -124,7 +124,7 @@ public class AlarmStoreDataItem {
 			alarmText = st.nextToken();
 			return new AlarmStoreDataItem(date, raiser, alarmCode, alarmText);
 		} catch (DatatypeConfigurationException e) {
-			throw new IllegalArgumentException("The date token is invalid");
+			throw new IllegalArgumentException("The date token is invalid", e);
 		}
 	}
 

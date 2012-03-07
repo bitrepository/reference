@@ -42,7 +42,7 @@ import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 
-public class AuditTrailServiceFactory {
+public final class AuditTrailServiceFactory {
     
     private static AuditTrailService auditTrailService;
     private static String configurationDir;
@@ -68,14 +68,14 @@ public class AuditTrailServiceFactory {
     }
     
     
-    public static void init(String confDir) {
+    public static synchronized void init(String confDir) {
         configurationDir = confDir;
     }
     
     /**
      * Factory method to retrieve AuditTrailService  
      */
-    public synchronized static AuditTrailService getAuditTrailService() {
+    public static synchronized AuditTrailService getAuditTrailService() {
         if(auditTrailService == null) {
             SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(configurationDir));
             Settings settings = settingsLoader.getSettings(DEFAULT_COLLECTION_ID);

@@ -39,7 +39,7 @@ import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 public class BasicMessageSigner implements MessageSigner {
 
     /** Constant to indicate whether to used attached or detached mode for signing.*/
-    private final static boolean USE_ATTACHED_MODE = false;
+    private static final boolean USE_ATTACHED_MODE = false;
     /** Container for the private key and certificate needed to sign messages*/
     private PrivateKeyEntry privateKeyEntry;
     /** SignerInfoBuilder used in the signing process. */

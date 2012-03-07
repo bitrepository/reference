@@ -28,7 +28,7 @@ public interface SecurityManager {
      * @param signature, the signature belonging to the message. 
      * @throws MessageAuthenticationException in case of failure.
      */
-    public void authenticateMessage(String message, String signature) throws MessageAuthenticationException;
+    void authenticateMessage(String message, String signature) throws MessageAuthenticationException;
     
     /**
      * Method to sign a message
@@ -36,7 +36,7 @@ public interface SecurityManager {
      * @return String the signature for the message, or null if authentication is disabled. 
      * @throws MessageSigningException if signing of the message fails.   
      */
-    public String signMessage(String message) throws MessageSigningException;
+    String signMessage(String message) throws MessageSigningException;
     
     /**
      * Method to authorize an operation 
@@ -45,6 +45,6 @@ public interface SecurityManager {
      * @param signature, the signature belonging to the message request. 
      * @throws OperationAuthorizationException in case of failure. 
      */
-    public void authorizeOperation(String operationType, String messageData, String signature) 
+    void authorizeOperation(String operationType, String messageData, String signature) 
             throws OperationAuthorizationException;
 }

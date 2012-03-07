@@ -44,9 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class IntegrityServiceFactory {
+public final class IntegrityServiceFactory {
     
-    private Logger log = LoggerFactory.getLogger(IntegrityServiceFactory.class);
     private static String confDir;
     private static IntegrityService integrityService;
     private static String privateKeyFile;

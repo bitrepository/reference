@@ -35,11 +35,11 @@ public interface AlarmHandler {
      * Handle the actual alarm messages.
      * @param msg The message to handle.
      */
-    public void handleAlarm(AlarmMessage msg);
+    void handleAlarm(AlarmMessage msg);
     
     /**
      * Handler for anything else than a AlarmMessage.
      * @param msg Anything else than a AlarmMessage.
      */
-    public void handleOther(Object msg);
+    void handleOther(Object msg);
 }

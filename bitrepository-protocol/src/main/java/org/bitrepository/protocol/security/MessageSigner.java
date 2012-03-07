@@ -32,7 +32,7 @@ public interface MessageSigner {
      * Setter method for setting the PrivateKeyEntry needed by implementers to sign messages. 
      * @param privateKeyEntry the PrivateKeyEntry used for signing messages. 
      */
-    public abstract void setPrivateKeyEntry(PrivateKeyEntry privateKeyEntry);
+    abstract void setPrivateKeyEntry(PrivateKeyEntry privateKeyEntry);
     
     /**
      * Method to sign a message.
@@ -40,5 +40,5 @@ public interface MessageSigner {
      * @return The raw signature. 
      * @throws MessageSigningException if the signing fails. 
      */
-    public abstract byte[] signMessage(byte[] messageData) throws MessageSigningException;
+    abstract byte[] signMessage(byte[] messageData) throws MessageSigningException;
 }

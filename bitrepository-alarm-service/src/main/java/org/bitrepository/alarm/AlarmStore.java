@@ -48,11 +48,11 @@ public class AlarmStore {
 	private AlarmCollector collector;
 	private AlarmMailer mailer;
 	private ArrayBlockingQueue<AlarmStoreDataItem> shortAlarmList;
-    private static MessageAuthenticator authenticator;
-    private static MessageSigner signer;
-    private static OperationAuthorizor authorizer;
-    private static PermissionStore permissionStore;
-    private static SecurityManager securityManager;
+    private MessageAuthenticator authenticator;
+    private MessageSigner signer;
+    private OperationAuthorizor authorizer;
+    private PermissionStore permissionStore;
+    private SecurityManager securityManager;
 
 	AlarmStore(Settings settings, String alarmStoreFile, String privateKeyFile) {
 		this.alarmStoreFile = alarmStoreFile;
