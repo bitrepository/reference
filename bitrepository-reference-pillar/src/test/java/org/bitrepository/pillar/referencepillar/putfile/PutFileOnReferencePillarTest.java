@@ -30,6 +30,8 @@ import java.net.URL;
 import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
@@ -37,12 +39,12 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.PillarComponentFactory;
 import org.bitrepository.pillar.referencepillar.ReferencePillar;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -85,8 +87,12 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
         Long FILE_SIZE = testfile.length();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
-        String FILE_CHECKSUM_MD5 = ChecksumUtils.generateChecksum(testfile, "md5", (byte[]) null);
-        String FILE_CHECKSUM_SHA1 = ChecksumUtils.generateChecksum(testfile, "sha1", (byte[]) null);
+        ChecksumSpecTYPE csMD5 = new ChecksumSpecTYPE();
+        csMD5.setChecksumType(ChecksumType.MD5);
+        ChecksumSpecTYPE csSHA1 = new ChecksumSpecTYPE();
+        csSHA1.setChecksumType(ChecksumType.SHA1);
+        String FILE_CHECKSUM_MD5 = ChecksumUtils.generateChecksum(testfile, csMD5);
+        String FILE_CHECKSUM_SHA1 = ChecksumUtils.generateChecksum(testfile, csSHA1);
         Date startDate = new Date();
         ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(new FileInputStream(testfile), 
                 new URL(FILE_ADDRESS));
@@ -241,7 +247,9 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
         Long FILE_SIZE = testfile.length();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
-        String CORRECT_FILE_CHECKSUM_MD5 = ChecksumUtils.generateChecksum(testfile, "md5", (byte[]) null);
+        ChecksumSpecTYPE csMD5 = new ChecksumSpecTYPE();
+        csMD5.setChecksumType(ChecksumType.MD5);
+        String CORRECT_FILE_CHECKSUM_MD5 = ChecksumUtils.generateChecksum(testfile, csMD5);
         String WRONG_FILE_CHECKSUM_MD5 = "erroneous-checksum";
         ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(new FileInputStream(testfile), 
                 new URL(FILE_ADDRESS));

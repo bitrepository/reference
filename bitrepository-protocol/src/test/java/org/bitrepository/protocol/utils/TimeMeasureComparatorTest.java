@@ -22,12 +22,13 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.time;
+package org.bitrepository.protocol.utils;
 
 import java.math.BigInteger;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
+import org.bitrepository.protocol.utils.TimeMeasurementUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -45,15 +46,15 @@ public class TimeMeasureComparatorTest {
         compareTime.setTimeMeasureValue(new BigInteger("3"));
         compareTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
         
-        Assert.assertTrue(TimeMeasureComparator.compare(referenceTime, compareTime) < 0, referenceTime + 
+        Assert.assertTrue(TimeMeasurementUtils.compare(referenceTime, compareTime) < 0, referenceTime + 
                 " should be smaller than " + compareTime);
         
         compareTime.setTimeMeasureValue(new BigInteger("1"));
-        Assert.assertTrue(TimeMeasureComparator.compare(referenceTime, compareTime) > 0, referenceTime + 
+        Assert.assertTrue(TimeMeasurementUtils.compare(referenceTime, compareTime) > 0, referenceTime + 
                 " should be larger than " + compareTime);
         
         compareTime.setTimeMeasureValue(new BigInteger("2"));
-        Assert.assertTrue(TimeMeasureComparator.compare(referenceTime, compareTime) == 0, referenceTime + 
+        Assert.assertTrue(TimeMeasurementUtils.compare(referenceTime, compareTime) == 0, referenceTime + 
                 " should be same as " + compareTime);
     }
 
@@ -67,15 +68,15 @@ public class TimeMeasureComparatorTest {
         compareTime.setTimeMeasureValue(new BigInteger("3"));
         compareTime.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
         
-        Assert.assertTrue(TimeMeasureComparator.compare(referenceTime, compareTime) < 0, referenceTime + 
+        Assert.assertTrue(TimeMeasurementUtils.compare(referenceTime, compareTime) < 0, referenceTime + 
                 " should be smaller than " + compareTime);
         
         compareTime.setTimeMeasureValue(new BigInteger("1"));
-        Assert.assertTrue(TimeMeasureComparator.compare(referenceTime, compareTime) > 0, referenceTime + 
+        Assert.assertTrue(TimeMeasurementUtils.compare(referenceTime, compareTime) > 0, referenceTime + 
                 " should be larger than " + compareTime);
         
         compareTime.setTimeMeasureValue(new BigInteger("2"));
-        Assert.assertTrue(TimeMeasureComparator.compare(referenceTime, compareTime) == 0, referenceTime + 
+        Assert.assertTrue(TimeMeasurementUtils.compare(referenceTime, compareTime) == 0, referenceTime + 
                 " should be same as " + compareTime);
     }
 }

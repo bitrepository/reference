@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.time;
+package org.bitrepository.protocol.utils;
 
 import java.math.BigInteger;
 import java.util.Comparator;
@@ -32,13 +32,39 @@ import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.bitrepository.common.ArgumentValidator;
 
-/** Used for comparing {@link TimeMeasureTYPE} objects.*/
-public final class TimeMeasureComparator {
-    
-    
-    /** Utility class, never instantiate. */
-    private TimeMeasureComparator() {}
+/**
+ * Provides helper method for accessing {@link TimeMeasurementTYPE} objects. 
+ */
+public class TimeMeasurementUtils {
 
+    /**
+     * Private constructor. To prevent instantiation of this utility class.
+     */
+    private TimeMeasurementUtils() { }
+    
+    /**
+     * Generates a TimeMeasureTYPE object based on a milliseconds value.
+     * @param milliseconds The time measure in milliseconds.
+     * @return A corresponding <code>TimeMeasureTYPE</code> object.
+     */
+    public static TimeMeasureTYPE getTimeMeasurementFromMiliseconds(BigInteger milliseconds) {
+        TimeMeasureTYPE timeMeasure = new TimeMeasureTYPE();
+        timeMeasure.setTimeMeasureValue(milliseconds);
+        timeMeasure.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
+        return timeMeasure; 
+    }
+    
+    /**
+     * Method for getting the maximum time. Uses the maximum value of Long and puts it in HOURS.
+     * @return The TimeMeasure for the maximum time.
+     */
+    public static TimeMeasureTYPE getMaximumTime() {
+        TimeMeasureTYPE timeMeasure = new TimeMeasureTYPE();
+        timeMeasure.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
+        timeMeasure.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
+        return timeMeasure; 
+    }
+    
     /**
      * Compares its two arguments for order. Returns a negative integer, zero, or a positive integer as the first 
      * argument is less than, equal to, or greater than the second.

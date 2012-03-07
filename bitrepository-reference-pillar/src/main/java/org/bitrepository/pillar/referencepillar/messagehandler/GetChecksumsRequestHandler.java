@@ -42,7 +42,6 @@ import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetChecksumsResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -54,12 +53,12 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -217,11 +216,9 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         
         FileIDs fileids = message.getFileIDs();
         
-        byte[] salt = message.getChecksumRequestForExistingFile().getChecksumSalt();
-        
         if(fileids.isSetAllFileIDs()) {
             log.debug("Calculating the checksum for all the files.");
-            return calculateChecksumForAllFiles(message.getChecksumRequestForExistingFile().getChecksumType(), salt);
+            return calculateChecksumForAllFiles(message.getChecksumRequestForExistingFile());
         }
         
         log.debug("Calculating the checksum for specified files: " + fileids.getFileID());
@@ -232,7 +229,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
         singleFileResult.setFileID(fileid);
         singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, 
-                message.getChecksumRequestForExistingFile().getChecksumType().value(), salt).getBytes());
+                message.getChecksumRequestForExistingFile()).getBytes());
         
         res.add(singleFileResult);
         
@@ -246,7 +243,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * @return The list of checksums for requested files. 
      */
     private List<ChecksumDataForChecksumSpecTYPE> calculateChecksumForAllFiles(
-            ChecksumType algorithm, byte[] salt) {
+            ChecksumSpecTYPE csType) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         
         // Go through every file in the archive, calculate the checksum and put it into the results.
@@ -255,7 +252,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
             singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
             singleFileResult.setFileID(fileid);
-            singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, algorithm.value(), salt).getBytes());
+            singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, csType).getBytes());
             
             res.add(singleFileResult);
         }

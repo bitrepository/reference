@@ -34,10 +34,10 @@ import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,8 +113,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
             throw new InvalidMessageException(responseInfo);
         }
         
-        String checksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), 
-                checksumType.getChecksumType().value(), checksumType.getChecksumSalt());
+        String checksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), checksumType);
         if(!checksum.equals(new String(checksumData.getChecksumValue()))) {
             // Log the different checksums, but do not send the right checksum back!
             log.info("Failed to handle delete operation on file '" + message.getFileID() + "' since the request had "
@@ -163,8 +162,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
             log.warn("No checksum requested for the file about to be deleted.");
             return null;
         }
-        String checksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), 
-                checksumType.getChecksumType().value(), checksumType.getChecksumSalt());
+        String checksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), checksumType);
         
         res.setChecksumSpec(checksumType);
         res.setCalculationTimestamp(CalendarUtils.getNow());

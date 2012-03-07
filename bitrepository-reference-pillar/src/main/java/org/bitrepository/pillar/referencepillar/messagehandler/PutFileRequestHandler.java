@@ -37,13 +37,13 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,9 +154,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         if(message.getChecksumDataForNewFile() != null) {
                 //&& message.getChecksumDataForNewFile().getChecksumDataItem() != null) {
         	ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
-            String checksum = ChecksumUtils.generateChecksum(fileForValidation, 
-                    csType.getChecksumSpec().getChecksumType().value(), 
-                    csType.getChecksumSpec().getChecksumSalt());
+            String checksum = ChecksumUtils.generateChecksum(fileForValidation, csType.getChecksumSpec());
             if(!checksum.equals(new String(csType.getChecksumValue()))) {
                 log.error("Expected checksums '" + new String(csType.getChecksumValue()) + "' but the checksum was '" 
                         + checksum + "'.");
@@ -192,8 +190,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         
         if(message.getChecksumRequestForNewFile() != null) {
         	checksumForValidation.setChecksumValue(ChecksumUtils.generateChecksum(retrievedFile, 
-                    message.getChecksumRequestForNewFile().getChecksumType().value(), 
-                    message.getChecksumRequestForNewFile().getChecksumSalt()).getBytes());
+                    message.getChecksumRequestForNewFile()).getBytes());
         	checksumForValidation.setCalculationTimestamp(CalendarUtils.getNow());
         	checksumForValidation.setChecksumSpec(message.getChecksumRequestForNewFile());
             log.info("Requested checksum calculated: " + checksumForValidation);

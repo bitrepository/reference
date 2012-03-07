@@ -76,4 +76,12 @@ public class MemoryCache implements ChecksumCache {
     public boolean hasFile(String fileId) {
         return checksumMap.containsKey(fileId);
     }
+    
+    /**
+     * Removes every entry in the cache.
+     * Used for cleaning up between tests.
+     */
+    public void cleanUp() {
+        checksumMap.clear();
+    }
 }

@@ -22,17 +22,22 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.common.utils;
+package org.bitrepository.protocol.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.Key;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.protocol.CoordinationLayerException;
 
 /**
  * Utility class for handling checksum calculations.
@@ -56,33 +61,15 @@ public final class ChecksumUtils {
      * Calculates the checksum for a file based on the given checksum algorith, where the calculcation is salted.
      * 
      * @param file The file to calculate the checksum for.
-     * @param messageDigest The digest algorithm to use for calculating the checksum of the file.
-     * @param salt The string to add in front of the data stream before calculating the checksum. Null or the empty 
-     * string means no salt.
+     * @param csSpec The checksum specification for the calculation of the checksum. 
      * @return The checksum of the file in hexadecimal.
      */
-    public static String generateChecksum(File file, String algorithm, String salt) {
+    public static String generateChecksum(File file, ChecksumSpecTYPE csSpec) {
         try {
-            return generateChecksum(new FileInputStream(file), algorithm, salt.getBytes());
+            return generateChecksum(new FileInputStream(file), csSpec);
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    /**
-     * Calculates the checksum for a file based on the given checksum algorith, where the calculcation is salted.
-     * 
-     * @param file The file to calculate the checksum for.
-     * @param messageDigest The digest algorithm to use for calculating the checksum of the file.
-     * @param salt The string to add in front of the data stream before calculating the checksum. Null or the empty 
-     * string means no salt.
-     * @return The checksum of the file in hexadecimal.
-     */
-    public static String generateChecksum(File file, String algorithm, byte[] salt) {
-        try {
-            return generateChecksum(new FileInputStream(file), algorithm, salt);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new CoordinationLayerException("Could not calculate the checksum for the file '" 
+                    + file.getAbsolutePath() + "'.", e);
         }
     }
     
@@ -94,14 +81,78 @@ public final class ChecksumUtils {
      * @param salt The salt for the calculation. 
      * @return The HMAC calculated checksum in hexadecimal.
      */
-    public static String generateChecksum(InputStream content, String algorithm, byte[] salt) {
+    public static String generateChecksum(InputStream content, ChecksumSpecTYPE csSpec) {
+        
+        byte[] digest = null;
+        ChecksumType algorithm = csSpec.getChecksumType();
+        
+        if((algorithm == ChecksumType.MD5) 
+                || (algorithm == ChecksumType.SHA1)
+                || (algorithm == ChecksumType.SHA256)
+                || (algorithm == ChecksumType.SHA384)
+                || (algorithm == ChecksumType.SHA512)) {
+            digest = CalculateChecksumWithMessageDigest(content, algorithm, csSpec.getChecksumSalt());
+        } else if((algorithm == ChecksumType.HMAC_MD5) 
+                || (algorithm == ChecksumType.HMAC_SHA1)
+                || (algorithm == ChecksumType.HMAC_SHA256)
+                || (algorithm == ChecksumType.HMAC_SHA384)
+                || (algorithm == ChecksumType.HMAC_SHA512)) {
+            digest = CalculateChecksumWithHMAC(content, algorithm, csSpec.getChecksumSalt());
+        } else {
+            throw new IllegalStateException("The checksum algorithm '" + csSpec.getChecksumType().name() 
+                    + "' is not supported.");
+        }
+        
+        return toHex(digest);
+        
+    }
+    
+    /**
+     * Calculation of the checksum for a given input stream through the use of HMAC based on the checksum type as 
+     * algorithm and the optional salt.
+     * @param content The input stream with the content to calculate the checksum of.
+     * @param csType The type of checksum to calculate, e.g. the algorithm.
+     * @param salt [OPTIONAL] The salt for key encrypting the HMAC calculation.
+     * @return The calculated checksum.
+     */
+    private static byte[] CalculateChecksumWithMessageDigest(InputStream content, ChecksumType csType, byte[] salt) {
         byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
         int bytesRead;
+        
         try {
-            String algorithmName = algorithm.toUpperCase();
-            if(!algorithm.startsWith("Hmac")) {
-                algorithmName = "Hmac" + algorithm.toUpperCase();
+            String algorithmName = csType.name();
+            if(algorithmName.startsWith("SHA")) {
+                algorithmName = algorithmName.replace("SHA", "SHA-");
             }
+            
+            MessageDigest digester = MessageDigest.getInstance(algorithmName);
+            if(salt != null && salt.length > 0) {
+                digester.update(salt);
+            }
+            
+            while ((bytesRead = content.read(bytes)) > 0) {
+                digester.update(bytes, 0, bytesRead);
+            }
+            return digester.digest();
+        } catch (Exception e) {
+            throw new CoordinationLayerException("Cannot calculate the checksum.", e);
+        }
+    }
+    
+    /**
+     * Calculation of the checksum for a given input stream through the use of HMAC based on the checksum type as 
+     * algorithm and the optional salt.
+     * @param content The input stream with the content to calculate the checksum of.
+     * @param csType The type of checksum to calculate, e.g. the algorithm.
+     * @param salt [OPTIONAL] The salt for key encrypting the HMAC calculation.
+     * @return The calculated checksum.
+     */
+    private static byte[] CalculateChecksumWithHMAC(InputStream content, ChecksumType csType, byte[] salt) {
+        byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
+        int bytesRead;
+        
+        try {
+            String algorithmName = csType.name().replace("_", "");
             
             Mac messageAuthenticationCode = Mac.getInstance(algorithmName);
             Key key;
@@ -117,10 +168,9 @@ public final class ChecksumUtils {
                 messageAuthenticationCode.update(bytes, 0, bytesRead);
             }
             
-            byte[] digest = messageAuthenticationCode.doFinal();
-            return toHex(digest);
+            return messageAuthenticationCode.doFinal();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new CoordinationLayerException("Cannot calculate the checksum.", e);
         }
     }
     

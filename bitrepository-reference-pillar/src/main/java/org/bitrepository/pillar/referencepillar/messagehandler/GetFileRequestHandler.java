@@ -30,9 +30,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
 
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
@@ -40,8 +37,6 @@ import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
@@ -57,11 +52,6 @@ import org.slf4j.LoggerFactory;
 public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-
-    /** Constant for identifying this.*/
-    private static final boolean USE_CHECKSUM = false;
-    /** The default checksum digester.*/
-    private static final String CHECKSUM_DIGESTER = "MD5";
     
     /**
      * Constructor.
@@ -141,17 +131,6 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Started to retrieve data.");
         pResponse.setResponseInfo(prInfo);
-        if(USE_CHECKSUM) {
-            log.debug("generating checksum data for '" + requestedFile.getName() + "'.");
-//            ChecksumsDataForFile checksumCollection = new ChecksumsDataForFile();
-//            ChecksumsDataForFile checksumData = new ChecksumsDataForFile();
-            // Retrieve the checksum using default digester without any salt.
-//            checksumData.getChecksumDataForFile().add(calculateChecksum(requestedFile, null, CHECKSUM_DIGESTER));
-            //TODO Review the current progressResponse info. 
-            // checksumCollection.setFileIDChecksumDataItem(checksumData);
-//            checksumCollection.setFileID(message.getFileID());
-            pResponse.setChecksumDataForExistingFile(calculateChecksum(requestedFile, null, CHECKSUM_DIGESTER));
-        }
 
         // Send the ProgressResponse
         log.info("Sending GetFileProgressResponse: " + pResponse);
@@ -204,31 +183,6 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         GetFileFinalResponse fResponse = createGetFileFinalResponse(message);
         fResponse.setResponseInfo(frInfo);
         messagebus.sendMessage(fResponse);
-    }
-    
-    /**
-     * Method for calculating the checksum for a given file. The checksum is calculated with 
-     * @param file The file to calculate the checksum for.
-     * @param salt The salt of for the checksum.
-     * @param algorithm The name of the digester for calculating the checksum (e.g. MD5 or SHA1).
-     * @return The requested ChecksumDataForFileTYPE, or null if any bad stuff happens.
-     */
-    protected ChecksumDataForFileTYPE calculateChecksum(File file, String salt, String algorithm) {
-        try {
-            ChecksumDataForFileTYPE checksumType = new ChecksumDataForFileTYPE();
-            ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
-            csType.setChecksumSalt(salt.getBytes());
-            csType.setChecksumType(ChecksumType.fromValue(algorithm));
-            checksumType.setChecksumSpec(csType);
-            checksumType.setChecksumValue(ChecksumUtils.generateChecksum(file, 
-                    algorithm, salt).getBytes());
-            checksumType.setCalculationTimestamp(CalendarUtils.getNow());
-
-            return checksumType;
-        } catch (Exception e) {
-            log.warn("Could not calculate the checksum of the requested file.", e);
-            return null;
-        }
     }
     
     /**

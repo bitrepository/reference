@@ -9,7 +9,6 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRespo
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.checksumpillar.ChecksumPillar;
 import org.bitrepository.pillar.checksumpillar.MemoryCache;
-import org.bitrepository.pillar.referencepillar.getchecksums.PillarGetChecksumsMessageFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -58,6 +57,8 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         
         
         
+        
+        csPillar.close();
     }
 
 }

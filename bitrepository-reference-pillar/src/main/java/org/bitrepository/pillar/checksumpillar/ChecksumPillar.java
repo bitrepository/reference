@@ -61,4 +61,8 @@ public class ChecksumPillar {
         mediator = new ChecksumPillarMediator(messagebus, settings, cache);
         log.info("ReferencePillar started!");
     }
+    
+    public void close() {
+        mediator.close();
+    }
 }
