@@ -108,9 +108,9 @@ public class GettingChecksums extends GetChecksumsState {
                         + pillar.getID());
             }
 
-            conversation.messageSender.sendMessage(getChecksumsRequest); 
             monitor.requestSent("GetChecksumRequest sent to: " + pillar.getID(), 
                     pillar.getID());
+            conversation.messageSender.sendMessage(getChecksumsRequest); 
         }
 
         timer.schedule(getChecksumsTimeoutTask,

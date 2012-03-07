@@ -121,7 +121,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
                     + "the value '" + checksum + "'. Sending alarm and respond failure.");
             String errMsg = "Requested to delete file '" + message.getFileID() + "' with checksum '"
                     + new String(checksumData.getChecksumValue()) + "', but our file had a different checksum.";
-            alarmDispatcher.sendInvalidChecksumAlarm(message, message.getFileID(), errMsg);
+            alarmDispatcher.sendInvalidChecksumAlarm(message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);

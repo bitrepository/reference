@@ -78,10 +78,10 @@ class GettingFile extends GetFileState {
         getFileRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         getFileRequest.setTo(conversation.selector.getSelectedPillar().getDestination());
 
-        conversation.messageSender.sendMessage(getFileRequest); 
-        timer.schedule(getFileTimeoutTask, getMaxTimeToWaitForGetFileToComplete());
         monitor.requestSent("Sending getFileRequest to " + conversation.selector.getSelectedPillar().getID(), 
                 conversation.selector.getSelectedPillar().getID());
+        conversation.messageSender.sendMessage(getFileRequest); 
+        timer.schedule(getFileTimeoutTask, getMaxTimeToWaitForGetFileToComplete());
     }
 
     /**

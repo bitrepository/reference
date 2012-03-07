@@ -115,6 +115,21 @@ public class AlarmDispatcher {
     }
 
     /**
+     * Method for creating and sending an Alarm about the checksum being invalid.
+     * @param fileId The id of the file, which has an invalid checksum.
+     * @param alarmText The test for the alarm message.
+     */
+    public void sendInvalidChecksumAlarm(String fileId, String alarmText) {
+        log.warn("Sending invalid checksum for the file '" + fileId + "' with the message: " + alarmText);
+        Alarm alarm = new Alarm();
+        alarm.setAlarmText(alarmText);
+        alarm.setAlarmCode(AlarmCode.CHECKSUM_ALARM);
+        alarm.setFileID(fileId);
+        alarm.setOrigDateTime(CalendarUtils.getNow());
+        sendAlarm(alarm);
+    }
+    
+    /**
      * Method for sending an Alarm when something bad happens.
      * @param alarmConcerning What the alarm is concerning.
      * @param alarmDescription The description of the alarm, e.g. What caused the alarm.
@@ -131,21 +146,8 @@ public class AlarmDispatcher {
         message.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
         message.setTo(settings.getAlarmDestination());
         message.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
+        message.setAlarm(alarm);
         
         messageBus.sendMessage(message);
-    }
-    
-    /**
-     * Method for creating and sending an Alarm about the checksum being invalid.
-     * @param message The 
-     * @param fileId
-     * @param alarmText
-     */
-    public void sendInvalidChecksumAlarm(Object message, String fileId, String alarmText) {
-        Alarm alarm = new Alarm();
-        alarm.setAlarmCode(AlarmCode.CHECKSUM_ALARM);
-        alarm.setAlarmText(alarmText);
-        alarm.setOrigDateTime(CalendarUtils.getNow());
-        sendAlarm(alarm);
     }
 }

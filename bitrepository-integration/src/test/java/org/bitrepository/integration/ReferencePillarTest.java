@@ -68,12 +68,11 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         Long REPLACE_FILE_SIZE = 59898L;
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
 //        String FILE_ID = DEFAULT_FILE_ID;
-        String CHECKSUM = "324be4dd443b6e1c52d52c5b1a323cd0";
-        String CHECKSUM_NEW_FILE = "c9839fb7921d9b995be4e8a5a09d2481";
+        String CHECKSUM = "940a51b250e7aa82d8e8ea31217ff267";
+        String CHECKSUM_NEW_FILE = "f1d6f02be917ed6cdade56fa60653918";
         ChecksumSpecTYPE DEFAULT_CHECKSUM_TYPE = new ChecksumSpecTYPE();
         DEFAULT_CHECKSUM_TYPE.setChecksumSalt(null);
         DEFAULT_CHECKSUM_TYPE.setChecksumType(ChecksumType.MD5);
-
         
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         

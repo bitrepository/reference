@@ -104,9 +104,9 @@ public class GettingFileIDs extends GetFileIDsState {
                         + pillar.getID());
             }
 
-            conversation.messageSender.sendMessage(getFileIDsRequest); 
             monitor.requestSent("GetFileIDsRequest sent to: " + pillar.getID(), 
                     pillar.getID());
+            conversation.messageSender.sendMessage(getFileIDsRequest); 
         }
 
         timer.schedule(getFileIDsTimeoutTask,
