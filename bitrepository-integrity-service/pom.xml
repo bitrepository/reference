@@ -6,8 +6,8 @@
   </parent>
   
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>bitrepository-integrity-client</artifactId>
-  <name>Bitrepository Integrity Client</name>
+  <artifactId>bitrepository-integrity-service</artifactId>
+  <name>Bitrepository Integrity Service</name>
   <packaging>war</packaging>
   <description>Integrity functionality consists of regularly collecting information about the data in the various
         pillars, and ensuring that the data are consistent. In case of inconsistency, integrity functionality ensures

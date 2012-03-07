@@ -20,7 +20,7 @@
     <module>bitrepository-protocol</module>
     <module>bitrepository-access-client</module>
     <module>bitrepository-modifying-client</module>
-    <module>bitrepository-integrity-client</module>
+    <module>bitrepository-integrity-service</module>
     <module>bitrepository-alarm-service</module>
     <module>bitrepository-audit-trail-service</module>
     <module>bitrepository-reference-pillar</module>
