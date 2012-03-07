@@ -32,7 +32,7 @@ import java.util.List;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityclient.cache.FileInfo;
-import org.bitrepository.integrityclient.cache.IntegrityCache;
+import org.bitrepository.integrityclient.cache.IntegrityModel;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +55,7 @@ public class CollectObsoleteChecksumsTrigger extends IntervalTrigger {
     /** The time to exceed. */
     private final long maxTimeToLastUpdate;
     /** The cache with the information about the previously collected integrity information.*/
-    private final IntegrityCache cache;
+    private final IntegrityModel cache;
     
     /**
      * Constructor.
@@ -66,7 +66,7 @@ public class CollectObsoleteChecksumsTrigger extends IntervalTrigger {
      * @param cache The cache with integrity information.
      */
     public CollectObsoleteChecksumsTrigger(long triggerInterval, long maxTimeToLastUpdate, 
-            ChecksumSpecTYPE checksumType, IntegrityInformationCollector informationCollector, IntegrityCache cache) {
+            ChecksumSpecTYPE checksumType, IntegrityInformationCollector informationCollector, IntegrityModel cache) {
         super(triggerInterval);
         this.informationCollector = informationCollector;
         this.checksumType = checksumType;

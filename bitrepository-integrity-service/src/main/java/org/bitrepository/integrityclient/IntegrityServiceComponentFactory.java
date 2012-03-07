@@ -27,8 +27,8 @@ package org.bitrepository.integrityclient;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.integrityclient.cache.FileBasedIntegrityCache;
-import org.bitrepository.integrityclient.cache.IntegrityCache;
+import org.bitrepository.integrityclient.cache.IntegrityDatabase;
+import org.bitrepository.integrityclient.cache.IntegrityModel;
 import org.bitrepository.integrityclient.checking.IntegrityChecker;
 import org.bitrepository.integrityclient.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityclient.collector.DelegatingIntegrityInformationCollector;
@@ -68,7 +68,7 @@ public final class IntegrityServiceComponentFactory {
     /** The integrity information collector. */
     private IntegrityInformationCollector integrityInformationCollector;
     /** The integrity information collector. */
-    private IntegrityCache cachedIntegrityInformationStorage;
+    private IntegrityModel cachedIntegrityInformationStorage;
     /** The integrity checker. */
     private IntegrityChecker integrityChecker;
 
@@ -94,7 +94,7 @@ public final class IntegrityServiceComponentFactory {
      * @param messageBus The messagebus for the communication.
      * @return an <code>IntegrityInformationCollector</code> that collects integrity information.
      */
-    public IntegrityInformationCollector getIntegrityInformationCollector(IntegrityCache cache, 
+    public IntegrityInformationCollector getIntegrityInformationCollector(IntegrityModel cache, 
             IntegrityChecker checker, GetFileIDsClient getFileIDsClient, GetChecksumsClient getChecksumsClient, 
             Settings settings, MessageBus messageBus) {
         if (integrityInformationCollector == null) {
@@ -110,7 +110,7 @@ public final class IntegrityServiceComponentFactory {
      * @param cache The cache for the integrity system.
      * @return An <code>IntegrityChecker</code> the can perform the integrity checks.
      */
-    public IntegrityChecker getIntegrityChecker(Settings settings, IntegrityCache cache) {
+    public IntegrityChecker getIntegrityChecker(Settings settings, IntegrityModel cache) {
         if(integrityChecker == null) {
             integrityChecker = new SimpleIntegrityChecker(settings, cache);
         }
@@ -122,9 +122,9 @@ public final class IntegrityServiceComponentFactory {
      * TODO implement the database based integrity cache.
      * @return an <code>CachedIntegrityInformationStorage</code> that collects integrity information.
      */
-    public IntegrityCache getCachedIntegrityInformationStorage() {
+    public IntegrityModel getCachedIntegrityInformationStorage(Settings settings) {
         if (cachedIntegrityInformationStorage == null) {
-            cachedIntegrityInformationStorage = new FileBasedIntegrityCache();
+            cachedIntegrityInformationStorage = new IntegrityDatabase(settings);
         }
         return cachedIntegrityInformationStorage;
     }

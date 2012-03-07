@@ -31,7 +31,7 @@ import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.integrityclient.cache.IntegrityCache;
+import org.bitrepository.integrityclient.cache.IntegrityModel;
 import org.bitrepository.integrityclient.checking.IntegrityChecker;
 import org.bitrepository.integrityclient.collector.eventhandler.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityclient.collector.eventhandler.IntegrityStorageChecksumsUpdater;
@@ -50,7 +50,7 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /** The storage to store data in. */
-    private final IntegrityCache storage;
+    private final IntegrityModel storage;
     /** The client for retrieving file IDs. */
     private final GetFileIDsClient getFileIDsClient;
     /** The client for retrieving checksums. */
@@ -67,7 +67,7 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
      * @param getFileIDsClient The client for retrieving file IDs
      * @param getChecksumsClient The client for retrieving checksums
      */
-    public DelegatingIntegrityInformationCollector(IntegrityCache storage,
+    public DelegatingIntegrityInformationCollector(IntegrityModel storage,
             IntegrityChecker integrityChecker, GetFileIDsClient getFileIDsClient, 
             GetChecksumsClient getChecksumsClient, Settings settings, MessageBus messageBus) {
         this.storage = storage;

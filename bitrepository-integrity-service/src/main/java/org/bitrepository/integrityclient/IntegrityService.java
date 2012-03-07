@@ -38,38 +38,38 @@ public class IntegrityService {
     private final Settings settings;
     
     public IntegrityService(SimpleIntegrityService simpleIntegrityService, Settings settings) {
-    	this.service = simpleIntegrityService;
-    	this.settings = settings;
+        this.service = simpleIntegrityService;
+        this.settings = settings;
     }
     
     public List<String> getPillarList() {
-    	return settings.getCollectionSettings().getClientSettings().getPillarIDs();    	
+        return settings.getCollectionSettings().getClientSettings().getPillarIDs();    	
     }
     
     public long getNumberOfFiles(String pillarID) {
-    	return service.getNumberOfFiles(pillarID);
+        return service.getNumberOfFiles(pillarID);
     }
     
     public long getNumberOfMissingFiles(String pillarID) {
-    	return service.getNumberOfMissingFiles(pillarID);
+        return service.getNumberOfMissingFiles(pillarID);
     }
     
     public Date getDateForLastFileIDUpdate(String pillarID) {
-    	return service.getDateForLastFileUpdate(pillarID);
+        return new Date(0);
     }
     
     public long getNumberOfChecksumErrors(String pillarID) {
-    	return service.getNumberOfChecksumErrors(pillarID);
+        return service.getNumberOfChecksumErrors(pillarID);
     }
     
     public Date getDateForLastChecksumUpdate(String pillarID) {
-    	return service.getDateForLastChecksumUpdate(pillarID);
+        return new Date(0);
     }
     
     public long getSchedulingInterval() {
-    	return settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval();
+        return settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval();
     }
-
+    
     public Collection<String> getScheduledTasks() {
         return service.getScheduledTasks();
     }

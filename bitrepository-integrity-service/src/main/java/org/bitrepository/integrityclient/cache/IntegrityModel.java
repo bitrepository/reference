@@ -35,7 +35,7 @@ import org.bitrepository.bitrepositoryelements.FileIDsData;
 /**
  * Store of cached integrity information.
  */
-public interface IntegrityCache {
+public interface IntegrityModel {
     /**
      * Add file ID data to cache.
      * @param data The received data.
@@ -77,21 +77,9 @@ public interface IntegrityCache {
     
     /**
      * @param pillarId The pillar.
-     * @return The latest update for the file list.
-     */
-    Date getLatestFileUpdate(String pillarId);
-    
-    /**
-     * @param pillarId The pillar.
      * @return The number of files with checksum state 'ERROR' for the given pillar.
      */
     long getNumberOfChecksumErrors(String pillarId);
-    
-    /**
-     * @param pillarId
-     * @return
-     */
-    Date getLatestChecksumUpdate(String pillarId);
     
     /**
      * Sets the file to be missing at the given pillars.

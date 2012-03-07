@@ -49,7 +49,9 @@ public class DatabaseUtils {
     private DatabaseUtils() { }
     
     /**
-     * Retrieves an integer value from the database based on a query and some arguments.
+     * Retrieves an integer value from the database through the use of a SQL query, which requests 
+     * the wanted integer value, and the arguments for the query to become a proper SQL statement.
+     * 
      * @param dbConnection The connection to the database.
      * @param query The query for retrieving the integer value.
      * @param args The arguments for the database statement.
@@ -61,28 +63,40 @@ public class DatabaseUtils {
         ArgumentValidator.checkNotNull(args, "Object... args");
         
         try {
-            PreparedStatement ps = createPreparedStatement(dbConnection, query, args);
+            PreparedStatement ps = null; 
+            ResultSet res = null;
             
-            ResultSet res = ps.executeQuery();
-            if (!res.next()) {
-                throw new IllegalStateException("No results from " + ps);
+            try {
+                ps = createPreparedStatement(dbConnection, query, args);
+                res = ps.executeQuery();
+                if (!res.next()) {
+                    throw new IllegalStateException("No results from " + ps);
+                }
+                Integer resultInt = res.getInt(1);
+                if (res.wasNull()) {
+                    resultInt = null;
+                }
+                if (res.next()) {
+                    throw new IllegalStateException("Too many results from " + ps);
+                }
+                return resultInt;
+            } finally {
+                if(res != null) {
+                    res.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
             }
-            Integer resultInt = res.getInt(1);
-            if (res.wasNull()) {
-                resultInt = null;
-            }
-            if (res.next()) {
-                throw new IllegalStateException("Too many results from " + ps);
-            }
-            return resultInt;
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not retrieve integer value from database '" 
-                    + dbConnection + "' with statement '" + query + "'", e);
+            throw failedExecutionOfStatement(e, dbConnection, query, args);
         }
     }
     
     /**
-     * Retrieves a long value from the database based on a query and some arguments.
+     * Retrieves a long value from the database through the use of a SQL query, which requests 
+     * the wanted long value, and the arguments for the query to become a proper SQL statement.
+     * 
      * @param dbConnection The connection to the database.
      * @param query The query for retrieving the long value.
      * @param args The arguments for the database statement.
@@ -94,30 +108,41 @@ public class DatabaseUtils {
         ArgumentValidator.checkNotNull(args, "Object... args");
         
         try {
-            PreparedStatement ps = createPreparedStatement(dbConnection, query, args);
-            
-            ResultSet res = ps.executeQuery();
-            if (!res.next()) {
-                log.info("Got an empty result set for statement '" + query + "' on database '"
-                        + dbConnection + "'. Returning a null.");
-                return null;
+            PreparedStatement ps = null;
+            ResultSet res = null; 
+            try {
+                ps = createPreparedStatement(dbConnection, query, args);
+                res = ps.executeQuery();
+                if (!res.next()) {
+                    log.info("Got an empty result set for statement '" + query + "' on database '"
+                            + dbConnection + "'. Returning a null.");
+                    return null;
+                }
+                Long resultLong = res.getLong(1);
+                if (res.wasNull()) {
+                    resultLong = null;
+                }
+                if (res.next()) {
+                    throw new IllegalStateException("Too many results from " + ps);
+                }
+                return resultLong;
+            } finally {
+                if(res != null) {
+                    res.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
             }
-            Long resultLong = res.getLong(1);
-            if (res.wasNull()) {
-                resultLong = null;
-            }
-            if (res.next()) {
-                throw new IllegalStateException("Too many results from " + ps);
-            }
-            return resultLong;
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not retrieve long value from database '" 
-                    + dbConnection + "' with statement '" + query + "'", e);
+            throw failedExecutionOfStatement(e, dbConnection, query, args);
         }
     }
 
     /**
-     * Retrieves a date from the database based on a query and some arguments.
+     * Retrieves an date value from the database through the use of a SQL query, which requests 
+     * the wanted date value, and the arguments for the query to become a proper SQL statement.
+     * 
      * @param dbConnection The connection to the database.
      * @param query The query for retrieving the date.
      * @param args The arguments for the database statement.
@@ -129,31 +154,45 @@ public class DatabaseUtils {
         ArgumentValidator.checkNotNull(args, "Object... args");
         
         try {
-            PreparedStatement ps = createPreparedStatement(dbConnection, query, args);
-            
-            ResultSet res = ps.executeQuery();
-            if (!res.next()) {
-                log.info("Got an empty result set for statement '" + query + "' on database '"
-                        + dbConnection + "'. Returning a null.");
-                return null;
+            PreparedStatement ps = null;
+            ResultSet res = null;
+            try {
+                ps = createPreparedStatement(dbConnection, query, args);
+                
+                res = ps.executeQuery();
+                if (!res.next()) {
+                    log.info("Got an empty result set for statement '" + query + "' on database '"
+                            + dbConnection + "'. Returning a null.");
+                    return null;
+                }
+                Date resultDate = res.getDate(1);
+                if (res.wasNull()) {
+                    resultDate = null;
+                }
+                if (res.next()) {
+                    throw new IllegalStateException("Too many results from " + ps);
+                }
+                return resultDate;
+            } finally {
+                if(res != null) {
+                    res.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
             }
-            Date resultDate = res.getDate(1);
-            if (res.wasNull()) {
-                resultDate = null;
-            }
-            if (res.next()) {
-                throw new IllegalStateException("Too many results from " + ps);
-            }
-            return resultDate;
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not retrieve long value from database '" 
-                    + dbConnection + "' with statement '" + query + "'", e);
+            throw failedExecutionOfStatement(e, dbConnection, query, args);
         }
     }
     
     /**
-     * Retrieves the result-set corresponding to an unspecified object.
-     * E.g. a set of several objects.
+     * Retrieves the result-set corresponding to an unspecified object through the use of a SQL query, which requests 
+     * the wanted data-set, and the arguments for the query to become a proper SQL statement. 
+     * This should only be used for advanced extractions of the database, e.g. several columns in a table.
+     * 
+     * NOTE: Remember to close the ResultSet after use.
+     * 
      * @param dbConnection The connection to the database.
      * @param query The SQL query to be executed on the database.
      * @param args The arguments for the SQL statement.
@@ -162,16 +201,16 @@ public class DatabaseUtils {
     public static ResultSet selectObject(Connection dbConnection, String query, Object... args) {
         try {
             PreparedStatement ps = createPreparedStatement(dbConnection, query, args);
-            
-            return ps.executeQuery();            
+            return ps.executeQuery();
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not execute the query '" + query + "' on database '"
-                    + dbConnection + "'", e);
+            throw failedExecutionOfStatement(e, dbConnection, query, args);
         }        
     }
     
     /**
-     * Retrieves a single String value from the database through the given query and arguments.
+     * Retrieves a String value from the database through the use of a SQL query, which requests 
+     * the wanted String value, and the arguments for the query to become a proper SQL statement.
+     * 
      * @param dbConnection The connection to the database.
      * @param query The query to extract the String value.
      * @param args The arguments for the statement.
@@ -179,24 +218,35 @@ public class DatabaseUtils {
      */
     public static String selectStringValue(Connection dbConnection, String query, Object... args) {
         try {
-            PreparedStatement ps = createPreparedStatement(dbConnection, query, args);
+            PreparedStatement ps = null; 
+            ResultSet res = null; 
             
-            ResultSet rs = ps.executeQuery();
-            
-            if(!rs.next()) {
-                log.info("No string was found for the query '" + query + "'. A null has been returned.");
-                return null;
+            try {
+                ps = createPreparedStatement(dbConnection, query, args);
+                res = ps.executeQuery();
+                
+                if(!res.next()) {
+                    log.info("No string was found for the query '" + query + "'. A null has been returned.");
+                    return null;
+                }
+                
+                return res.getString(1);
+            } finally {
+                if(res != null) {
+                    res.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
             }
-            
-            return rs.getString(1);
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not execute the query '" + query + "' on database '"
-                    + dbConnection + "'", e);
+            throw failedExecutionOfStatement(e, dbConnection, query, args);
         }
     }
     
     /**
-     * Retrieves a list of string values from the database based on a given query and arguments.
+     * Retrieves a list of String value from the database through the use of a SQL query, which requests 
+     * the wanted list of String value, and the arguments for the query to become a proper SQL statement.
      * 
      * @param dbConnection The connection to the database.
      * @param query The SQL query for retrieving the strings.
@@ -205,36 +255,53 @@ public class DatabaseUtils {
      */
     public static List<String> selectStringList(Connection dbConnection, String query, Object... args) {
         try {
-            List<String> res = new ArrayList<String>();
-            PreparedStatement ps = createPreparedStatement(dbConnection, query, args);
+            PreparedStatement ps = null;
             
-            ResultSet rs = ps.executeQuery();
-            
-            while(rs.next()) {
-                res.add(rs.getString(1));
+            ResultSet rs = null;
+            try {
+                ps = createPreparedStatement(dbConnection, query, args);
+                rs = ps.executeQuery();
+                
+                List<String> res = new ArrayList<String>();
+                while(rs.next()) {
+                    res.add(rs.getString(1));
+                }
+                return res;
+            } finally {
+                if(rs != null) {
+                    rs.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
             }
-            return res;
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not execute the query '" + query + "' on database '"
-                    + dbConnection + "'", e);
+            throw failedExecutionOfStatement(e, dbConnection, query, args);
         }
     }
 
     /**
      * Executing a given statement, which should not return any results.
      * This is intended to be used especially for UPDATE commands.
+     * 
      * @param dbConnection The connection to the database.
      * @param query The SQL query to execute.
      * @param args The arguments for the SQL statement.
      */
     public static void executeStatement(Connection dbConnection, String query, Object... args) {
         try {
-            PreparedStatement ps = createPreparedStatement(dbConnection, query, args);
-            ps.executeUpdate();
-            dbConnection.commit();
+            PreparedStatement ps = null;
+            try {
+                ps = createPreparedStatement(dbConnection, query, args);
+                ps.executeUpdate();
+                dbConnection.commit();
+            } finally {
+                if(ps != null) {
+                    ps.close();
+                }
+            }
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not execute the query '" + query + "' on database '"
-                    + dbConnection + "'", e);
+            throw failedExecutionOfStatement(e, dbConnection, query, args);
         }
     }
     
@@ -266,14 +333,26 @@ public class DatabaseUtils {
             } else if (arg instanceof Date) {
                 s.setTimestamp(i, new Timestamp(((Date) arg).getTime()));
             } else {
-                throw new IllegalStateException("Cannot handle type '"
-                        + arg.getClass().getName()
-                        + "'. We can only handle string, "
-                        + "int, long, date or boolean args for query: "
-                        + query);
+                throw new IllegalStateException("Cannot handle type '" + arg.getClass().getName() + "'. We can only "
+                        + "handle string, int, long, date or boolean args for query: " + query);
             }
             i++;
         }
         return s;
+    }
+    
+    /**
+     * Method for throwing an exception for a failure for executing a statement.
+     * 
+     * @param e The exception for the execution to fail.
+     * @param dbConnection The connection to the database, where the failure occurred.
+     * @param query The SQL query for the statement, which caused the failure.
+     * @param args The arguments for the statement, which caused the failure.
+     * @throws IllegalStateException Always, since it is intended for this method to report the failure.
+     */
+    private static IllegalStateException failedExecutionOfStatement(Throwable e, Connection dbConnection, 
+            String query, Object... args) {
+        return new IllegalStateException("Could not execute the query '" + query + "' with the arguments '" 
+                + Arrays.asList(args) + "' on database '" + dbConnection + "'", e);
     }
 }

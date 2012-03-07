@@ -27,28 +27,27 @@ package org.bitrepository.integrityclient.cache;
 import java.io.File;
 import java.sql.Connection;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
-import org.apache.derby.tools.ij;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
+import org.bitrepository.common.database.DBConnector;
 import org.bitrepository.common.database.DerbyDBConnector;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.integrityclient.cache.database.DatabaseStoragedCache;
+import org.bitrepository.integrityclient.cache.database.IntegrityDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A storage of configuration information that is backed by a database.
  */
-public class DatabaseBasedIntegrityCached implements IntegrityCache {
+public class IntegrityDatabase implements IntegrityModel {
     /** The settings for the database cache. */
     private final Settings settings;
     
     /** The database store. The interface to the functions of the database. */
-    private final DatabaseStoragedCache store;
+    private final IntegrityDAO store;
     
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -58,12 +57,12 @@ public class DatabaseBasedIntegrityCached implements IntegrityCache {
      *
      * @param storageConfiguration Contains configuration for storage. Currently URL, user and pass for database.
      */
-    public DatabaseBasedIntegrityCached(Settings settings) {
+    public IntegrityDatabase(Settings settings) {
         this.settings = settings;
         this.settings.getReferenceSettings().getIntegrityServiceSettings();
         
-        Connection dbConnection = initDatabaConnection();
-        this.store = new DatabaseStoragedCache(dbConnection);
+        Connection dbConnection = initDatabaseConnection();
+        this.store = new IntegrityDAO(dbConnection);
     }
     
     /**
@@ -71,9 +70,12 @@ public class DatabaseBasedIntegrityCached implements IntegrityCache {
      * the database based on the SQL script.
      * @return The connection to the database.
      */
-    private Connection initDatabaConnection() {
+    private Connection initDatabaseConnection() {
+        // TODO make a better instantiation, which is not depending on Derby.
+        DBConnector dbConnector = new DerbyDBConnector();
+        
         try {
-            Connection dbConnection = DerbyDBConnector.getEmbeddedDBConnection(
+            Connection dbConnection = dbConnector.getEmbeddedDBConnection(
                     settings.getReferenceSettings().getIntegrityServiceSettings().getDatabaseUrl());
             return dbConnection;
         } catch (Exception e) {
@@ -83,19 +85,9 @@ public class DatabaseBasedIntegrityCached implements IntegrityCache {
         
         log.info("Trying to instantiate the database.");
         File sqlDatabaseFile = new File("src/main/resources/integrityDB.sql");
+        dbConnector.createDatabase(sqlDatabaseFile);
         
-        if(!sqlDatabaseFile.isFile()) {
-            throw new IllegalStateException("Could not find the file with the sql for the database at '" 
-                    + sqlDatabaseFile.getAbsolutePath() + "'.");
-        }
-        
-        // Use the derby tool 'ij' to create the database.
-        try {
-            ij.main(new String[]{sqlDatabaseFile.getAbsolutePath()});
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not instantiate the database.");
-        }
-        
+        // Wait to ensure, that the database has been instantiated.
         synchronized(this) {
             try {
                 this.wait(2000);
@@ -106,7 +98,7 @@ public class DatabaseBasedIntegrityCached implements IntegrityCache {
         
         // Connect to the new instantiated database.
         try { 
-            Connection dbConnection = DerbyDBConnector.getEmbeddedDBConnection(
+            Connection dbConnection = dbConnector.getEmbeddedDBConnection(
                     settings.getReferenceSettings().getIntegrityServiceSettings().getDatabaseUrl());
             return dbConnection;
         } catch (Exception e) {
@@ -119,7 +111,7 @@ public class DatabaseBasedIntegrityCached implements IntegrityCache {
      * Retrieve the interface to the database, which stores the integrity data.
      * @return The database store.
      */
-    public DatabaseStoragedCache getStore() {
+    public IntegrityDAO getStore() {
         return store;
     }
     
@@ -155,18 +147,8 @@ public class DatabaseBasedIntegrityCached implements IntegrityCache {
     }
 
     @Override
-    public Date getLatestFileUpdate(String pillarId) {
-        return store.getLastFileListUpdate(pillarId);
-    }
-
-    @Override
     public long getNumberOfChecksumErrors(String pillarId) {
         return store.getNumberOfChecksumErrorsForAPillar(pillarId);
-    }
-
-    @Override
-    public Date getLatestChecksumUpdate(String pillarId) {
-        return store.getLastChecksumUpdate(pillarId);
     }
 
     @Override

@@ -26,7 +26,7 @@ package org.bitrepository.integrityclient.collector.eventhandler;
 
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.integrityclient.cache.IntegrityCache;
+import org.bitrepository.integrityclient.cache.IntegrityModel;
 import org.bitrepository.integrityclient.checking.IntegrityChecker;
 import org.bitrepository.integrityclient.checking.IntegrityReport;
 import org.bitrepository.protocol.eventhandler.EventHandler;
@@ -44,7 +44,7 @@ public class IntegrityStorageChecksumsUpdater implements EventHandler {
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /** The storage to send the results.*/
-    private IntegrityCache informationCache;
+    private IntegrityModel informationCache;
     /** The FileIDs to be */
     private final FileIDs fileIDs;
     /** The checker used for checking the integrity of the results.*/
@@ -59,7 +59,7 @@ public class IntegrityStorageChecksumsUpdater implements EventHandler {
      * @param alarmDispatcher The dispatcher of alarms. 
      * @param fileIDs The given data to perform the integrity checks upon.
      */
-    public IntegrityStorageChecksumsUpdater(IntegrityCache informationCache, 
+    public IntegrityStorageChecksumsUpdater(IntegrityModel informationCache, 
             IntegrityChecker integrityChecker, IntegrityAlarmDispatcher alarmDispatcher, FileIDs fileIDs) {
         this.informationCache = informationCache;
         this.integrityChecker = integrityChecker;
@@ -122,11 +122,11 @@ public class IntegrityStorageChecksumsUpdater implements EventHandler {
      */
     private void performIntegrityCheck() {
         IntegrityReport report = integrityChecker.checkChecksum(fileIDs);
-        if(!report.isValid()) {
+        if(report.hasIntegrityIssues()) {
             log.warn(report.generateReport());
             alarmDispatcher.integrityFailed(report);
         } else {
-            log.debug("No integrity issues found for files '" + report.getFileIDs() + "'");
+            log.debug("No integrity issues found for files '" + fileIDs + "'");
         }
     }
 }

@@ -74,10 +74,6 @@ public class DatabaseConstants {
     final static String PILLAR_ID = "pillar_id";
     /** The guid of the checksum specification corresponding to a checksum pillar. A long/bigint value, may be null.*/
     final static String PILLAR_CHECKSUM_SPEC_GUID = "checksum_spec_guid";
-    /** The timestamp for the latest file list update for the pillar entry. A date/timestamp value, may be null.*/
-    final static String PILLAR_LAST_FILE_UPDATE = "last_file_update";
-    /** The timestamp for the latest checksum update for the pillar entry. A date/timestamp value, may be null.*/
-    final static String PILLAR_LAST_CHECKSUM_UPDATE = "last_checksum_update";
     
     // THE CHECKSUMSPEC TABLE
     /** The name of the checksum specification table.*/

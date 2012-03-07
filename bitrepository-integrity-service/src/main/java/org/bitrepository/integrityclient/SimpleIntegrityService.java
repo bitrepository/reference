@@ -32,7 +32,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.integrityclient.cache.IntegrityCache;
+import org.bitrepository.integrityclient.cache.IntegrityModel;
 import org.bitrepository.integrityclient.checking.IntegrityChecker;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityclient.scheduler.IntegrityInformationScheduler;
@@ -58,7 +58,7 @@ public class SimpleIntegrityService {
     /** The information collector. */
     private final IntegrityInformationCollector collector;
     /** The cache.*/
-    private final IntegrityCache cache;
+    private final IntegrityModel cache;
     /** The integrity checker.*/
     private final IntegrityChecker checker;
     /** The settings. */
@@ -70,7 +70,7 @@ public class SimpleIntegrityService {
      */
     public SimpleIntegrityService(Settings settings, SecurityManager securityManager) {
         this.settings = settings;
-        this.cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage();
+        this.cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings);
         this.scheduler = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settings);
         this.checker = IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache);
         this.collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
@@ -178,26 +178,10 @@ public class SimpleIntegrityService {
     }
     
     /**
-     * @param pillarId The pillar which has its file list updated.
-     * @return The timestamp for the latest file list update for the given pillar.
-     */
-    public Date getDateForLastFileUpdate(String pillarId) {
-        return cache.getLatestFileUpdate(pillarId);
-    }
-    
-    /**
      * @param pillarId The pillar which might contain files with checksum error.
      * @return The number of files with checksum error at the given pillar.
      */
     public long getNumberOfChecksumErrors(String pillarId) {
         return cache.getNumberOfChecksumErrors(pillarId);
-    }
-    
-    /**
-     * @param pillarId The pillar.
-     * @return The date for the latest checksum update for the given pillar.
-     */
-    public Date getDateForLastChecksumUpdate(String pillarId){
-        return cache.getLatestChecksumUpdate(pillarId);
     }
 }

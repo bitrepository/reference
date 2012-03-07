@@ -33,7 +33,7 @@ import org.bitrepository.integrityclient.collector.IntegrityInformationCollector
  * {@link IntegrityInformationCollector}.
  *
  * Conditions for the trigger should pull on configuration combined with data from the
- * {@link org.bitrepository.integrityclient.cache.IntegrityCache}.
+ * {@link org.bitrepository.integrityclient.cache.IntegrityModel}.
  */
 public interface Trigger {
     /**

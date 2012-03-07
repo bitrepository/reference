@@ -27,9 +27,8 @@ package org.bitrepository.integrityclient;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.integrityclient.cache.FileBasedIntegrityCache;
-import org.bitrepository.integrityclient.cache.IntegrityCache;
-import org.bitrepository.integrityclient.cache.MemoryBasedIntegrityCache;
+import org.bitrepository.integrityclient.cache.IntegrityDatabase;
+import org.bitrepository.integrityclient.cache.IntegrityModel;
 import org.bitrepository.integrityclient.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityclient.collector.DelegatingIntegrityInformationCollector;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
@@ -61,16 +60,16 @@ public class ComponentFactoryTest extends ExtendedTestCase {
     
     @Test(groups = {"regressiontest"})
     public void verifyCacheFromFactory() throws Exception {
-        Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage()
+        Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings)
 //                instanceof MemoryBasedIntegrityCache,
-                instanceof FileBasedIntegrityCache,
-                "The default Cache should be the '" + MemoryBasedIntegrityCache.class.getName() + "' but was '"
-                + IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage().getClass().getName() + "'");
+                instanceof IntegrityDatabase,
+                "The default Cache should be the '" + IntegrityDatabase.class.getName() + "' but was '"
+                + IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings).getClass().getName() + "'");
     }
 
     @Test(groups = {"regressiontest"})
     public void verifyCollectorFromFactory() throws Exception {
-        IntegrityCache cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage();
+        IntegrityModel cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings);
         IntegrityInformationCollector collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
                 cache, 
                 IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache), 
@@ -83,7 +82,7 @@ public class ComponentFactoryTest extends ExtendedTestCase {
 
     @Test(groups = {"regressiontest"})
     public void verifyIntegrityCheckerFromFactory() throws Exception {
-        IntegrityCache cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage();
+        IntegrityModel cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings);
         Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache)
                 instanceof SimpleIntegrityChecker, 
                 "The default IntegrityChecker should be the '" + SimpleIntegrityChecker.class.getName() + "'");

@@ -105,13 +105,9 @@ create table pillar (
                                  -- The GUID for the pillar.
     pillar_id varchar(100) not null,
                                  -- The id of the pillar.
-    checksum_spec_guid bigint,   -- If it is a ChecksumPillar, then this 
+    checksum_spec_guid bigint    -- If it is a ChecksumPillar, then this 
                                  -- would be refering to the type of checksum
                                  -- the pillar is using.
-    last_file_update timestamp,  -- Latest filelist update.
-    last_checksum_update timestamp
-                                 -- The latest timestamp for the checksum check
-                                 -- for all of the files on the pillar.
 );
 
 create index pillarindex on pillar ( pillar_id );

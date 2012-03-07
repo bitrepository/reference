@@ -1,33 +1,8 @@
-/*
- * #%L
- * Bitrepository Integrity Client
- * 
- * $Id$
- * $HeadURL$
- * %%
- * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
- * %%
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
- * License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/lgpl-2.1.html>.
- * #L%
- */
-package org.bitrepository.integrityclient.cache;
+package org.bitrepository.integrityclient;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,20 +11,19 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.integrityclient.cache.FileInfo;
+import org.bitrepository.integrityclient.cache.IntegrityModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simple integrity cache which stores its data in the memory.
+ * Simple integrity model which stores its data in the memory.
  * 
  * NOT INTENDED FOR PRODUCTION!!!
- * Should only be used for testing purposes.
- * TODO move to test?
  * 
  * This does not handle anything about CollectionID.
  */
-public class MemoryBasedIntegrityCache implements IntegrityCache {
-    
+public class TestIntegrityModel implements IntegrityModel {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
@@ -63,7 +37,7 @@ public class MemoryBasedIntegrityCache implements IntegrityCache {
     /**
      * Constructor.
      */
-    public MemoryBasedIntegrityCache() {
+    public TestIntegrityModel() {
         log.info("Instantiating " + this.getClass().getSimpleName());
     }
     
@@ -253,21 +227,9 @@ public class MemoryBasedIntegrityCache implements IntegrityCache {
     }
 
     @Override
-    public Date getLatestFileUpdate(String pillarId) {
-        // TODO Auto-generated method stub
-        return new Date(0);
-    }
-
-    @Override
     public long getNumberOfChecksumErrors(String pillarId) {
         // TODO Auto-generated method stub
         return 0;
-    }
-
-    @Override
-    public Date getLatestChecksumUpdate(String pillarId) {
-        // TODO Auto-generated method stub
-        return new Date(0);
     }
 
     @Override
