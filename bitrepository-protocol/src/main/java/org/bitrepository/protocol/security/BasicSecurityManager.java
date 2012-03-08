@@ -265,6 +265,10 @@ public class BasicSecurityManager implements SecurityManager {
      */
     private void loadInfrastructureCertificates(PermissionSet permissions) throws CertificateException, KeyStoreException {
         ByteArrayInputStream bs;
+        if(permissions == null) {
+            log.info("The provided PermissionSet is empty. Continuing without permissions!");
+            return;
+        }
         for(Permission permission : permissions.getPermission()) {
             if(permission.getInfrastructurePermission().contains(InfrastructurePermission.MESSAGE_BUS_SERVER)) {
                 try {
