@@ -47,7 +47,7 @@ public final class AlarmStoreFactory {
     /** The properties file holding implementation specifics for the alarm service. */
     private static final String CONFIGFILE = "alarmservice.properties"; 
     /** Property key for the property holding the path the file persisting alarms */
-    private static final String ALARMSTOREFILE = "org.bitrepository.webclient.alarmstorefile";
+    private static final String ALARMSTOREFILE = "org.bitrepository.alarm-service.alarmstorefile";
     /** Default collection settings identifier (used to build the path the collection and referencesettings */
     private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
     
