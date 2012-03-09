@@ -24,15 +24,16 @@
  */
 package org.bitrepository.integrityclient.workflow.scheduler;
 
+import java.util.Date;
+
 import org.bitrepository.integrityclient.workflow.Workflow;
 
 /**
  * Abstract trigger, that triggers at given interval.
  * Trigger will run the run() method, if triggered.
  */
-public abstract class IntervalTrigger implements Workflow, Runnable {
-    /** Time of last event, truncated to two seconds. */
-    private long time; //no see
+public abstract class IntervalWorkflow implements Workflow {
+    private Date nextRun;
     /** The interval between triggers. */
     private final long interval;
 
@@ -40,26 +41,29 @@ public abstract class IntervalTrigger implements Workflow, Runnable {
      * Initialise trigger.
      * @param interval The interval between triggering events in milliseconds.
      */
-    public IntervalTrigger(long interval) {
-        long now = System.currentTimeMillis();
+    public IntervalWorkflow(long interval) {
         this.interval = interval;
-        time = now - (now % this.interval);
+        nextRun = new Date();
     }
-
+    
     @Override
-    public synchronized boolean isTriggered() {
-        return ((System.currentTimeMillis() - time) > interval);
+    public Date getNextRun() {
+        return nextRun;
     }
-
+    
+    @Override
+    public long timeBetweenRuns() {
+        return interval;
+    }
+    
     @Override
     public void trigger() {
-        synchronized (this) {
-            if (!isTriggered()) {
-                return;
-            }
-            long now = System.currentTimeMillis();
-            time = now - (now % interval);
-        }
-        run();
+        nextRun = new Date(System.currentTimeMillis() + interval);
+        runWorkflow();
     }
+    
+    /**
+     * Performs the given workflow.
+     */
+    public abstract void runWorkflow();
 }

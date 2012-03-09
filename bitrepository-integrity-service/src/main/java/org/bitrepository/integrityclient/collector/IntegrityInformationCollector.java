@@ -28,12 +28,16 @@ import java.util.Collection;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.protocol.eventhandler.EventHandler;
 
 /**
  * This is the interface for initiating collecting integrity information from pillars.
  *
  * It is expected to be called from a scheduler that generates events to collect specific data.
  * Results should be stored in the {@link org.bitrepository.integrityclient.cache.IntegrityModel}
+ * 
+ * The EventHandler given as argument will determine what to do after the collection. 
+ * E.g. perform a integrity check on the collected data.
  */
 public interface IntegrityInformationCollector {
     
@@ -43,8 +47,10 @@ public interface IntegrityInformationCollector {
      * @param pillarIDs The collection of ids of the pillars to request for the file ids.
      * @param fileIDs The file ids requested.
      * @param auditTrailInformation The audit trail information for the conversation.
+     * @param eventHandler The eventhandler for the results of the checksum collection. 
      */
-    void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation);
+    void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation, 
+            EventHandler eventHandler);
 
     /**
      * Request the specified checksums for from all the pillars.
@@ -54,7 +60,8 @@ public interface IntegrityInformationCollector {
      * @param checksumType The checksum algorithm (and salt) used for the calculation. 
      * May be null, in which case the collection default is used.
      * @param auditTrailInformation The audit trail information for the conversation.
+     * @param eventHandler The eventhandler for the results of the checksum collection. 
      */
     void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType, 
-            String auditTrailInformation);
+            String auditTrailInformation, EventHandler eventHandler);
 }

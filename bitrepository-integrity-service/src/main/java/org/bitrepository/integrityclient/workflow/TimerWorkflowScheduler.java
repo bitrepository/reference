@@ -24,8 +24,9 @@
  */
 package org.bitrepository.integrityclient.workflow;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -46,7 +47,7 @@ public class TimerWorkflowScheduler implements IntegrityWorkflowScheduler {
     /** The period between testing whether triggers have triggered. */
     private final long interval;
     /** The map between the running timertasks and their names.*/
-    private Map<String, TimerTask> triggerTimerTasks = new HashMap<String, TimerTask>();
+    private Map<String, TriggerTimerTask> workflowTimerTasks = new HashMap<String, TriggerTimerTask>();
     
     /** The name of the timer.*/
     private final String TIMER_NAME = "Integrity Information Scheduler";
@@ -65,23 +66,21 @@ public class TimerWorkflowScheduler implements IntegrityWorkflowScheduler {
     }
 
     @Override
-    public void putTrigger(String name, Workflow trigger) {
+    public void putTrigger(String name, Workflow workflow) {
         if(removeTrigger(name)) {
-            log.info("Recreated trigger named '" + name + "': " + trigger);
+            log.info("Recreated workflow named '" + name + "': " + workflow);
         } else {
-            log.debug("Created a trigger named '" + name + "': " + trigger);
+            log.debug("Created a workflow named '" + name + "': " + workflow);
         }
-        TimerTask task = new TriggerTimerTask(trigger);
-        // TODO: Should the interval rather be a suggestion from the trigger?
-        // TODO: Should triggers be defined in configuration? How?
+        TriggerTimerTask task = new TriggerTimerTask(workflow);
         timer.scheduleAtFixedRate(task, NO_DELAY, interval);
         
-        triggerTimerTasks.put(name, task);
+        workflowTimerTasks.put(name, task);
     }
     
     @Override
     public boolean removeTrigger(String name) {
-        TimerTask task = triggerTimerTasks.remove(name);
+        TimerTask task = workflowTimerTasks.remove(name);
         if(task == null) {
             return false;
         }
@@ -91,8 +90,13 @@ public class TimerWorkflowScheduler implements IntegrityWorkflowScheduler {
     }
     
     @Override
-    public Collection<String> getTriggerNames() {
-       return triggerTimerTasks.keySet(); 
+    public List<Workflow> getWorkflows() {
+        List<Workflow> workflows = new ArrayList<Workflow>();
+        for(TriggerTimerTask task : workflowTimerTasks.values()) {
+            workflows.add(task.getWorkflow());
+        }
+        
+        return workflows;
     }
     
     /**
@@ -100,21 +104,25 @@ public class TimerWorkflowScheduler implements IntegrityWorkflowScheduler {
      */
     private static class TriggerTimerTask extends TimerTask {
         /** The trigger to test and run. */
-        private Workflow trigger;
+        private Workflow workflow;
 
         /** Initialise a task that tests a trigger and runs it if it has triggered.
          *
          * @param trigger The trigger to test and run.
          */
         public TriggerTimerTask(Workflow trigger) {
-            this.trigger = trigger;
+            this.workflow = trigger;
         }
 
         @Override
         public void run() {
-            if (trigger.isTriggered()) {
-                trigger.trigger();
+            if(workflow.getNextRun().getTime() < System.currentTimeMillis()) {
+                workflow.trigger();
             }
+        }
+        
+        public Workflow getWorkflow() {
+            return workflow;
         }
     }
 }

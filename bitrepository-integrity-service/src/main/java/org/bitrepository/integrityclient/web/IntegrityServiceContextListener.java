@@ -43,36 +43,42 @@ import org.slf4j.LoggerFactory;
  */
 public class IntegrityServiceContextListener implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
-
+    
+    private IntegrityService service = null;
+    
     /**
      * Do initialization work  
      */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-    	String confDir = sce.getServletContext().getInitParameter("integrityServiceConfDir");
-	    if(confDir == null) {
-	    	throw new RuntimeException("No configuration directory specified!");
-	    }
-	    log.debug("Configuration dir = " + confDir);
-	    System.setProperty(ConfigurationFactory.CONFIGURATION_DIR_SYSTEM_PROPERTY, confDir);
-	    try {
-			new LogbackConfigLoader(confDir + "/logback.xml");
-		} catch (Exception e) {
-			log.info("Failed to read log configuration file. Falling back to default.");
-		} 
-	    IntegrityServiceFactory.init(confDir);
-	    IntegrityService service = IntegrityServiceFactory.getIntegrityService();
+        String confDir = sce.getServletContext().getInitParameter("integrityServiceConfDir");
+        if(confDir == null) {
+            throw new RuntimeException("No configuration directory specified!");
+        }
+        log.debug("Configuration dir = " + confDir);
+        System.setProperty(ConfigurationFactory.CONFIGURATION_DIR_SYSTEM_PROPERTY, confDir);
+        try {
+            new LogbackConfigLoader(confDir + "/logback.xml");
+        } catch (Exception e) {
+            log.info("Failed to read log configuration file. Falling back to default.");
+        } 
+        IntegrityServiceFactory.init(confDir);
+        service = IntegrityServiceFactory.getIntegrityService();
         log.debug("Servlet context initialized");
     }
-
+    
     /**
      * Do teardown work. 
      */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         // Method that's run when the war file is undeployed. 
-    	// Can be used to shut everything down nicely..
-    	log.debug("Servlet context destroyed");
+        // Can be used to shut everything down nicely..
+        log.debug("Servlet context destroyed");
+        
+        if(service != null) {
+            service.close();
+        }
     }
-
+    
 }

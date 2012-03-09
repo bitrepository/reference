@@ -25,7 +25,6 @@
 package org.bitrepository.integrityclient;
 
 import java.util.Collection;
-import java.util.Date;
 
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -35,11 +34,17 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityclient.cache.IntegrityModel;
 import org.bitrepository.integrityclient.checking.IntegrityChecker;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
+import org.bitrepository.integrityclient.collector.eventhandler.ChecksumsUpdaterAndValidatorEventHandler;
+import org.bitrepository.integrityclient.collector.eventhandler.FileIDsUpdaterAndValidatorEventHandler;
 import org.bitrepository.integrityclient.workflow.IntegrityWorkflowScheduler;
-import org.bitrepository.integrityclient.workflow.scheduler.CollectAllChecksumsFromPillarTrigger;
-import org.bitrepository.integrityclient.workflow.scheduler.CollectAllFileIDsFromPillarTrigger;
-import org.bitrepository.integrityclient.workflow.scheduler.CollectObsoleteChecksumsTrigger;
+import org.bitrepository.integrityclient.workflow.Workflow;
+import org.bitrepository.integrityclient.workflow.scheduler.CollectAllChecksumsWorkflow;
+import org.bitrepository.integrityclient.workflow.scheduler.CollectAllFileIDsWorkflow;
+import org.bitrepository.integrityclient.workflow.scheduler.CollectObsoleteChecksumsWorkflow;
+import org.bitrepository.integrityclient.workflow.scheduler.IntegrityValidatorWorkflow;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
 
 /**
@@ -47,11 +52,13 @@ import org.bitrepository.protocol.security.SecurityManager;
  */
 public class SimpleIntegrityService {
     /** The default name of the trigger.*/
-    private static final String DEFAULT_NAME_OF_CHECKSUM_TRIGGER = "The Checksum Collector Trigger";
+    private static final String DEFAULT_NAME_OF_OBSOLETE_CHECKSUM_TRIGGER = "The Obsolete Checksum Collector Workflow";
     /** The default name of the trigger.*/
-    private static final String DEFAULT_NAME_OF_ALL_FILEIDS_TRIGGER = "The FileIDs Collector Trigger For Pillar ";
+    private static final String DEFAULT_NAME_OF_ALL_FILEIDS_TRIGGER = "The FileIDs Collector Workflow";
     /** The default name of the trigger.*/
-    private static final String DEFAULT_NAME_OF_ALL_CHECKSUMS_TRIGGER = "The Checksums Collector Trigger For Pillar ";
+    private static final String DEFAULT_NAME_OF_ALL_CHECKSUMS_TRIGGER = "The Checksums Collector Workflow";
+    /** The default name of the trigger.*/
+    private static final String DEFAULT_NAME_OF_INTEGRITY_VALIDATOR_WORKFLOW = "The Integrity Validator Workflow.";
 
     /** The scheduler. */
     private final IntegrityWorkflowScheduler scheduler;
@@ -63,6 +70,10 @@ public class SimpleIntegrityService {
     private final IntegrityChecker checker;
     /** The settings. */
     private final Settings settings;
+    /** The dispatcher of alarms.*/
+    private final IntegrityAlarmDispatcher alarmDispatcher;
+    /** The messagebus for communication.*/
+    private final MessageBus messageBus;
     
     /**
      * Constructor.
@@ -70,15 +81,17 @@ public class SimpleIntegrityService {
      */
     public SimpleIntegrityService(Settings settings, SecurityManager securityManager) {
         this.settings = settings;
+        this.messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager); 
         this.cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings);
         this.scheduler = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settings);
         this.checker = IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache);
+        this.alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus);
         this.collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
                 cache, checker, 
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager),
-                settings,
-                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager));
+                settings, messageBus);
+        
     }
     
     /**
@@ -87,43 +100,58 @@ public class SimpleIntegrityService {
      * @param intervalBetweenChecks The time between checking for outdated checksums.
      */
     public void startChecksumIntegrityCheck(long millisSinceLastUpdate, long intervalBetweenChecks) {
+        EventHandler eventHandler = new ChecksumsUpdaterAndValidatorEventHandler(cache, checker, alarmDispatcher, 
+                getFileIDsWithAllFileIDs());
+        
         // Default checksum used.
         ChecksumSpecTYPE checksumType = new ChecksumSpecTYPE();
         checksumType.setChecksumType(ChecksumType.fromValue(
                 settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType()));
         
-        CollectObsoleteChecksumsTrigger trigger = new CollectObsoleteChecksumsTrigger(intervalBetweenChecks, millisSinceLastUpdate, 
-                checksumType, collector, cache);
+        Workflow trigger = new CollectObsoleteChecksumsWorkflow(intervalBetweenChecks, millisSinceLastUpdate, 
+                checksumType, collector, cache, eventHandler);
         
-        scheduler.putTrigger(DEFAULT_NAME_OF_CHECKSUM_TRIGGER, trigger);
+        scheduler.putTrigger(DEFAULT_NAME_OF_OBSOLETE_CHECKSUM_TRIGGER, trigger);
     }
     
     /**
-     * Initiates the scheduling of collecting and checking of all the file ids from a single pillar.
-     * @param pillarId The id of the pillar to collect file ids from.
+     * Initiates the scheduling of collecting and checking of all the file ids from all the pillars.
      * @param intervalBetweenCollecting The time between collecting all the file ids.
      */
-    public void startAllFileIDsIntegrityCheckFromPillar(String pillarId, long intervalBetweenCollecting) {
-        CollectAllFileIDsFromPillarTrigger trigger = new CollectAllFileIDsFromPillarTrigger(
-                intervalBetweenCollecting, pillarId, collector);
+    public void startAllFileIDsIntegrityCheck(long intervalBetweenCollecting) {
+        EventHandler eventHandler = new FileIDsUpdaterAndValidatorEventHandler(cache, checker, alarmDispatcher, 
+                getFileIDsWithAllFileIDs());
+        Workflow trigger = new CollectAllFileIDsWorkflow(intervalBetweenCollecting, settings, collector, eventHandler);
         
-        scheduler.putTrigger(DEFAULT_NAME_OF_ALL_FILEIDS_TRIGGER + pillarId, trigger);
+        scheduler.putTrigger(DEFAULT_NAME_OF_ALL_FILEIDS_TRIGGER, trigger);
     }
 
     /**
-     * Initiates the scheduling of collecting and checking of all the checksums from a single pillar.
-     * @param pillarId The id of the pillar to collect file ids from.
+     * Initiates the scheduling of collecting and checking of all the checksums from all the pillars.
      * @param intervalBetweenCollecting The time between collecting all the file ids.
      */
-    public void startAllChecksumsIntegrityCheckFromPillar(String pillarId, long intervalBetweenCollecting) {
+    public void startAllChecksumsIntegrityCheck(long intervalBetweenCollecting) {
+        EventHandler eventHandler = new ChecksumsUpdaterAndValidatorEventHandler(cache, checker, alarmDispatcher, 
+                getFileIDsWithAllFileIDs());
         ChecksumSpecTYPE checksumType = new ChecksumSpecTYPE();
         checksumType.setChecksumType(ChecksumType.fromValue(
                 settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType()));
         
-        CollectAllChecksumsFromPillarTrigger trigger = new CollectAllChecksumsFromPillarTrigger(
-                intervalBetweenCollecting, pillarId, checksumType, collector);
+        Workflow trigger = new CollectAllChecksumsWorkflow(intervalBetweenCollecting, checksumType, 
+                settings, collector, eventHandler);
         
-        scheduler.putTrigger(DEFAULT_NAME_OF_ALL_CHECKSUMS_TRIGGER + pillarId, trigger);
+        scheduler.putTrigger(DEFAULT_NAME_OF_ALL_CHECKSUMS_TRIGGER, trigger);
+    }
+    
+    /**
+     * Initiates the scheduling of a checking of all the checksums and file id for all the data in the cache.
+     * @param intervalBetweenCollecting The time between the workflow is run.
+     */
+    public void startIntegrityValidator(long intervalBetweenCollecting) {
+        Workflow trigger = new IntegrityValidatorWorkflow(intervalBetweenCollecting, checker);
+        
+        scheduler.putTrigger(DEFAULT_NAME_OF_INTEGRITY_VALIDATOR_WORKFLOW, trigger);
+
     }
     
     /**
@@ -146,19 +174,20 @@ public class SimpleIntegrityService {
         } else {
             checksumType.setChecksumType(ChecksumType.fromValue(checksumAlgorithm));
         }
-        
         checksumType.setChecksumSalt(salt.getBytes());
         
+        EventHandler eventHandler = new ChecksumsUpdaterAndValidatorEventHandler(cache, checker, alarmDispatcher, 
+                getFileIDsWithAllFileIDs());
         collector.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
-                fileIDs, checksumType, auditTrailInformation);
+                fileIDs, checksumType, auditTrailInformation, eventHandler);
     }
     
     /**
      * Retrieves all the scheduled tasks in the system, which are running.
      * @return The names of the tasks, which are scheduled by the system.
      */
-    public Collection<String> getScheduledTasks() {
-        return scheduler.getTriggerNames();
+    public Collection<Workflow> getScheduledTasks() {
+        return scheduler.getWorkflows();
     }
     
     /**
@@ -183,5 +212,18 @@ public class SimpleIntegrityService {
      */
     public long getNumberOfChecksumErrors(String pillarId) {
         return cache.getNumberOfChecksumErrors(pillarId);
+    }
+    
+    public void close() {
+        // TODO!
+    }
+    
+    /**
+     * @return A FileIDs where all FileIDs are set.
+     */
+    private FileIDs getFileIDsWithAllFileIDs() {
+        FileIDs allFileIDs = new FileIDs();
+        allFileIDs.setAllFileIDs("TRUE");
+        return allFileIDs;
     }
 }

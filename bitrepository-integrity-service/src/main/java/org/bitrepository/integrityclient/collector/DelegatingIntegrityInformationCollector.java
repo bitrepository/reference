@@ -31,11 +31,6 @@ import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.integrityclient.cache.IntegrityModel;
-import org.bitrepository.integrityclient.checking.IntegrityChecker;
-import org.bitrepository.integrityclient.collector.eventhandler.IntegrityAlarmDispatcher;
-import org.bitrepository.integrityclient.collector.eventhandler.IntegrityStorageChecksumsUpdater;
-import org.bitrepository.integrityclient.collector.eventhandler.IntegrityStorageFileIDsUpdater;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -49,40 +44,27 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
-    /** The storage to store data in. */
-    private final IntegrityModel storage;
     /** The client for retrieving file IDs. */
     private final GetFileIDsClient getFileIDsClient;
     /** The client for retrieving checksums. */
     private final GetChecksumsClient getChecksumsClient;
-    /** The checker for the integrity. Should be used, when the collecting has finished to validate the collected.*/
-    private final IntegrityChecker checker;
-    /** The alarmDispatcher for sending errors. */
-    private final IntegrityAlarmDispatcher alarmDispatcher;
     
     /**
-     * Initialise a delegating integrity information collector.
-     *
-     * @param storage The storage to store data in.
+     * Constructor.
      * @param getFileIDsClient The client for retrieving file IDs
      * @param getChecksumsClient The client for retrieving checksums
      */
-    public DelegatingIntegrityInformationCollector(IntegrityModel storage,
-            IntegrityChecker integrityChecker, GetFileIDsClient getFileIDsClient, 
+    public DelegatingIntegrityInformationCollector(GetFileIDsClient getFileIDsClient, 
             GetChecksumsClient getChecksumsClient, Settings settings, MessageBus messageBus) {
-        this.storage = storage;
-        this.checker = integrityChecker;
         this.getFileIDsClient = getFileIDsClient;
         this.getChecksumsClient = getChecksumsClient;
-        alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus);
     }
 
     @Override
-    public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation) {
+    public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation, 
+            EventHandler eventHandler) {
         try {
-            EventHandler fileIdsEventHandler = new IntegrityStorageFileIDsUpdater(storage, checker, alarmDispatcher,
-                    fileIDs);
-            getFileIDsClient.getFileIDs(pillarIDs, fileIDs, null, fileIdsEventHandler, auditTrailInformation);
+            getFileIDsClient.getFileIDs(pillarIDs, fileIDs, null, eventHandler, auditTrailInformation);
         } catch (OperationFailedException e) {
             log.warn("Could not retrieve the file ids '" + fileIDs + "' from '" + pillarIDs + "'", e);
         } catch (Throwable e) {
@@ -93,11 +75,9 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
 
     @Override
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType, 
-            String auditTrailInformation) {
+            String auditTrailInformation, EventHandler eventHandler) {
         try {
-            EventHandler checksumEventHandler = new IntegrityStorageChecksumsUpdater(storage, checker, alarmDispatcher, 
-                    fileIDs);
-            getChecksumsClient.getChecksums(pillarIDs, fileIDs, checksumType, null, checksumEventHandler, 
+            getChecksumsClient.getChecksums(pillarIDs, fileIDs, checksumType, null, eventHandler, 
                     auditTrailInformation);
         } catch (OperationFailedException e) {
             log.warn("Could not retrieve the checksum '" + fileIDs + "' from '" + pillarIDs + "' with spec '" 

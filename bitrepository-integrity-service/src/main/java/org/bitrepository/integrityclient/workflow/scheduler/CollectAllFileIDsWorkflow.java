@@ -24,50 +24,53 @@
  */
 package org.bitrepository.integrityclient.workflow.scheduler;
 
-import java.util.Arrays;
-
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
+import org.bitrepository.protocol.eventhandler.EventHandler;
 
 /**
- * Collects all the checksums from a given pillar, put them into the IntegrityCache, and validate the checksum.
+ * Collects all the fileids from a given pillar.
+ */
+/**
+ * Collects all the file ids from a given pillar, put them into the IntegrityCache, and validate them.
  * It is performed by having the integrity collector updating the integrity cache, and then performing 
  * the integrity check upon the results.
  */
-public class CollectAllChecksumsFromPillarTrigger extends IntervalTrigger {
+public class CollectAllFileIDsWorkflow extends IntervalWorkflow {
     /** Sets all the file ids to true.*/
     private final String SET_ALL_FILE_IDS_TRUE = "true";
     /** The audit trail for this trigger.*/
-    private final String AUDIT_TRAIL_INFORMATION = "IntegrityService Scheduling GetChecksums collector.";
+    private final String AUDIT_TRAIL_INFORMATION = "IntegrityService Scheduling GetFileIDs collector";
     
     /** The informationCollector.*/
     private final IntegrityInformationCollector informationCollector;
-    /** The id for the pillar, where all the checksums should be collected.*/
-    private final String pillarId;
-    /** The type of checksum for the calculation, e.g. the algorithm and optional salt.*/
-    private final ChecksumSpecTYPE checksumType;
+    /** The settings for this workflow.*/
+    private final Settings settings;
+    /** The eventhandler for handling the results of collecting in this workflow.*/
+    private final EventHandler eventHandler;
     
     /**
      * Constructor.
-     * @param interval The interval between each collecting of all the checksums.
+     * @param interval The interval between each collecting of all the fileids.
      * @param pillarId The id of the pillar.
-     * @param informationCollector The initiator of the GetChecksums conversation.
+     * @param informationCollector The initiator of the GetFileIDs conversation.
+     * @param eventHandler The eventhandler for handling the results of collecting all the file ids.
      */
-    public CollectAllChecksumsFromPillarTrigger(long interval, String pillarId, ChecksumSpecTYPE checksumType, 
-            IntegrityInformationCollector informationCollector) {
+    public CollectAllFileIDsWorkflow(long interval, Settings settings, 
+            IntegrityInformationCollector informationCollector, EventHandler eventHandler) {
         super(interval);
         this.informationCollector = informationCollector;
-        this.pillarId = pillarId;
-        this.checksumType = checksumType;
+        this.settings = settings;
+        this.eventHandler = eventHandler;
     }
 
     @Override
-    public void run() {
+    public void runWorkflow() {
         FileIDs fileIDs = new FileIDs();
         fileIDs.setAllFileIDs(SET_ALL_FILE_IDS_TRUE);
-        
-        informationCollector.getChecksums(Arrays.asList(new String[]{pillarId}), fileIDs, checksumType, 
-                AUDIT_TRAIL_INFORMATION);
+
+        informationCollector.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
+                AUDIT_TRAIL_INFORMATION, eventHandler);
     }
 }

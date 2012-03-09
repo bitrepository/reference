@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityclient.cache.FileInfo;
 import org.bitrepository.integrityclient.cache.IntegrityModel;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
+import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * Collects the checksums from the pillars when their latest update has exceeded the interval.
  * The messages will be sent individually for each file.
  */
-public class CollectObsoleteChecksumsTrigger extends IntervalTrigger {
+public class CollectObsoleteChecksumsWorkflow extends IntervalWorkflow {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -56,6 +57,8 @@ public class CollectObsoleteChecksumsTrigger extends IntervalTrigger {
     private final long maxTimeToLastUpdate;
     /** The cache with the information about the previously collected integrity information.*/
     private final IntegrityModel cache;
+    /** The eventhandler for handling the results of collecting in this workflow.*/
+    private final EventHandler eventHandler;
     
     /**
      * Constructor.
@@ -64,18 +67,21 @@ public class CollectObsoleteChecksumsTrigger extends IntervalTrigger {
      * @param checksumType The type of checksum to request being calculated.
      * @param informationCollector The initiator of the GetChecksums conversation.
      * @param cache The cache with integrity information.
+     * @param eventHandler The eventhandler for handling the results of collecting all the file ids.
      */
-    public CollectObsoleteChecksumsTrigger(long triggerInterval, long maxTimeToLastUpdate, 
-            ChecksumSpecTYPE checksumType, IntegrityInformationCollector informationCollector, IntegrityModel cache) {
+    public CollectObsoleteChecksumsWorkflow(long triggerInterval, long maxTimeToLastUpdate, 
+            ChecksumSpecTYPE checksumType, IntegrityInformationCollector informationCollector, IntegrityModel cache,
+            EventHandler eventHandler) {
         super(triggerInterval);
         this.informationCollector = informationCollector;
         this.checksumType = checksumType;
         this.maxTimeToLastUpdate = maxTimeToLastUpdate;
         this.cache = cache;
+        this.eventHandler = eventHandler;
     }
 
     @Override
-    public void run() {
+    public void runWorkflow() {
         Date latestUpdate = new Date(new Date().getTime() - maxTimeToLastUpdate);
         
         // Handle each file id individually.
@@ -98,7 +104,7 @@ public class CollectObsoleteChecksumsTrigger extends IntervalTrigger {
                 FileIDs fileIDs = new FileIDs();
                 fileIDs.setFileID(fileid);
                 informationCollector.getChecksums(pillarsToUpdate, fileIDs, checksumType, 
-                        AUDIT_TRAIL_INFORMATION);
+                        AUDIT_TRAIL_INFORMATION, eventHandler);
             }
         }
     }

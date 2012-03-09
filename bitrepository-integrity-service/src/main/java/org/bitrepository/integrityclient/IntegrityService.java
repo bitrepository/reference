@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.integrityclient.workflow.Workflow;
 
 public class IntegrityService {
     private final SimpleIntegrityService service;
@@ -67,7 +68,12 @@ public class IntegrityService {
         return settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval();
     }
     
-    public Collection<String> getScheduledTasks() {
+    public Collection<Workflow> getWorkflows() {
         return service.getScheduledTasks();
     }
+    
+    public void close() {
+        service.close();
+    }
+    
 }

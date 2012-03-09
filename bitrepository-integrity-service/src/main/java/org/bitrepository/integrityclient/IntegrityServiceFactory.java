@@ -40,8 +40,6 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public final class IntegrityServiceFactory {
@@ -104,10 +102,7 @@ public final class IntegrityServiceFactory {
                 integrityService = new IntegrityService(simpleIntegrityService, settings);
                 simpleIntegrityService.startChecksumIntegrityCheck(timeSinceLastChecksumUpdate, 
                         settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval());
-                for(String pillarId : settings.getCollectionSettings().getClientSettings().getPillarIDs()) {
-                    simpleIntegrityService.startAllFileIDsIntegrityCheckFromPillar(pillarId, 
-                            timeSinceLastFileIDsUpdate);
-                }
+                simpleIntegrityService.startAllFileIDsIntegrityCheck(timeSinceLastFileIDsUpdate);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

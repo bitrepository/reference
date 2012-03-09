@@ -24,8 +24,9 @@
  */
 package org.bitrepository.integrityclient.collector.eventhandler;
 
-import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
+import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.integrityclient.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityclient.cache.IntegrityModel;
 import org.bitrepository.integrityclient.checking.IntegrityChecker;
 import org.bitrepository.integrityclient.checking.IntegrityReport;
@@ -36,9 +37,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles the event from the GetFileIds operations and sends the results into the cache.
+ * Handles the event from the GetChecksums operations and sends the results into the cache.
  */
-public class IntegrityStorageFileIDsUpdater implements EventHandler {
+public class ChecksumsUpdaterAndValidatorEventHandler implements EventHandler {
+    
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
@@ -58,16 +60,16 @@ public class IntegrityStorageFileIDsUpdater implements EventHandler {
      * @param alarmDispatcher The dispatcher of alarms. 
      * @param fileIDs The given data to perform the integrity checks upon.
      */
-    public IntegrityStorageFileIDsUpdater(IntegrityModel informationCache, 
+    public ChecksumsUpdaterAndValidatorEventHandler(IntegrityModel informationCache, 
             IntegrityChecker integrityChecker, IntegrityAlarmDispatcher alarmDispatcher, FileIDs fileIDs) {
         this.informationCache = informationCache;
         this.integrityChecker = integrityChecker;
-        this.alarmDispatcher = alarmDispatcher;
         this.fileIDs = fileIDs;
+        this.alarmDispatcher = alarmDispatcher;
     }
     
-    @Override
     @SuppressWarnings("rawtypes")
+    @Override
     public void handleEvent(OperationEvent event) {
         if(event.getType().equals(OperationEventType.FAILED)) {
             handleFailure(event);
@@ -79,8 +81,8 @@ public class IntegrityStorageFileIDsUpdater implements EventHandler {
             return;
         }
         
-        if(event instanceof FileIDsCompletePillarEvent) {
-            handleFileIDsComplete((FileIDsCompletePillarEvent) event);
+        if(event instanceof ChecksumsCompletePillarEvent) {
+            handleChecksumsComplete((ChecksumsCompletePillarEvent) event);
         } else {
             // TODO handle differently if special case (e.g. PillarFailure).
             log.debug(event.toString());
@@ -88,11 +90,12 @@ public class IntegrityStorageFileIDsUpdater implements EventHandler {
     }
     
     /**
-     * Handles the results of a operation.
-     * @param event The event for the completed pillar.
+     * Handles the results of the GetChecksums operation of a single pillar.
+     * @param event The event with the results of the completed pillar.
      */
-    private void handleFileIDsComplete(FileIDsCompletePillarEvent event) {
-        informationCache.addFileIDs(event.getFileIDs().getFileIDsData(), event.getState()); 
+    private void handleChecksumsComplete(ChecksumsCompletePillarEvent event) {
+        informationCache.addChecksums(event.getChecksums().getChecksumDataItems(), event.getChecksumType(), 
+                event.getState());
     }
     
     /**
@@ -114,12 +117,12 @@ public class IntegrityStorageFileIDsUpdater implements EventHandler {
         log.info(event.getType() + " : " + event.getState() + " : " + event.getInfo());
         performIntegrityCheck();
     }
-
+    
     /**
      * Performs the integrity check, and sends an Alarm if any integrity problems. 
      */
     private void performIntegrityCheck() {
-        IntegrityReport report = integrityChecker.checkFileIDs(fileIDs);
+        IntegrityReport report = integrityChecker.checkChecksum(fileIDs);
         if(report.hasIntegrityIssues()) {
             log.warn(report.generateReport());
             alarmDispatcher.integrityFailed(report);

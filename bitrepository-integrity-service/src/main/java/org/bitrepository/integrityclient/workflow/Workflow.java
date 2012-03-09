@@ -24,6 +24,8 @@
  */
 package org.bitrepository.integrityclient.workflow;
 
+import java.util.Date;
+
 /**
  * Interface for defining a workflow.
  * A workflow collects data or validate data, or a combination of these two. 
@@ -39,21 +41,19 @@ package org.bitrepository.integrityclient.workflow;
  */
 public interface Workflow {
     /**
-     * Whether the trigger triggers an event. Note, this is informational only, due to race conditions,
-     * no event may be available when actually requesting the trigger.
-     * This method will should be implemented to be fairly fast, and not require too many resources,
-     * since it can be called quite frequently from the scheduler.
-     *
-     * @return True if this triggers an event. False otherwise.
+     * @return The date for the next run of this workflow.
      */
-    boolean isTriggered();
-
+    Date getNextRun();
+    
     /**
-     * Trigger a collection event.
-     *
-     * This should trigger the collection of information using an {@link IntegrityInformationCollector}.
-     *
-     * May do nothing, if triggering conditions do not apply.
+     * The time between the automatically triggering of the workflow.
+     * @return The number of milliseconds from the workflow is triggered until it automatically is triggered again.
+     */
+    long timeBetweenRuns();
+    
+    /**
+     * Trigger a workflow event.
+     * This should reinitiate the 'next run', and perform the given workflow.
      */
     void trigger();
 }

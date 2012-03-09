@@ -98,8 +98,8 @@ public final class IntegrityServiceComponentFactory {
             IntegrityChecker checker, GetFileIDsClient getFileIDsClient, GetChecksumsClient getChecksumsClient, 
             Settings settings, MessageBus messageBus) {
         if (integrityInformationCollector == null) {
-            integrityInformationCollector = new DelegatingIntegrityInformationCollector(cache, checker, 
-                    getFileIDsClient, getChecksumsClient, settings, messageBus);
+            integrityInformationCollector = new DelegatingIntegrityInformationCollector(getFileIDsClient, 
+                    getChecksumsClient, settings, messageBus);
         }
         return integrityInformationCollector;
     }

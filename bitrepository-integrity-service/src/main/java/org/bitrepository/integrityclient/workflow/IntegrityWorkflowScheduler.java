@@ -48,7 +48,7 @@ public interface IntegrityWorkflowScheduler {
     boolean removeTrigger(String name);
     
     /**
-     * @return The list of all the triggers.
+     * @return The list of all workflows.
      */
-    Collection<String> getTriggerNames();
+    Collection<Workflow> getWorkflows();
 }

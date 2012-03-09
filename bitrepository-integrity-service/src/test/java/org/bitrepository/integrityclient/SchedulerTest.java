@@ -32,9 +32,10 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityclient.workflow.TimerWorkflowScheduler;
-import org.bitrepository.integrityclient.workflow.scheduler.CollectAllChecksumsFromPillarTrigger;
-import org.bitrepository.integrityclient.workflow.scheduler.CollectAllFileIDsFromPillarTrigger;
+import org.bitrepository.integrityclient.workflow.scheduler.CollectAllChecksumsWorkflow;
+import org.bitrepository.integrityclient.workflow.scheduler.CollectAllFileIDsWorkflow;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
@@ -54,6 +55,8 @@ public class SchedulerTest extends ExtendedTestCase {
         settings = TestSettingsProvider.reloadSettings();
         securityManager = new DummySecurityManager();
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
+        
+        
     }
     
     @Test(groups = {"regressiontest"})
@@ -72,7 +75,7 @@ public class SchedulerTest extends ExtendedTestCase {
         Assert.assertEquals(collector.getFileIDsCount(), 0, "No fileids calls at begining.");
         
         addStep("Start the trigger for the FileIDs", "Should start sending requests to the InformationCollector");
-        scheduler.putTrigger(taskName, new CollectAllFileIDsFromPillarTrigger(interval, "test-pillar", collector));
+        scheduler.putTrigger(taskName, new CollectAllFileIDsWorkflow(interval, settings, collector, null));
         
         addStep("Wait 4 * the interval, stop the trigger and validate the results.", 
                 "Should be three or four counts for FileIDs and none for Checksums");
@@ -112,7 +115,8 @@ public class SchedulerTest extends ExtendedTestCase {
         Assert.assertEquals(collector.getFileIDsCount(), 0, "No fileids calls at begining.");
 
         addStep("Start the trigger for the FileIDs", "Should start sending requests to the InformationCollector");
-        scheduler.putTrigger(taskName, new CollectAllChecksumsFromPillarTrigger(interval, "test-pillar", new ChecksumSpecTYPE(), collector));
+        scheduler.putTrigger(taskName, new CollectAllChecksumsWorkflow(interval, new ChecksumSpecTYPE(), settings, 
+                collector, null));
         
         addStep("Wait 4 * the interval, stop the trigger and validate the results.", 
                 "Should be three or four counts for Checksums and none for FileIDs");
@@ -122,8 +126,8 @@ public class SchedulerTest extends ExtendedTestCase {
         scheduler.removeTrigger(taskName);
         int getChecksumsCalls = collector.getChecksumsCount();
         Assert.assertEquals(collector.getFileIDsCount(), 0, "Still no calls for GetFileIDs");
-        Assert.assertTrue(getChecksumsCalls >= 3, "At least 3 calls for GetChecksums");
-        Assert.assertTrue(getChecksumsCalls <= 4, "At most 4 calls for GetChecksums");
+        Assert.assertTrue(getChecksumsCalls >= 3, "At least 3 calls for GetChecksums, but was: " + getChecksumsCalls);
+        Assert.assertTrue(getChecksumsCalls <= 4, "At most 4 calls for GetChecksums, but was: " + getChecksumsCalls);
         
         addStep("Wait another 2*interval and validate that the trigger has been cancled.", 
                 "The Collector should have received no more requests.");
@@ -151,7 +155,8 @@ public class SchedulerTest extends ExtendedTestCase {
         }
         
         @Override
-        public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation) {
+        public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation, 
+                EventHandler eventHandler) {
             getFileIDs++;
         }
         
@@ -164,7 +169,7 @@ public class SchedulerTest extends ExtendedTestCase {
 
         @Override
         public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType,
-                String auditTrailInformation) {
+                String auditTrailInformation, EventHandler eventHandler) {
             getChecksums++;
         }
         
