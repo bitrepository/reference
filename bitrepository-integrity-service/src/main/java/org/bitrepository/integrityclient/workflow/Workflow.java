@@ -22,20 +22,22 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityclient.scheduler;
-
-import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
+package org.bitrepository.integrityclient.workflow;
 
 /**
- * Interface for defining a trigger for collecting events.
- *
- * Implementations should trigger collection of integrity information using an
- * {@link IntegrityInformationCollector}.
+ * Interface for defining a workflow.
+ * A workflow collects data or validate data, or a combination of these two. 
+ * 
+ * Implementations for a workflow for collection of integrity information should use an
+ * {@link org.bitrepository.integrityclient.collector.IntegrityInformationCollector}.
  *
  * Conditions for the trigger should pull on configuration combined with data from the
  * {@link org.bitrepository.integrityclient.cache.IntegrityModel}.
+ * 
+ * Implementations for a workflow which checks the integrity of the data should use an
+ * {@link org.bitrepository.integrityclient.checking.IntegrityChecker}
  */
-public interface Trigger {
+public interface Workflow {
     /**
      * Whether the trigger triggers an event. Note, this is informational only, due to race conditions,
      * no event may be available when actually requesting the trigger.

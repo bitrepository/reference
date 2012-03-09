@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityclient.scheduler;
+package org.bitrepository.integrityclient.workflow;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Scheduler that uses Timer to trigger events.
  */
-public class TimerIntegrityInformationScheduler implements IntegrityInformationScheduler {
+public class TimerWorkflowScheduler implements IntegrityWorkflowScheduler {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -59,13 +59,13 @@ public class TimerIntegrityInformationScheduler implements IntegrityInformationS
      *
      * @param configuration The configuration for the collection. Currently contains polling interval.
      */
-    public TimerIntegrityInformationScheduler(Settings settings) {
+    public TimerWorkflowScheduler(Settings settings) {
         this.interval = settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval();
         timer = new Timer(TIMER_NAME, TIMER_IS_DEAMON);
     }
 
     @Override
-    public void putTrigger(String name, Trigger trigger) {
+    public void putTrigger(String name, Workflow trigger) {
         if(removeTrigger(name)) {
             log.info("Recreated trigger named '" + name + "': " + trigger);
         } else {
@@ -100,13 +100,13 @@ public class TimerIntegrityInformationScheduler implements IntegrityInformationS
      */
     private static class TriggerTimerTask extends TimerTask {
         /** The trigger to test and run. */
-        private Trigger trigger;
+        private Workflow trigger;
 
         /** Initialise a task that tests a trigger and runs it if it has triggered.
          *
          * @param trigger The trigger to test and run.
          */
-        public TriggerTimerTask(Trigger trigger) {
+        public TriggerTimerTask(Workflow trigger) {
             this.trigger = trigger;
         }
 

@@ -43,6 +43,8 @@ public class IntegrityReport {
     private List<String> filesWithChecksumSpecIssues = new ArrayList<String>();
     /** The files which does not have any integrity issues.*/
     private List<String> filesWithoutIssues = new ArrayList<String>();
+    /** The files which are too new to be checked whether they are missing.*/
+    private List<String> newUncheckedFiles = new ArrayList<String>();
     
     /**
      * Constructor.
@@ -56,6 +58,7 @@ public class IntegrityReport {
     public void combineWithReport(IntegrityReport otherReport) {
         checksumErrors.addAll(otherReport.getChecksumErrors());
         missingFiles.addAll(otherReport.getMissingFiles());
+        newUncheckedFiles.addAll(otherReport.getNewUncheckedFiles());
         filesWithoutIssues.addAll(otherReport.getFilesWithoutIssues());
         
         integrityIssueReported |= otherReport.hasIntegrityIssues();
@@ -98,6 +101,13 @@ public class IntegrityReport {
     }
     
     /**
+     * @return The files which are too new to be checked against whether they are missing.
+     */
+    public List<String> getNewUncheckedFiles() {
+        return newUncheckedFiles;
+    }
+    
+    /**
      * Insert the checksum results, when a checksum disagreement occurs.
      * This means that the integrity check found an error.
      * @param fileId The id of the file for the checksum disagreement.
@@ -129,6 +139,15 @@ public class IntegrityReport {
     }
     
     /**
+     * Report a file which is too new to be checked whether it is missing, since it might not have been put to all 
+     * pillars yet.
+     * @param fileId The id of the file which are not checked for being missing since it is too new.
+     */
+    public void addTooNewFile(String fileId) {
+        newUncheckedFiles.add(fileId);
+    }
+    
+    /**
      * Report a file without any integrity issues.
      * @param fileId The id of the file which does not have integrity issues.
      */
@@ -141,7 +160,12 @@ public class IntegrityReport {
      */
     public String generateReport() {
         StringBuffer res = new StringBuffer();
-        res.append("No integrity problems at the files: " + filesWithoutIssues);
+        res.append("No integrity problems at the files: " + filesWithoutIssues + "\n");
+        
+        if(!newUncheckedFiles.isEmpty()) {
+            res.append("Files which are too new to be checked: " + newUncheckedFiles + "\n");
+        }
+        
         if(integrityIssueReported == false) {
             return res.toString();
         }

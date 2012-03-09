@@ -31,9 +31,9 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
-import org.bitrepository.integrityclient.scheduler.TimerIntegrityInformationScheduler;
-import org.bitrepository.integrityclient.scheduler.triggers.CollectAllChecksumsFromPillarTrigger;
-import org.bitrepository.integrityclient.scheduler.triggers.CollectAllFileIDsFromPillarTrigger;
+import org.bitrepository.integrityclient.workflow.TimerWorkflowScheduler;
+import org.bitrepository.integrityclient.workflow.scheduler.CollectAllChecksumsFromPillarTrigger;
+import org.bitrepository.integrityclient.workflow.scheduler.CollectAllFileIDsFromPillarTrigger;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
@@ -63,7 +63,7 @@ public class SchedulerTest extends ExtendedTestCase {
         long interval = 1000;
         String taskName = "AllFileIDs-Task";
         settings.getReferenceSettings().getIntegrityServiceSettings().setSchedulerInterval(interval);
-        TimerIntegrityInformationScheduler scheduler = new TimerIntegrityInformationScheduler(settings);
+        TimerWorkflowScheduler scheduler = new TimerWorkflowScheduler(settings);
         TestCollector collector = new TestCollector();
         
         addStep("Validate that no calls for either checksums or fileIDs have been made.", 
@@ -103,7 +103,7 @@ public class SchedulerTest extends ExtendedTestCase {
         long interval = 1000;
         String taskName = "AllChecksums-Task";
         settings.getReferenceSettings().getIntegrityServiceSettings().setSchedulerInterval(interval);
-        TimerIntegrityInformationScheduler scheduler = new TimerIntegrityInformationScheduler(settings);
+        TimerWorkflowScheduler scheduler = new TimerWorkflowScheduler(settings);
         TestCollector collector = new TestCollector();
         
         addStep("Validate that no calls for either checksums or fileIDs have been made.", 

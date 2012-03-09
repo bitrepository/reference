@@ -35,10 +35,10 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityclient.cache.IntegrityModel;
 import org.bitrepository.integrityclient.checking.IntegrityChecker;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
-import org.bitrepository.integrityclient.scheduler.IntegrityInformationScheduler;
-import org.bitrepository.integrityclient.scheduler.triggers.CollectAllChecksumsFromPillarTrigger;
-import org.bitrepository.integrityclient.scheduler.triggers.CollectAllFileIDsFromPillarTrigger;
-import org.bitrepository.integrityclient.scheduler.triggers.CollectObsoleteChecksumsTrigger;
+import org.bitrepository.integrityclient.workflow.IntegrityWorkflowScheduler;
+import org.bitrepository.integrityclient.workflow.scheduler.CollectAllChecksumsFromPillarTrigger;
+import org.bitrepository.integrityclient.workflow.scheduler.CollectAllFileIDsFromPillarTrigger;
+import org.bitrepository.integrityclient.workflow.scheduler.CollectObsoleteChecksumsTrigger;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.security.SecurityManager;
 
@@ -54,7 +54,7 @@ public class SimpleIntegrityService {
     private static final String DEFAULT_NAME_OF_ALL_CHECKSUMS_TRIGGER = "The Checksums Collector Trigger For Pillar ";
 
     /** The scheduler. */
-    private final IntegrityInformationScheduler scheduler;
+    private final IntegrityWorkflowScheduler scheduler;
     /** The information collector. */
     private final IntegrityInformationCollector collector;
     /** The cache.*/

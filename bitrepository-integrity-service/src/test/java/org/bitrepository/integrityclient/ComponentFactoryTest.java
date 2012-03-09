@@ -32,7 +32,7 @@ import org.bitrepository.integrityclient.cache.IntegrityModel;
 import org.bitrepository.integrityclient.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityclient.collector.DelegatingIntegrityInformationCollector;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
-import org.bitrepository.integrityclient.scheduler.TimerIntegrityInformationScheduler;
+import org.bitrepository.integrityclient.workflow.TimerWorkflowScheduler;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
@@ -91,8 +91,8 @@ public class ComponentFactoryTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})
     public void verifySchedulerFromFactory() throws Exception {
         Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settings)
-                instanceof TimerIntegrityInformationScheduler, 
-                "The default Scheduler should be the '" + TimerIntegrityInformationScheduler.class.getName() + "'");
+                instanceof TimerWorkflowScheduler, 
+                "The default Scheduler should be the '" + TimerWorkflowScheduler.class.getName() + "'");
     }
 
 }

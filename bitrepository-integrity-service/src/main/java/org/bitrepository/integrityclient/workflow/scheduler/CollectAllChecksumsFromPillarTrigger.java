@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityclient.scheduler.triggers;
+package org.bitrepository.integrityclient.workflow.scheduler;
 
 import java.util.Arrays;
 

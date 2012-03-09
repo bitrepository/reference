@@ -22,15 +22,15 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityclient.scheduler.triggers;
+package org.bitrepository.integrityclient.workflow.scheduler;
 
-import org.bitrepository.integrityclient.scheduler.Trigger;
+import org.bitrepository.integrityclient.workflow.Workflow;
 
 /**
  * Abstract trigger, that triggers at given interval.
  * Trigger will run the run() method, if triggered.
  */
-public abstract class IntervalTrigger implements Trigger, Runnable {
+public abstract class IntervalTrigger implements Workflow, Runnable {
     /** Time of last event, truncated to two seconds. */
     private long time; //no see
     /** The interval between triggers. */

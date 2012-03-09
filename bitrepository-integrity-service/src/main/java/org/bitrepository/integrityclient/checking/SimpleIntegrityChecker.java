@@ -26,11 +26,9 @@ package org.bitrepository.integrityclient.checking;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.integrityclient.cache.FileInfo;
 import org.bitrepository.integrityclient.cache.IntegrityModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,15 +58,9 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
         Collection<String> requestedFileIDs = getRequestedFileIDs(fileIDs);
         
         IntegrityReport report = new IntegrityReport();
-        
+        FileExistenceValidator fValidator = new FileExistenceValidator(cache, settings);
         for(String fileId : requestedFileIDs) {
-            List<String> pillarIds = checkFileID(fileId);
-            if(!pillarIds.isEmpty()) {
-                cache.setFileMissing(fileId, pillarIds);
-                report.addMissingFile(fileId, pillarIds);
-            } else {
-                report.addFileWithoutIssue(fileId);
-            }
+            report.combineWithReport(fValidator.validateFile(fileId));
         }
         
         if(report.hasIntegrityIssues()) {
@@ -107,23 +99,5 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
             return cache.getAllFileIDs();
         } 
         return Arrays.asList(fileIDs.getFileID());
-    }
-    
-    /**
-     * Checks whether all pillars contain a given file id.
-     * 
-     * @param fileId The id of the file to validate.
-     * @return The pillars, where the file is missing.
-     */
-    private List<String> checkFileID(String fileId) {
-        List<String> unfoundPillars = settings.getCollectionSettings().getClientSettings().getPillarIDs();
-        
-        for(FileInfo fileinfo : cache.getFileInfos(fileId)) {
-            if(!unfoundPillars.remove(fileinfo.getPillarId())) {
-                log.warn("Not expected pillar '" + fileinfo.getPillarId() + "' for file '" + fileId + "'");
-            }
-        }
-        
-        return unfoundPillars;
     }
 }

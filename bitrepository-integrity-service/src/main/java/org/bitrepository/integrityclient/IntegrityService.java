@@ -29,11 +29,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.common.settings.Settings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class IntegrityService {
-    private Logger log = LoggerFactory.getLogger(IntegrityService.class);
     private final SimpleIntegrityService service;
     private final Settings settings;
     

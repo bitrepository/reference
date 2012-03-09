@@ -39,7 +39,7 @@ fi;
 
 export LOGBACK="-Dlogback.configurationFile=conf/logback.xml"
 export CLASSPATH=`echo \`ls lib/*\` | sed s/' '/:/g`
-export KEYFILE=`ls conf/client*.p12 | head -1`
+export KEYFILE=`ls conf/client*.pem | head -1`
 
 # Launch the application
 echo java -cp $CLASSPATH $LOGBACK org.bitrepository.pillar.checksumpillar.ChecksumPillarLauncher $PWD/conf $KEYFILE 

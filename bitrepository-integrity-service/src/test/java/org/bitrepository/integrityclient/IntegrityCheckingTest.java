@@ -55,6 +55,10 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
     @BeforeClass (alwaysRun = true)
     public void setup() {
         settings = TestSettingsProvider.reloadSettings();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_1);
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
+        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0L);
     }
     
     @Test(groups = {"regressiontest"})
@@ -62,9 +66,6 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         addDescription("Tests the file ids validation is able to give good result, when two pillars give the same "
                 + "fileids results.");
         addStep("Setup the environment for this test.", "Should define the pillars and fileids, and the clear the cache.");
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_1);
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
         
         IntegrityModel cache = getIntegrityModel();
         String[] fileids = new String[]{"test-file-1", "test-file-2"};
@@ -100,10 +101,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         addDescription("Tests the file ids validation is able to give bad result, when only one pillars has delivered "
                 + "fileids results.");
         addStep("Setup the environment for this test.", "Should define the pillars and fileids, and the clear the cache.");
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_1);
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
-        
+
         IntegrityModel cache = getIntegrityModel();
         String[] fileids = new String[]{"test-file-1", "test-file-2"};
         
@@ -131,18 +129,49 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         addStep("Check whether all pillars have all the file ids", "Only one should contain the fileids, so it should return false");
         Assert.assertTrue(checker.checkFileIDs(fileidsToCheck).hasIntegrityIssues(), "The file ids should be validated");
     }
+    
+    @Test(groups = {"regressiontest"})
+    public void testFileidsMissingButTooNew() {
+        addDescription("Tests the file ids validation is able to give positive result, when the file is too new, "
+                + "even though one pillars has not delivered fileids results.");
+        addStep("Setup the environment for this test.", "Should define the pillars and fileids, and the clear the cache.");
+        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(3600000L);
+        
+        IntegrityModel cache = getIntegrityModel();
+        String[] fileids = new String[]{"test-file-1", "test-file-2"};
+        
+        addStep("Initialise the file ids data.", "Should be created and put into the cache.");
+        FileIDsData fileidsData1 = new FileIDsData();
+        FileIDsDataItems items1 = new FileIDsDataItems();
+
+        for(String fileid : fileids) {
+            FileIDsDataItem item = new FileIDsDataItem();
+            item.setFileID(fileid);
+            item.setLastModificationTime(CalendarUtils.getNow());
+            items1.getFileIDsDataItem().add(item);
+        }
+        fileidsData1.setFileIDsDataItems(items1);
+        
+        // add the files for two pillars.
+        cache.addFileIDs(fileidsData1, TEST_PILLAR_1);
+        
+        addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
+        IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
+        
+        FileIDs fileidsToCheck = new FileIDs();
+        fileidsToCheck.setAllFileIDs("true");
+        
+        addStep("Check whether all pillars have all the file ids", "Only one should contain the fileids, so it should return false");
+        Assert.assertFalse(checker.checkFileIDs(fileidsToCheck).hasIntegrityIssues(), "The file ids should be validated");
+    }
 
     @Test(groups = {"regressiontest"})
     public void testChecksumValid() {
         addDescription("Tests that the checksum validation is able to give good result, when two pillars give the same "
                 + "checksum results.");
         addStep("Setup the environment for this test.", "Should define the pillars and fileids, and the clear the cache.");
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_1);
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
         
         IntegrityModel cache = getIntegrityModel();
-//        ((MemoryBasedIntegrityCache) cache).clearCache();
         String[] fileids = new String[]{"test-file-1", "test-file-2"};
        
         addStep("Initialise the checksum results data.", "Should be created and put into the cache.");
@@ -180,12 +209,8 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
     public void testChecksumsMissingFromOnePillar() {
         addDescription("Tests that the checksum validation is able to give good result, even though not all pillars have the requested files.");
         addStep("Setup the environment for this test.", "Should define the pillars and fileids, and the clear the cache.");
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_1);
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
         
         IntegrityModel cache = getIntegrityModel();
-//        ((MemoryBasedIntegrityCache) cache).clearCache();
         String[] fileids = new String[]{"test-file-1", "test-file-2"};
        
         addStep("Initialise the checksum results data.", "Should be created and put into the cache.");
@@ -223,12 +248,8 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         addDescription("Tests that the checksum validation is able to give a negative result, when two pillars give "
                 + "different checksum results.");
         addStep("Setup the environment for this test.", "Should define the pillars and fileids, and the clear the cache.");
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_1);
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
         
         IntegrityModel cache = getIntegrityModel();
-//        ((MemoryBasedIntegrityCache) cache).clearCache();
         String[] fileids = new String[]{"test-file-1", "test-file-2"};
        
         addStep("Initialise the two different checksum results data.", "Should be created and put into the cache for each pillar.");

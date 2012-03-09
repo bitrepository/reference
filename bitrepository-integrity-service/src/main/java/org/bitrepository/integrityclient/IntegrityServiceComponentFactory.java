@@ -33,8 +33,8 @@ import org.bitrepository.integrityclient.checking.IntegrityChecker;
 import org.bitrepository.integrityclient.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityclient.collector.DelegatingIntegrityInformationCollector;
 import org.bitrepository.integrityclient.collector.IntegrityInformationCollector;
-import org.bitrepository.integrityclient.scheduler.IntegrityInformationScheduler;
-import org.bitrepository.integrityclient.scheduler.TimerIntegrityInformationScheduler;
+import org.bitrepository.integrityclient.workflow.IntegrityWorkflowScheduler;
+import org.bitrepository.integrityclient.workflow.TimerWorkflowScheduler;
 import org.bitrepository.protocol.messagebus.MessageBus;
 
 /**
@@ -64,7 +64,7 @@ public final class IntegrityServiceComponentFactory {
 
     // --------------------- Components-----------------------
     /** The integrity information scheduler. */
-    private IntegrityInformationScheduler integrityInformationScheduler;
+    private IntegrityWorkflowScheduler integrityInformationScheduler;
     /** The integrity information collector. */
     private IntegrityInformationCollector integrityInformationCollector;
     /** The integrity information collector. */
@@ -77,9 +77,9 @@ public final class IntegrityServiceComponentFactory {
      * @param settings The settings for the information scheduler.
      * @return an <code>IntegrityInformationScheduler</code> that schedules integrity information collection.
      */
-    public IntegrityInformationScheduler getIntegrityInformationScheduler(Settings settings) {
+    public IntegrityWorkflowScheduler getIntegrityInformationScheduler(Settings settings) {
         if (integrityInformationScheduler == null) {
-            integrityInformationScheduler = new TimerIntegrityInformationScheduler(settings);
+            integrityInformationScheduler = new TimerWorkflowScheduler(settings);
         }
         return integrityInformationScheduler;
     }
