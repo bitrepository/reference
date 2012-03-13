@@ -349,13 +349,13 @@ public class Reposervice {
             WebserviceInputChecker.checkChecksumTypeParameter(oldFileChecksumType);
             WebserviceInputChecker.checkChecksumParameter(oldFileChecksum);
             WebserviceInputChecker.checkSaltParameter(oldFileChecksumSalt);
-            WebserviceInputChecker.checkChecksumTypeParameter(oldFileRequestChecksumType);
-            WebserviceInputChecker.checkSaltParameter(oldFileRequestChecksumSalt);
+            //WebserviceInputChecker.checkChecksumTypeParameter(oldFileRequestChecksumType);
+            //WebserviceInputChecker.checkSaltParameter(oldFileRequestChecksumSalt);
             WebserviceInputChecker.checkChecksumTypeParameter(newFileChecksumType);
             WebserviceInputChecker.checkChecksumParameter(newFileChecksum);
             WebserviceInputChecker.checkSaltParameter(newFileChecksumSalt);
-            WebserviceInputChecker.checkSaltParameter(newFileRequestChecksumSalt);
-            WebserviceInputChecker.checkChecksumTypeParameter(newFileRequestChecksumType);
+            //WebserviceInputChecker.checkSaltParameter(newFileRequestChecksumSalt);
+            //WebserviceInputChecker.checkChecksumTypeParameter(newFileRequestChecksumType);
         } catch (WebserviceInputCheckException e) {
             return e.getMessage();
         }

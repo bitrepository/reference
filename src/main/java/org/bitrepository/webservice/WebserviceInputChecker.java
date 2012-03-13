@@ -42,7 +42,7 @@ public class WebserviceInputChecker {
             if((checksum.length() % 2) != 0) {
                 throw new WebserviceInputCheckException("Failure: checksum parameter contains an uneven number of characters.");
             }
-            if(checksum.matches("^\\p{XDigit}*$")) {
+            if(!checksum.matches("^\\p{XDigit}*$")) {
                 throw new WebserviceInputCheckException("Failure: checksum parameter contains a non hexadecimal value.");
             }
         }    
@@ -53,7 +53,7 @@ public class WebserviceInputChecker {
             if((salt.length() % 2) != 0) {
                 throw new WebserviceInputCheckException("Failure: salt parameter contains an uneven number of characters.");
             }
-            if(salt.matches("^\\p{XDigit}*$")) {
+            if(!salt.matches("^\\p{XDigit}*$")) {
                 throw new WebserviceInputCheckException("Failure: salt parameter contains a non hexadecimal value.");
             }
         }    
