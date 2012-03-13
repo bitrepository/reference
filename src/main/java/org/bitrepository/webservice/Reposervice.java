@@ -51,7 +51,7 @@ public class Reposervice {
         WebserviceInputChecker.checkFileIDParameter(fileID);
         WebserviceInputChecker.checkURLParameter(URL);
         String approveChecksumTypeStr = null;
-        if(!approveChecksumType.equals("disabled")) {
+        if(approveChecksumType != null && !approveChecksumType.equals("disabled")) {
             approveChecksumTypeStr = approveChecksumType;
         }
         return client.putFile(fileID, fileSize, URL, putChecksum, putChecksumType, putSalt, 
