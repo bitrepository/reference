@@ -44,6 +44,7 @@ import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.Base64Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,6 +114,14 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         // Validate the message.
         validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
+        if(message.getChecksumDataForNewFile() != null) {
+            validateChecksumSpecification(message.getChecksumDataForNewFile().getChecksumSpec());
+        }
+        validateChecksumSpecification(message.getChecksumRequestForNewFile());
+        if(message.getChecksumDataForExistingFile() != null) {
+            validateChecksumSpecification(message.getChecksumDataForExistingFile().getChecksumSpec());
+        }
+        validateChecksumSpecification(message.getChecksumRequestForExistingFile());
 
         // Validate, that we have the requested file.
         if(!archive.hasFile(message.getFileID())) {
@@ -148,21 +157,22 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         }
         
         // calculate and validate the checksum of the file.
-        String checksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), checksumType);
-        if(!checksum.equals(new String(checksumData.getChecksumValue()))) {
+        String calculatedChecksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), checksumType);
+        String requestedChecksum = Base64Utils.decodeBase64(checksumData.getChecksumValue());
+        if(!calculatedChecksum.equals(requestedChecksum)) {
             // Log the different checksums, but do not send the right checksum back!
             log.info("Failed to handle replace operation on file '" + message.getFileID() + "' since the request had "
-                    + "the checksum '" + new String(checksumData.getChecksumValue()) 
-                    + "' where our local file has the value '" + checksum + "'. Sending alarm and respond failure.");
+                    + "the checksum '" + requestedChecksum + "' where our local file has the value '" 
+                    + calculatedChecksum + "'. Sending alarm and respond failure.");
             String errMsg = "Requested to replace the file '" + message.getFileID() + "' with checksum '"
-                    + new String(checksumData.getChecksumValue()) + "', but our file had a different checksum.";
+                    + requestedChecksum + "', but our file had a different checksum.";
             alarmDispatcher.sendInvalidChecksumAlarm(message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);
             responseInfo.setResponseText(errMsg);
             throw new InvalidMessageException(responseInfo);
-        }        
+        }
     }
     
     /**
@@ -204,7 +214,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
         if(csType != null) {
             String checksum = ChecksumUtils.generateChecksum(fileForValidation, csType.getChecksumSpec());
-            String requestedChecksum = new String(csType.getChecksumValue());
+            String requestedChecksum = Base64Utils.decodeBase64(csType.getChecksumValue());
             if(!checksum.equals(requestedChecksum)) {
                 log.error("Expected checksums '" + requestedChecksum + "' but the checksum was '" 
                         + checksum + "' for the file '" + fileForValidation.getAbsolutePath() + "'");
@@ -283,7 +293,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         
         res.setChecksumSpec(checksumType);
         res.setCalculationTimestamp(CalendarUtils.getNow());
-        res.setChecksumValue(checksum.getBytes());
+        res.setChecksumValue(Base64Utils.encodeBase64(checksum));
         
         return res;
     }

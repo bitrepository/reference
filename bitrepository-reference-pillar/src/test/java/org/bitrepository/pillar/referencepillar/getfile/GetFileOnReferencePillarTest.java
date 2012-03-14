@@ -62,7 +62,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
             FileUtils.retrieveSubDirectory(dir, "retainDir");
         }
         
-        if(pillar != null) {
+        if(pillar == null) {
             pillar = PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
         }
     }

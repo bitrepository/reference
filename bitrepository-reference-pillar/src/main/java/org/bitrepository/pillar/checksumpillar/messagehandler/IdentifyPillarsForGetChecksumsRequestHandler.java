@@ -24,7 +24,6 @@
  */
 package org.bitrepository.pillar.checksumpillar.messagehandler;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +38,6 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,17 +134,6 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         if(checksumSpec == null || checksumSpec.getChecksumType() == null) {
             log.debug("No checksumSpec in the identification. Thus no reason to expect, that we cannot handle it.");
             return;
-        }
-        
-        try {
-            ChecksumUtils.verifyAlgorithm(checksumSpec.getChecksumType().value());
-        } catch (NoSuchAlgorithmException e) {
-            log.warn("Could not instantiate the given messagedigester for calculating a checksum.", e);
-            ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FAILURE);
-            irInfo.setResponseText("The algorithm '" + checksumSpec.getChecksumType() 
-                    + "' cannot be found. Exception: " + e.getLocalizedMessage());
-            throw new IdentifyPillarsException(irInfo, e);
         }
     }
     

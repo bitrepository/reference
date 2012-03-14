@@ -101,7 +101,11 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         // validate message
         validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
-
+        if(message.getChecksumDataForNewFile() != null) {
+            validateChecksumSpecification(message.getChecksumDataForNewFile().getChecksumSpec());
+        }
+        validateChecksumSpecification(message.getChecksumRequestForNewFile());
+        
         // verify, that we already have the file
         if(archive.hasFile(message.getFileID())) {
             log.warn("Cannot perform put for a file, '" + message.getFileID() 

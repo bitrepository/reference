@@ -25,12 +25,18 @@
 package org.bitrepository.pillar.referencepillar.messagehandler;
 
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.ChecksumUtils;
 
 /**
  * Abstract level for message handling. 
@@ -106,6 +112,26 @@ public abstract class PillarMessageHandler<T> {
             throw new IllegalArgumentException("The message had a wrong PillarId: "
                     + "Expected '" + settings.getReferenceSettings().getPillarSettings().getPillarID() + "' but was '" 
                     + pillarId + "'.");
+        }
+    }
+    
+    /**
+     * Validates a given checksum calculation.
+     * Ignores if the checksum type is null.
+     * @param checksumSpec The checksum specification to validate.
+     */
+    protected void validateChecksumSpecification(ChecksumSpecTYPE checksumSpec) {
+        if(checksumSpec == null) {
+            return;
+        }
+        
+        try {
+            ChecksumUtils.verifyAlgorithm(checksumSpec);
+        } catch (NoSuchAlgorithmException e) {
+            ResponseInfo fri = new ResponseInfo();
+            fri.setResponseCode(ResponseCode.FAILURE);
+            fri.setResponseText(e.getMessage());
+            throw new InvalidMessageException(fri, e);
         }
     }
 }

@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -44,6 +45,7 @@ import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.PillarComponentFactory;
 import org.bitrepository.pillar.referencepillar.ReferencePillar;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.utils.Base64Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -59,14 +61,15 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
     @BeforeMethod (alwaysRun=true)
     public void initialisePutFileTests() throws Exception {
         msgFactory = new PillarPutFileMessageFactory(settings);
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        if(dir.exists()) {
-            FileUtils.delete(dir);
-        }
         
         if(pillar == null) {
             pillar = PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
         } else {
+            // Delete the files in the archive.
+            File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
+            if(dir.exists()) {
+                FileUtils.delete(dir);
+            }
             FileUtils.retrieveDirectory(dir.getAbsolutePath());
             FileUtils.retrieveSubDirectory(dir, "fileDir");
             FileUtils.retrieveSubDirectory(dir, "tmpDir");
@@ -118,7 +121,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
                 receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, FILE_SIZE,
-                FILE_CHECKSUM_MD5, pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
+                Base64Utils.encodeBase64(FILE_CHECKSUM_MD5), pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
         messageBus.sendMessage(putRequest);
         
         addStep("Retrieve the ProgressResponse for the put request", "The put response should be sent by the pillar.");
@@ -218,7 +221,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
-                IdentifyPillarsForPutFileResponse.class);
+                IdentifyPillarsForPutFileResponse.class, 10, TimeUnit.SECONDS);
         Assert.assertEquals(receivedIdentifyResponse, 
                 msgFactory.createIdentifyPillarsForPutFileResponse(
                         identifyRequest.getCorrelationID(),
@@ -275,7 +278,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
                 receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, FILE_SIZE,
-                WRONG_FILE_CHECKSUM_MD5,  receivedIdentifyResponse.getPillarID(), clientDestinationId, 
+                Base64Utils.encodeBase64(WRONG_FILE_CHECKSUM_MD5),  receivedIdentifyResponse.getPillarID(), clientDestinationId, 
                 receivedIdentifyResponse.getReplyTo());
         messageBus.sendMessage(putRequest);
         

@@ -91,12 +91,20 @@ public final class ChecksumUtils {
                 || (algorithm == ChecksumType.SHA256)
                 || (algorithm == ChecksumType.SHA384)
                 || (algorithm == ChecksumType.SHA512)) {
-            digest = CalculateChecksumWithMessageDigest(content, algorithm, csSpec.getChecksumSalt());
+            if(csSpec.getChecksumSalt() != null && csSpec.getChecksumSalt().length > 0) {
+                throw new IllegalArgumentException("Cannot perform a message-digest checksum calculation with salt "
+                        + "as requested:" + csSpec);
+            }
+            digest = CalculateChecksumWithMessageDigest(content, algorithm);
         } else if((algorithm == ChecksumType.HMAC_MD5) 
                 || (algorithm == ChecksumType.HMAC_SHA1)
                 || (algorithm == ChecksumType.HMAC_SHA256)
                 || (algorithm == ChecksumType.HMAC_SHA384)
                 || (algorithm == ChecksumType.HMAC_SHA512)) {
+            if(csSpec.getChecksumSalt() == null) {
+                throw new IllegalArgumentException("Cannot perform a HMAC checksum calculation without salt as requested:" 
+                        + csSpec);
+            }
             digest = CalculateChecksumWithHMAC(content, algorithm, csSpec.getChecksumSalt());
         } else {
             throw new IllegalStateException("The checksum algorithm '" + csSpec.getChecksumType().name() 
@@ -104,18 +112,20 @@ public final class ChecksumUtils {
         }
         
         return toHex(digest);
-        
     }
     
     /**
-     * Calculation of the checksum for a given input stream through the use of HMAC based on the checksum type as 
-     * algorithm and the optional salt.
+     * Calculation of the checksum for a given input stream through the use of message digestion on the checksum 
+     * type as algorithm.
+     * 
+     * NOTE: the 'SHA' algorithm need a dash, '-', after the SHA, which is currently not in the protocol defined 
+     * algorithm name.
+     * 
      * @param content The input stream with the content to calculate the checksum of.
      * @param csType The type of checksum to calculate, e.g. the algorithm.
-     * @param salt [OPTIONAL] The salt for key encrypting the HMAC calculation.
      * @return The calculated checksum.
      */
-    private static byte[] CalculateChecksumWithMessageDigest(InputStream content, ChecksumType csType, byte[] salt) {
+    private static byte[] CalculateChecksumWithMessageDigest(InputStream content, ChecksumType csType) {
         byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
         int bytesRead;
         
@@ -126,10 +136,6 @@ public final class ChecksumUtils {
             }
             
             MessageDigest digester = MessageDigest.getInstance(algorithmName);
-            if(salt != null && salt.length > 0) {
-                digester.update(salt);
-            }
-            
             while ((bytesRead = content.read(bytes)) > 0) {
                 digester.update(bytes, 0, bytesRead);
             }
@@ -142,9 +148,10 @@ public final class ChecksumUtils {
     /**
      * Calculation of the checksum for a given input stream through the use of HMAC based on the checksum type as 
      * algorithm and the optional salt.
+     * 
      * @param content The input stream with the content to calculate the checksum of.
      * @param csType The type of checksum to calculate, e.g. the algorithm.
-     * @param salt [OPTIONAL] The salt for key encrypting the HMAC calculation.
+     * @param salt The salt for key encrypting the HMAC calculation.
      * @return The calculated checksum.
      */
     private static byte[] CalculateChecksumWithHMAC(InputStream content, ChecksumType csType, byte[] salt) {
@@ -194,17 +201,38 @@ public final class ChecksumUtils {
     
     /**
      * Returns whether a given checksum calculation algorithm exists.
-     * This only checksum whether the algorithm exists for HMAC. If it is not prefixed with 'Hmac', then it is added. 
+     * This validates both whether the ChecksumType is implemented and whether the salt is put the correct place. 
      * 
-     * @param algorithm The algorithm for the checksum calculation to test.
+     * @param checksumSpec The specification for the checksum calculation to validate.
      * @throws NoSuchAlgorithmException If the algorithm does not exist.
      */
-    public static void verifyAlgorithm(String algorithm) throws NoSuchAlgorithmException {
-        String algorithmName = algorithm.toUpperCase();
-        if(!algorithm.startsWith("Hmac")) {
-            algorithmName = "Hmac" + algorithm.toUpperCase();
+    public static void verifyAlgorithm(ChecksumSpecTYPE checksumSpec) throws NoSuchAlgorithmException {
+        ChecksumType algorithm = checksumSpec.getChecksumType();
+        if(algorithm == ChecksumType.OTHER) {
+            throw new NoSuchAlgorithmException("Cannot handle non-predefined checksum algorithms: '"
+                    + checksumSpec + "'.");
         }
         
-        Mac.getInstance(algorithmName);
+        if((algorithm == ChecksumType.MD5) 
+                || (algorithm == ChecksumType.SHA1)
+                || (algorithm == ChecksumType.SHA256)
+                || (algorithm == ChecksumType.SHA384)
+                || (algorithm == ChecksumType.SHA512)) {
+            if(checksumSpec.getChecksumSalt() != null && checksumSpec.getChecksumSalt().length > 0) {
+                throw new NoSuchAlgorithmException("Cannot perform a message-digest checksum calculation with salt "
+                        + "as requested:" + checksumSpec);
+            }
+        } else if((algorithm == ChecksumType.HMAC_MD5) 
+                || (algorithm == ChecksumType.HMAC_SHA1)
+                || (algorithm == ChecksumType.HMAC_SHA256)
+                || (algorithm == ChecksumType.HMAC_SHA384)
+                || (algorithm == ChecksumType.HMAC_SHA512)) {
+            if(checksumSpec.getChecksumSalt() == null) {
+                throw new NoSuchAlgorithmException("Cannot perform a HMAC checksum calculation without salt as "
+                        + "requested:" + checksumSpec);
+            }
+        } else {
+            throw new NoSuchAlgorithmException("The checksum specification '" + checksumSpec + "' is not supported.");
+        }
     }
 }

@@ -26,10 +26,10 @@ package org.bitrepository.protocol.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -44,10 +44,13 @@ public class ChecksumTest extends ExtendedTestCase {
         addStep("Setup variables.", "Should be OK");
         ChecksumSpecTYPE csHmacMD5 = new ChecksumSpecTYPE();
         csHmacMD5.setChecksumType(ChecksumType.HMAC_MD5);
+        csHmacMD5.setChecksumSalt(new byte[0]);
         ChecksumSpecTYPE csHmacSHA1 = new ChecksumSpecTYPE();
         csHmacSHA1.setChecksumType(ChecksumType.HMAC_SHA1);
+        csHmacSHA1.setChecksumSalt(new byte[0]);
         ChecksumSpecTYPE csHmacSHA256 = new ChecksumSpecTYPE();
         csHmacSHA256.setChecksumType(ChecksumType.HMAC_SHA256);
+        csHmacSHA256.setChecksumSalt(new byte[0]);
         
         addStep("Test with no text and no key for HMAC_MD5, HMAC_SHA1, and HMAC_SHA256", 
                 "Should give expected results.");
@@ -76,6 +79,16 @@ public class ChecksumTest extends ExtendedTestCase {
         data2.reset();
         Assert.assertEquals(ChecksumUtils.generateChecksum(data2, csHmacSHA256),
                 "f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8");
+        data2.reset();
+        
+        addStep("Try calculating HMAC with a null salt", "Should throw NoSuchAlgorithmException");
+        csHmacMD5.setChecksumSalt(null);
+        try {
+            ChecksumUtils.generateChecksum(data2, csHmacMD5);
+            Assert.fail("Should throw an IllegalArgumentException here!");
+        }  catch (IllegalArgumentException e) {
+            // expected
+        }
     }
     
     @Test(groups = { "regressiontest" })
@@ -100,22 +113,98 @@ public class ChecksumTest extends ExtendedTestCase {
         Assert.assertEquals(ChecksumUtils.generateChecksum(data1, csSHA256), 
                 "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
         
-        String message = "The quick brown fox jumps over the lazy dog";
-        InputStream data2 = new ByteArrayInputStream(message.getBytes());
+        addStep("Test when a salt is added", "Should throw an exception");
         String key = "key";
         csMD5.setChecksumSalt(key.getBytes());
-        csSHA1.setChecksumSalt(key.getBytes());
-        csSHA256.setChecksumSalt(key.getBytes());
         
-        addStep("Test with the text '" + message + "' and key '" + key + "' for MD5, SHA1, and SHA256", 
-                "Should give expected results.");
-        Assert.assertEquals(ChecksumUtils.generateChecksum(data2, csMD5),
-                "5e429bbc85fdf7563d6d7a8f1794a71e");
-        data2.reset();
-        Assert.assertEquals(ChecksumUtils.generateChecksum(data2, csSHA1),
-                "2449ee34eb231c94f1d26a3285ab55e69b1ea4de");
-        data2.reset();
-        Assert.assertEquals(ChecksumUtils.generateChecksum(data2, csSHA256),
-                "51729876100348eb46ed8c4bf39efa4037a3a2c687f864348ed69292a67ffdbc");
+        try {
+            ChecksumUtils.generateChecksum(data1, csMD5);
+            Assert.fail("Should throw an IllegalArgumentException here!");
+        }  catch (IllegalArgumentException e) {
+            // expected
+        }        
+    }
+
+    @Test(groups = { "regressiontest" })
+    public void testChecksumAlgorithmValidation() throws Exception {
+        for (ChecksumType csType : ChecksumType.values()) {
+            if(csType == ChecksumType.OTHER) {
+                validateOtherChecksumType(csType);
+            } else if(csType.name().startsWith("HMAC")) {
+                validateHmac(csType);
+            } else {
+                validateMessageDigest(csType);
+            }
+        }
+    }
+    
+    private void validateOtherChecksumType(ChecksumType algorithm) {
+        addStep("Test '" + algorithm + "'", "Should be invalid no matter the salt!");
+        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
+        csType.setChecksumType(algorithm);
+
+        try {
+            ChecksumUtils.verifyAlgorithm(csType);
+            Assert.fail("The 'OTHER' algorithms should be invalid without the salt: '" + csType);
+        } catch (NoSuchAlgorithmException e) {
+            // expected
+        }
+
+        csType.setChecksumSalt(new byte[]{0});
+        try {
+            ChecksumUtils.verifyAlgorithm(csType);
+            Assert.fail("The 'OTHER' algorithms should be invalid with an empty salt: '" + csType);
+        } catch (NoSuchAlgorithmException e) {
+            // expected
+        }
+
+        csType.setChecksumSalt(new byte[]{1});
+        try {
+            ChecksumUtils.verifyAlgorithm(csType);
+            Assert.fail("The 'OTHER' algorithms should be invalid with the salt: '" + csType);
+        } catch (NoSuchAlgorithmException e) {
+            // expected
+        }
+    }
+    
+    private void validateHmac(ChecksumType hmacType) throws NoSuchAlgorithmException {
+        addStep("Test '" + hmacType + "'", "Should be invalid without salt, and valid with no matter whether "
+                + "the salt is empty.");
+        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
+        csType.setChecksumType(hmacType);
+        
+        try {
+            ChecksumUtils.verifyAlgorithm(csType);
+            Assert.fail("The HMAC algorithms should be invalid without the salt: '" + csType);
+        } catch (NoSuchAlgorithmException e) {
+            // expected
+        }
+
+        csType.setChecksumSalt(new byte[]{0});
+        ChecksumUtils.verifyAlgorithm(csType);   
+
+        csType.setChecksumSalt(new byte[]{1});
+        ChecksumUtils.verifyAlgorithm(csType);   
+    }
+    
+    private void validateMessageDigest(ChecksumType algorithmType) throws NoSuchAlgorithmException {
+        addStep("Test '" + algorithmType + "'", "Should be valid without salt, valid with an empty salt, "
+                + "and invalid with a proper salt.");
+        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
+        csType.setChecksumType(algorithmType);
+        
+        ChecksumUtils.verifyAlgorithm(csType);   
+        
+        csType.setChecksumSalt(new byte[0]);
+        ChecksumUtils.verifyAlgorithm(csType);
+        
+        csType.setChecksumSalt(new byte[]{1});
+        try {
+            ChecksumUtils.verifyAlgorithm(csType);
+            Assert.fail("The MessaegDigest algorithms should be invalid with the salt: '" + csType);
+        } catch (NoSuchAlgorithmException e) {
+            // expected
+        }
+        
     }
 }

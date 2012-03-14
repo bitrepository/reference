@@ -31,6 +31,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRespo
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
+import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
@@ -69,7 +70,10 @@ public class IdentifyPillarsForDeleteFileRequestHandler
             alarmDispatcher.handleIllegalArgumentException(e);
         } catch (IdentifyPillarsException e) {
             log.warn("Unsuccessful identification for the DeleteFile operation.", e);
-            respondUnsuccessfulIdentification(message, e);
+            respondUnsuccessfulIdentification(message, e.getResponseInfo());
+        } catch (InvalidMessageException e) {
+            log.warn("Unsuccessful identification for the DeleteFile operation.", e);
+            respondUnsuccessfulIdentification(message, e.getResponseInfo());
         } catch (RuntimeException e) {
             alarmDispatcher.handleRuntimeExceptions(e);
         }
@@ -114,16 +118,16 @@ public class IdentifyPillarsForDeleteFileRequestHandler
     /**
      * Sends a bad response with the given cause.
      * @param message The identification request to respond to.
-     * @param cause The cause of the bad identification (e.g. which file is missing).
+     * @param responseInfo The cause of the bad identification (e.g. which file is missing).
      */
-    private void respondUnsuccessfulIdentification(IdentifyPillarsForDeleteFileRequest message, 
-            IdentifyPillarsException cause) {
+    private void respondUnsuccessfulIdentification(IdentifyPillarsForDeleteFileRequest message,
+            ResponseInfo responseInfo) {
         IdentifyPillarsForDeleteFileResponse reply = createIdentifyPillarsForDeleteFileResponse(message);
         
         reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
-        reply.setResponseInfo(cause.getResponseInfo());
+        reply.setResponseInfo(responseInfo);
         
-        messagebus.sendMessage(reply);
+        messagebus.sendMessage(reply);        
     }
     
     /**

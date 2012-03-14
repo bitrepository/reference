@@ -24,11 +24,9 @@
  */
 package org.bitrepository.pillar.referencepillar.messagehandler;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -39,7 +37,6 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,8 +70,8 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
 
         try {
             validateBitrepositoryCollectionId(message.getCollectionID());
+            validateChecksumSpecification(message.getChecksumRequestForExistingFile());
             checkThatAllRequestedFilesAreAvailable(message);
-            checkThatTheChecksumFunctionIsAvailable(message);
             respondSuccesfullIdentification(message);
         } catch (IllegalArgumentException e) {
             alarmDispatcher.handleIllegalArgumentException(e);
@@ -112,32 +109,6 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
             irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
             
             throw new IdentifyPillarsException(irInfo);
-        }
-    }
-    
-    /**
-     * Validates that it is possible to instantiate the requested checksum algorithm.
-     * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
-     * @param message The message with the checksum algorithm to validate.
-     */
-    public void checkThatTheChecksumFunctionIsAvailable(IdentifyPillarsForGetChecksumsRequest message) {
-        ChecksumSpecTYPE checksumSpec = message.getChecksumRequestForExistingFile();
-        
-        // validate that this non-mandatory field has been filled out.
-        if(checksumSpec == null || checksumSpec.getChecksumType() == null) {
-            log.debug("No checksumSpec in the identification. Thus no reason to expect, that we cannot handle it.");
-            return;
-        }
-        
-        try {
-            ChecksumUtils.verifyAlgorithm(checksumSpec.getChecksumType().value());
-        } catch (NoSuchAlgorithmException e) {
-            log.warn("Could not instantiate the given messagedigester for calculating a checksum.", e);
-            ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FAILURE);
-            irInfo.setResponseText("The algorithm '" + checksumSpec.getChecksumType() 
-                    + "' cannot be found. Exception: " + e.getLocalizedMessage());
-            throw new IdentifyPillarsException(irInfo, e);
         }
     }
     
