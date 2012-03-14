@@ -85,7 +85,7 @@ public class PillarPutFileMessageFactory extends TestMessageFactory {
     }
     
     public PutFileRequest createPutFileRequest(String correlationId, String url, String fileId, Long fileSize,
-            String checksum, String pillarId, String replyTo, String toTopic) {
+            byte[] checksum, String pillarId, String replyTo, String toTopic) {
         PutFileRequest res = new PutFileRequest();
         res.setAuditTrailInformation(null);
         
@@ -93,7 +93,7 @@ public class PillarPutFileMessageFactory extends TestMessageFactory {
         ChecksumSpecTYPE csDeliveredSpec = new ChecksumSpecTYPE();
         csDeliveredSpec.setChecksumType(ChecksumType.MD5);
         checksumDataForFile.setChecksumSpec(csDeliveredSpec);       
-        checksumDataForFile.setChecksumValue(checksum.getBytes());
+        checksumDataForFile.setChecksumValue(checksum);
         checksumDataForFile.setCalculationTimestamp(CalendarUtils.getNow());
         res.setChecksumDataForNewFile(checksumDataForFile);
 

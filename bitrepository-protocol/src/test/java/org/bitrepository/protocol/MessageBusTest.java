@@ -76,7 +76,7 @@ public class MessageBusTest extends IntegrationTest {
 
         synchronized(this) {
             try {
-                wait(TIME_FOR_MESSAGE_TRANSFER_WAIT);
+                wait(2*TIME_FOR_MESSAGE_TRANSFER_WAIT);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -169,7 +169,7 @@ public class MessageBusTest extends IntegrationTest {
             addStep("Wait for the message to be sent over the messagebus", "We wait.");
             synchronized (this) {
                 try {
-                    wait(TIME_FOR_MESSAGE_TRANSFER_WAIT);
+                    wait(2*TIME_FOR_MESSAGE_TRANSFER_WAIT);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

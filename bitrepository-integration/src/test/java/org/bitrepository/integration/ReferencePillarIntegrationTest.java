@@ -47,15 +47,15 @@ import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.PillarComponentFactory;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.protocol.utils.Base64Utils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
  * Test class for the reference pillar.
  */
-public class ReferencePillarTest extends DefaultFixturePillarTest {
+public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
     
-    @SuppressWarnings("deprecation")
     @Test(groups = {"regressiontest"})
     public void testPillarVsClients() throws Exception {
         addDescription("Tests the put functionality of the reference pillar.");
@@ -68,8 +68,10 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         Long REPLACE_FILE_SIZE = 59898L;
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
 //        String FILE_ID = DEFAULT_FILE_ID;
-        String CHECKSUM = "940a51b250e7aa82d8e8ea31217ff267";
-        String CHECKSUM_NEW_FILE = "f1d6f02be917ed6cdade56fa60653918";
+        String CHECKSUM_STRING = "940a51b250e7aa82d8e8ea31217ff267";
+        byte[] CHECKSUM = Base64Utils.encodeBase64(CHECKSUM_STRING);
+        String CHECKSUM_NEW_FILE_STRING = "f1d6f02be917ed6cdade56fa60653918";
+        byte[] CHECKSUM_NEW_FILE = Base64Utils.encodeBase64(CHECKSUM_NEW_FILE_STRING);
         ChecksumSpecTYPE DEFAULT_CHECKSUM_TYPE = new ChecksumSpecTYPE();
         DEFAULT_CHECKSUM_TYPE.setChecksumSalt(null);
         DEFAULT_CHECKSUM_TYPE.setChecksumType(ChecksumType.MD5);
@@ -170,12 +172,12 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         checksumRequested.setChecksumType(ChecksumType.SHA1);
         ChecksumDataForFileTYPE checksumDataOldFile = new ChecksumDataForFileTYPE();
         checksumDataOldFile.setChecksumSpec(DEFAULT_CHECKSUM_TYPE);
-        checksumDataOldFile.setChecksumValue(CHECKSUM.getBytes());
+        checksumDataOldFile.setChecksumValue(CHECKSUM);
         checksumDataOldFile.setCalculationTimestamp(CalendarUtils.getEpoch());
         
         ChecksumDataForFileTYPE checksumDataNewFile = new ChecksumDataForFileTYPE();
         checksumDataNewFile.setChecksumSpec(DEFAULT_CHECKSUM_TYPE);
-        checksumDataNewFile.setChecksumValue(CHECKSUM_NEW_FILE.getBytes());
+        checksumDataNewFile.setChecksumValue(CHECKSUM_NEW_FILE);
         checksumDataNewFile.setCalculationTimestamp(CalendarUtils.getEpoch());
         
         replaceFile.replaceFile(FILE_ID, settings.getReferenceSettings().getPillarSettings().getPillarID(), 
@@ -192,7 +194,6 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PROGRESS);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
-
         
         addStep("Create a DeleteFileClient and start a delete operation", 
                 "This should be caught by the pillar");
