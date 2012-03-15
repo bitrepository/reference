@@ -48,7 +48,7 @@ case "$1" in
 		do_put $filename
 	else 
 		echo "Usage: br-client put <filename>"	
-		return 1
+		exit 1
 	fi
 	;;
   getlog)
@@ -58,7 +58,7 @@ case "$1" in
 	if [ -z $filename ]
 	then
 		echo "Usage br-client get <filename>"
-		return 1
+		exit 1
 	else
 		do_get $filename
 	fi
@@ -68,7 +68,7 @@ case "$1" in
 	if [ -z $filename ]
 	then 
 		echo "Usage br-client getchecksum <filename> [<checksumType> <salt>]"
-		return 1
+		exit 1
 	fi
 	checksumType=$3
 	if [ -z $checksumType ]
@@ -83,7 +83,7 @@ case "$1" in
 	if [ -z $filename ] 
 	then
 		echo "Usage br-client remove-file <filename>"
-		return 1
+		exit 1
 	else
 		do_webserver_remove_file $filename
 	fi
@@ -93,7 +93,7 @@ case "$1" in
 	if [ -z $filename ]
 	then
 		echo "Usage br-client get-file <filename>"
-		return 1
+		exit 1
 	else
 		do_webserver_get_file $filename
 	fi
