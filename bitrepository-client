@@ -9,7 +9,7 @@ do_put() {
 	stripedfilename=`basename $filename`
 	filesize=`du -b $filename | cut -f1`
 	checksum=`md5sum $filename | cut -f1 --delimiter=" "`
-	command="$SERVICEURL/putfile/?fileID=$stripedfilename&url=$WEBDAVSERVER$stripedfilename&fileSize=$filesize&putChecksum=$checksum&putChecksumType=md5"
+	command="$SERVICEURL/putfile/?fileID=$stripedfilename&url=$WEBDAVSERVER$stripedfilename&fileSize=$filesize&putChecksum=$checksum&putChecksumType=MD5"
 	curl --silent $command
 	echo ""
 }
@@ -73,7 +73,7 @@ case "$1" in
 	checksumType=$3
 	if [ -z $checksumType ]
 	then 
-		checksumType="md5"
+		checksumType="MD5"
 	fi
 	salt=$4
 	do_getchecksum $filename $checksumType $salt
