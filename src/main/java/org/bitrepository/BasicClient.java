@@ -86,28 +86,12 @@ public class BasicClient {
         URL url;
         ChecksumDataForFileTYPE checksumDataForNewFile = null;
         if(putChecksum != null) {
-        	checksumDataForNewFile = new ChecksumDataForFileTYPE();
-        	checksumDataForNewFile.setCalculationTimestamp(XMLGregorianCalendarConverter.asXMLGregorianCalendar(new Date()));
-        	checksumDataForNewFile.setChecksumValue(HexUtils.stringToByteArray(putChecksum));
-        	ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
-        	if(putChecksumType != null) {
-        		checksumSpec.setChecksumType(ChecksumType.fromValue(putChecksumType));
-        	} else {
-        		checksumSpec.setChecksumType(ChecksumType.fromValue("MD5"));
-        	}
-        	if(putSalt != null) {
-        		checksumSpec.setChecksumSalt(HexUtils.stringToByteArray(putSalt));
-        	}
-        	checksumDataForNewFile.setChecksumSpec(checksumSpec);
+            checksumDataForNewFile = makeChecksumData(putChecksum, putChecksumType, putSalt);
         }
         
         ChecksumSpecTYPE checksumRequestForNewFile = null;
         if(approveChecksumType != null) {
-        	checksumRequestForNewFile = new ChecksumSpecTYPE();
-        	checksumRequestForNewFile.setChecksumType(ChecksumType.fromValue(approveChecksumType));
-        	if(approveSalt != null) {
-        		checksumRequestForNewFile.setChecksumSalt(HexUtils.stringToByteArray(approveSalt));
-        	}
+            checksumRequestForNewFile = makeChecksumSpec(approveChecksumType, approveSalt);
         }
         try {
             url = new URL(URLStr);
@@ -199,11 +183,7 @@ public class BasicClient {
     }
     
     public Map<String, Map<String, String>> getChecksums(String fileIDsText, String checksumType, String salt) {
-    	ChecksumSpecTYPE checksumSpecItem = new ChecksumSpecTYPE();
-    	if(salt != null && !salt.equals("")) {
-    		checksumSpecItem.setChecksumSalt(HexUtils.stringToByteArray(salt));	
-    	}
-    	checksumSpecItem.setChecksumType(ChecksumType.fromValue(checksumType));
+        ChecksumSpecTYPE checksumSpecItem = makeChecksumSpec(checksumType, salt);
     	FileIDs fileIDs = new FileIDs();
     	fileIDs.setFileID(fileIDsText);
 
@@ -274,9 +254,7 @@ public class BasicClient {
         ChecksumSpecTYPE requestedChecksumSpec = null;
         log.info("----- Got DeleteFileRequest with approveChecksumtype = " + approveChecksumType);
         if(approveChecksumType != null && !approveChecksumType.equals("disabled")) {
-            requestedChecksumSpec = new ChecksumSpecTYPE();
-            requestedChecksumSpec.setChecksumType(ChecksumType.fromValue(approveChecksumType));
-            requestedChecksumSpec.setChecksumSalt(HexUtils.stringToByteArray(approveChecksumSalt));
+            requestedChecksumSpec = makeChecksumSpec(approveChecksumType, approveChecksumSalt);
         }
         
         try {
@@ -321,16 +299,12 @@ public class BasicClient {
         ChecksumSpecTYPE oldFileChecksumRequest = null;
         if(oldFileRequestChecksumType != null && (!oldFileRequestChecksumType.equals("disabled") &&
         		!oldFileRequestChecksumType.trim().equals(""))) {
-        	oldFileChecksumRequest = new ChecksumSpecTYPE();
-        	oldFileChecksumRequest.setChecksumType(ChecksumType.fromValue(oldFileRequestChecksumType));
-        	oldFileChecksumRequest.setChecksumSalt(HexUtils.stringToByteArray(oldFileRequestChecksumSalt));
+            oldFileChecksumRequest = makeChecksumSpec(oldFileRequestChecksumType, oldFileRequestChecksumSalt);
         }
         ChecksumSpecTYPE newFileChecksumRequest = null;
         if(newFileRequestChecksumType != null && (!newFileRequestChecksumType.equals("disabled") &&
         		!newFileRequestChecksumType.trim().equals(""))) {
-        	newFileChecksumRequest = new ChecksumSpecTYPE();
-        	newFileChecksumRequest.setChecksumType(ChecksumType.fromValue(newFileRequestChecksumType));
-        	newFileChecksumRequest.setChecksumSalt(HexUtils.stringToByteArray(newFileRequestChecksumSalt));
+        	newFileChecksumRequest = makeChecksumSpec(newFileRequestChecksumType, newFileRequestChecksumSalt);
         }
         
         try {
@@ -367,15 +341,26 @@ public class BasicClient {
     private ChecksumDataForFileTYPE makeChecksumData(String checksum, String checksumType, String checksumSalt) {
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumValue(HexUtils.stringToByteArray(checksum));
-        ChecksumSpecTYPE deleteChecksumSpec = new ChecksumSpecTYPE();
-        if(checksumSalt != null && !checksumSalt.equals("")) {
-        	deleteChecksumSpec.setChecksumSalt(HexUtils.stringToByteArray(checksumSalt));	
-        }
-        deleteChecksumSpec.setChecksumType(ChecksumType.fromValue(checksumType));
         Date now = new Date();
         checksumData.setCalculationTimestamp(XMLGregorianCalendarConverter.asXMLGregorianCalendar(now));
-        checksumData.setChecksumSpec(deleteChecksumSpec);
+        checksumData.setChecksumSpec(makeChecksumSpec(checksumType, checksumSalt));
         return checksumData;
+    }
+    
+    private ChecksumSpecTYPE makeChecksumSpec(String checksumType, String checksumSalt) {
+        ChecksumSpecTYPE spec = new ChecksumSpecTYPE();
+        
+        if(checksumType == null || checksumType.trim().equals("")) {
+            checksumType = settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType();
+        }
+        
+        if(checksumSalt != null && !checksumSalt.trim().equals("")) {
+            spec.setChecksumSalt(HexUtils.stringToByteArray(checksumSalt));
+            checksumType = "HMAC_" + checksumType;
+        }
+        spec.setChecksumType(ChecksumType.fromValue(checksumType));
+        
+        return spec;
     }
     
 }

@@ -50,6 +50,9 @@ public class Reposervice {
         try {
         WebserviceInputChecker.checkFileIDParameter(fileID);
         WebserviceInputChecker.checkURLParameter(URL);
+        WebserviceInputChecker.checkChecksumParameter(putChecksum);
+        WebserviceInputChecker.checkSaltParameter(putSalt);
+        WebserviceInputChecker.checkSaltParameter(approveSalt);
         String approveChecksumTypeStr = null;
         if(approveChecksumType != null && !approveChecksumType.equals("disabled")) {
             approveChecksumTypeStr = approveChecksumType;
@@ -349,13 +352,13 @@ public class Reposervice {
             WebserviceInputChecker.checkChecksumTypeParameter(oldFileChecksumType);
             WebserviceInputChecker.checkChecksumParameter(oldFileChecksum);
             WebserviceInputChecker.checkSaltParameter(oldFileChecksumSalt);
-            //WebserviceInputChecker.checkChecksumTypeParameter(oldFileRequestChecksumType);
-            //WebserviceInputChecker.checkSaltParameter(oldFileRequestChecksumSalt);
+            WebserviceInputChecker.checkChecksumTypeParameter(oldFileRequestChecksumType);
+            WebserviceInputChecker.checkSaltParameter(oldFileRequestChecksumSalt);
             WebserviceInputChecker.checkChecksumTypeParameter(newFileChecksumType);
             WebserviceInputChecker.checkChecksumParameter(newFileChecksum);
             WebserviceInputChecker.checkSaltParameter(newFileChecksumSalt);
-            //WebserviceInputChecker.checkSaltParameter(newFileRequestChecksumSalt);
-            //WebserviceInputChecker.checkChecksumTypeParameter(newFileRequestChecksumType);
+            WebserviceInputChecker.checkSaltParameter(newFileRequestChecksumSalt);
+            WebserviceInputChecker.checkChecksumTypeParameter(newFileRequestChecksumType);
         } catch (WebserviceInputCheckException e) {
             return e.getMessage();
         }
