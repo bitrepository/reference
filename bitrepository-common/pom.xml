@@ -48,8 +48,8 @@
             </goals>
             <configuration>
               <outputDirectory>${project.build.directory}/collectionsettings</outputDirectory>
-              <attached>false</attached> <!-- If attached is true (the default) the copy-resources step below will re-include the resources from the last build in 
-                the current. -->
+              <attached>false</attached> <!-- If attached is true (the default) the copy-resources step below
+              will re-include the resources from the last build in the current. -->
               <resourceBundles>
                 <resourceBundle>org.bitrepository:bitrepository-collection-settings:${collection.settings.version}</resourceBundle>
               </resourceBundles>
@@ -58,7 +58,8 @@
         </executions>
       </plugin>
       <plugin>
-        <!-- Copies the jaxb bindings definition to the message xsd dir, in preparation for the xsd -> java class file generation -->
+        <!-- Copies the jaxb bindings definition to the message xsd dir,
+        in preparation for the xsd -> java class file generation -->
         <artifactId>maven-resources-plugin</artifactId>
         <version>2.5</version>
         <executions>
@@ -90,7 +91,7 @@
             <goals>
               <goal>generate</goal>
             </goals>
-            <phase>generate-sources</phase>
+            <phase>process-sources</phase>
             <configuration>
               <schemaDirectory>${project.build.directory}/collectionsettings/xsd</schemaDirectory>
               <generateDirectory>${project.build.directory}/collectionsettings</generateDirectory>
