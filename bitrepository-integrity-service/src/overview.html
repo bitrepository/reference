@@ -23,23 +23,27 @@
   #L%
   -->
 <body>
-The primary function of the IntegrityService is to perform and schedule integrity tests
-for the different files at a given collection.
+The primary function of the IntegrityService is to perform and schedule integrity checks for the different files at a given collection.
 It consists of four different entities:
 <ul>
-  <li>IntegrityCache - The storage of the collected integrity data.</li>
-  <li>IntegrityChecker - The instance for performing the checks for the integrity of the files within the collection.</li>
+  <li>IntegrityModel - The storage of the collected integrity data.</li>
+  <li>IntegrityChecker - The instance for performing the validation of the integrity of the files within the collection.</li>
   <li>Collector - Collects the integrity data from the pillars by using the clients in the access module.</li>
   <li>Scheduler - Schedules the collection of integrity data.</li>
 </ul>
 
-These four different entities of the IntegrityService are working together to perform the integrity checks in the following way:
+The service performs integrity tasks through different workflows.  
+A workflow is an repeatable task, which is scheduled by the scheduler.
+It is setup for either collecting data, validating the integrity of data or a combination of these. 
+And it is possible to base these tasks upon already collected data.  
+<br/>
+Currently four different workflows has been created:
 
 <ul>
-  <li>The scheduler issues an integrity check by calling the collector. This can either be integrity for the checksums or file ids, for one file or all files, and for either a single pillar or all the pillars.</li>
-  <li>The collector instantiates an eventhandler for the given type of integrity check and calls the respective client with this eventhandler.</li>
-  <li>When the results of the respective data collection has been performed by the client in the access module, then the eventhandler inserts the results into the IntgerityCache, and afterwards calls the IntegrityChecker to perform the actual integrity check on the given data-set.</li>
-  <li>The IntegrityChecker then validates the checksums of the file/all files, and issues an alarm if there is any disagreement about the checksum of a given file, or if the file is missing at a given pillar.</li>
+  <li>CollectAllChecksums: collect all the checksums from all the pillars and afterwards performs an integrity validation on the collected checksums</li>
+  <li>CollectAllFileIDs: Collect all the file ids from all the pillars and afterwards performs an integrity check for finding missing files.</li>
+  <li>CollecObsoleteChecksums: Goes through all the checksums to find those, which are obsolete. These are collected and afterwards an integrity validation are performed.</li>
+  <li>IntegrityValidator: Performs a complete integrity validation on all the data. Validates both the integrity of the checksums and whether the files are missing.</li>
 </ul>
 
 </body>

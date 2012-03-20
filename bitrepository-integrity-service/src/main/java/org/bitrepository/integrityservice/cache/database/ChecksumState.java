@@ -1,6 +1,9 @@
 /*
  * #%L
- * Bitrepository Common
+ * Bitrepository Integrity Client
+ * 
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -19,27 +22,29 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.common.database;
-
-import java.io.File;
-import java.sql.Connection;
+package org.bitrepository.integrityservice.cache.database;
 
 /**
- * The interface for connecting to a database.
+ * The different states for integrity check of the checksum of a given file.
  */
-public interface DBConnector {
-    /**
-     * Creates an embedded connection to a Derby database through the given URL.
-     * @param dbUrl The URL to connect to the database with.
-     * @return The connection to the database.
-     * @throws Exception If problems with the instantiation of the connection database occurs.
-     * E.g. The connection cannot be instantiated, or the driver is not available.
-     */
-    Connection getEmbeddedDBConnection(String dbUrl);
+public enum ChecksumState {
+    /** When the checksum of the given file is correct (e.g. won the vote).*/
+    VALID,
+    /** When the checksum of the given file is incorrect (e.g. lost the vote).*/
+    ERROR,
+    /** When no vote for the checksum has been performed.*/
+    UNKNOWN;
     
     /**
-     * Instantiates the database from a SQL file.
-     * @param sqlDatabaseFile The SQL file to instantiate the database from.
+     * Converts between an integer and the corresponding checksum state.
+     * @param i The integer value for the checksum state.
+     * @return The checksum state for the given integer.
      */
-    void createDatabase(File sqlDatabaseFile);
+    public static ChecksumState fromOrdinal(Integer i) {
+        switch (i) {
+            case 0: return VALID;
+            case 1: return ERROR;
+            default: return UNKNOWN;
+        }
+    }
 }

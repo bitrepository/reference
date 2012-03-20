@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitrepository Common
+ * Bitrepository Integrity Client
  * 
  * $Id$
  * $HeadURL$
@@ -22,21 +22,27 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.common.exceptions;
+package org.bitrepository.integrityservice;
 
 /**
- * Indicates a failure to finish a task. <p>
- * 
- * An example would be a failure to handle of a set of responses to reach a well defined finish state.
+ * Exception thrown on trouble retrieving integrity information.
  */
 @SuppressWarnings("serial")
-public class UnableToFinishException extends Exception {
-
-    public UnableToFinishException(String message, Throwable cause) {
-        super(message, cause);
+public class IntegrityInformationRetrievalException extends RuntimeException {
+    /**
+     * Create exception for integrity information retrieval error.
+     * @param message What went wrong.
+     */
+    public IntegrityInformationRetrievalException(String message) {
+        super(message);
     }
 
-    public UnableToFinishException(String message) {
-        super(message);
+    /**
+     * Create exception for integrity information retrieval error.
+     * @param message What went wrong.
+     * @param cause Exception that caused this exception.
+     */
+    public IntegrityInformationRetrievalException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

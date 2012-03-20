@@ -191,7 +191,8 @@ public class DatabaseUtils {
      * the wanted data-set, and the arguments for the query to become a proper SQL statement. 
      * This should only be used for advanced extractions of the database, e.g. several columns in a table.
      * 
-     * NOTE: Remember to close the ResultSet after use.
+     * NOTE: Remember to close the ResultSet after use. 
+     * TODO: find a way to close the PreparedStatement. If it is closed too soon it will also close the ResultSet.
      * 
      * @param dbConnection The connection to the database.
      * @param query The SQL query to be executed on the database.

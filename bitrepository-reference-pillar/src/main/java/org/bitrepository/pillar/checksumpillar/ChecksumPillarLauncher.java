@@ -47,7 +47,7 @@ public class ChecksumPillarLauncher {
     /** The default path for the settings in the development.*/
     private static final String DEFAULT_PATH_TO_SETTINGS = "settings/xml";
     /** The default path for the settings in the development.*/
-    private static final String DEFAULT_PATH_TO_KEY_FILE = "conf/client.p12";
+    private static final String DEFAULT_PATH_TO_KEY_FILE = "conf/client.pem";
     
     /**
      * Private constructor. To prevent instantiation of this utility class.

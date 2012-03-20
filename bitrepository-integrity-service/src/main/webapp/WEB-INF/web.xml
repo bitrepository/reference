@@ -25,26 +25,22 @@
   -->
 
 <web-app>
-   	<display-name>Bitrepository integrityservice</display-name>
-	
-   	<servlet>
- 		<servlet-name>Bitrepository-integrityservice</servlet-name>
- 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-		<init-param>
- 			<param-name>com.sun.jersey.config.property.packages</param-name>
- 			<param-value>org.bitrepository.integrityclient.web</param-value>
- 		</init-param>
- 	</servlet>
- 	
- 	<servlet-mapping>
- 		<servlet-name>Bitrepository-integrityservice</servlet-name>
- 		<url-pattern>/integrity/*</url-pattern>
- 	</servlet-mapping>
- 	
-    <listener>
-		<listener-class>org.bitrepository.integrityclient.web.IntegrityServiceContextListener</listener-class>
-	</listener>
- 	
+  <display-name>Bitrepository integrityservice</display-name>
+  <servlet>
+    <servlet-name>Bitrepository-integrityservice</servlet-name>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.packages</param-name>
+      <param-value>org.bitrepository.integrityservice.web</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Bitrepository-integrityservice</servlet-name>
+    <url-pattern>/integrity/*</url-pattern>
+  </servlet-mapping>
+  <listener>
+    <listener-class>org.bitrepository.integrityservice.web.IntegrityServiceContextListener</listener-class>
+  </listener>
 </web-app>
 
 

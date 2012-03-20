@@ -1,6 +1,9 @@
 /*
  * #%L
- * Bitrepository Common
+ * Bitrepository Integrity Client
+ * 
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -19,27 +22,30 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.common.database;
-
-import java.io.File;
-import java.sql.Connection;
+package org.bitrepository.integrityservice.cache.database;
 
 /**
- * The interface for connecting to a database.
+ * The different states for a file in the integrity cache.
  */
-public interface DBConnector {
-    /**
-     * Creates an embedded connection to a Derby database through the given URL.
-     * @param dbUrl The URL to connect to the database with.
-     * @return The connection to the database.
-     * @throws Exception If problems with the instantiation of the connection database occurs.
-     * E.g. The connection cannot be instantiated, or the driver is not available.
-     */
-    Connection getEmbeddedDBConnection(String dbUrl);
+public enum FileState {
+
+    /** The state when the file has been found in the latest file list. */ 
+    EXISTING,
+    /** The state when the file was not found in the latest file list. */
+    MISSING,
+    /** The state when it is not known for the given file.*/
+    UNKNOWN;
     
     /**
-     * Instantiates the database from a SQL file.
-     * @param sqlDatabaseFile The SQL file to instantiate the database from.
+     * Converts between an integer and the actual file state.
+     * @param i The integer value for the file state.
+     * @return The file state for the given integer.
      */
-    void createDatabase(File sqlDatabaseFile);
+    public static FileState fromOrdinal(Integer i) {
+        switch (i) {
+            case 0: return EXISTING;
+            case 1: return MISSING;
+            default: return UNKNOWN;
+        }
+    }
 }

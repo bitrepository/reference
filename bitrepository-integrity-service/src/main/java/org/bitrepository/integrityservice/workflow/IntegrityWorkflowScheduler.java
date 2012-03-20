@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitrepository Common
+ * Bitrepository Integrity Client
  * 
  * $Id$
  * $HeadURL$
@@ -22,21 +22,32 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.common.exceptions;
+package org.bitrepository.integrityservice.workflow;
+
+import java.util.Collection;
 
 /**
- * Indicates a failure to finish a task. <p>
- * 
- * An example would be a failure to handle of a set of responses to reach a well defined finish state.
+ * Interface for scheduling integrity information collection.
+ *
+ * Implementations should apply all triggers at reasonable intervals.
  */
-@SuppressWarnings("serial")
-public class UnableToFinishException extends Exception {
-
-    public UnableToFinishException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public UnableToFinishException(String message) {
-        super(message);
-    }
+public interface IntegrityWorkflowScheduler {
+    /** Add a trigger for initiating information collection.
+     *
+     * @param workflow The definition of whether a collection should run, and if so what collection.
+     */
+    void putWorkflow(Workflow workflow);
+    
+    /**
+     * Removes a trigger with the given name.
+     * 
+     * @param name
+     * @return Whether the trigger was successfully found and removed. 
+     */
+    boolean removeWorkflow(String name);
+    
+    /**
+     * @return The list of all workflows.
+     */
+    Collection<Workflow> getWorkflows();
 }

@@ -83,7 +83,7 @@ public class DerbyDBConnector implements DBConnector {
                     + sqlDatabaseFile.getAbsolutePath() + "'.");
         }
         
-        // Use the derby tool 'ij' to create the database.
+        // TODO Use the derby tool 'ij' to create the database.
         try {
             ij.main(new String[]{sqlDatabaseFile.getAbsolutePath()});
         } catch (Exception e) {
