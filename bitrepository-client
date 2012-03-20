@@ -14,6 +14,11 @@ do_put() {
 	echo ""
 }
 
+do_delete() {
+	command="$SERVICEURL/deleteFile/?fileID=$filename&pillarID=$pillarID&deleteChecksum=$checksumValue&deleteChecksumType=$checksumType"
+	curl --silent $command
+}
+
 do_getlog() {
 	command="$SERVICEURL/getLog/"
 	curl --silent $command
@@ -38,7 +43,9 @@ do_webserver_get_file() {
 	curl $CURLPARMS --silent $WEBDAVSERVER$filename > $filename
 }
 
-
+print_delete_usage() {
+    echo "Usage br-client delete <filename> <pillarID> <checksumType> <checksumValue> \nChecksumType: MD5 or SHA1" 
+}
 
 case "$1" in
   put)
@@ -77,6 +84,34 @@ case "$1" in
 	fi
 	salt=$4
 	do_getchecksum $filename $checksumType $salt
+	;;
+  delete)
+	filename=$2
+	if [ -z $filename ] 
+	then
+		print_delete_usage
+		exit 1
+    fi
+    pillarID=$3
+    if [ -z $pillarID ]
+    then
+		print_delete_usage
+		exit 2
+    fi      
+    checksumType=$4
+    if [ -z $checksumType ]
+    then
+		print_delete_usage
+		exit 2
+    fi      
+    checksumValue=$5
+    if [ -z $checksumValue ]
+    then
+		print_delete_usage
+		exit 2
+    fi      
+
+    do_delete $filename $pillarID $checksumType $checksumValue
 	;;
   remove-file)
 	filename=$2
