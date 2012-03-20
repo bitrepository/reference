@@ -63,12 +63,18 @@ public class ReplaceFileCompletePillarEvent extends PillarOperationEvent {
         return newFileChecksum;
     }
     
-    @Override
+    @Override 
+    public String additionalInfo() {
+        return "checksum for new file: '" + newFileChecksum + "'," +
+                "checksum for deleted file: '" + deletedFileChecksum + "' ";
+    }
+    
+    /*@Override
     public String toString() {
         StringBuffer res = new StringBuffer();
         res.append(super.toString());
         res.append(", checksum for new file: '" + newFileChecksum + "'");
         res.append(", checksum for deleted file: '" + deletedFileChecksum + "'");
         return  res.toString();
-    }
+    }*/
 }
