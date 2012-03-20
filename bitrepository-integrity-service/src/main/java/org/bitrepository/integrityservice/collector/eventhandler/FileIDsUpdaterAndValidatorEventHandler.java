@@ -93,7 +93,7 @@ public class FileIDsUpdaterAndValidatorEventHandler implements EventHandler {
      * @param event The event for the completed pillar.
      */
     private void handleFileIDsComplete(FileIDsCompletePillarEvent event) {
-        informationCache.addFileIDs(event.getFileIDs().getFileIDsData(), event.getState()); 
+        informationCache.addFileIDs(event.getFileIDs().getFileIDsData(), event.getPillarID()); 
     }
     
     /**
