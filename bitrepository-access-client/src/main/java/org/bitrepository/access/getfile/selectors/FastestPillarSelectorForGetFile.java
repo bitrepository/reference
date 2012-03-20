@@ -32,7 +32,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
-import org.bitrepository.protocol.time.TimeMeasureComparator;
+import org.bitrepository.protocol.utils.TimeMeasurementUtils;
 
 /**
  * Selects the pillar which have the quickest estimated delivery as indicated in the <code>timeToDelover</code> in the 
@@ -59,7 +59,7 @@ public class FastestPillarSelectorForGetFile extends PillarSelectorForGetFile {
                 response.getResponseInfo().getResponseCode())) {
             return false;
         } 
-        if (selectedPillar == null || TimeMeasureComparator.compare(response.getTimeToDeliver(), 
+        if (selectedPillar == null || TimeMeasurementUtils.compare(response.getTimeToDeliver(), 
                 selectedPillar.getTimeToDeliver()) < 0) {
             return true;
         } 

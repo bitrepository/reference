@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.bitrepository.reference</groupId>
   <artifactId>bitrepository-parent</artifactId>
-  <version>0.10-SNAPSHOT</version>
+  <version>0.11-SNAPSHOT</version>
 
   <parent>
     <groupId>org.sbforge</groupId>
@@ -20,7 +20,7 @@
     <module>bitrepository-protocol</module>
     <module>bitrepository-access-client</module>
     <module>bitrepository-modifying-client</module>
-    <module>bitrepository-integrity-client</module>
+    <module>bitrepository-integrity-service</module>
     <module>bitrepository-alarm-service</module>
     <module>bitrepository-audit-trail-service</module>
     <module>bitrepository-reference-pillar</module>

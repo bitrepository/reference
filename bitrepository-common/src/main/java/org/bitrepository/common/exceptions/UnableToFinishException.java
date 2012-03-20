@@ -29,6 +29,7 @@ package org.bitrepository.common.exceptions;
  * 
  * An example would be a failure to handle of a set of responses to reach a well defined finish state.
  */
+@SuppressWarnings("serial")
 public class UnableToFinishException extends Exception {
 
     public UnableToFinishException(String message, Throwable cause) {

@@ -39,9 +39,8 @@ fi;
 
 export LOGBACK="-Dlogback.configurationFile=conf/logback.xml"
 export CLASSPATH=`echo \`ls lib/*\` | sed s/' '/:/g`
-
-export SSL_DEPENDENCIES="-Djavax.net.ssl.keyStore=conf/key.store -Djavax.net.ssl.keyStorePassword=123456 -Djavax.net.ssl.trustStore=conf/trust.store -Djavax.net.ssl.trustStorePassword=123456"
+export KEYFILE=`ls conf/client*.pem | head -1`
 
 # Launch the application
-echo java -cp $CLASSPATH $LOGBACK $SSL_DEPENDENCIES org.bitrepository.pillar.checksumpillar.ChecksumPillarLauncher $PWD/conf
-java -cp $CLASSPATH $LOGBACK $SSL_DEPENDENCIES org.bitrepository.pillar.checksumpillar.ChecksumPillarLauncher $PWD/conf > ReferencePillar.start 2>&1 &
+echo java -cp $CLASSPATH $LOGBACK org.bitrepository.pillar.checksumpillar.ChecksumPillarLauncher $PWD/conf $KEYFILE 
+java -cp $CLASSPATH $LOGBACK org.bitrepository.pillar.checksumpillar.ChecksumPillarLauncher $PWD/conf $KEYFILE > ReferencePillar.start 2>&1 &

@@ -24,6 +24,7 @@ package org.bitrepository.pillar.checksumpillar;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
+import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,19 +36,33 @@ public class ChecksumPillar {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The messagebus for the pillar.*/
-    private final MessageBus messageBus;
+    private final MessageBus messagebus;
     
-    private ChecksumCache cache;
-    private Object mediator;
+    /** The cache for persisting the checksum data.*/
+    protected final ChecksumCache cache;
+    /** The mediator for delegating the communication to the message handlers.*/
+    protected ChecksumPillarMediator mediator;
  
-    public ChecksumPillar(MessageBus messageBus, Settings settings) {
+    /**
+     * Constructor.
+     * @param messageBus The message bus for the 
+     * @param settings The settings for the checksum pillar.
+     * @param refCache The cache for the checksum data to be stored.
+     */
+    public ChecksumPillar(MessageBus messageBus, Settings settings, ChecksumCache refCache) {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
+        ArgumentValidator.checkNotNull(refCache, "ChecksumCache refCache");
         
-        this.messageBus = messageBus;
+        this.messagebus = messageBus;
+        this.cache = refCache;
         
-        log.info("Starting the reference pillar!");
-        
+        log.info("Starting the checksum pillar!");
+        mediator = new ChecksumPillarMediator(messagebus, settings, cache);
         log.info("ReferencePillar started!");
+    }
+    
+    public void close() {
+        mediator.close();
     }
 }

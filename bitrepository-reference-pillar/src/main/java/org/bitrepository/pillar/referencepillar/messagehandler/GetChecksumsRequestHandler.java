@@ -30,8 +30,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +40,6 @@ import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetChecksumsResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -54,12 +51,13 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.Base64Utils;
+import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -105,7 +103,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText("Error: " + e.getMessage());
+            fri.setResponseText("Error at my end: " + e.getMessage());
             sendFailedResponse(message, fri);
         }
     }
@@ -120,9 +118,9 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         // Validate the message.
         validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
+        validateChecksumSpecification(message.getChecksumRequestForExistingFile());
         
         validateFileIDs(message);
-        validateChecksum(message);
         
         log.debug("Message '" + message.getCorrelationID() + "' validated and accepted.");
     }
@@ -158,39 +156,6 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
     }
     
     /**
-     * Method for validating the checksum algorithm in the GetChecksumsRequest message.
-     * Do we access to the Algorithm?
-     * Also validates whether an algorithm has been granted.
-     * 
-     * @param message The message to have its checksum algorithm validated.
-     */
-    private void validateChecksum(GetChecksumsRequest message) {
-        // validate the checksum function
-        ChecksumSpecTYPE checksumSpec = message.getChecksumRequestForExistingFile();
-        
-        // validate that this non-mandatory field has been filled out.
-        if(checksumSpec == null || checksumSpec.getChecksumType() == null) {
-            String errText = "No checksumSpec in the request. Needs an algorithm to calculate checksums!";
-            log.warn(errText);
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText(errText);
-            throw new InvalidMessageException(fri);
-        }
-        
-        try {
-            MessageDigest.getInstance(checksumSpec.getChecksumType().value());
-        } catch (NoSuchAlgorithmException e) {
-            String errText = "Could not instantiate the given messagedigester for calculating a checksum.";
-            log.warn(errText, e);
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText(errText);
-            throw new InvalidMessageException(fri, e);
-        }
-    }
-    
-    /**
      * Method for creating and sending the initial progress message for accepting the operation.
      * @param message The message to base the response upon.
      */
@@ -217,24 +182,14 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         
         FileIDs fileids = message.getFileIDs();
         
-        byte[] salt = message.getChecksumRequestForExistingFile().getChecksumSalt();
-        
         if(fileids.isSetAllFileIDs()) {
             log.debug("Calculating the checksum for all the files.");
-            return calculateChecksumForAllFiles(message.getChecksumRequestForExistingFile().getChecksumType(), salt);
+            return calculateChecksumForAllFiles(message.getChecksumRequestForExistingFile());
         }
         
         log.debug("Calculating the checksum for specified files: " + fileids.getFileID());
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
-        String fileid = fileids.getFileID();
-        File file = archive.getFile(fileid);
-        ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
-        singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
-        singleFileResult.setFileID(fileid);
-        singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, 
-                message.getChecksumRequestForExistingFile().getChecksumType().value(), salt).getBytes());
-        
-        res.add(singleFileResult);
+        res.add(calculateSingleChecksum(fileids.getFileID(), message.getChecksumRequestForExistingFile()));
         
         return res;
     }
@@ -246,21 +201,33 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * @return The list of checksums for requested files. 
      */
     private List<ChecksumDataForChecksumSpecTYPE> calculateChecksumForAllFiles(
-            ChecksumType algorithm, byte[] salt) {
+            ChecksumSpecTYPE csType) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         
         // Go through every file in the archive, calculate the checksum and put it into the results.
         for(String fileid : archive.getAllFileIds()) {
-            File file = archive.getFile(fileid);
-            ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
-            singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
-            singleFileResult.setFileID(fileid);
-            singleFileResult.setChecksumValue(ChecksumUtils.generateChecksum(file, algorithm.value(), salt).getBytes());
-            
-            res.add(singleFileResult);
+            res.add(calculateSingleChecksum(fileid, csType));
         }
 
         return res;
+    }
+    
+    /**
+     * Performs the actual checksum calculation of a file. And Base64 encodes the results.
+     * 
+     * @param fileId The id of the file.
+     * @param csType The specifications for the calculation.
+     * @return The calculated checksum for the given file, calculated with the given checksum specification.
+     */
+    private ChecksumDataForChecksumSpecTYPE calculateSingleChecksum(String fileId, ChecksumSpecTYPE csType) {
+        File file = archive.getFile(fileId);
+        ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
+        String checksum = ChecksumUtils.generateChecksum(file, csType);
+        singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
+        singleFileResult.setFileID(fileId);
+        singleFileResult.setChecksumValue(Base64Utils.encodeBase64(checksum));
+        
+        return singleFileResult;
     }
     
     /**
@@ -375,16 +342,20 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         fResponse.setResultingChecksums(results);
         
         // Send the FinalResponse
-        log.info("Sending GetFileFinalResponse: " + fResponse);
+        log.info("Sending successful GetFileFinalResponse: " + fResponse);
         messagebus.sendMessage(fResponse);        
     }
     
+    /**
+     * Method for sending a failed response based on a given request message and a given response info.
+     * @param message The request message to base the response upon.
+     * @param fri The response info for the failed response.
+     */
     private void sendFailedResponse(GetChecksumsRequest message, ResponseInfo fri) {
         GetChecksumsFinalResponse fResponse = createFinalResponse(message);
         fResponse.setResponseInfo(fri);
         
-        // Send the FinalResponse
-        log.info("Sending GetFileFinalResponse: " + fResponse);
+        log.info("Sending failed GetFileFinalResponse: " + fResponse);
         messagebus.sendMessage(fResponse);        
     }
     

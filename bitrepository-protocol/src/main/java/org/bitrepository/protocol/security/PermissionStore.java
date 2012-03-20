@@ -171,7 +171,7 @@ public class PermissionStore {
          * Retrieve the certificate from the object. 
          * @return the X509Certificate from the object.
          */
-        public final X509Certificate getCertificate() {
+        public X509Certificate getCertificate() {
             return certificate;
         }   
     }

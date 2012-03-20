@@ -33,7 +33,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 
-public class AlarmStoreFactory {
+public final class AlarmStoreFactory {
 	/** The instance of the alarmStore */
     private static AlarmStore alarmStore;
     /** Member to hold the directory path of where the configuration files are located. */
@@ -47,7 +47,7 @@ public class AlarmStoreFactory {
     /** The properties file holding implementation specifics for the alarm service. */
     private static final String CONFIGFILE = "alarmservice.properties"; 
     /** Property key for the property holding the path the file persisting alarms */
-    private static final String ALARMSTOREFILE = "org.bitrepository.webclient.alarmstorefile";
+    private static final String ALARMSTOREFILE = "org.bitrepository.alarm-service.alarmstorefile";
     /** Default collection settings identifier (used to build the path the collection and referencesettings */
     private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
     
@@ -59,7 +59,7 @@ public class AlarmStoreFactory {
      * Set the configuration directory. 
      * Should only be run at initialization time. 
      */
-    public synchronized static void init(String configurationDir) {
+    public static synchronized void init(String configurationDir) {
     	confDir = configurationDir;
     }
     
@@ -67,7 +67,7 @@ public class AlarmStoreFactory {
      *	Factory method to get a singleton instance of BasicClient
      *	@return The BasicClient instance or a null in case of trouble.  
      */
-    public synchronized static AlarmStore getAlarmStore() {
+    public static synchronized AlarmStore getAlarmStore() {
         if(alarmStore == null) {
         	if(confDir == null) {
         		throw new IllegalStateException("No configuration dir has been set!");

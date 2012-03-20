@@ -1,0 +1,49 @@
+<!--
+  #%L
+  Bitrepository Integrity Client
+  
+  $Id$
+  $HeadURL$
+  %%
+  Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as 
+  published by the Free Software Foundation, either version 2.1 of the 
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Lesser Public License for more details.
+  
+  You should have received a copy of the GNU General Lesser Public 
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  #L%
+  -->
+<body>
+The primary function of the IntegrityService is to perform and schedule integrity checks for the different files at a given collection.
+It consists of four different entities:
+<ul>
+  <li>IntegrityModel - The storage of the collected integrity data.</li>
+  <li>IntegrityChecker - The instance for performing the validation of the integrity of the files within the collection.</li>
+  <li>Collector - Collects the integrity data from the pillars by using the clients in the access module.</li>
+  <li>Scheduler - Schedules the collection of integrity data.</li>
+</ul>
+
+The service performs integrity tasks through different workflows.  
+A workflow is an repeatable task, which is scheduled by the scheduler.
+It is setup for either collecting data, validating the integrity of data or a combination of these. 
+And it is possible to base these tasks upon already collected data.  
+<br/>
+Currently four different workflows has been created:
+
+<ul>
+  <li>CollectAllChecksums: collect all the checksums from all the pillars and afterwards performs an integrity validation on the collected checksums</li>
+  <li>CollectAllFileIDs: Collect all the file ids from all the pillars and afterwards performs an integrity check for finding missing files.</li>
+  <li>CollecObsoleteChecksums: Goes through all the checksums to find those, which are obsolete. These are collected and afterwards an integrity validation are performed.</li>
+  <li>IntegrityValidator: Performs a complete integrity validation on all the data. Validates both the integrity of the checksums and whether the files are missing.</li>
+</ul>
+
+</body>

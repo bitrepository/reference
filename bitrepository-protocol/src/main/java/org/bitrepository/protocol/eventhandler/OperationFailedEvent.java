@@ -28,11 +28,11 @@ package org.bitrepository.protocol.eventhandler;
 /**
  * Indicates and operation has failed to complete
  */
-public class OperationFailedEvent implements OperationEvent<Exception> {
+public class OperationFailedEvent extends AbstractOperationEvent<Exception> {
     /** @see #getInfo() */
     private final String info;
     /** @see #getType() */
-    private final OperationEventType type = OperationEventType.FAILED;
+    private final static OperationEventType type = OperationEventType.FAILED;
     /** @see #getState() */
     private final Exception exception;
 
@@ -42,7 +42,7 @@ public class OperationFailedEvent implements OperationEvent<Exception> {
      * @param exception
      */
     public OperationFailedEvent(String info, Exception exception) {
-        super();
+        super(type, info);
         this.info = info;
         this.exception = exception;
     }
@@ -52,7 +52,7 @@ public class OperationFailedEvent implements OperationEvent<Exception> {
      * @param info Message describing the failure.
      */
     public OperationFailedEvent(String info) {
-        super();
+        super(type, info);
         this.info = info;
         this.exception = null;
     }
@@ -69,8 +69,16 @@ public class OperationFailedEvent implements OperationEvent<Exception> {
 
     /** Returns the exception causing this failure, if any. Might be null if the failure wasn't caused by an 
      * exception */
-    @Override
-    public Exception getState() {
+    public Exception getException() {
         return exception;
+    }
+
+    @Override
+    public String additionalInfo() {
+        if(exception != null) {
+            return exception.getMessage();
+        } else {
+            return "";
+        }
     }
 }

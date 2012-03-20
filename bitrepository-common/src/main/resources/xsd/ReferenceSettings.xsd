@@ -127,7 +127,21 @@
               The destination for receiving messages for the pillar.
             </xs:documentation>
           </xs:annotation>
-        </xs:element>        
+        </xs:element>
+        <xs:element name="ChecksumPillarChecksumSpecificationType" type="xs:string" maxOccurs="1">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The checksum specification for the checksum pillar.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ChecksumPillarChecksumSpecificationSalt" type="xs:string" maxOccurs="1" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The checksum specification for the checksum pillar.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -271,6 +285,13 @@
             </xs:annotation>
           </xs:element>
           <xs:element name="DatabaseUrl" type="xs:string">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The url to the database, which contains the integrity data.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="TimeBeforeMissingFileCheck" type="xs:long">
             <xs:annotation>
               <xs:documentation xml:lang="en">
                 The url to the database, which contains the integrity data.

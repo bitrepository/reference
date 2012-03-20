@@ -129,9 +129,8 @@ public class IdentifyPillarsForPutFile extends PutFileState {
             monitor.pillarIdentified("Identified the pillar '" + response.getPillarID() + "' for Put.", 
                     response.getPillarID());
         } else {
-            String errMsg = "Negative identification from pillar '" + response.getPillarID() + "' received: " + rInfo;
-            monitor.pillarFailed(errMsg);
-            monitor.debug(errMsg);
+            monitor.pillarFailed("Negative identification from pillar '" + response.getPillarID() + "' received: " 
+                    + rInfo);
         }
     }
 

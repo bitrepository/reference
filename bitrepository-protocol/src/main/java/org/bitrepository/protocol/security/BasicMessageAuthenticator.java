@@ -29,7 +29,6 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
-import org.bouncycastle.util.encoders.Base64;
 
 /**
  * Class to handle authentication of messages.  
@@ -57,24 +56,22 @@ public class BasicMessageAuthenticator implements MessageAuthenticator {
      */
     @Override
     public void authenticateMessage(byte[] messageData, byte[] signatureData) throws MessageAuthenticationException {
-        X509Certificate signingCert;
         try {
-            byte[] decodedSig = Base64.decode(signatureData); 
-            CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(messageData), decodedSig);
+            CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(messageData), signatureData);
             SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
-            signingCert = permissionStore.getCertificate(signer.getSID());
+            X509Certificate signingCert = permissionStore.getCertificate(signer.getSID());
             
             if(!signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityModuleConstants.BC).build(signingCert))) {
                 throw new MessageAuthenticationException("Signature does not match the message. Indicated certificate " +
                         "did not sign message. Certificate issuer: " + signingCert.getIssuerX500Principal().getName() +
                         ", serial: " + signingCert.getSerialNumber());  
             }
-        } catch (OperatorCreationException e) {
-            throw new RuntimeException(e);
-        } catch (CMSException e) {
-            throw new RuntimeException(e);
         } catch (PermissionStoreException e) {
             throw new MessageAuthenticationException(e.getMessage(), e);
+        } catch (CMSException e) {
+            throw new SecurityModuleException(e.getMessage(), e);
+        } catch (OperatorCreationException e) {
+            throw new SecurityModuleException(e.getMessage(), e);
         }
     }
 

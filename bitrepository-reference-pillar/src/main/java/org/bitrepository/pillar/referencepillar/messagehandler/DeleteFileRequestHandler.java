@@ -34,10 +34,11 @@ import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.Base64Utils;
+import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +94,8 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         // Validate the message.
         validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
+        validateChecksumSpecification(message.getChecksumRequestForExistingFile());
+        validateChecksumSpecification(message.getChecksumDataForExistingFile().getChecksumSpec());
 
         // Validate, that we have the requested file.
         if(!archive.hasFile(message.getFileID())) {
@@ -107,22 +110,23 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
         ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
         if(checksumType == null) {
+            // TODO this is only invalid, if it is set in settings! Make settings for this!
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);
             responseInfo.setResponseText("A checksum for deletion is required!");
             throw new InvalidMessageException(responseInfo);
         }
         
-        String checksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), 
-                checksumType.getChecksumType().value(), checksumType.getChecksumSalt());
-        if(!checksum.equals(new String(checksumData.getChecksumValue()))) {
+        String calculatedChecksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), checksumType);
+        String requestedChecksum = Base64Utils.decodeBase64(checksumData.getChecksumValue());
+        if(!calculatedChecksum.equals(requestedChecksum)) {
             // Log the different checksums, but do not send the right checksum back!
             log.info("Failed to handle delete operation on file '" + message.getFileID() + "' since the request had "
-                    + "the checksum '" + new String(checksumData.getChecksumValue()) + "' where our local file has "
-                    + "the value '" + checksum + "'. Sending alarm and respond failure.");
+                    + "the checksum '" + requestedChecksum + "' where our local file has the value '" 
+                    + calculatedChecksum + "'. Sending alarm and respond failure.");
             String errMsg = "Requested to delete file '" + message.getFileID() + "' with checksum '"
                     + new String(checksumData.getChecksumValue()) + "', but our file had a different checksum.";
-            alarmDispatcher.sendInvalidChecksumAlarm(message, message.getFileID(), errMsg);
+            alarmDispatcher.sendInvalidChecksumAlarm(message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);
@@ -163,12 +167,11 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
             log.warn("No checksum requested for the file about to be deleted.");
             return null;
         }
-        String checksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), 
-                checksumType.getChecksumType().value(), checksumType.getChecksumSalt());
+        String checksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), checksumType);
         
         res.setChecksumSpec(checksumType);
         res.setCalculationTimestamp(CalendarUtils.getNow());
-        res.setChecksumValue(checksum.getBytes());
+        res.setChecksumValue(Base64Utils.encodeBase64(checksum));
         
         return res;
     }

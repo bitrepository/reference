@@ -81,6 +81,7 @@ public class PuttingFile extends PutFileState {
                     + "' of file '" + conversation.fileID + "' from url '" + conversation.downloadUrl.toExternalForm()
                     + "'.");
             finishOperation();
+            return;
         }
         
         // Create the message.
@@ -100,12 +101,10 @@ public class PuttingFile extends PutFileState {
         for(Map.Entry<String, String> pillarDest : pillarDestinations.entrySet()) {
             putMsg.setPillarID(pillarDest.getKey());
             putMsg.setTo(pillarDest.getValue());
+            monitor.requestSent("Request to put file " + conversation.fileID + " has been sent to pillar + " +
+                    pillarDest.getKey(), pillarDest.getKey());
             conversation.messageSender.sendMessage(putMsg);
         }
-
-        monitor.requestSent("Request to put file " + conversation.fileID + " has been sent to pillars + " +
-                conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs().toString(), 
-                conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs().toString());
 
         timerTask = new PutTimerTask();
         timer.schedule(timerTask,

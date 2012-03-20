@@ -27,6 +27,7 @@ package org.bitrepository.pillar.checksumpillar.messagehandler;
 import java.math.BigInteger;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
@@ -59,7 +60,7 @@ public abstract class ChecksumPillarMessageHandler<T> {
     protected final MessageBus messagebus;
     /** The reference checksum cache.*/
     protected final ChecksumCache cache;
-    /** */
+    /** The specifications for the checksum type of this ChecksumPillar. */
     protected final ChecksumSpecTYPE checksumType;
     
     /**
@@ -81,6 +82,13 @@ public abstract class ChecksumPillarMessageHandler<T> {
         this.alarmDispatcher = alarmDispatcher;
         this.cache = refCache;
         this.checksumType = new ChecksumSpecTYPE();
+        
+        checksumType.setChecksumType(ChecksumType.fromValue(
+                settings.getReferenceSettings().getPillarSettings().getChecksumPillarChecksumSpecificationType()));
+        String salt = settings.getReferenceSettings().getPillarSettings().getChecksumPillarChecksumSpecificationSalt();
+        if(salt != null) {
+            checksumType.setChecksumSalt(salt.getBytes());
+        }
     }
     
     /** 

@@ -50,4 +50,5 @@ public class PutFileCompletePillarEvent extends PillarOperationEvent {
     public ChecksumDataForFileTYPE getChecksums() {
         return result;
     }
+    
 }

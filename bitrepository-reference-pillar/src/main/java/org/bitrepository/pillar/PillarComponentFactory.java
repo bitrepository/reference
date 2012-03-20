@@ -92,7 +92,8 @@ public final class PillarComponentFactory {
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(messagebus, "messagebus");
         
-        return new ChecksumPillar(messagebus, settings);
+        // TODO !!
+        return new ChecksumPillar(messagebus, settings, null);
     }
 
 }

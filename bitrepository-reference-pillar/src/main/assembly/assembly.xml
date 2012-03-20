@@ -38,6 +38,8 @@
     <fileSets>
         <fileSet>
             <outputDirectory>conf</outputDirectory>
+            <fileMode>0740</fileMode>
+            <directoryMode>0740</directoryMode>
             <directory>../bitrepository-common/target/test-classes/settings/xml/bitrepository-devel/</directory>
             <excludes>
             	<exclude>xjb-bindings/</exclude>           
@@ -45,16 +47,17 @@
         </fileSet>
         <fileSet>
             <outputDirectory>conf</outputDirectory>
+            <fileMode>0740</fileMode>
+            <directoryMode>0740</directoryMode>
             <directory>src/main/conf</directory>
         </fileSet>
         <fileSet>
             <outputDirectory>bin</outputDirectory>
             <directory>src/main/scripts</directory>
-            <fileMode>0755</fileMode>
+            <fileMode>0740</fileMode>
+            <directoryMode>0740</directoryMode>
             <filtered>true</filtered>
         </fileSet>
     </fileSets>
-
-
 </assembly>
 

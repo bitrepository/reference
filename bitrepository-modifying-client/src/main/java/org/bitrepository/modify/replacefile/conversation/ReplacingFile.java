@@ -100,9 +100,9 @@ public class ReplacingFile extends ReplaceFileState {
             request.setPillarID(pillarInfo.getID());
             request.setTo(pillarInfo.getDestination());
             
-            conversation.messageSender.sendMessage(request);
             monitor.requestSent("Request to replace file " + conversation.fileID + " has been sent to the pillar + " +
                     conversation.pillarId, pillarInfo.getID());
+            conversation.messageSender.sendMessage(request);
         }
 
         timer.schedule(timerTask, 

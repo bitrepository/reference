@@ -37,6 +37,7 @@
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
     <ReceiverDestination>TEST-TOPIC-PILLAR</ReceiverDestination>
+    <ChecksumPillarChecksumSpecificationType>MD5</ChecksumPillarChecksumSpecificationType>
   </PillarSettings>
   <DeleteFileSettings></DeleteFileSettings>
   <GetAuditTrailSettings></GetAuditTrailSettings>
@@ -58,5 +59,6 @@
     <ID>integrity-service</ID>
     <SchedulerInterval>600000</SchedulerInterval>
     <DatabaseUrl>jdbc:derby:integritydb</DatabaseUrl>
+    <TimeBeforeMissingFileCheck>60000</TimeBeforeMissingFileCheck>
   </IntegrityServiceSettings>
 </ReferenceSettings>

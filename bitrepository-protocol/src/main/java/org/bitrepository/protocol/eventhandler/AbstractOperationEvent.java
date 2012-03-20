@@ -49,7 +49,9 @@ public abstract class AbstractOperationEvent<T> implements OperationEvent<T> {
     }
 
     @Override 
-    public String toString() {
-        return getType() + " event: " + getInfo();
+    public final String toString() {
+        return getType() + " event: " + additionalInfo() + getInfo();
     }
+    
+    public abstract String additionalInfo();
 }

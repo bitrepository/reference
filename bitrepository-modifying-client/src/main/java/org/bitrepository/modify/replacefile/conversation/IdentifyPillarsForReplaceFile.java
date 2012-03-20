@@ -70,9 +70,9 @@ public class IdentifyPillarsForReplaceFile extends ReplaceFileState {
         identifyRequest.setAuditTrailInformation(conversation.auditTrailInformation);
         identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         identifyRequest.setTo(conversation.settings.getCollectionDestination());
-        conversation.messageSender.sendMessage(identifyRequest);
         
         monitor.identifyPillarsRequestSent("Identifying pillars for ReplaceFile '" + conversation.fileID + "'");
+        conversation.messageSender.sendMessage(identifyRequest);
         timer.schedule(identifyTimeoutTask, 
                 conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());
     }

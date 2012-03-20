@@ -37,13 +37,14 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.Base64Utils;
+import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +102,11 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         // validate message
         validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
-
+        if(message.getChecksumDataForNewFile() != null) {
+            validateChecksumSpecification(message.getChecksumDataForNewFile().getChecksumSpec());
+        }
+        validateChecksumSpecification(message.getChecksumRequestForNewFile());
+        
         // verify, that we already have the file
         if(archive.hasFile(message.getFileID())) {
             log.warn("Cannot perform put for a file, '" + message.getFileID() 
@@ -154,14 +159,13 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         if(message.getChecksumDataForNewFile() != null) {
                 //&& message.getChecksumDataForNewFile().getChecksumDataItem() != null) {
         	ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
-            String checksum = ChecksumUtils.generateChecksum(fileForValidation, 
-                    csType.getChecksumSpec().getChecksumType().value(), 
-                    csType.getChecksumSpec().getChecksumSalt());
-            if(!checksum.equals(new String(csType.getChecksumValue()))) {
-                log.error("Expected checksums '" + new String(csType.getChecksumValue()) + "' but the checksum was '" 
-                        + checksum + "'.");
-                throw new IllegalStateException("Wrong checksum! Expected: [" + new String(csType.getChecksumValue()) 
-                        + "], but calculated: [" + checksum + "]");
+            String calculatedChecksum = ChecksumUtils.generateChecksum(fileForValidation, csType.getChecksumSpec());
+            String expectedChecksum = Base64Utils.decodeBase64(csType.getChecksumValue());
+            if(!calculatedChecksum.equals(expectedChecksum)) {
+                log.error("Expected checksums '" + expectedChecksum + "' but the checksum was '" 
+                        + calculatedChecksum + "'.");
+                throw new IllegalStateException("Wrong checksum! Expected: [" + expectedChecksum 
+                        + "], but calculated: [" + calculatedChecksum + "]");
             }
         } else {
             // TODO is such a checksum required?
@@ -192,8 +196,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         
         if(message.getChecksumRequestForNewFile() != null) {
         	checksumForValidation.setChecksumValue(ChecksumUtils.generateChecksum(retrievedFile, 
-                    message.getChecksumRequestForNewFile().getChecksumType().value(), 
-                    message.getChecksumRequestForNewFile().getChecksumSalt()).getBytes());
+                    message.getChecksumRequestForNewFile()).getBytes());
         	checksumForValidation.setCalculationTimestamp(CalendarUtils.getNow());
         	checksumForValidation.setChecksumSpec(message.getChecksumRequestForNewFile());
             log.info("Requested checksum calculated: " + checksumForValidation);

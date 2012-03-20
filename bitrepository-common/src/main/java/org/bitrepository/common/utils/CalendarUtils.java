@@ -30,6 +30,7 @@ import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.bitrepository.common.ArgumentValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,17 +48,21 @@ public final class CalendarUtils {
     
     /**
      * Turns a date into a XMLGregorianCalendar.
-     * @param date The date.
+     * @param date The date. If the argument is null, then epoch is returned.
      * @return The XMLGregorianCalendar.
      */
     public static XMLGregorianCalendar getXmlGregorianCalendar(Date date) {
+        if(date == null) {
+            log.debug("Cannot convert the date '" + date + "'. Returning epoch instead.");
+            date = new Date(0);
+        }
+        
         GregorianCalendar gc = new GregorianCalendar();
         try {
             gc.setTime(date);
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
         } catch (Exception e) {
-            log.warn("Could not convert the date '" + date + "' into the xml format.", e);
-            return getEpoch();
+            throw new IllegalStateException("Could not convert the date '" + date + "' into the xml format.", e);
         }
     }
     
@@ -84,5 +89,17 @@ public final class CalendarUtils {
      */
     public static XMLGregorianCalendar getFromMillis(long millis) {
         return getXmlGregorianCalendar(new Date(millis));
+    }
+    
+    /**
+     * Method for converting a date from the XML calendar type 'XMLGregorianCalendar' to the default java date.
+     * 
+     * @param xmlCal The XML calendar to convert from.
+     * @return The date for the XML calendar converted into the default java date class.
+     */
+    public static Date convertFromXMLGregorianCalendar(XMLGregorianCalendar xmlCal) {
+        ArgumentValidator.checkNotNull(xmlCal, "XMLGregorianCalendar xmlCal");
+        
+        return xmlCal.toGregorianCalendar().getTime();
     }
 }

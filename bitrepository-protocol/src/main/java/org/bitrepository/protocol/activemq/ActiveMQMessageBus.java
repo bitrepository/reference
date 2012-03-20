@@ -424,6 +424,7 @@ public class ActiveMQMessageBus implements MessageBus {
             try {
                 type = jmsMessage.getStringProperty(MESSAGE_TYPE_KEY);
                 signature = jmsMessage.getStringProperty(MESSAGE_SIGNATURE_KEY);
+                log.debug("Adjoining message signature: " + signature);
                 text = ((TextMessage) jmsMessage).getText();
                 jaxbHelper.validate(new ByteArrayInputStream(text.getBytes()));
                 content = jaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),

@@ -112,31 +112,31 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
      * Method for instantiating the handlers.
      */
     private void initialiseHandlers() {
-//        this.handlers.put(IdentifyPillarsForGetFileRequest.class.getName(), 
-//                new IdentifyPillarsForGetFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
-//        this.handlers.put(GetFileRequest.class.getName(), 
-//                new GetFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
-//        this.handlers.put(IdentifyPillarsForGetFileIDsRequest.class.getName(), 
-//                new IdentifyPillarsForGetFileIDsRequestHandler(settings, messagebus, alarmDispatcher, archive));
-//        this.handlers.put(GetFileIDsRequest.class.getName(), 
-//                new GetFileIDsRequestHandler(settings, messagebus, alarmDispatcher, archive));
-//        this.handlers.put(IdentifyPillarsForGetChecksumsRequest.class.getName(), 
-//                new IdentifyPillarsForGetChecksumsRequestHandler(settings, messagebus, alarmDispatcher, archive));
-//        this.handlers.put(GetChecksumsRequest.class.getName(), 
-//                new GetChecksumsRequestHandler(settings, messagebus, alarmDispatcher, archive));
-//        
-//        this.handlers.put(IdentifyPillarsForPutFileRequest.class.getName(), 
-//                new IdentifyPillarsForPutFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
-//        this.handlers.put(PutFileRequest.class.getName(), 
-//                new PutFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
-//        this.handlers.put(IdentifyPillarsForDeleteFileRequest.class.getName(), 
-//                new IdentifyPillarsForDeleteFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+        this.handlers.put(IdentifyPillarsForGetFileRequest.class.getName(), 
+                new IdentifyPillarsForGetFileRequestHandler(settings, messagebus, alarmDispatcher, cache));
+        this.handlers.put(GetFileRequest.class.getName(), 
+                new GetFileRequestHandler(settings, messagebus, alarmDispatcher, cache));
+        this.handlers.put(IdentifyPillarsForGetFileIDsRequest.class.getName(), 
+                new IdentifyPillarsForGetFileIDsRequestHandler(settings, messagebus, alarmDispatcher, cache));
+        this.handlers.put(GetFileIDsRequest.class.getName(), 
+                new GetFileIDsRequestHandler(settings, messagebus, alarmDispatcher, cache));
+        this.handlers.put(IdentifyPillarsForGetChecksumsRequest.class.getName(), 
+                new IdentifyPillarsForGetChecksumsRequestHandler(settings, messagebus, alarmDispatcher, cache));
+        this.handlers.put(GetChecksumsRequest.class.getName(), 
+                new GetChecksumsRequestHandler(settings, messagebus, alarmDispatcher, cache));
+        
+        this.handlers.put(IdentifyPillarsForPutFileRequest.class.getName(), 
+                new IdentifyPillarsForPutFileRequestHandler(settings, messagebus, alarmDispatcher, cache));
+        this.handlers.put(PutFileRequest.class.getName(), 
+                new PutFileRequestHandler(settings, messagebus, alarmDispatcher, cache));
+        this.handlers.put(IdentifyPillarsForDeleteFileRequest.class.getName(), 
+                new IdentifyPillarsForDeleteFileRequestHandler(settings, messagebus, alarmDispatcher, cache));
         this.handlers.put(DeleteFileRequest.class.getName(), 
                 new DeleteFileRequestHandler(settings, messagebus, alarmDispatcher, cache));
-//        this.handlers.put(IdentifyPillarsForReplaceFileRequest.class.getName(), 
-//                new IdentifyPillarsForReplaceFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
-//        this.handlers.put(ReplaceFileRequest.class.getName(), 
-//                new ReplaceFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+        this.handlers.put(IdentifyPillarsForReplaceFileRequest.class.getName(), 
+                new IdentifyPillarsForReplaceFileRequestHandler(settings, messagebus, alarmDispatcher, cache));
+        this.handlers.put(ReplaceFileRequest.class.getName(), 
+                new ReplaceFileRequestHandler(settings, messagebus, alarmDispatcher, cache));
     }
     
     /**

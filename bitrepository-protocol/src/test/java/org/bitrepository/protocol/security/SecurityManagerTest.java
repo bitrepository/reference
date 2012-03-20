@@ -99,7 +99,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         
         addStep("Check signature matches the data ", "Signature and data matches");
         try {
-            securityManager.authenticateMessage(SecurityTestConstants.getTestData(), signatureString);
+            securityManager.authenticateMessage(SecurityTestConstants.getTestData(), signature);//signatureString);
         } catch (MessageAuthenticationException e) {
            Assert.fail("Failed authenticating test data!", e);
         }  
@@ -121,7 +121,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         
         addStep("Check signature matches the data", "Signature cant be matched as certificate is unknown.");
         try {
-            securityManager.authenticateMessage(SecurityTestConstants.getTestData(), signatureString);
+            securityManager.authenticateMessage(SecurityTestConstants.getTestData(), signature);//signatureString);
             Assert.fail("Authentication did not fail as expected");
         } catch (MessageAuthenticationException e) {
             log.info(e.getMessage());
@@ -148,7 +148,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         addStep("Check signature matches the data ", "Signature and data matches does not match");
         String corruptData = SecurityTestConstants.getTestData() + "foobar";
         try {
-            securityManager.authenticateMessage(corruptData, signatureString);
+            securityManager.authenticateMessage(corruptData, signature);//signatureString);
             Assert.fail("Authentication did not fail as expected!");
         } catch (MessageAuthenticationException e) {
             log.info(e.getMessage());

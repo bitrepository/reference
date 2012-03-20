@@ -77,5 +77,5 @@ public interface OperationEvent<T> {
     /**
      * @return Contains any additional information of the state of the operation
      */
-    T getState();
+   // T getState();
 }

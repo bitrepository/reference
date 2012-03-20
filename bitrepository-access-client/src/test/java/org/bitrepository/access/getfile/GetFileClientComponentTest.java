@@ -223,7 +223,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         PillarOperationEvent event = (PillarOperationEvent) testEventHandler.waitForEvent();
         Assert.assertEquals(event.getType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(event.getState(), fastPillarID);
+        Assert.assertEquals(event.getPillarID(), fastPillarID);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
     }
 

@@ -24,16 +24,23 @@
  */
 package org.bitrepository.common.database;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.apache.derby.tools.ij;
 import org.bitrepository.common.ArgumentValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DerbyDBConnector {
+/**
+ * Handles the connection to a Derby database.
+ * Currently only handles the embedded version of the Derby database. 
+ */
+public class DerbyDBConnector implements DBConnector {
     /** The pool of connections.*/
     private static Map<Thread, Connection> connectionPool
             = new WeakHashMap<Thread, Connection>();
@@ -45,14 +52,14 @@ public class DerbyDBConnector {
     /** A default value for the check timeout.*/
     private static final int validityCheckTimeout = 10000;
     
-    public static Connection getEmbeddedDBConnection(String dbUrl) throws Exception {
+    @Override
+    public Connection getEmbeddedDBConnection(String dbUrl) {
         ArgumentValidator.checkNotNullOrEmpty(dbUrl, "String dbUrl");
 
         try {
             Connection connection = connectionPool.get(Thread.currentThread());
             boolean renew = ((connection == null) 
                     || (!connection.isValid(validityCheckTimeout)));
-            
             if (renew) {  
                 Class.forName(DERBY_EMBEDDED_DRIVER);
                 connection = DriverManager.getConnection(dbUrl);
@@ -61,12 +68,26 @@ public class DerbyDBConnector {
                 log.info("Connected to database using DBurl '"
                         + dbUrl + "'  using driver '" + DERBY_EMBEDDED_DRIVER + "'");
             }
-            
             return connection;
         } catch (ClassNotFoundException e) {
-            final String message = "Can't find driver '" + DERBY_EMBEDDED_DRIVER + "'";
-            log.warn(message, e);
-            throw e;
+            throw new IllegalStateException("Can't find driver '" + DERBY_EMBEDDED_DRIVER + "'", e);
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot instantiate the connection to the database.", e);
+        }
+    }
+    
+    @Override
+    public void createDatabase(File sqlDatabaseFile) {
+        if(!sqlDatabaseFile.isFile()) {
+            throw new IllegalStateException("Could not find the file with the sql for the database at '" 
+                    + sqlDatabaseFile.getAbsolutePath() + "'.");
+        }
+        
+        // TODO Use the derby tool 'ij' to create the database.
+        try {
+            ij.main(new String[]{sqlDatabaseFile.getAbsolutePath()});
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not instantiate the database.");
         }
     }
 }

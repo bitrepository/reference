@@ -48,7 +48,9 @@ public final class ReferencePillarLauncher {
     private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
     /** The default path for the settings in the development.*/
     private static final String DEFAULT_PATH_TO_SETTINGS = "settings/xml";
-    
+    /** The default path for the settings in the development.*/
+    private static final String DEFAULT_PATH_TO_KEY_FILE = "conf/client.pem";
+
     /**
      * Private constructor. To prevent instantiation of this utility class.
      */
@@ -57,22 +59,25 @@ public final class ReferencePillarLauncher {
     /**
      * @param args <ol>
      * <li> The path to the directory containing the settings. See {@link XMLFileSettingsLoader} for details.</li>
+     * <li> The path to the private key file with the certificates for communication.</li>
      * <li> The collection ID to load the settings for.</li>
      * </ol>
      */
     public static void main(String[] args) {
-        String collectionId;
-        String pathToSettings;
-        String privateKeyFile = "foobar";
-        if(args.length >= 2) {
-            collectionId = args[0];
-            pathToSettings = args[1];
+        String collectionId = DEFAULT_COLLECTION_ID;
+        String pathToSettings = DEFAULT_PATH_TO_SETTINGS;
+        String privateKeyFile = DEFAULT_PATH_TO_KEY_FILE;
+        if(args.length >= 3) {
+            pathToSettings = args[0];
+            privateKeyFile = args[1];
+            collectionId = args[2];
+        } else if(args.length == 2) {
+            pathToSettings = args[0];
+            privateKeyFile = args[1];
+            collectionId = ".";
         } else if(args.length == 1) {
             pathToSettings = args[0];
             collectionId = ".";
-        } else {
-            collectionId = DEFAULT_COLLECTION_ID;
-            pathToSettings = DEFAULT_PATH_TO_SETTINGS;
         }
         
         // Instantiate the settings for the ChecksumPillar.

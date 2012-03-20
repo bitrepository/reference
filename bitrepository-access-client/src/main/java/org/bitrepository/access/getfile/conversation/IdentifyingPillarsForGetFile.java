@@ -70,8 +70,8 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
         identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         identifyRequest.setTo(conversation.settings.getCollectionDestination());
 
-        messageSender.sendMessage(identifyRequest);
         monitor.identifyPillarsRequestSent("Identifying pillars for getting file ");
+        messageSender.sendMessage(identifyRequest);
 
         timer.schedule(identifyTimeoutTask,
                 conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());
