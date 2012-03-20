@@ -95,7 +95,7 @@ public class ChecksumsUpdaterAndValidatorEventHandler implements EventHandler {
      */
     private void handleChecksumsComplete(ChecksumsCompletePillarEvent event) {
         informationCache.addChecksums(event.getChecksums().getChecksumDataItems(), event.getChecksumType(), 
-                event.getState());
+                event.getPillarID());
     }
     
     /**
@@ -104,7 +104,8 @@ public class ChecksumsUpdaterAndValidatorEventHandler implements EventHandler {
      */
     @SuppressWarnings("rawtypes")
     private void handleFailure(OperationEvent event) {
-        log.warn(event.getType() + " : " + event.getState() + " : " + event.getInfo());
+        //log.warn(event.getType() + " : " + event.getState() + " : " + event.getInfo());
+        log.warn(event.getType() + " : " + event.getInfo());
         performIntegrityCheck();
     }
     
@@ -114,7 +115,8 @@ public class ChecksumsUpdaterAndValidatorEventHandler implements EventHandler {
      */
     @SuppressWarnings("rawtypes")
     private void handleComplete(OperationEvent event) {
-        log.info(event.getType() + " : " + event.getState() + " : " + event.getInfo());
+        //log.info(event.getType() + " : " + event.getState() + " : " + event.getInfo());
+        log.info(event.getType() + " : " + event.getInfo());
         performIntegrityCheck();
     }
     

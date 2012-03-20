@@ -93,7 +93,7 @@ public class FileIDsUpdaterAndValidatorEventHandler implements EventHandler {
      * @param event The event for the completed pillar.
      */
     private void handleFileIDsComplete(FileIDsCompletePillarEvent event) {
-        informationCache.addFileIDs(event.getFileIDs().getFileIDsData(), event.getState()); 
+        informationCache.addFileIDs(event.getFileIDs().getFileIDsData(), event.getPillarID()); 
     }
     
     /**
@@ -102,7 +102,8 @@ public class FileIDsUpdaterAndValidatorEventHandler implements EventHandler {
      */
     @SuppressWarnings("rawtypes")
     private void handleFailure(OperationEvent event) {
-        log.warn(event.getType() + " : " + event.getState() + " : " + event.getInfo());
+        //log.warn(event.getType() + " : " + event.getState() + " : " + event.getInfo());
+        log.warn(event.getType() + " : " + event.getInfo());
         performIntegrityCheck();
     }
     
@@ -112,7 +113,8 @@ public class FileIDsUpdaterAndValidatorEventHandler implements EventHandler {
      */
     @SuppressWarnings("rawtypes")
     private void handleComplete(OperationEvent event) {
-        log.info(event.getType() + " : " + event.getState() + " : " + event.getInfo());
+        //log.info(event.getType() + " : " + event.getState() + " : " + event.getInfo());
+        log.info(event.getType() + " : " + event.getInfo());
         performIntegrityCheck();
     }
 

@@ -33,11 +33,6 @@ public class DefaultEvent extends AbstractOperationEvent<Object> {
     }
     
     @Override
-    public Object getState() {
-        return null;
-    }
-    
-    @Override
     public String additionalInfo() {
         return "";
     }

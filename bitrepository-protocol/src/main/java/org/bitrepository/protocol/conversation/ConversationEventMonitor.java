@@ -235,7 +235,7 @@ public class ConversationEventMonitor {
      * @param event Encapsulates the cause.
      */
     public void operationFailed(OperationFailedEvent event) {
-        log.warn(event.getInfo(), event.getState());
+        log.warn(event.getInfo(), event.getException());
         if (eventHandler != null) {
             eventHandler.handleEvent(event);
         }
