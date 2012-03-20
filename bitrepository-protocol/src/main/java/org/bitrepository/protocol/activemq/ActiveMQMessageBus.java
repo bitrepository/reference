@@ -103,8 +103,6 @@ public class ActiveMQMessageBus implements MessageBus {
     public static final String COLLECTION_ID_KEY = "org.bitrepository.messages.collectionid";
     /** The key for storing the message type in a string property in the message headers. */
     public static final String MESSAGE_SIGNATURE_KEY = "org.bitrepository.messages.signature";
-    /** The default acknowledge mode. */
-    public static final int ACKNOWLEDGE_MODE = Session.AUTO_ACKNOWLEDGE;
     /** Default transacted. */
     public static final boolean TRANSACTED = false;
 
@@ -120,6 +118,9 @@ public class ActiveMQMessageBus implements MessageBus {
     
     /** The session for receiving messages. */
     private final Session consumerSession;
+
+    /** The session for receiving messages. */
+    private final Session manAckConsumerSession;
 
     /**
      * Map of the consumers, mapping from a hash of "destinations and listener" to consumer.
@@ -155,8 +156,9 @@ public class ActiveMQMessageBus implements MessageBus {
             connection = connectionFactory.createConnection();
             connection.setExceptionListener(new MessageBusExceptionListener());
             
-            producerSession = connection.createSession(TRANSACTED, ACKNOWLEDGE_MODE);
-            consumerSession = connection.createSession(TRANSACTED, ACKNOWLEDGE_MODE);
+            producerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+            consumerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+            manAckConsumerSession = connection.createSession(TRANSACTED, Session.CLIENT_ACKNOWLEDGE);
             
             startListeningForMessages();
             
@@ -195,6 +197,19 @@ public class ActiveMQMessageBus implements MessageBus {
         } catch (JMSException e) {
             throw new CoordinationLayerException(
                     "Unable to add listener '" + listener + "' to destinationID '" + destinationID + "'", e);
+        }
+    }
+
+    @Override
+    public synchronized void addDurableListener(String destinationID, final MessageListener listener) {
+        log.debug("Adding durable listener '{}' to destination: '{}' on message-bus '{}'.",
+                new Object[] {listener, destinationID, configuration.getName()});
+        MessageConsumer consumer = getDurableMessageConsumer(destinationID, listener);
+        try {
+            consumer.setMessageListener(new ActiveMQMessageListener(listener));
+        } catch (JMSException e) {
+            throw new CoordinationLayerException(
+                    "Unable to add durable listener '" + listener + "' to destinationID '" + destinationID + "'", e);
         }
     }
 
