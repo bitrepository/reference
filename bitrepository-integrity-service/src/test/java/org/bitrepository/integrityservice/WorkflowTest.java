@@ -1,10 +1,15 @@
 package org.bitrepository.integrityservice;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.mocks.MockChecker;
 import org.bitrepository.integrityservice.mocks.MockCollector;
@@ -41,7 +46,7 @@ public class WorkflowTest extends ExtendedTestCase {
         addStep("Validate the interface to the workflow.", "Should contain the given variables and none of the functions should have been called.");
         Assert.assertEquals(workflow.getNextRunCount(), 0, "Did not expect any calls for NextRun yet.");
         Assert.assertEquals(workflow.getWorkflowCalled(), 0, "Did not expect any calls for trigger yet.");
-        Assert.assertEquals(workflow.timeBetweenRuns(), interval);
+        Assert.assertEquals(workflow.getTimeBetweenRuns(), interval);
         Assert.assertEquals(workflow.getName(), name);
         
         addStep("Retrieve the date for next run and then trigger it.", 
@@ -50,7 +55,6 @@ public class WorkflowTest extends ExtendedTestCase {
         workflow.trigger();
         Assert.assertEquals(workflow.getNextRunCount(), 1, "Should have called for NextRun once");
         Assert.assertEquals(workflow.getWorkflowCalled(), 1, "Should have triggered the workflow once");
-        
         
         Assert.assertTrue( nextRun != workflow.getNextRun(), "The dates should differ");
         Assert.assertTrue(nextRun.getTime() < workflow.getNextRun().getTime(), 
@@ -146,42 +150,91 @@ public class WorkflowTest extends ExtendedTestCase {
         addStep("Setup the varibles.", "No errors");
         long interval = 1L;
         String name = "CollectObsoleteChecksumsWorkflowTest";
-        long obsoleteInterval = 1000000000L;
+        String checksum = "CHECKSUM";
+        String fileid1 = "FILE-1";
+        String pillarId = "PillarId";
+        long obsoleteInterval = 3600000L; // set for one hour
         MockCollector collector = new MockCollector();
         IntegrityModel cache = new TestIntegrityModel();
-        MockIntegrityModel model = new MockIntegrityModel(cache);
+        MockIntegrityModel mockCache = new MockIntegrityModel(cache);
         CollectObsoleteChecksumsWorkflow workflow = new CollectObsoleteChecksumsWorkflow(interval, name, 
-                obsoleteInterval, new ChecksumSpecTYPE(), collector, model, null);
+                obsoleteInterval, new ChecksumSpecTYPE(), collector, mockCache, null);
         
         addStep("Validate the initial position", "No calls for either collector or cache");
-        // TODO
-        addStep("Trigger the workflow", "Should call the cache.");
-        // TODO
+        Assert.assertEquals(collector.getNumberOfCallsForGetChecksums(), 0);
+        Assert.assertEquals(collector.getNumberOfCallsForGetFileIDs(), 0);
+        Assert.assertEquals(mockCache.getCallsForAddChecksums(), 0);
+        Assert.assertEquals(mockCache.getCallsForAddFileIDs(), 0);
+        Assert.assertEquals(mockCache.getCallsForGetAllFileIDs(), 0);
+        Assert.assertEquals(mockCache.getCallsForGetFileInfos(), 0);
+        Assert.assertEquals(mockCache.getCallsForGetNumberOfChecksumErrors(), 0);
+        Assert.assertEquals(mockCache.getCallsForGetNumberOfFiles(), 0);
+        Assert.assertEquals(mockCache.getCallsForGetNumberOfMissingFiles(), 0);
+        Assert.assertEquals(mockCache.getCallsForSetChecksumAgreement(), 0);
+        Assert.assertEquals(mockCache.getCallsForSetChecksumError(), 0);
+        Assert.assertEquals(mockCache.getCallsForSetFileMissing(), 0);
+        
+        addStep("Trigger the workflow", "Should call the cache, but not the collector, since no data exists.");
+        workflow.trigger();
+        Assert.assertEquals(mockCache.getCallsForGetAllFileIDs(), 1);
+        Assert.assertEquals(mockCache.getCallsForGetFileInfos(), 0);
+        Assert.assertEquals(collector.getNumberOfCallsForGetChecksums(), 0);
+        Assert.assertEquals(collector.getNumberOfCallsForGetFileIDs(), 0);
+        
         addStep("Add one file with a new checksum to the cache. Then trigger the workflow.", 
                 "Should only call the cache.");
-        // TODO
+        
+        ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
+        csData.setCalculationTimestamp(CalendarUtils.getNow());
+        csData.setChecksumValue(checksum.getBytes());
+        csData.setFileID(fileid1);
+        List<ChecksumDataForChecksumSpecTYPE> csDataList = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
+        csDataList.add(csData);
+        
+        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
+        csType.setChecksumType(ChecksumType.MD5);
+        
+        cache.addChecksums(csDataList, csType, pillarId);
+        
+        workflow.trigger();
+        
+        Assert.assertEquals(mockCache.getCallsForGetAllFileIDs(), 2, "One at this trigger and one for the previous trigger");
+        Assert.assertEquals(mockCache.getCallsForGetFileInfos(), 1);
+        Assert.assertEquals(collector.getNumberOfCallsForGetChecksums(), 0);
+        Assert.assertEquals(collector.getNumberOfCallsForGetFileIDs(), 0);
+        
         addStep("Add another file, but with an old checksum to the cache. Then trigger the workflow.",
                 "Should call both the cache and the collector.");
-        // TODO
+        csData = new ChecksumDataForChecksumSpecTYPE();
+        csData.setCalculationTimestamp(CalendarUtils.getEpoch());
+        csData.setChecksumValue(checksum.getBytes());
+        csData.setFileID(fileid1);
+        csDataList = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
+        csDataList.add(csData);
+        
+        cache.addChecksums(csDataList, csType, pillarId);
+        workflow.trigger();
+        
+        Assert.assertEquals(mockCache.getCallsForGetAllFileIDs(), 3, "One for each trigger");
+        Assert.assertEquals(mockCache.getCallsForGetFileInfos(), 2);
+        Assert.assertEquals(collector.getNumberOfCallsForGetChecksums(), 1);
+        Assert.assertEquals(collector.getNumberOfCallsForGetFileIDs(), 0);
     }    
 
     @Test(groups = "specificationonly")
     void testTriggerOnOldData() throws Exception {
         addDescription("Test that triggering on old data works");
+        // TODO old stuff from Kåre. Might be a usecase.
         addStep("Set up the system", "No errors");
-        // TODO
         addStep("Test that the trigger triggers when data is old", "Trigger responds with true");
-        // TODO
         addStep("Test that event is to collect information", "Trigger calls information collection methods");
-        // TODO
     }
 
     @Test(groups = "specificationonly")
     void testTriggerOfRandomSet() throws Exception {
         addDescription("Test that a trigger that should generate collection on random files does so.");
+        // TODO old stuff from Kåre. Might be a usecase.
         addStep("Set up a trigger that generates collection of checksums on three random files", "No errors");
-        // TODO
         addStep("Pull the trigger 10 times", "Trigger generates collection event for three random files");
-        // TODO
     }
 }
