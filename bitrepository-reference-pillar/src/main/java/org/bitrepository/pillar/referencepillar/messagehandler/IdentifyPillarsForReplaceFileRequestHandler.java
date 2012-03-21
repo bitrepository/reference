@@ -24,6 +24,8 @@
  */
 package org.bitrepository.pillar.referencepillar.messagehandler;
 
+import java.math.BigInteger;
+
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
@@ -41,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * Class for handling the identification of this pillar for the purpose of performing the ReplaceFile operation.
  */
 public class IdentifyPillarsForReplaceFileRequestHandler 
-        extends PillarMessageHandler<IdentifyPillarsForReplaceFileRequest> {
+        extends ReferencePillarMessageHandler<IdentifyPillarsForReplaceFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -64,6 +66,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
         try {
             validateBitrepositoryCollectionId(message.getCollectionID());
             checkThatRequestedFileIsAvailable(message);
+            checkSpaceForStoringNewFile(message);
             respondSuccessfulIdentification(message);
         } catch (IllegalArgumentException e) {
             alarmDispatcher.handleIllegalArgumentException(e);
@@ -85,6 +88,31 @@ public class IdentifyPillarsForReplaceFileRequestHandler
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("Could not find the requested file to delete.");
+            throw new IdentifyPillarsException(irInfo);
+        }
+    }
+    
+    /**
+     * Validates that enough space exists is left in the archive.
+     * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
+     * @param message The request with the size of the file.
+     */
+    private void checkSpaceForStoringNewFile(IdentifyPillarsForReplaceFileRequest message) {
+        BigInteger fileSize = message.getFileSize();
+        if(fileSize == null) {
+            log.debug("No file size given in the identification request. "
+                    + "Validating that the archive has any space left.");
+            fileSize = BigInteger.ZERO;
+        }
+        
+        long useableSizeLeft = archive.sizeLeftInArchive() 
+                - settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
+        if(useableSizeLeft < fileSize.longValue()) {
+            ResponseInfo irInfo = new ResponseInfo();
+            irInfo.setResponseCode(ResponseCode.FAILURE);
+            irInfo.setResponseText("Not enough space left in this pillar. Requires '" 
+                    + fileSize.longValue() + "' but has only '" + useableSizeLeft + "'");
+            
             throw new IdentifyPillarsException(irInfo);
         }
     }

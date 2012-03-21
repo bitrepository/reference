@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * Class for handling the identification of this pillar for the purpose of performing the GetChecksums operation.
  */
 public class IdentifyPillarsForGetChecksumsRequestHandler 
-        extends PillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> {
+        extends ReferencePillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     

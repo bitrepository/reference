@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * All other messages than requests are considered garbage.
  * Every message (even garbage) is put into the audit trails.
  */
-public class PillarMediator extends AbstractMessageListener {
+public class ReferencePillarMediator extends AbstractMessageListener {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -78,7 +78,7 @@ public class PillarMediator extends AbstractMessageListener {
     // THE MESSAGE HANDLERS!
     /** The map between the messagenames and their respective handlers.*/
     @SuppressWarnings("rawtypes")
-    private Map<String, PillarMessageHandler> handlers = new HashMap<String, PillarMessageHandler>();
+    private Map<String, ReferencePillarMessageHandler> handlers = new HashMap<String, ReferencePillarMessageHandler>();
 
     /**
      * Constructor.
@@ -89,7 +89,7 @@ public class PillarMediator extends AbstractMessageListener {
      * @param refArchive The archive for the reference pillar.
      * @param messageFactory The message factory.
      */
-    public PillarMediator(MessageBus messagebus, Settings settings, ReferenceArchive refArchive) {
+    public ReferencePillarMediator(MessageBus messagebus, Settings settings, ReferenceArchive refArchive) {
         ArgumentValidator.checkNotNull(messagebus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(refArchive, "ReferenceArchive refArchive");
@@ -170,7 +170,7 @@ public class PillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        PillarMessageHandler<DeleteFileRequest> handler = handlers.get(message.getClass().getName());
+        ReferencePillarMessageHandler<DeleteFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -184,7 +184,7 @@ public class PillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        PillarMessageHandler<GetAuditTrailsRequest> handler = handlers.get(message.getClass().getName());
+        ReferencePillarMessageHandler<GetAuditTrailsRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -198,7 +198,7 @@ public class PillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        PillarMessageHandler<GetChecksumsRequest> handler = handlers.get(message.getClass().getName());
+        ReferencePillarMessageHandler<GetChecksumsRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -212,7 +212,7 @@ public class PillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        PillarMessageHandler<GetFileIDsRequest> handler = handlers.get(message.getClass().getName());
+        ReferencePillarMessageHandler<GetFileIDsRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -226,7 +226,7 @@ public class PillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        PillarMessageHandler<GetFileRequest> handler = handlers.get(message.getClass().getName());
+        ReferencePillarMessageHandler<GetFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -240,7 +240,7 @@ public class PillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        PillarMessageHandler<GetStatusRequest> handler = handlers.get(message.getClass().getName());
+        ReferencePillarMessageHandler<GetStatusRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -254,7 +254,7 @@ public class PillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        PillarMessageHandler<IdentifyPillarsForDeleteFileRequest> handler = handlers.get(message.getClass().getName());
+        ReferencePillarMessageHandler<IdentifyPillarsForDeleteFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -268,7 +268,7 @@ public class PillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        PillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> handler 
+        ReferencePillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> handler 
                 = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
@@ -283,7 +283,7 @@ public class PillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        PillarMessageHandler<IdentifyPillarsForGetFileIDsRequest> handler = handlers.get(message.getClass().getName());
+        ReferencePillarMessageHandler<IdentifyPillarsForGetFileIDsRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -297,7 +297,7 @@ public class PillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message);
 
-        PillarMessageHandler<IdentifyPillarsForGetFileRequest> handler = handlers.get(message.getClass().getName());
+        ReferencePillarMessageHandler<IdentifyPillarsForGetFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -311,7 +311,7 @@ public class PillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        PillarMessageHandler<IdentifyPillarsForPutFileRequest> handler = handlers.get(message.getClass().getName());
+        ReferencePillarMessageHandler<IdentifyPillarsForPutFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -325,7 +325,7 @@ public class PillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        PillarMessageHandler<IdentifyPillarsForReplaceFileRequest> handler = handlers.get(message.getClass().getName());
+        ReferencePillarMessageHandler<IdentifyPillarsForReplaceFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -339,7 +339,7 @@ public class PillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        PillarMessageHandler<PutFileRequest> handler = handlers.get(message.getClass().getName());
+        ReferencePillarMessageHandler<PutFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -353,7 +353,7 @@ public class PillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        PillarMessageHandler<ReplaceFileRequest> handler = handlers.get(message.getClass().getName());
+        ReferencePillarMessageHandler<ReplaceFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -364,10 +364,8 @@ public class PillarMediator extends AbstractMessageListener {
     /**
     * Closes the mediator by removing all the message handlers.
     */
-    @SuppressWarnings("rawtypes")
     public void close() {
         handlers.clear();
-        handlers = new HashMap<String, PillarMessageHandler>(); 
         // removes to both the general topic and the local queue.
         messagebus.removeListener(settings.getCollectionDestination(), this);
         messagebus.removeListener(settings.getReferenceSettings().getPillarSettings().getReceiverDestination(), this);

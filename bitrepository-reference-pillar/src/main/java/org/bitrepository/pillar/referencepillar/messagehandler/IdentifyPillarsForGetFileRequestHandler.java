@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class for handling the identification of this pillar for the purpose of performing the GetFile operation.
  */
-public class IdentifyPillarsForGetFileRequestHandler extends PillarMessageHandler<IdentifyPillarsForGetFileRequest> {
+public class IdentifyPillarsForGetFileRequestHandler extends ReferencePillarMessageHandler<IdentifyPillarsForGetFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 

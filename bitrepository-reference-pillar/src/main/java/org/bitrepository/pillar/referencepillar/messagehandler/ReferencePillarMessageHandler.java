@@ -41,7 +41,7 @@ import org.bitrepository.protocol.utils.ChecksumUtils;
 /**
  * Abstract level for message handling. 
  */
-public abstract class PillarMessageHandler<T> {
+public abstract class ReferencePillarMessageHandler<T> {
 
     /** The constant for the VERSION of the messages.*/
     protected static final BigInteger VERSION = BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION);
@@ -72,7 +72,7 @@ public abstract class PillarMessageHandler<T> {
      * @param alarmDispatcher The dispatcher of alarms.
      * @param referenceArchive The archive for the data.
      */
-    protected PillarMessageHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher, 
+    protected ReferencePillarMessageHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher, 
             ReferenceArchive referenceArchive) {
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
