@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityservice;
+package org.bitrepository.integrityservice.collector;
 
 import java.net.URL;
 import java.util.Arrays;
