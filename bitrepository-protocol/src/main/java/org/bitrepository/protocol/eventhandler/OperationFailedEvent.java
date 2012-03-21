@@ -29,6 +29,8 @@ package org.bitrepository.protocol.eventhandler;
  * Indicates and operation has failed to complete
  */
 public class OperationFailedEvent extends AbstractOperationEvent<Exception> {
+    /** correlation id of the operation */
+    private final String ID;
     /** @see #getInfo() */
     private final String info;
     /** @see #getType() */
@@ -41,9 +43,10 @@ public class OperationFailedEvent extends AbstractOperationEvent<Exception> {
      * @param info
      * @param exception
      */
-    public OperationFailedEvent(String info, Exception exception) {
+    public OperationFailedEvent(String info, String conversationID, Exception exception) {
         super(type, info);
         this.info = info;
+        this.ID = conversationID;
         this.exception = exception;
     }
 
@@ -51,9 +54,10 @@ public class OperationFailedEvent extends AbstractOperationEvent<Exception> {
      * Plain info constructor.
      * @param info Message describing the failure.
      */
-    public OperationFailedEvent(String info) {
+    public OperationFailedEvent(String info, String conversationID) {
         super(type, info);
         this.info = info;
+        this.ID = conversationID;
         this.exception = null;
     }
 
@@ -81,4 +85,10 @@ public class OperationFailedEvent extends AbstractOperationEvent<Exception> {
             return "";
         }
     }
+    
+    @Override 
+    public String getID() {
+        return ID;
+    }
+    
 }

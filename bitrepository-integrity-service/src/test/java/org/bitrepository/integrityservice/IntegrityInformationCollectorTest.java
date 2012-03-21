@@ -1,4 +1,4 @@
-package org.bitrepository.integrityclient.collection;
+package org.bitrepository.integrityservice;
 
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;

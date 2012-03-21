@@ -50,8 +50,16 @@ public abstract class AbstractOperationEvent<T> implements OperationEvent<T> {
 
     @Override 
     public final String toString() {
-        return getType() + " event: " + additionalInfo() + getInfo();
+        return getType() + " event: " + "[ID: " + getID() + "] " + getInfo() + additionalInfo();
     }
     
+    /**
+     * Deliver additional information in a string form. 
+     */
     public abstract String additionalInfo();
+    
+    /**
+     * Deliver the correlation ID of the event. 
+     */
+    public abstract String getID();
 }

@@ -139,7 +139,8 @@ public class IdentifyPillarsForDeleteFile extends DeleteFileState {
         @Override
         public void run() {
             conversation.failConversation(new OperationFailedEvent(
-                    "Timeout for the identification of the pillars for the DeleteFile operation."));
+                    "Timeout for the identification of the pillars for the DeleteFile operation.",
+                    conversation.getConversationID()));
         }
     }
     
