@@ -219,7 +219,7 @@ public class Reposervice {
     @Path("getChecksums")
     @Produces("text/plain")
     public String getChecksums(
-    		@QueryParam("fileIDs") String fileID,
+    		@QueryParam("fileID") String fileID,
     		@QueryParam("checksumType") String checksumType,
     		@QueryParam("salt") String salt) {
         try {

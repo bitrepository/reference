@@ -33,7 +33,7 @@ public class GetChecksumsEventHandler implements EventHandler {
 		case PROGRESS:
 		    break;
 		case COMPONENT_COMPLETE:
-		    results.addResultsFromPillar((String) event.getState(), 
+		    results.addResultsFromPillar(((ChecksumsCompletePillarEvent) event).getPillarID(), 
 		            ((ChecksumsCompletePillarEvent) event).getChecksums());
 		    break;
 		case COMPLETE:
