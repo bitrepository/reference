@@ -56,7 +56,8 @@ import org.testng.annotations.Test;
  */
 public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
     
-    @Test(groups = {"regressiontest"})
+//    @Test(groups = {"regressiontest"})
+    @Test(groups = {"integrationtest"})
     public void testPillarVsClients() throws Exception {
         addDescription("Tests the put functionality of the reference pillar.");
         addStep("Set up constants and variables.", "Should not fail here!");
