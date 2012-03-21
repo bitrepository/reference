@@ -39,8 +39,8 @@ public class DeleteFileCompletePillarEvent extends PillarOperationEvent {
      * @param pillarID The pillar which generated the result
      * @param info Additional information.
      */
-    public DeleteFileCompletePillarEvent(ChecksumDataForFileTYPE result, String pillarID, String info) {
-        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID);
+    public DeleteFileCompletePillarEvent(ChecksumDataForFileTYPE result, String pillarID, String info, String conversationID) {
+        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID, conversationID);
         this.result = result;
     }
 

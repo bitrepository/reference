@@ -54,9 +54,7 @@ public class RestIntegrityService {
 		sb.append("<th width=\"100\">PillarID</th>\n");
 		sb.append("<th width=\"100\">Total number of files</th>\n");
 		sb.append("<th width=\"100\">Number of missing files</th>\n");
-		sb.append("<th width=\"100\">Last file list retrieval</th>\n");
-		sb.append("<th width=\"100\">Number of checksum errors</th>\n");
-		sb.append("<th>Last checksum retrieval</th>\n");
+		sb.append("<th>Number of checksum errors</th>\n");
 		sb.append("</tr>\n");
 		sb.append("</thead>\n");
 		sb.append("<tbody>\n");
@@ -66,9 +64,7 @@ public class RestIntegrityService {
 			sb.append("<td>" + pillar + " </td>\n");
 			sb.append("<td>" + service.getNumberOfFiles(pillar) + " </td>\n");
 			sb.append("<td>" + service.getNumberOfMissingFiles(pillar) + " </td>\n");
-			sb.append("<td>" + service.getDateForLastFileIDUpdate(pillar) + " </td>\n");
 			sb.append("<td>" + service.getNumberOfChecksumErrors(pillar) + " </td>\n");
-			sb.append("<td>" + service.getDateForLastChecksumUpdate(pillar) + " </td>\n");
 			sb.append("</tr>\n");
 		}
 		sb.append("</tbody>\n");

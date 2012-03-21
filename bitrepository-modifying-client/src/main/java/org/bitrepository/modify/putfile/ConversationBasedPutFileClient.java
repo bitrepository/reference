@@ -91,7 +91,7 @@ public class ConversationBasedPutFileClient implements PutFileClient {
             String msg = "Couldn't perform put for '" + fileId + "' at '" + url + "' due to the following error: '"
                     + e.getMessage() + "'.";
             log.error(msg, e);
-            eventHandler.handleEvent(new DefaultEvent(OperationEventType.FAILED, msg));
+            eventHandler.handleEvent(new DefaultEvent(OperationEventType.FAILED, msg, "Unknown"));
         }
     }
     

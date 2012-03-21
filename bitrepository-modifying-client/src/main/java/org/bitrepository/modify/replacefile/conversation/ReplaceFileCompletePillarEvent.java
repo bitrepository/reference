@@ -43,8 +43,8 @@ public class ReplaceFileCompletePillarEvent extends PillarOperationEvent {
      * @param info Additional information.
      */
     public ReplaceFileCompletePillarEvent(ChecksumDataForFileTYPE deletedFile, ChecksumDataForFileTYPE newFile, 
-            String pillarID, String info) {
-        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID);
+            String pillarID, String info, String conversationID) {
+        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID, conversationID);
         this.newFileChecksum = newFile;
         this.deletedFileChecksum = deletedFile;
     }

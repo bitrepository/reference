@@ -25,7 +25,6 @@
 package org.bitrepository.integrityservice.web;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.common.settings.Settings;
@@ -57,26 +56,6 @@ public class IntegrityServiceWebInterface implements IntegrityService {
      */
     public List<String> getPillarList() {
         return settings.getCollectionSettings().getClientSettings().getPillarIDs();    	
-    }
-    
-    /**
-     * TODO REMOVE!
-     * @param pillarID The pillar which date for last file ids update should be retrieved. 
-     * @return Epoch! (January 1, 1970)
-     */
-    @Deprecated
-    public Date getDateForLastFileIDUpdate(String pillarID) {
-        return new Date(0);
-    }
-    
-    /**
-     * TODO REMOVE!
-     * @param pillarID The pillar which date for last checksum update should be retrieved. 
-     * @return Epoch! (January 1, 1970)
-     */
-    @Deprecated
-    public Date getDateForLastChecksumUpdate(String pillarID) {
-        return new Date(0);
     }
     
     /**
