@@ -113,7 +113,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         System.out.println("numberOfMissingFiles: " + numberOfMissingFiles);
     }
     
-    @Test(groups = {"databasetest"})
+    @Test(groups = {"databasetest", "integrationtest"})
     public void integrityCheckTest() throws Exception {
         addDescription("Testing whether the integrity check can interact with the database cache.");
         addStep("Setup variables and constants.", "Should not be a problem.");
@@ -173,7 +173,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId2), 1, "They should disagree upon one.");
     }
     
-    @Test(groups = {"databasetest"})
+    @Test(groups = {"databasetest", "integrationtest"})
     public void integrityCheckForChecksumTest() throws Exception {
         addDescription("Testing whether the integrity check can perform different checksum votes, "
                 + "select a winner and find a draw.");

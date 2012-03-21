@@ -58,9 +58,7 @@ public class TestIntegrityModel implements IntegrityModel {
     /**
      * Constructor.
      */
-    public TestIntegrityModel() {
-        log.info("Instantiating " + this.getClass().getSimpleName());
-    }
+    public TestIntegrityModel() {}
     
     @Override
     public void addFileIDs(FileIDsData data, String pillarId) {
