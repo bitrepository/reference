@@ -30,6 +30,8 @@ package org.bitrepository.protocol.eventhandler;
 public class PillarOperationEvent extends AbstractOperationEvent<String> {
     /** @see #getState() */
     private final String pillarID;
+    /** correlation id of the operation */
+    private final String ID;
 
     /**
      * Constructor with exception information
@@ -37,9 +39,10 @@ public class PillarOperationEvent extends AbstractOperationEvent<String> {
      * @param info Free text description of the event
      * @param pillarID The ID of the pillar this event relates to
      */
-    public PillarOperationEvent(OperationEventType type, String info, String pillarID) {
+    public PillarOperationEvent(OperationEventType type, String info, String pillarID, String conversationID) {
         super(type, info);
         this.pillarID = pillarID;
+        this.ID = conversationID;
     }
 
     /**
@@ -54,4 +57,8 @@ public class PillarOperationEvent extends AbstractOperationEvent<String> {
         return " for pillar " + pillarID + " ";
     }
 
+    @Override 
+    public String getID() {
+        return ID;
+    }
 }

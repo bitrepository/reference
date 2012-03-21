@@ -163,7 +163,8 @@ public class IdentifyPillarsForPutFile extends PutFileState {
         @Override
         public void run() {
         	conversation.failConversation(
-        	        new OperationFailedEvent("Timeout for the identification of the pillars for the PutFile operation."));
+        	        new OperationFailedEvent("Timeout for the identification of the pillars for the PutFile operation.",
+        	                conversation.getConversationID()));
         }
     }
     

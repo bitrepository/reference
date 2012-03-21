@@ -60,7 +60,7 @@ public class ConversationEventMonitor {
         log.debug(info);
         if (eventHandler != null) {
             eventHandler.handleEvent(new DefaultEvent(
-                    OperationEventType.IDENTIFY_REQUEST_SENT, info));
+                    OperationEventType.IDENTIFY_REQUEST_SENT, info, conversation.getConversationID()));
         }
     }
 
@@ -73,7 +73,7 @@ public class ConversationEventMonitor {
         log.debug(info);
         if (eventHandler != null) {
             eventHandler.handleEvent(new PillarOperationEvent(
-                    OperationEventType.COMPONENT_IDENTIFIED, info, pillarID));
+                    OperationEventType.COMPONENT_IDENTIFIED, info, pillarID, conversation.getConversationID()));
         }
     }
     
@@ -84,7 +84,8 @@ public class ConversationEventMonitor {
     public void identifyPillarTimeout(String info) {
         log.debug(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent( OperationEventType.IDENTIFY_TIMEOUT, info));
+            eventHandler.handleEvent(new DefaultEvent( OperationEventType.IDENTIFY_TIMEOUT, info, 
+                    conversation.getConversationID()));
         }
     }
 
@@ -97,7 +98,7 @@ public class ConversationEventMonitor {
         log.debug(info);
         if (eventHandler != null) {
             eventHandler.handleEvent(new PillarOperationEvent(
-                    OperationEventType.IDENTIFICATION_COMPLETE, info, pillarID));
+                    OperationEventType.IDENTIFICATION_COMPLETE, info, pillarID, conversation.getConversationID()));
         }
     }
 
@@ -112,7 +113,7 @@ public class ConversationEventMonitor {
             eventHandler.handleEvent(
                     new PillarOperationEvent(OperationEvent.OperationEventType.REQUEST_SENT, 
                             pillarID, 
-                            pillarID));
+                            pillarID, conversation.getConversationID()));
         }
     }
 
@@ -177,7 +178,7 @@ public class ConversationEventMonitor {
     public void warning(String info) {
         log.warn(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(OperationEventType.WARNING, info));
+            eventHandler.handleEvent(new DefaultEvent(OperationEventType.WARNING, info, conversation.getConversationID()));
         }
     }
 
@@ -192,7 +193,8 @@ public class ConversationEventMonitor {
         }
         log.warn(info, e);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(OperationEventType.WARNING, info + ", " + e.getMessage()));
+            eventHandler.handleEvent(new DefaultEvent(OperationEventType.WARNING, info + ", " + e.getMessage(), 
+                    conversation.getConversationID()));
         }
     }
     
@@ -211,7 +213,8 @@ public class ConversationEventMonitor {
     public void pillarFailed(String info) {
         log.warn(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(OperationEventType.COMPONENT_FAILED, info));
+            eventHandler.handleEvent(new DefaultEvent(OperationEventType.COMPONENT_FAILED, info, 
+                    conversation.getConversationID()));
         }    
     }
     
@@ -226,7 +229,8 @@ public class ConversationEventMonitor {
         }
         log.warn(info, e);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(OperationEventType.COMPONENT_FAILED, info + ", " + e.getMessage()));
+            eventHandler.handleEvent(new DefaultEvent(OperationEventType.COMPONENT_FAILED, info + ", " + e.getMessage(), 
+                    conversation.getConversationID()));
         }
     }
 

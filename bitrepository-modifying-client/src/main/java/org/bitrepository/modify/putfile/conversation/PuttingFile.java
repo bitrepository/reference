@@ -132,7 +132,8 @@ public class PuttingFile extends PutFileState {
     public void onMessage(PutFileProgressResponse response) {
         monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.PROGRESS, 
                 "Received PutFileProgressResponse from pillar " + response.getPillarID() + ": " + 
-                        response.getResponseInfo().getResponseText()));
+                        response.getResponseInfo().getResponseText(),
+                        conversation.getConversationID()));
     }
 
     @Override
@@ -146,7 +147,8 @@ public class PuttingFile extends PutFileState {
         if(isResponseSuccess(response.getResponseInfo())) {
             monitor.pillarComplete(new PutFileCompletePillarEvent(response.getChecksumDataForNewFile(),
                     response.getPillarID(),
-                    "Received checksum result from " + response.getPillarID()));
+                    "Received checksum result from " + response.getPillarID(),
+                    conversation.getConversationID()));
         } else {
             monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
         } 
@@ -165,7 +167,8 @@ public class PuttingFile extends PutFileState {
             timerTask.cancel();
         }
         monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE,
-                "Finished put on all the pillars."));
+                "Finished put on all the pillars.",
+                conversation.getConversationID()));
 
         PutFileFinished finishState = new PutFileFinished(conversation);
         conversation.conversationState = finishState;
