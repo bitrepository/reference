@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  * If anything goes wrong a FinalResponse is send telling about the failure.
  */
-public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileRequest> {
+public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<ReplaceFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
@@ -169,7 +169,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
             alarmDispatcher.sendInvalidChecksumAlarm(message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.FAILURE);
+            responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
             responseInfo.setResponseText(errMsg);
             throw new InvalidMessageException(responseInfo);
         }
@@ -218,8 +218,11 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
             if(!checksum.equals(requestedChecksum)) {
                 log.error("Expected checksums '" + requestedChecksum + "' but the checksum was '" 
                         + checksum + "' for the file '" + fileForValidation.getAbsolutePath() + "'");
-                throw new IllegalStateException("Wrong checksum! Expected: [" + requestedChecksum 
+                ResponseInfo ri = new ResponseInfo();
+                ri.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
+                ri.setResponseText("Wrong checksum! Expected: [" + requestedChecksum 
                         + "], but calculated: [" + checksum + "]");
+                throw new InvalidMessageException(ri);
             }
         } else {
             // TODO is such a checksum required?

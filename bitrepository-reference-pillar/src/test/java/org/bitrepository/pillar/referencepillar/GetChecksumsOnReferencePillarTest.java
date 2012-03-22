@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.referencepillar.getchecksums;
+package org.bitrepository.pillar.referencepillar;
 
 import java.io.File;
 import java.util.Date;
@@ -38,8 +38,10 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReq
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.PillarComponentFactory;
+import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
+import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -47,18 +49,37 @@ import org.testng.annotations.Test;
  * Tests the PutFile functionality on the ReferencePillar.
  */
 public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest {
-    PillarGetChecksumsMessageFactory msgFactory;
+    GetChecksumsMessageFactory msgFactory;
+    
+    ReferenceArchive archive;
+    ReferencePillarMediator mediator;
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetChecksumsTests() throws Exception {
-        msgFactory = new PillarGetChecksumsMessageFactory(settings);
+        msgFactory = new GetChecksumsMessageFactory(settings);
         File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
         if(dir.exists()) {
             FileUtils.delete(dir);
         }
+        
+        addStep("Initialize the pillar.", "Should not be a problem.");
+        archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
+        mediator = new ReferencePillarMediator(messageBus, settings, archive);
     }
     
-    @Test( groups = {"pillartest"})
+    @AfterMethod (alwaysRun=true) 
+    public void closeArchive() {
+        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
+        if(dir.exists()) {
+            FileUtils.delete(dir);
+        }
+        
+        if(mediator != null) {
+            mediator.close();
+        }
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
     public void pillarGetChecksumsTestSuccessCase() throws Exception {
         addDescription("Tests the GetChecksums functionality of the reference pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -67,13 +88,11 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
+        String auditTrail = null;
         
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
         csSpec.setChecksumSalt(null);
         csSpec.setChecksumType(ChecksumType.MD5);
-        
-        addStep("Initialize the pillar.", "Should not be a problem.");
-        PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
         
         addStep("Move the test file into the file directory.", "Should be all-right");
         File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
@@ -87,8 +106,8 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetChecksumsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetChecksumsRequest(
-                csSpec, clientDestinationId, fileids);
-        messageBus.sendMessage(identifyRequest);
+                auditTrail, csSpec, fileids, clientDestinationId);
+        mediator.onMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -96,23 +115,24 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
                 IdentifyPillarsForGetChecksumsResponse.class);
         Assert.assertEquals(receivedIdentifyResponse, 
                 msgFactory.createIdentifyPillarsForGetChecksumsResponse(
-                        csSpec,
-                        identifyRequest.getCorrelationID(),
-                        fileids, 
-                        receivedIdentifyResponse.getReplyTo(),
-                        pillarId,
-                        receivedIdentifyResponse.getTimeToDeliver(),
-                        receivedIdentifyResponse.getTo(),
-                        receivedIdentifyResponse.getResponseInfo()));
+                      csSpec,
+                      identifyRequest.getCorrelationID(),
+                      fileids, 
+                      receivedIdentifyResponse.getPillarChecksumSpec(),
+                      pillarId, 
+                      receivedIdentifyResponse.getReplyTo(),
+                      receivedIdentifyResponse.getResponseInfo(), 
+                      receivedIdentifyResponse.getTimeToDeliver(),
+                      receivedIdentifyResponse.getTo()));
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
         
         addStep("Create and send the actual GetChecksums message to the pillar.", 
                 "Should be received and handled by the pillar.");
-        GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
+        GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(auditTrail,
                 csSpec, receivedIdentifyResponse.getCorrelationID(), fileids, pillarId, 
                 clientDestinationId, CS_DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
-        messageBus.sendMessage(getChecksumsRequest);
+        mediator.onMessage(getChecksumsRequest);
         
         addStep("Retrieve the ProgressResponse for the GetChecksums request", 
                 "The GetChecksums progress response should be sent by the pillar.");
@@ -137,7 +157,6 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
                 msgFactory.createGetChecksumsFinalResponse(
                         csSpec,
                         identifyRequest.getCorrelationID(), 
-                        fileids,
                         pillarId, 
                         finalResponse.getReplyTo(), 
                         finalResponse.getResponseInfo(), 
@@ -145,7 +164,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
                         finalResponse.getTo()));
     }
     
-    @Test( groups = {"pillartest"})
+    @Test( groups = {"regressiontest", "pillartest"})
     public void pillarGetChecksumsTestFailedNoSuchFile() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetChecksums requests for a file, which it does not have.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -153,19 +172,17 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
-
+        String auditTrail = null;
+        
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
         csSpec.setChecksumSalt(null);
         csSpec.setChecksumType(ChecksumType.MD5);
         
-        addStep("Initialize the pillar.", "Should not be a problem.");
-        PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
-
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetChecksumsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetChecksumsRequest(
-                csSpec, clientDestinationId, fileids);
-        messageBus.sendMessage(identifyRequest);
+                auditTrail, csSpec, fileids, clientDestinationId);
+        mediator.onMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -176,16 +193,17 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
                         csSpec,
                         identifyRequest.getCorrelationID(),
                         fileids, 
+                        receivedIdentifyResponse.getPillarChecksumSpec(),
+                        pillarId, 
                         receivedIdentifyResponse.getReplyTo(),
-                        pillarId,
+                        receivedIdentifyResponse.getResponseInfo(), 
                         receivedIdentifyResponse.getTimeToDeliver(),
-                        receivedIdentifyResponse.getTo(),
-                        receivedIdentifyResponse.getResponseInfo()));
+                        receivedIdentifyResponse.getTo()));
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.FILE_NOT_FOUND_FAILURE);        
     }
     
-    @Test(groups = {"pillartest"})
+    @Test( groups = {"regressiontest", "pillartest"})
     public void pillarGetChecksumsTestFailedNoSuchFileInOperation() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetChecksums requests for a file, " +
                 "which it does not have. But this time at the GetChecksums message.");
@@ -195,20 +213,18 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
+        String auditTrail = null;
         
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
         csSpec.setChecksumSalt(null);
         csSpec.setChecksumType(ChecksumType.MD5);
         
-        addStep("Initialize the pillar.", "Should not be a problem.");
-        PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
-
         addStep("Create and send the actual GetChecksums message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
-                csSpec, msgFactory.getNewCorrelationID(), fileids, pillarId, 
+                auditTrail, csSpec, msgFactory.getNewCorrelationID(), fileids, pillarId, 
                 clientDestinationId, CS_DELIVERY_ADDRESS, pillarDestinationId);
-        messageBus.sendMessage(getChecksumsRequest);
+        mediator.onMessage(getChecksumsRequest);
         
         addStep("Retrieve the FinalResponse for the GetChecksums request", 
                 "The GetChecksums response should be sent by the pillar.");
@@ -219,8 +235,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
                 msgFactory.createGetChecksumsFinalResponse(
                         csSpec,
                         getChecksumsRequest.getCorrelationID(), 
-                        fileids,
-                        pillarId, 
+                        pillarId,
                         finalResponse.getReplyTo(), 
                         finalResponse.getResponseInfo(), 
                         finalResponse.getResultingChecksums(),

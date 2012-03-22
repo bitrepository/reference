@@ -65,7 +65,7 @@ import org.xml.sax.SAXException;
 /**
  * Class for performing the GetChecksums operation for this pillar.
  */
-public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksumsRequest> {
+public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<GetChecksumsRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     

@@ -55,6 +55,12 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
     public boolean useEmbeddedReferencePillars() {
         return System.getProperty("useEmbeddedReferencePillars", "false").equals("true");
     }
+    
+    @Override
+    protected void teardownMessageBusListeners() {
+        messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
+        super.teardownMessageBusListeners();
+    }
 
     @Override
     protected void initializeMessageBusListeners() {
@@ -66,12 +72,5 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
         
         pillarDestinationId = settings.getReferenceSettings().getPillarSettings().getReceiverDestination() + getTopicPostfix();
         settings.getReferenceSettings().getPillarSettings().setReceiverDestination(pillarDestinationId);
-    }
-
-    @Override
-    protected void teardownMessageBus() {
-        messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
-
-        super.teardownMessageBus();
     }
 }

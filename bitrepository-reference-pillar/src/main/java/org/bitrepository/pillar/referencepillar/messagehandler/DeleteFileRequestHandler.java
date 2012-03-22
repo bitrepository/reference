@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class for handling the DeleteFile operation.
  */
-public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileRequest> {
+public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<DeleteFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
@@ -125,11 +125,11 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
                     + "the checksum '" + requestedChecksum + "' where our local file has the value '" 
                     + calculatedChecksum + "'. Sending alarm and respond failure.");
             String errMsg = "Requested to delete file '" + message.getFileID() + "' with checksum '"
-                    + new String(checksumData.getChecksumValue()) + "', but our file had a different checksum.";
+                    + requestedChecksum + "', but our file had a different checksum.";
             alarmDispatcher.sendInvalidChecksumAlarm(message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.FAILURE);
+            responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
             responseInfo.setResponseText(errMsg);
             throw new InvalidMessageException(responseInfo);
         }

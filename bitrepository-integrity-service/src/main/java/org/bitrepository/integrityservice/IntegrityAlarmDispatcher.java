@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The class for dispatching alarms.
  */
-public class IntegrityAlarmDispatcher {
+public class IntegrityAlarmDispatcher implements AlarmDispatcher {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 

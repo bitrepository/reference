@@ -24,6 +24,8 @@
  */
 package org.bitrepository.integrityservice.web;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -34,6 +36,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
+import org.bitrepository.integrityservice.workflow.Workflow;
 
 @Path("/IntegrityService")
 public class RestIntegrityService {
@@ -73,37 +76,63 @@ public class RestIntegrityService {
     }
     
     @GET
-    @Path("/getSchedulerSetup/")
+    @Path("/getWorkflowSetup/")
     @Produces("text/html")
-    public String getSchedulerSetup() {
-    	StringBuilder sb = new StringBuilder();
-    	sb.append("<table class=\"ui-widget ui-widget-content\">\n");
-		sb.append("<thead>\n");
-		sb.append("<tr class=\"ui-widget-header\">\n");
-		sb.append("<th width=\"200\">Configuration name</th>\n");
-		sb.append("<th>Value</th>\n");
-		sb.append("</tr>\n");
-		sb.append("</thead>\n");
-		sb.append("<tbody>\n");
-    	sb.append("<tr><td>Scheduler interval</td><td>" + service.getSchedulingInterval() + "</td></tr>\n");
-    	sb.append("</table>\n");
-    	return sb.toString();
+    public String getWorkflowSetup() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<table class=\"ui-widget ui-widget-content\">\n");
+        sb.append("<thead>\n");
+        sb.append("<tr class=\"ui-widget-header\">\n");
+        sb.append("<th width=\"200\">Workflow name</th>\n");
+        sb.append("<th>Next run</th>\n");
+        sb.append("<th>Execution interval</th>\n");
+        sb.append("</tr>\n");
+        sb.append("</thead>\n");
+        sb.append("<tbody>\n");
+        Collection<Workflow> workflows = service.getWorkflows();
+        for(Workflow workflow : workflows) {
+            sb.append("<tr>\n");
+            sb.append("<td>" + workflow.getName() + "</td>\n");
+            sb.append("<td>" + workflow.getNextRun() + "</td>\n");
+            sb.append("<td>" + workflow.getTimeBetweenRuns() + "</td>\n");
+            sb.append("</tr>\n");
+        }
+        sb.append("</table>\n");
+        return sb.toString();
+    }
+    
+    @GET
+    @Path("/getWorkflowList/")
+    @Produces("text/json")
+    public String getWorkflowList() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        Collection<Workflow> workflows = service.getWorkflows();
+        Iterator<Workflow> it = workflows.iterator();
+        while(it.hasNext()) {
+            String name = it.next().getName();
+            sb.append("{\"optionValue\":\"" + name + "\", \"optionDisplay\": \"" + name + "\"}");
+            if(it.hasNext()) {
+                sb.append(",");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
     }
     
     @POST
-    @Path("/startFileIDCheckFromPillar/")
+    @Path("/startWorkflow/")
     @Consumes("application/x-www-form-urlencoded")
     @Produces("text/html")
-    public String startFileIDCheckFromPillar(@FormParam ("pillarID") String pillarID) {
-    	return "Starting collection of fileID's from pillar: " + pillarID + "\n";
-    }
-    
-    @POST
-    @Path("/startChecksumCheckFromPillar/")
-    @Consumes("application/x-www-form-urlencoded")
-    @Produces("text/html")
-    public String startChecksumCheckFromPillar(@FormParam ("pillarID") String pillarID) {
-    	return "Starting collection of checksums from pillar: " + pillarID + "\n";
+    public String startWorkflow(@FormParam ("workflowID") String workflowID) {
+        Collection<Workflow> workflows = service.getWorkflows();
+        for(Workflow workflow : workflows) {
+            if(workflow.getName().equals(workflowID)) {
+                workflow.trigger();
+                return "Workflow '" + workflowID + "' started";        
+            }
+        }
+        return "No workflow named '" + workflowID + "' was found!";
     }
     
 }

@@ -80,8 +80,9 @@ public class IdentifyPillarsForDeleteFile extends DeleteFileState {
     public synchronized void onMessage(IdentifyPillarsForDeleteFileResponse response) {
         try {
             conversation.pillarSelector.processResponse(response);
-            monitor.pillarIdentified("Received IdentifyPillarsForDeleteFileResponse " + response, 
-                    response.getPillarID());
+            monitor.pillarIdentified("Received IdentifyPillarsForDeleteFileResponse for '" + response.getFileID() +
+                    "' " + "from '" + response.getPillarID() + "' with response '" + 
+                    response.getResponseInfo().getResponseText() + "'", response.getPillarID());
         } catch (UnexpectedResponseException e) {
             monitor.pillarFailed("Unable to handle IdentifyPillarsForDeleteFileResponse, ", e);
         } catch (NegativeResponseException e) {

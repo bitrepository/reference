@@ -84,7 +84,7 @@ public class AlarmDispatcher {
         
         // create a descriptor.
         Alarm ad = new Alarm();
-        ad.setAlarmCode(AlarmCode.FAILED_OPERATION); //TODO Jonas see if this should be changed to another type
+        ad.setAlarmCode(AlarmCode.INCONSISTENT_REQUEST);
         ad.setAlarmText(exception.getMessage());
         
         sendAlarm(ad);

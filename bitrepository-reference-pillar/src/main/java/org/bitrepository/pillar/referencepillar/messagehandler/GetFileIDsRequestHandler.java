@@ -64,7 +64,7 @@ import org.xml.sax.SAXException;
 /**
  * Class for handling requests for the GetFileIDs operation.
  */
-public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsRequest> {
+public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetFileIDsRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     

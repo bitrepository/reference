@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.referencepillar.getchecksums;
+package org.bitrepository.pillar.messagefactories;
 
 import java.util.UUID;
 
@@ -39,18 +39,18 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRes
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.TestMessageFactory;
 
-public class PillarGetChecksumsMessageFactory extends TestMessageFactory {
+public class GetChecksumsMessageFactory extends TestMessageFactory {
 
     final Settings settings;
     
-    public PillarGetChecksumsMessageFactory(Settings pSettings) {
+    public GetChecksumsMessageFactory(Settings pSettings) {
         this.settings = pSettings;
     }
     
     public IdentifyPillarsForGetChecksumsRequest createIdentifyPillarsForGetChecksumsRequest( 
-            ChecksumSpecTYPE csSpec, String replyTo, FileIDs fileId) {
+            String auditTrail, ChecksumSpecTYPE csSpec, FileIDs fileId, String replyTo) {
         IdentifyPillarsForGetChecksumsRequest res = new IdentifyPillarsForGetChecksumsRequest();
-        res.setAuditTrailInformation(null);
+        res.setAuditTrailInformation(auditTrail);
         res.setChecksumRequestForExistingFile(csSpec);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
@@ -64,15 +64,15 @@ public class PillarGetChecksumsMessageFactory extends TestMessageFactory {
     }
 
     public IdentifyPillarsForGetChecksumsResponse createIdentifyPillarsForGetChecksumsResponse(
-            ChecksumSpecTYPE csSpec, String correlationId, FileIDs fileId, String replyTo, String pillarId, 
-            TimeMeasureTYPE timeToDeliver, String toTopic, ResponseInfo responseInfo) {
+            ChecksumSpecTYPE csSpec, String correlationId, FileIDs fileId, ChecksumSpecTYPE pillarCsType,
+            String pillarId, String replyTo, ResponseInfo responseInfo, TimeMeasureTYPE timeToDeliver, String toTopic) {
         IdentifyPillarsForGetChecksumsResponse res = new IdentifyPillarsForGetChecksumsResponse();
         res.setChecksumRequestForExistingFile(csSpec);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
         res.setMinVersion(VERSION_DEFAULT);
-        res.setPillarChecksumSpec(null);
+        res.setPillarChecksumSpec(pillarCsType);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
@@ -83,10 +83,10 @@ public class PillarGetChecksumsMessageFactory extends TestMessageFactory {
         return res;
     }
     
-    public GetChecksumsRequest createGetChecksumsRequest(ChecksumSpecTYPE csSpec, String correlationId, FileIDs fileId,
-            String pillarId, String replyTo, String url, String toTopic) {
+    public GetChecksumsRequest createGetChecksumsRequest(String auditTrail, ChecksumSpecTYPE csSpec, 
+            String correlationId, FileIDs fileId, String pillarId, String replyTo, String url, String toTopic) {
         GetChecksumsRequest res = new GetChecksumsRequest();
-        res.setAuditTrailInformation(null);
+        res.setAuditTrailInformation(auditTrail);
         res.setChecksumRequestForExistingFile(csSpec);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
@@ -121,8 +121,7 @@ public class PillarGetChecksumsMessageFactory extends TestMessageFactory {
     }
 
     public GetChecksumsFinalResponse createGetChecksumsFinalResponse(ChecksumSpecTYPE csSpec, String correlationId, 
-            FileIDs fileId, String pillarId, String replyTo, ResponseInfo frInfo, ResultingChecksums results, 
-            String toTopic) {
+            String pillarId, String replyTo, ResponseInfo frInfo, ResultingChecksums results, String toTopic) {
         GetChecksumsFinalResponse res = new GetChecksumsFinalResponse();
         res.setChecksumRequestForExistingFile(csSpec);
         res.setCollectionID(settings.getCollectionID());

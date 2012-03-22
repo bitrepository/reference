@@ -196,8 +196,12 @@ public class ChecksumValidator {
                 }
             }
             
-            cache.setChecksumAgreement(fileId, presentPillars);
-            cache.setChecksumError(fileId, missingPillars);
+            if(!presentPillars.isEmpty()) {
+                cache.setChecksumAgreement(fileId, presentPillars);
+            }
+            if(!missingPillars.isEmpty()) {
+                cache.setChecksumError(fileId, missingPillars);
+            }
             report.addIncorrectChecksums(fileId, missingPillars);
         }
         

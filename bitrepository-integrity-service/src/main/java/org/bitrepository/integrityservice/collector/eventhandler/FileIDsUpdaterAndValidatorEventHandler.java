@@ -26,6 +26,7 @@ package org.bitrepository.integrityservice.collector.eventhandler;
 
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.integrityservice.AlarmDispatcher;
 import org.bitrepository.integrityservice.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
@@ -50,7 +51,7 @@ public class FileIDsUpdaterAndValidatorEventHandler implements EventHandler {
     /** The checker used for checking the integrity of the results.*/
     private final IntegrityChecker integrityChecker;
     /** The entity used for sending alarms.*/
-    private final IntegrityAlarmDispatcher alarmDispatcher;
+    private final AlarmDispatcher alarmDispatcher;
     
     /**
      * Constructor.
@@ -60,7 +61,7 @@ public class FileIDsUpdaterAndValidatorEventHandler implements EventHandler {
      * @param fileIDs The given data to perform the integrity checks upon.
      */
     public FileIDsUpdaterAndValidatorEventHandler(IntegrityModel informationCache, 
-            IntegrityChecker integrityChecker, IntegrityAlarmDispatcher alarmDispatcher, FileIDs fileIDs) {
+            IntegrityChecker integrityChecker, AlarmDispatcher alarmDispatcher, FileIDs fileIDs) {
         this.informationCache = informationCache;
         this.integrityChecker = integrityChecker;
         this.alarmDispatcher = alarmDispatcher;

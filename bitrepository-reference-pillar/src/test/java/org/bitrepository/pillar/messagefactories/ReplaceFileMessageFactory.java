@@ -22,35 +22,39 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.referencepillar.getfile;
+package org.bitrepository.pillar.messagefactories;
 
 import java.math.BigInteger;
 import java.util.UUID;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.TestMessageFactory;
 
-public class PillarGetFileMessageFactory extends TestMessageFactory {
+public class ReplaceFileMessageFactory extends TestMessageFactory {
 
     final Settings settings;
     
-    public PillarGetFileMessageFactory(Settings pSettings) {
+    public ReplaceFileMessageFactory(Settings pSettings) {
         this.settings = pSettings;
     }
     
-    public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileRequest(String replyTo, String fileId) {
-        IdentifyPillarsForGetFileRequest res = new IdentifyPillarsForGetFileRequest();
-        res.setAuditTrailInformation(null);
+    public IdentifyPillarsForReplaceFileRequest createIdentifyPillarsForReplaceFileRequest( 
+            String auditTrail, String fileId, long fileSize, String replyTo) {
+        IdentifyPillarsForReplaceFileRequest res = new IdentifyPillarsForReplaceFileRequest();
+        res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFileID(fileId);
+        res.setFileSize(BigInteger.valueOf(fileSize));
         res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setTo(settings.getCollectionDestination());
@@ -59,75 +63,83 @@ public class PillarGetFileMessageFactory extends TestMessageFactory {
         return res;
     }
 
-    public IdentifyPillarsForGetFileResponse createIdentifyPillarsForGetFileResponse(
-            String correlationId, String fileId, String replyTo, String pillarId, 
-            TimeMeasureTYPE timeToDeliver, String toTopic, ResponseInfo responseInfo) {
-        IdentifyPillarsForGetFileResponse res = new IdentifyPillarsForGetFileResponse();
+    public IdentifyPillarsForReplaceFileResponse createIdentifyPillarsForReplaceFileResponse(
+            String correlationId, String fileId, ChecksumSpecTYPE csType, String pillarId, String replyTo,  
+            ResponseInfo responseInfo, TimeMeasureTYPE timeToDeliver, String toTopic) {
+        IdentifyPillarsForReplaceFileResponse res = new IdentifyPillarsForReplaceFileResponse();
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileID(fileId);
         res.setMinVersion(VERSION_DEFAULT);
+        res.setPillarChecksumSpec(csType);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setTimeToDeliver(timeToDeliver);
         res.setTo(toTopic);
         res.setVersion(VERSION_DEFAULT);
-        
+
         return res;
     }
     
-    public GetFileRequest createGetFileRequest(String correlationId, String url, String fileId, String pillarId, 
-            String replyTo, String toTopic) {
-        GetFileRequest res = new GetFileRequest();
-        res.setAuditTrailInformation(null);
+    public ReplaceFileRequest createReplaceFileRequest(String auditTrail, ChecksumDataForFileTYPE existingChecksumData, 
+            ChecksumDataForFileTYPE newChecksumData, ChecksumSpecTYPE csExistingRequest, 
+            ChecksumSpecTYPE csNewRequest, String correlationId, String url, String fileId, long fileSize, 
+            String pillarId, String replyTo, String toTopic) {
+        ReplaceFileRequest res = new ReplaceFileRequest();
+        res.setAuditTrailInformation(auditTrail);
+        res.setChecksumDataForExistingFile(existingChecksumData);
+        res.setChecksumDataForNewFile(newChecksumData);
+        res.setChecksumRequestForExistingFile(csExistingRequest);
+        res.setChecksumRequestForNewFile(csNewRequest);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);
-        res.setFilePart(null);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setPillarID(pillarId);
-        res.setReplyTo(replyTo);
-        res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-        
-        return res;
-    }
-
-    public GetFileProgressResponse createGetFileProgressResponse(String correlationId, String url, String fileId, 
-            String pillarId, long fileSize, ResponseInfo prInfo, String replyTo, 
-            String toTopic) {
-        GetFileProgressResponse res = new GetFileProgressResponse();
-        res.setChecksumDataForExistingFile(null);
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(correlationId);
-        res.setFileAddress(url);
-        res.setFileID(fileId);
-        res.setFilePart(null);
         res.setFileSize(BigInteger.valueOf(fileSize));
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
-        res.setResponseInfo(prInfo);
         res.setTo(toTopic);
         res.setVersion(VERSION_DEFAULT);
-        
+
         return res;
     }
 
-    public GetFileFinalResponse createGetFileFinalResponse(String correlationId, String url, String fileId, ResponseInfo frInfo, String pillarId, 
-            String replyTo, String toTopic) {
-        GetFileFinalResponse res = new GetFileFinalResponse();
+    public ReplaceFileProgressResponse createReplaceFileProgressResponse(String correlationId, String url,
+            String fileId, ChecksumSpecTYPE pillarCsSpec, String pillarId, String replyTo, ResponseInfo responseInfo, 
+            String toTopic) {
+        ReplaceFileProgressResponse res = new ReplaceFileProgressResponse();
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);
-        res.setFilePart(null);
         res.setMinVersion(VERSION_DEFAULT);
+        res.setPillarChecksumSpec(pillarCsSpec);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
-        res.setResponseInfo(frInfo);
+        res.setResponseInfo(responseInfo);
+        res.setTo(toTopic);
+        res.setVersion(VERSION_DEFAULT);
+
+        return res;
+    }
+
+    public ReplaceFileFinalResponse createReplaceFileFinalResponse(ChecksumDataForFileTYPE csDataExisting, 
+            ChecksumDataForFileTYPE csDataNew, String correlationId, String url, String fileId, 
+            ChecksumSpecTYPE pillarCsSpec, String pillarId, String replyTo, ResponseInfo responseInfo, String toTopic) {
+        ReplaceFileFinalResponse res = new ReplaceFileFinalResponse();
+        res.setChecksumDataForExistingFile(csDataExisting);
+        res.setChecksumDataForNewFile(csDataNew);
+        res.setCollectionID(settings.getCollectionID());
+        res.setCorrelationID(correlationId);
+        res.setFileAddress(url);
+        res.setFileID(fileId);
+        res.setMinVersion(VERSION_DEFAULT);
+        res.setPillarChecksumSpec(pillarCsSpec);
+        res.setPillarID(pillarId);
+        res.setReplyTo(replyTo);
+        res.setResponseInfo(responseInfo);
         res.setTo(toTopic);
         res.setVersion(VERSION_DEFAULT);
         
@@ -138,7 +150,7 @@ public class PillarGetFileMessageFactory extends TestMessageFactory {
      * Method for generating new correlation IDs.
      * @return A unique correlation id.
      */
-    private String getNewCorrelationID() {
+    public String getNewCorrelationID() {
         return UUID.randomUUID().toString();
     }
 }

@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * Class for handling the identification of this pillar for the purpose of performing the GetFileIDs operation.
  */
 public class IdentifyPillarsForGetFileIDsRequestHandler 
-        extends PillarMessageHandler<IdentifyPillarsForGetFileIDsRequest> {
+        extends ReferencePillarMessageHandler<IdentifyPillarsForGetFileIDsRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     

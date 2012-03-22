@@ -28,7 +28,7 @@ import javax.jms.JMSException;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.referencepillar.messagehandler.PillarMediator;
+import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public class ReferencePillar {
     /** The messagebus for the pillar.*/
     private final MessageBus messageBus;
     /** The mediator for the messages.*/
-    private final PillarMediator mediator;
+    private final ReferencePillarMediator mediator;
     /** The archive for the data.*/
     private final ReferenceArchive archive;
 
@@ -60,7 +60,7 @@ public class ReferencePillar {
         log.info("Starting the reference pillar!");
         
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        mediator = new PillarMediator(messageBus, settings, archive);
+        mediator = new ReferencePillarMediator(messageBus, settings, archive);
         log.info("ReferencePillar started!");
     }
     
@@ -79,7 +79,7 @@ public class ReferencePillar {
     /**
      * @return The mediator connected to this reference pillar.
      */
-    public PillarMediator getMediator() {
+    public ReferencePillarMediator getMediator() {
         return mediator;
     }
 }
