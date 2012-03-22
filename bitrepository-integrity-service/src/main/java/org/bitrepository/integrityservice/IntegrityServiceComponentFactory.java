@@ -98,7 +98,7 @@ public final class IntegrityServiceComponentFactory {
             Settings settings, MessageBus messageBus) {
         if (integrityInformationCollector == null) {
             integrityInformationCollector = new DelegatingIntegrityInformationCollector(getFileIDsClient, 
-                    getChecksumsClient, settings, messageBus);
+                    getChecksumsClient);
         }
         return integrityInformationCollector;
     }

@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class for performing the GetFile operation.
  */
-public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> {
+public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     

@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class for handling the identification of this pillar for the purpose of performing the PutFile operation.
  */
-public class IdentifyPillarsForPutFileRequestHandler extends PillarMessageHandler<IdentifyPillarsForPutFileRequest> {
+public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMessageHandler<IdentifyPillarsForPutFileRequest> {
 
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());

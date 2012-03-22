@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * Class for performing the PutFile operation.
  * TODO handle error scenarios.
  */
-public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> {
+public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 

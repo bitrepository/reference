@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -108,12 +109,10 @@ public class TestIntegrityModel implements IntegrityModel {
      */
     private void updateChecksum(ChecksumDataForChecksumSpecTYPE checksumData, ChecksumSpecTYPE checksumType, 
             String pillarId) {
-        synchronized(cache) {
-            CollectionFileIDInfo fileInfos = cache.get(checksumData.getFileID());
-            
-            fileInfos.updateChecksums(checksumData, checksumType, pillarId);
-            cache.put(checksumData.getFileID(), fileInfos);
-        }
+        CollectionFileIDInfo fileInfos = cache.get(checksumData.getFileID());
+        
+        fileInfos.updateChecksums(checksumData, checksumType, pillarId);
+        cache.put(checksumData.getFileID(), fileInfos);
     }
     
     /**
@@ -153,14 +152,12 @@ public class TestIntegrityModel implements IntegrityModel {
      */
     private class CollectionFileIDInfo {
         /** The collection of FileIDInfos.*/
-        private List<FileInfo> fileIDInfos;
+        private List<FileInfo> fileIDInfos = new ArrayList<FileInfo>();
         
         /**
          * Constructor. Initializes and empty list of FileIDInfos.
          */
-        CollectionFileIDInfo() {
-            fileIDInfos = new ArrayList<FileInfo>();
-        }
+        CollectionFileIDInfo() {}
         
         /**
          * Updates the FileIDInfo for a given pillar based on the results of a GetFileIDs operation.
@@ -202,10 +199,12 @@ public class TestIntegrityModel implements IntegrityModel {
             
             // Extract current file info and update it or create a new one.
             FileInfo currentInfo = null;
-            for(FileInfo fileInfo : fileIDInfos) {
-                if(fileInfo.getPillarId().equals(pillarId)) {
-                    currentInfo = fileInfo;
-                    fileIDInfos.remove(fileInfo);
+            Iterator<FileInfo> it = fileIDInfos.iterator();
+            while(it.hasNext()) {
+                FileInfo fi = it.next();
+                if(fi.getPillarId().equals(pillarId)) {
+                    currentInfo = fi;
+                    it.remove();
                 }
             }
             if(currentInfo == null) {

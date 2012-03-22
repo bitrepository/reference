@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.referencepillar.getfileids;
+package org.bitrepository.pillar.messagefactories;
 
 import java.util.UUID;
 
@@ -38,17 +38,18 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRespo
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.TestMessageFactory;
 
-public class PillarGetFileIDsMessageFactory extends TestMessageFactory {
+public class GetFileIDsMessageFactory extends TestMessageFactory {
 
     final Settings settings;
     
-    public PillarGetFileIDsMessageFactory(Settings pSettings) {
+    public GetFileIDsMessageFactory(Settings pSettings) {
         this.settings = pSettings;
     }
     
-    public IdentifyPillarsForGetFileIDsRequest createIdentifyPillarsForGetFileIDsRequest(String replyTo, FileIDs fileId) {
+    public IdentifyPillarsForGetFileIDsRequest createIdentifyPillarsForGetFileIDsRequest(String auditTrail,
+            FileIDs fileId, String replyTo) {
         IdentifyPillarsForGetFileIDsRequest res = new IdentifyPillarsForGetFileIDsRequest();
-        res.setAuditTrailInformation(null);
+        res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFileIDs(fileId);
@@ -61,8 +62,8 @@ public class PillarGetFileIDsMessageFactory extends TestMessageFactory {
     }
 
     public IdentifyPillarsForGetFileIDsResponse createIdentifyPillarsForGetFileIDsResponse(
-            String correlationId, FileIDs fileId, String replyTo, String pillarId, 
-            TimeMeasureTYPE timeToDeliver, String toTopic, ResponseInfo responseInfo) {
+            String correlationId, FileIDs fileId, String pillarId, String replyTo, 
+            ResponseInfo responseInfo, TimeMeasureTYPE timeToDeliver, String toTopic) {
         IdentifyPillarsForGetFileIDsResponse res = new IdentifyPillarsForGetFileIDsResponse();
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
@@ -78,10 +79,10 @@ public class PillarGetFileIDsMessageFactory extends TestMessageFactory {
         return res;
     }
     
-    public GetFileIDsRequest createGetFileIDsRequest(String correlationId, FileIDs fileId, String pillarId,  
-            String replyTo, String url, String toTopic) {
+    public GetFileIDsRequest createGetFileIDsRequest(String auditTrail, String correlationId, FileIDs fileId, 
+            String pillarId, String replyTo, String url, String toTopic) {
         GetFileIDsRequest res = new GetFileIDsRequest();
-        res.setAuditTrailInformation(null);
+        res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);

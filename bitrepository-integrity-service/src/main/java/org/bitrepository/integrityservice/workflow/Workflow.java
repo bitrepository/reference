@@ -54,7 +54,7 @@ public interface Workflow {
      * The time between the automatically triggering of the workflow.
      * @return The number of milliseconds from the workflow is triggered until it automatically is triggered again.
      */
-    long timeBetweenRuns();
+    long getTimeBetweenRuns();
     
     /**
      * Trigger a workflow event.

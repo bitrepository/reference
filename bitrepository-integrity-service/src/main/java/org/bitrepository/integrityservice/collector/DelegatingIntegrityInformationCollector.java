@@ -55,7 +55,7 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
      * @param getChecksumsClient The client for retrieving checksums
      */
     public DelegatingIntegrityInformationCollector(GetFileIDsClient getFileIDsClient, 
-            GetChecksumsClient getChecksumsClient, Settings settings, MessageBus messageBus) {
+            GetChecksumsClient getChecksumsClient) {
         this.getFileIDsClient = getFileIDsClient;
         this.getChecksumsClient = getChecksumsClient;
     }

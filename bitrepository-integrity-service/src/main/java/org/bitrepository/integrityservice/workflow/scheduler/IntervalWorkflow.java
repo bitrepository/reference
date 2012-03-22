@@ -57,7 +57,7 @@ public abstract class IntervalWorkflow implements Workflow {
     }
     
     @Override
-    public long timeBetweenRuns() {
+    public long getTimeBetweenRuns() {
         return interval;
     }
     

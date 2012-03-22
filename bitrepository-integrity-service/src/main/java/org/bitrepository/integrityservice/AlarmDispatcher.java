@@ -19,37 +19,25 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityservice.mocks;
+package org.bitrepository.integrityservice;
 
-import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.integrityservice.checking.IntegrityChecker;
+import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.integrityservice.checking.IntegrityReport;
 
-public class MockChecker implements IntegrityChecker {
+/**
+ * The interface for the alarm dispatcher.
+ */
+public interface AlarmDispatcher {
+    /**
+     * Sends an alarm based on an integrity report.
+     * @param report The report to base the alarm upon.
+     */
+    void integrityFailed(IntegrityReport report);
     
-    public MockChecker() {}
-    
-    private int callsForCheckFileIDs = 0;
-    private int callsForCheckChecksums = 0;
-    
-    public int getCallsForCheckFileIDs() {
-        return callsForCheckFileIDs;
-    }
-
-    public int getCallsForCheckChecksums() {
-        return callsForCheckChecksums;
-    }
-
-    @Override
-    public IntegrityReport checkFileIDs(FileIDs fileIDs) {
-        callsForCheckFileIDs++;
-        return new IntegrityReport();
-    }
-    
-    @Override
-    public IntegrityReport checkChecksum(FileIDs fileIDs) {
-        callsForCheckChecksums++;
-        return new IntegrityReport();
-    }
-    
+    /**
+     * Method for sending an Alarm when something bad happens.
+     * @param alarmConcerning What the alarm is concerning.
+     * @param alarm The description of the alarm, e.g. What caused the alarm.
+     */
+    void sendAlarm(Alarm alarm);
 }
