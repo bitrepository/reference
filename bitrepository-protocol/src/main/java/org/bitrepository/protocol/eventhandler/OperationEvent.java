@@ -73,9 +73,5 @@ public interface OperationEvent<T> {
      * @return A <code>OperationEventType</code> categorizing this event.
      */
     OperationEventType getType();
-    
-    /**
-     * @return Contains any additional information of the state of the operation
-     */
-   // T getState();
+
 }
