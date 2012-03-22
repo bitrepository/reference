@@ -233,7 +233,6 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String auditTrail = null;
         String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        ChecksumSpecTYPE csSpecPillar = null;
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         Long FILE_SIZE = Long.MAX_VALUE;
         

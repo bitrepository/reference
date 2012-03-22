@@ -71,12 +71,13 @@ public class TestPutFileMessageFactory extends TestMessageFactory{
      * @return The requested IdentifyPillarsForPutFileRequest.
      */
     public IdentifyPillarsForPutFileRequest createIdentifyPillarsForPutFileRequest(String correlationID, 
-            String replyTo, String toTopic, String fileId, String auditTrailInformation) {
+            String replyTo, String toTopic, String fileId, long fileSize, String auditTrailInformation) {
         IdentifyPillarsForPutFileRequest identifyPillarsForPutFileRequest = createIdentifyPillarsForPutFileRequest();
         identifyPillarsForPutFileRequest.setCorrelationID(correlationID);
         identifyPillarsForPutFileRequest.setReplyTo(replyTo);
         identifyPillarsForPutFileRequest.setTo(toTopic);
         identifyPillarsForPutFileRequest.setFileID(fileId);
+        identifyPillarsForPutFileRequest.setFileSize(BigInteger.valueOf(fileSize));
         identifyPillarsForPutFileRequest.setAuditTrailInformation(auditTrailInformation);
         return identifyPillarsForPutFileRequest;
     }
