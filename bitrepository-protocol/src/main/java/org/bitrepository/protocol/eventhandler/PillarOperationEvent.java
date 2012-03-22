@@ -54,7 +54,7 @@ public class PillarOperationEvent extends AbstractOperationEvent<String> {
     
     @Override
     public String additionalInfo() {
-        return " for pillar " + pillarID + " ";
+        return " "; //" for pillar " + pillarID + " ";
     }
 
     @Override 

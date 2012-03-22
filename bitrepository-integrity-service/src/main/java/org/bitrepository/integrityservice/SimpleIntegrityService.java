@@ -211,7 +211,7 @@ public class SimpleIntegrityService implements IntegrityService {
     
     @Override
     public long getNumberOfMissingFiles(String pillarId) {
-        return cache.getNumberOfFiles(pillarId);
+        return cache.getNumberOfMissingFiles(pillarId);
     }
     
     @Override

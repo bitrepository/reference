@@ -81,8 +81,9 @@ public class IdentifyPillarsForReplaceFile extends ReplaceFileState {
     public synchronized void onMessage(IdentifyPillarsForReplaceFileResponse response) {
         try {
             conversation.pillarSelector.processResponse(response);
-            monitor.pillarIdentified("Received IdentifyPillarsForReplaceFileResponse " + response, 
-                    response.getPillarID());
+            monitor.pillarIdentified("Received IdentifyPillarsForReplaceFileResponse for '" + response.getFileID() + 
+                    "' from '" + response.getPillarID() + "' with response '" + 
+                    response.getResponseInfo().getResponseText() + "'", response.getPillarID());
         } catch (UnexpectedResponseException e) {
             monitor.pillarFailed("Unable to handle IdentifyPillarsForReplaceFileResponse, ", e);
         } catch (NegativeResponseException e) {

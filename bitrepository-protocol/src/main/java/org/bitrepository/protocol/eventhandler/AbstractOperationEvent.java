@@ -50,7 +50,7 @@ public abstract class AbstractOperationEvent<T> implements OperationEvent<T> {
 
     @Override 
     public final String toString() {
-        return getType() + " event: " + "[ID: " + getID() + "] " + getInfo() + additionalInfo();
+        return getType() + ": " + "[ID: " + getID() + "] " + getInfo() + additionalInfo();
     }
     
     /**

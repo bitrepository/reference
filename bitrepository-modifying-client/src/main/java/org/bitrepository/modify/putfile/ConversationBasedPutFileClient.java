@@ -78,7 +78,7 @@ public class ConversationBasedPutFileClient implements PutFileClient {
                     throws OperationFailedException {
         ArgumentValidator.checkNotNull(url, "URL url");
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
-        ArgumentValidator.checkPositive(sizeOfFile, "long sizeOfFile");
+        ArgumentValidator.checkNotNegative(sizeOfFile, "long sizeOfFile");
         // TODO add potential regex from collection settings.
         
         try {

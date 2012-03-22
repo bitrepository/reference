@@ -90,7 +90,9 @@ public class IdentifyPillarsForGetFileIDs extends GetFileIDsState {
     public void onMessage(IdentifyPillarsForGetFileIDsResponse response) {
         try {
             conversation.selector.processResponse(response);
-            monitor.pillarIdentified("Received IdentifyPillarsForGetFileIDsResponse " + response, response.getPillarID());
+            monitor.pillarIdentified("Received IdentifyPillarsForGetFileIDsResponse for " + response.getFileIDs() +
+                    " from " + response.getPillarID() + " with response '" +
+                    response.getResponseInfo().getResponseText() + "'", response.getPillarID());
         } catch (UnexpectedResponseException e) {
             monitor.pillarFailed("Unable to handle IdentifyPillarsForGetFileIDsResponse, ", e);
         } catch (NegativeResponseException e) {
