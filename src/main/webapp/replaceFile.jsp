@@ -30,7 +30,7 @@
                     <td>Fileaddress:</td>
                     <td>&nbsp;</td>
                     <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
-                    <td> <input type="text" id="fileaddr" value="<%= su.getDefaultHttpServerUrl() %>"/></td>
+                    <td> <input type="text" id="fileaddr" class="inputURL" value="<%= su.getDefaultHttpServerUrl() %>"/></td>
                     <td>&nbsp;&nbsp;</td>
                     <td>Filesize:</td>
                     <td>&nbsp;</td>
