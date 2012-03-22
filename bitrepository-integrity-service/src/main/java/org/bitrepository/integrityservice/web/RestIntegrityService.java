@@ -25,6 +25,7 @@
 package org.bitrepository.integrityservice.web;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -75,25 +76,6 @@ public class RestIntegrityService {
     }
     
     @GET
-    @Path("/getSchedulerSetup/")
-    @Produces("text/html")
-    @Deprecated 
-    public String getSchedulerSetup() {
-    	StringBuilder sb = new StringBuilder();
-    	sb.append("<table class=\"ui-widget ui-widget-content\">\n");
-		sb.append("<thead>\n");
-		sb.append("<tr class=\"ui-widget-header\">\n");
-		sb.append("<th width=\"200\">Configuration name</th>\n");
-		sb.append("<th>Value</th>\n");
-		sb.append("</tr>\n");
-		sb.append("</thead>\n");
-		sb.append("<tbody>\n");
-    	sb.append("<tr><td>Scheduler interval</td><td>" + service.getSchedulingInterval() + "</td></tr>\n");
-    	sb.append("</table>\n");
-    	return sb.toString();
-    }
-    
-    @GET
     @Path("/getWorkflowSetup/")
     @Produces("text/html")
     public String getWorkflowSetup() {
@@ -120,19 +102,21 @@ public class RestIntegrityService {
     }
     
     @GET
-    @Path("/getWorkflowLauncher/")
-    @Produces("text/html")
-    public String getWorkflowLauncher() {
+    @Path("/getWorkflowList/")
+    @Produces("text/json")
+    public String getWorkflowList() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<form id=\"workflowLauncher\" action=\"javascript:submit()\">\n");
-        sb.append("<select id=\"workflowSelector\">\n");
+        sb.append("[");
         Collection<Workflow> workflows = service.getWorkflows();
-        for(Workflow workflow : workflows) {
-            sb.append("<option value=\"" + workflow.getName() + "\">" + workflow.getName() + "</option>\n");
+        Iterator<Workflow> it = workflows.iterator();
+        while(it.hasNext()) {
+            String name = it.next().getName();
+            sb.append("{\"optionValue\":\"" + name + "\", \"optionDisplay\": \"" + name + "\"}");
+            if(it.hasNext()) {
+                sb.append(",");
+            }
         }
-        sb.append("</select>\n");
-        sb.append("<input type=\"submit\" value=\"Start\"/>\n");
-        sb.append("</form>\n");
+        sb.append("]");
         return sb.toString();
     }
     
@@ -141,26 +125,14 @@ public class RestIntegrityService {
     @Consumes("application/x-www-form-urlencoded")
     @Produces("text/html")
     public String startWorkflow(@FormParam ("workflowID") String workflowID) {
-        return "Starting collection of fileID's from pillar: " + workflowID + "\n";
-    }
-    
-    
-    @POST
-    @Path("/startFileIDCheckFromPillar/")
-    @Consumes("application/x-www-form-urlencoded")
-    @Produces("text/html")
-    @Deprecated
-    public String startFileIDCheckFromPillar(@FormParam ("pillarID") String pillarID) {
-    	return "Starting collection of fileID's from pillar: " + pillarID + "\n";
-    }
-    
-    @POST
-    @Path("/startChecksumCheckFromPillar/")
-    @Consumes("application/x-www-form-urlencoded")
-    @Produces("text/html")
-    @Deprecated
-    public String startChecksumCheckFromPillar(@FormParam ("pillarID") String pillarID) {
-    	return "Starting collection of checksums from pillar: " + pillarID + "\n";
+        Collection<Workflow> workflows = service.getWorkflows();
+        for(Workflow workflow : workflows) {
+            if(workflow.getName().equals(workflowID)) {
+                workflow.trigger();
+                return "Workflow '" + workflowID + "' started";        
+            }
+        }
+        return "No workflow named '" + workflowID + "' was found!";
     }
     
 }
