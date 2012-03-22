@@ -94,7 +94,7 @@ public class RestIntegrityService {
             sb.append("<tr>\n");
             sb.append("<td>" + workflow.getName() + "</td>\n");
             sb.append("<td>" + workflow.getNextRun() + "</td>\n");
-            sb.append("<td>" + workflow.timeBetweenRuns() + "</td>\n");
+            sb.append("<td>" + workflow.getTimeBetweenRuns() + "</td>\n");
             sb.append("</tr>\n");
         }
         sb.append("</table>\n");
