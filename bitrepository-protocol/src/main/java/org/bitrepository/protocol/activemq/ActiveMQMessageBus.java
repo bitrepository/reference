@@ -142,7 +142,7 @@ public class ActiveMQMessageBus implements MessageBus {
      * MessageBusConnections. This constructor is for the
      * <code>ProtocolComponentFactory</code> eyes only.
      *
-     * @param messageBusConfigurations The properties for the connection.
+     * @param messageBusConfiguration The properties for the connection.
      */
     public ActiveMQMessageBus(MessageBusConfiguration messageBusConfiguration, SecurityManager securityManager) {
         log.debug("Initializing ActiveMQConnection to '" + messageBusConfiguration + "'.");
@@ -200,7 +200,7 @@ public class ActiveMQMessageBus implements MessageBus {
         }
     }
 
-    @Override
+    /*
     public synchronized void addDurableListener(String destinationID, final MessageListener listener) {
         log.debug("Adding durable listener '{}' to destination: '{}' on message-bus '{}'.",
                 new Object[] {listener, destinationID, configuration.getName()});
@@ -211,7 +211,7 @@ public class ActiveMQMessageBus implements MessageBus {
             throw new CoordinationLayerException(
                     "Unable to add durable listener '" + listener + "' to destinationID '" + destinationID + "'", e);
         }
-    }
+    }       */
 
     @Override
     public synchronized void removeListener(String destinationID, MessageListener listener) {
@@ -320,7 +320,7 @@ public class ActiveMQMessageBus implements MessageBus {
     /**
      * Method for retrieving the message producer for a specific queue.
      *
-     * @param destination The id for the destination.
+     * @param destinationID The id for the destination.
      * @return The message producer for this destination.
      */
     private MessageProducer addDestinationMessageProducer(String destinationID) {
