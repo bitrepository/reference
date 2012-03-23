@@ -1,6 +1,8 @@
 package org.bitrepository.webservice;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -106,6 +108,25 @@ public class Reposervice {
     @Produces("text/plain")
     public String getLog() {
         return client.getLog();
+    }
+    
+    @GET
+    @Path("/getPillarList/")
+    @Produces("text/json")
+    public String getPillarList() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        List<String> pillars = client.getPillarList();
+        Iterator<String> it = pillars.iterator();
+        while(it.hasNext()) {
+            String pillar = it.next();
+            sb.append("{\"optionValue\":\"" + pillar + "\", \"optionDisplay\": \"" + pillar + "\"}");
+            if(it.hasNext()) {
+                sb.append(",");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
     }
     
     /**

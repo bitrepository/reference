@@ -24,7 +24,11 @@
                     <td>&nbsp;&nbsp;</td>
                     <td>Pillar ID:</td>
                     <td>&nbsp;</td>
-                    <td><input class="defaultText" title="Pillar ID" id="pillarID" type="text"/></td>
+                    <td>
+                    	<select id="pillarSelector">
+                    		<option value=""> </option>
+                		</select>	
+                    </td>
                 </tr>
                 <tr>
                     <td>Fileaddress:</td>
@@ -112,11 +116,22 @@
     <div id="status"> </div>
         
     <script>
+        $(function(){
+            $.getJSON('repo/reposervice/getPillarList/',{}, function(j){
+                var options = '';
+                for (var i = 0; i < j.length; i++) {
+                    options += '<option value="' + j[i].optionValue + '">' + j[i].optionDisplay + '</option>';
+                }
+                $("select#pillarSelector").html(options);
+            })
+        })
+    </script>    
+        
+    <script>
         $("#replaceForm").submit(function() {
             var fileID = $("#fileID").val();
             fileID = fileID.replace(/\s+/g, '');
-            var pillarID = $("#pillarID").val();
-            pillarID = pillarID.replace(/\s+/g, '');
+            var pillarID = $("#pillarSelector option:selected").val();
             var fileAddress = $("#fileaddr").val();
             var fileSize = $("#filesize").val();
             var oldFileChecksumVal = $("#oldFileChecksum").val();

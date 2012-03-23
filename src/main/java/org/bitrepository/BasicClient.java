@@ -182,6 +182,10 @@ public class BasicClient {
         return sb.toString();
     }
     
+    public List<String> getPillarList() {
+    	return settings.getCollectionSettings().getClientSettings().getPillarIDs();
+    }
+    
     public Map<String, Map<String, String>> getChecksums(String fileIDsText, String checksumType, String salt) {
         ChecksumSpecTYPE checksumSpecItem = makeChecksumSpec(checksumType, salt);
     	FileIDs fileIDs = new FileIDs();
