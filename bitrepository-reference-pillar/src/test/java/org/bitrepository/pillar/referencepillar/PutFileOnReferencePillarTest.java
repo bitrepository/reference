@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
@@ -191,8 +192,9 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void pillarPutTestFailedFileSize() throws Exception {
-        addDescription("Tests that the ReferencePillar is able to reject put requests for too large files.");
+    public void pillarPutTestFailedFileSizeIdentification() throws Exception {
+        addDescription("Tests that the ReferencePillar is able to reject a put operation for too large files "
+                + "in the identification process.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String auditTrail = null;
@@ -223,6 +225,53 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), ResponseCode.FAILURE);
     }
     
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void pillarPutTestFailedFileSizeOperation() throws Exception {
+        addDescription("Tests that the ReferencePillar is able to reject a put operation for too large files "
+                + "in the operation process.");
+        addStep("Set up constants and variables.", "Should not fail here!");
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        String auditTrail = null;
+        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
+        Long FILE_SIZE = Long.MAX_VALUE;
+        
+        File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
+        Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
+
+        ChecksumSpecTYPE csMD5 = new ChecksumSpecTYPE();
+        csMD5.setChecksumType(ChecksumType.MD5);
+        String FILE_CHECKSUM_MD5 = ChecksumUtils.generateChecksum(testfile, csMD5);
+
+        ChecksumDataForFileTYPE checksumDataForFile = new ChecksumDataForFileTYPE();
+        checksumDataForFile.setCalculationTimestamp(CalendarUtils.getEpoch());
+        checksumDataForFile.setChecksumSpec(csMD5);
+        checksumDataForFile.setChecksumValue(Base64Utils.encodeBase64(FILE_CHECKSUM_MD5));
+        
+        addStep("Create and send the operation message to the pillar.", "Should be received and handled by the pillar.");
+        PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, checksumDataForFile, 
+                null, UUID.randomUUID().toString(), FILE_ADDRESS, FILE_ID, FILE_SIZE, 
+                pillarId, clientDestinationId, clientDestinationId);
+        mediator.onMessage(putRequest);
+        
+        addStep("Retrieve the FinalResponse for the put request", "The put response should be sent by the pillar.");
+        PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FAILURE);
+        
+        Assert.assertEquals(finalResponse,
+                msgFactory.createPutFileFinalResponse(
+                        finalResponse.getChecksumDataForNewFile(),
+                        finalResponse.getCorrelationID(), 
+                        finalResponse.getFileAddress(), 
+                        finalResponse.getFileID(), 
+                        finalResponse.getPillarChecksumSpec(), 
+                        pillarId, 
+                        finalResponse.getReplyTo(), 
+                        finalResponse.getResponseInfo(), 
+                        finalResponse.getTo()));
+    }
+    
+
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarPutTestFileAlreadyExistsCase() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject put requests on a file, which it already have.");

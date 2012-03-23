@@ -26,6 +26,7 @@ package org.bitrepository.pillar.referencepillar.messagehandler;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URL;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
@@ -107,15 +108,48 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         }
         validateChecksumSpecification(message.getChecksumRequestForNewFile());
         
-        // verify, that we already have the file
+        checkThatTheFileDoesNotAlreadyExist(message);
+        checkSpaceForStoringNewFile(message);
+    }
+    
+    /**
+     * Validates that the file is not already within the archive. 
+     * Otherwise an {@link InvalidMessageException} with the appropriate errorcode is thrown.
+     * @param message The request with the filename to validate.
+     */
+    private void checkThatTheFileDoesNotAlreadyExist(PutFileRequest message) {
         if(archive.hasFile(message.getFileID())) {
-            log.warn("Cannot perform put for a file, '" + message.getFileID() 
-                    + "', which we already have within the archive");
-            // Then tell the mediator, that we failed.
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
-            fri.setResponseText("File is already within archive.");
-            throw new InvalidMessageException(fri);
+            ResponseInfo irInfo = new ResponseInfo();
+            irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
+            irInfo.setResponseText("The file '" + message.getFileID() 
+                    + "' already exists within the archive.");
+            
+            throw new InvalidMessageException(irInfo);
+        }
+    }
+    
+    /**
+     * Validates that enough space exists is left in the archive.
+     * Otherwise an {@link InvalidMessageException} with the appropriate errorcode is thrown.
+     * @param message The request with the size of the file.
+     */
+    private void checkSpaceForStoringNewFile(PutFileRequest message) {
+        BigInteger fileSize = message.getFileSize();
+        if(fileSize == null) {
+            log.debug("No file size given in the identification request. "
+                    + "Validating that the archive has any space left.");
+            fileSize = BigInteger.ZERO;
+        }
+        
+        long useableSizeLeft = archive.sizeLeftInArchive() 
+                - settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
+        if(useableSizeLeft < fileSize.longValue()) {
+            ResponseInfo irInfo = new ResponseInfo();
+            irInfo.setResponseCode(ResponseCode.FAILURE);
+            irInfo.setResponseText("Not enough space left in this pillar. Requires '" 
+                    + fileSize.longValue() + "' but has only '" + useableSizeLeft + "'");
+            
+            throw new InvalidMessageException(irInfo);
         }
     }
     
