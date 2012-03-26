@@ -13,11 +13,13 @@ public class ServiceUrl {
     private static final String ALARMURL = "org.bitrepository.webclient.alarmserviceurl"; 
     private static final String AUDITTRAILURL = "org.bitrepository.webclient.audittrailserviceurl"; 
     private static final String INTEGRITYURL = "org.bitrepository.webclient.integrityserviceurl"; 
+    private static final String MONITORINGURL = "org.bitrepository.webclient.monitoringserviceurl";
     private static final String DEFAULTHTTPURL = "org.bitrepository.webclient.defaulthttpserverurl"; 
         
 	private static String alarmUrl = "";
 	private static String auditTrailUrl = "";
 	private static String integrityUrl = "";
+    private static String monitoringUrl = "";
 	private static String defaultHttpUrl = "";
 	private static String configDir;
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -44,6 +46,7 @@ public class ServiceUrl {
     		alarmUrl = properties.getProperty(ALARMURL);
     		auditTrailUrl = properties.getProperty(AUDITTRAILURL);
     		integrityUrl = properties.getProperty(INTEGRITYURL);
+    		monitoringUrl = properties.getProperty(MONITORINGURL);
     		defaultHttpUrl = properties.getProperty(DEFAULTHTTPURL);
     		log.debug("Properties has been loaded, alarm: " + alarmUrl + ", auditTrail: " + auditTrailUrl + 
     				", integrity: " + integrityUrl + ", http: " + defaultHttpUrl);
@@ -69,6 +72,10 @@ public class ServiceUrl {
 	
 	public String getIntegrityServiceUrl() {
 		return integrityUrl;
+	}
+	
+	public String getMonitoringServiceUrl() {
+	    return integrityUrl;
 	}
 	
 	public String getDefaultHttpServerUrl() {
