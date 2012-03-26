@@ -1,4 +1,4 @@
-package main.java.org.bitrepository.monitoringservice.webservice;
+package org.bitrepository.monitoringservice.webservice;
 
 import org.bitrepository.monitoringservice.MonitoringService;
 import org.bitrepository.monitoringservice.MonitoringServiceFactory;
@@ -15,7 +15,7 @@ public class RestMonitoringService {
 		return "";
 	}
 	
-	public String getCompnentStatuses() {
+	public String getComponentStatuses() {
 		return "";
 	}
 }
