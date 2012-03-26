@@ -56,7 +56,7 @@ import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.utils.Base64Utils;
+import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -225,7 +225,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
         String checksum = ChecksumUtils.generateChecksum(file, csType);
         singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
         singleFileResult.setFileID(fileId);
-        singleFileResult.setChecksumValue(Base64Utils.encodeBase64(checksum));
+        singleFileResult.setChecksumValue(Base16Utils.encodeBase16(checksum));
         
         return singleFileResult;
     }

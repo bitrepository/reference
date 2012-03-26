@@ -48,7 +48,7 @@ import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.utils.Base64Utils;
+import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.testng.Assert;
@@ -116,7 +116,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ChecksumDataForFileTYPE checksumDataForFile = new ChecksumDataForFileTYPE();
         checksumDataForFile.setCalculationTimestamp(CalendarUtils.getEpoch());
         checksumDataForFile.setChecksumSpec(csMD5);
-        checksumDataForFile.setChecksumValue(Base64Utils.encodeBase64(FILE_CHECKSUM_MD5));
+        checksumDataForFile.setChecksumValue(Base16Utils.encodeBase16(FILE_CHECKSUM_MD5));
         Date startDate = new Date();
         ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(new FileInputStream(testfile), 
                 new URL(FILE_ADDRESS));
@@ -246,7 +246,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ChecksumDataForFileTYPE checksumDataForFile = new ChecksumDataForFileTYPE();
         checksumDataForFile.setCalculationTimestamp(CalendarUtils.getEpoch());
         checksumDataForFile.setChecksumSpec(csMD5);
-        checksumDataForFile.setChecksumValue(Base64Utils.encodeBase64(FILE_CHECKSUM_MD5));
+        checksumDataForFile.setChecksumValue(Base16Utils.encodeBase16(FILE_CHECKSUM_MD5));
         
         addStep("Create and send the operation message to the pillar.", "Should be received and handled by the pillar.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, checksumDataForFile, 
@@ -338,7 +338,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         csSHA1.setChecksumType(ChecksumType.SHA1);
 
         String CORRECT_FILE_CHECKSUM_MD5 = ChecksumUtils.generateChecksum(testfile, csMD5);
-        byte[] WRONG_FILE_CHECKSUM_MD5 = Base64Utils.encodeBase64("erroneous-checksum");
+        byte[] WRONG_FILE_CHECKSUM_MD5 = Base16Utils.encodeBase16("erroneous-checksum");
         ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(new FileInputStream(testfile), 
                 new URL(FILE_ADDRESS));
         ChecksumDataForFileTYPE checksumDataForFile = new ChecksumDataForFileTYPE();
@@ -407,8 +407,8 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         Assert.assertTrue(ir.getResponseText().contains(CORRECT_FILE_CHECKSUM_MD5), 
                 "The response should contain the actual checksum '" + CORRECT_FILE_CHECKSUM_MD5 + "', but was: '"
                 + ir.getResponseText());
-        Assert.assertTrue(ir.getResponseText().contains(Base64Utils.decodeBase64(WRONG_FILE_CHECKSUM_MD5)), 
-                "The response should contain the wrong checksum '" + Base64Utils.decodeBase64(WRONG_FILE_CHECKSUM_MD5) 
+        Assert.assertTrue(ir.getResponseText().contains(Base16Utils.decodeBase16(WRONG_FILE_CHECKSUM_MD5)), 
+                "The response should contain the wrong checksum '" + Base16Utils.decodeBase16(WRONG_FILE_CHECKSUM_MD5) 
                 + "', but was: '" + ir.getResponseText());
     }
 }

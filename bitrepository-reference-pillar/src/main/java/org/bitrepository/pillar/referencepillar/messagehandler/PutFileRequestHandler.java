@@ -44,7 +44,7 @@ import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.utils.Base64Utils;
+import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,7 +194,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
                 //&& message.getChecksumDataForNewFile().getChecksumDataItem() != null) {
         	ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
             String calculatedChecksum = ChecksumUtils.generateChecksum(fileForValidation, csType.getChecksumSpec());
-            String expectedChecksum = Base64Utils.decodeBase64(csType.getChecksumValue());
+            String expectedChecksum = Base16Utils.decodeBase16(csType.getChecksumValue());
             if(!calculatedChecksum.equals(expectedChecksum)) {
                 log.error("Expected checksums '" + expectedChecksum + "' but the checksum was '" 
                         + calculatedChecksum + "'.");

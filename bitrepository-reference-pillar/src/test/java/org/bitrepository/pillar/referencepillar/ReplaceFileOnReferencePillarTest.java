@@ -44,7 +44,7 @@ import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.utils.Base64Utils;
+import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.testng.Assert;
@@ -111,7 +111,7 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ChecksumDataForFileTYPE checksumDataForNewFile = new ChecksumDataForFileTYPE();
         checksumDataForNewFile.setCalculationTimestamp(CalendarUtils.getEpoch());
         checksumDataForNewFile.setChecksumSpec(csSpecExisting);
-        checksumDataForNewFile.setChecksumValue(Base64Utils.encodeBase64(REPLACE_FILE_CHECKSUM_MD5));
+        checksumDataForNewFile.setChecksumValue(Base16Utils.encodeBase16(REPLACE_FILE_CHECKSUM_MD5));
         Date startDate = new Date();
         ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(new FileInputStream(replaceFile), 
                 new URL(FILE_ADDRESS));
@@ -123,7 +123,7 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ChecksumDataForFileTYPE csDataDelete = new ChecksumDataForFileTYPE();
         csDataDelete.setCalculationTimestamp(CalendarUtils.getEpoch());
         csDataDelete.setChecksumSpec(csSpecExisting);
-        csDataDelete.setChecksumValue(Base64Utils.encodeBase64(ChecksumUtils.generateChecksum(oldFile, csSpecExisting)));
+        csDataDelete.setChecksumValue(Base16Utils.encodeBase16(ChecksumUtils.generateChecksum(oldFile, csSpecExisting)));
         
         File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
@@ -194,7 +194,7 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         Assert.assertNotNull(receivedChecksumData.getChecksumSpec());
         Assert.assertEquals(receivedChecksumData.getChecksumSpec(), replaceRequest.getChecksumRequestForNewFile(), 
                 "Should return the same type of checksum as requested.");
-        Assert.assertEquals(Base64Utils.decodeBase64(receivedChecksumData.getChecksumValue()), 
+        Assert.assertEquals(Base16Utils.decodeBase16(receivedChecksumData.getChecksumValue()), 
                 REPLACE_FILE_CHECKSUM_MD5);
         Assert.assertTrue(receivedChecksumData.getCalculationTimestamp().toGregorianCalendar().getTimeInMillis() > startDate.getTime(), 
                 "The received timestamp should be after the start of this test '" + startDate + "', but was "
@@ -225,7 +225,7 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ChecksumDataForFileTYPE checksumDataForNewFile = new ChecksumDataForFileTYPE();
         checksumDataForNewFile.setCalculationTimestamp(CalendarUtils.getEpoch());
         checksumDataForNewFile.setChecksumSpec(csSpecExisting);
-        checksumDataForNewFile.setChecksumValue(Base64Utils.encodeBase64(REPLACE_FILE_CHECKSUM_MD5));
+        checksumDataForNewFile.setChecksumValue(Base16Utils.encodeBase16(REPLACE_FILE_CHECKSUM_MD5));
         ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(new FileInputStream(replaceFile), 
                 new URL(FILE_ADDRESS));
         
@@ -236,7 +236,7 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ChecksumDataForFileTYPE csDataDelete = new ChecksumDataForFileTYPE();
         csDataDelete.setCalculationTimestamp(CalendarUtils.getEpoch());
         csDataDelete.setChecksumSpec(csSpecExisting);
-        csDataDelete.setChecksumValue(Base64Utils.encodeBase64(ChecksumUtils.generateChecksum(oldFile, csSpecExisting)));
+        csDataDelete.setChecksumValue(Base16Utils.encodeBase16(ChecksumUtils.generateChecksum(oldFile, csSpecExisting)));
         
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(
@@ -283,7 +283,7 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ChecksumDataForFileTYPE checksumDataForNewFile = new ChecksumDataForFileTYPE();
         checksumDataForNewFile.setCalculationTimestamp(CalendarUtils.getEpoch());
         checksumDataForNewFile.setChecksumSpec(csSpecExisting);
-        checksumDataForNewFile.setChecksumValue(Base64Utils.encodeBase64(REPLACE_FILE_CHECKSUM_MD5));
+        checksumDataForNewFile.setChecksumValue(Base16Utils.encodeBase16(REPLACE_FILE_CHECKSUM_MD5));
         ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(new FileInputStream(replaceFile), 
                 new URL(FILE_ADDRESS));
         
@@ -294,7 +294,7 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ChecksumDataForFileTYPE csDataDelete = new ChecksumDataForFileTYPE();
         csDataDelete.setCalculationTimestamp(CalendarUtils.getEpoch());
         csDataDelete.setChecksumSpec(csSpecExisting);
-        csDataDelete.setChecksumValue(Base64Utils.encodeBase64(ChecksumUtils.generateChecksum(oldFile, csSpecExisting)));
+        csDataDelete.setChecksumValue(Base16Utils.encodeBase16(ChecksumUtils.generateChecksum(oldFile, csSpecExisting)));
         
         File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
@@ -347,7 +347,7 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ChecksumDataForFileTYPE checksumDataForNewFile = new ChecksumDataForFileTYPE();
         checksumDataForNewFile.setCalculationTimestamp(CalendarUtils.getEpoch());
         checksumDataForNewFile.setChecksumSpec(csSpecExisting);
-        checksumDataForNewFile.setChecksumValue(Base64Utils.encodeBase64(REPLACE_FILE_CHECKSUM_MD5));
+        checksumDataForNewFile.setChecksumValue(Base16Utils.encodeBase16(REPLACE_FILE_CHECKSUM_MD5));
         ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(new FileInputStream(replaceFile), 
                 new URL(FILE_ADDRESS));
         
@@ -358,7 +358,7 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ChecksumDataForFileTYPE csDataDelete = new ChecksumDataForFileTYPE();
         csDataDelete.setCalculationTimestamp(CalendarUtils.getEpoch());
         csDataDelete.setChecksumSpec(csSpecExisting);
-        csDataDelete.setChecksumValue(Base64Utils.encodeBase64(ChecksumUtils.generateChecksum(oldFile, csSpecExisting)));
+        csDataDelete.setChecksumValue(Base16Utils.encodeBase16(ChecksumUtils.generateChecksum(oldFile, csSpecExisting)));
         
         File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
@@ -435,7 +435,7 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ChecksumDataForFileTYPE checksumDataForNewFile = new ChecksumDataForFileTYPE();
         checksumDataForNewFile.setCalculationTimestamp(CalendarUtils.getEpoch());
         checksumDataForNewFile.setChecksumSpec(csSpecExisting);
-        checksumDataForNewFile.setChecksumValue(Base64Utils.encodeBase64(REPLACE_FILE_CHECKSUM_MD5));
+        checksumDataForNewFile.setChecksumValue(Base16Utils.encodeBase16(REPLACE_FILE_CHECKSUM_MD5));
         ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(new FileInputStream(replaceFile), 
                 new URL(FILE_ADDRESS));
         
@@ -446,7 +446,7 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ChecksumDataForFileTYPE csDataDelete = new ChecksumDataForFileTYPE();
         csDataDelete.setCalculationTimestamp(CalendarUtils.getEpoch());
         csDataDelete.setChecksumSpec(csSpecExisting);
-        csDataDelete.setChecksumValue(Base64Utils.encodeBase64("bad-checksum"));
+        csDataDelete.setChecksumValue(Base16Utils.encodeBase16("bad-checksum"));
         
         File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"

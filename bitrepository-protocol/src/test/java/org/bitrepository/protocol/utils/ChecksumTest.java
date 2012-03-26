@@ -127,6 +127,7 @@ public class ChecksumTest extends ExtendedTestCase {
 
     @Test(groups = { "regressiontest" })
     public void testChecksumAlgorithmValidation() throws Exception {
+        addDescription("Test the algorithm validation for every single possible checksum algorithm.");
         for (ChecksumType csType : ChecksumType.values()) {
             if(csType == ChecksumType.OTHER) {
                 validateOtherChecksumType(csType);

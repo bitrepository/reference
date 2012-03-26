@@ -21,27 +21,29 @@
  */
 package org.bitrepository.protocol.utils;
 
+import org.bitrepository.common.ArgumentValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for handling encoding and decoding of base64 bytes.
  */
-public class Base64Utils {
+public class Base16Utils {
     /** The log.*/
-    private static final Logger log = LoggerFactory.getLogger(Base64Utils.class);
+    private static final Logger log = LoggerFactory.getLogger(Base16Utils.class);
     
     /**
      * Private constructor to prevent instantiation of this utility class.
      */
-    private Base64Utils() {}
+    private Base16Utils() {}
     
     /**
      * Decodes a Base64 encoded byte set into a human readable string.
      * @param data The data to decode.
      * @return The decoded data.
      */
-    public static String decodeBase64(byte[] data) {
+    public static String decodeBase16(byte[] data) {
+        ArgumentValidator.checkNotNull(data, "byte[] data");
         StringBuffer sb = new StringBuffer(data.length * 2);
         for (int i = 0; i < data.length; i++){
           int v = data[i] & 0xff;
@@ -60,7 +62,11 @@ public class Base64Utils {
      * @param hexString The string to encode to base64.
      * @return The string encoded to base64.
      */
-    public static byte[] encodeBase64(String hexString) {
+    public static byte[] encodeBase16(String hexString) {
+        ArgumentValidator.checkNotNullOrEmpty(hexString, "String hexString");
+        ArgumentValidator.checkTrue((hexString.length() % 2) == 0, "String hexString, '" + hexString 
+                + "', must be an even number of characters.");
+        
         int len = hexString.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {

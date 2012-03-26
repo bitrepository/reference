@@ -62,6 +62,9 @@ public class ChecksumPillar {
         log.info("ReferencePillar started!");
     }
     
+    /**
+     * Close the pillar, and thus also the mediator.
+     */
     public void close() {
         mediator.close();
     }

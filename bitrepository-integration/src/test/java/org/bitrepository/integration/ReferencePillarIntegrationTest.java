@@ -47,7 +47,7 @@ import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.PillarComponentFactory;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.utils.Base64Utils;
+import org.bitrepository.protocol.utils.Base16Utils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -70,9 +70,9 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
 //        String FILE_ID = DEFAULT_FILE_ID;
         String CHECKSUM_STRING = "940a51b250e7aa82d8e8ea31217ff267";
-        byte[] CHECKSUM = Base64Utils.encodeBase64(CHECKSUM_STRING);
+        byte[] CHECKSUM = Base16Utils.encodeBase16(CHECKSUM_STRING);
         String CHECKSUM_NEW_FILE_STRING = "f1d6f02be917ed6cdade56fa60653918";
-        byte[] CHECKSUM_NEW_FILE = Base64Utils.encodeBase64(CHECKSUM_NEW_FILE_STRING);
+        byte[] CHECKSUM_NEW_FILE = Base16Utils.encodeBase16(CHECKSUM_NEW_FILE_STRING);
         ChecksumSpecTYPE DEFAULT_CHECKSUM_TYPE = new ChecksumSpecTYPE();
         DEFAULT_CHECKSUM_TYPE.setChecksumSalt(null);
         DEFAULT_CHECKSUM_TYPE.setChecksumType(ChecksumType.MD5);

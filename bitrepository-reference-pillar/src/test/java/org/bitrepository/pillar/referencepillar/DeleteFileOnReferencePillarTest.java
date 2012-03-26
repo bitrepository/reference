@@ -41,7 +41,7 @@ import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.messagefactories.DeleteFileMessageFactory;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
-import org.bitrepository.protocol.utils.Base64Utils;
+import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -105,7 +105,7 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ChecksumDataForFileTYPE csData = new ChecksumDataForFileTYPE();
         csData.setCalculationTimestamp(CalendarUtils.getEpoch());
         csData.setChecksumSpec(csSpecExisting);
-        csData.setChecksumValue(Base64Utils.encodeBase64(ChecksumUtils.generateChecksum(testfile, csSpecExisting)));
+        csData.setChecksumValue(Base16Utils.encodeBase16(ChecksumUtils.generateChecksum(testfile, csSpecExisting)));
         
         File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
@@ -183,7 +183,7 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ChecksumDataForFileTYPE csData = new ChecksumDataForFileTYPE();
         csData.setCalculationTimestamp(CalendarUtils.getEpoch());
         csData.setChecksumSpec(csSpecExisting);
-        csData.setChecksumValue(Base64Utils.encodeBase64(ChecksumUtils.generateChecksum(testfile, csSpecExisting)));
+        csData.setChecksumValue(Base16Utils.encodeBase16(ChecksumUtils.generateChecksum(testfile, csSpecExisting)));
         
         File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
@@ -238,7 +238,7 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ChecksumDataForFileTYPE csData = new ChecksumDataForFileTYPE();
         csData.setCalculationTimestamp(CalendarUtils.getEpoch());
         csData.setChecksumSpec(csSpecExisting);
-        csData.setChecksumValue(Base64Utils.encodeBase64(ChecksumUtils.generateChecksum(testfile, csSpecRequest)));
+        csData.setChecksumValue(Base16Utils.encodeBase16(ChecksumUtils.generateChecksum(testfile, csSpecRequest)));
         
         File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"

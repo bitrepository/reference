@@ -45,10 +45,10 @@ import org.bitrepository.protocol.CoordinationLayerException;
  */
 public final class ChecksumUtils {
     
-    /** The magical integer '4'.*/
-    private static final int MAGIC_INTEGER_4 = 4;
-    /** The magical integer for the hexadecimal '0x0F'.*/
-    private static final int MAGIC_INTEGER_OXOF = 0x0F;
+    /** The number of bytes per hexadecimal digit.*/
+    private static final int BYTES_PER_HEX = 4;
+    /** The maximal value of a single hexadecimal digit: '0x0F'.*/
+    private static final int SINGLE_HEX_MAX = 0x0F;
     /** The maximal size of the byte array for digest.*/
     private static final int BYTE_ARRAY_SIZE_FOR_DIGEST = 4096;
     
@@ -119,7 +119,7 @@ public final class ChecksumUtils {
      * type as algorithm.
      * 
      * NOTE: the 'SHA' algorithm need a dash, '-', after the SHA, which is currently not in the protocol defined 
-     * algorithm name.
+     * algorithm names.
      * 
      * @param content The input stream with the content to calculate the checksum of.
      * @param csType The type of checksum to calculate, e.g. the algorithm.
@@ -149,6 +149,9 @@ public final class ChecksumUtils {
      * Calculation of the checksum for a given input stream through the use of HMAC based on the checksum type as 
      * algorithm and the optional salt.
      * 
+     * NOTE: the 'HMAC' algorithms need to have the underscore, '_', after the HMAC removed, which is currently in the 
+     * protocol defined algorithm names.
+     * 
      * @param content The input stream with the content to calculate the checksum of.
      * @param csType The type of checksum to calculate, e.g. the algorithm.
      * @param salt The salt for key encrypting the HMAC calculation.
@@ -162,12 +165,7 @@ public final class ChecksumUtils {
             String algorithmName = csType.name().replace("_", "");
             
             Mac messageAuthenticationCode = Mac.getInstance(algorithmName);
-            Key key;
-            if(salt == null || salt.length == 0) {
-                key = new SecretKeySpec(new byte[]{0}, algorithmName);
-            } else {
-                key = new SecretKeySpec(salt, algorithmName);
-            }
+            Key key = new SecretKeySpec(salt, algorithmName);
             
             // digest the content for calculating the checksum.
             messageAuthenticationCode.init(key);
@@ -193,8 +191,8 @@ public final class ChecksumUtils {
         
         StringBuffer sb = new StringBuffer("");
         for (byte b : byteArray) {
-            sb.append(hexdigit[(b >> MAGIC_INTEGER_4) & MAGIC_INTEGER_OXOF]);
-            sb.append(hexdigit[b & MAGIC_INTEGER_OXOF]);
+            sb.append(hexdigit[(b >> BYTES_PER_HEX) & SINGLE_HEX_MAX]);
+            sb.append(hexdigit[b & SINGLE_HEX_MAX]);
         }
         return sb.toString();
     }
