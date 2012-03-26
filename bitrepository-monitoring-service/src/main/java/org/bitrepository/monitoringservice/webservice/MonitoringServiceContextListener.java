@@ -48,7 +48,7 @@ public class MonitoringServiceContextListener implements ServletContextListener 
      */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        String confDir = sce.getServletContext().getInitParameter("auditTrailServiceConfDir");
+        String confDir = sce.getServletContext().getInitParameter("monitoringServiceConfDir");
         if(confDir == null) {
             throw new RuntimeException("No configuration directory specified!");
         }

@@ -6,6 +6,7 @@
     <version>0.12-SNAPSHOT</version>
   </parent>
   <artifactId>bitrepository-monitoring-service</artifactId>
+  <packaging>war</packaging>
   <name>Bitrepository Monitoring Service</name>
   <description>Contains functionality for monitoring the Bitrepository system. The monitoring comonent is part of the system infrastructure.</description>
   <dependencies>
