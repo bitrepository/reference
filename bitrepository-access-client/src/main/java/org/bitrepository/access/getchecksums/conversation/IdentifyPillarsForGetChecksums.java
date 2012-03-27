@@ -121,7 +121,7 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
     
     @Override
     public void onMessage(GetChecksumsFinalResponse response) {
-        monitor.outOfSequenceMessage("Received GetChecksumsProgressResponse "
+        monitor.outOfSequenceMessage("Received GetChecksumsFinalResponse "
                 + "from " + response.getPillarID() + " before sending GetChecksumsRequest.");
     }
     
