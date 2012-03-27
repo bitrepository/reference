@@ -23,7 +23,35 @@
     </div>
     
     <script>
+        jQuery.fn.updateComponentStatus = function() {
+            $.getJSON('<%= su.getMonitoringServiceUrl() %>/monitoring/MonitoringService/getComponentStatus/',{}, function(j){
+                var htmlTable;
+                htmlTable = "<table id=\"users\" class=\"ui-widget ui-widget-content\">";
+                htmlTable += "<thead> <tr class=\"ui-widget-header\">";
+                htmlTable += "<th width=\"100\">Component ID</th>";
+                htmlTable += "<th width=\"100\">Status</th>";
+                htmlTable += "<th width=\"300\">Info</th>";
+                htmlTable += "</tr></thead><tbody>";
+                for (var i = 0; i < j.length; i++) {
+                    htmlTable += "<tr><td>" + j[i].componentID + "</td><td>" + j[i].status + "</td> <td>" + j[i].info + "</td></tr>";
+               }
+                htmlTable += "</tbody></table>"; 
+                $("#componentStatus").html(htmlTable);
+            })
+        }
+
+    </script>
+
+    <script>
+        var update_component_status = setInterval(
+        function() {
+            $().updateComponentStatus();
+            }, 2500);
+    </script> 
+    
+    <script>
         $(function(){
+            $().updateComponentStatus();
             $.getJSON('<%= su.getMonitoringServiceUrl() %>/monitoring/MonitoringService/getMonitoringConfiguration/',{}, function(j){
                 var htmlTable = "<table id=\"users\" class=\"ui-widget ui-widget-content\">";
                 htmlTable += "<thead> <tr class=\"ui-widget-header\">";
