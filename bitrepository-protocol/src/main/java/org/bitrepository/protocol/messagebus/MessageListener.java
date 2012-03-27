@@ -45,6 +45,8 @@ import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
@@ -343,4 +345,18 @@ public interface MessageListener {
      * @param message The message received.
      */
     void onMessage(IdentifyContributorsForGetAuditTrailsResponse message);
+    
+    /**
+     * Action to perform upon receiving a general message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyContributorsForGetStatusRequest message);
+    
+    /**
+     * Action to perform upon receiving a general message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyContributorsForGetStatusResponse message);
 }

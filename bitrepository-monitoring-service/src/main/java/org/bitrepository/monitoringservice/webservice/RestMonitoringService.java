@@ -32,7 +32,16 @@ public class RestMonitoringService {
 		return sb.toString();
 	}
 	
-	public String getComponentStatuses() {
-		return "";
+	@GET
+    @Path("/getComponentStatus/")
+    @Produces("text/json")
+	public String getComponentStatus() {
+	    StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        sb.append("{\"status\":\" Online \", \"componentID\": \" sbtape3 \", \"info\": \" Foobar! I'm online\"},");
+        sb.append("{\"status\":\" Online \", \"componentID\": \" sbtape1 \", \"info\": \" Foobar! I'm online\"},");
+        sb.append("{\"status\":\" Online \", \"componentID\": \" sbtape2 \", \"info\": \" Foobar! I'm online\"}");
+        sb.append("]");
+        return sb.toString();
 	}
 }

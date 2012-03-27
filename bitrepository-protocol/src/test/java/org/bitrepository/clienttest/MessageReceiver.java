@@ -54,6 +54,8 @@ import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
@@ -328,6 +330,14 @@ public class MessageReceiver {
         }
         @Override
         public void onMessage(IdentifyContributorsForGetAuditTrailsResponse message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(IdentifyContributorsForGetStatusRequest message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(IdentifyContributorsForGetStatusResponse message) {
             messageModel.addMessage(message);
         }
         @Override
