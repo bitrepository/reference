@@ -127,7 +127,6 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
         reply.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
                 settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
-        reply.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
@@ -160,6 +159,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
         res.setCollectionID(settings.getCollectionID());
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarChecksumSpec(checksumType);
         
         return res;
     }

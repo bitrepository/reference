@@ -42,6 +42,7 @@ import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,9 +144,9 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
         
-        String checksum = null;
+        String calculatedChecksum = null;
         try {
-            checksum = ChecksumUtils.generateChecksum(fe.downloadFromServer(new URL(message.getFileAddress())),
+            calculatedChecksum = ChecksumUtils.generateChecksum(fe.downloadFromServer(new URL(message.getFileAddress())),
                     checksumType);
         } catch (IOException e) {
             throw new CoordinationLayerException("Could not download the file '" + message.getFileID() 
@@ -154,18 +155,19 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         
         if(message.getChecksumDataForNewFile() != null) {
             ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
-            if(!checksum.equals(new String(csType.getChecksumValue()))) {
-                log.error("Expected checksums '" + new String(csType.getChecksumValue()) + "' but the checksum was '" 
-                        + checksum + "'.");
-                throw new IllegalStateException("Wrong checksum! Expected: [" + new String(csType.getChecksumValue()) 
-                + "], but calculated: [" + checksum + "]");
+            String givenChecksum = Base16Utils.decodeBase16(csType.getChecksumValue());
+            if(!calculatedChecksum.equals(givenChecksum)) {
+                log.error("Expected checksums '" + givenChecksum + "' but the checksum was '" 
+                        + calculatedChecksum + "'.");
+                throw new IllegalStateException("Wrong checksum! Expected: [" + givenChecksum 
+                + "], but calculated: [" + calculatedChecksum + "]");
             }
         } else {
             // TODO is such a checksum required?
             log.warn("No checksums for validating the retrieved file.");
         }
         
-        cache.putEntry(message.getFileID(), checksum);
+        cache.putEntry(message.getFileID(), calculatedChecksum);
     }
     
     /**
@@ -236,6 +238,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         res.setCollectionID(settings.getCollectionID());
         res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarChecksumSpec(checksumType);
         
         return res;
     }
@@ -262,6 +265,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         res.setCollectionID(settings.getCollectionID());
         res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarChecksumSpec(checksumType);
         
         return res;
     }

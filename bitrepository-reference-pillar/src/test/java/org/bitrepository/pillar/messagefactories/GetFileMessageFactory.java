@@ -141,7 +141,7 @@ public class GetFileMessageFactory extends TestMessageFactory {
      * Method for generating new correlation IDs.
      * @return A unique correlation id.
      */
-    private String getNewCorrelationID() {
+    public String getNewCorrelationID() {
         return UUID.randomUUID().toString();
     }
 }

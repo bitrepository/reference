@@ -28,11 +28,15 @@ import java.math.BigInteger;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
+import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.Base16Utils;
 
 /**
  * Abstract level for message handling. 
@@ -61,7 +65,7 @@ public abstract class ChecksumPillarMessageHandler<T> {
     /** The reference checksum cache.*/
     protected final ChecksumCache cache;
     /** The specifications for the checksum type of this ChecksumPillar. */
-    protected final ChecksumSpecTYPE checksumType;
+    protected ChecksumSpecTYPE checksumType;
     
     /**
      * Constructor. 
@@ -82,12 +86,11 @@ public abstract class ChecksumPillarMessageHandler<T> {
         this.alarmDispatcher = alarmDispatcher;
         this.cache = refCache;
         this.checksumType = new ChecksumSpecTYPE();
-        
         checksumType.setChecksumType(ChecksumType.fromValue(
                 settings.getReferenceSettings().getPillarSettings().getChecksumPillarChecksumSpecificationType()));
         String salt = settings.getReferenceSettings().getPillarSettings().getChecksumPillarChecksumSpecificationSalt();
         if(salt != null) {
-            checksumType.setChecksumSalt(salt.getBytes());
+            checksumType.setChecksumSalt(Base16Utils.encodeBase16(salt));
         }
     }
     
@@ -107,10 +110,22 @@ public abstract class ChecksumPillarMessageHandler<T> {
             return;
         }
         
-        if(!(checksumType.getChecksumType() == csSpec.getChecksumType()) 
-                || !(new String(checksumType.getChecksumSalt()) == new String(csSpec.getChecksumSalt()))) {
-            throw new IllegalArgumentException("Cannot handle the checksum specification '" + csSpec + "'."
+        if(!(checksumType.getChecksumType() == csSpec.getChecksumType())) {
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+            ri.setResponseText("Cannot handle the checksum specification '" + csSpec + "'."
                     + "This checksum pillar can only handle '" + checksumType + "'");
+            throw new InvalidMessageException(ri);
+        }
+        
+        String mySalt = Base16Utils.decodeBase16(checksumType.getChecksumSalt());
+        String csSalt = Base16Utils.decodeBase16(csSpec.getChecksumSalt());
+        if(mySalt != csSalt) {
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+            ri.setResponseText("Cannot handle the checksum specification '" + csSpec + "'."
+                    + "This checksum pillar can only handle '" + checksumType + "'");
+            throw new InvalidMessageException(ri);
         }
     }
     

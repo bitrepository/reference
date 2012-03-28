@@ -22,18 +22,17 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.referencepillar;
+package org.bitrepository.pillar.checksumpillar;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.util.Date;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
@@ -44,13 +43,11 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
+import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
-import org.bitrepository.pillar.referencepillar.ReferenceArchive;
-import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
-import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -59,60 +56,56 @@ import org.testng.annotations.Test;
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
-public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
+public class PutFileOnChecksumPillarTest extends DefaultFixturePillarTest {
     PutFileMessageFactory msgFactory;
     
-    ReferenceArchive archive;
-    ReferencePillarMediator mediator;
+    MemoryCache cache;
+    ChecksumPillarMediator mediator;
     
     @BeforeMethod (alwaysRun=true)
-    public void initialiseGetChecksumsTests() throws Exception {
+    public void initialiseDeleteFileTests() throws Exception {
         msgFactory = new PutFileMessageFactory(settings);
         File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        settings.getCollectionSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         if(dir.exists()) {
             FileUtils.delete(dir);
         }
         
         addStep("Initialize the pillar.", "Should not be a problem.");
-        archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        mediator = new ReferencePillarMediator(messageBus, settings, archive);
+        cache = new MemoryCache();
+        mediator = new ChecksumPillarMediator(messageBus, settings, cache);
     }
     
     @AfterMethod (alwaysRun=true) 
     public void closeArchive() {
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        if(dir.exists()) {
-            FileUtils.delete(dir);
+        if(cache != null) {
+            cache.cleanUp();
         }
-        
         if(mediator != null) {
             mediator.close();
         }
     }
     
-    
     @SuppressWarnings("deprecation")
     @Test( groups = {"regressiontest", "pillartest"})
-    public void pillarPutTestSuccessCase() throws Exception {
-        addDescription("Tests the put functionality of the reference pillar for the successful scenario.");
-        addStep("Set up constants and variables.", "Should not fail here!");
+    public void checksumPillarPutTestSuccessCase() throws Exception {
+        addDescription("Tests the put functionality of the checksum pillar for the successful scenario.");
+        addStep("Setting up the variables for the test.", "Should be instantiated.");
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        String auditTrail = "GET-CHECKSUMS-TEST";
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        String auditTrail = null;
-        ChecksumSpecTYPE csSpecPillar = null;
-        
+        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+                ChecksumType.MD5.toString());
+        FileIDs fileids = new FileIDs();
+        fileids.setFileID(FILE_ID);
+
         addStep("Upload the test-file and calculate the checksum.", "Should be all-right");
         File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
         Long FILE_SIZE = testfile.length();
-        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         ChecksumSpecTYPE csMD5 = new ChecksumSpecTYPE();
         csMD5.setChecksumType(ChecksumType.MD5);
-        ChecksumSpecTYPE csSHA1 = new ChecksumSpecTYPE();
-        csSHA1.setChecksumType(ChecksumType.SHA1);
         String FILE_CHECKSUM_MD5 = ChecksumUtils.generateChecksum(testfile, csMD5);
-        String FILE_CHECKSUM_SHA1 = ChecksumUtils.generateChecksum(testfile, csSHA1);
         ChecksumDataForFileTYPE checksumDataForFile = new ChecksumDataForFileTYPE();
         checksumDataForFile.setCalculationTimestamp(CalendarUtils.getEpoch());
         checksumDataForFile.setChecksumSpec(csMD5);
@@ -136,7 +129,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         Assert.assertEquals(receivedIdentifyResponse, 
                 msgFactory.createIdentifyPillarsForPutFileResponse(
                         identifyRequest.getCorrelationID(),
-                        csSpecPillar,
+                        csMD5,
                         pillarId,
                         receivedIdentifyResponse.getReplyTo(),
                         receivedIdentifyResponse.getResponseInfo(),
@@ -147,7 +140,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         
         PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, checksumDataForFile, 
-                csSHA1, receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, FILE_SIZE, 
+                csMD5, receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, FILE_SIZE, 
                 pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
         if(useEmbeddedPillar()) {
             mediator.onMessage(putRequest);
@@ -192,120 +185,41 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         Assert.assertNotNull(receivedChecksumData.getChecksumSpec());
         Assert.assertEquals(receivedChecksumData.getChecksumSpec(), putRequest.getChecksumRequestForNewFile(), 
                 "Should return the same type of checksum as requested.");
-        Assert.assertEquals(new String(receivedChecksumData.getChecksumValue()), 
-                FILE_CHECKSUM_SHA1);
         Assert.assertTrue(receivedChecksumData.getCalculationTimestamp().toGregorianCalendar().getTimeInMillis() > startDate.getTime(), 
                 "The received timestamp should be after the start of this test '" + startDate + "', but was "
                         + receivedChecksumData.getCalculationTimestamp().toGregorianCalendar().getTime() + "'");
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
-    public void pillarPutTestFailedFileSizeIdentification() throws Exception {
-        addDescription("Tests that the ReferencePillar is able to reject a put operation for too large files "
-                + "in the identification process.");
-        addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
-        String auditTrail = null;
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        ChecksumSpecTYPE csSpecPillar = null;
-        
-        addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
-        IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
-                auditTrail, FILE_ID, Long.MAX_VALUE, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
-        
-        addStep("Retrieve and validate the response from the pillar.", 
-                "The pillar should make a response.");
-        IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
-                IdentifyPillarsForPutFileResponse.class);
-        Assert.assertEquals(receivedIdentifyResponse, 
-                msgFactory.createIdentifyPillarsForPutFileResponse(
-                        identifyRequest.getCorrelationID(),
-                        csSpecPillar,
-                        pillarId,
-                        receivedIdentifyResponse.getReplyTo(),
-                        receivedIdentifyResponse.getResponseInfo(),
-                        receivedIdentifyResponse.getTimeToDeliver(),
-                        receivedIdentifyResponse.getTo()));
-        
-        addStep("Validate that the identification has failed.", 
-                "The response info should give 'FAILURE'");
-        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), ResponseCode.FAILURE);
-    }
-    
-    @Test( groups = {"regressiontest", "pillartest"})
-    public void pillarPutTestFailedFileSizeOperation() throws Exception {
-        addDescription("Tests that the ReferencePillar is able to reject a put operation for too large files "
-                + "in the operation process.");
-        addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
-        String auditTrail = null;
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
-        Long FILE_SIZE = Long.MAX_VALUE;
-        
-        File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
-        Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
-
-        ChecksumSpecTYPE csMD5 = new ChecksumSpecTYPE();
-        csMD5.setChecksumType(ChecksumType.MD5);
-        String FILE_CHECKSUM_MD5 = ChecksumUtils.generateChecksum(testfile, csMD5);
-
-        ChecksumDataForFileTYPE checksumDataForFile = new ChecksumDataForFileTYPE();
-        checksumDataForFile.setCalculationTimestamp(CalendarUtils.getEpoch());
-        checksumDataForFile.setChecksumSpec(csMD5);
-        checksumDataForFile.setChecksumValue(Base16Utils.encodeBase16(FILE_CHECKSUM_MD5));
-        
-        addStep("Create and send the operation message to the pillar.", "Should be received and handled by the pillar.");
-        PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, checksumDataForFile, 
-                null, UUID.randomUUID().toString(), FILE_ADDRESS, FILE_ID, FILE_SIZE, 
-                pillarId, clientDestinationId, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(putRequest);
-        } else {
-            messageBus.sendMessage(putRequest);
-        }
-        
-        addStep("Retrieve the FinalResponse for the put request", "The put response should be sent by the pillar.");
-        PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
-        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FAILURE);
-        
-        Assert.assertEquals(finalResponse,
-                msgFactory.createPutFileFinalResponse(
-                        finalResponse.getChecksumDataForNewFile(),
-                        finalResponse.getCorrelationID(), 
-                        finalResponse.getFileAddress(), 
-                        finalResponse.getFileID(), 
-                        finalResponse.getPillarChecksumSpec(), 
-                        pillarId, 
-                        finalResponse.getReplyTo(), 
-                        finalResponse.getResponseInfo(), 
-                        finalResponse.getTo()));
-    }
-    
-
+    @SuppressWarnings("deprecation")
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarPutTestFileAlreadyExistsCase() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject put requests on a file, which it already have.");
-        addStep("Set up constants and variables.", "Should not fail here!");
-        String auditTrail = null;
+        addStep("Setting up the variables for the test.", "Should be instantiated.");
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        String auditTrail = "GET-CHECKSUMS-TEST";
+        String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        ChecksumSpecTYPE csSpecPillar = null;
-        
+        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+                ChecksumType.MD5.toString());
+        FileIDs fileids = new FileIDs();
+        fileids.setFileID(FILE_ID);
+
         addStep("Upload the test-file and calculate the checksum.", "Should be all-right");
         File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
         Long FILE_SIZE = testfile.length();
-        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        ChecksumSpecTYPE csMD5 = new ChecksumSpecTYPE();
+        csMD5.setChecksumType(ChecksumType.MD5);
+        String FILE_CHECKSUM_MD5 = ChecksumUtils.generateChecksum(testfile, csMD5);
+        ChecksumDataForFileTYPE checksumDataForFile = new ChecksumDataForFileTYPE();
+        checksumDataForFile.setCalculationTimestamp(CalendarUtils.getEpoch());
+        checksumDataForFile.setChecksumSpec(csMD5);
+        checksumDataForFile.setChecksumValue(Base16Utils.encodeBase16(FILE_CHECKSUM_MD5));
+        ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(new FileInputStream(testfile), 
+                new URL(FILE_ADDRESS));
         
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
-        Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
-                + dir.getAbsolutePath() + "'");
-        FileUtils.copyFile(testfile, new File(dir, FILE_ID));
+        addStep("Populate the memory cache with the file to delete.", "Should be possible.");
+        cache.putEntry(FILE_ID, FILE_CHECKSUM_MD5);
         
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
@@ -319,11 +233,11 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
-                IdentifyPillarsForPutFileResponse.class, 10, TimeUnit.SECONDS);
+                IdentifyPillarsForPutFileResponse.class);
         Assert.assertEquals(receivedIdentifyResponse, 
                 msgFactory.createIdentifyPillarsForPutFileResponse(
                         identifyRequest.getCorrelationID(),
-                        csSpecPillar,
+                        csMD5,
                         pillarId,
                         receivedIdentifyResponse.getReplyTo(),
                         receivedIdentifyResponse.getResponseInfo(),
@@ -341,21 +255,24 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
     public void pillarPutTestBadChecksumCase() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject put requests, "
                 + "when it gives a wrong checksum for validation.");
-        addStep("Set up constants and variables.", "Should not fail here!");
+        addStep("Setting up the variables for the test.", "Should be instantiated.");
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        String auditTrail = "GET-CHECKSUMS-TEST";
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
-        String auditTrail = null;
         String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        ChecksumSpecTYPE csSpecPillar = null;
-        
+        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+                ChecksumType.MD5.toString());
+        FileIDs fileids = new FileIDs();
+        fileids.setFileID(FILE_ID);
+
         addStep("Upload the test-file and calculate the checksum.", "Should be all-right");
         File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
         Long FILE_SIZE = testfile.length();
-        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         ChecksumSpecTYPE csMD5 = new ChecksumSpecTYPE();
         csMD5.setChecksumType(ChecksumType.MD5);
-        ChecksumSpecTYPE csSHA1 = new ChecksumSpecTYPE();
-        csSHA1.setChecksumType(ChecksumType.SHA1);
+        ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(new FileInputStream(testfile), 
+                new URL(FILE_ADDRESS));
 
         String CORRECT_FILE_CHECKSUM_MD5 = ChecksumUtils.generateChecksum(testfile, csMD5);
         byte[] WRONG_FILE_CHECKSUM_MD5 = Base16Utils.encodeBase16("erroneous-checksum");
@@ -381,7 +298,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         Assert.assertEquals(receivedIdentifyResponse, 
                 msgFactory.createIdentifyPillarsForPutFileResponse(
                         identifyRequest.getCorrelationID(),
-                        csSpecPillar,
+                        csMD5,
                         pillarId,
                         receivedIdentifyResponse.getReplyTo(),
                         receivedIdentifyResponse.getResponseInfo(),
@@ -391,7 +308,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the actual Put message to the pillar.", 
                 "Should be received and handled by the pillar.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, checksumDataForFile, 
-                csSHA1, receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, FILE_SIZE, 
+                csMD5, receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, FILE_SIZE, 
                 pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
         if(useEmbeddedPillar()) {
             mediator.onMessage(putRequest);

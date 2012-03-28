@@ -145,6 +145,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
         res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
         res.setCollectionID(settings.getCollectionID());
         res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarChecksumSpec(checksumType);
         
         return res;
     }

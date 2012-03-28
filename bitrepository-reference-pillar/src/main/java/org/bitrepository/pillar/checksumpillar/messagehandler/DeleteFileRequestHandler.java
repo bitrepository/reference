@@ -37,6 +37,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.Base16Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,18 +132,19 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
             throw new InvalidMessageException(responseInfo);
         }
         
-        String checksum = cache.getChecksum(message.getFileID());
-        if(!checksum.equals(new String(checksumData.getChecksumValue()))) {
+        String calculatedChecksum = cache.getChecksum(message.getFileID());
+        String requestChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
+        if(!calculatedChecksum.equals(requestChecksum)) {
             // Log the different checksums, but do not send the right checksum back!
             log.info("Failed to handle delete operation on file '" + message.getFileID() + "' since the request had "
-                    + "the checksum '" + new String(checksumData.getChecksumValue()) + "' where our local file has "
-                    + "the value '" + checksum + "'. Sending alarm and respond failure.");
+                    + "the checksum '" + requestChecksum + "' where our local file has the value '" 
+                    + calculatedChecksum + "'. Sending alarm and respond failure.");
             String errMsg = "Requested to delete file '" + message.getFileID() + "' with checksum '"
-                    + new String(checksumData.getChecksumValue()) + "', but our file had a different checksum.";
+                    + requestChecksum + "', but our file had a different checksum.";
             alarmDispatcher.sendInvalidChecksumAlarm(message, message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.FAILURE);
+            responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
             responseInfo.setResponseText(errMsg);
             throw new InvalidMessageException(responseInfo);
         }

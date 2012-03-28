@@ -124,7 +124,8 @@ public class AlarmDispatcher {
         AlarmMessage message = new AlarmMessage();
         alarm.setAlarmRaiser(settings.getReferenceSettings().getPillarSettings().getPillarID());
         alarm.setOrigDateTime(CalendarUtils.getNow());
-        
+
+        message.setAlarm(alarm);
         message.setCollectionID(settings.getCollectionID());
         message.setCorrelationID(UUID.randomUUID().toString());
         message.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));

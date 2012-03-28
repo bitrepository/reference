@@ -108,7 +108,11 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
                 auditTrail, FILE_ID, clientDestinationId);
-        mediator.onMessage(identifyRequest);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(identifyRequest);
+        } else {
+            messageBus.sendMessage(identifyRequest);
+        }
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -131,7 +135,11 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, 
                 receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, pillarId, 
                 clientDestinationId, receivedIdentifyResponse.getReplyTo());
-        mediator.onMessage(getRequest);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(getRequest);
+        } else {
+            messageBus.sendMessage(getRequest);
+        }
         
         addStep("Retrieve the ProgressResponse for the GetFile request", 
                 "The GetFile progress response should be sent by the pillar.");
@@ -180,7 +188,11 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
                 auditTrail, FILE_ID, clientDestinationId);
-        mediator.onMessage(identifyRequest);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(identifyRequest);
+        } else {
+            messageBus.sendMessage(identifyRequest);
+        }
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -213,7 +225,11 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
                 auditTrail, FILE_ID, clientDestinationId);
         identifyRequest.setCollectionID(settings.getCollectionID() + "ERROR");
-        mediator.onMessage(identifyRequest);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(identifyRequest);
+        } else {
+            messageBus.sendMessage(identifyRequest);
+        }
         
         addStep("Retrieve the alarm sent by the pillar.", 
                 "The pillar should make a response.");
@@ -247,7 +263,11 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
                 auditTrail, FILE_ID, clientDestinationId);
-        mediator.onMessage(identifyRequest);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(identifyRequest);
+        } else {
+            messageBus.sendMessage(identifyRequest);
+        }
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -271,7 +291,11 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, pillarId, 
                 clientDestinationId, receivedIdentifyResponse.getReplyTo());
         getRequest.setPillarID(pillarId + "-ERROR");
-        mediator.onMessage(getRequest);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(getRequest);
+        } else {
+            messageBus.sendMessage(getRequest);
+        }
         
         addStep("Retrieve the alarm sent by the pillar.", 
                 "The pillar should make a response.");

@@ -43,6 +43,7 @@ import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,8 +115,13 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         validatePillarId(message.getPillarID());
         validateChecksumSpec(message.getChecksumRequestForExistingFile());
         validateChecksumSpec(message.getChecksumRequestForNewFile());
-        validateChecksumSpec(message.getChecksumDataForExistingFile().getChecksumSpec());
-        validateChecksumSpec(message.getChecksumDataForNewFile().getChecksumSpec());
+        if(message.getChecksumDataForExistingFile() != null) {
+            validateChecksumSpec(message.getChecksumDataForExistingFile().getChecksumSpec());
+        }
+        if(message.getChecksumDataForNewFile() != null) {
+            validateChecksumSpec(message.getChecksumDataForNewFile().getChecksumSpec());
+        }
+        
 
         // Validate, that we have the requested file.
         if(!cache.hasFile(message.getFileID())) {
@@ -139,20 +145,21 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         
         // calculate and validate the checksum of the file.
         String checksum = cache.getChecksum(message.getFileID());
-        if(!checksum.equals(new String(checksumData.getChecksumValue()))) {
+        String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
+        if(!checksum.equals(requestedChecksum)) {
             // Log the different checksums, but do not send the right checksum back!
             log.info("Failed to handle replace operation on file '" + message.getFileID() + "' since the request had "
-                    + "the checksum '" + new String(checksumData.getChecksumValue()) 
-                    + "' where our local file has the value '" + checksum + "'. Sending alarm and respond failure.");
+                    + "the checksum '" + requestedChecksum + "' where our local file has the value '" + checksum 
+                    + "'. Sending alarm and respond failure.");
             String errMsg = "Requested to replace the file '" + message.getFileID() + "' with checksum '"
-                    + new String(checksumData.getChecksumValue()) + "', but our file had a different checksum.";
+                    + requestedChecksum + "', but our file had a different checksum.";
             alarmDispatcher.sendInvalidChecksumAlarm(message, message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.FAILURE);
+            responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
             responseInfo.setResponseText(errMsg);
             throw new InvalidMessageException(responseInfo);
-        }        
+        }
     }
     
     /**
@@ -193,12 +200,15 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         
         ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
         if(csType != null) {
-            String requestedChecksum = new String(csType.getChecksumValue());
+            String requestedChecksum = Base16Utils.decodeBase16(csType.getChecksumValue());
             if(!checksum.equals(requestedChecksum)) {
                 log.error("Expected checksums '" + requestedChecksum + "' but the checksum was '" 
                         + checksum + "' for the file '" + message.getFileID() + "'");
-                throw new IllegalStateException("Wrong checksum! Expected: [" + requestedChecksum 
+                ResponseInfo responseInfo = new ResponseInfo();
+                responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
+                responseInfo.setResponseText("Wrong checksum! Expected: [" + requestedChecksum 
                         + "], but calculated: [" + checksum + "]");
+                throw new InvalidMessageException(responseInfo);
             }
         } else {
             // TODO is such a checksum required?
@@ -214,8 +224,8 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
      * @param newChecksum The new checksum to replace the old one with.
      */
     private void replaceTheEntry(ReplaceFileRequest message, String newChecksum) {
-        cache.replaceEntry(message.getFileID(), new String(message.getChecksumDataForExistingFile().getChecksumValue()),
-                newChecksum);
+        String oldChecksum = Base16Utils.decodeBase16(message.getChecksumDataForExistingFile().getChecksumValue());
+        cache.replaceEntry(message.getFileID(), oldChecksum, newChecksum);
     }
 
     /**
@@ -262,7 +272,6 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
      * If no checksum specification for the 'old' file has been defined, then an null is returned.
      */
     private ChecksumDataForFileTYPE calculateChecksumOnNewFile(ReplaceFileRequest message) {
-        // TODO insert the new checksum
         ChecksumSpecTYPE csType = message.getChecksumRequestForNewFile();
         if(csType != null) {
             return calculatedChecksumForFile(csType, message.getFileID());
@@ -284,7 +293,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         
         res.setChecksumSpec(checksumType);
         res.setCalculationTimestamp(CalendarUtils.getNow());
-        res.setChecksumValue(checksum.getBytes());
+        res.setChecksumValue(Base16Utils.encodeBase16(checksum));
         
         return res;
     }
@@ -341,6 +350,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
         res.setTo(message.getReplyTo());
         res.setVersion(VERSION);
+        res.setPillarChecksumSpec(checksumType);
 
         return res;
     }
@@ -365,6 +375,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
         res.setTo(message.getReplyTo());
         res.setVersion(VERSION);
+        res.setPillarChecksumSpec(checksumType);
 
         return res;
     }
