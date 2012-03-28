@@ -263,7 +263,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the operation message to the pillar.", "Should be received and handled by the pillar.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, checksumDataForFile, 
                 null, UUID.randomUUID().toString(), FILE_ADDRESS, FILE_ID, FILE_SIZE, 
-                pillarId, clientDestinationId, clientDestinationId);
+                pillarId, clientDestinationId, pillarDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(putRequest);
         } else {

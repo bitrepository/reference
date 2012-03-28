@@ -78,11 +78,13 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         ArgumentValidator.checkNotNull(message, "PutFileRequest message");
         
         try {
+            System.err.println(message);
             validateMessage(message);
             tellAboutProgress(message);
             retrieveFile(message);
             sendFinalResponse(message);
         } catch (InvalidMessageException e) {
+            log.warn("Failed operation: '" + e + "'.");
             sendFailedResponse(message, e.getResponseInfo());
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Possible intruder -> Sending alarm! ", e);

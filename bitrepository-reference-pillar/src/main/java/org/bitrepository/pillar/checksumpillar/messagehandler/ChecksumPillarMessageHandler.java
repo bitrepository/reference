@@ -146,23 +146,13 @@ public abstract class ChecksumPillarMessageHandler<T> {
             return;
         }
         
-        if(!(checksumType.getChecksumType().equals(csSpec.getChecksumType()))) {
+        if(!(checksumType.equals(csSpec))) {
             ResponseInfo ri = new ResponseInfo();
             ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
             ri.setResponseText("Cannot handle the checksum specification '" + csSpec + "'."
                     + "This checksum pillar can only handle '" + checksumType + "'");
             throw new InvalidMessageException(ri);
-        }
-        
-        String mySalt = Base16Utils.decodeBase16(checksumType.getChecksumSalt());
-        String csSalt = Base16Utils.decodeBase16(csSpec.getChecksumSalt());
-        if(!mySalt.equals(csSalt)) {
-            ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
-            ri.setResponseText("Cannot handle the checksum specification '" + csSpec + "'."
-                    + "This checksum pillar can only handle '" + checksumType + "'");
-            throw new InvalidMessageException(ri);
-        }
+        }        
     }
     
     /**

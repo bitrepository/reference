@@ -94,24 +94,8 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         // Validate the message.
         validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
-        
-        // validate the checksum types
-        try {
-            validateChecksumSpec(message.getChecksumRequestForExistingFile());
-        } catch (IllegalArgumentException e) {
-            ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-            ri.setResponseText(e.getMessage());
-            throw new InvalidMessageException(ri, e);
-        }
-        try {
-            validateChecksumSpec(message.getChecksumDataForExistingFile().getChecksumSpec());
-        } catch (IllegalArgumentException e) {
-            ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-            ri.setResponseText(e.getMessage());
-            throw new InvalidMessageException(ri, e);
-        }
+        validateChecksumSpec(message.getChecksumRequestForExistingFile());
+        validateChecksumSpec(message.getChecksumDataForExistingFile().getChecksumSpec());
 
         // Validate, that we have the requested file.
         if(!getCache().hasFile(message.getFileID())) {
