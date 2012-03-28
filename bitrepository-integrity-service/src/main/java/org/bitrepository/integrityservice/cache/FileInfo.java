@@ -35,7 +35,7 @@ import org.bitrepository.common.utils.CalendarUtils;
  */
 public class FileInfo {
     /** The id of the file.*/
-    private final String fileID;
+    private final String fileId;
     /** The date for the last check for the file ID.*/
     private XMLGregorianCalendar fileCreationTimestamp;
     /** The checksum of the file.*/
@@ -49,18 +49,18 @@ public class FileInfo {
     
     /**
      * Constructor for all data.
-     * @param fileID The id of the file (may not be null)
+     * @param fileId The id of the file (may not be null)
      * @param fileLastCheck The date for the last check of the file id (if null, replaced by Epoch).
      * @param checksum The checksum of the file.
      * @param checksumType The type of checksum (e.g. Algorithm and optionally salt). 
      * @param checksumLastCheck The date for the last check of the checksum (if null, replaced by Epoch).
      * @param pillarId The id of the pillar (may not be null)
      */
-    public FileInfo(String fileID, XMLGregorianCalendar fileLastCheck, String checksum, 
+    public FileInfo(String fileId, XMLGregorianCalendar fileLastCheck, String checksum, 
             ChecksumSpecTYPE checksumType, XMLGregorianCalendar checksumLastCheck, String pillarId) {
-        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileID");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
-        this.fileID = fileID;
+        this.fileId = fileId;
         this.fileCreationTimestamp = fileLastCheck;
         this.checksum = checksum;
         this.checksumType = checksumType;
@@ -80,18 +80,18 @@ public class FileInfo {
     
     /**
      * Constructor for only file id and pillar id.
-     * @param fileID The id of the file.
+     * @param fileId The id of the file.
      * @param pillarId The id of the pillar.
      */
-    public FileInfo(String fileID, String pillarId) {
-        this(fileID, null, null, null, null, pillarId);
+    public FileInfo(String fileId, String pillarId) {
+        this(fileId, null, null, null, null, pillarId);
     }
     
     /**
      * @return The id of the file.
      */
-    public String getFileID() {
-        return fileID;
+    public String getFileId() {
+        return fileId;
     }
     
     /**
@@ -102,10 +102,10 @@ public class FileInfo {
     }
     
     /**
-     * @param dateForLastFielIDCheck The new date for the last check of the file.
+     * @param dateForLastFileIDCheck The new date for the last check of the file.
      */
-    public void setDateForLastFileIDCheck(XMLGregorianCalendar dateForLastFielIDCheck) {
-        this.fileCreationTimestamp = dateForLastFielIDCheck;
+    public void setDateForLastFileIDCheck(XMLGregorianCalendar dateForLastFileIDCheck) {
+        this.fileCreationTimestamp = dateForLastFileIDCheck;
     }
     
     /**
@@ -159,7 +159,7 @@ public class FileInfo {
     
     @Override
     public String toString() {
-        return "Pillar id: " + pillarId + ", File id: " + fileID + " (date: " + fileCreationTimestamp + "), Checksum: " 
+        return "Pillar id: " + pillarId + ", File id: " + fileId + " (date: " + fileCreationTimestamp + "), Checksum: " 
                 + checksum + " (date: " + checksumLastCheck + "), Checksum type: " + checksumType;
     }
 }

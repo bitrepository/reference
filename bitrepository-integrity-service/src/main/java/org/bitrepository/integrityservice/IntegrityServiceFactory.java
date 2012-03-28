@@ -80,7 +80,7 @@ public final class IntegrityServiceFactory {
      * Set the configuration directory. 
      * Should only be run at initialization time. 
      */
-    public synchronized static void init(String configurationDir) {
+    public static synchronized void init(String configurationDir) {
         confDir = configurationDir;
     }
     
@@ -89,7 +89,7 @@ public final class IntegrityServiceFactory {
      * @return The settings.
      * @see {@link Settings}
      */
-    public synchronized static Settings getSettings() {
+    public static synchronized Settings getSettings() {
         if(settings == null) {
             if(confDir == null) {
                 throw new IllegalStateException("No configuration directory has been set!");
@@ -108,7 +108,7 @@ public final class IntegrityServiceFactory {
      * @see getSettings()
      * @see {@link BasicSecurityManager}
      */
-    public synchronized static BasicSecurityManager getSecurityManager() {
+    public static synchronized BasicSecurityManager getSecurityManager() {
         if(securityManager == null) {
             getSettings();
             PermissionStore permissionStore = new PermissionStore();
@@ -130,7 +130,7 @@ public final class IntegrityServiceFactory {
      * @see getSettings()
      * @see {@link SimpleIntegrityService} 
      */
-    public synchronized static SimpleIntegrityService getIntegrityService() {
+    public static synchronized SimpleIntegrityService getIntegrityService() {
         if(simpleIntegrityService == null) {
             getSettings();
             getSecurityManager();
@@ -148,7 +148,7 @@ public final class IntegrityServiceFactory {
      * @see getSimpleIntegrityService()
      * @see {@link IntegrityServiceWebInterface}
      */
-    public synchronized static IntegrityServiceWebInterface getIntegrityServiceWebInterface() {
+    public static synchronized IntegrityServiceWebInterface getIntegrityServiceWebInterface() {
         if(integrityServiceWebInterface == null) {
             long timeSinceLastChecksumUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
             long timeSinceLastFileIDsUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
@@ -169,9 +169,16 @@ public final class IntegrityServiceFactory {
         try {
             Properties properties = new Properties();
             String propertiesFile = confDir + "/" + CONFIGFILE;
-            BufferedReader propertiesReader = new BufferedReader(new FileReader(propertiesFile));
-            properties.load(propertiesReader);
-            privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
+            BufferedReader propertiesReader = null; 
+            try {
+                propertiesReader = new BufferedReader(new FileReader(propertiesFile));
+                properties.load(propertiesReader);
+                privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
+            } finally {
+                if(propertiesReader != null) {
+                    propertiesReader.close();
+                }
+            }
         } catch (IOException e) {
             throw new IllegalStateException("Could not instantiate the properties.", e);
         }

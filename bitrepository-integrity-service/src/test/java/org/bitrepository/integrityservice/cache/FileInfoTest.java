@@ -48,7 +48,7 @@ public class FileInfoTest extends ExtendedTestCase {
         addStep("Setup the file info.", "Should be possible to extract all the data again.");
         FileInfo fi = new FileInfo(FILE_ID, LAST_FILE_CHECK, CHECKSUM, CHECKSUM_TYPE, LAST_CHECKSUM_CHECK, PILLAR_ID);
         
-        Assert.assertEquals(fi.getFileID(), FILE_ID);
+        Assert.assertEquals(fi.getFileId(), FILE_ID);
         Assert.assertEquals(fi.getDateForLastFileIDCheck().toGregorianCalendar().getTimeInMillis(), LAST_FILE_CHECK_MILLIS);
         Assert.assertEquals(fi.getChecksum(), CHECKSUM);
         Assert.assertEquals(fi.getChecksumType(), CHECKSUM_TYPE);

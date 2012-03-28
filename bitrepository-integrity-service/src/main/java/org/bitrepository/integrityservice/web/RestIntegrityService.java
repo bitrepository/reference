@@ -40,39 +40,39 @@ import org.bitrepository.integrityservice.workflow.Workflow;
 
 @Path("/IntegrityService")
 public class RestIntegrityService {
-	private IntegrityServiceWebInterface service;
-	
-	public RestIntegrityService() {
-		service = IntegrityServiceFactory.getIntegrityServiceWebInterface();
-	}
+    private IntegrityServiceWebInterface service;
+    
+    public RestIntegrityService() {
+        service = IntegrityServiceFactory.getIntegrityServiceWebInterface();
+    }
     
     @GET
     @Path("/getIntegrityStatus/")
     @Produces("text/html")
     public String getIntegrityStatus() {
-    	StringBuilder sb = new StringBuilder();
-		sb.append("<table class=\"ui-widget ui-widget-content\">\n");
-		sb.append("<thead>\n");
-		sb.append("<tr class=\"ui-widget-header\">\n");
-		sb.append("<th width=\"100\">PillarID</th>\n");
-		sb.append("<th width=\"100\">Total number of files</th>\n");
-		sb.append("<th width=\"100\">Number of missing files</th>\n");
-		sb.append("<th>Number of checksum errors</th>\n");
-		sb.append("</tr>\n");
-		sb.append("</thead>\n");
-		sb.append("<tbody>\n");
-		List<String> pillars = service.getPillarList();
-		for(String pillar : pillars) {
-			sb.append("<tr> \n");
-			sb.append("<td>" + pillar + " </td>\n");
-			sb.append("<td>" + service.getNumberOfFiles(pillar) + " </td>\n");
-			sb.append("<td>" + service.getNumberOfMissingFiles(pillar) + " </td>\n");
-			sb.append("<td>" + service.getNumberOfChecksumErrors(pillar) + " </td>\n");
-			sb.append("</tr>\n");
-		}
-		sb.append("</tbody>\n");
-		sb.append("</table>\n");
-		return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("<table class=\"ui-widget ui-widget-content\">\n");
+        sb.append("<thead>\n");
+        sb.append("<tr class=\"ui-widget-header\">\n");
+        sb.append("<th width=\"100\">PillarID</th>\n");
+        sb.append("<th width=\"100\">Total number of files</th>\n");
+        sb.append("<th width=\"100\">Number of missing files</th>\n");
+        sb.append("<th>Number of checksum errors</th>\n");
+        sb.append("</tr>\n");
+        sb.append("</thead>\n");
+        sb.append("<tbody>\n");
+        List<String> pillars = service.getPillarList();
+        for(String pillar : pillars) {
+            sb.append("<tr> \n");
+            sb.append("<td>" + pillar + " </td>\n");
+            sb.append("<td>" + service.getNumberOfFiles(pillar) + " </td>\n");
+            sb.append("<td>" + service.getNumberOfMissingFiles(pillar) + " </td>\n");
+            sb.append("<td>" + service.getNumberOfChecksumErrors(pillar) + " </td>\n");
+            sb.append("</tr>\n");
+        }
+        sb.append("</tbody>\n");
+        sb.append("</table>\n");
+        return sb.toString();
     }
     
     @GET

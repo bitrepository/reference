@@ -38,6 +38,7 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
 public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-
+    
     /**
      * Constructor.
      * @param settings The settings for handling the message.
@@ -68,14 +69,14 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
             AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
         super(settings, messageBus, alarmDispatcher, referenceArchive);
     }
-
+    
     /**
      * Handles the identification messages for the PutFile operation.
      * @param message The IdentifyPillarsForPutFileRequest message to handle.
      */
     public void handleMessage(PutFileRequest message) {
         ArgumentValidator.checkNotNull(message, "PutFileRequest message");
-
+        
         try {
             validateMessage(message);
             tellAboutProgress(message);
@@ -85,7 +86,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
             sendFailedResponse(message, e.getResponseInfo());
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Possible intruder -> Sending alarm! ", e);
-            alarmDispatcher.handleIllegalArgumentException(e);
+            getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
@@ -118,7 +119,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
      * @param message The request with the filename to validate.
      */
     private void checkThatTheFileDoesNotAlreadyExist(PutFileRequest message) {
-        if(archive.hasFile(message.getFileID())) {
+        if(getArchive().hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
             irInfo.setResponseText("The file '" + message.getFileID() 
@@ -141,8 +142,8 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
             fileSize = BigInteger.ZERO;
         }
         
-        long useableSizeLeft = archive.sizeLeftInArchive() 
-                - settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
+        long useableSizeLeft = getArchive().sizeLeftInArchive() 
+                - getSettings().getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
         if(useableSizeLeft < fileSize.longValue()) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FAILURE);
@@ -160,16 +161,16 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
     private void tellAboutProgress(PutFileRequest message) {
         log.info("Respond that we are starting to retrieve the file.");
         PutFileProgressResponse pResponse = createPutFileProgressResponse(message);
-
+        
         // Needs to fill in: AuditTrailInformation, PillarChecksumSpec, ProgressResponseInfo
         pResponse.setPillarChecksumSpec(null);
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Started to receive date.");  
         pResponse.setResponseInfo(prInfo);
-
+        
         log.info("Sending ProgressResponseInfo: " + prInfo);
-        messagebus.sendMessage(pResponse);
+        getMessageBus().sendMessage(pResponse);
     }
     
     /**
@@ -180,10 +181,10 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
     private void retrieveFile(PutFileRequest message) {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
-
+        
         File fileForValidation;
         try {
-            fileForValidation = archive.downloadFileForValidation(message.getFileID(), 
+            fileForValidation = getArchive().downloadFileForValidation(message.getFileID(), 
                     fe.downloadFromServer(new URL(message.getFileAddress())));
         } catch (IOException e) {
             throw new CoordinationLayerException("Could not download the file '" + message.getFileID() 
@@ -191,8 +192,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         }
         
         if(message.getChecksumDataForNewFile() != null) {
-                //&& message.getChecksumDataForNewFile().getChecksumDataItem() != null) {
-        	ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
+            ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
             String calculatedChecksum = ChecksumUtils.generateChecksum(fileForValidation, csType.getChecksumSpec());
             String expectedChecksum = Base16Utils.decodeBase16(csType.getChecksumValue());
             if(!calculatedChecksum.equals(expectedChecksum)) {
@@ -205,8 +205,8 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
             // TODO is such a checksum required?
             log.warn("No checksums for validating the retrieved file.");
         }
-
-        archive.moveToArchive(message.getFileID());
+        
+        getArchive().moveToArchive(message.getFileID());
     }
     
     /**
@@ -214,25 +214,25 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
      * @param message The message requesting the put operation.
      */
     private void sendFinalResponse(PutFileRequest message) {
-
-        File retrievedFile = archive.getFile(message.getFileID());
-
+        
+        File retrievedFile = getArchive().getFile(message.getFileID());
+        
         PutFileFinalResponse fResponse = createPutFileFinalResponse(message);
-
+        
         // insert: AuditTrailInformation, ChecksumsDataForNewFile, FinalResponseInfo, PillarChecksumSpec
         ResponseInfo frInfo = new ResponseInfo();
         frInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);
         frInfo.setResponseText("The put has be finished.");
         fResponse.setResponseInfo(frInfo);
         fResponse.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
-
+        
         ChecksumDataForFileTYPE checksumForValidation = new ChecksumDataForFileTYPE();
         
         if(message.getChecksumRequestForNewFile() != null) {
-        	checksumForValidation.setChecksumValue(ChecksumUtils.generateChecksum(retrievedFile, 
+            checksumForValidation.setChecksumValue(ChecksumUtils.generateChecksum(retrievedFile, 
                     message.getChecksumRequestForNewFile()).getBytes());
-        	checksumForValidation.setCalculationTimestamp(CalendarUtils.getNow());
-        	checksumForValidation.setChecksumSpec(message.getChecksumRequestForNewFile());
+            checksumForValidation.setCalculationTimestamp(CalendarUtils.getNow());
+            checksumForValidation.setChecksumSpec(message.getChecksumRequestForNewFile());
             log.info("Requested checksum calculated: " + checksumForValidation);
         } else {
             // TODO is such a request required?
@@ -241,10 +241,10 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         }
         
         fResponse.setChecksumDataForNewFile(checksumForValidation);
-
+        
         // Finish by sending final response.
         log.info("Sending PutFileFinalResponse: " + fResponse);
-        messagebus.sendMessage(fResponse);
+        getMessageBus().sendMessage(fResponse);
     }
     
     /**
@@ -256,7 +256,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         // send final response telling, that the file already exists!
         PutFileFinalResponse fResponse = createPutFileFinalResponse(message);
         fResponse.setResponseInfo(frInfo);
-        messagebus.sendMessage(fResponse);
+        getMessageBus().sendMessage(fResponse);
     }
     
     /**
@@ -277,13 +277,13 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }
-
+    
     /**
      * Creates a PutFileFinalResponse based on a PutFileRequest. Missing the
      * following fields:
@@ -303,10 +303,10 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
-
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
+        
         return res;
     }
 }

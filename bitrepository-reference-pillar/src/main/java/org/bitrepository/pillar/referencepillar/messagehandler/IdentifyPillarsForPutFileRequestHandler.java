@@ -32,6 +32,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -72,12 +73,12 @@ public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMess
             checkSpaceForStoringNewFile(message);
             respondSuccesfullIdentification(message);
         } catch (IllegalArgumentException e) {
-            alarmDispatcher.handleIllegalArgumentException(e);
+            getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (IdentifyPillarsException e) {
             log.warn("Unsuccessfull identification for the GetChecksums operation.", e);
             respondUnsuccessfulIdentification(message, e);
         } catch (RuntimeException e) {
-            alarmDispatcher.handleRuntimeExceptions(e);
+            getAlarmDispatcher().handleRuntimeExceptions(e);
         }
     }
     
@@ -92,7 +93,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMess
             return;
         }
         
-        if(archive.hasFile(message.getFileID())) {
+        if(getArchive().hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
             irInfo.setResponseText("The file '" + message.getFileID() 
@@ -115,8 +116,8 @@ public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMess
             fileSize = BigInteger.ZERO;
         }
         
-        long useableSizeLeft = archive.sizeLeftInArchive() 
-                - settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
+        long useableSizeLeft = getArchive().sizeLeftInArchive() 
+                - getSettings().getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
         if(useableSizeLeft < fileSize.longValue()) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FAILURE);
@@ -140,7 +141,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMess
         reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
         reply.setResponseInfo(cause.getResponseInfo());
         
-        messagebus.sendMessage(reply);
+        getMessageBus().sendMessage(reply);
     }
     
     /**
@@ -152,9 +153,9 @@ public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMess
         IdentifyPillarsForPutFileResponse reply = createIdentifyPillarsForPutFileResponse(message);
 
         // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
-        reply.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        reply.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-                settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         reply.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
         
         ResponseInfo irInfo = new ResponseInfo();
@@ -163,7 +164,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMess
         reply.setResponseInfo(irInfo);
 
         log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
-        messagebus.sendMessage(reply);
+        getMessageBus().sendMessage(reply);
     }
     
     /**
@@ -185,9 +186,9 @@ public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMess
         res.setVersion(VERSION);
         res.setCorrelationID(msg.getCorrelationID());
         res.setTo(msg.getReplyTo());
-        res.setCollectionID(settings.getCollectionID());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

@@ -38,6 +38,7 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
@@ -95,7 +96,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
             sendFailedResponse(message, e.getResponseInfo());
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Message '" + message + "'.", e);
-            alarmDispatcher.handleIllegalArgumentException(e);
+            getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
@@ -124,7 +125,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         validateChecksumSpecification(message.getChecksumRequestForExistingFile());
 
         // Validate, that we have the requested file.
-        if(!archive.hasFile(message.getFileID())) {
+        if(!getArchive().hasFile(message.getFileID())) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             responseInfo.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
@@ -133,11 +134,11 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         }
         
         // validate, that we have enough space for the new file.
-        long useableSizeLeft = archive.sizeLeftInArchive()
-                - settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
+        long useableSizeLeft = getArchive().sizeLeftInArchive()
+                - getSettings().getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
         if(useableSizeLeft < message.getFileSize().longValue()) {
             String errMsg = "Not enough space left on device. Requires '" + message.getFileSize().longValue()
-                    + "' bytes, but we only have '" + archive.sizeLeftInArchive() + "' bytes left.";
+                    + "' bytes, but we only have '" + getArchive().sizeLeftInArchive() + "' bytes left.";
             log.warn(errMsg);
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);
@@ -157,7 +158,8 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         }
         
         // calculate and validate the checksum of the file.
-        String calculatedChecksum = ChecksumUtils.generateChecksum(archive.getFile(message.getFileID()), checksumType);
+        String calculatedChecksum = ChecksumUtils.generateChecksum(getArchive().getFile(message.getFileID()), 
+                checksumType);
         String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
         if(!calculatedChecksum.equals(requestedChecksum)) {
             // Log the different checksums, but do not send the right checksum back!
@@ -166,7 +168,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
                     + calculatedChecksum + "'. Sending alarm and respond failure.");
             String errMsg = "Requested to replace the file '" + message.getFileID() + "' with checksum '"
                     + requestedChecksum + "', but our file had a different checksum.";
-            alarmDispatcher.sendInvalidChecksumAlarm(message.getFileID(), errMsg);
+            getAlarmDispatcher().sendInvalidChecksumAlarm(message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
@@ -189,7 +191,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         responseInfo.setResponseText(responseText);
         
         response.setResponseInfo(responseInfo);
-        messagebus.sendMessage(response);
+        getMessageBus().sendMessage(response);
     }
     
     /**
@@ -204,7 +206,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
 
         File fileForValidation;
         try {
-            fileForValidation = archive.downloadFileForValidation(message.getFileID(), 
+            fileForValidation = getArchive().downloadFileForValidation(message.getFileID(), 
                     fe.downloadFromServer(new URL(message.getFileAddress())));
         } catch (IOException e) {
             throw new CoordinationLayerException("Could not download the file '" + message.getFileID() 
@@ -245,7 +247,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         responseInfo.setResponseText(responseText);
         
         response.setResponseInfo(responseInfo);
-        messagebus.sendMessage(response);
+        getMessageBus().sendMessage(response);
     }
     
     /**
@@ -292,7 +294,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
     private ChecksumDataForFileTYPE calculatedChecksumForFile(ChecksumSpecTYPE checksumType, String fileId) {
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         
-        String checksum = ChecksumUtils.generateChecksum(archive.getFile(fileId), checksumType);
+        String checksum = ChecksumUtils.generateChecksum(getArchive().getFile(fileId), checksumType);
         
         res.setChecksumSpec(checksumType);
         res.setCalculationTimestamp(CalendarUtils.getNow());
@@ -310,7 +312,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         try {
             log.info("Replacing the file '" + message.getFileID() + "' in the archive with the one in the "
                     + "temporary area.");
-            archive.replaceFile(message.getFileID());
+            getArchive().replaceFile(message.getFileID());
         } catch (IOException e) {
             throw new CoordinationLayerException("Could not replace the old file with the new one.", e);
         }
@@ -334,7 +336,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         response.setChecksumDataForNewFile(requestedNewChecksum);
         response.setChecksumDataForExistingFile(requestedOldChecksum);
         
-        messagebus.sendMessage(response);
+        getMessageBus().sendMessage(response);
     }
     
     /**
@@ -346,7 +348,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         ReplaceFileFinalResponse response = createFinalResponse(message);
         response.setResponseInfo(ri);
         
-        messagebus.sendMessage(response);
+        getMessageBus().sendMessage(response);
     }
     
     /**
@@ -359,13 +361,13 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
      */
     private ReplaceFileProgressResponse createProgressResponse(ReplaceFileRequest message) {
         ReplaceFileProgressResponse res = new ReplaceFileProgressResponse();
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(getSettings().getCollectionID());
         res.setCorrelationID(message.getCorrelationID());
         res.setFileAddress(message.getFileAddress());
         res.setFileID(message.getFileID());
         res.setMinVersion(MIN_VERSION);
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         res.setTo(message.getReplyTo());
         res.setVersion(VERSION);
 
@@ -383,13 +385,13 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
      */
     private ReplaceFileFinalResponse createFinalResponse(ReplaceFileRequest message) {
         ReplaceFileFinalResponse res = new ReplaceFileFinalResponse();
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(getSettings().getCollectionID());
         res.setCorrelationID(message.getCorrelationID());
         res.setFileAddress(message.getFileAddress());
         res.setFileID(message.getFileID());
         res.setMinVersion(MIN_VERSION);
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         res.setTo(message.getReplyTo());
         res.setVersion(VERSION);
 

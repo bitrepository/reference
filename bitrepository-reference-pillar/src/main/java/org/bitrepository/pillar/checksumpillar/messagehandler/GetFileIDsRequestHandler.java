@@ -53,6 +53,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.FileExchange;
@@ -97,7 +98,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
             sendFailedResponse(message, e.getResponseInfo());
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Message ", e);
-            alarmDispatcher.handleIllegalArgumentException(e);
+            getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RuntimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
@@ -139,7 +140,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
         
         List<String> missingFiles = new ArrayList<String>();
         String fileID = fileids.getFileID();
-        if(fileID != null && !fileID.isEmpty() && !cache.hasFile(fileID)) {
+        if(fileID != null && !fileID.isEmpty() && !getCache().hasFile(fileID)) {
             missingFiles.add(fileID);
         }
         
@@ -166,7 +167,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
         pResponse.setResponseInfo(prInfo);
 
         // Send the ProgressResponse
-        messagebus.sendMessage(pResponse);
+        getMessageBus().sendMessage(pResponse);
     }
     
     /**
@@ -210,7 +211,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
         
         FileIDsData res = new FileIDsData();
         FileIDsDataItems fileIDList = new FileIDsDataItems();
-        for(Map.Entry<String, Date> fileDate : cache.getLastModifiedDate(fileIDs).entrySet()) {
+        for(Map.Entry<String, Date> fileDate : getCache().getLastModifiedDate(fileIDs).entrySet()) {
             FileIDsDataItem fileIDData = new FileIDsDataItem();
             fileIDData.setFileID(fileDate.getKey());
             fileIDData.setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(fileDate.getValue()));
@@ -241,10 +242,10 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
         try {
             is = new FileOutputStream(checksumResultFile);
             GetFileIDsResults result = new GetFileIDsResults();
-            result.setCollectionID(settings.getCollectionID());
+            result.setCollectionID(getSettings().getCollectionID());
             result.setMinVersion(MIN_VERSION);
             result.setVersion(VERSION);
-            result.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
+            result.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
             result.setFileIDsData(fileIDs);
             
             JaxbHelper jaxbHelper = new JaxbHelper(XSD_CLASSPATH, XSD_BR_DATA);
@@ -299,7 +300,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
         fResponse.setResponseInfo(fri);
         fResponse.setResultingFileIDs(results);
         
-        messagebus.sendMessage(fResponse);        
+        getMessageBus().sendMessage(fResponse);        
     }
     
     /**
@@ -311,7 +312,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
         GetFileIDsFinalResponse fResponse = createFinalResponse(message);
         fResponse.setResponseInfo(fri);
         
-        messagebus.sendMessage(fResponse);        
+        getMessageBus().sendMessage(fResponse);        
     }
     
     /**
@@ -326,9 +327,9 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
         GetFileIDsProgressResponse response = new GetFileIDsProgressResponse();
         response.setMinVersion(MIN_VERSION);
         response.setVersion(VERSION);
-        response.setCollectionID(settings.getCollectionID());
-        response.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        response.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        response.setCollectionID(getSettings().getCollectionID());
+        response.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        response.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         response.setCorrelationID(message.getCorrelationID());
         response.setFileIDs(message.getFileIDs());
         response.setResultAddress(message.getResultAddress());
@@ -350,9 +351,9 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
         GetFileIDsFinalResponse response = new GetFileIDsFinalResponse();
         response.setMinVersion(MIN_VERSION);
         response.setVersion(VERSION);
-        response.setCollectionID(settings.getCollectionID());
-        response.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        response.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        response.setCollectionID(getSettings().getCollectionID());
+        response.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        response.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         response.setCorrelationID(message.getCorrelationID());
         response.setFileIDs(message.getFileIDs());
         response.setTo(message.getReplyTo());

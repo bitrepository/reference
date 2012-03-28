@@ -100,7 +100,7 @@ public class FileExistenceValidator {
         
         for(FileInfo fileinfo : fileInfos) {
             if(!unfoundPillars.remove(fileinfo.getPillarId())) {
-                log.warn("Not expected pillar '" + fileinfo.getPillarId() + "' for file '" + fileinfo.getFileID() 
+                log.warn("Not expected pillar '" + fileinfo.getPillarId() + "' for file '" + fileinfo.getFileId() 
                         + "'");
             }
         }

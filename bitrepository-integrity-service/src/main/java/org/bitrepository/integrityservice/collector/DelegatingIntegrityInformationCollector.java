@@ -30,10 +30,8 @@ import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +65,7 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
             getFileIDsClient.getFileIDs(pillarIDs, fileIDs, null, eventHandler, auditTrailInformation);
         } catch (OperationFailedException e) {
             log.warn("Could not retrieve the file ids '" + fileIDs + "' from '" + pillarIDs + "'", e);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             // Barrier
             log.error("Unexpected failure!", e);
         }
@@ -82,7 +80,7 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
         } catch (OperationFailedException e) {
             log.warn("Could not retrieve the checksum '" + fileIDs + "' from '" + pillarIDs + "' with spec '" 
                     + checksumType + "'", e);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             // Barrier
             log.error("Unexpected failure!", e);
         }

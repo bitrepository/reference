@@ -166,7 +166,7 @@ public class IntegrityReport {
             res.append("Files which are too new to be checked: " + newUncheckedFiles + "\n");
         }
         
-        if(integrityIssueReported == false) {
+        if(!integrityIssueReported) {
             return res.toString();
         }
         

@@ -39,7 +39,7 @@ public interface IntegrityChecker {
      * @param fileIDs The ids of the files to validate (e.g. a list of files or all files).
      * @return Whether the given file ids where validated.
      */
-    public IntegrityReport checkFileIDs(FileIDs fileIDs);
+    IntegrityReport checkFileIDs(FileIDs fileIDs);
     
     /**
      * Validates the checksum of the requested files for all the pillars.
@@ -47,5 +47,5 @@ public interface IntegrityChecker {
      * @param fileIDs The files, which checksum are requested to be validated.
      * @return Whether the checksums of the given file ids where validated.
      */
-    public IntegrityReport checkChecksum(FileIDs fileIDs);
+    IntegrityReport checkChecksum(FileIDs fileIDs);
 }

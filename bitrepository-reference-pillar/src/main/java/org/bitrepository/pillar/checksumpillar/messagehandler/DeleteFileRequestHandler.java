@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -74,7 +75,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
             sendFailedResponse(message, e.getResponseInfo());
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Message ", e);
-            alarmDispatcher.handleIllegalArgumentException(e);
+            getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
@@ -113,7 +114,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         }
 
         // Validate, that we have the requested file.
-        if(!cache.hasFile(message.getFileID())) {
+        if(!getCache().hasFile(message.getFileID())) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             responseInfo.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
@@ -132,7 +133,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
             throw new InvalidMessageException(responseInfo);
         }
         
-        String calculatedChecksum = cache.getChecksum(message.getFileID());
+        String calculatedChecksum = getCache().getChecksum(message.getFileID());
         String requestChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
         if(!calculatedChecksum.equals(requestChecksum)) {
             // Log the different checksums, but do not send the right checksum back!
@@ -141,7 +142,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
                     + calculatedChecksum + "'. Sending alarm and respond failure.");
             String errMsg = "Requested to delete file '" + message.getFileID() + "' with checksum '"
                     + requestChecksum + "', but our file had a different checksum.";
-            alarmDispatcher.sendInvalidChecksumAlarm(message, message.getFileID(), errMsg);
+            getAlarmDispatcher().sendInvalidChecksumAlarm(message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
@@ -165,7 +166,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         pResponse.setResponseInfo(prInfo);
 
         // Send the ProgressResponse
-        messagebus.sendMessage(pResponse);
+        getMessageBus().sendMessage(pResponse);
     }
     
     /**
@@ -182,7 +183,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
             log.warn("No checksum requested for the file about to be deleted.");
             return null;
         }
-        String checksum = cache.getChecksum(message.getFileID());
+        String checksum = getCache().getChecksum(message.getFileID());
         
         res.setChecksumSpec(checksumType);
         res.setCalculationTimestamp(CalendarUtils.getNow());
@@ -197,7 +198,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
      */
     protected void deleteTheFile(DeleteFileRequest message) {
         try {
-            cache.deleteEntry(message.getFileID());
+            getCache().deleteEntry(message.getFileID());
         } catch (Exception e) {
             ResponseInfo ir = new ResponseInfo();
             ir.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
@@ -221,7 +222,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         fResponse.setResponseInfo(frInfo);
 
         // send the FinalResponse.
-        messagebus.sendMessage(fResponse);
+        getMessageBus().sendMessage(fResponse);
     }
     
     /**
@@ -233,7 +234,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         log.info("Sending bad DeleteFileFinalResponse: " + frInfo);
         DeleteFileFinalResponse fResponse = createDeleteFileFinalResponse(message);
         fResponse.setResponseInfo(frInfo);
-        messagebus.sendMessage(fResponse);
+        getMessageBus().sendMessage(fResponse);
     }
     
     /**
@@ -251,9 +252,9 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         res.setCorrelationID(message.getCorrelationID());
         res.setFileID(message.getFileID());
         res.setTo(message.getReplyTo());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }
@@ -274,9 +275,9 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         res.setCorrelationID(msg.getCorrelationID());
         res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
 
         return res;
     }

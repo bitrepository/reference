@@ -32,6 +32,7 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.ProtocolConstants;
@@ -57,15 +58,15 @@ public abstract class ChecksumPillarMessageHandler<T> {
     protected static final String RESPONSE_FOR_POSITIVE_IDENTIFICATION = "Operation acknowledged and accepted.";
     
     /** The dispatcher for sending alarm messages.*/
-    protected final AlarmDispatcher alarmDispatcher;
-    /** The settings for this setup.*/
-    protected final Settings settings;
-    /** The messagebus for communication.*/ 
-    protected final MessageBus messagebus;
+    private final AlarmDispatcher alarmDispatcher;
     /** The reference checksum cache.*/
-    protected final ChecksumCache cache;
+    private final ChecksumCache cache;
+    /** The settings for this setup.*/
+    private final Settings settings;
+    /** The messagebus for communication.*/ 
+    private final MessageBus messagebus;
     /** The specifications for the checksum type of this ChecksumPillar. */
-    protected ChecksumSpecTYPE checksumType;
+    private ChecksumSpecTYPE checksumType;
     
     /**
      * Constructor. 
@@ -94,6 +95,41 @@ public abstract class ChecksumPillarMessageHandler<T> {
         }
     }
     
+    /**
+     * @return The alarmDispatcher for this message handler.
+     */
+    protected AlarmDispatcher getAlarmDispatcher() {
+        return alarmDispatcher;
+    }
+
+    /**
+     * @return The checksumType for this message handler.
+     */
+    protected ChecksumSpecTYPE getChecksumType() {
+        return checksumType;
+    }
+
+    /**
+     * @return The cache for this message handler.
+     */
+    protected ChecksumCache getCache() {
+        return cache;
+    }
+
+    /**
+     * @return The messagebus for this message handler.
+     */
+    protected MessageBus getMessageBus() {
+        return messagebus;
+    }
+
+    /**
+     * @return The settings for this message handler.
+     */
+    protected Settings getSettings() {
+        return settings;
+    }
+    
     /** 
      * The method for handling the message connected to the specific handler.
      * @param message The message to handle.
@@ -110,7 +146,7 @@ public abstract class ChecksumPillarMessageHandler<T> {
             return;
         }
         
-        if(!(checksumType.getChecksumType() == csSpec.getChecksumType())) {
+        if(!(checksumType.getChecksumType().equals(csSpec.getChecksumType()))) {
             ResponseInfo ri = new ResponseInfo();
             ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
             ri.setResponseText("Cannot handle the checksum specification '" + csSpec + "'."
@@ -120,7 +156,7 @@ public abstract class ChecksumPillarMessageHandler<T> {
         
         String mySalt = Base16Utils.decodeBase16(checksumType.getChecksumSalt());
         String csSalt = Base16Utils.decodeBase16(csSpec.getChecksumSalt());
-        if(mySalt != csSalt) {
+        if(!mySalt.equals(csSalt)) {
             ResponseInfo ri = new ResponseInfo();
             ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
             ri.setResponseText("Cannot handle the checksum specification '" + csSpec + "'."

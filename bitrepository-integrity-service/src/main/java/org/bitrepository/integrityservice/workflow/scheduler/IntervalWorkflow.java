@@ -53,7 +53,7 @@ public abstract class IntervalWorkflow implements Workflow {
     
     @Override
     public Date getNextRun() {
-        return nextRun;
+        return new Date(nextRun.getTime());
     }
     
     @Override

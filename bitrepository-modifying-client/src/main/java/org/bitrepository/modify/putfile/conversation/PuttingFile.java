@@ -98,11 +98,12 @@ public class PuttingFile extends PutFileState {
         putMsg.setChecksumDataForNewFile(conversation.validationChecksums);
 
         // Send the message to each pillar.
+        monitor.requestSent("Request to put file " + conversation.fileID + " has been sent to the pillars + " +
+                conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs().toString(), 
+                conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs().toString());
         for(Map.Entry<String, String> pillarDest : pillarDestinations.entrySet()) {
             putMsg.setPillarID(pillarDest.getKey());
             putMsg.setTo(pillarDest.getValue());
-            monitor.requestSent("Request to put file " + conversation.fileID + " has been sent to pillar + " +
-                    pillarDest.getKey(), pillarDest.getKey());
             conversation.messageSender.sendMessage(putMsg);
         }
 

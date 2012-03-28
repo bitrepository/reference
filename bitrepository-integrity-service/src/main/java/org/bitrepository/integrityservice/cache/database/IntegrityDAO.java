@@ -134,13 +134,13 @@ public class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         
         // Define the index in the result set for the different variables to extract.
-        int INDEX_LAST_FILE_CHECH = 1;
-        int INDEX_CHECKSUM = 2;
-        int INDEX_CHECKSUM_GUID = 3;
-        int INDEX_LAST_CHECKSUM_CHECK = 4;
-        int INDEX_PILLAR_GUID = 5;
+        final int indexLastFileCheck = 1;
+        final int indexChecksum = 2;
+        final int indexChecksumGuid = 3;
+        final int indexLastChecksumCheck = 4;
+        final int indexPillarGuid = 5;
         
-        long file_guid = retrieveFileGuid(fileId);
+        long fileGuid = retrieveFileGuid(fileId);
         List<FileInfo> res = new ArrayList<FileInfo>();
         String sql = "SELECT " + FI_LAST_FILE_UPDATE + ", " + FI_CHECKSUM + ", " + FI_CHECKSUM_GUID + ", "
                 + FI_LAST_CHECKSUM_UPDATE + ", " + FI_PILLAR_GUID + " FROM " + FILE_INFO_TABLE + " WHERE " 
@@ -149,15 +149,15 @@ public class IntegrityDAO {
         try {
             ResultSet dbResult = null;
             try {
-                dbResult = DatabaseUtils.selectObject(dbConnection, sql, file_guid);
+                dbResult = DatabaseUtils.selectObject(dbConnection, sql, fileGuid);
                 
                 while(dbResult.next()) {
                     
-                    Date lastFileCheck = dbResult.getDate(INDEX_LAST_FILE_CHECH);
-                    String checksum = dbResult.getString(INDEX_CHECKSUM);
-                    long checksumGuid = dbResult.getLong(INDEX_CHECKSUM_GUID);
-                    Date lastChecksumCheck = dbResult.getDate(INDEX_LAST_CHECKSUM_CHECK);
-                    long pillarGuid = dbResult.getLong(INDEX_PILLAR_GUID);
+                    Date lastFileCheck = dbResult.getDate(indexLastFileCheck);
+                    String checksum = dbResult.getString(indexChecksum);
+                    long checksumGuid = dbResult.getLong(indexChecksumGuid);
+                    Date lastChecksumCheck = dbResult.getDate(indexLastChecksumCheck);
+                    long pillarGuid = dbResult.getLong(indexPillarGuid);
                     
                     String pillarId = retrievePillarFromGuid(pillarGuid);
                     ChecksumSpecTYPE checksumType = retrieveChecksumSpecFromGuid(checksumGuid);
@@ -250,7 +250,8 @@ public class IntegrityDAO {
             String insertSql = "INSERT INTO " + FILE_INFO_TABLE + " ( " + FI_PILLAR_GUID + ", " + FI_FILE_GUID + ", "
                     + FI_LAST_FILE_UPDATE + ", " + FI_LAST_CHECKSUM_UPDATE + ", " + FI_FILE_STATE + ", " 
                     + FI_CHECKSUM_STATE + ") VALUES ( ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " 
-                    + PILLAR_ID + " = ? ), ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ? ) , ?, ?, ?, ? )";
+                    + PILLAR_ID + " = ? ), ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID 
+                    + " = ? ) , ?, ?, ?, ? )";
             DatabaseUtils.executeStatement(dbConnection, insertSql, pillarId, fileId, new Date(0),
                     new Date(0), FileState.MISSING.ordinal(), ChecksumState.UNKNOWN.ordinal());
         } else {
@@ -325,8 +326,8 @@ public class IntegrityDAO {
         // if guid is null, then make new entry. Otherwise validate / update.
         if(guid == null) {
             String insertSql = "INSERT INTO " + FILE_INFO_TABLE + " ( " + FI_PILLAR_GUID + ", " + FI_FILE_GUID + ", "
-                    + FI_LAST_FILE_UPDATE + ", " + FI_LAST_CHECKSUM_UPDATE + ", " + FI_FILE_STATE + ", " + FI_CHECKSUM_STATE + ") VALUES "
-                    + "( ?, ?, ?, ?, ?, ? )";
+                    + FI_LAST_FILE_UPDATE + ", " + FI_LAST_CHECKSUM_UPDATE + ", " + FI_FILE_STATE + ", " 
+                    + FI_CHECKSUM_STATE + ") VALUES ( ?, ?, ?, ?, ?, ? )";
             DatabaseUtils.executeStatement(dbConnection, insertSql, pillarGuid, fileGuid, filelistTimestamp,
                     new Date(0), FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
         } else {
