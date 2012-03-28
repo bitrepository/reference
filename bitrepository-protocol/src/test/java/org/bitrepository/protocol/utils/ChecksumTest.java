@@ -44,13 +44,13 @@ public class ChecksumTest extends ExtendedTestCase {
         addStep("Setup variables.", "Should be OK");
         ChecksumSpecTYPE csHmacMD5 = new ChecksumSpecTYPE();
         csHmacMD5.setChecksumType(ChecksumType.HMAC_MD5);
-        csHmacMD5.setChecksumSalt(new byte[0]);
+        csHmacMD5.setChecksumSalt(new byte[]{0});
         ChecksumSpecTYPE csHmacSHA1 = new ChecksumSpecTYPE();
         csHmacSHA1.setChecksumType(ChecksumType.HMAC_SHA1);
-        csHmacSHA1.setChecksumSalt(new byte[0]);
+        csHmacSHA1.setChecksumSalt(new byte[]{0});
         ChecksumSpecTYPE csHmacSHA256 = new ChecksumSpecTYPE();
         csHmacSHA256.setChecksumType(ChecksumType.HMAC_SHA256);
-        csHmacSHA256.setChecksumSalt(new byte[0]);
+        csHmacSHA256.setChecksumSalt(new byte[]{0});
         
         addStep("Test with no text and no key for HMAC_MD5, HMAC_SHA1, and HMAC_SHA256", 
                 "Should give expected results.");

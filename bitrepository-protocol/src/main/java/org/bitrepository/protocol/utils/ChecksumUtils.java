@@ -101,7 +101,7 @@ public final class ChecksumUtils {
                 || (algorithm == ChecksumType.HMAC_SHA256)
                 || (algorithm == ChecksumType.HMAC_SHA384)
                 || (algorithm == ChecksumType.HMAC_SHA512)) {
-            if(csSpec.getChecksumSalt() == null) {
+            if(csSpec.getChecksumSalt() == null || csSpec.getChecksumSalt().length == 0) {
                 throw new IllegalArgumentException("Cannot perform a HMAC checksum calculation without salt as requested:" 
                         + csSpec);
             }
@@ -160,10 +160,9 @@ public final class ChecksumUtils {
     private static byte[] CalculateChecksumWithHMAC(InputStream content, ChecksumType csType, byte[] salt) {
         byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
         int bytesRead;
+        String algorithmName = csType.name().replace("_", "");
         
         try {
-            String algorithmName = csType.name().replace("_", "");
-            
             Mac messageAuthenticationCode = Mac.getInstance(algorithmName);
             Key key = new SecretKeySpec(salt, algorithmName);
             
@@ -175,7 +174,9 @@ public final class ChecksumUtils {
             
             return messageAuthenticationCode.doFinal();
         } catch (Exception e) {
-            throw new CoordinationLayerException("Cannot calculate the checksum.", e);
+            e.printStackTrace();
+            throw new CoordinationLayerException("Cannot calculate the checksum with algorithm '" + algorithmName 
+                    + "' and salt '" + salt + "'", e);
         }
     }
     
