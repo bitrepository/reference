@@ -24,14 +24,23 @@ package org.bitrepository.pillar.checksumpillar;
 import java.io.File;
 import java.util.Date;
 
+import org.bitrepository.bitrepositoryelements.AlarmCode;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.messagefactories.DeleteFileMessageFactory;
+import org.bitrepository.protocol.utils.Base16Utils;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -67,12 +76,12 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void pillarDeleteFileTestSuccessCase() throws Exception {
+    public void checksumPillarDeleteFileTestSuccessCase() throws Exception {
         addDescription("Testing the delete operation for the checksum pillar.");
         addStep("Setting up the variables for the test.", "Should be instantiated.");
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
-        String AUDIT = "DELETE-FILE-TEST";
-        String CHECKSUM = "delete-checksum";
+        String auditTrail = "DELETE-FILE-TEST";
+        String CHECKSUM = "1234cccccccc4321";
         String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
         settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
                 ChecksumType.MD5.toString());
@@ -84,42 +93,259 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Populate the memory cache with the file to delete.", "Should be possible.");
         cache.putEntry(FILE_ID, CHECKSUM);
         
+        ChecksumDataForFileTYPE csData = new ChecksumDataForFileTYPE();
+        csData.setCalculationTimestamp(CalendarUtils.getEpoch());
+        csData.setChecksumSpec(csSpec);
+        csData.setChecksumValue(Base16Utils.encodeBase16(CHECKSUM));
+        
         addStep("Send message for identification of the pillar.", 
                 "The checksum pillar receive and handle the message.");
-        IdentifyPillarsForDeleteFileRequest identifyReq = msgFactory.createIdentifyPillarsForDeleteFileRequest(AUDIT, 
+        IdentifyPillarsForDeleteFileRequest identifyRequest = msgFactory.createIdentifyPillarsForDeleteFileRequest(auditTrail, 
                 FILE_ID, clientDestinationId);
-        mediator.onMessage(identifyReq);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(identifyRequest);
+        } else {
+            messageBus.sendMessage(identifyRequest);
+        }
         
         addStep("Receive and validate response from the checksum pillar.",
                 "The pillar should make a positive response.");
-        IdentifyPillarsForDeleteFileResponse identifyRes = clientTopic.waitForMessage(
+        IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
                 IdentifyPillarsForDeleteFileResponse.class);
-        Assert.assertEquals(identifyRes, msgFactory.createIdentifyPillarsForDeleteFileResponse(
-                identifyRes.getCorrelationID(), FILE_ID, csSpec, pillarId,identifyRes.getReplyTo(),  
-                identifyRes.getResponseInfo(), identifyRes.getTimeToDeliver(), clientDestinationId));
+        Assert.assertEquals(receivedIdentifyResponse, 
+                msgFactory.createIdentifyPillarsForDeleteFileResponse(
+                        receivedIdentifyResponse.getCorrelationID(), 
+                        FILE_ID, 
+                        receivedIdentifyResponse.getPillarChecksumSpec(), 
+                        pillarId, 
+                        receivedIdentifyResponse.getReplyTo(), receivedIdentifyResponse.getResponseInfo(), 
+                        receivedIdentifyResponse.getTimeToDeliver(), receivedIdentifyResponse.getTo()));
+        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.IDENTIFICATION_POSITIVE);
         
-        addStep("Send the actual delete request.", "Should be caught and handled by the checksum replica.");
+        addStep("Create and send the actual DeleteFile message to the checksum pillar.", 
+                "Should be received and handled by the checksum pillar.");
+        DeleteFileRequest deleteFileRequest = msgFactory.createDeleteFileRequest(auditTrail, 
+                csData, csSpec, receivedIdentifyResponse.getCollectionID(), 
+                FILE_ID, pillarId, receivedIdentifyResponse.getTo(), receivedIdentifyResponse.getReplyTo());
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(deleteFileRequest);
+        } else {
+            messageBus.sendMessage(deleteFileRequest);
+        }
         
+        addStep("Retrieve the ProgressResponse for the DeleteFile request", 
+                "The DeleteFile progress response should be sent by the checksum pillar.");
+        DeleteFileProgressResponse progressResponse = clientTopic.waitForMessage(DeleteFileProgressResponse.class);
+        Assert.assertEquals(progressResponse,
+                msgFactory.createDeleteFileProgressResponse(progressResponse.getCorrelationID(), FILE_ID, 
+                        pillarId, progressResponse.getReplyTo(), progressResponse.getResponseInfo(), 
+                        progressResponse.getTo()));
         
-        addStep("Receive and validate the progress response from the checksum pillar.", 
-                "Should tell about progress.");
+        addStep("Retrieve the FinalResponse for the DeleteFile request", 
+                "The DeleteFile response should be sent by the checksum pillar.");
+        DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         
-        addStep("Receive and validate the final response from the checksum pillar.", 
-                "Should tell about a successfull deletion.");
-        
-        addStep("Validate the cache.", "The file shoud no longer be found in the cache.");
-        
+        Assert.assertEquals(finalResponse,
+                msgFactory.createDeleteFileFinalResponse(finalResponse.getChecksumDataForExistingFile(), 
+                        finalResponse.getCorrelationID(), FILE_ID, pillarId, finalResponse.getReplyTo(), 
+                        finalResponse.getResponseInfo(), finalResponse.getTo()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void pillarDeleteFileTestFailedNoSuchFile() throws Exception {
-        // TODO
+    public void checksumPillarDeleteFileTestFailedNoSuchFile() throws Exception {
+        addDescription("Tests the DeleteFile functionality of the reference pillar for the scenario when the file does not exist.");
+        addStep("Setting up the variables for the test.", "Should be instantiated.");
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        String auditTrail = "DELETE-FILE-TEST";
+        String CHECKSUM = "1234cccccccc4321";
+        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+                ChecksumType.MD5.toString());
+
+        ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
+        csSpec.setChecksumSalt(null);
+        csSpec.setChecksumType(ChecksumType.MD5);
+        
+        addStep("Cleanup the memory cache so it does not contain any files.", "Should be possible.");
+        cache.cleanUp();
+        
+        ChecksumDataForFileTYPE csData = new ChecksumDataForFileTYPE();
+        csData.setCalculationTimestamp(CalendarUtils.getEpoch());
+        csData.setChecksumSpec(csSpec);
+        csData.setChecksumValue(Base16Utils.encodeBase16(CHECKSUM));
+        
+        addStep("Create and send the identify request message.", 
+                "Should be received and handled by the pillar.");
+        IdentifyPillarsForDeleteFileRequest identifyRequest = msgFactory.createIdentifyPillarsForDeleteFileRequest(
+                auditTrail, FILE_ID, clientDestinationId);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(identifyRequest);
+        } else {
+            messageBus.sendMessage(identifyRequest);
+        }
+        
+        addStep("Retrieve and validate the response from the checksum pillar.", 
+                "The checksum pillar should make a response for 'FILE_NOT_FOUND'.");
+        IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+                IdentifyPillarsForDeleteFileResponse.class);
+        Assert.assertEquals(receivedIdentifyResponse, 
+                msgFactory.createIdentifyPillarsForDeleteFileResponse(
+                        receivedIdentifyResponse.getCorrelationID(), 
+                        FILE_ID, 
+                        receivedIdentifyResponse.getPillarChecksumSpec(), 
+                        pillarId, 
+                        receivedIdentifyResponse.getReplyTo(), receivedIdentifyResponse.getResponseInfo(), 
+                        receivedIdentifyResponse.getTimeToDeliver(), receivedIdentifyResponse.getTo()));
+        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.FILE_NOT_FOUND_FAILURE);     
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void pillarDeleteFileTestFailedWrongChecksum() throws Exception {
-        // TODO
+    public void checksumPillarDeleteFileTestFailedWrongChecksum() throws Exception {
+        addDescription("Tests the DeleteFile functionality of the reference pillar for scenario when a wrong "
+                + "checksum is given as argument.");
+        addStep("Setting up the variables for the test.", "Should be instantiated.");
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        String auditTrail = "DELETE-FILE-TEST";
+        String GOOD_CHECKSUM = "1234cccccccc4321";
+        String BAD_CHECKSUM = "cccc12344321cccc";
+        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+                ChecksumType.MD5.toString());
+
+        ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
+        csSpec.setChecksumSalt(null);
+        csSpec.setChecksumType(ChecksumType.MD5);
+        
+        addStep("Populate the memory cache with the file to delete.", "Should be possible.");
+        cache.putEntry(FILE_ID, GOOD_CHECKSUM);
+        
+        ChecksumDataForFileTYPE csData = new ChecksumDataForFileTYPE();
+        csData.setCalculationTimestamp(CalendarUtils.getEpoch());
+        csData.setChecksumSpec(csSpec);
+        csData.setChecksumValue(Base16Utils.encodeBase16(BAD_CHECKSUM));
+        
+        addStep("Create and send the identify request message.", 
+                "Should be received and handled by the pillar.");
+        IdentifyPillarsForDeleteFileRequest identifyRequest = msgFactory.createIdentifyPillarsForDeleteFileRequest(
+                auditTrail, FILE_ID, clientDestinationId);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(identifyRequest);
+        } else {
+            messageBus.sendMessage(identifyRequest);
+        }
+        
+        addStep("Retrieve and validate the response from the pillar.", 
+                "The pillar should make a response.");
+        IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+                IdentifyPillarsForDeleteFileResponse.class);
+        Assert.assertEquals(receivedIdentifyResponse, 
+                msgFactory.createIdentifyPillarsForDeleteFileResponse(
+                        receivedIdentifyResponse.getCorrelationID(), 
+                        FILE_ID, 
+                        receivedIdentifyResponse.getPillarChecksumSpec(), 
+                        pillarId, 
+                        receivedIdentifyResponse.getReplyTo(), receivedIdentifyResponse.getResponseInfo(), 
+                        receivedIdentifyResponse.getTimeToDeliver(), receivedIdentifyResponse.getTo()));
+        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.IDENTIFICATION_POSITIVE);
+        
+        addStep("Create and send the actual DeleteFile message to the pillar.", 
+                "Should be received and handled by the pillar.");
+        DeleteFileRequest deleteFileRequest = msgFactory.createDeleteFileRequest(auditTrail, 
+                csData, csSpec, receivedIdentifyResponse.getCollectionID(), 
+                FILE_ID, pillarId, receivedIdentifyResponse.getTo(), receivedIdentifyResponse.getReplyTo());
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(deleteFileRequest);
+        } else {
+            messageBus.sendMessage(deleteFileRequest);
+        }
+        
+        addStep("Retrieve the FinalResponse for the DeleteFile request", 
+                "The DeleteFile response should be sent by the pillar.");
+        DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
+        
+        Assert.assertEquals(finalResponse,
+                msgFactory.createDeleteFileFinalResponse(finalResponse.getChecksumDataForExistingFile(), 
+                        finalResponse.getCorrelationID(), FILE_ID, pillarId, finalResponse.getReplyTo(), 
+                        finalResponse.getResponseInfo(), finalResponse.getTo()));
+        
+        AlarmMessage alarm = alarmDestination.waitForMessage(AlarmMessage.class);
+        Assert.assertEquals(alarm.getAlarm().getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
     }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void checksumPillarDeleteFileTestBadChecksumSpec() throws Exception {
+        addDescription("Testing the delete operation for the checksum pillar.");
+        addStep("Setting up the variables for the test.", "Should be instantiated.");
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        String auditTrail = "DELETE-FILE-TEST";
+        String CHECKSUM = "1234cccccccc4321";
+        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+                ChecksumType.MD5.toString());
 
-
+        ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
+        csSpec.setChecksumSalt(null);
+        csSpec.setChecksumType(ChecksumType.OTHER);
+        csSpec.setOtherChecksumType("UNSUPPORTED ALGORITHM");
+        
+        addStep("Populate the memory cache with the file to delete.", "Should be possible.");
+        cache.putEntry(FILE_ID, CHECKSUM);
+        
+        ChecksumDataForFileTYPE csData = new ChecksumDataForFileTYPE();
+        csData.setCalculationTimestamp(CalendarUtils.getEpoch());
+        csData.setChecksumSpec(csSpec);
+        csData.setChecksumValue(Base16Utils.encodeBase16(CHECKSUM));
+        
+        addStep("Send message for identification of the pillar.", 
+                "The checksum pillar receive and handle the message.");
+        IdentifyPillarsForDeleteFileRequest identifyRequest = msgFactory.createIdentifyPillarsForDeleteFileRequest(auditTrail, 
+                FILE_ID, clientDestinationId);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(identifyRequest);
+        } else {
+            messageBus.sendMessage(identifyRequest);
+        }
+        
+        addStep("Receive and validate response from the checksum pillar.",
+                "The pillar should make a positive response.");
+        IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+                IdentifyPillarsForDeleteFileResponse.class);
+        Assert.assertEquals(receivedIdentifyResponse, 
+                msgFactory.createIdentifyPillarsForDeleteFileResponse(
+                        receivedIdentifyResponse.getCorrelationID(), 
+                        FILE_ID, 
+                        receivedIdentifyResponse.getPillarChecksumSpec(), 
+                        pillarId, 
+                        receivedIdentifyResponse.getReplyTo(), receivedIdentifyResponse.getResponseInfo(), 
+                        receivedIdentifyResponse.getTimeToDeliver(), receivedIdentifyResponse.getTo()));
+        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.IDENTIFICATION_POSITIVE);
+        
+        addStep("Create and send the actual DeleteFile message to the checksum pillar.", 
+                "Should be received and handled by the checksum pillar.");
+        DeleteFileRequest deleteFileRequest = msgFactory.createDeleteFileRequest(auditTrail, 
+                csData, csSpec, receivedIdentifyResponse.getCollectionID(), 
+                FILE_ID, pillarId, receivedIdentifyResponse.getTo(), receivedIdentifyResponse.getReplyTo());
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(deleteFileRequest);
+        } else {
+            messageBus.sendMessage(deleteFileRequest);
+        }
+        
+        addStep("Retrieve the FinalResponse for the DeleteFile request", 
+                "The DeleteFile response should be sent by the checksum pillar.");
+        DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+        
+        Assert.assertEquals(finalResponse,
+                msgFactory.createDeleteFileFinalResponse(finalResponse.getChecksumDataForExistingFile(), 
+                        finalResponse.getCorrelationID(), FILE_ID, pillarId, finalResponse.getReplyTo(), 
+                        finalResponse.getResponseInfo(), finalResponse.getTo()));
+    }
 }

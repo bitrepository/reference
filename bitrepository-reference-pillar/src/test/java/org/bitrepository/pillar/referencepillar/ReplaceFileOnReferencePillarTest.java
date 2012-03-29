@@ -133,7 +133,11 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(
                 auditTrail, FILE_ID, FILE_SIZE, clientDestinationId);
-        mediator.onMessage(identifyRequest);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(identifyRequest);
+        } else {
+            messageBus.sendMessage(identifyRequest);
+        }
         
         addStep("Retrieve and validate the response from the pillar.", "The pillar should make a response.");
         IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
@@ -154,7 +158,11 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ReplaceFileRequest replaceRequest = msgFactory.createReplaceFileRequest(auditTrail, csDataDelete, 
                 checksumDataForNewFile, csSpecNew, csSpecExisting, receivedIdentifyResponse.getCorrelationID(), 
                 FILE_ADDRESS, FILE_ID, FILE_SIZE, pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
-        mediator.onMessage(replaceRequest);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(replaceRequest);
+        } else {
+            messageBus.sendMessage(replaceRequest);
+        }
         
         addStep("Retrieve the ProgressResponse for the replace request", "The replace response should be sent by the pillar.");
         ReplaceFileProgressResponse progressResponse = clientTopic.waitForMessage(ReplaceFileProgressResponse.class);
@@ -241,7 +249,11 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(
                 auditTrail, FILE_ID, FILE_SIZE, clientDestinationId);
-        mediator.onMessage(identifyRequest);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(identifyRequest);
+        } else {
+            messageBus.sendMessage(identifyRequest);
+        }
         
         addStep("Retrieve and validate the response from the pillar.", "The pillar should make a response.");
         IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
@@ -304,7 +316,11 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(
                 auditTrail, FILE_ID, FILE_SIZE, clientDestinationId);
-        mediator.onMessage(identifyRequest);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(identifyRequest);
+        } else {
+            messageBus.sendMessage(identifyRequest);
+        }
         
         addStep("Retrieve and validate the response from the pillar.", "The pillar should make a response.");
         IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
@@ -368,7 +384,11 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(
                 auditTrail, FILE_ID, FILE_SIZE, clientDestinationId);
-        mediator.onMessage(identifyRequest);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(identifyRequest);
+        } else {
+            messageBus.sendMessage(identifyRequest);
+        }
         
         addStep("Retrieve and validate the response from the pillar.", "The pillar should make a response.");
         IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
@@ -389,7 +409,11 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ReplaceFileRequest replaceRequest = msgFactory.createReplaceFileRequest(auditTrail, csDataDelete, 
                 checksumDataForNewFile, csSpecNew, csSpecExisting, receivedIdentifyResponse.getCorrelationID(), 
                 FILE_ADDRESS, FILE_ID, FILE_SIZE, pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
-        mediator.onMessage(replaceRequest);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(replaceRequest);
+        } else {
+            messageBus.sendMessage(replaceRequest);
+        }
         
         addStep("Retrieve the FinalResponse for the replace request", "The replace response should be sent by the pillar.");
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
@@ -456,7 +480,11 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(
                 auditTrail, FILE_ID, FILE_SIZE, clientDestinationId);
-        mediator.onMessage(identifyRequest);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(identifyRequest);
+        } else {
+            messageBus.sendMessage(identifyRequest);
+        }
         
         addStep("Retrieve and validate the response from the pillar.", "The pillar should make a response.");
         IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
@@ -477,7 +505,11 @@ public class ReplaceFileOnReferencePillarTest extends DefaultFixturePillarTest {
         ReplaceFileRequest replaceRequest = msgFactory.createReplaceFileRequest(auditTrail, csDataDelete, 
                 checksumDataForNewFile, csSpecNew, csSpecExisting, receivedIdentifyResponse.getCorrelationID(), 
                 FILE_ADDRESS, FILE_ID, FILE_SIZE, pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
-        mediator.onMessage(replaceRequest);
+        if(useEmbeddedPillar()) {
+            mediator.onMessage(replaceRequest);
+        } else {
+            messageBus.sendMessage(replaceRequest);
+        }
         
         addStep("Retrieve the FinalResponse for the replace request", "The replace response should be sent by the pillar.");
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);

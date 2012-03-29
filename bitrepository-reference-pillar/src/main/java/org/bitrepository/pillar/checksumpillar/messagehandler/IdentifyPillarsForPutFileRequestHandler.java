@@ -30,6 +30,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -69,12 +70,12 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
             checkThatTheFileDoesNotAlreadyExist(message);
             respondSuccesfullIdentification(message);
         } catch (IllegalArgumentException e) {
-            alarmDispatcher.handleIllegalArgumentException(e);
+            getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (IdentifyPillarsException e) {
             log.warn("Unsuccessfull identification for the GetChecksums operation.", e);
             respondUnsuccessfulIdentification(message, e);
         } catch (RuntimeException e) {
-            alarmDispatcher.handleRuntimeExceptions(e);
+            getAlarmDispatcher().handleRuntimeExceptions(e);
         }
     }
     
@@ -89,7 +90,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
             return;
         }
         
-        if(cache.hasFile(message.getFileID())) {
+        if(getCache().hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
             irInfo.setResponseText("The file '" + message.getFileID() 
@@ -112,7 +113,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
         reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
         reply.setResponseInfo(cause.getResponseInfo());
         
-        messagebus.sendMessage(reply);
+        getMessageBus().sendMessage(reply);
     }
     
     /**
@@ -124,10 +125,9 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
         IdentifyPillarsForPutFileResponse reply = createIdentifyPillarsForPutFileResponse(message);
 
         // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
-        reply.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        reply.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-                settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
-        reply.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
+                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
@@ -135,7 +135,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
         reply.setResponseInfo(irInfo);
 
         log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
-        messagebus.sendMessage(reply);
+        getMessageBus().sendMessage(reply);
     }
     
     /**
@@ -157,11 +157,11 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
         res.setVersion(VERSION);
         res.setCorrelationID(msg.getCorrelationID());
         res.setTo(msg.getReplyTo());
-        res.setCollectionID(settings.getCollectionID());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarChecksumSpec(getChecksumType());
         
         return res;
     }
-
 }

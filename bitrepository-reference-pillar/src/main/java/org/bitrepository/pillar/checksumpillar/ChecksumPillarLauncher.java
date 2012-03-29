@@ -41,7 +41,7 @@ import org.bitrepository.protocol.security.SecurityManager;
  * It just loads the settings from the given path, initiates the messagebus (with security) and then starts the 
  * ChecksumPillar.
  */
-public class ChecksumPillarLauncher {
+public final class ChecksumPillarLauncher {
     /** The default path to the collection id during development.*/
     private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
     /** The default path for the settings in the development.*/

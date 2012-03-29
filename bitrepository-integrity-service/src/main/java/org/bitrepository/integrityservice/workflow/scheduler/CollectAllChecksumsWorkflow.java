@@ -37,14 +37,14 @@ import org.bitrepository.protocol.eventhandler.EventHandler;
  */
 public class CollectAllChecksumsWorkflow extends IntervalWorkflow {
     /** Sets all the file ids to true.*/
-    private final String SET_ALL_FILE_IDS_TRUE = "true";
+    private static final String SET_ALL_FILE_IDS_TRUE = "true";
     /** The audit trail for this trigger.*/
-    private final String AUDIT_TRAIL_INFORMATION = "IntegrityService Scheduling GetChecksums collector.";
-    /** The settings for this workflow.*/
-    private final Settings settings;
+    private static final String AUDIT_TRAIL_INFORMATION = "IntegrityService Scheduling GetChecksums collector.";
     
     /** The informationCollector.*/
     private final IntegrityInformationCollector informationCollector;
+    /** The settings for this workflow.*/
+    private final Settings settings;
     /** The type of checksum for the calculation, e.g. the algorithm and optional salt.*/
     private final ChecksumSpecTYPE checksumType;
     /** The eventhandler for handling the results of collecting in this workflow.*/

@@ -40,10 +40,13 @@ public class Base16Utils {
     /**
      * Decodes a Base64 encoded byte set into a human readable string.
      * @param data The data to decode.
-     * @return The decoded data.
+     * @return The decoded data, or null if a null is given.
      */
     public static String decodeBase16(byte[] data) {
-        ArgumentValidator.checkNotNull(data, "byte[] data");
+        if(data == null) {
+            return null;
+        }
+        
         StringBuffer sb = new StringBuffer(data.length * 2);
         for (int i = 0; i < data.length; i++){
           int v = data[i] & 0xff;

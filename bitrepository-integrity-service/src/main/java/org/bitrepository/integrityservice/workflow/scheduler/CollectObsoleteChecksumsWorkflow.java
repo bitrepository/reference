@@ -48,7 +48,7 @@ public class CollectObsoleteChecksumsWorkflow extends IntervalWorkflow {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /** The audit trail for this trigger.*/
-    private final String AUDIT_TRAIL_INFORMATION = "IntegrityService Scheduling GetChecksums collector";
+    private static final String AUDIT_TRAIL_INFORMATION = "IntegrityService Scheduling GetChecksums collector";
     
     /** The informationCollector.*/
     private final IntegrityInformationCollector informationCollector;

@@ -128,7 +128,7 @@ public class ChecksumValidator {
             // Validate that the checksum has been found.
             String checksum = fileInfo.getChecksum();
             if(checksum == null || checksum.isEmpty()) {
-                log.warn("The file '" + fileInfo.getFileID() + "' is missing checksum at '" + fileInfo.getPillarId() 
+                log.warn("The file '" + fileInfo.getFileId() + "' is missing checksum at '" + fileInfo.getPillarId() 
                         + "'. Ignoring: {}", fileInfo);
                 continue;
             }

@@ -30,6 +30,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
@@ -66,12 +67,12 @@ public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessa
             ResponseInfo ri = new ResponseInfo();
             ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
             ri.setResponseText("The ChecksumPillar '" 
-                    + settings.getReferenceSettings().getPillarSettings().getPillarID() + "' cannot handle a "
+                    + getSettings().getReferenceSettings().getPillarSettings().getPillarID() + "' cannot handle a "
                     + "request for the actual file, since it only contains the checksum of the file.");
             
             sendFailedResponse(message, ri);
         } catch (RuntimeException e) {
-            alarmDispatcher.handleRuntimeExceptions(e);
+            getAlarmDispatcher().handleRuntimeExceptions(e);
         }
     }
     
@@ -89,7 +90,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessa
         reply.setResponseInfo(ri);
         
         // Send resulting file.
-        messagebus.sendMessage(reply);
+        getMessageBus().sendMessage(reply);
     }
     
     /**
@@ -111,9 +112,9 @@ public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessa
         res.setCorrelationID(msg.getCorrelationID());
         res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

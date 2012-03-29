@@ -45,6 +45,7 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.audit.MemorybasedAuditTrailManager;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
@@ -254,7 +255,8 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        ChecksumPillarMessageHandler<IdentifyPillarsForDeleteFileRequest> handler = handlers.get(message.getClass().getName());
+        ChecksumPillarMessageHandler<IdentifyPillarsForDeleteFileRequest> handler = handlers.get(
+                message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -283,7 +285,8 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        ChecksumPillarMessageHandler<IdentifyPillarsForGetFileIDsRequest> handler = handlers.get(message.getClass().getName());
+        ChecksumPillarMessageHandler<IdentifyPillarsForGetFileIDsRequest> handler = handlers.get(
+                message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -297,7 +300,8 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message);
 
-        ChecksumPillarMessageHandler<IdentifyPillarsForGetFileRequest> handler = handlers.get(message.getClass().getName());
+        ChecksumPillarMessageHandler<IdentifyPillarsForGetFileRequest> handler = handlers.get(
+                message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -311,7 +315,8 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        ChecksumPillarMessageHandler<IdentifyPillarsForPutFileRequest> handler = handlers.get(message.getClass().getName());
+        ChecksumPillarMessageHandler<IdentifyPillarsForPutFileRequest> handler = handlers.get(
+                message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {
@@ -325,7 +330,8 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
         log.info("Received: " + message);
         audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
-        ChecksumPillarMessageHandler<IdentifyPillarsForReplaceFileRequest> handler = handlers.get(message.getClass().getName());
+        ChecksumPillarMessageHandler<IdentifyPillarsForReplaceFileRequest> handler = handlers.get(
+                message.getClass().getName());
         if(handler != null) {
             handler.handleMessage(message);
         } else {

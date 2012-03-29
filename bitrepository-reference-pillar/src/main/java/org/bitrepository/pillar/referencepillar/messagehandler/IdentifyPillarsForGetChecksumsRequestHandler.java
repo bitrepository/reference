@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReq
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -74,12 +75,12 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
             checkThatAllRequestedFilesAreAvailable(message);
             respondSuccesfullIdentification(message);
         } catch (IllegalArgumentException e) {
-            alarmDispatcher.handleIllegalArgumentException(e);
+            getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (IdentifyPillarsException e) {
             log.warn("Unsuccessfull identification for the GetChecksums operation.", e);
             respondUnsuccessfulIdentification(message, e);
         } catch (RuntimeException e) {
-            alarmDispatcher.handleRuntimeExceptions(e);
+            getAlarmDispatcher().handleRuntimeExceptions(e);
         }
     }
     
@@ -98,7 +99,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         
         List<String> missingFiles = new ArrayList<String>();
         String fileID = fileids.getFileID();
-        if(fileID != null && !fileID.isEmpty() && !archive.hasFile(fileID)) {
+        if(fileID != null && !fileID.isEmpty() && !getArchive().hasFile(fileID)) {
             missingFiles.add(fileID);
         }
         
@@ -123,7 +124,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         // set the missing variables in the reply:
         // TimeToDeliver, AuditTrailInformation, IdentifyResponseInfo
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-                settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
@@ -131,7 +132,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         reply.setResponseInfo(irInfo);
         
         // Send resulting file.
-        messagebus.sendMessage(reply);
+        getMessageBus().sendMessage(reply);
     }
     
     /**
@@ -146,7 +147,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
         reply.setResponseInfo(cause.getResponseInfo());
         
-        messagebus.sendMessage(reply);
+        getMessageBus().sendMessage(reply);
     }
     
     /**
@@ -170,9 +171,9 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         res.setFileIDs(msg.getFileIDs());
         res.setTo(msg.getReplyTo());
         res.setChecksumRequestForExistingFile(msg.getChecksumRequestForExistingFile());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

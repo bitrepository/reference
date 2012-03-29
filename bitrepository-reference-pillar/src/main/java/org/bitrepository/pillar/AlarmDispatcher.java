@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.checksumpillar.messagehandler;
+package org.bitrepository.pillar;
 
 import java.math.BigInteger;
 import java.util.UUID;
@@ -44,11 +44,6 @@ import org.slf4j.LoggerFactory;
 public class AlarmDispatcher {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-
-    /** The classpath to the 'xsd'.*/
-    protected static final String XSD_CLASSPATH = "xsd/";
-    /** The name of the XSD containing the BitRepositoryData elements. */
-    protected static final String XSD_BR_MESSAGE = "BitRepositoryMessage.xsd";
 
     /** The settings for this AlarmDispatcher.*/
     private final Settings settings;
@@ -84,7 +79,7 @@ public class AlarmDispatcher {
         
         // create a descriptor.
         Alarm ad = new Alarm();
-        ad.setAlarmCode(AlarmCode.FAILED_OPERATION); //TODO Jonas see if this should be changed to another type
+        ad.setAlarmCode(AlarmCode.INCONSISTENT_REQUEST);
         ad.setAlarmText(exception.getMessage());
         
         sendAlarm(ad);
@@ -113,18 +108,33 @@ public class AlarmDispatcher {
         
         sendAlarm(alarm);
     }
-
+    
+    /**
+     * Method for creating and sending an Alarm about the checksum being invalid.
+     * @param fileId The id of the file, which has an invalid checksum.
+     * @param alarmText The test for the alarm message.
+     */
+    public void sendInvalidChecksumAlarm(String fileId, String alarmText) {
+        log.warn("Sending invalid checksum for the file '" + fileId + "' with the message: " + alarmText);
+        Alarm alarm = new Alarm();
+        alarm.setAlarmText(alarmText);
+        alarm.setAlarmCode(AlarmCode.CHECKSUM_ALARM);
+        alarm.setFileID(fileId);
+        alarm.setOrigDateTime(CalendarUtils.getNow());
+        sendAlarm(alarm);
+    }
+    
     /**
      * Method for sending an Alarm when something bad happens.
-     * @param alarmConcerning What the alarm is concerning.
-     * @param alarmDescription The description of the alarm, e.g. What caused the alarm.
+     * @param alarm The alarm to send to the destination for the alarm service.
      */
     public void sendAlarm(Alarm alarm) {
         ArgumentValidator.checkNotNull(alarm, "alarm");
         AlarmMessage message = new AlarmMessage();
         alarm.setAlarmRaiser(settings.getReferenceSettings().getPillarSettings().getPillarID());
         alarm.setOrigDateTime(CalendarUtils.getNow());
-        
+
+        message.setAlarm(alarm);
         message.setCollectionID(settings.getCollectionID());
         message.setCorrelationID(UUID.randomUUID().toString());
         message.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
@@ -133,19 +143,5 @@ public class AlarmDispatcher {
         message.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         
         messageBus.sendMessage(message);
-    }
-    
-    /**
-     * Method for creating and sending an Alarm about the checksum being invalid.
-     * @param message The 
-     * @param fileId
-     * @param alarmText
-     */
-    public void sendInvalidChecksumAlarm(Object message, String fileId, String alarmText) {
-        Alarm alarm = new Alarm();
-        alarm.setAlarmCode(AlarmCode.CHECKSUM_ALARM);
-        alarm.setAlarmText(alarmText);
-        alarm.setOrigDateTime(CalendarUtils.getNow());
-        sendAlarm(alarm);
     }
 }

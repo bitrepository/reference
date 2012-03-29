@@ -27,7 +27,6 @@ package org.bitrepository.integrityservice.collector.eventhandler;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityservice.AlarmDispatcher;
-import org.bitrepository.integrityservice.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.checking.IntegrityReport;

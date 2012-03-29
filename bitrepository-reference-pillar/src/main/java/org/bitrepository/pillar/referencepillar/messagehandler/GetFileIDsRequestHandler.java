@@ -52,6 +52,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
@@ -96,7 +97,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
             sendFailedResponse(message, e.getResponseInfo());
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Message ", e);
-            alarmDispatcher.handleIllegalArgumentException(e);
+            getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RuntimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
@@ -138,7 +139,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
         
         List<String> missingFiles = new ArrayList<String>();
         String fileID = fileids.getFileID();
-        if(fileID != null && !fileID.isEmpty() && !archive.hasFile(fileID)) {
+        if(fileID != null && !fileID.isEmpty() && !getArchive().hasFile(fileID)) {
             missingFiles.add(fileID);
         }
         
@@ -165,7 +166,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
         pResponse.setResponseInfo(prInfo);
 
         // Send the ProgressResponse
-        messagebus.sendMessage(pResponse);
+        getMessageBus().sendMessage(pResponse);
     }
     
     /**
@@ -222,7 +223,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
     private FileIDsData retrieveAllFileIDs() {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems fileIDList = new FileIDsDataItems();
-        for(String fileID : archive.getAllFileIds()) {
+        for(String fileID : getArchive().getAllFileIds()) {
             fileIDList.getFileIDsDataItem().add(getDataItemForFileID(fileID));
         }
         res.setFileIDsDataItems(fileIDList);
@@ -248,7 +249,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      * @return The FileIDsDataItem for the requested fileID.
      */
     private FileIDsDataItem getDataItemForFileID(String fileID) {
-        if(!archive.getFile(fileID).isFile()) {
+        if(!getArchive().getFile(fileID).isFile()) {
             ResponseInfo ri = new ResponseInfo();
             ri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             ri.setResponseText("The file '" + fileID + "' is not valid. It either does not exist or "
@@ -256,7 +257,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
             throw new InvalidMessageException(ri);
         }        
         FileIDsDataItem fileIDData = new FileIDsDataItem();
-        long timestamp = archive.getFile(fileID).lastModified();
+        long timestamp = getArchive().getFile(fileID).lastModified();
         fileIDData.setLastModificationTime(CalendarUtils.getFromMillis(timestamp));
         fileIDData.setFileID(fileID);
         return fileIDData;
@@ -282,10 +283,10 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
         try {
             is = new FileOutputStream(checksumResultFile);
             GetFileIDsResults result = new GetFileIDsResults();
-            result.setCollectionID(settings.getCollectionID());
+            result.setCollectionID(getSettings().getCollectionID());
             result.setMinVersion(MIN_VERSION);
             result.setVersion(VERSION);
-            result.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
+            result.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
             result.setFileIDsData(fileIDs);
             
             JaxbHelper jaxbHelper = new JaxbHelper(XSD_CLASSPATH, XSD_BR_DATA);
@@ -340,7 +341,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
         fResponse.setResponseInfo(fri);
         fResponse.setResultingFileIDs(results);
         
-        messagebus.sendMessage(fResponse);        
+        getMessageBus().sendMessage(fResponse);        
     }
     
     /**
@@ -352,7 +353,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
         GetFileIDsFinalResponse fResponse = createFinalResponse(message);
         fResponse.setResponseInfo(fri);
         
-        messagebus.sendMessage(fResponse);        
+        getMessageBus().sendMessage(fResponse);        
     }
     
     /**
@@ -367,9 +368,9 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
         GetFileIDsProgressResponse response = new GetFileIDsProgressResponse();
         response.setMinVersion(MIN_VERSION);
         response.setVersion(VERSION);
-        response.setCollectionID(settings.getCollectionID());
-        response.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        response.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        response.setCollectionID(getSettings().getCollectionID());
+        response.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        response.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         response.setCorrelationID(message.getCorrelationID());
         response.setFileIDs(message.getFileIDs());
         response.setResultAddress(message.getResultAddress());
@@ -391,9 +392,9 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
         GetFileIDsFinalResponse response = new GetFileIDsFinalResponse();
         response.setMinVersion(MIN_VERSION);
         response.setVersion(VERSION);
-        response.setCollectionID(settings.getCollectionID());
-        response.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        response.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        response.setCollectionID(getSettings().getCollectionID());
+        response.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        response.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         response.setCorrelationID(message.getCorrelationID());
         response.setFileIDs(message.getFileIDs());
         response.setTo(message.getReplyTo());

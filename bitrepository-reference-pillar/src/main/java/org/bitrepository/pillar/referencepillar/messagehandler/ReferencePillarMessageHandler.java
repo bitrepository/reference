@@ -32,6 +32,7 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.ProtocolConstants;
@@ -57,13 +58,13 @@ public abstract class ReferencePillarMessageHandler<T> {
     protected static final String RESPONSE_FOR_POSITIVE_IDENTIFICATION = "Operation acknowledged and accepted.";
     
     /** The dispatcher for sending alarm messages.*/
-    protected final AlarmDispatcher alarmDispatcher;
+    private final AlarmDispatcher alarmDispatcher;
     /** The settings for this setup.*/
-    protected final Settings settings;
+    private final Settings settings;
     /** The messagebus for communication.*/ 
-    protected final MessageBus messagebus;
+    private final MessageBus messagebus;
     /** The reference archive.*/
-    protected final ReferenceArchive archive;
+    private final ReferenceArchive archive;
     
     /**
      * Constructor. 
@@ -83,6 +84,34 @@ public abstract class ReferencePillarMessageHandler<T> {
         this.messagebus = messageBus;
         this.alarmDispatcher = alarmDispatcher;
         this.archive = referenceArchive;
+    }
+    
+    /**
+     * @return The alarmDispatcher for this message handler.
+     */
+    protected AlarmDispatcher getAlarmDispatcher() {
+        return alarmDispatcher;
+    }
+
+    /**
+     * @return The cache for this message handler.
+     */
+    protected ReferenceArchive getArchive() {
+        return archive;
+    }
+
+    /**
+     * @return The messagebus for this message handler.
+     */
+    protected MessageBus getMessageBus() {
+        return messagebus;
+    }
+
+    /**
+     * @return The settings for this message handler.
+     */
+    protected Settings getSettings() {
+        return settings;
     }
     
     /** 

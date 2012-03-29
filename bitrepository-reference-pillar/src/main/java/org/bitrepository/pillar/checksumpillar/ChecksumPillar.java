@@ -21,6 +21,8 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
+import javax.jms.JMSException;
+
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
@@ -36,12 +38,12 @@ public class ChecksumPillar {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The messagebus for the pillar.*/
-    private final MessageBus messagebus;
+    private final MessageBus messageBus;
     
     /** The cache for persisting the checksum data.*/
-    protected final ChecksumCache cache;
+    private final ChecksumCache cache;
     /** The mediator for delegating the communication to the message handlers.*/
-    protected ChecksumPillarMediator mediator;
+    private ChecksumPillarMediator mediator;
  
     /**
      * Constructor.
@@ -54,18 +56,23 @@ public class ChecksumPillar {
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(refCache, "ChecksumCache refCache");
         
-        this.messagebus = messageBus;
+        this.messageBus = messageBus;
         this.cache = refCache;
         
         log.info("Starting the checksum pillar!");
-        mediator = new ChecksumPillarMediator(messagebus, settings, cache);
+        mediator = new ChecksumPillarMediator(messageBus, settings, cache);
         log.info("ReferencePillar started!");
     }
     
     /**
-     * Close the pillar, and thus also the mediator.
+     * Close the pillar, and thus also the mediator and the connection to the messagebus.
      */
     public void close() {
-        mediator.close();
+        try {
+            mediator.close();
+            messageBus.close();
+        } catch (JMSException e) {
+            log.warn("Could not close the messagebus.", e);
+        }
     }
 }

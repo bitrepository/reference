@@ -85,9 +85,9 @@ public class MemoryCache implements ChecksumCache {
     
     @Override
     public void replaceEntry(String fileId, String oldChecksum, String newChecksum) {
-        if(checksumMap.get(fileId) != oldChecksum) {
+        if(!checksumMap.get(fileId).equals(oldChecksum)) {
             throw new IllegalStateException("Cannot replace the entry for '" + fileId + "' since it does not "
-                    + "have the checksum '" + oldChecksum + "'.");
+                    + "have the checksum '" + oldChecksum + "'. Expected '" + checksumMap.get(fileId) + "'");
         }
         
         checksumMap.put(fileId, newChecksum);

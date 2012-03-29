@@ -36,12 +36,14 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +84,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
             sendFailedResponse(message, e.getResponseInfo());
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Possible intruder -> Sending alarm! ", e);
-            alarmDispatcher.handleIllegalArgumentException(e);
+            getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
@@ -104,7 +106,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         validateChecksumSpec(message.getChecksumRequestForNewFile());
         
         // verify, that we already have the file
-        if(cache.hasFile(message.getFileID())) {
+        if(getCache().hasFile(message.getFileID())) {
             log.warn("Cannot perform put for a file, '" + message.getFileID() 
                     + "', which we already have within the archive");
             // Then tell the mediator, that we failed.
@@ -131,7 +133,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         pResponse.setResponseInfo(prInfo);
         
         log.info("Sending ProgressResponseInfo: " + prInfo);
-        messagebus.sendMessage(pResponse);
+        getMessageBus().sendMessage(pResponse);
     }
     
     /**
@@ -143,10 +145,10 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
         
-        String checksum = null;
+        String calculatedChecksum = null;
         try {
-            checksum = ChecksumUtils.generateChecksum(fe.downloadFromServer(new URL(message.getFileAddress())),
-                    checksumType);
+            calculatedChecksum = ChecksumUtils.generateChecksum(fe.downloadFromServer(new URL(message.getFileAddress())),
+                    getChecksumType());
         } catch (IOException e) {
             throw new CoordinationLayerException("Could not download the file '" + message.getFileID() 
                     + "' from the url '" + message.getFileAddress() + "'.", e);
@@ -154,18 +156,19 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         
         if(message.getChecksumDataForNewFile() != null) {
             ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
-            if(!checksum.equals(new String(csType.getChecksumValue()))) {
-                log.error("Expected checksums '" + new String(csType.getChecksumValue()) + "' but the checksum was '" 
-                        + checksum + "'.");
-                throw new IllegalStateException("Wrong checksum! Expected: [" + new String(csType.getChecksumValue()) 
-                + "], but calculated: [" + checksum + "]");
+            String givenChecksum = Base16Utils.decodeBase16(csType.getChecksumValue());
+            if(!calculatedChecksum.equals(givenChecksum)) {
+                log.error("Expected checksums '" + givenChecksum + "' but the checksum was '" 
+                        + calculatedChecksum + "'.");
+                throw new IllegalStateException("Wrong checksum! Expected: [" + givenChecksum 
+                + "], but calculated: [" + calculatedChecksum + "]");
             }
         } else {
             // TODO is such a checksum required?
             log.warn("No checksums for validating the retrieved file.");
         }
         
-        cache.putEntry(message.getFileID(), checksum);
+        getCache().putEntry(message.getFileID(), calculatedChecksum);
     }
     
     /**
@@ -186,7 +189,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         ChecksumDataForFileTYPE checksumForValidation = new ChecksumDataForFileTYPE();
         
         if(message.getChecksumRequestForNewFile() != null) {
-            checksumForValidation.setChecksumValue(cache.getChecksum(message.getFileID()).getBytes());
+            checksumForValidation.setChecksumValue(getCache().getChecksum(message.getFileID()).getBytes());
             checksumForValidation.setCalculationTimestamp(CalendarUtils.getNow());
             checksumForValidation.setChecksumSpec(message.getChecksumRequestForNewFile());
             log.info("Requested checksum calculated: " + checksumForValidation);
@@ -200,7 +203,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         
         // Finish by sending final response.
         log.info("Sending PutFileFinalResponse: " + fResponse);
-        messagebus.sendMessage(fResponse);
+        getMessageBus().sendMessage(fResponse);
     }
     
     /**
@@ -212,7 +215,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         // send final response telling, that the file already exists!
         PutFileFinalResponse fResponse = createPutFileFinalResponse(message);
         fResponse.setResponseInfo(frInfo);
-        messagebus.sendMessage(fResponse);
+        getMessageBus().sendMessage(fResponse);
     }
     
     /**
@@ -233,9 +236,10 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarChecksumSpec(getChecksumType());
         
         return res;
     }
@@ -259,9 +263,10 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarChecksumSpec(getChecksumType());
         
         return res;
     }

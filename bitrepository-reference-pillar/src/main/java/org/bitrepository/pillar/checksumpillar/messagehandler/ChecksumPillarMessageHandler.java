@@ -28,11 +28,16 @@ import java.math.BigInteger;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
+import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.Base16Utils;
 
 /**
  * Abstract level for message handling. 
@@ -53,15 +58,15 @@ public abstract class ChecksumPillarMessageHandler<T> {
     protected static final String RESPONSE_FOR_POSITIVE_IDENTIFICATION = "Operation acknowledged and accepted.";
     
     /** The dispatcher for sending alarm messages.*/
-    protected final AlarmDispatcher alarmDispatcher;
-    /** The settings for this setup.*/
-    protected final Settings settings;
-    /** The messagebus for communication.*/ 
-    protected final MessageBus messagebus;
+    private final AlarmDispatcher alarmDispatcher;
     /** The reference checksum cache.*/
-    protected final ChecksumCache cache;
+    private final ChecksumCache cache;
+    /** The settings for this setup.*/
+    private final Settings settings;
+    /** The messagebus for communication.*/ 
+    private final MessageBus messagebus;
     /** The specifications for the checksum type of this ChecksumPillar. */
-    protected final ChecksumSpecTYPE checksumType;
+    private ChecksumSpecTYPE checksumType;
     
     /**
      * Constructor. 
@@ -82,13 +87,47 @@ public abstract class ChecksumPillarMessageHandler<T> {
         this.alarmDispatcher = alarmDispatcher;
         this.cache = refCache;
         this.checksumType = new ChecksumSpecTYPE();
-        
         checksumType.setChecksumType(ChecksumType.fromValue(
                 settings.getReferenceSettings().getPillarSettings().getChecksumPillarChecksumSpecificationType()));
         String salt = settings.getReferenceSettings().getPillarSettings().getChecksumPillarChecksumSpecificationSalt();
         if(salt != null) {
-            checksumType.setChecksumSalt(salt.getBytes());
+            checksumType.setChecksumSalt(Base16Utils.encodeBase16(salt));
         }
+    }
+    
+    /**
+     * @return The alarmDispatcher for this message handler.
+     */
+    protected AlarmDispatcher getAlarmDispatcher() {
+        return alarmDispatcher;
+    }
+
+    /**
+     * @return The checksumType for this message handler.
+     */
+    protected ChecksumSpecTYPE getChecksumType() {
+        return checksumType;
+    }
+
+    /**
+     * @return The cache for this message handler.
+     */
+    protected ChecksumCache getCache() {
+        return cache;
+    }
+
+    /**
+     * @return The messagebus for this message handler.
+     */
+    protected MessageBus getMessageBus() {
+        return messagebus;
+    }
+
+    /**
+     * @return The settings for this message handler.
+     */
+    protected Settings getSettings() {
+        return settings;
     }
     
     /** 
@@ -107,11 +146,13 @@ public abstract class ChecksumPillarMessageHandler<T> {
             return;
         }
         
-        if(!(checksumType.getChecksumType() == csSpec.getChecksumType()) 
-                || !(new String(checksumType.getChecksumSalt()) == new String(csSpec.getChecksumSalt()))) {
-            throw new IllegalArgumentException("Cannot handle the checksum specification '" + csSpec + "'."
+        if(!(checksumType.equals(csSpec))) {
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+            ri.setResponseText("Cannot handle the checksum specification '" + csSpec + "'."
                     + "This checksum pillar can only handle '" + checksumType + "'");
-        }
+            throw new InvalidMessageException(ri);
+        }        
     }
     
     /**

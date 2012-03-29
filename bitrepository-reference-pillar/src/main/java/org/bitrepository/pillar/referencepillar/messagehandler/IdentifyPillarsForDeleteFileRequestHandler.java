@@ -30,6 +30,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileReque
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
@@ -67,7 +68,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
             checkThatRequestedFileIsAvailable(message);
             respondSuccessfulIdentification(message);
         } catch (IllegalArgumentException e) {
-            alarmDispatcher.handleIllegalArgumentException(e);
+            getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (IdentifyPillarsException e) {
             log.warn("Unsuccessful identification for the DeleteFile operation.", e);
             respondUnsuccessfulIdentification(message, e.getResponseInfo());
@@ -75,7 +76,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
             log.warn("Unsuccessful identification for the DeleteFile operation.", e);
             respondUnsuccessfulIdentification(message, e.getResponseInfo());
         } catch (RuntimeException e) {
-            alarmDispatcher.handleRuntimeExceptions(e);
+            getAlarmDispatcher().handleRuntimeExceptions(e);
         }
     }
     
@@ -86,7 +87,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
      * but the operation is accepted.
      */
     private void checkThatRequestedFileIsAvailable(IdentifyPillarsForDeleteFileRequest message) {
-        if(!archive.hasFile(message.getFileID())) {
+        if(!getArchive().hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("Could not find the requested file to delete.");
@@ -105,14 +106,14 @@ public class IdentifyPillarsForDeleteFileRequestHandler
         // set the missing variables in the reply:
         // TimeToDeliver, IdentifyResponseInfo (ignore PillarChecksumSpec)
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-                settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
         irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
         reply.setResponseInfo(irInfo);
         
-        messagebus.sendMessage(reply);
+        getMessageBus().sendMessage(reply);
     }
     
     /**
@@ -127,7 +128,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
         reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
         reply.setResponseInfo(responseInfo);
         
-        messagebus.sendMessage(reply);        
+        getMessageBus().sendMessage(reply);        
     }
     
     /**
@@ -148,9 +149,9 @@ public class IdentifyPillarsForDeleteFileRequestHandler
         res.setCorrelationID(msg.getCorrelationID());
         res.setFileID(msg.getFileID());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

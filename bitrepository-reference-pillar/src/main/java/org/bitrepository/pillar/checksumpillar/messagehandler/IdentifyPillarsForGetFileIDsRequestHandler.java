@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReque
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -73,12 +74,12 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
             checkThatAllRequestedFilesAreAvailable(message);
             respondSuccesfullIdentification(message);
         } catch (IllegalArgumentException e) {
-            alarmDispatcher.handleIllegalArgumentException(e);
+            getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (IdentifyPillarsException e) {
             log.warn("Unsuccessfull identification for the GetFileIDs.", e);
             respondUnsuccessfulIdentification(message, e);
         } catch (RuntimeException e) {
-            alarmDispatcher.handleRuntimeExceptions(e);
+            getAlarmDispatcher().handleRuntimeExceptions(e);
         }
     }
     
@@ -97,7 +98,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         
         List<String> missingFiles = new ArrayList<String>();
         String fileID = fileids.getFileID();
-        if(fileID != null && !fileID.isEmpty() && !cache.hasFile(fileID)) {
+        if(fileID != null && !fileID.isEmpty() && !getCache().hasFile(fileID)) {
             missingFiles.add(fileID);
         }
         
@@ -120,7 +121,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         IdentifyPillarsForGetFileIDsResponse reply = createIdentifyPillarsForGetFileIDsResponse(message);
         
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-                settings.getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
@@ -128,7 +129,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         reply.setResponseInfo(irInfo);
         
         // Send resulting file.
-        messagebus.sendMessage(reply);
+        getMessageBus().sendMessage(reply);
     }
     
     /**
@@ -145,7 +146,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         // Set to maximum time to indicate that it is a bad reply.
         reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
         
-        messagebus.sendMessage(reply);
+        getMessageBus().sendMessage(reply);
     }
     
     /**
@@ -166,9 +167,9 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         res.setCorrelationID(msg.getCorrelationID());
         res.setFileIDs(msg.getFileIDs());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

@@ -36,9 +36,9 @@ import org.bitrepository.protocol.eventhandler.EventHandler;
  */
 public class CollectAllFileIDsWorkflow extends IntervalWorkflow {
     /** Sets all the file ids to true.*/
-    private final String SET_ALL_FILE_IDS_TRUE = "true";
+    private static final String SET_ALL_FILE_IDS_TRUE = "true";
     /** The audit trail for this trigger.*/
-    private final String AUDIT_TRAIL_INFORMATION = "IntegrityService Scheduling GetFileIDs collector";
+    private static final String AUDIT_TRAIL_INFORMATION = "IntegrityService Scheduling GetFileIDs collector";
     
     /** The informationCollector.*/
     private final IntegrityInformationCollector informationCollector;

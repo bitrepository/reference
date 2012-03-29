@@ -225,4 +225,11 @@ public class ReferenceArchive implements FileStore {
     public long sizeLeftInArchive() {
         return baseDepositDir.getFreeSpace();
     }
+    
+    /**
+     * Closes the reference archive.
+     */
+    public void close() {
+        // TODO close stuff.
+    }
 }

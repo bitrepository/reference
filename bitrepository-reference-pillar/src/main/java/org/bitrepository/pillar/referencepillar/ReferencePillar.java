@@ -71,6 +71,7 @@ public class ReferencePillar {
         try {
             mediator.close();
             messageBus.close();
+            archive.close();
         } catch (JMSException e) {
             log.warn("Could not close the messagebus.", e);
         }

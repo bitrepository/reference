@@ -53,6 +53,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.FileExchange;
@@ -98,7 +99,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
             sendFailedResponse(message, e.getResponseInfo());
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Message ", e);
-            alarmDispatcher.handleIllegalArgumentException(e);
+            getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
@@ -144,7 +145,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         }
         
         // if not missing, then all files have been found!
-        if(!cache.hasFile(fileID)) {
+        if(!getCache().hasFile(fileID)) {
             // report on the missing files
             String errText = "The following file is missing: '" + fileID + "'";
             log.warn(errText);
@@ -203,7 +204,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
 
         // Send the ProgressResponse
         log.info("Sending GetFileProgressResponse: " + pResponse);
-        messagebus.sendMessage(pResponse);
+        getMessageBus().sendMessage(pResponse);
     }
     
     /**
@@ -217,11 +218,11 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         
         // Go through every file in the archive, calculate the checksum and put it into the results.
-        for(String fileid : cache.getFileIDs(message.getFileIDs())) {
+        for(String fileid : getCache().getFileIDs(message.getFileIDs())) {
             ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
             singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
             singleFileResult.setFileID(fileid);
-            singleFileResult.setChecksumValue(cache.getChecksum(fileid).getBytes());
+            singleFileResult.setChecksumValue(getCache().getChecksum(fileid).getBytes());
             
             res.add(singleFileResult);
         }
@@ -285,8 +286,8 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         GetChecksumsResults results = new GetChecksumsResults();
         results.setVersion(VERSION);
         results.setMinVersion(MIN_VERSION);
-        results.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        results.setCollectionID(settings.getCollectionID());
+        results.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        results.setCollectionID(getSettings().getCollectionID());
         for(ChecksumDataForChecksumSpecTYPE cs : checksumList) {
             results.getChecksumDataItems().add(cs);
         }
@@ -342,7 +343,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         
         // Send the FinalResponse
         log.info("Sending GetFileFinalResponse: " + fResponse);
-        messagebus.sendMessage(fResponse);        
+        getMessageBus().sendMessage(fResponse);        
     }
     
     private void sendFailedResponse(GetChecksumsRequest message, ResponseInfo fri) {
@@ -351,7 +352,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         
         // Send the FinalResponse
         log.info("Sending GetFileFinalResponse: " + fResponse);
-        messagebus.sendMessage(fResponse);        
+        getMessageBus().sendMessage(fResponse);        
     }
     
     /**
@@ -371,9 +372,9 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         res.setFileIDs(message.getFileIDs());
         res.setResultAddress(message.getResultAddress());
         res.setTo(message.getReplyTo());
-        res.setCollectionID(settings.getCollectionID());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
 
         return res;
     }
@@ -395,9 +396,9 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         res.setCorrelationID(message.getCorrelationID());
         res.setChecksumRequestForExistingFile(message.getChecksumRequestForExistingFile());
         res.setTo(message.getReplyTo());
-        res.setCollectionID(settings.getCollectionID());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

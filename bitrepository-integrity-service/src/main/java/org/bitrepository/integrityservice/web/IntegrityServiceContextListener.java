@@ -33,11 +33,10 @@ import org.bitrepository.integrityservice.utils.LogbackConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * The Listener has two intentions
  * 1) Acquire necessary information at startup to locate configuration files and create the first instance 
- * 		of the basic client, so everything is setup before the first users start using the webservice. 
+ *     of the basic client, so everything is setup before the first users start using the webservice. 
  * 2) In time shut the service down in a proper manner, so no threads will be orphaned.   
  */
 public class IntegrityServiceContextListener implements ServletContextListener {
@@ -79,6 +78,5 @@ public class IntegrityServiceContextListener implements ServletContextListener {
         if(service != null) {
             service.close();
         }
-    }
-    
+    }    
 }

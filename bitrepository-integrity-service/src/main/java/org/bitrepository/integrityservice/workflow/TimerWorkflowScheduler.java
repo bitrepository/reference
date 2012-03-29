@@ -50,11 +50,11 @@ public class TimerWorkflowScheduler implements IntegrityWorkflowScheduler {
     private Map<String, WorkflowTimerTask> workflowTimerTasks = new HashMap<String, WorkflowTimerTask>();
     
     /** The name of the timer.*/
-    private final String TIMER_NAME = "Integrity Information Scheduler";
+    private static final String TIMER_NAME = "Integrity Information Scheduler";
     /** Whether the timer is a deamon.*/
-    private final boolean TIMER_IS_DEAMON = true;
+    private static final boolean TIMER_IS_DEAMON = true;
     /** A timer delay of 0 seconds.*/
-    private final Long NO_DELAY = 0L;
+    private static final Long NO_DELAY = 0L;
 
     /** Setup a timer task for triggering all triggers at requested interval.
      *

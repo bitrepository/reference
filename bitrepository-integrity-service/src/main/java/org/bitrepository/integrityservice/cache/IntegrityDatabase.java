@@ -25,7 +25,6 @@
 package org.bitrepository.integrityservice.cache;
 
 import java.io.File;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.List;
@@ -86,8 +85,8 @@ public class IntegrityDatabase implements IntegrityModel {
         
         log.info("Trying to instantiate the database.");
         // TODO handle this!
-        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                "src/main/resources/integrityDB.sql");
+//        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
+//                "src/main/resources/integrityDB.sql");
         File sqlDatabaseFile = new File("src/main/resources/integrityDB.sql");
         dbConnector.createDatabase(sqlDatabaseFile);
         

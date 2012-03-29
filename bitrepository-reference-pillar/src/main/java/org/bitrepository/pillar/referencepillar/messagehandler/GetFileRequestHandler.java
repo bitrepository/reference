@@ -37,6 +37,7 @@ import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
@@ -82,7 +83,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
             sendFailedResponse(message, e.getResponseInfo());
         } catch (IllegalArgumentException e) {
             log.warn("Caught IllegalArgumentException. Message ", e);
-            alarmDispatcher.handleIllegalArgumentException(e);
+            getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
             ResponseInfo fri = new ResponseInfo();
@@ -103,7 +104,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
         validatePillarId(message.getPillarID());
 
         // Validate, that we have the requested file.
-        if(!archive.hasFile(message.getFileID())) {
+        if(!getArchive().hasFile(message.getFileID())) {
             log.warn("The file '" + message.getFileID() + "' has been requested, but we do not have that file!");
             // Then tell the mediator, that we failed.
             ResponseInfo fri = new ResponseInfo();
@@ -119,7 +120,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      * @param message The request for the GetFile operation.
      */
     protected void sendProgressMessage(GetFileRequest message) {
-        File requestedFile = archive.getFile(message.getFileID());
+        File requestedFile = getArchive().getFile(message.getFileID());
         
         // make ProgressResponse to tell that we are handling this.
         GetFileProgressResponse pResponse = createGetFileProgressResponse(message);
@@ -134,7 +135,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
 
         // Send the ProgressResponse
         log.info("Sending GetFileProgressResponse: " + pResponse);
-        messagebus.sendMessage(pResponse);
+        getMessageBus().sendMessage(pResponse);
     } 
 
     /**
@@ -143,7 +144,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      */
     @SuppressWarnings("deprecation")
     protected void uploadToClient(GetFileRequest message) {
-        File requestedFile = archive.getFile(message.getFileID());
+        File requestedFile = getArchive().getFile(message.getFileID());
 
         try {
             // Upload the file.
@@ -170,7 +171,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
 
         // send the FinalResponse.
         log.info("Sending GetFileFinalResponse: " + fResponse);
-        messagebus.sendMessage(fResponse);
+        getMessageBus().sendMessage(fResponse);
     }
     
     /**
@@ -182,7 +183,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
         log.info("Sending bad GetFileFinalResponse: " + frInfo);
         GetFileFinalResponse fResponse = createGetFileFinalResponse(message);
         fResponse.setResponseInfo(frInfo);
-        messagebus.sendMessage(fResponse);
+        getMessageBus().sendMessage(fResponse);
     }
     
     /**
@@ -205,9 +206,9 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
         res.setFileID(msg.getFileID());
         res.setFilePart(msg.getFilePart());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
 
         return res;
     }
@@ -230,9 +231,9 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
         res.setFileID(msg.getFileID());
         res.setFilePart(msg.getFilePart());
         res.setTo(msg.getReplyTo());
-        res.setPillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(settings.getCollectionID());
-        res.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
 
         return res;
     }
