@@ -24,9 +24,9 @@
  */
 package org.bitrepository.protocol.conversation;
 
+import org.bitrepository.protocol.eventhandler.AbstractOperationEvent;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
@@ -59,8 +59,9 @@ public class ConversationEventMonitor {
     public void identifyPillarsRequestSent(String info) {
         log.debug(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(
-                    OperationEventType.IDENTIFY_REQUEST_SENT, info, conversation.getConversationID()));
+            DefaultEvent event = new DefaultEvent(OperationEventType.IDENTIFY_REQUEST_SENT, info);
+            event.setConversationID(conversation.getConversationID());
+            eventHandler.handleEvent(event);
         }
     }
 
@@ -72,8 +73,9 @@ public class ConversationEventMonitor {
     public void pillarIdentified(String info, String pillarID) {
         log.debug(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new PillarOperationEvent(
-                    OperationEventType.COMPONENT_IDENTIFIED, info, pillarID, conversation.getConversationID()));
+            PillarOperationEvent event = new PillarOperationEvent(OperationEventType.COMPONENT_IDENTIFIED, info, pillarID);
+            event.setConversationID(conversation.getConversationID());
+            eventHandler.handleEvent(event);
         }
     }
     
@@ -84,8 +86,9 @@ public class ConversationEventMonitor {
     public void identifyPillarTimeout(String info) {
         log.debug(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent( OperationEventType.IDENTIFY_TIMEOUT, info, 
-                    conversation.getConversationID()));
+            DefaultEvent event = new DefaultEvent( OperationEventType.IDENTIFY_TIMEOUT, info);
+            event.setConversationID(conversation.getConversationID());
+            eventHandler.handleEvent(event);
         }
     }
 
@@ -97,8 +100,10 @@ public class ConversationEventMonitor {
     public void pillarSelected(String info, String pillarID) {
         log.debug(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new PillarOperationEvent(
-                    OperationEventType.IDENTIFICATION_COMPLETE, info, pillarID, conversation.getConversationID()));
+            PillarOperationEvent event = new PillarOperationEvent(OperationEventType.IDENTIFICATION_COMPLETE,
+                    info, pillarID);
+            event.setConversationID(conversation.getConversationID());
+            eventHandler.handleEvent(event);
         }
     }
 
@@ -110,10 +115,10 @@ public class ConversationEventMonitor {
     public void requestSent(String info, String pillarID) {
         log.debug(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(
-                    new PillarOperationEvent(OperationEvent.OperationEventType.REQUEST_SENT, 
-                            pillarID, 
-                            pillarID, conversation.getConversationID()));
+            PillarOperationEvent event = new PillarOperationEvent(OperationEventType.REQUEST_SENT, 
+                    pillarID, pillarID);
+            event.setConversationID(conversation.getConversationID());
+            eventHandler.handleEvent(event);
         }
     }
 
@@ -121,7 +126,8 @@ public class ConversationEventMonitor {
      * New information regarding the progress of the operation has been received
      * @param progressEvent Contains information regarding the progress
      */
-    public void progress(OperationEvent<?> progressEvent) {
+    public void progress(AbstractOperationEvent progressEvent) {
+        progressEvent.setConversationID(conversation.getConversationID());
         log.debug(progressEvent.getInfo());
         if (eventHandler != null) {
             eventHandler.handleEvent(progressEvent);
@@ -133,7 +139,8 @@ public class ConversationEventMonitor {
      * @param defaultEvent Event containing any additional information regarding the completion. Might contain the 
      * return value from the operation, in which case the event will be a <code>DefafaultEvent</code> subclass.
      */
-    public void pillarComplete(OperationEvent<?> completeEvent) {
+    public void pillarComplete(AbstractOperationEvent completeEvent) {
+        completeEvent.setConversationID(conversation.getConversationID());
         log.debug(completeEvent.getInfo());
         if (eventHandler != null) {
             eventHandler.handleEvent(completeEvent);
@@ -146,7 +153,8 @@ public class ConversationEventMonitor {
      * received.
      * @param completeEvent Description of the context
      */
-    public void complete(OperationEvent<?> completeEvent) {
+    public void complete(AbstractOperationEvent completeEvent) {
+        completeEvent.setConversationID(conversation.getConversationID());
         log.info(completeEvent.getInfo());
         if (eventHandler != null) {
             eventHandler.handleEvent(completeEvent);
@@ -178,7 +186,9 @@ public class ConversationEventMonitor {
     public void warning(String info) {
         log.warn(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(OperationEventType.WARNING, info, conversation.getConversationID()));
+            DefaultEvent event = new DefaultEvent(OperationEventType.WARNING, info);
+            event.setConversationID(conversation.getConversationID());
+            eventHandler.handleEvent(event);
         }
     }
 
@@ -193,8 +203,9 @@ public class ConversationEventMonitor {
         }
         log.warn(info, e);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(OperationEventType.WARNING, info + ", " + e.getMessage(), 
-                    conversation.getConversationID()));
+            DefaultEvent event = new DefaultEvent(OperationEventType.WARNING, info + ", " + e.getMessage());
+            event.setConversationID(conversation.getConversationID());
+            eventHandler.handleEvent(event);
         }
     }
     
@@ -213,8 +224,9 @@ public class ConversationEventMonitor {
     public void pillarFailed(String info) {
         log.warn(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(OperationEventType.COMPONENT_FAILED, info, 
-                    conversation.getConversationID()));
+            DefaultEvent event = new DefaultEvent(OperationEventType.COMPONENT_FAILED, info);
+            event.setConversationID(conversation.getConversationID());
+            eventHandler.handleEvent(event);
         }    
     }
     
@@ -229,8 +241,9 @@ public class ConversationEventMonitor {
         }
         log.warn(info, e);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(OperationEventType.COMPONENT_FAILED, info + ", " + e.getMessage(), 
-                    conversation.getConversationID()));
+            DefaultEvent event = new DefaultEvent(OperationEventType.COMPONENT_FAILED, info + ", " + e.getMessage());
+            event.setConversationID(conversation.getConversationID());
+            eventHandler.handleEvent(event);
         }
     }
 
@@ -239,6 +252,7 @@ public class ConversationEventMonitor {
      * @param event Encapsulates the cause.
      */
     public void operationFailed(OperationFailedEvent event) {
+        event.setConversationID(conversation.getConversationID());
         log.warn(event.getInfo(), event.getException());
         if (eventHandler != null) {
             eventHandler.handleEvent(event);

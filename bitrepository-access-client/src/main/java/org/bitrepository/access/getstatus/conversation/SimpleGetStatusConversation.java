@@ -32,6 +32,7 @@ public class SimpleGetStatusConversation extends AbstractConversation {
         this.messageSender = messageSender;
         this.settings = settings;     
         selector = new ContributorSelectorForGetStatus(contributors);
+        conversationState = new IdentifyingContributorsForGetStatus(this);
     }
 
     @Override

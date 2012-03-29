@@ -39,8 +39,8 @@ public class PutFileCompletePillarEvent extends PillarOperationEvent {
      * @param pillarID The pillar which generated the result
      * @param info Additional information.
      */
-    public PutFileCompletePillarEvent(ChecksumDataForFileTYPE result, String pillarID, String info, String conversationID) {
-        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID, conversationID);
+    public PutFileCompletePillarEvent(ChecksumDataForFileTYPE result, String pillarID, String info) {
+        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID);
         this.result = result;
     }
 

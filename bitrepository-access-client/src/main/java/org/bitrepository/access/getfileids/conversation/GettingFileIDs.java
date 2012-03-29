@@ -88,7 +88,8 @@ public class GettingFileIDs extends GetFileIDsState {
         getFileIDsRequest.setCollectionID(conversation.settings.getCollectionID());
         getFileIDsRequest.setCorrelationID(conversation.getConversationID());
         getFileIDsRequest.setFileIDs(conversation.fileIDs);
-        getFileIDsRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        getFileIDsRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings()
+                .getReceiverDestination());
         getFileIDsRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         getFileIDsRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         getFileIDsRequest.setAuditTrailInformation(conversation.auditTrailInformation);
@@ -122,8 +123,7 @@ public class GettingFileIDs extends GetFileIDsState {
     @Override
     public void onMessage(GetFileIDsProgressResponse response) {
         monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.PROGRESS, 
-                "Received progress response for retrieval of file ids " + response.getFileIDs(), 
-                conversation.getConversationID()));
+                "Received progress response for retrieval of file ids " + response.getFileIDs()));
     }
 
     @Override
@@ -135,7 +135,7 @@ public class GettingFileIDs extends GetFileIDsState {
                 monitor.pillarComplete(new FileIDsCompletePillarEvent(
                         response.getResultingFileIDs(),
                         response.getPillarID(),
-                        "Received file ids result from " + response.getPillarID(), conversation.getConversationID()));
+                        "Received file ids result from " + response.getPillarID()));
                 // If calculations in message, then put them into the results map.
                 if(response.getResultingFileIDs() != null) {
                     results.put(response.getPillarID(), response.getResultingFileIDs());
@@ -149,7 +149,7 @@ public class GettingFileIDs extends GetFileIDsState {
 
         if(responseStatus.haveAllPillarResponded()) {
             monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE, 
-                    "All pillars have delivered their FileIDs.", conversation.getConversationID()));
+                    "All pillars have delivered their FileIDs."));
             conversation.getFlowController().unblock();
             conversation.conversationState = new GetFileIDsFinished(conversation);
         }

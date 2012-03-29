@@ -28,7 +28,7 @@ package org.bitrepository.protocol.eventhandler;
  * Container for information regarding events occurring during an operation on the Bit Repository.  
  * @param <T> The type of specialized state for this event.
  */
-public interface OperationEvent<T> {
+public interface OperationEvent {
     /**
      * Defines the different types of events that can be received. These are:<ol>
      * <li>PillarIdentified: An identify response has been received from a pillar.

@@ -74,14 +74,14 @@ public class GettingStatus extends GetStatusState {
         if(isReponseSuccess(response.getResponseInfo())) {
             monitor.pillarComplete(new StatusCompleteContributorEvent(
                     "Received status result from " + response.getContributor(), 
-                    response.getContributor(), conversation.getConversationID()));
+                    response.getContributor()));
         } else {
             monitor.pillarFailed("Received negativ FinalResponse from contributor: " + response.getResponseInfo());
         } 
 
         if(responseStatus.haveAllPillarResponded()) {
             monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE, 
-                    "All contributors have delivered their status.", conversation.getConversationID()));
+                    "All contributors have delivered their status."));
             conversation.getFlowController().unblock();
             conversation.conversationState = new GetStatusFinished(conversation);
         }    }
@@ -89,8 +89,7 @@ public class GettingStatus extends GetStatusState {
     @Override
     public synchronized void onMessage(GetStatusProgressResponse response) {
         monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.PROGRESS, 
-                "Received progress response for retrieval of status from " + response.getContributor(),
-                conversation.getConversationID()));
+                "Received progress response for retrieval of status from " + response.getContributor()));
     }
 
     @Override

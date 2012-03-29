@@ -2,8 +2,10 @@ package org.bitrepository.access.getstatus;
 
 import javax.jms.JMSException;
 
+import org.bitrepository.access.getstatus.conversation.SimpleGetStatusConversation;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.conversation.FlowController;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -41,8 +43,12 @@ public class CollectionBasedGetStatusClient implements GetStatusClient {
     public void getStatus(EventHandler eventHandler) {
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
 
-        // TODO Auto-generated method stub
-        
+        log.info("Requesting status for collection of components.");
+        SimpleGetStatusConversation conversation = new SimpleGetStatusConversation(messageBus, 
+                settings, settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
+                eventHandler, new FlowController(settings));
+        conversationMediator.addConversation(conversation);
+        conversation.startConversation();
     }
     
     @Override

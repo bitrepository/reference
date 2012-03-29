@@ -25,14 +25,18 @@
 package org.bitrepository.protocol.eventhandler;
 
 /** A general type of <code>OperationEvent</code> only containing a descriptive info message. */
-public class DefaultEvent extends AbstractOperationEvent<Object> {
+public class DefaultEvent extends AbstractOperationEvent {
     
     /** Conversation ID */
-    private final String ID;
+    private String ID;
     
     /** The constructor for this immutable */
-    public DefaultEvent(OperationEventType type, String info, String conversationID) {
+    public DefaultEvent(OperationEventType type, String info) {
         super(type, info);
+    }
+    
+    @Override
+    public void setConversationID(String conversationID) {
         this.ID = conversationID;
     }
     
