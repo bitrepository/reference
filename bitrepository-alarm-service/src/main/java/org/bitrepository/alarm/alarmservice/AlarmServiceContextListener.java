@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AlarmServiceContextListener implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
-
+    
     /**
      * Performs work required to bring up the alarm service. 
      * This includes setting up locations of configuration directories and initializing the AlarmStore 
@@ -53,20 +53,20 @@ public class AlarmServiceContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         String confDir = sce.getServletContext().getInitParameter("alarmServiceConfDir");
         if(confDir == null) {
-        	throw new RuntimeException("No configuration directory specified!");
+            throw new RuntimeException("No configuration directory specified!");
         }
         log.debug("Configuration dir = " + confDir);
         System.setProperty(ConfigurationFactory.CONFIGURATION_DIR_SYSTEM_PROPERTY, confDir);
         try {
-			new LogbackConfigLoader(confDir + "/logback.xml");
-		} catch (Exception e) {
-			log.info("Failed to read log configuration file. Falling back to default.");
-		} 
+            new LogbackConfigLoader(confDir + "/logback.xml");
+        } catch (Exception e) {
+            log.info("Failed to read log configuration file. Falling back to default.");
+        } 
         AlarmStoreFactory.init(confDir);
         AlarmStore alarmStore = AlarmStoreFactory.getAlarmStore();
         log.debug("Servlet context initialized");
     }
-
+    
     /**
      * Does the work of shutting the alarm service down gracefully. 
      * This is done by calling the Alarm Store's shutdown method. 
@@ -77,5 +77,4 @@ public class AlarmServiceContextListener implements ServletContextListener {
         alarmStore.shutdown(); 
         log.debug("Servlet context destroyed");
     }
-
 }
