@@ -34,20 +34,20 @@
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
-      <xs:sequence minOccurs="0" maxOccurs="1">
-        <xs:element ref="ClientSettings" />
-        <xs:element ref="PillarSettings" />
-        <xs:element ref="DeleteFileSettings" />
-        <xs:element ref="GetAuditTrailSettings" />
-        <xs:element ref="GetChecksumsSettings" />
-        <xs:element ref="GetFileSettings" />
-        <xs:element ref="GetFileIDsSettings" />
-        <xs:element ref="GetStatusSettings" />
-        <xs:element ref="PutFileSettings" />
-        <xs:element ref="ReplaceFileSettings" />
-        <xs:element ref="AlarmServiceSettings" />
-        <xs:element ref="AuditTrailServiceSettings" />
-        <xs:element ref="IntegrityServiceSettings" />
+      <xs:sequence>
+        <xs:element ref="ClientSettings" minOccurs="0" />
+        <xs:element ref="PillarSettings" minOccurs="0" />
+        <xs:element ref="DeleteFileSettings" minOccurs="0" />
+        <xs:element ref="GetAuditTrailSettings" minOccurs="0" />
+        <xs:element ref="GetChecksumsSettings" minOccurs="0" />
+        <xs:element ref="GetFileSettings" minOccurs="0" />
+        <xs:element ref="GetFileIDsSettings" minOccurs="0" />
+        <xs:element ref="GetStatusSettings" minOccurs="0" />
+        <xs:element ref="PutFileSettings" minOccurs="0" />
+        <xs:element ref="ReplaceFileSettings" minOccurs="0" />
+        <xs:element ref="AlarmServiceSettings" minOccurs="0" />
+        <xs:element ref="AuditTrailServiceSettings" minOccurs="0" />
+        <xs:element ref="IntegrityServiceSettings" minOccurs="0" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

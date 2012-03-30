@@ -26,7 +26,7 @@ package org.bitrepository.protocol.eventhandler;
 
 /** A abstract implementation of <code>OperationEvent</code> . 
  * @param <T>*/
-public abstract class AbstractOperationEvent<T> implements OperationEvent<T> {
+public abstract class AbstractOperationEvent implements OperationEvent {
     /** @see #getType() */
     protected final OperationEventType type;
     /** @see #getInfo() */
@@ -57,6 +57,12 @@ public abstract class AbstractOperationEvent<T> implements OperationEvent<T> {
      * Deliver additional information in a string form. 
      */
     public abstract String additionalInfo();
+    
+    /**
+     * Set the correlation ID of the event. 
+     */
+    public abstract void setConversationID(String conversationID);
+
     
     /**
      * Deliver the correlation ID of the event. 

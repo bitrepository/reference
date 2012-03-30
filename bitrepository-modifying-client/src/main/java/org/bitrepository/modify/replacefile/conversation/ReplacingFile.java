@@ -129,8 +129,7 @@ public class ReplacingFile extends ReplaceFileState {
     public void onMessage(ReplaceFileProgressResponse response) {
         monitor.progress(new PillarOperationEvent(OperationEvent.OperationEventType.PROGRESS, 
                 "Received ReplaceFileProgressResponse from pillar " + response.getPillarID() + ": " + 
-                        response.getResponseInfo().toString(), response.getPillarID(),
-                        conversation.getConversationID()));
+                        response.getResponseInfo().toString(), response.getPillarID()));
     }
 
     /**
@@ -153,8 +152,7 @@ public class ReplacingFile extends ReplaceFileState {
                     response.getChecksumDataForExistingFile(),
                     response.getChecksumDataForNewFile(),
                     response.getPillarID(),
-                    "Received replace file result from " + response.getPillarID(),
-                    conversation.getConversationID()));
+                    "Received replace file result from " + response.getPillarID()));
         } else {
             monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
         }
@@ -163,8 +161,7 @@ public class ReplacingFile extends ReplaceFileState {
         if(replaceResponseStatus.haveAllPillarResponded()) {
             timerTask.cancel();
             monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE,
-                    "Finished the ReplaceFile operation on all the pillars.",
-                    conversation.getConversationID()));
+                    "Finished the ReplaceFile operation on all the pillars."));
             conversation.getFlowController().unblock();
 
             ReplaceFileFinished finishState = new ReplaceFileFinished(conversation);
