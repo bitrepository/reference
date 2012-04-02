@@ -48,7 +48,7 @@ public class CollectionBasedGetStatusClient implements GetStatusClient {
 
         log.info("Requesting status for collection of components.");
         SimpleGetStatusConversation conversation = new SimpleGetStatusConversation(messageBus, 
-                settings, settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
+                settings, settings.getCollectionSettings().getGetStatusSettings().getContributorIDs(), 
                 eventHandler, new FlowController(settings));
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
