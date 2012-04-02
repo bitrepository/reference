@@ -27,6 +27,7 @@ public class CollectionBasedGetStatusClient implements GetStatusClient {
     /**
      * Constructor
      * @param messageBus the message bus to use.
+     * @param conversationMediator the mediator to facilitate message tranmission
      * @param settings the settings to use.  
      */
     public CollectionBasedGetStatusClient(MessageBus messageBus, ConversationMediator conversationMediator, 
@@ -34,6 +35,8 @@ public class CollectionBasedGetStatusClient implements GetStatusClient {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         this.settings = settings;
+        ArgumentValidator.checkNotNullOrEmpty(settings.getCollectionSettings().getGetStatusSettings().getContributorIDs(),
+                "ContributorIDs");
         this.conversationMediator = conversationMediator;
         this.messageBus = messageBus;
     }
