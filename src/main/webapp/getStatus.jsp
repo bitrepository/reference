@@ -30,10 +30,11 @@
                 htmlTable += "<thead> <tr class=\"ui-widget-header\">";
                 htmlTable += "<th width=\"100\">Component ID</th>";
                 htmlTable += "<th width=\"100\">Status</th>";
+                htmlTable += "<th width=\"100\">Timestamp</th>";
                 htmlTable += "<th width=\"300\">Info</th>";
                 htmlTable += "</tr></thead><tbody>";
                 for (var i = 0; i < j.length; i++) {
-                    htmlTable += "<tr><td>" + j[i].componentID + "</td><td>" + j[i].status + "</td> <td>" + j[i].info + "</td></tr>";
+                    htmlTable += "<tr><td>" + j[i].componentID + "</td><td>" + j[i].status + "</td> <td>" + j[i].timeStamp + "</td> <td>" + j[i].info + "</td></tr>";
                }
                 htmlTable += "</tbody></table>"; 
                 $("#componentStatus").html(htmlTable);

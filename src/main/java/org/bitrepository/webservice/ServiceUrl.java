@@ -75,7 +75,7 @@ public class ServiceUrl {
 	}
 	
 	public String getMonitoringServiceUrl() {
-	    return integrityUrl;
+	    return monitoringUrl;
 	}
 	
 	public String getDefaultHttpServerUrl() {
