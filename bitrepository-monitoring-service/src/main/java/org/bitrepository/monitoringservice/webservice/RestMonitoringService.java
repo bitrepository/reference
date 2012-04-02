@@ -1,12 +1,14 @@
 package org.bitrepository.monitoringservice.webservice;
 
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.monitoringservice.MonitoringService;
 import org.bitrepository.monitoringservice.MonitoringServiceFactory;
 
@@ -36,11 +38,22 @@ public class RestMonitoringService {
     @Path("/getComponentStatus/")
     @Produces("text/json")
 	public String getComponentStatus() {
+	    Map<String, ResultingStatus> statusMap = service.getStatus();
+	    Set<String> components = statusMap.keySet();
 	    StringBuilder sb = new StringBuilder();
         sb.append("[");
-        sb.append("{\"status\":\" Online \", \"componentID\": \" sbtape3 \", \"info\": \" Foobar! I'm online\"},");
-        sb.append("{\"status\":\" Online \", \"componentID\": \" sbtape1 \", \"info\": \" Foobar! I'm online\"},");
-        sb.append("{\"status\":\" Online \", \"componentID\": \" sbtape2 \", \"info\": \" Foobar! I'm online\"}");
+        Iterator<String> it = components.iterator();
+        while(it.hasNext()) {
+            String component = it.next();
+            sb.append("{\"componentID\": \"" + component + "\"" +
+                    "\"status\":\" " + statusMap.get(component).getStatusInfo().getStatusCode() + "\"" + 
+                    "\"info\":\" " + statusMap.get(component).getStatusInfo().getStatusText() + "\"" + 
+                    "\"timeStamp\":\" " + statusMap.get(component).getStatusTimestamp() + "\"" + 
+                "}");
+            if(it.hasNext()) {
+                sb.append(",");
+            }
+        }
         sb.append("]");
         return sb.toString();
 	}

@@ -203,6 +203,15 @@
           The settings for the GetStatusClient.
         </xs:documentation>
       </xs:annotation>
+      <xs:sequence>
+        <xs:element name="CollectionInterval" type="xs:long" minOccurs="1" maxOccurs="1">
+          <xs:annotation>
+            <xs:documentation>
+              Interval at which statuses is to be collected from components. Value in milliseconds. 
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
 
