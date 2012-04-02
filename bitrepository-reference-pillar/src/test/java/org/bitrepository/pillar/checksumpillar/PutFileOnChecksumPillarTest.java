@@ -188,6 +188,9 @@ public class PutFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         Assert.assertTrue(receivedChecksumData.getCalculationTimestamp().toGregorianCalendar().getTimeInMillis() > startDate.getTime(), 
                 "The received timestamp should be after the start of this test '" + startDate + "', but was "
                         + receivedChecksumData.getCalculationTimestamp().toGregorianCalendar().getTime() + "'");
+        
+        addStep("Validate the content of the cache", "Should contain the checksum of the file");
+        Assert.assertEquals(cache.getChecksum(FILE_ID), FILE_CHECKSUM_MD5);
     }
     
     @SuppressWarnings("deprecation")
@@ -248,6 +251,9 @@ public class PutFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 "The response info should give 'FILE_FOUND'");
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.DUPLICATE_FILE_FAILURE);
+        
+        addStep("Validate the content of the cache", "Should contain the checksum of the file");
+        Assert.assertEquals(cache.getChecksum(FILE_ID), FILE_CHECKSUM_MD5);
     }
     
     @SuppressWarnings("deprecation")
@@ -355,5 +361,8 @@ public class PutFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         Assert.assertTrue(ir.getResponseText().contains(Base16Utils.decodeBase16(WRONG_FILE_CHECKSUM_MD5)), 
                 "The response should contain the wrong checksum '" + Base16Utils.decodeBase16(WRONG_FILE_CHECKSUM_MD5) 
                 + "', but was: '" + ir.getResponseText());
+        
+        addStep("Validate the content of the cache", "Should not contain the checksum of the file");
+        Assert.assertNull(cache.getChecksum(FILE_ID));
     }
 }

@@ -151,6 +151,9 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 msgFactory.createDeleteFileFinalResponse(finalResponse.getChecksumDataForExistingFile(), 
                         finalResponse.getCorrelationID(), FILE_ID, pillarId, finalResponse.getReplyTo(), 
                         finalResponse.getResponseInfo(), finalResponse.getTo()));
+
+        addStep("Validate the content of the cache", "Should no longer contain the checksum of the file");
+        Assert.assertNull(cache.getChecksum(FILE_ID));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -199,7 +202,10 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                         receivedIdentifyResponse.getReplyTo(), receivedIdentifyResponse.getResponseInfo(), 
                         receivedIdentifyResponse.getTimeToDeliver(), receivedIdentifyResponse.getTo()));
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
-                ResponseCode.FILE_NOT_FOUND_FAILURE);     
+                ResponseCode.FILE_NOT_FOUND_FAILURE);  
+        
+        addStep("Validate the content of the cache", "Should not contain the checksum of the file");
+        Assert.assertNull(cache.getChecksum(FILE_ID));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -275,6 +281,9 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         
         AlarmMessage alarm = alarmDestination.waitForMessage(AlarmMessage.class);
         Assert.assertEquals(alarm.getAlarm().getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
+        
+        addStep("Validate the content of the cache", "Should still contain the good checksum of the file");
+        Assert.assertEquals(cache.getChecksum(FILE_ID), GOOD_CHECKSUM);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -347,5 +356,8 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 msgFactory.createDeleteFileFinalResponse(finalResponse.getChecksumDataForExistingFile(), 
                         finalResponse.getCorrelationID(), FILE_ID, pillarId, finalResponse.getReplyTo(), 
                         finalResponse.getResponseInfo(), finalResponse.getTo()));
+        
+        addStep("Validate the content of the cache", "Should still contain the checksum of the file");
+        Assert.assertEquals(cache.getChecksum(FILE_ID), CHECKSUM);
     }
 }

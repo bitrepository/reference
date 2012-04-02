@@ -28,6 +28,8 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.pillar.PillarComponentFactory;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
@@ -108,8 +110,8 @@ public final class ReferencePillarLauncher {
         }
         
         try {
-            PillarComponentFactory.getInstance().getReferencePillar(MessageBusManager.getMessageBus(settings, 
-                    securityManager), settings);
+            MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
+            PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);
