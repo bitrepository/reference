@@ -32,7 +32,7 @@ public class GetStatusEventHandler implements EventHandler {
             break;
         case COMPONENT_COMPLETE:
             StatusCompleteContributorEvent statusEvent = (StatusCompleteContributorEvent) event; 
-            statusStore.updateStatus(statusEvent.getID(), statusEvent.getStatus());
+            statusStore.updateStatus(statusEvent.getPillarID(), statusEvent.getStatus());
             break;
         case COMPLETE:
             break;

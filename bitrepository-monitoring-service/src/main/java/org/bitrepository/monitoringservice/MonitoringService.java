@@ -27,6 +27,7 @@ public class MonitoringService {
 		statusStore = new ComponentStatusStore();
 		getStatusClient = AccessComponentFactory.getInstance().createGetStatusClient(settings, securityManager);
 		collector = new StatusCollector(getStatusClient, settings, statusStore);
+		collector.start();
 	}
 	
 	public Map<String, ResultingStatus> getStatus() {

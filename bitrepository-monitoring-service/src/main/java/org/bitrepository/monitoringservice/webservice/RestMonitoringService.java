@@ -45,9 +45,9 @@ public class RestMonitoringService {
         Iterator<String> it = components.iterator();
         while(it.hasNext()) {
             String component = it.next();
-            sb.append("{\"componentID\": \"" + component + "\"" +
-                    "\"status\":\" " + statusMap.get(component).getStatusInfo().getStatusCode() + "\"" + 
-                    "\"info\":\" " + statusMap.get(component).getStatusInfo().getStatusText() + "\"" + 
+            sb.append("{\"componentID\": \"" + component + "\"," +
+                    "\"status\":\" " + statusMap.get(component).getStatusInfo().getStatusCode() + "\"," + 
+                    "\"info\":\" " + statusMap.get(component).getStatusInfo().getStatusText() + "\"," + 
                     "\"timeStamp\":\" " + statusMap.get(component).getStatusTimestamp() + "\"" + 
                 "}");
             if(it.hasNext()) {
