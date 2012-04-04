@@ -46,64 +46,61 @@ public class RestIntegrityService {
         service = IntegrityServiceFactory.getIntegrityServiceWebInterface();
     }
     
+    /**
+     * Get the listing of integrity status as a JSON array
+     */
     @GET
     @Path("/getIntegrityStatus/")
-    @Produces("text/html")
+    @Produces("application/json")
     public String getIntegrityStatus() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<table class=\"ui-widget ui-widget-content\">\n");
-        sb.append("<thead>\n");
-        sb.append("<tr class=\"ui-widget-header\">\n");
-        sb.append("<th width=\"100\">PillarID</th>\n");
-        sb.append("<th width=\"100\">Total number of files</th>\n");
-        sb.append("<th width=\"100\">Number of missing files</th>\n");
-        sb.append("<th>Number of checksum errors</th>\n");
-        sb.append("</tr>\n");
-        sb.append("</thead>\n");
-        sb.append("<tbody>\n");
+        sb.append("[");
         List<String> pillars = service.getPillarList();
-        for(String pillar : pillars) {
-            sb.append("<tr> \n");
-            sb.append("<td>" + pillar + " </td>\n");
-            sb.append("<td>" + service.getNumberOfFiles(pillar) + " </td>\n");
-            sb.append("<td>" + service.getNumberOfMissingFiles(pillar) + " </td>\n");
-            sb.append("<td>" + service.getNumberOfChecksumErrors(pillar) + " </td>\n");
-            sb.append("</tr>\n");
+        Iterator<String> it = pillars.iterator();
+        while(it.hasNext()) {
+            String pillar = it.next();
+            sb.append("{\"pillarID\": \"" + pillar + "\"," +
+                    "\"totalFileCount\": \"" + service.getNumberOfFiles(pillar) + "\"," +
+                    "\"missingFilesCount\": \"" + service.getNumberOfMissingFiles(pillar) + "\"," +
+                    "\"checksumErrorCount\": \"" + service.getNumberOfChecksumErrors(pillar) + "\"}");
+            if(it.hasNext()) {
+                sb.append(",");
+            }
         }
-        sb.append("</tbody>\n");
-        sb.append("</table>\n");
+        sb.append("]");       
         return sb.toString();
     }
     
+    /***
+     * Get the current workflows setup as a JSON array 
+     */
     @GET
     @Path("/getWorkflowSetup/")
-    @Produces("text/html")
+    @Produces("application/json")
     public String getWorkflowSetup() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<table class=\"ui-widget ui-widget-content\">\n");
-        sb.append("<thead>\n");
-        sb.append("<tr class=\"ui-widget-header\">\n");
-        sb.append("<th width=\"200\">Workflow name</th>\n");
-        sb.append("<th>Next run</th>\n");
-        sb.append("<th>Execution interval</th>\n");
-        sb.append("</tr>\n");
-        sb.append("</thead>\n");
-        sb.append("<tbody>\n");
+        sb.append("[");
         Collection<Workflow> workflows = service.getWorkflows();
-        for(Workflow workflow : workflows) {
-            sb.append("<tr>\n");
-            sb.append("<td>" + workflow.getName() + "</td>\n");
-            sb.append("<td>" + workflow.getNextRun() + "</td>\n");
-            sb.append("<td>" + workflow.getTimeBetweenRuns() + "</td>\n");
-            sb.append("</tr>\n");
+        Iterator<Workflow> it = workflows.iterator();
+        while(it.hasNext()) {
+            Workflow workflow = it.next();
+            sb.append("{\"workflowID\": \"" + workflow.getName() + "\"," +
+                    "\"nextRun\": \"" + workflow.getNextRun() + "\"," +
+                    "\"executionInterval\": \"" + workflow.getTimeBetweenRuns() + "\"}");
+            if(it.hasNext()) {
+                sb.append(",");
+            }
         }
-        sb.append("</table>\n");
+        sb.append("]");       
         return sb.toString();
     }
     
+    /**
+     * Get the list of possible workflows as a JSON array 
+     */
     @GET
     @Path("/getWorkflowList/")
-    @Produces("text/json")
+    @Produces("application/json")
     public String getWorkflowList() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -120,6 +117,9 @@ public class RestIntegrityService {
         return sb.toString();
     }
     
+    /**
+     * Start a named workflow.  
+     */
     @POST
     @Path("/startWorkflow/")
     @Consumes("application/x-www-form-urlencoded")

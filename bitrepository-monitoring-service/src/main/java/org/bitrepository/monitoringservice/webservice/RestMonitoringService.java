@@ -23,7 +23,7 @@ public class RestMonitoringService {
 
 	@GET
 	@Path("/getMonitoringConfiguration/")
-	@Produces("text/json")
+	@Produces("application/json")
 	public String getMonitoringServiceConfiguration() {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("[");
@@ -36,7 +36,7 @@ public class RestMonitoringService {
 	
 	@GET
     @Path("/getComponentStatus/")
-    @Produces("text/json")
+    @Produces("application/json")
 	public String getComponentStatus() {
 	    Map<String, ResultingStatus> statusMap = service.getStatus();
 	    Set<String> components = statusMap.keySet();
