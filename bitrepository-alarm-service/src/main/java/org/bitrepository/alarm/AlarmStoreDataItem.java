@@ -74,7 +74,23 @@ public class AlarmStoreDataItem {
 		alarmText = alarm.getAlarmText();
 	}
 
-	/**
+	public XMLGregorianCalendar getDate() {
+        return date;
+    }
+
+    public String getRaiserID() {
+        return raiserID;
+    }
+
+    public AlarmCode getAlarmCode() {
+        return alarmCode;
+    }
+
+    public String getAlarmText() {
+        return alarmText;
+    }
+
+    /**
 	 * toString method to deliver a HTML representation of the alarm. 
 	 * @return A string containing a HTML table row presenting the alarm.  
 	 */
