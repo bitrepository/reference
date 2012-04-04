@@ -36,6 +36,7 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -127,7 +128,11 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
                 new IdentifyPillarsForGetChecksumsRequestHandler(settings, messagebus, alarmDispatcher, cache));
         this.handlers.put(GetChecksumsRequest.class.getName(), 
                 new GetChecksumsRequestHandler(settings, messagebus, alarmDispatcher, cache));
-        
+        this.handlers.put(IdentifyContributorsForGetStatusRequest.class.getName(), 
+                new IdentifyContributorsForGetStatusRequestHandler(settings, messagebus, alarmDispatcher, cache));
+        this.handlers.put(GetStatusRequest.class.getName(),
+                new GetStatusRequestHandler(settings, messagebus, alarmDispatcher, cache));
+
         this.handlers.put(IdentifyPillarsForPutFileRequest.class.getName(), 
                 new IdentifyPillarsForPutFileRequestHandler(settings, messagebus, alarmDispatcher, cache));
         this.handlers.put(PutFileRequest.class.getName(), 
@@ -246,6 +251,20 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
         }    
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onMessage(IdentifyContributorsForGetStatusRequest message) {
+        log.info("Received: " + message);
+
+        ChecksumPillarMessageHandler<IdentifyContributorsForGetStatusRequest> handler = handlers.get(
+                message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        } else {
+            noHandlerAlarm(message);
+        }    
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
