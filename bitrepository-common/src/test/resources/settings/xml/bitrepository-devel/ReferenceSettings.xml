@@ -38,6 +38,7 @@
     <TimeToStartDeliver>1000</TimeToStartDeliver>
     <ReceiverDestination>TEST-TOPIC-PILLAR</ReceiverDestination>
     <ChecksumPillarChecksumSpecificationType>MD5</ChecksumPillarChecksumSpecificationType>
+    <AuditContributerDatabaseUrl>jdbc:derby:auditcontributerdb</AuditContributerDatabaseUrl>
   </PillarSettings>
   <DeleteFileSettings></DeleteFileSettings>
   <GetAuditTrailSettings></GetAuditTrailSettings>

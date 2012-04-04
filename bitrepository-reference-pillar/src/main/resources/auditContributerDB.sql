@@ -19,9 +19,8 @@
 -- <http://www.gnu.org/licenses/lgpl-2.1.html>.
 -- #L%
 ---
--- TODO: HEADER
 
-connect 'jdbc:derby:auditdb;create=true';
+connect 'jdbc:derby:auditcontributerdb;create=true';
 
 --**************************************************************************--
 -- Name:        tableversions
@@ -56,11 +55,13 @@ insert into tableversions ( tablename, version )
 create table audittrail (
     sequence_number bigint not null generated always as identity primary key,
                                     -- The sequence number and unique key for this table.
-    file_id bigint,                 -- The identifier for the file. Used to lookup in the file table.
-    actor_id bigint,                -- The identifier for the actor which performed the action for the audit. 
+    file_guid bigint,               -- The identifier for the file. Used to lookup in the file table.
+    actor_guid bigint,              -- The identifier for the actor which performed the action for the audit. 
                                     -- Used for looking up in the 
-    action varchar(100),            -- The name of the action behind the audit.
-    action_date date                -- The date when the action was performed.
+    operation varchar(100),         -- The name of the action behind the audit.
+    operation_date date,            -- The date when the action was performed.
+    audit varchar(255),             -- The audit trail delivered from the actor. 
+    information varchar(255)        -- The information about the audit.
 );
 
 create index sequenceindex on audittrail ( sequence_number );
