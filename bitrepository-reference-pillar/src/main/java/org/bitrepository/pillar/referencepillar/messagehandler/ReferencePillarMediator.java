@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -46,6 +47,7 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.AlarmDispatcher;
+import org.bitrepository.pillar.AuditTrailManager;
 import org.bitrepository.pillar.audit.MemorybasedAuditTrailManager;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
@@ -72,7 +74,7 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     /** The archive. Package protected on purpose.*/
     private final ReferenceArchive archive;
     /** The handler of the audits. Package protected on purpose.*/
-    private final MemorybasedAuditTrailManager audits;
+    private final AuditTrailManager audits;
     /** The dispatcher of alarms. Package protected on purpose.*/
     private final AlarmDispatcher alarmDispatcher;
 
@@ -159,7 +161,7 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     
     @Override
     protected void reportUnsupported(Object message) {
-        audits.addMessageReceivedAudit("Received unsupported: " + message.getClass());
+        audits.addAuditEvent("", "", "", "", FileAction.OTHER);
         if(AlarmLevel.WARNING.equals(settings.getCollectionSettings().getPillarSettings().getAlarmLevel())) {
             noHandlerAlarm(message);
         }
@@ -169,7 +171,6 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(DeleteFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ReferencePillarMessageHandler<DeleteFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
@@ -183,7 +184,6 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(GetAuditTrailsRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ReferencePillarMessageHandler<GetAuditTrailsRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
@@ -197,7 +197,6 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(GetChecksumsRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ReferencePillarMessageHandler<GetChecksumsRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
@@ -211,7 +210,6 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(GetFileIDsRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ReferencePillarMessageHandler<GetFileIDsRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
@@ -225,7 +223,6 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(GetFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ReferencePillarMessageHandler<GetFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
@@ -239,7 +236,6 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(GetStatusRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ReferencePillarMessageHandler<GetStatusRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
@@ -253,7 +249,6 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ReferencePillarMessageHandler<IdentifyPillarsForDeleteFileRequest> handler = handlers.get(
                 message.getClass().getName());
@@ -268,7 +263,6 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ReferencePillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> handler 
                 = handlers.get(message.getClass().getName());
@@ -283,7 +277,6 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ReferencePillarMessageHandler<IdentifyPillarsForGetFileIDsRequest> handler = handlers.get(
                 message.getClass().getName());
@@ -298,7 +291,6 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(IdentifyPillarsForGetFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message);
 
         ReferencePillarMessageHandler<IdentifyPillarsForGetFileRequest> handler = handlers.get(
                 message.getClass().getName());
@@ -313,7 +305,6 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(IdentifyPillarsForPutFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ReferencePillarMessageHandler<IdentifyPillarsForPutFileRequest> handler = handlers.get(
                 message.getClass().getName());
@@ -328,7 +319,6 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(IdentifyPillarsForReplaceFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ReferencePillarMessageHandler<IdentifyPillarsForReplaceFileRequest> handler = handlers.get(
                 message.getClass().getName());
@@ -343,7 +333,6 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(PutFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ReferencePillarMessageHandler<PutFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
@@ -357,7 +346,6 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(ReplaceFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ReferencePillarMessageHandler<ReplaceFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
