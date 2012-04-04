@@ -30,6 +30,8 @@ import org.bitrepository.access.getfile.CollectionBasedGetFileClient;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfileids.ConversationBasedGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
+import org.bitrepository.access.getstatus.CollectionBasedGetStatusClient;
+import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -111,4 +113,18 @@ public final class AccessComponentFactory {
                 ConversationMediatorManager.getConversationMediator(settings, securityManager),
                 settings);
     }
+    
+    /**
+     * Method for getting a GetStatusClient as defined in the access configuration.<p>
+     *
+     * @return A GetStatusClient.
+     */
+    public GetStatusClient createGetStatusClient(Settings settings, SecurityManager securityManager) {
+        return new CollectionBasedGetStatusClient(
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
+                ConversationMediatorManager.getConversationMediator(settings, securityManager),
+                settings);
+    }
+
+    
 }

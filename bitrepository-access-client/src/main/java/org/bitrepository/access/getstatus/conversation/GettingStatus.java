@@ -36,8 +36,10 @@ public class GettingStatus extends GetStatusState {
     
     public GettingStatus(SimpleGetStatusConversation conversation) {
         super(conversation);
+        contributorsSelectedForRequest = conversation.selector.getSelectedContributors();
         responseStatus = new PillarsResponseStatus(
-                contributorsSelectedForRequest.toArray(new SelectedPillarInfo[contributorsSelectedForRequest.size()]));
+                contributorsSelectedForRequest.toArray(
+                        new SelectedPillarInfo[conversation.selector.getSelectedContributors().size()]));
     }
 
     @Override
@@ -74,7 +76,7 @@ public class GettingStatus extends GetStatusState {
         if(isReponseSuccess(response.getResponseInfo())) {
             monitor.pillarComplete(new StatusCompleteContributorEvent(
                     "Received status result from " + response.getContributor(), 
-                    response.getContributor()));
+                    response.getContributor(), response.getResultingStatus()));
         } else {
             monitor.pillarFailed("Received negativ FinalResponse from contributor: " + response.getResponseInfo());
         } 

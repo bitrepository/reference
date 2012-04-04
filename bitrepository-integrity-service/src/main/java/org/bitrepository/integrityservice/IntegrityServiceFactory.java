@@ -50,8 +50,6 @@ public final class IntegrityServiceFactory {
     /** The private key file containing the security information.*/
     private static String privateKeyFile;
     
-    /** Default collection settings identifier (used to build the path the collection and referencesettings */
-    private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
     /** The properties file holding implementation specifics for the alarm service. */
     private static final String CONFIGFILE = "integrity.properties";
     /** Property key to tell where to locate the path and filename to the private key file. */
@@ -96,7 +94,7 @@ public final class IntegrityServiceFactory {
             }
             loadProperties();
             SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
-            settings = settingsLoader.getSettings(DEFAULT_COLLECTION_ID);         
+            settings = settingsLoader.getSettings();         
         }
 
         return settings;

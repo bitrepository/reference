@@ -57,13 +57,12 @@ public class XMLFileSettingsLoader implements SettingsLoader {
 
     /**
      * Loads the indicated settings for the specified collection.
-     * @param <T> The type of settings to return
-     * @param collectionID The collectionID to load the settings for.
      * @param settingsClass The settings class identifying the type of settings requested.
+     * @param <T> The type of settings to return
      * @return The loaded settings.
      */
-    public <T> T loadSettings(String collectionID, Class<T> settingsClass) {
-        String fileLocation = pathToSettingsFiles + "/" + collectionID + "/" + settingsClass.getSimpleName() + ".xml";
+    public <T> T loadSettings(Class<T> settingsClass) {
+        String fileLocation = pathToSettingsFiles + "/" + settingsClass.getSimpleName() + ".xml";
         String schemaLocation = settingsClass.getSimpleName() + ".xsd";
         JaxbHelper jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
 

@@ -45,7 +45,9 @@
   <GetChecksumsSettings></GetChecksumsSettings>
   <GetFileSettings></GetFileSettings>
   <GetFileIDsSettings></GetFileIDsSettings>
-  <GetStatusSettings></GetStatusSettings>
+  <GetStatusSettings>
+    <CollectionInterval>300000</CollectionInterval>
+  </GetStatusSettings>
   <PutFileSettings></PutFileSettings>
   <ReplaceFileSettings></ReplaceFileSettings>
   <AlarmServiceSettings>

@@ -31,41 +31,21 @@ package org.bitrepository.common.settings;
 public class TestSettingsProvider {
     /** The SettingsProvider to use for accessing the settings */
     private final static SettingsProvider settingsprovider = 
-            new SettingsProvider(new XMLFileSettingsLoader("settings/xml"));
-    public final static String NO_ENVIRONMENT = "empty-settings";
-    public final static String LOCAL_ENVIRONMENT = "local-settings";
-    public final static String DEVELOPMENT_ENVIRONMENT = "bitrepository-devel";
-    
-    /** 
-     * Gets you settings for the indicated collectionID. 
-     */
-    public static Settings getSettings(String collectionID) {
-        return settingsprovider.getSettings(collectionID);
-    }
-    
+            new SettingsProvider(new XMLFileSettingsLoader("settings/xml/bitrepository-devel"));
+     
     /** 
      * Returns the settings for the collection defined by the COLLECTIONID_PROPERTY system variable if defined. If 
      * undefined the DEVELOPMENT_ENVIRONMENT settings will be loaded.
      */
     public static Settings getSettings() {
-        String collectionID = System.getProperty(SettingsProvider.COLLECTIONID_PROPERTY, DEVELOPMENT_ENVIRONMENT);
-        return settingsprovider.getSettings(collectionID);
-    }
-    
-    /** 
-     * Reloads the settings from disk for the indicated collectionID.
-     */
-    public static Settings reloadSettings(String collectionID) {
-        settingsprovider.loadSettings(collectionID);
-        return getSettings(collectionID);
+        return settingsprovider.getSettings();
     }
     
     /** 
      * Reloads the settings from disk.
      */
     public static Settings reloadSettings() {
-        String collectionID = System.getProperty(SettingsProvider.COLLECTIONID_PROPERTY, DEVELOPMENT_ENVIRONMENT);
-        settingsprovider.loadSettings(collectionID);
+        settingsprovider.loadSettings();
         return getSettings();
     }
 }

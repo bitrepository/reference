@@ -45,8 +45,8 @@ public class ProtocolComponentFactoryTest {
     }
     
     protected void setupSettings() throws Exception {
-        SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader("settings/xml"));
-        settings = settingsLoader.getSettings("bitrepository-devel");
+        SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader("settings/xml/bitrepository-devel"));
+        settings = settingsLoader.getSettings();
     }
     
     @Test(groups = { "regressiontest" })    
@@ -54,7 +54,6 @@ public class ProtocolComponentFactoryTest {
      * Validates that only one message bus instance is created for each collection ID.
      */
     public void getMessageTest() throws Exception {
-        MessageBus bus =
-            ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
+        MessageBus bus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
     }
 }
