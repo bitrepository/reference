@@ -30,9 +30,8 @@ package org.bitrepository.common.settings;
 public interface SettingsLoader {
     /**
      * Loads the settings for the indicated collection
-     * @param collectionID The collection to load the settings for.
      * @param configurationClass Specifies the type of settings to load.
      * @return The loaded settings.
      */
-    public <T> T loadSettings(String collectionID, Class<T> configurationClass);
+    public <T> T loadSettings(Class<T> configurationClass);
 }

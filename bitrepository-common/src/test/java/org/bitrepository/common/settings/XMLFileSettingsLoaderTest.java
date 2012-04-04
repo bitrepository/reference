@@ -31,15 +31,13 @@ import org.testng.annotations.Test;
 
 public class XMLFileSettingsLoaderTest extends ExtendedTestCase{
     private static final String COLLECTION_ID = "bitrepository-devel";
-    private static final String PATH_TO_SETTINGS = "settings/xml";
+    private static final String PATH_TO_SETTINGS = "settings/xml/bitrepository-devel";
     
     @Test(groups = { "regressiontest" })
     public void testCollectionSettingsLoading() throws Exception {
         SettingsLoader settingsLoader = new XMLFileSettingsLoader(PATH_TO_SETTINGS);
         
-        CollectionSettings collectionSettings = settingsLoader.loadSettings(
-                COLLECTION_ID, CollectionSettings.class);
-        
+        CollectionSettings collectionSettings = settingsLoader.loadSettings(CollectionSettings.class);
         Assert.assertNotNull(collectionSettings, "CollectionSettings");
     }
 }

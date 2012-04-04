@@ -24,9 +24,6 @@
  */
 package org.bitrepository.common.settings;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
 
@@ -35,13 +32,11 @@ import org.bitrepository.settings.referencesettings.ReferenceSettings;
  * instantiation for loading stored settings.
  */
 public class SettingsProvider {
-    /** Defines the property which might be used to specify the collection to load the settings for */
-    public static final String COLLECTIONID_PROPERTY = "bitrepository.collectionid";
     /** The loader to use for acessing stored settings*/
     private final SettingsLoader settingsReader;
-    /** Map of the loaded settings */
-    private final Map<String,Settings> settingsMap = new HashMap<String,Settings>();
-
+    /** The loaded settings */
+    private Settings settings;
+    
     /**
      * Creates a <code>SettingsProvider</code> which will use the provided <code>SettingsLoader</code> for loading the 
      * settings.
@@ -53,15 +48,13 @@ public class SettingsProvider {
     
     /**
      * Loads the settings for the collection defined by the COLLECTIONID_PROPERTY system variable.
-     * @param collectionID The collectionID to find settings for.
-     * @return The settings for the indicated CollectionID
+     * @return The settings 
      */
     public synchronized Settings getSettings() {
-        String collectionID = System.getProperty(COLLECTIONID_PROPERTY);
-        if (!settingsMap.containsKey(collectionID)) {
-            loadSettings(collectionID);
+        if(settings == null) {
+            loadSettings();
         }
-        return settingsMap.get(collectionID);
+        return settings;
     }
     
     /**
@@ -69,25 +62,17 @@ public class SettingsProvider {
      * @param collectionID The collectionID to find settings for.
      * @return The settings for the indicated CollectionID
      */
+    @Deprecated
     public synchronized Settings getSettings(String collectionID) {
-        if (!settingsMap.containsKey(collectionID)) {
-            loadSettings(collectionID);
-        }
-        return settingsMap.get(collectionID);
+        return getSettings();
     }
     
     /**
     * Will load the settings from disk to this providers model. Will overwrite any settings already in the provider.
-    * @param collectionID The collectionID to load the settings for.
     */
-    public synchronized void loadSettings(String collectionID) {
-    	CollectionSettings collectionSettings = settingsReader.loadSettings(collectionID, CollectionSettings.class);
-    	ReferenceSettings referenceSettings = settingsReader.loadSettings(collectionID, ReferenceSettings.class);
-        Settings settings = new Settings(
-        		collectionSettings, referenceSettings
-                //settingsReader.loadSettings(collectionID, CollectionSettings.class),
-                //settingsReader.loadSettings(collectionID, ReferenceSettings.class)
-        );
-        settingsMap.put(collectionID, settings);
+    public synchronized void loadSettings() {
+    	CollectionSettings collectionSettings = settingsReader.loadSettings(CollectionSettings.class);
+    	ReferenceSettings referenceSettings = settingsReader.loadSettings(ReferenceSettings.class);
+        settings = new Settings(collectionSettings, referenceSettings);
     }
 }
