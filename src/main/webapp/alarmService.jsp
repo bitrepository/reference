@@ -11,19 +11,41 @@
 <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
     <script>
         $(function() {
-            $('#alarmsContent').load('<%= su.getAlarmServiceUrl() %>/alarm/AlarmService/getShortAlarmList/').fadeIn("slow");
+            $().updateAlarms();
+            //$('#alarmsContent').load('<%= su.getAlarmServiceUrl() %>/alarm/AlarmService/getShortAlarmList/').fadeIn("slow");
         });
     </script>
 
     <div id="alarm-container" class="ui-widget">
         <h1>Alarms:</h1>
-        <div id=alarmsContent>
+        <div id=alarmsContent> </div>
     </div>
+
+    <script>
+        jQuery.fn.updateAlarms = function() {
+            $.getJSON('<%= su.getAlarmServiceUrl() %>/alarm/AlarmService/getShortAlarmList/',{}, function(j){
+                var htmlTable;
+                htmlTable = "<table id=\"users\" class=\"ui-widget ui-widget-content\">";
+                htmlTable += "<thead> <tr class=\"ui-widget-header\">";
+                htmlTable += "<th width=\"70\">Date</th>";
+                htmlTable += "<th width=\"80\">Raiser</th>";
+                htmlTable += "<th width=\"80\">Alarm code</th>";
+                htmlTable += "<th>Description</th>";
+                htmlTable += "</tr></thead><tbody>";
+                for (var i = 0; i < j.length; i++) {
+                    htmlTable += "<tr><td>" + j[i].date + "</td><td>" + j[i].raiser + "</td> <td>" + j[i].alarmCode + "</td> <td>" + j[i].description + "</td></tr>";
+               }
+                htmlTable += "</tbody></table>"; 
+                $("#alarmsContent").html(htmlTable);
+            })
+        }
+    </script>
 
     <script>
         var auto_getalarms = setInterval(
         function() {
-            $('#alarmsContent').load('<%= su.getAlarmServiceUrl() %>/alarm/AlarmService/getShortAlarmList/').fadeIn("slow");
+            $().updateAlarms();
+        //    $('#alarmsContent').load('<%= su.getAlarmServiceUrl() %>/alarm/AlarmService/getShortAlarmList/').fadeIn("slow");
             }, 2500);
     </script> 
 </html>

@@ -11,8 +11,7 @@
 <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>    
 <script>
     $(function() {
-        $('#integritySetup').load('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowSetup/').fadeIn("slow");
-        $('#integrityStatus').load('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getIntegrityStatus/').fadeIn("slow");
+        $().updateIntegrityStatus();
         $("#workflowLauncher").buttonset();
     });
 </script>
@@ -21,9 +20,7 @@
         <h1>Integrity service configuration:</h1>
         <div id="launcher"> 
             <form id="workflowLauncher" action="javascript:submit()">
-                <select id="workflowSelector">
-                    <option value=""> asd </option>
-                </select>
+                <select id="workflowSelector"></select>
                 <input type="submit" value="Start">
             </form>
         </div>
@@ -49,11 +46,51 @@
         })
     </script>
     
+    <script>
+        $(function(){
+            $.getJSON('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowSetup/',{}, function(j){
+                var htmlTable;
+                htmlTable = "<table class=\"ui-widget ui-widget-content\">";
+                htmlTable += "<thead> <tr class=\"ui-widget-header\">";
+                htmlTable += "<th width=\"200\">Workflow name</th>";
+                htmlTable += "<th>Next run</th>";
+                htmlTable += "<th>Execution interval</th>";
+                htmlTable += "</tr></thead><tbody>";
+                for (var i = 0; i < j.length; i++) {
+                    htmlTable += "<tr><td>" + j[i].workflowID + "</td><td>" + j[i].nextRun 
+                        + "</td> <td>" + j[i].executionInterval + "</td></tr>";
+               }
+                htmlTable += "</tbody></table>"; 
+                $("#integritySetup").html(htmlTable);
+            })
+        })
+    </script>
+    
+    <script>
+        jQuery.fn.updateIntegrityStatus = function() {
+            $.getJSON('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getIntegrityStatus/',{}, function(j){
+                var htmlTable;
+                htmlTable = "<table class=\"ui-widget ui-widget-content\">";
+                htmlTable += "<thead> <tr class=\"ui-widget-header\">";
+                htmlTable += "<th width=\"100\">PillarID</th>";
+                htmlTable += "<th width=\"100\">Total number of files</th>";
+                htmlTable += "<th width=\"100\">Number of missing files</th>";
+                htmlTable += "<th>Number of checksum errors</th>";
+                htmlTable += "</tr></thead><tbody>";
+                for (var i = 0; i < j.length; i++) {
+                    htmlTable += "<tr><td>" + j[i].pillarID + "</td><td>" + j[i].totalFileCount 
+                        + "</td> <td>" + j[i].missingFilesCount + "</td> <td>" + j[i].checksumErrorCount + "</td></tr>";
+               }
+                htmlTable += "</tbody></table>"; 
+                $("#integrityStatus").html(htmlTable);
+            })
+        }
+    </script>
     
     <script>
         var auto_getalarms = setInterval(
         function() {
-            $('#integrityStatus').load('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getIntegrityStatus/').fadeIn("slow");
+            $().updateIntegrityStatus();
             }, 2500);
     </script> 
     
