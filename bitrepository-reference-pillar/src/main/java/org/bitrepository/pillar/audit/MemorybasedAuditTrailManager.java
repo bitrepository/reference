@@ -24,13 +24,15 @@
  */
 package org.bitrepository.pillar.audit;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.List;
 
+import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.AuditTrailManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,55 +45,58 @@ public class MemorybasedAuditTrailManager implements AuditTrailManager {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /** The map to keep the audit trails.*/
-    private SortedMap<Date, String> auditTrails = Collections.synchronizedSortedMap(new TreeMap<Date, String>());
+    private List<AuditTrailEvent> auditTrails = new ArrayList<AuditTrailEvent>();
 
     /** Constructor.*/
     public MemorybasedAuditTrailManager() {}
 
-    @Override
-    public synchronized void addMessageReceivedAudit(Object msg) {
-        Date now = new Date();
-        log.info("At '" + now + "' inserted audit: " + msg.toString());
-        auditTrails.put(now, msg.toString());
-    }
-    
     /**
      * Inserts a audit at a given time. 
      * TODO this method is currently only for tests.
-     * @param date The date for the audit.
      * @param msg The audit to insert.
      */
-    public synchronized void insertAudit(Date date, Object msg) {
-        ArgumentValidator.checkNotNull(date, "date");
+    public synchronized void insertAudit(AuditTrailEvent event) {
+        ArgumentValidator.checkNotNull(event, "AuditTrailEvent event");
+        log.debug("Adding event: {}", event);
         
-        log.info("At '" + date + "' inserted audit: " + msg.toString());
-        auditTrails.put(date, msg.toString());
+        auditTrails.add(event);
     }
 
     @Override
-    public Collection<String> getAllAudits() {
-        return auditTrails.values();
-    }
-
-    @Override
-    public Collection<String> getAuditsAfterDate(Date date) {
-        ArgumentValidator.checkNotNull(date, "date");
+    public synchronized Collection<AuditTrailEvent> getAudits(String fileId, Long sequence) {
+        if(fileId == null && sequence == null) {
+            return auditTrails.subList(0, auditTrails.size()-1);
+        }
         
-        return auditTrails.tailMap(date).values();
-    }
-
-    @Override
-    public Collection<String> getAuditsBeforeDate(Date date) {
-        ArgumentValidator.checkNotNull(date, "date");
-
-        return auditTrails.headMap(date).values();
-    }
-    
-    @Override
-    public Collection<String> getAuditsBetweenDates(Date start, Date end) {
-        ArgumentValidator.checkNotNull(start, "Date start");
-        ArgumentValidator.checkNotNull(end, "Date end");
+        List<AuditTrailEvent> res = new ArrayList<AuditTrailEvent>();
+        for(AuditTrailEvent event : auditTrails) {
+            if(fileId != null && !event.getFileID().equals(fileId)) {
+                continue;
+            }
+            
+            if(sequence != null && event.getSequenceNumber().longValue() < sequence) {
+                continue;
+            }
+            
+            res.add(event);
+        }
         
-        return auditTrails.tailMap(start).headMap(end).values();
+        return res;
+    }
+
+    @Override
+    public synchronized void addAuditEvent(String fileId, String actor, String info, String auditTrail, FileAction operation) {
+        AuditTrailEvent event = new AuditTrailEvent();
+        event.setActionDateTime(CalendarUtils.getNow());
+        event.setActionOnFile(operation);
+        event.setActorOnFile(actor);
+        event.setFileID(fileId);
+        event.setInfo(info);
+        event.setReportingComponent("Mock ReferencePillar");
+        event.setSequenceNumber(BigInteger.valueOf((long) auditTrails.size()));
+        event.setAuditTrailInformation(auditTrail);
+        
+        log.debug("Adding event: {}", event);
+        auditTrails.add(event);
     }
 }

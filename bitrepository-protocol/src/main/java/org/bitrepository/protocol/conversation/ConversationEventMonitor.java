@@ -133,7 +133,8 @@ public class ConversationEventMonitor {
      * New information regarding the progress of the operation has been received
      * @param progressEvent Contains information regarding the progress
      */
-    public void progress(OperationEvent progressEvent) {
+    public void progress(AbstractOperationEvent progressEvent) {
+        progressEvent.setConversationID(conversationID);
         log.debug(progressEvent.getInfo());
         if (eventHandler != null) {
             eventHandler.handleEvent(progressEvent);
@@ -169,7 +170,8 @@ public class ConversationEventMonitor {
      * received.
      * @param completeEvent Description of the context
      */
-    public void complete(OperationEvent completeEvent) {
+    public void complete(AbstractOperationEvent completeEvent) {
+        completeEvent.setConversationID(conversationID);
         log.info(completeEvent.getInfo());
         if (eventHandler != null) {
             eventHandler.handleEvent(completeEvent);

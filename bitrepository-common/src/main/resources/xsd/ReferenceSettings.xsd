@@ -142,6 +142,13 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="AuditContributerDatabaseUrl" type="xs:string">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The url to the database, which contains the audit data for the contributer.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -203,6 +210,15 @@
           The settings for the GetStatusClient.
         </xs:documentation>
       </xs:annotation>
+      <xs:sequence>
+        <xs:element name="CollectionInterval" type="xs:long" minOccurs="1" maxOccurs="1">
+          <xs:annotation>
+            <xs:documentation>
+              Interval at which statuses is to be collected from components. Value in milliseconds. 
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
 

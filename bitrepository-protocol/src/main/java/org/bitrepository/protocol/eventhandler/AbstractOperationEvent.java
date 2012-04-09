@@ -30,17 +30,17 @@ package org.bitrepository.protocol.eventhandler;
 public class AbstractOperationEvent implements OperationEvent {
     private final OperationEventType type;
     private final String info;
-    private final String correlationID;
+    private String conversationID;
 
     /**
      * @param type See {@link #getType()}
      * @param info See {@link #getInfo()}
-     * @param correlationID See {@link #getCorrelationID()}
+     * @param conversationID See {@link #getConversationID}
      */
-    public AbstractOperationEvent(OperationEventType type, String info, String correlationID) {
+    public AbstractOperationEvent(OperationEventType type, String info, String conversationID) {
         this.type = type;
         this.info = info;
-        this.correlationID = correlationID;
+        this.conversationID = conversationID;
     }
 
     @Override
@@ -54,13 +54,20 @@ public class AbstractOperationEvent implements OperationEvent {
     }
 
     @Override
-    public String getCorrelationID() {
-        return correlationID;
+    public String getConversationID() {
+        return conversationID;
+    }
+
+    /**
+     * @param conversationID See {@link #getConversationID}
+     */
+    public void setConversationID(String conversationID) {
+        this.conversationID = conversationID;
     }
 
     @Override
     public final String toString() {
-        return getType() + ": " + "ID: " + getCorrelationID() + ", " + additionalInfo() + ", " + getInfo();
+        return getType() + ": " + "ID: " + getConversationID() + ", " + additionalInfo() + ", " + getInfo();
     }
     
     /**
@@ -69,5 +76,4 @@ public class AbstractOperationEvent implements OperationEvent {
     protected String additionalInfo() {
         return "";
     }
-
 }

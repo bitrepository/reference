@@ -57,9 +57,7 @@ public final class AuditTrailServiceFactory {
     private static final String CONFIGFILE = "audittrails.properties";
     /** Property key to tell where to locate the path and filename to the private key file. */
     private static final String PRIVATE_KEY_FILE = "org.bitrepository.audit-trail-service.privateKeyFile";
-    /** Default collection settings identifier (used to build the path the collection and referencesettings */
-    private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
-    
+        
     /**
      * Private constructor as the class is meant to be used in a static way.
      */
@@ -78,7 +76,7 @@ public final class AuditTrailServiceFactory {
     public static synchronized AuditTrailService getAuditTrailService() {
         if(auditTrailService == null) {
             SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(configurationDir));
-            Settings settings = settingsLoader.getSettings(DEFAULT_COLLECTION_ID);
+            Settings settings = settingsLoader.getSettings();
             try {
                 loadProperties();
                 permissionStore = new PermissionStore();

@@ -1,12 +1,14 @@
 package org.bitrepository.monitoringservice.webservice;
 
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.monitoringservice.MonitoringService;
 import org.bitrepository.monitoringservice.MonitoringServiceFactory;
 
@@ -21,7 +23,7 @@ public class RestMonitoringService {
 
 	@GET
 	@Path("/getMonitoringConfiguration/")
-	@Produces("text/json")
+	@Produces("application/json")
 	public String getMonitoringServiceConfiguration() {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("[");
@@ -32,7 +34,27 @@ public class RestMonitoringService {
 		return sb.toString();
 	}
 	
-	public String getComponentStatuses() {
-		return "";
+	@GET
+    @Path("/getComponentStatus/")
+    @Produces("application/json")
+	public String getComponentStatus() {
+	    Map<String, ResultingStatus> statusMap = service.getStatus();
+	    Set<String> components = statusMap.keySet();
+	    StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        Iterator<String> it = components.iterator();
+        while(it.hasNext()) {
+            String component = it.next();
+            sb.append("{\"componentID\": \"" + component + "\"," +
+                    "\"status\":\" " + statusMap.get(component).getStatusInfo().getStatusCode() + "\"," + 
+                    "\"info\":\" " + statusMap.get(component).getStatusInfo().getStatusText() + "\"," + 
+                    "\"timeStamp\":\" " + statusMap.get(component).getStatusTimestamp() + "\"" + 
+                "}");
+            if(it.hasNext()) {
+                sb.append(",");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
 	}
 }

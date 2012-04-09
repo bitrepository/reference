@@ -24,7 +24,10 @@
  */
 package org.bitrepository.audittrails.webservice;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -36,6 +39,7 @@ import javax.ws.rs.Produces;
 import org.bitrepository.audittrails.service.AuditTrailService;
 import org.bitrepository.audittrails.service.AuditTrailServiceFactory;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.bitrepositoryelements.ResultingStatus;
 
 @Path("/AuditTrailService")
 
@@ -46,46 +50,37 @@ public class RestAuditTrailService {
     public RestAuditTrailService() {
         service = AuditTrailServiceFactory.getAuditTrailService();	
     }
-    
+      
     @GET
     @Path("/getAllAuditTrails/")
-    @Produces("text/html")
+    @Produces("application/json")
     public String getAllAuditTrails() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<table class=\"ui-widget ui-widget-content\">\n");
-        sb.append("<thead>\n");
-        sb.append("<tr class=\"ui-widget-header\">\n");
-        sb.append("<th width=\"100\">FileID</th>\n");
-        sb.append("<th width=\"100\">Reporting component</th>\n");
-        sb.append("<th width=\"100\">Actor</th>\n");
-        sb.append("<th width=\"100\">Action</th>\n");
-        sb.append("<th width=\"100\">Timestamp</th>\n");
-        sb.append("<th width=\"100\">Info</th>\n");
-        sb.append("<th>Message from client</th>\n");
-        sb.append("</tr>\n");
-        sb.append("</thead>\n");
-        sb.append("<tbody>\n");
+        sb.append("[");
         List<AuditTrailEvent> events = service.getAllAuditTrailEvents();
-        for(AuditTrailEvent event : events) {
-            sb.append("<tr> \n");
-            sb.append("<td>" + event.getFileID() + " </td>\n");
-            sb.append("<td>" + event.getReportingComponent() + " </td>\n");
-            sb.append("<td>" + event.getActorOnFile() + " </td>\n");
-            sb.append("<td>" + event.getActionOnFile() + " </td>\n");
-            sb.append("<td>" + event.getActionDateTime() + " </td>\n");
-            sb.append("<td>" + event.getInfo() + " </td>\n");
-            sb.append("<td>" + event.getAuditTrailInformation() + " </td>\n");
-            sb.append("</tr>\n");
+        Iterator<AuditTrailEvent> it = events.iterator();
+        while(it.hasNext()) {
+            AuditTrailEvent event = it.next();
+            sb.append("{\"fileID\": \"" + event.getFileID() + "\"," +
+                    "\"reportingComponent\":\" " + event.getReportingComponent() + "\"," +
+                    "\"actor\":\" " + event.getActorOnFile() + "\"," +
+                    "\"action\":\" " + event.getActionOnFile() + "\"," +
+                    "\"timeStamp\":\" " + event.getActionDateTime() + "\"," + 
+                    "\"info\":\" " + event.getInfo() + "\"," +
+                    "\"auditTrailInfo\":\" " + event.getAuditTrailInformation() + "\"}");
+            if(it.hasNext()) {
+                sb.append(",");
+            }
         }
-        sb.append("</tbody>\n");
-        sb.append("</table>\n");
+        sb.append("]");
         return sb.toString();
     }
+
     
     @POST
     @Path("/queryAuditTrailEvents/")
     @Consumes("application/x-www-form-urlencoded")
-    @Produces("text/html")
+    @Produces("application/json")
     public String startChecksumCheckFromPillar(
             @FormParam ("fromDate") String fromDate,
             @FormParam ("toDate") String toDate,

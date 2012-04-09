@@ -30,6 +30,11 @@ public class DefaultEvent extends AbstractOperationEvent {
     public DefaultEvent(OperationEventType type, String info, String conversationID) {
         super(type, info, conversationID);
     }
+
+    /** The constructor for this immutable */
+    public DefaultEvent(OperationEventType type, String info) {
+        super(type, info, null);
+    }
     
     @Override
     public String additionalInfo() {

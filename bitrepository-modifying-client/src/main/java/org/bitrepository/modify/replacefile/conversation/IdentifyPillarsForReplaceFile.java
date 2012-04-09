@@ -141,8 +141,7 @@ public class IdentifyPillarsForReplaceFile extends ReplaceFileState {
         @Override
         public void run() {
             conversation.failConversation(new OperationFailedEvent(
-                    "Timeout for the identification of the pillars for the ReplaceFile operation.",
-                    conversation.getConversationID()));
+                    "Timeout for the identification of the pillars for the ReplaceFile operation."));
         }
     }
     

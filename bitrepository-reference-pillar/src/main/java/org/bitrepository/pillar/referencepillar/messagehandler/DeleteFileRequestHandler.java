@@ -141,7 +141,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
 
     /**
      * The method for sending a progress response telling, that the operation is about to be performed.
-     * @param message The request for the GetFile operation.
+     * @param message The request for the DeleteFile operation.
      */
     protected void sendProgressMessage(DeleteFileRequest message) {
         // make ProgressResponse to tell that we are handling the requested operation.
@@ -206,7 +206,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
         fResponse.setChecksumDataForExistingFile(requestedChecksum);
         ResponseInfo frInfo = new ResponseInfo();
         frInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);
-        frInfo.setResponseText("Data delivered.");
+        frInfo.setResponseText("Operation successful performed.");
         fResponse.setResponseInfo(frInfo);
 
         // send the FinalResponse.

@@ -41,6 +41,10 @@ public class PillarOperationEvent extends AbstractOperationEvent {
         this.pillarID = pillarID;
     }
 
+    public PillarOperationEvent(OperationEventType type, String info, String pillarID) {
+        this(type, info, pillarID, null);
+    }
+
     /**
      * Returns the ID of the pillar this event relates to.
      */

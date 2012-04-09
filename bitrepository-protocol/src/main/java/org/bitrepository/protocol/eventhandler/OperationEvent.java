@@ -74,7 +74,7 @@ public interface OperationEvent {
     OperationEventType getType();
 
     /**
-     * Deliver the correlation ID of the event.
+     * Deliver the conversation ID of the event.
      */
-    public abstract String getCorrelationID();
+    public abstract String getConversationID();
 }

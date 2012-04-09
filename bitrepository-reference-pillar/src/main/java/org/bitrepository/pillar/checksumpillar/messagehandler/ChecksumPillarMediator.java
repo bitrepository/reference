@@ -29,12 +29,14 @@ import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -46,6 +48,7 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.AlarmDispatcher;
+import org.bitrepository.pillar.AuditTrailManager;
 import org.bitrepository.pillar.audit.MemorybasedAuditTrailManager;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
@@ -72,7 +75,7 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
     /** The archive. Package protected on purpose.*/
     private final ChecksumCache cache;
     /** The handler of the audits. Package protected on purpose.*/
-    private final MemorybasedAuditTrailManager audits;
+    private final AuditTrailManager audits;
     /** The dispatcher of alarms. Package protected on purpose.*/
     private final AlarmDispatcher alarmDispatcher;
 
@@ -125,7 +128,11 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
                 new IdentifyPillarsForGetChecksumsRequestHandler(settings, messagebus, alarmDispatcher, cache));
         this.handlers.put(GetChecksumsRequest.class.getName(), 
                 new GetChecksumsRequestHandler(settings, messagebus, alarmDispatcher, cache));
-        
+        this.handlers.put(IdentifyContributorsForGetStatusRequest.class.getName(), 
+                new IdentifyContributorsForGetStatusRequestHandler(settings, messagebus, alarmDispatcher, cache));
+        this.handlers.put(GetStatusRequest.class.getName(),
+                new GetStatusRequestHandler(settings, messagebus, alarmDispatcher, cache));
+
         this.handlers.put(IdentifyPillarsForPutFileRequest.class.getName(), 
                 new IdentifyPillarsForPutFileRequestHandler(settings, messagebus, alarmDispatcher, cache));
         this.handlers.put(PutFileRequest.class.getName(), 
@@ -159,7 +166,8 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
     
     @Override
     protected void reportUnsupported(Object message) {
-        audits.addMessageReceivedAudit("Received unsupported: " + message.getClass());
+        // TODO
+        audits.addAuditEvent("", "", "", "", FileAction.OTHER);
         if(AlarmLevel.WARNING.equals(settings.getCollectionSettings().getPillarSettings().getAlarmLevel())) {
             noHandlerAlarm(message);
         }
@@ -169,7 +177,6 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(DeleteFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ChecksumPillarMessageHandler<DeleteFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
@@ -183,7 +190,6 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(GetAuditTrailsRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ChecksumPillarMessageHandler<GetAuditTrailsRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
@@ -197,7 +203,6 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(GetChecksumsRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ChecksumPillarMessageHandler<GetChecksumsRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
@@ -211,7 +216,6 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(GetFileIDsRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ChecksumPillarMessageHandler<GetFileIDsRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
@@ -225,7 +229,6 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(GetFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ChecksumPillarMessageHandler<GetFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
@@ -239,7 +242,6 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(GetStatusRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ChecksumPillarMessageHandler<GetStatusRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
@@ -251,9 +253,22 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
 
     @SuppressWarnings("unchecked")
     @Override
+    public void onMessage(IdentifyContributorsForGetStatusRequest message) {
+        log.info("Received: " + message);
+
+        ChecksumPillarMessageHandler<IdentifyContributorsForGetStatusRequest> handler = handlers.get(
+                message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        } else {
+            noHandlerAlarm(message);
+        }    
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
     public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ChecksumPillarMessageHandler<IdentifyPillarsForDeleteFileRequest> handler = handlers.get(
                 message.getClass().getName());
@@ -268,7 +283,6 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ChecksumPillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> handler 
                 = handlers.get(message.getClass().getName());
@@ -283,7 +297,6 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ChecksumPillarMessageHandler<IdentifyPillarsForGetFileIDsRequest> handler = handlers.get(
                 message.getClass().getName());
@@ -298,7 +311,6 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(IdentifyPillarsForGetFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message);
 
         ChecksumPillarMessageHandler<IdentifyPillarsForGetFileRequest> handler = handlers.get(
                 message.getClass().getName());
@@ -313,7 +325,6 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(IdentifyPillarsForPutFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ChecksumPillarMessageHandler<IdentifyPillarsForPutFileRequest> handler = handlers.get(
                 message.getClass().getName());
@@ -328,7 +339,6 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(IdentifyPillarsForReplaceFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ChecksumPillarMessageHandler<IdentifyPillarsForReplaceFileRequest> handler = handlers.get(
                 message.getClass().getName());
@@ -343,7 +353,6 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(PutFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ChecksumPillarMessageHandler<PutFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {
@@ -357,7 +366,6 @@ public class ChecksumPillarMediator extends AbstractMessageListener {
     @Override
     public void onMessage(ReplaceFileRequest message) {
         log.info("Received: " + message);
-        audits.addMessageReceivedAudit("Received: " + message.getClass() + " : " + message.getAuditTrailInformation());
 
         ChecksumPillarMessageHandler<ReplaceFileRequest> handler = handlers.get(message.getClass().getName());
         if(handler != null) {

@@ -25,43 +25,29 @@
 package org.bitrepository.pillar;
 
 import java.util.Collection;
-import java.util.Date;
+
+import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.bitrepositoryelements.FileAction;
 
 /**
  * The interface for the audit trail handlers.
  */
 public interface AuditTrailManager {
     /**
-     * Inserts an audit trail into the map with the date 'now'. 
-     * @param msg The audit trail to insert.
+     * Adds an audit trail event to the manager.
+     * @param fileId The id of the file, where the operation has been performed.
+     * @param actor The name of the actor.
+     * @param info Information about the reason for the audit trail to be logged.
+     * @param auditTrail The string for the audit trail information from the message performing the operation.
+     * @param operation The performed operation.
      */
-    void addMessageReceivedAudit(Object msg);
+    void addAuditEvent(String fileId, String actor, String info, String auditTrail, FileAction operation);
     
     /**
      * Method for extracting all the audit trails.
+     * @param fileId [OPTIONAL] The id of the file to request audits for.
+     * @param sequenceNumber [OPTIONAL] The lowest sequence number
      * @return The all audit trails.
      */
-    Collection<String> getAllAudits();
-    
-    /**
-     * Retrieves all the audit trails after a given date.
-     * @param date The earliest date for the audit trails.
-     * @return The list of audit trails after the date.
-     */
-    Collection<String> getAuditsAfterDate(Date date);
-    
-    /**
-     * Retrieves all the audit trails before a given date.
-     * @param date The latest date for the audit trails.
-     * @return The list of audit trails prior to the date.
-     */
-    Collection<String> getAuditsBeforeDate(Date date);
-    
-    /**
-     * Retrieves all the audit trails between two given dates.
-     * @param start The earliest date for the audit trails.
-     * @param end The latest date for the audit trails.
-     * @return The list of audit trails prior to the date.
-     */
-    Collection<String> getAuditsBetweenDates(Date start, Date end);
+    Collection<AuditTrailEvent> getAudits(String fileId, Long sequenceNumber);
 }

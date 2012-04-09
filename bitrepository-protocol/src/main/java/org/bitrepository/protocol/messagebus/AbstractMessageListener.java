@@ -47,6 +47,8 @@ import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
@@ -258,6 +260,16 @@ public abstract class AbstractMessageListener implements MessageListener {
 
     @Override
     public void onMessage(IdentifyContributorsForGetAuditTrailsResponse message) {
+        reportUnsupported(message);
+    }
+    
+    @Override
+    public void onMessage(IdentifyContributorsForGetStatusRequest message) {
+        reportUnsupported(message);
+    }
+
+    @Override
+    public void onMessage(IdentifyContributorsForGetStatusResponse message) {
         reportUnsupported(message);
     }
     

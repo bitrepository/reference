@@ -126,8 +126,7 @@ public class GettingChecksums extends GetChecksumsState {
     @Override
     public void onMessage(GetChecksumsProgressResponse response) {
         monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.PROGRESS, 
-                "Received progress response for retrieval of checksums " + response.getFileIDs() + ": response",
-                conversation.getConversationID()));
+                "Received progress response for retrieval of checksums " + response.getFileIDs() + ": response"));
     }
 
     @Override
@@ -143,7 +142,7 @@ public class GettingChecksums extends GetChecksumsState {
                     response.getResultingChecksums(),
                     conversation.checksumSpecifications,
                     response.getPillarID(),
-                    "Received checksum result from " + response.getPillarID(), conversation.getConversationID()));
+                    "Received checksum result from " + response.getPillarID()));
             // If calculations in message, then put them into the results map.
             if(response.getResultingChecksums() != null) {
                 results.put(response.getPillarID(), response.getResultingChecksums());

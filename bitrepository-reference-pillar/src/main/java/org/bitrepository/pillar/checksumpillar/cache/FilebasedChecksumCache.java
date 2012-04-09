@@ -87,6 +87,9 @@ public class FilebasedChecksumCache implements ChecksumCache {
     private Map<String, ChecksumEntry> checksumArchive = Collections.synchronizedMap(
             new HashMap<String, ChecksumEntry>());
     
+    /**
+     * The settings.
+     */
     private final Settings settings;
     
     /**
@@ -169,10 +172,8 @@ public class FilebasedChecksumCache implements ChecksumCache {
      */
     private void initializeFiles() {
         // Extract the dir-name and create the dir (if it does not yet exist).
-        File checksumDir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        if(!checksumDir.exists()) {
-            checksumDir.mkdir();
-        }
+        File checksumDir = FileUtils.retrieveDirectory(
+                settings.getReferenceSettings().getPillarSettings().getFileDir());
         
         // Get the name and initialise the wrong entry file.
         wrongEntryFile = new File(checksumDir, makeWrongEntryFileName());
@@ -296,7 +297,7 @@ public class FilebasedChecksumCache implements ChecksumCache {
                 }
                 
                 // Move the file.
-                FileUtils.moveFile(recreateFile, checksumFile);
+                recreateFile.renameTo(checksumFile);
             }
         } catch (IOException e) {
             String errMsg = "The checksum file has not been recreated as attempted. The archive in memory and the one "
@@ -447,23 +448,27 @@ public class FilebasedChecksumCache implements ChecksumCache {
         checksumArchive.put(fileId, new ChecksumEntry(fileId, checksum));
         appendEntryToFile(fileId, checksum);
     }
-
+    
     @Override
-    public String getChecksum(String fileid) {
-        ArgumentValidator.checkNotNullOrEmpty(fileid, "String fileid");
+    public boolean hasFile(String fileId) {
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         synchronizeMemoryWithFile();
         
-        // Return the checksum of the record.
-        return checksumArchive.get(fileid).getChecksum();
+        // Return whether the archive contains an entry with the filename.
+        return checksumArchive.containsKey(fileId);
     }
     
     @Override
-    public boolean hasFile(String filename) {
-        ArgumentValidator.checkNotNullOrEmpty(filename, "String filename");
+    public String getChecksum(String fileId) {
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         synchronizeMemoryWithFile();
-
-        // Return whether the archive contains an entry with the filename.
-        return checksumArchive.containsKey(filename);
+        
+        if(!checksumArchive.containsKey(fileId)) {
+            throw new IllegalStateException("No entry for file '" + fileId + "' to delete.");
+        }
+        
+        // Return the checksum of the record.
+        return checksumArchive.get(fileId).getChecksum();
     }
     
     @Override
@@ -498,23 +503,15 @@ public class FilebasedChecksumCache implements ChecksumCache {
     }
     
     @Override
-    public void deleteEntry(String fileId) {
-        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
-        synchronizeMemoryWithFile();
-
-        // First add to 'wrongRecord', then remove.
-        ChecksumEntry ce = checksumArchive.get(fileId);
-        appendWrongRecordToWrongEntryFile(ce.toString());
-        checksumArchive.remove(fileId);
-        recreateArchiveFile();
-    }
-
-    @Override
     public void replaceEntry(String fileId, String oldChecksum, String newChecksum) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(oldChecksum, "String oldChecksum");
         ArgumentValidator.checkNotNullOrEmpty(newChecksum, "String newChecksum");
         synchronizeMemoryWithFile();
+        
+        if(!checksumArchive.containsKey(fileId)) {
+            throw new IllegalStateException("No entry for file '" + fileId + "' to delete.");
+        }
         
         ChecksumEntry ce = checksumArchive.get(fileId);
         if(ce.getChecksum() != oldChecksum) {
@@ -526,6 +523,22 @@ public class FilebasedChecksumCache implements ChecksumCache {
         recreateArchiveFile();
     }
     
+    @Override
+    public void deleteEntry(String fileId) {
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+        synchronizeMemoryWithFile();
+
+        if(!checksumArchive.containsKey(fileId)) {
+            throw new IllegalStateException("No entry for file '" + fileId + "' to delete.");
+        }
+        
+        // First add to 'wrongRecord', then remove.
+        ChecksumEntry ce = checksumArchive.get(fileId);
+        appendWrongRecordToWrongEntryFile(ce.toString());
+        checksumArchive.remove(fileId);
+        recreateArchiveFile();
+    }
+
     /**
      * Ensures that the file and memory archives are identical.
      * 

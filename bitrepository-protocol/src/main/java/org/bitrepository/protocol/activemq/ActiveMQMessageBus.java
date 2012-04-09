@@ -53,6 +53,11 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
@@ -554,6 +559,31 @@ public class ActiveMQMessageBus implements MessageBus {
 
                 if (content.getClass().equals(IdentifyPillarsForReplaceFileRequest.class)) {
                     listener.onMessage((IdentifyPillarsForReplaceFileRequest) content);
+                    return;
+                }
+                
+                if (content.getClass().equals(IdentifyContributorsForGetStatusResponse.class)) {
+                    listener.onMessage((IdentifyContributorsForGetStatusResponse) content);
+                    return;
+                }
+                
+                if (content.getClass().equals(IdentifyContributorsForGetStatusRequest.class)) {
+                    listener.onMessage((IdentifyContributorsForGetStatusRequest) content);
+                    return;
+                }
+                
+                if (content.getClass().equals(GetStatusRequest.class)) {
+                    listener.onMessage((GetStatusRequest) content);
+                    return;
+                }
+                
+                if (content.getClass().equals(GetStatusProgressResponse.class)) {
+                    listener.onMessage((GetStatusProgressResponse) content);
+                    return;
+                }
+                
+                if (content.getClass().equals(GetStatusFinalResponse.class)) {
+                    listener.onMessage((GetStatusFinalResponse) content);
                     return;
                 }
 

@@ -40,7 +40,7 @@ public class OperationFailedEvent extends AbstractOperationEvent {
      * @param info See {@link #getInfo()}
      * @param exception See {@link #getException()} ()}
      */
-    public OperationFailedEvent(String info, String conversationID, Exception exception) {
+    public OperationFailedEvent(String info, Exception exception, String conversationID) {
         super(type, info, conversationID);
         this.info = info;
         this.exception = exception;
@@ -51,12 +51,18 @@ public class OperationFailedEvent extends AbstractOperationEvent {
      * @param info Message describing the failure.
      */
     public OperationFailedEvent(String info, String conversationID) {
-        super(type, info, conversationID);
-        this.info = info;
-        this.exception = null;
+        this(info, null, conversationID);
     }
 
-    /** Returns the exception causing this failure, if any. Might be null if the failure wasn't caused by an 
+    public OperationFailedEvent(String info, Exception exception) {
+        this(info, exception, null);
+    }
+
+    public OperationFailedEvent(String info) {
+        this(info, null, null);
+    }
+
+    /** Returns the exception causing this failure, if any. Might be null if the failure wasn't caused by an
      * exception */
     public Exception getException() {
         return exception;

@@ -48,8 +48,6 @@ public final class AlarmStoreFactory {
     private static final String CONFIGFILE = "alarmservice.properties"; 
     /** Property key for the property holding the path the file persisting alarms */
     private static final String ALARMSTOREFILE = "org.bitrepository.alarm-service.alarmstorefile";
-    /** Default collection settings identifier (used to build the path the collection and referencesettings */
-    private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
     
     private AlarmStoreFactory() {
     	//Empty constructor
@@ -73,7 +71,7 @@ public final class AlarmStoreFactory {
         		throw new IllegalStateException("No configuration dir has been set!");
         	}
         	SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
-            Settings settings = settingsLoader.getSettings(DEFAULT_COLLECTION_ID);	 
+            Settings settings = settingsLoader.getSettings();	 
             try {
             	loadProperties();
             	alarmStore = new AlarmStore(settings, alarmStoreFile, privateKeyFile);

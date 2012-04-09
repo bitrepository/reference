@@ -101,7 +101,7 @@ public abstract class AbstractConversation extends AbstractMessageListener imple
      * @param e The causing exception.
      */
     public synchronized void failConversation(String info, Exception e) {
-        failConversation(new OperationFailedEvent(info, conversationID, e));
+        failConversation(new OperationFailedEvent(info, e));
     }
 
     /**
@@ -109,7 +109,7 @@ public abstract class AbstractConversation extends AbstractMessageListener imple
      * @param info A description of the cause.
      */
     public synchronized void failConversation(String info) {
-        failConversation(new OperationFailedEvent(info, conversationID));
+        failConversation(new OperationFailedEvent(info));
     }
 
     @Override

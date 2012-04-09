@@ -71,6 +71,8 @@ public class MonitoringServiceContextListener implements ServletContextListener 
     public void contextDestroyed(ServletContextEvent sce) {
         // Method that's run when the war file is undeployed. 
         // Can be used to shut everything down nicely..
+        MonitoringService service = MonitoringServiceFactory.getMonitoringService();
+        service.shutdown();
         log.debug("Servlet context destroyed");
     }
     
