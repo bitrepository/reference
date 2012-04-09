@@ -26,16 +26,14 @@ package org.bitrepository.access.getfile;
 
 import java.net.URL;
 
+import org.bitrepository.protocol.client.BitrepositoryClient;
 import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.exceptions.NoPillarFoundException;
-import org.bitrepository.protocol.exceptions.OperationFailedException;
-import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 
 /**
  * The <code>GetFileClient</code> is used as a handle for the Bit Repository getFile operation. 
  * 
  */
-public interface GetFileClient {
+public interface GetFileClient extends BitrepositoryClient {
 
     /**
      * Method for retrieving a file from the pillar able to deliver the file fastest. 
@@ -49,21 +47,6 @@ public interface GetFileClient {
     void getFileFromFastestPillar(String fileId, URL uploadUrl, EventHandler eventHandler);
 
     /**
-     * Method for retrieving a file from the pillar able to deliver the file fastest. 
-     * 
-     * The method will block until the file has been retrieved.
-     *
-     * @param fileId The id of the file to retrieve.
-     * @param uploadUrl The url the pillar should upload the file to.
-     * 
-     * @throws NoPillarFoundException The identify request didn't cause any relevant pillar to respond.  
-     * @throws OperationTimeOutException The get request timeout.  
-     * @throws OperationFailedException The operation failed.
-     */
-    void getFileFromFastestPillar(String fileId, URL uploadUrl) 
-    throws NoPillarFoundException, OperationTimeOutException, OperationFailedException;
-
-    /**
      * Method for retrieving a file from a specific pillar. 
      * 
      * The method will return as soon as the communication has been setup.
@@ -75,22 +58,4 @@ public interface GetFileClient {
      * the pillar communication. 
      */
     void getFileFromSpecificPillar(String fileId, URL uploadUrl, String pillarId, EventHandler eventHandler);
-
-    /**
-     * Method for retrieving a file from a specific pillar.
-     *
-     * @param fileId The id of the file to retrieve.
-     * @param uploadUrl The url the pillar should upload the file to.
-     * @param pillarId The id of pillar, where the file should be retrieved from.
-     * @throws NoPillarFoundException The identify request didn't cause any relevant pillar to respond.  
-     * @throws OperationTimeOutException The get request timeout.  
-     * @throws OperationFailedException The operation failed.
-     */
-    void getFileFromSpecificPillar(String fileId, URL uploadUrl, String pillarId)
-    throws NoPillarFoundException, OperationTimeOutException, OperationFailedException;
-    
-    /**
-     * Method to perform a graceful shutdown of the client.
-     */
-    void shutdown();
 }

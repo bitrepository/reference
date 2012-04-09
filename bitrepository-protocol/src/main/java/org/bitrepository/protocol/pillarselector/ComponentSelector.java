@@ -24,20 +24,26 @@
  */
 package org.bitrepository.protocol.pillarselector;
 
+import java.util.List;
+
 import org.bitrepository.common.exceptions.UnableToFinishException;
 
 /** Can be used to select a single pillar to run an operation on by handling the identify responses. <p>
  * The algorithm for selecting the pillar is implemented in the concrete classes.
  */
-public interface SinglePillarSelector {
+public interface ComponentSelector {
 
-    /** Return the ID of the pillar chosen by this selector.*/
-    public String getIDForSelectedPillar();
-
-    /** If finished return the topic for sending messages to the pillar chosen by this selector. 
-     * If unfinished null is returned 
+    /**
+     *
+     * @return A string representation of the selected contributors.
      */
-    public String getDestinationForSelectedPillar();
+    public String getContributersAsString();
+
+    /**
+     * Method for identifying the components, which needs to be identified for this operation to be finished.
+     * @return An array of the IDs of the components which have not yet responded.
+     */
+    public List<String> getOutstandingComponents();
     
     /**
      * Returns true if all the need information to select a pillar has been processed. <p>

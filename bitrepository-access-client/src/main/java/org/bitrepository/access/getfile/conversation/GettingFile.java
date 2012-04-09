@@ -108,6 +108,7 @@ class GettingFile extends GetFileState {
         monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE, 
                 "Finished getting file " + msg.getFileID() + " from " + msg.getPillarID(), 
                 conversation.getConversationID()));
+        endConversation();
     }
 
     @Override

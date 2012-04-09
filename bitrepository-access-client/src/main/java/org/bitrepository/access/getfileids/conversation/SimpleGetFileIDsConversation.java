@@ -66,7 +66,6 @@ public class SimpleGetFileIDsConversation extends AbstractConversation {
      * @param settings The settings for the GetChecksumsClient.
      * @param url The URL where to upload the results.
      * @param fileIds The IDs for the files to retrieve.
-     * @param checksumsSpecs The specifications for the checksums to retrieve.
      * @param pillars The pillars to retrieve the checksums from.
      * @param eventHandler The handler of events.
      */

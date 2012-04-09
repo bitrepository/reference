@@ -24,12 +24,10 @@
  */
 package org.bitrepository.protocol.conversation;
 
-import org.bitrepository.protocol.eventhandler.DefaultEvent;
-import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.eventhandler.OperationEvent;
+import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.protocol.eventhandler.*;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,16 +37,16 @@ import org.slf4j.LoggerFactory;
 public class ConversationEventMonitor {
     /** The log for this class. */
     private final ConversationLogger log;
-    private final Conversation conversation;
+    private final String conversationID;
     private final EventHandler eventHandler;
 
     /**
-     * @param conversation Used for adding conversation context information to the information distributed
+     * @param conversationID Used for adding conversation context information to the information distributed
      * @param eventHandler The eventHandler to send updates to.
      */
-    public ConversationEventMonitor(Conversation conversation, EventHandler eventHandler) {
-        log = new ConversationLogger(conversation.getConversationID());
-        this.conversation = conversation;
+    public ConversationEventMonitor(String conversationID, EventHandler eventHandler) {
+        log = new ConversationLogger(conversationID);
+        this.conversationID = conversationID;
         this.eventHandler = eventHandler;
     }
 
@@ -60,7 +58,7 @@ public class ConversationEventMonitor {
         log.debug(info);
         if (eventHandler != null) {
             eventHandler.handleEvent(new DefaultEvent(
-                    OperationEventType.IDENTIFY_REQUEST_SENT, info, conversation.getConversationID()));
+                    OperationEventType.IDENTIFY_REQUEST_SENT, info, conversationID));
         }
     }
 
@@ -73,7 +71,21 @@ public class ConversationEventMonitor {
         log.debug(info);
         if (eventHandler != null) {
             eventHandler.handleEvent(new PillarOperationEvent(
-                    OperationEventType.COMPONENT_IDENTIFIED, info, pillarID, conversation.getConversationID()));
+                    OperationEventType.COMPONENT_IDENTIFIED, info, pillarID, conversationID));
+        }
+    }
+
+    /**
+     * Indicates a pillar has been identified and considered for selection.
+     * @param response The identify response.
+     */
+    public void pillarIdentified(MessageResponse response) {
+        String info = "Received positive identification response from " + response.getFrom() + ": " +
+                response.getResponseInfo().getResponseText();
+        log.debug(info);
+        if (eventHandler != null) {
+            eventHandler.handleEvent(new PillarOperationEvent(
+                    OperationEventType.COMPONENT_IDENTIFIED, info, response.getFrom(), conversationID));
         }
     }
     
@@ -85,7 +97,7 @@ public class ConversationEventMonitor {
         log.debug(info);
         if (eventHandler != null) {
             eventHandler.handleEvent(new DefaultEvent( OperationEventType.IDENTIFY_TIMEOUT, info, 
-                    conversation.getConversationID()));
+                    conversationID));
         }
     }
 
@@ -98,7 +110,7 @@ public class ConversationEventMonitor {
         log.debug(info);
         if (eventHandler != null) {
             eventHandler.handleEvent(new PillarOperationEvent(
-                    OperationEventType.IDENTIFICATION_COMPLETE, info, pillarID, conversation.getConversationID()));
+                    OperationEventType.IDENTIFICATION_COMPLETE, info, pillarID, conversationID));
         }
     }
 
@@ -113,7 +125,7 @@ public class ConversationEventMonitor {
             eventHandler.handleEvent(
                     new PillarOperationEvent(OperationEvent.OperationEventType.REQUEST_SENT, 
                             pillarID, 
-                            pillarID, conversation.getConversationID()));
+                            pillarID, conversationID));
         }
     }
 
@@ -121,19 +133,30 @@ public class ConversationEventMonitor {
      * New information regarding the progress of the operation has been received
      * @param progressEvent Contains information regarding the progress
      */
-    public void progress(OperationEvent<?> progressEvent) {
+    public void progress(OperationEvent progressEvent) {
         log.debug(progressEvent.getInfo());
         if (eventHandler != null) {
             eventHandler.handleEvent(progressEvent);
         }
     }
+
+    /**
+     * New information regarding the progress of the operation has been received
+     * @param progressInfo Contains information regarding the progress
+     */
+    public void progress(String progressInfo) {
+        log.debug(progressInfo);
+        if (eventHandler != null) {
+            eventHandler.handleEvent(new DefaultEvent(OperationEventType.PROGRESS, progressInfo, conversationID));
+        }
+    }
     
     /** 
      * A pillar has completed the operation.
-     * @param defaultEvent Event containing any additional information regarding the completion. Might contain the 
+     * @param completeEvent Event containing any additional information regarding the completion. Might contain the
      * return value from the operation, in which case the event will be a <code>DefafaultEvent</code> subclass.
      */
-    public void pillarComplete(OperationEvent<?> completeEvent) {
+    public void pillarComplete(OperationEvent completeEvent) {
         log.debug(completeEvent.getInfo());
         if (eventHandler != null) {
             eventHandler.handleEvent(completeEvent);
@@ -142,25 +165,48 @@ public class ConversationEventMonitor {
 
     /**
      * An operation has completed. Note that only one complete event should be sent for each operation, so if multiple
-     * pillars participate in the operation, this event should only be trigged after all the final response has been 
+     * pillars participate in the operation, this event should only be trigged after all the final response has been
      * received.
      * @param completeEvent Description of the context
      */
-    public void complete(OperationEvent<?> completeEvent) {
+    public void complete(OperationEvent completeEvent) {
         log.info(completeEvent.getInfo());
         if (eventHandler != null) {
             eventHandler.handleEvent(completeEvent);
         }
-        conversation.endConversation();
+    }
+
+    /**
+     * An operation has completed. Note that only one complete event should be sent for each operation, so if multiple
+     * pillars participate in the operation, this event should only be trigged after all the final response has been
+     * received.
+     * @param info Description of the context
+     */
+    public void complete(String info) {
+        log.info(info);
+        if (eventHandler != null) {
+            eventHandler.handleEvent(new DefaultEvent(
+                    OperationEvent.OperationEventType.COMPLETE, info, conversationID));
+        }
     }
 
     /**
      * An invalid messages has been received
      * @param info Description of the context
-     * @param message The invalid message
      */
     public void invalidMessage(String info) {
         log.warn(info);
+    }
+
+    /**
+     * An invalid messages has been received
+     * @param message the invalid message
+     * @param e Description of the context
+     */
+    public void invalidMessage(Message message, Exception e) {
+        log.warn("Received invalid " + message.getClass().getSimpleName() + " from " + message.getFrom(), e);
+        eventHandler.handleEvent(new PillarOperationEvent(
+                OperationEventType.WARNING, e.getMessage(), message.getFrom(), conversationID));
     }
 
     /**
@@ -178,7 +224,7 @@ public class ConversationEventMonitor {
     public void warning(String info) {
         log.warn(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(OperationEventType.WARNING, info, conversation.getConversationID()));
+            eventHandler.handleEvent(new DefaultEvent(OperationEventType.WARNING, info, conversationID));
         }
     }
 
@@ -194,7 +240,7 @@ public class ConversationEventMonitor {
         log.warn(info, e);
         if (eventHandler != null) {
             eventHandler.handleEvent(new DefaultEvent(OperationEventType.WARNING, info + ", " + e.getMessage(), 
-                    conversation.getConversationID()));
+                    conversationID));
         }
     }
     
@@ -214,7 +260,7 @@ public class ConversationEventMonitor {
         log.warn(info);
         if (eventHandler != null) {
             eventHandler.handleEvent(new DefaultEvent(OperationEventType.COMPONENT_FAILED, info, 
-                    conversation.getConversationID()));
+                    conversationID));
         }    
     }
     
@@ -230,10 +276,31 @@ public class ConversationEventMonitor {
         log.warn(info, e);
         if (eventHandler != null) {
             eventHandler.handleEvent(new DefaultEvent(OperationEventType.COMPONENT_FAILED, info + ", " + e.getMessage(), 
-                    conversation.getConversationID()));
+                    conversationID));
         }
     }
-
+    /**
+     * General failure to complete the operation.
+     * @param info Encapsulates the cause.
+     */
+    public void operationFailed(String info) {
+        OperationFailedEvent event = new OperationFailedEvent(info, conversationID);
+        log.warn(event.getInfo(), event.getException());
+        if (eventHandler != null) {
+            eventHandler.handleEvent(event);
+        }
+    }
+    /**
+     * General failure to complete the operation.
+     * @param exception Encapsulates the cause.
+     */
+    public void operationFailed(Exception exception) {
+        log.warn(exception.getMessage(), exception);
+        OperationFailedEvent event = new OperationFailedEvent(exception.getMessage(), conversationID);
+        if (eventHandler != null) {
+            eventHandler.handleEvent(event);
+        }
+    }
     /**
      * General failure to complete the operation.
      * @param event Encapsulates the cause.

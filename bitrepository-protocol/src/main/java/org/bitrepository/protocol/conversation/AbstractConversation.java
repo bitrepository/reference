@@ -35,32 +35,23 @@ import org.slf4j.LoggerFactory;
  * Abstract super class for conversations. This super class will handle sending all messages with the correct
  * conversation id, and simply log messages received. Overriding implementations should override the behaviour for
  * receiving specific messages.
- *
- * @param <T> The result of this conversation.
  */
 public abstract class AbstractConversation extends AbstractMessageListener implements Conversation {
     /** The message bus used for sending messages. */
-    public final MessageSender messageSender;
+    public MessageSender messageSender;
     /** The conversation ID. */
-    private final String conversationID;
+    private String conversationID;
     /** @see Conversation#getStartTime() */
-    private final long startTime;
+    private long startTime;
     /** The logger for this class. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
     /** Takes care of publishing update information */
-    private final ConversationEventMonitor monitor;
-    /** Used for storing exceptions generates as result of a message reception, so it can be thrown to the initial 
-     * operation initiator */
-//    protected OperationFailedException operationFailedException;
-    /** Is this conversation a result of a blocking call*/
-    protected boolean blocking;
-    /** Handles blocks */
-    private final FlowController flowController;
+    private ConversationEventMonitor monitor;
 
     /**
      * Initialize a conversation on the given message bus.
      *
-     * @param messagebus The message bus used for exchanging messages.
+     * @param messageSender Used for sending messages.
      * @param conversationID The conversation ID for this conversation.
      */
     public AbstractConversation(
@@ -71,9 +62,11 @@ public abstract class AbstractConversation extends AbstractMessageListener imple
         this.messageSender = messageSender;
         this.conversationID = conversationID;
         this.startTime = System.currentTimeMillis();
-        this.monitor = new ConversationEventMonitor(this, eventHandler);
-        this.flowController = flowController;
-        flowController.setConversation(this);
+        this.monitor = new ConversationEventMonitor(getConversationID(), eventHandler);
+    }
+
+    public AbstractConversation() {
+        this.startTime = System.currentTimeMillis();
     }
 
     @Override
@@ -84,6 +77,10 @@ public abstract class AbstractConversation extends AbstractMessageListener imple
     @Override
     public long getStartTime() {
         return startTime;
+    }
+
+    public ConversationContext getContext() {
+        throw new UnsupportedOperationException();
     }
 
     /** 
@@ -119,7 +116,6 @@ public abstract class AbstractConversation extends AbstractMessageListener imple
     public synchronized void failConversation(OperationFailedEvent failedEvent) {
         monitor.operationFailed(failedEvent);
         endConversation();
-        flowController.unblock();
     }
 
     /**
@@ -128,14 +124,7 @@ public abstract class AbstractConversation extends AbstractMessageListener imple
     public ConversationEventMonitor getMonitor() {
         return monitor;
     }
-    
-    /**
-     * @return The controller with the responsibility of handling blocking
-     */
-    public FlowController getFlowController() {
-        return flowController;
-    }
-    
+
     /**
      * @return The state of this conversation.
      */

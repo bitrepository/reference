@@ -67,7 +67,6 @@ public class DeletingFile extends DeleteFileState {
     /**
      * Constructor.
      * @param conversation The conversation in this state.
-     * @param pillarDest The destination of the pillar.
      */
     public DeletingFile(SimpleDeleteFileConversation conversation) {
         super(conversation);
@@ -153,7 +152,6 @@ public class DeletingFile extends DeleteFileState {
             monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE,
                     "Finished Delete on all the pillars.",
                     conversation.getConversationID()));
-            conversation.getFlowController().unblock();
 
             DeleteFileFinished finishState = new DeleteFileFinished(conversation);
             conversation.conversationState = finishState;

@@ -49,7 +49,7 @@ public class PillarSelectorForDeleteFile {
     
     /**
      * Constructor.
-     * @param pillars The IDs of the pillars to be selected.
+     * @param pillarsWhichShouldRespond The IDs of the pillars to be selected.
      */
     public PillarSelectorForDeleteFile(Collection<String> pillarsWhichShouldRespond) {
         ArgumentValidator.checkNotNullOrEmpty(pillarsWhichShouldRespond, "pillarsWhichShouldRespond");

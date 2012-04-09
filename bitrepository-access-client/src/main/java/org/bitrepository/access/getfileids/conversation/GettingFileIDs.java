@@ -150,7 +150,6 @@ public class GettingFileIDs extends GetFileIDsState {
         if(responseStatus.haveAllPillarResponded()) {
             monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE, 
                     "All pillars have delivered their FileIDs.", conversation.getConversationID()));
-            conversation.getFlowController().unblock();
             conversation.conversationState = new GetFileIDsFinished(conversation);
         }
     }

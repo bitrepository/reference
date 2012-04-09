@@ -24,18 +24,23 @@
  */
 package org.bitrepository.protocol.eventhandler;
 
-/** A abstract implementation of <code>OperationEvent</code> . 
- * @param <T>*/
-public abstract class AbstractOperationEvent<T> implements OperationEvent<T> {
-    /** @see #getType() */
-    protected final OperationEventType type;
-    /** @see #getInfo() */
-    protected final String info;
+/**
+ * A general implementation of <code>OperationEvent</code>.
+ */
+public class AbstractOperationEvent implements OperationEvent {
+    private final OperationEventType type;
+    private final String info;
+    private final String correlationID;
 
-    /** The constructor for this immutable */
-    public AbstractOperationEvent(OperationEventType type, String info) {
+    /**
+     * @param type See {@link #getType()}
+     * @param info See {@link #getInfo()}
+     * @param correlationID See {@link #getCorrelationID()}
+     */
+    public AbstractOperationEvent(OperationEventType type, String info, String correlationID) {
         this.type = type;
         this.info = info;
+        this.correlationID = correlationID;
     }
 
     @Override
@@ -48,18 +53,21 @@ public abstract class AbstractOperationEvent<T> implements OperationEvent<T> {
         return type;
     }
 
-    @Override 
+    @Override
+    public String getCorrelationID() {
+        return correlationID;
+    }
+
+    @Override
     public final String toString() {
-        return getType() + ": " + "[ID: " + getID() + "] " + getInfo() + additionalInfo();
+        return getType() + ": " + "ID: " + getCorrelationID() + ", " + additionalInfo() + ", " + getInfo();
     }
     
     /**
-     * Deliver additional information in a string form. 
+     * Deliver additional information in a string form. The string returned will be appended to the toString value.
      */
-    public abstract String additionalInfo();
-    
-    /**
-     * Deliver the correlation ID of the event. 
-     */
-    public abstract String getID();
+    protected String additionalInfo() {
+        return "";
+    }
+
 }

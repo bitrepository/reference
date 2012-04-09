@@ -61,11 +61,7 @@ public class SimpleGetFileConversation extends AbstractConversation {
      * Initializes the file directory, and the message bus used for sending messages.
      * The fileDir is retrieved from the configuration.
      *
-     * @param messageBus The message bus used for sending messages.
-     * @param expectedNumberOfPillars The number of pillars to wait for replies from, when identifying pillars.
-     * @param getFileDefaultTimeout The timeout when getting a file. If the conversation identifies pillars, this value
-     * is replaced by twice the time the pillar estimated.
-     * @param fileDir The directory to store retrieved files in.
+     * @param messageSender The message bus used for sending messages.
      */
     public SimpleGetFileConversation(
             MessageSender messageSender, 

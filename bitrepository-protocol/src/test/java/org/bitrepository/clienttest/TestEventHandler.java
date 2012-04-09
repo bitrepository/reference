@@ -38,7 +38,7 @@ public class TestEventHandler implements EventHandler {
     /** The <code>TestEventManager</code> used to manage the event for the associated test. */
     private final TestEventManager testEventManager;
     /** The queue used to store the received operation events. */
-    private final BlockingQueue<OperationEvent<?>> eventQueue = new LinkedBlockingQueue<OperationEvent<?>>();
+    private final BlockingQueue<OperationEvent> eventQueue = new LinkedBlockingQueue<OperationEvent>();
 
     /** The default time to wait for events */
     private static final long DEFAULT_WAIT_SECONDS = 10;  
@@ -62,11 +62,11 @@ public class TestEventHandler implements EventHandler {
      * Wait for an event for the DEFAULT_WAIT_SECONDS amount of time.
      * @return The next event if any, else null 
      */
-    public OperationEvent<?> waitForEvent() throws InterruptedException {
+    public OperationEvent waitForEvent() throws InterruptedException {
         return waitForEvent(DEFAULT_WAIT_SECONDS, TimeUnit.SECONDS);
     }
 
-    public OperationEvent<?> waitForEvent(long timeout, TimeUnit unit) throws InterruptedException {
+    public OperationEvent waitForEvent(long timeout, TimeUnit unit) throws InterruptedException {
         return eventQueue.poll(timeout, unit);
     }
 }

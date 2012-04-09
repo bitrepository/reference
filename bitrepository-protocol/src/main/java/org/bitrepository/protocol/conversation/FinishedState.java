@@ -24,32 +24,57 @@
  */
 package org.bitrepository.protocol.conversation;
 
-import org.bitrepository.bitrepositorymessages.Message;
-import org.bitrepository.protocol.messagebus.AbstractMessageListener;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.common.exceptions.UnableToFinishException;
 
 /**
  * Marker interface to indicate that this is the finished state for a conversation.
  */
-public class FinishedState extends AbstractMessageListener implements ConversationState {
-    /** Handles the mediation of information regarding conversation updates */
-    protected final ConversationEventMonitor monitor;
+public class FinishedState extends AbstractConversationState {
+    protected final ConversationContext context;
     
-    public FinishedState(ConversationEventMonitor monitor) {
-        this.monitor = monitor;
+    public FinishedState(ConversationContext context) {
+        this.context = context;
     }
 
-    public void onMessage(Message message) {
-        monitor.outOfSequenceMessage("Received " + message.getClass().getName() + 
+    @Override
+    protected ConversationContext getContext() {
+        return context;
+    }
+
+    @Override
+    protected AbstractConversationState getNextState() throws UnableToFinishException {
+        return this;
+    }
+
+    @Override
+    protected long getTimeout() {
+        return context.getSettings().getReferenceSettings().getClientSettings().getConversationTimeout().longValue();
+    }
+
+    @Override
+    protected String getName() {
+        return "Finished";
+    }
+
+    @Override
+    public void sendRequest() {
+        // Nothing to do.
+    }
+
+    @Override
+    protected void processMessage(MessageResponse message) {
+        context.getMonitor().outOfSequenceMessage("Received " + message.getClass().getName() +
                 " with replyTo " + message.getReplyTo() + " after the conversation has ended.");
-    };
-    
-    @Override
-    public void start() {
-        //Nothing to do.      
     }
 
+    /**
+     * Never occures, this is the final state
+     * @return
+     */
     @Override
-    public boolean hasEnded() {
-        return true;
+    protected AbstractConversationState handleStateTimeout() {
+        // What to do?
+        return this;
     }
 }

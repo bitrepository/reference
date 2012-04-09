@@ -35,9 +35,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.putfile.conversation.SimplePutFileConversation;
 import org.bitrepository.protocol.conversation.FlowController;
-import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.bitrepository.protocol.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -80,19 +78,13 @@ public class ConversationBasedPutFileClient implements PutFileClient {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNegative(sizeOfFile, "long sizeOfFile");
         // TODO add potential regex from collection settings.
-        
-        try {
+
             SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
                     BigInteger.valueOf(sizeOfFile), checksumForValidationAtPillar, checksumRequestsForValidation, 
                     eventHandler, new FlowController(settings), auditTrailInformation);
             conversationMediator.addConversation(conversation);
             conversation.startConversation();
-        } catch (Exception e) {
-            String msg = "Couldn't perform put for '" + fileId + "' at '" + url + "' due to the following error: '"
-                    + e.getMessage() + "'.";
-            log.error(msg, e);
-            eventHandler.handleEvent(new DefaultEvent(OperationEventType.FAILED, msg, "Unknown"));
-        }
+
     }
     
     @Override

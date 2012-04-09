@@ -67,7 +67,6 @@ public class ReplacingFile extends ReplaceFileState {
     /**
      * Constructor.
      * @param conversation The conversation in this state.
-     * @param pillarDest The destination of the pillar.
      */
     public ReplacingFile(SimpleReplaceFileConversation conversation) {
         super(conversation);
@@ -165,7 +164,6 @@ public class ReplacingFile extends ReplaceFileState {
             monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE,
                     "Finished the ReplaceFile operation on all the pillars.",
                     conversation.getConversationID()));
-            conversation.getFlowController().unblock();
 
             ReplaceFileFinished finishState = new ReplaceFileFinished(conversation);
             conversation.conversationState = finishState;

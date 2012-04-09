@@ -27,9 +27,6 @@ package org.bitrepository.access.getfile;
 import java.net.URL;
 
 import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.exceptions.NoPillarFoundException;
-import org.bitrepository.protocol.exceptions.OperationFailedException;
-import org.bitrepository.protocol.exceptions.OperationTimeOutException;
 import org.jaccept.TestEventManager;
 
 /**
@@ -52,26 +49,12 @@ public class GetFileClientTestWrapper implements GetFileClient {
     }
 
     @Override
-    public void getFileFromFastestPillar(String fileId, URL uploadUrl) 
-            throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
-        testEventManager.addStimuli("Calling getFileFromFastestPillar(" + fileId + ", " + uploadUrl + ")");
-        createGetFileClient.getFileFromFastestPillar(fileId, uploadUrl);
-    }
-
-    @Override
     public void getFileFromSpecificPillar(String fileId, URL uploadUrl, String pillarId, EventHandler eventHandler) {
         testEventManager.addStimuli("Calling getFileFromSpecificPillar(" + 
                 fileId + ", " + uploadUrl + ", " + pillarId + ")");
         createGetFileClient.getFileFromSpecificPillar(fileId, uploadUrl, pillarId, eventHandler);
     }
 
-    @Override
-    public void getFileFromSpecificPillar(String fileId, URL uploadUrl, String pillarId) 
-            throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
-        testEventManager.addStimuli("Calling getFileFromSpecificPillar(" + fileId + ", " + uploadUrl+ ", " + pillarId + ")");
-        createGetFileClient.getFileFromSpecificPillar(fileId, uploadUrl, pillarId);
-    }
-    
     @Override
     public void shutdown() {
         // Empty
