@@ -88,18 +88,6 @@ public class CollectionBasedGetFileClient implements GetFileClient {
     }
 
     @Override
-    public void getFileFromFastestPillar(String fileID, URL uploadUrl) 
-    throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
-        ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
-        ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
-
-        log.info("Requesting fastest retrieval of the file '" + fileID);
-        getFile(messageBus, settings, new FastestPillarSelectorForGetFile(
-                settings.getCollectionSettings().getClientSettings().getPillarIDs()), 
-                fileID, uploadUrl);				
-    }
-
-    @Override
     public void getFileFromSpecificPillar(String fileID, URL uploadUrl, String pillarID, EventHandler eventHandler) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
@@ -111,18 +99,6 @@ public class CollectionBasedGetFileClient implements GetFileClient {
                 fileID, uploadUrl, eventHandler);				
     }
 
-    @Override
-    public void getFileFromSpecificPillar(String fileID, URL uploadUrl, String pillarID) 
-    throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
-        ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
-        ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
-        ArgumentValidator.checkNotNullOrEmpty(pillarID, "pillarID");
-
-        log.info("Requesting the file '" + fileID + "' from pillar '" + pillarID + "'.");
-        getFile(messageBus, settings, new SpecificPillarSelectorForGetFile(pillarID), 
-                fileID, uploadUrl);				
-    }
-    
     @Override
     public void shutdown() {
         try {

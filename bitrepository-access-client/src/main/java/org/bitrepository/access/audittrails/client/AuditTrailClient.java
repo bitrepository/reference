@@ -24,21 +24,22 @@
  */
 package org.bitrepository.access.audittrails.client;
 
-import javax.xml.datatype.XMLGregorianCalendar;
+import org.bitrepository.access.audittrails.AuditTrailQuery;
+import org.bitrepository.protocol.client.BitrepositoryClient;
+import org.bitrepository.protocol.eventhandler.EventHandler;
 
-import org.bitrepository.access.audittrails.ComponentDestination;
-import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
-
-/**
- * Handles the retrieval of from contributors and storage of the audit trails into the AuditTrail storage.
- */
-public class AuditTrailClient {
-    
-    public AuditTrailEvent[] getAuditTrails(ComponentDestination contributorDestination, XMLGregorianCalendar starttime, XMLGregorianCalendar endtime, String url) {
-        return null;
-    }
-    
-    public AuditTrailEvent[] getAuditTrailsFromContributor(ComponentDestination contributorDestination, Integer minSequenceNumber, Integer maxSequenceNumber, String url) {
-        return null;
-    }
+public interface AuditTrailClient extends BitrepositoryClient {
+    /**
+     * @param componentQueries Defines which components to retrieve audit trail from. Also defines a filter which
+     *                         can be used to limit the audit trail result from each pillar. If null all audit trails
+     *                         from all contributers are returned.
+     * @param urlForResult If defined, the result is upload to this url (with a -componentID postfix) in stead of being
+     *                     returned in a completeEvent.
+     * @param eventHandler The handler which should receive notifications of the progress events.
+     * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation call.
+     */
+    void getAuditTrails(
+            AuditTrailQuery[] componentQueries,
+            String urlForResult,
+            EventHandler eventHandler, String auditTrailInformation);
 }

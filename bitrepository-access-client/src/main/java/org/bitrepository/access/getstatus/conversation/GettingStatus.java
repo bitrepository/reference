@@ -84,7 +84,6 @@ public class GettingStatus extends GetStatusState {
         if(responseStatus.haveAllPillarResponded()) {
             monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE, 
                     "All contributors have delivered their status."));
-            conversation.getFlowController().unblock();
             conversation.conversationState = new GetStatusFinished(conversation);
         }    }
 

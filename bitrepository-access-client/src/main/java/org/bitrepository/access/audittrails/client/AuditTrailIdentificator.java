@@ -24,8 +24,6 @@
  */
 package org.bitrepository.access.audittrails.client;
 
-import java.util.List;
-
 import org.bitrepository.protocol.client.BitrepositoryClient;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 
@@ -38,9 +36,4 @@ public interface AuditTrailIdentificator extends BitrepositoryClient {
      * each time this method is called.
      */
     void getAvailableContributors(EventHandler eventHandler, String auditTrailInformation);
-    
-    /**
-     * @return Returns the list of audit trail contributors defined for this collection.
-     */
-    List<String> getDefinedContributors();
 }

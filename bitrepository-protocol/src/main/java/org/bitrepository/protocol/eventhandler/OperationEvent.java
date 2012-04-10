@@ -25,8 +25,7 @@
 package org.bitrepository.protocol.eventhandler;
 
 /**
- * Container for information regarding events occurring during an operation on the Bit Repository.  
- * @param <T> The type of specialized state for this event.
+ * Container for information regarding events occurring during an operation on the Bit Repository.
  */
 public interface OperationEvent {
     /**
@@ -74,4 +73,8 @@ public interface OperationEvent {
      */
     OperationEventType getType();
 
+    /**
+     * Deliver the conversation ID of the event.
+     */
+    public abstract String getConversationID();
 }

@@ -30,7 +30,7 @@ import java.util.Set;
 
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 /** Models the response state for a given set of pillars */
-public class PillarsResponseStatus {
+public class  PillarsResponseStatus {
     private final Set<String> pillarsWhichShouldRespond;
     private final Set<String> pillarsWithOutstandingResponse;
 

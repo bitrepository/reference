@@ -24,31 +24,35 @@
  */
 package org.bitrepository.access.audittrails.client;
 
-import java.util.List;
-
+import org.bitrepository.access.audittrails.AuditTrailQuery;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.client.AbstractClient;
+import org.bitrepository.protocol.conversation.ConversationIDGenerator;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ConversationBasedAuditTrailIdentificator extends AbstractClient implements AuditTrailIdentificator {
+public class ConversationBasedAuditTrailClient extends AbstractClient implements AuditTrailClient {
     /** The log for this class. */
-    private final List<String> definedContributorIDs;
+    private final Logger log = LoggerFactory.getLogger(getClass());
        
-    public ConversationBasedAuditTrailIdentificator(Settings settings, ConversationMediator conversationMediator, MessageBus messageBus) {
+    public ConversationBasedAuditTrailClient(
+            Settings settings, ConversationMediator conversationMediator, MessageBus messageBus) {
         super(settings, conversationMediator, messageBus);
-        this.definedContributorIDs = settings.getReferenceSettings().getAuditTrailServiceSettings().getContributors();
     }
 
     @Override
-    public void getAvailableContributors(
+    public void getAuditTrails(
+            AuditTrailQuery[] componentQueries,
+            String urlForResult,
             EventHandler eventHandler, String auditTrailInformation) {
-        startConversation(new AuditTrailIdentificationConversation(
-                settings, messageBus, eventHandler, auditTrailInformation));
-    }
-    
-    public List<String> getDefinedContributors() {
-        return definedContributorIDs;
+        String newConversationID = ConversationIDGenerator.generateConversationID();
+        AuditTrailConversationContext context = new AuditTrailConversationContext(
+                componentQueries, urlForResult,
+                settings, messageBus, eventHandler, auditTrailInformation);
+        AuditTrailConversation conversation = new AuditTrailConversation(context);
+        startConversation(conversation);
     }
 }

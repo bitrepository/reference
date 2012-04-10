@@ -153,8 +153,7 @@ public class GettingChecksums extends GetChecksumsState {
 
         if(responseStatus.haveAllPillarResponded()) {
             monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE, 
-                    "All pillars have delivered their checksums."));
-            conversation.getFlowController().unblock();
+                    "All pillars have delivered their checksums.", conversation.getConversationID()));
             conversation.setResults(results);
             conversation.conversationState = new GetChecksumsFinished(conversation);
         }

@@ -29,22 +29,19 @@ package org.bitrepository.protocol.eventhandler;
  * Indicates and operation has failed to complete
  */
 public class OperationFailedEvent extends AbstractOperationEvent {
-    /** correlation id of the operation */
-    private String ID;
     /** @see #getInfo() */
     private final String info;
     /** @see #getType() */
     private final static OperationEventType type = OperationEventType.FAILED;
-    /** @see #getState() */
     private final Exception exception;
 
     /**
      * Constructor with exception information
-     * @param info
-     * @param exception
+     * @param info See {@link #getInfo()}
+     * @param exception See {@link #getException()} ()}
      */
-    public OperationFailedEvent(String info, Exception exception) {
-        super(type, info);
+    public OperationFailedEvent(String info, Exception exception, String conversationID) {
+        super(type, info, conversationID);
         this.info = info;
         this.exception = exception;
     }
@@ -53,23 +50,19 @@ public class OperationFailedEvent extends AbstractOperationEvent {
      * Plain info constructor.
      * @param info Message describing the failure.
      */
+    public OperationFailedEvent(String info, String conversationID) {
+        this(info, null, conversationID);
+    }
+
+    public OperationFailedEvent(String info, Exception exception) {
+        this(info, exception, null);
+    }
+
     public OperationFailedEvent(String info) {
-        super(type, info);
-        this.info = info;
-        this.exception = null;
+        this(info, null, null);
     }
 
-    @Override
-    public String getInfo() {
-        return info;
-    }
-
-    @Override
-    public OperationEventType getType() {
-        return type;
-    }
-
-    /** Returns the exception causing this failure, if any. Might be null if the failure wasn't caused by an 
+    /** Returns the exception causing this failure, if any. Might be null if the failure wasn't caused by an
      * exception */
     public Exception getException() {
         return exception;
@@ -83,15 +76,4 @@ public class OperationFailedEvent extends AbstractOperationEvent {
             return "";
         }
     }
-    
-    @Override 
-    public String getID() {
-        return ID;
-    }
-
-    @Override
-    public void setConversationID(String conversationID) {
-        ID = conversationID;
-    }
-    
 }

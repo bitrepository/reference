@@ -24,18 +24,23 @@
  */
 package org.bitrepository.protocol.eventhandler;
 
-/** A abstract implementation of <code>OperationEvent</code> . 
- * @param <T>*/
-public abstract class AbstractOperationEvent implements OperationEvent {
-    /** @see #getType() */
-    protected final OperationEventType type;
-    /** @see #getInfo() */
-    protected final String info;
+/**
+ * A general implementation of <code>OperationEvent</code>.
+ */
+public class AbstractOperationEvent implements OperationEvent {
+    private final OperationEventType type;
+    private final String info;
+    private String conversationID;
 
-    /** The constructor for this immutable */
-    public AbstractOperationEvent(OperationEventType type, String info) {
+    /**
+     * @param type See {@link #getType()}
+     * @param info See {@link #getInfo()}
+     * @param conversationID See {@link #getConversationID}
+     */
+    public AbstractOperationEvent(OperationEventType type, String info, String conversationID) {
         this.type = type;
         this.info = info;
+        this.conversationID = conversationID;
     }
 
     @Override
@@ -48,24 +53,27 @@ public abstract class AbstractOperationEvent implements OperationEvent {
         return type;
     }
 
-    @Override 
+    @Override
+    public String getConversationID() {
+        return conversationID;
+    }
+
+    /**
+     * @param conversationID See {@link #getConversationID}
+     */
+    public void setConversationID(String conversationID) {
+        this.conversationID = conversationID;
+    }
+
+    @Override
     public final String toString() {
-        return getType() + ": " + "[ID: " + getID() + "] " + getInfo() + additionalInfo();
+        return getType() + ": " + "ID: " + getConversationID() + ", " + additionalInfo() + ", " + getInfo();
     }
     
     /**
-     * Deliver additional information in a string form. 
+     * Deliver additional information in a string form. The string returned will be appended to the toString value.
      */
-    public abstract String additionalInfo();
-    
-    /**
-     * Set the correlation ID of the event. 
-     */
-    public abstract void setConversationID(String conversationID);
-
-    
-    /**
-     * Deliver the correlation ID of the event. 
-     */
-    public abstract String getID();
+    protected String additionalInfo() {
+        return "";
+    }
 }

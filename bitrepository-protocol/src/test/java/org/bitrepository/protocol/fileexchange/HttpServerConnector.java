@@ -58,7 +58,7 @@ public class HttpServerConnector {
     /**
      * Initialize HTTP file exchange.
      *
-     * @param configuration The configuration for file exchange.
+     * @param config The configuration for file exchange.
      */
     public HttpServerConnector(HttpServerConfiguration config, TestEventManager testEventManager) {
         this.config = config;
