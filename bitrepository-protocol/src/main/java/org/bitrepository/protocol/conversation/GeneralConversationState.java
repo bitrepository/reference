@@ -45,11 +45,23 @@ public abstract class GeneralConversationState {
     /** The timer task for timeout of identify in this conversation. */
     private final TimerTask stateTimeoutTask = new StateTimerTask();
 
+    /**
+     * Startes the state by: <ol>
+     *     <li>Starting the timeout timer.</li>
+     *     <li>Sends the request which triggers the responses for this state.</li>
+     * </ol>
+     */
     public synchronized final void start() {
         timer.schedule(stateTimeoutTask, getTimeout());
         sendRequest();
     }
 
+    /**
+     * The general message handler for this state. Will only accept <code>MessageResponses</code>.
+     * Takes care of the general message bookkepping and delegates the specifics of the message handling to the
+     * concrete states {@link #processMessage(MessageResponse)}.
+     * @param message The message to handle.
+     */
     public synchronized final void handleMessage(Message message) {
         if (!(message instanceof MessageResponse)) {
             getContext().getMonitor().outOfSequenceMessage("Can only handle responses, but received " +
@@ -72,10 +84,6 @@ public abstract class GeneralConversationState {
         } catch (UnableToFinishException e) {
             getContext().getMonitor().operationFailed(e);
         }
-    }
-
-    protected void failConversation(String info) {
-        getContext().getMonitor().operationFailed(info);
     }
 
     /**
@@ -134,6 +142,9 @@ public abstract class GeneralConversationState {
      */
     protected abstract GeneralConversationState getNextState() throws UnableToFinishException;
 
+    /**
+     * Gives access to the concrete timeout for the state.
+     */
     protected abstract long getTimeout();
 
     /**
