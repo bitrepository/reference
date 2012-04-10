@@ -31,7 +31,9 @@ import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -96,6 +98,12 @@ public class RequestToOperationPermissionMapper {
         requiredPermissions.add(OperationPermission.REPLACE_FILE);
         mapping.put(IdentifyPillarsForReplaceFileRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(ReplaceFileRequest.class.getSimpleName(), requiredPermissions);
+
+        requiredPermissions = new ArrayList<OperationPermission>();
+        requiredPermissions.add(OperationPermission.ALL);
+        requiredPermissions.add(OperationPermission.GET_STATUS);
+        mapping.put(IdentifyContributorsForGetStatusRequest.class.getSimpleName(), requiredPermissions);
+        mapping.put(GetStatusRequest.class.getSimpleName(), requiredPermissions);
     }
 
     /**

@@ -45,8 +45,6 @@ import org.bitrepository.protocol.security.SecurityManager;
  * It just loads the configurations and uses them to create the PillarSettings needed for starting the ReferencePillar.
  */
 public final class ReferencePillarLauncher {
-    /** The default path to the collection id during development.*/
-    private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
     /** The default path for the settings in the development.*/
     private static final String DEFAULT_PATH_TO_SETTINGS = "settings/xml";
     /** The default path for the settings in the development.*/
@@ -65,20 +63,16 @@ public final class ReferencePillarLauncher {
      * </ol>
      */
     public static void main(String[] args) {
-        String collectionId = DEFAULT_COLLECTION_ID;
         String pathToSettings = DEFAULT_PATH_TO_SETTINGS;
         String privateKeyFile = DEFAULT_PATH_TO_KEY_FILE;
         if(args.length >= 3) {
             pathToSettings = args[0];
             privateKeyFile = args[1];
-            collectionId = args[2];
         } else if(args.length == 2) {
             pathToSettings = args[0];
             privateKeyFile = args[1];
-            collectionId = ".";
         } else if(args.length == 1) {
             pathToSettings = args[0];
-            collectionId = ".";
         }
         
         // Instantiate the settings for the ChecksumPillar.
@@ -86,7 +80,7 @@ public final class ReferencePillarLauncher {
         try {
             SettingsProvider settingsLoader = new SettingsProvider(
                     new XMLFileSettingsLoader(pathToSettings));
-            settings = settingsLoader.getSettings(collectionId);
+            settings = settingsLoader.getSettings();
         } catch (Exception e) {
             System.err.println("Could not load the settings from '" + pathToSettings + "'.");
             e.printStackTrace();

@@ -47,7 +47,7 @@ public class SettingsProvider {
     }
     
     /**
-     * Loads the settings for the collection defined by the COLLECTIONID_PROPERTY system variable.
+     * Gets the settings, if no settings has been loaded into memory, will load the settings from disk
      * @return The settings 
      */
     public synchronized Settings getSettings() {
@@ -58,17 +58,7 @@ public class SettingsProvider {
     }
     
     /**
-     * Will load the settings from disk if they haven't been loaded before
-     * @param collectionID The collectionID to find settings for.
-     * @return The settings for the indicated CollectionID
-     */
-    @Deprecated
-    public synchronized Settings getSettings(String collectionID) {
-        return getSettings();
-    }
-    
-    /**
-    * Will load the settings from disk to this providers model. Will overwrite any settings already in the provider.
+    * Will load the settings from disk. Will overwrite any settings already in the provider.
     */
     public synchronized void loadSettings() {
     	CollectionSettings collectionSettings = settingsReader.loadSettings(CollectionSettings.class);
