@@ -36,6 +36,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
+import org.bitrepository.integrityservice.utils.TimeUtils;
 import org.bitrepository.integrityservice.workflow.Workflow;
 
 @Path("/IntegrityService")
@@ -86,7 +87,7 @@ public class RestIntegrityService {
             Workflow workflow = it.next();
             sb.append("{\"workflowID\": \"" + workflow.getName() + "\"," +
                     "\"nextRun\": \"" + workflow.getNextRun() + "\"," +
-                    "\"executionInterval\": \"" + workflow.getTimeBetweenRuns() + "\"}");
+                    "\"executionInterval\": \"" + TimeUtils.millisecondsToHuman(workflow.getTimeBetweenRuns()) + "\"}");
             if(it.hasNext()) {
                 sb.append(",");
             }
