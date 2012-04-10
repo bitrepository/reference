@@ -44,6 +44,7 @@ public class GetChecksumsMessageFactory extends TestMessageFactory {
     final Settings settings;
     
     public GetChecksumsMessageFactory(Settings pSettings) {
+        super(pSettings.getCollectionID());
         this.settings = pSettings;
     }
     

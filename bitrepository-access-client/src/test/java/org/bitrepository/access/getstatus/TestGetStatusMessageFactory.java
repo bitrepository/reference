@@ -3,23 +3,15 @@ package org.bitrepository.access.getstatus;
 import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
-import org.bitrepository.bitrepositoryelements.StatusInfo;
 import org.bitrepository.bitrepositoryelements.StatusCode;
-import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
-import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.bitrepositoryelements.StatusInfo;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.TestMessageFactory;
 
 public class TestGetStatusMessageFactory extends TestMessageFactory {
-
-    protected final String collectionID;
-    
     public TestGetStatusMessageFactory(String collectionID) {
-        this.collectionID = collectionID;
+        super(collectionID);
     }
     
     public IdentifyContributorsForGetStatusResponse createIdentifyContributorsForGetStatusResponse(
@@ -70,11 +62,5 @@ public class TestGetStatusMessageFactory extends TestMessageFactory {
         setMessageDetails(response);
         
         return response;
-    } 
-    
-    private void setMessageDetails(Message msg) {
-        msg.setCollectionID(collectionID);
-        msg.setVersion(VERSION_DEFAULT);
-        msg.setMinVersion(VERSION_DEFAULT);
     }
 }

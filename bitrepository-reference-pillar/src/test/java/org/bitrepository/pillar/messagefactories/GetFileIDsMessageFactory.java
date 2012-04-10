@@ -43,6 +43,7 @@ public class GetFileIDsMessageFactory extends TestMessageFactory {
     final Settings settings;
     
     public GetFileIDsMessageFactory(Settings pSettings) {
+        super(pSettings.getCollectionID());
         this.settings = pSettings;
     }
     

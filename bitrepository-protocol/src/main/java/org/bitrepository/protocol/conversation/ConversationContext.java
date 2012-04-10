@@ -13,7 +13,7 @@ public class ConversationContext {
     public final MessageSender messageSender;
     private final ConversationEventMonitor monitor;
     private final String auditTrailInformation;
-    private AbstractConversationState state;
+    private GeneralConversationState state;
 
     public ConversationContext(
             Settings settings,
@@ -47,10 +47,10 @@ public class ConversationContext {
         return auditTrailInformation;
     }
 
-    public AbstractConversationState getState() {
+    public GeneralConversationState getState() {
         return state;
     }
-    public void setState(AbstractConversationState state) {
+    public void setState(GeneralConversationState state) {
         this.state = state;
     }
 }

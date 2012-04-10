@@ -1,10 +1,4 @@
 /*
- * #%L
- * Bitrepository Access Client
- * 
- * $Id$
- * $HeadURL$
- * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -37,18 +31,16 @@ import org.bitrepository.protocol.TestMessageFactory;
  * ToDo based on example messages.
  */
 public class TestGetChecksumsMessageFactory extends TestMessageFactory {
-    protected final String slaID;
 
-    public TestGetChecksumsMessageFactory(String slaID) {
-        super();
-        this.slaID = slaID;
+    public TestGetChecksumsMessageFactory(String collectionID) {
+        super(collectionID);
     }
 
     public IdentifyPillarsForGetChecksumsRequest createIdentifyPillarsForGetChecksumsRequest() {
         IdentifyPillarsForGetChecksumsRequest identifyPillarsForGetChecksumsRequest = new IdentifyPillarsForGetChecksumsRequest();
         identifyPillarsForGetChecksumsRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         identifyPillarsForGetChecksumsRequest.setMinVersion(VERSION_DEFAULT);
-        identifyPillarsForGetChecksumsRequest.setCollectionID(slaID);
+        identifyPillarsForGetChecksumsRequest.setCollectionID(collectionID);
         identifyPillarsForGetChecksumsRequest.setVersion(VERSION_DEFAULT);
         
         return identifyPillarsForGetChecksumsRequest;
@@ -101,7 +93,7 @@ public class TestGetChecksumsMessageFactory extends TestMessageFactory {
         getChecksumsRequest.setMinVersion(VERSION_DEFAULT);
         getChecksumsRequest.setVersion(VERSION_DEFAULT);
         getChecksumsRequest.setPillarID(pillarId);
-        getChecksumsRequest.setCollectionID(slaID);
+        getChecksumsRequest.setCollectionID(collectionID);
         getChecksumsRequest.setTo(toTopic);
         return getChecksumsRequest;
     }

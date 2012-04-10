@@ -39,10 +39,10 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.TestMessageFactory;
 
 public class DeleteFileMessageFactory extends TestMessageFactory {
-
     final Settings settings;
     
     public DeleteFileMessageFactory(Settings pSettings) {
+        super(pSettings.getCollectionID());
         this.settings = pSettings;
     }
     

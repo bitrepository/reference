@@ -22,9 +22,9 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access.audittrails.client;
+package org.bitrepository.access.getaudittrails.client;
 
-import org.bitrepository.access.audittrails.AuditTrailQuery;
+import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.protocol.client.BitrepositoryClient;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 

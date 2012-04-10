@@ -148,8 +148,8 @@ public class MessageReceiver {
         if (message != null) {
             log.debug("Received message in (" + waitTime + " ms): " + message);
         } else {
-            log.info("Wait for " + messageType.getName() + " message timed out (" + waitTime + " ms).");
-            Assert.fail("Wait for " + messageType.getName() + " message timed out (" + waitTime + " ms).");
+            log.info("Wait for " + messageType.getSimpleName() + " message timed out (" + waitTime + " ms).");
+            Assert.fail("Wait for " + messageType.getSimpleName() + " message timed out (" + waitTime + " ms).");
         }
         return message;
     }

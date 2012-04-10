@@ -22,12 +22,16 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access.audittrails.client;
+package org.bitrepository.access.getaudittrails.client;
 
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.conversation.AbstractConversation;
 import org.bitrepository.protocol.conversation.ConversationState;
 import org.bitrepository.protocol.conversation.FinishedState;
 
+/**
+ * Mostly just a event mediator.
+ */
 public class AuditTrailConversation extends AbstractConversation {
     private final AuditTrailConversationContext context;
     
@@ -38,7 +42,14 @@ public class AuditTrailConversation extends AbstractConversation {
     }
 
     @Override
+    public void onMessage(Message message) {
+        context.getState().handleMessage(message);
+    }
+
+    @Override
     public ConversationState getConversationState() {
+        // Only used to start conversation, which has been oveloaded. This is because the current parent state isn't of
+        // type ConversationState in the AuditTrailCLient.
         return null;
     }
 

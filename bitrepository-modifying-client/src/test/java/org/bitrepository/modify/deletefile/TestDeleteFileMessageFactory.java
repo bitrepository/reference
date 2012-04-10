@@ -1,10 +1,4 @@
 /*
- * #%L
- * Bitrepository Access Client
- * 
- * $Id$
- * $HeadURL$
- * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -36,7 +30,7 @@ import org.bitrepository.protocol.TestMessageFactory;
 /**
  * Messages creation factory for the DeleteFile tests.
  */
-public class TestDeleteFileMessageFactory extends TestMessageFactory{
+public class TestDeleteFileMessageFactory extends TestMessageFactory {
     /** The collection id for the factory.*/
     private final String collectionId;
     
@@ -45,7 +39,7 @@ public class TestDeleteFileMessageFactory extends TestMessageFactory{
      * @param bitrepositoryCollectionId The id for the collection, where the factory belong.
      */
     public TestDeleteFileMessageFactory(String bitrepositoryCollectionId) {
-        super();
+        super(bitrepositoryCollectionId);
         this.collectionId = bitrepositoryCollectionId;
     }
 

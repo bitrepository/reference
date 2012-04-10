@@ -1,10 +1,4 @@
 /*
- * #%L
- * Bitrepository Protocol
- * *
- * $Id$
- * $HeadURL$
- * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -35,18 +29,16 @@ import org.bitrepository.protocol.TestMessageFactory;
  * Generates test messages for use in GetFileIDsClientTest.
  */
 public class TestGetFileIDsMessageFactory extends TestMessageFactory {
-    protected final String slaID;
 
-    public TestGetFileIDsMessageFactory(String slaID) {
-        super();
-        this.slaID = slaID;
+    public TestGetFileIDsMessageFactory(String collectionID) {
+        super(collectionID);
     }
 
     public IdentifyPillarsForGetFileIDsRequest createIdentifyPillarsForGetFileIDsRequest() {
         IdentifyPillarsForGetFileIDsRequest identifyPillarsForGetFileIDsRequest = new IdentifyPillarsForGetFileIDsRequest();
         identifyPillarsForGetFileIDsRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         identifyPillarsForGetFileIDsRequest.setMinVersion(VERSION_DEFAULT);
-        identifyPillarsForGetFileIDsRequest.setCollectionID(slaID);
+        identifyPillarsForGetFileIDsRequest.setCollectionID(collectionID);
         identifyPillarsForGetFileIDsRequest.setVersion(VERSION_DEFAULT);
         
         return identifyPillarsForGetFileIDsRequest;
@@ -55,10 +47,6 @@ public class TestGetFileIDsMessageFactory extends TestMessageFactory {
     // TODO queue in all methods?
     /**
      * Generate IdentifyPillarsForGetFileIDsRequest test message with specified values.
-     * @param correlationID
-     * @param collectionID
-     * @param replyTo
-     * @param fileIDlist
      * @return test message
      */
     public IdentifyPillarsForGetFileIDsRequest createIdentifyPillarsForGetFileIDsRequest(
@@ -97,7 +85,7 @@ public class TestGetFileIDsMessageFactory extends TestMessageFactory {
         getFileIDsRequest.setMinVersion(VERSION_DEFAULT);
         getFileIDsRequest.setVersion(VERSION_DEFAULT);
         getFileIDsRequest.setPillarID(pillarId);
-        getFileIDsRequest.setCollectionID(slaID);
+        getFileIDsRequest.setCollectionID(collectionID);
         getFileIDsRequest.setTo(toTopic);
         return getFileIDsRequest;
     }

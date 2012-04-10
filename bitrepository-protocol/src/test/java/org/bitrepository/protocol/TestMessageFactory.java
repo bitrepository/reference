@@ -1,10 +1,4 @@
 /*
- * #%L
- * Bitrepository Protocol
- * *
- * $Id$
- * $HeadURL$
- * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -30,6 +24,9 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
+import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 
 /**
  * Abstract message factory for use in tests, which are suppose to be subclasses by functionality specific factories.
@@ -76,4 +73,25 @@ public abstract class TestMessageFactory {
         FINAL_INFO_DEFAULT.setResponseText("We have liftoff");
     }
 
+    protected final String collectionID;
+
+    public TestMessageFactory(String collectionID) {
+        this.collectionID = collectionID;
+    }
+
+
+    protected void setResponseDetails(
+            MessageResponse response, MessageRequest request, String componentID, String replyTo) {
+        setMessageDetails(response);
+        response.setCorrelationID(request.getCorrelationID());
+        response.setTo(request.getReplyTo());
+        response.setReplyTo(replyTo);
+        response.setFrom(componentID);
+    }
+
+    protected void setMessageDetails(Message msg) {
+        msg.setCollectionID(collectionID);
+        msg.setVersion(VERSION_DEFAULT);
+        msg.setMinVersion(VERSION_DEFAULT);
+    }
 }

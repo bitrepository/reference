@@ -22,9 +22,12 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access.audittrails.client;
+package org.bitrepository.access.getaudittrails.client;
 
-import org.bitrepository.access.audittrails.AuditTrailQuery;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.client.AbstractClient;
 import org.bitrepository.protocol.conversation.ConversationIDGenerator;
@@ -34,10 +37,13 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The conversation based implementation of the {@link AuditTrailClient}.
+ */
 public class ConversationBasedAuditTrailClient extends AbstractClient implements AuditTrailClient {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
-       
+
     public ConversationBasedAuditTrailClient(
             Settings settings, ConversationMediator conversationMediator, MessageBus messageBus) {
         super(settings, conversationMediator, messageBus);
@@ -49,10 +55,33 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
             String urlForResult,
             EventHandler eventHandler, String auditTrailInformation) {
         String newConversationID = ConversationIDGenerator.generateConversationID();
+        if (componentQueries == null) {
+            componentQueries = createFullAuditTrailQuery();
+        }
         AuditTrailConversationContext context = new AuditTrailConversationContext(
                 componentQueries, urlForResult,
                 settings, messageBus, eventHandler, auditTrailInformation);
         AuditTrailConversation conversation = new AuditTrailConversation(context);
         startConversation(conversation);
+    }
+
+    /**
+     * Used to create a <code>AuditTrailQuery[]</code> array in case no array is defined.
+     * @return A <code>AuditTrailQuery[]</code> array requesting all audit trails from all the defined contributers.
+     */
+    private AuditTrailQuery[] createFullAuditTrailQuery() {
+        if (settings.getCollectionSettings().getGetAuditTrailSettings() == null) {
+            throw new IllegalStateException("Unable getAuditTrails both undefined GetAuditTrailSettings and undefined " +
+                    "AuditTrailQuery[] in getAuditTrails call");
+        } else if (settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().isEmpty()) {
+            throw new IllegalStateException("Running AuditTrailClient without any defined contributers and undefined " +
+                    "AuditTrailQuery[] in getAuditTrails call.");
+        }
+        List<String> contributers = settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs();
+        List<AuditTrailQuery> componentQueryList = new ArrayList<AuditTrailQuery>(contributers.size());
+        for (String contributer : contributers) {
+            componentQueryList.add(new AuditTrailQuery(contributer));
+        }
+        return componentQueryList.toArray(new AuditTrailQuery[componentQueryList.size()]);
     }
 }

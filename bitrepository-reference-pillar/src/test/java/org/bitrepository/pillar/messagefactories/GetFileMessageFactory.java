@@ -44,6 +44,7 @@ public class GetFileMessageFactory extends TestMessageFactory {
     final Settings settings;
     
     public GetFileMessageFactory(Settings pSettings) {
+        super(pSettings.getCollectionID());
         this.settings = pSettings;
     }
     

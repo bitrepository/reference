@@ -30,7 +30,7 @@ import org.bitrepository.common.exceptions.UnableToFinishException;
 /**
  * Marker interface to indicate that this is the finished state for a conversation.
  */
-public class FinishedState extends AbstractConversationState {
+public class FinishedState extends GeneralConversationState {
     protected final ConversationContext context;
     
     public FinishedState(ConversationContext context) {
@@ -43,7 +43,7 @@ public class FinishedState extends AbstractConversationState {
     }
 
     @Override
-    protected AbstractConversationState getNextState() throws UnableToFinishException {
+    protected GeneralConversationState getNextState() throws UnableToFinishException {
         return this;
     }
 
@@ -73,7 +73,7 @@ public class FinishedState extends AbstractConversationState {
      * @return
      */
     @Override
-    protected AbstractConversationState handleStateTimeout() {
+    protected GeneralConversationState handleStateTimeout() {
         // What to do?
         return this;
     }

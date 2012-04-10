@@ -3,9 +3,9 @@ package org.bitrepository.protocol.conversation;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.pillarselector.ComponentSelector;
 
-public abstract class IdentifyingState extends AbstractConversationState {
+public abstract class IdentifyingState extends GeneralConversationState {
     @Override
-    protected AbstractConversationState handleStateTimeout() {
+    protected GeneralConversationState handleStateTimeout() {
         if (getContext().getState() == this) {
             if (getSelector().getOutstandingComponents().size() != 0) {
                 getContext().getMonitor().identifyPillarTimeout(
@@ -27,7 +27,7 @@ public abstract class IdentifyingState extends AbstractConversationState {
     }
 
     @Override
-    protected AbstractConversationState getNextState() throws UnableToFinishException {
+    protected GeneralConversationState getNextState() throws UnableToFinishException {
         if (getSelector().isFinished()) {
             getContext().getMonitor().pillarSelected("Identified contributors",
                     getSelector().getContributersAsString());
@@ -44,5 +44,5 @@ public abstract class IdentifyingState extends AbstractConversationState {
 
     public abstract ComponentSelector getSelector();
 
-    public abstract AbstractConversationState getOperationState();
+    public abstract GeneralConversationState getOperationState();
 }

@@ -1,10 +1,4 @@
 /*
- * #%L
- * Bitrepository Access Client
- * 
- * $Id$
- * $HeadURL$
- * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -39,11 +33,9 @@ import org.bitrepository.protocol.TestMessageFactory;
  * ToDo based on example messages.
  */
 public class TestGetFileMessageFactory extends TestMessageFactory {
-    protected final String collectionID;
 
     public TestGetFileMessageFactory(String collectionID) {
-        super();
-        this.collectionID = collectionID;
+        super(collectionID);
     }
 
     public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileRequest() {

@@ -1,4 +1,4 @@
-package org.bitrepository.access.audittrails.client;
+package org.bitrepository.access.getaudittrails.client;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.protocol.eventhandler.PillarOperationEvent;

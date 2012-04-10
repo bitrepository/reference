@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access.audittrails;
+package org.bitrepository.access.getaudittrails;
 
 /**
  * Encapsulates the information need to communicate with a Bit Repository component over the message bus.
@@ -47,7 +47,7 @@ public class AuditTrailQuery {
      * @param componentID
      */
     public AuditTrailQuery(String componentID, Integer minSequenceNumber) {
-        this(componentID, null, null);
+        this(componentID, minSequenceNumber, null);
     }
     /**
      *
@@ -69,5 +69,13 @@ public class AuditTrailQuery {
      */
     public String getComponentID() {
         return componentID;
+    }
+
+    public Integer getMinSequenceNumber() {
+        return minSequenceNumber;
+    }
+
+    public Integer getMaxSequenceNumber() {
+        return maxSequenceNumber;
     }
 }

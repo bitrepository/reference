@@ -40,43 +40,7 @@ import javax.jms.TextMessage;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.util.ByteArrayInputStream;
-import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
-import org.bitrepository.bitrepositorymessages.Message;
-import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -439,184 +403,87 @@ public class ActiveMQMessageBus implements MessageBus {
                 log.debug("Received message: " + text);
                 if(content.getClass().equals(AlarmMessage.class)){
                 	listener.onMessage((AlarmMessage) content);
-                	return;
-                }
-                
-                if (content.getClass().equals(DeleteFileFinalResponse.class)) {
+                } else if (content.getClass().equals(DeleteFileFinalResponse.class)) {
                     listener.onMessage((DeleteFileFinalResponse) content);
-                    return;
-                }
-                
-                if (content.getClass().equals(DeleteFileProgressResponse.class)) {
+                } else if (content.getClass().equals(DeleteFileProgressResponse.class)) {
                     listener.onMessage((DeleteFileProgressResponse) content);
-                    return;
-                }
-                
-                if (content.getClass().equals(DeleteFileRequest.class)) {
+                } else if (content.getClass().equals(DeleteFileRequest.class)) {
                     listener.onMessage((DeleteFileRequest) content);
-                    return;
-                }
-                
-                if (content.getClass().equals(GetChecksumsFinalResponse.class)) {
+                } else if (content.getClass().equals(GetChecksumsFinalResponse.class)) {
                     listener.onMessage((GetChecksumsFinalResponse) content);
-                    return;
-                }
-
-                if (content.getClass().equals(GetChecksumsRequest.class)) {
+                } else if (content.getClass().equals(GetChecksumsRequest.class)) {
                     listener.onMessage((GetChecksumsRequest) content);
-                    return;
-                }
-
-                if (content.getClass().equals(GetChecksumsProgressResponse.class)) {
+                } else if (content.getClass().equals(GetChecksumsProgressResponse.class)) {
                     listener.onMessage((GetChecksumsProgressResponse) content);
-                    return;
-                }
-
-                if (content.getClass().equals(GetFileFinalResponse.class)) {
+                } else if (content.getClass().equals(GetFileFinalResponse.class)) {
                     listener.onMessage((GetFileFinalResponse) content);
-                    return;
-                }
-
-                if (content.getClass().equals(GetFileIDsFinalResponse.class)) {
+                } else if (content.getClass().equals(GetFileIDsFinalResponse.class)) {
                     listener.onMessage((GetFileIDsFinalResponse) content);
-                    return;
-                }
-
-                if (content.getClass().equals(GetFileIDsRequest.class)) {
+                } else if (content.getClass().equals(GetFileIDsRequest.class)) {
                     listener.onMessage((GetFileIDsRequest) content);
-                    return;
-                }
-
-                if (content.getClass().equals(GetFileIDsProgressResponse.class)) {
+                } else if (content.getClass().equals(GetFileIDsProgressResponse.class)) {
                     listener.onMessage((GetFileIDsProgressResponse) content);
-                    return;
-                }
-
-                if (content.getClass().equals(GetFileRequest.class)) {
+                } else if (content.getClass().equals(GetFileRequest.class)) {
                     listener.onMessage((GetFileRequest) content);
-                    return;
-                }
-
-                if (content.getClass().equals(GetFileProgressResponse.class)) {
+                } else if (content.getClass().equals(GetFileProgressResponse.class)) {
                     listener.onMessage((GetFileProgressResponse) content);
-                    return;
-                }
-
-                if (content.getClass().equals(IdentifyPillarsForDeleteFileRequest.class)) {
+                } else if (content.getClass().equals(IdentifyPillarsForDeleteFileRequest.class)) {
                     listener.onMessage((IdentifyPillarsForDeleteFileRequest) content);
-                    return;
-                }
-
-                if (content.getClass().equals(IdentifyPillarsForDeleteFileResponse.class)) {
+                } else if (content.getClass().equals(IdentifyPillarsForDeleteFileResponse.class)) {
                     listener.onMessage((IdentifyPillarsForDeleteFileResponse) content);
-                    return;
-                }
-                
-                if (content.getClass().equals(IdentifyPillarsForGetChecksumsResponse.class)) {
+                } else if (content.getClass().equals(IdentifyPillarsForGetChecksumsResponse.class)) {
                     listener.onMessage((IdentifyPillarsForGetChecksumsResponse) content);
-                    return;
-                }
-
-                if (content.getClass().equals(IdentifyPillarsForGetChecksumsRequest.class)) {
+                } else if (content.getClass().equals(IdentifyPillarsForGetChecksumsRequest.class)) {
                     listener.onMessage((IdentifyPillarsForGetChecksumsRequest) content);
-                    return;
-                }
-
-                if (content.getClass().equals(IdentifyPillarsForGetFileIDsResponse.class)) {
+                } else if (content.getClass().equals(IdentifyPillarsForGetFileIDsResponse.class)) {
                     listener.onMessage((IdentifyPillarsForGetFileIDsResponse) content);
-                    return;
-                }
-
-                if (content.getClass().equals(IdentifyPillarsForGetFileIDsRequest.class)) {
+                } else if (content.getClass().equals(IdentifyPillarsForGetFileIDsRequest.class)) {
                     listener.onMessage((IdentifyPillarsForGetFileIDsRequest) content);
-                    return;
-                }
-
-                if (content.getClass().equals(IdentifyPillarsForGetFileResponse.class)) {
+                } else if (content.getClass().equals(IdentifyPillarsForGetFileResponse.class)) {
                     listener.onMessage((IdentifyPillarsForGetFileResponse) content);
-                    return;
-                }
-
-                if (content.getClass().equals(IdentifyPillarsForGetFileRequest.class)) {
+                } else if (content.getClass().equals(IdentifyPillarsForGetFileRequest.class)) {
                     listener.onMessage((IdentifyPillarsForGetFileRequest) content);
-                    return;
-                }
-
-                if (content.getClass().equals(IdentifyPillarsForPutFileResponse.class)) {
+                } else if (content.getClass().equals(IdentifyPillarsForPutFileResponse.class)) {
                     listener.onMessage((IdentifyPillarsForPutFileResponse) content);
-                    return;
-                }
-
-                if (content.getClass().equals(IdentifyPillarsForPutFileRequest.class)) {
+                } else if (content.getClass().equals(IdentifyPillarsForPutFileRequest.class)) {
                     listener.onMessage((IdentifyPillarsForPutFileRequest) content);
-                    return;
-                }
-
-                if (content.getClass().equals(IdentifyPillarsForReplaceFileResponse.class)) {
+                } else if (content.getClass().equals(IdentifyPillarsForReplaceFileResponse.class)) {
                     listener.onMessage((IdentifyPillarsForReplaceFileResponse) content);
-                    return;
-                }
-
-                if (content.getClass().equals(IdentifyPillarsForReplaceFileRequest.class)) {
+                } else if (content.getClass().equals(IdentifyPillarsForReplaceFileRequest.class)) {
                     listener.onMessage((IdentifyPillarsForReplaceFileRequest) content);
-                    return;
-                }
-                
-                if (content.getClass().equals(IdentifyContributorsForGetStatusResponse.class)) {
+                } else if (content.getClass().equals(IdentifyContributorsForGetStatusResponse.class)) {
                     listener.onMessage((IdentifyContributorsForGetStatusResponse) content);
-                    return;
-                }
-                
-                if (content.getClass().equals(IdentifyContributorsForGetStatusRequest.class)) {
+                } else if (content.getClass().equals(IdentifyContributorsForGetStatusRequest.class)) {
                     listener.onMessage((IdentifyContributorsForGetStatusRequest) content);
-                    return;
-                }
-                
-                if (content.getClass().equals(GetStatusRequest.class)) {
+                } else if (content.getClass().equals(GetStatusRequest.class)) {
                     listener.onMessage((GetStatusRequest) content);
-                    return;
-                }
-                
-                if (content.getClass().equals(GetStatusProgressResponse.class)) {
+                } else if (content.getClass().equals(GetStatusProgressResponse.class)) {
                     listener.onMessage((GetStatusProgressResponse) content);
-                    return;
-                }
-                
-                if (content.getClass().equals(GetStatusFinalResponse.class)) {
+                } else if (content.getClass().equals(GetStatusFinalResponse.class)) {
                     listener.onMessage((GetStatusFinalResponse) content);
-                    return;
-                }
-
-                if (content.getClass().equals(PutFileFinalResponse.class)) {
+                } else if (content.getClass().equals(GetStatusRequest.class)) {
+                    listener.onMessage((GetStatusRequest) content);
+                } else if (content.getClass().equals(GetStatusProgressResponse.class)) {
+                    listener.onMessage((GetStatusProgressResponse) content);
+                } else if (content.getClass().equals(GetStatusFinalResponse.class)) {
+                    listener.onMessage((GetStatusFinalResponse) content);
+                } else if (content.getClass().equals(PutFileFinalResponse.class)) {
                     listener.onMessage((PutFileFinalResponse) content);
-                    return;
-                }
-
-                if (content.getClass().equals(PutFileRequest.class)) {
+                } else if (content.getClass().equals(PutFileRequest.class)) {
                     listener.onMessage((PutFileRequest) content);
-                    return;
-                }
-
-                if (content.getClass().equals(PutFileProgressResponse.class)) {
+                } else if (content.getClass().equals(PutFileProgressResponse.class)) {
                     listener.onMessage((PutFileProgressResponse) content);
-                    return;
-                }
-                
-                if (content.getClass().equals(ReplaceFileFinalResponse.class)) {
+                } else if (content.getClass().equals(ReplaceFileFinalResponse.class)) {
                     listener.onMessage((ReplaceFileFinalResponse) content);
-                    return;
-                }
-
-                if (content.getClass().equals(ReplaceFileRequest.class)) {
+                } else if (content.getClass().equals(ReplaceFileRequest.class)) {
                     listener.onMessage((ReplaceFileRequest) content);
-                    return;
-                }
-
-                if (content.getClass().equals(ReplaceFileProgressResponse.class)) {
+                } else if (content.getClass().equals(ReplaceFileProgressResponse.class)) {
                     listener.onMessage((ReplaceFileProgressResponse) content);
-                    return;
+                } else if (content instanceof Message) {
+                    listener.onMessage((Message) content);
+                } else {
+                    log.error("Received message of unknown type '" + type + "'\n{}", text);
                 }
-                log.error("Received message of unknown type '" + type + "'\n{}", text);
             } catch (SAXException e) {
                 log.error("Error validating message " + jmsMessage, e);
             } catch (MessageAuthenticationException e) {

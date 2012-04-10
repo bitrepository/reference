@@ -24,6 +24,8 @@
  */
 package org.bitrepository.access;
 
+import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
+import org.bitrepository.access.getaudittrails.client.ConversationBasedAuditTrailClient;
 import org.bitrepository.access.getchecksums.CollectionBasedGetChecksumsClient;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.CollectionBasedGetFileClient;
@@ -126,5 +128,16 @@ public final class AccessComponentFactory {
                 settings);
     }
 
-    
+    /**
+     * Method for getting a AUditTrailClient as defined in the access configuration.<p>
+     *
+     * @return A AuditTrailClient.
+     */
+    public AuditTrailClient createAuditTrailClient(Settings settings, SecurityManager securityManager) {
+        return new ConversationBasedAuditTrailClient(
+                settings,
+                        ConversationMediatorManager.getConversationMediator(settings, securityManager),
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager));
+    }
+
 }

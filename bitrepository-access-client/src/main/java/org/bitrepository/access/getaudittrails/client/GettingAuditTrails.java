@@ -1,17 +1,18 @@
-package org.bitrepository.access.audittrails.client;
+package org.bitrepository.access.getaudittrails.client;
 
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bitrepository.access.audittrails.AuditTrailQuery;
+import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.conversation.ConversationContext;
+import org.bitrepository.protocol.conversation.PerformingOperationState;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
 import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
@@ -48,6 +49,9 @@ public class GettingAuditTrails extends PerformingOperationState {
             if (activeContributers.containsKey(query.getComponentID())) {
                 msg.setContributor(query.getComponentID());
                 msg.setTo(activeContributers.get(query.getComponentID()));
+                if (query.getMinSequenceNumber() != null) {
+                    msg.setMinSequenceNumber(BigInteger.valueOf(query.getMinSequenceNumber().intValue()));
+                }
                 context.getMessageSender().sendMessage(msg);
             }
         }

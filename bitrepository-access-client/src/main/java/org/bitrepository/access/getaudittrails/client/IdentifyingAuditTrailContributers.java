@@ -1,15 +1,15 @@
-package org.bitrepository.access.audittrails.client;
+package org.bitrepository.access.getaudittrails.client;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bitrepository.access.audittrails.AuditTrailQuery;
+import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.conversation.AbstractConversationState;
+import org.bitrepository.protocol.conversation.GeneralConversationState;
 import org.bitrepository.protocol.conversation.ConversationContext;
 import org.bitrepository.protocol.conversation.IdentifyingState;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
@@ -72,7 +72,7 @@ public class IdentifyingAuditTrailContributers extends IdentifyingState {
     }
 
     @Override
-    public AbstractConversationState getOperationState() {
+    public GeneralConversationState getOperationState() {
         return new GettingAuditTrails(context, selector.getSelectedComponents());
     }
 }

@@ -54,7 +54,7 @@ public final class AuditTrailServiceFactory {
     private static SecurityManager securityManager;
     
     /** The properties file holding implementation specifics for the alarm service. */
-    private static final String CONFIGFILE = "audittrails.properties";
+    private static final String CONFIGFILE = "getaudittrails.properties";
     /** Property key to tell where to locate the path and filename to the private key file. */
     private static final String PRIVATE_KEY_FILE = "org.bitrepository.audit-trail-service.privateKeyFile";
         

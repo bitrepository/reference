@@ -39,16 +39,13 @@ import org.bitrepository.protocol.TestMessageFactory;
  * Messages creation factory for the ReplaceFile tests.
  */
 public class TestReplaceFileMessageFactory extends TestMessageFactory{
-    /** The collection id for the factory.*/
-    private final String collectionId;
-    
+
     /**
      * Constructor.
-     * @param bitrepositoryCollectionId The id for the collection, where the factory belong.
+     * @param collectionID The id for the collection, where the factory belong.
      */
-    public TestReplaceFileMessageFactory(String bitrepositoryCollectionId) {
-        super();
-        this.collectionId = bitrepositoryCollectionId;
+    public TestReplaceFileMessageFactory(String collectionID) {
+        super(collectionID);
     }
 
     /**
@@ -59,7 +56,7 @@ public class TestReplaceFileMessageFactory extends TestMessageFactory{
         IdentifyPillarsForReplaceFileRequest identifyPillarsForReplaceFileRequest = new IdentifyPillarsForReplaceFileRequest();
         identifyPillarsForReplaceFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         identifyPillarsForReplaceFileRequest.setMinVersion(VERSION_DEFAULT);
-        identifyPillarsForReplaceFileRequest.setCollectionID(collectionId);
+        identifyPillarsForReplaceFileRequest.setCollectionID(collectionID);
         identifyPillarsForReplaceFileRequest.setVersion(VERSION_DEFAULT);
         identifyPillarsForReplaceFileRequest.setAuditTrailInformation(null);
         return identifyPillarsForReplaceFileRequest;
@@ -96,7 +93,7 @@ public class TestReplaceFileMessageFactory extends TestMessageFactory{
         IdentifyPillarsForReplaceFileResponse ipfrfResponse = new IdentifyPillarsForReplaceFileResponse();
         ipfrfResponse.setTo(receivedIdentifyRequestMessage.getReplyTo());
         ipfrfResponse.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
-        ipfrfResponse.setCollectionID(collectionId);
+        ipfrfResponse.setCollectionID(collectionID);
         ipfrfResponse.setPillarID(pillarId);
         ipfrfResponse.setReplyTo(pillarDestinationId);
         ipfrfResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
@@ -120,7 +117,7 @@ public class TestReplaceFileMessageFactory extends TestMessageFactory{
         replaceFileRequest.setFileID(FILE_ID_DEFAULT);
         replaceFileRequest.setMinVersion(VERSION_DEFAULT);
         replaceFileRequest.setVersion(VERSION_DEFAULT);
-        replaceFileRequest.setCollectionID(collectionId);
+        replaceFileRequest.setCollectionID(collectionID);
         return replaceFileRequest;
     }
 
@@ -166,7 +163,7 @@ public class TestReplaceFileMessageFactory extends TestMessageFactory{
         ReplaceFileProgressResponse progressResponse = new ReplaceFileProgressResponse();
         progressResponse.setTo(request.getReplyTo());
         progressResponse.setCorrelationID(request.getCorrelationID());
-        progressResponse.setCollectionID(collectionId);
+        progressResponse.setCollectionID(collectionID);
         progressResponse.setReplyTo(pillarDestinationId);
         progressResponse.setPillarID(pillarId);
         progressResponse.setFileAddress(request.getFileAddress());
@@ -191,7 +188,7 @@ public class TestReplaceFileMessageFactory extends TestMessageFactory{
             String pillarId, String pillarDestinationId, ChecksumDataForFileTYPE checksumData) {
         ReplaceFileFinalResponse finalResponse = new ReplaceFileFinalResponse();
         finalResponse.setChecksumDataForNewFile(checksumData);
-        finalResponse.setCollectionID(collectionId);
+        finalResponse.setCollectionID(collectionID);
         finalResponse.setCorrelationID(request.getCorrelationID());
         finalResponse.setFileAddress(request.getFileAddress());
         finalResponse.setFileID(request.getFileID());

@@ -39,7 +39,7 @@ import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
  *
  * ToDo Implement ConversationState and consider moving selected method here when this class is in general usage.
  */
-public abstract class AbstractConversationState {
+public abstract class GeneralConversationState {
     /** The timer used for timeout checks. */
     private final Timer timer = new Timer();
     /** The timer task for timeout of identify in this conversation. */
@@ -96,7 +96,7 @@ public abstract class AbstractConversationState {
      * Handles the change to the new state.
      * @param newState The state to change to.
      */
-    private void setNewState(AbstractConversationState newState) {
+    private void setNewState(GeneralConversationState newState) {
         if (newState != this){
             stateTimeoutTask.cancel();
             getContext().setState(newState);
@@ -117,7 +117,7 @@ public abstract class AbstractConversationState {
     /**
      * Implement by concrete states for handling timeout for the state.
      */
-    protected abstract AbstractConversationState handleStateTimeout();
+    protected abstract GeneralConversationState handleStateTimeout();
 
     /**
      * @return The conversation context used for this conversation.
@@ -132,7 +132,7 @@ public abstract class AbstractConversationState {
      * Note that if the implementing class must also handle the sending of events in cae of a state change.
      * @return The next state after this one.
      */
-    protected abstract AbstractConversationState getNextState() throws UnableToFinishException;
+    protected abstract GeneralConversationState getNextState() throws UnableToFinishException;
 
     protected abstract long getTimeout();
 

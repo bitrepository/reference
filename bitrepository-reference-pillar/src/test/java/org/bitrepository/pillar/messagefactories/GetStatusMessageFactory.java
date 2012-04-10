@@ -42,6 +42,7 @@ public class GetStatusMessageFactory extends TestMessageFactory {
     final Settings settings;
     
     public GetStatusMessageFactory(Settings pSettings) {
+        super(pSettings.getCollectionID());
         this.settings = pSettings;
     }
     

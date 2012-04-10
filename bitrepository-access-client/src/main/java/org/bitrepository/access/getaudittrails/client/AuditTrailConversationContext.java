@@ -1,6 +1,6 @@
-package org.bitrepository.access.audittrails.client;
+package org.bitrepository.access.getaudittrails.client;
 
-import org.bitrepository.access.audittrails.AuditTrailQuery;
+import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.conversation.ConversationContext;
 import org.bitrepository.protocol.eventhandler.EventHandler;
