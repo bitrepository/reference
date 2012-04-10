@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
+import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.client.AbstractClient;
 import org.bitrepository.protocol.conversation.ConversationIDGenerator;
@@ -52,6 +53,7 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
     @Override
     public void getAuditTrails(
             AuditTrailQuery[] componentQueries,
+            FileIDs fileIDs,
             String urlForResult,
             EventHandler eventHandler, String auditTrailInformation) {
         String newConversationID = ConversationIDGenerator.generateConversationID();
@@ -59,7 +61,7 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
             componentQueries = createFullAuditTrailQuery();
         }
         AuditTrailConversationContext context = new AuditTrailConversationContext(
-                componentQueries, urlForResult,
+                componentQueries, fileIDs, urlForResult,
                 settings, messageBus, eventHandler, auditTrailInformation);
         AuditTrailConversation conversation = new AuditTrailConversation(context);
         startConversation(conversation);

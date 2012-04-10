@@ -26,6 +26,7 @@ package org.bitrepository.access.getaudittrails.client;
 
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.conversation.AbstractConversation;
+import org.bitrepository.protocol.conversation.ConversationEventMonitor;
 import org.bitrepository.protocol.conversation.ConversationState;
 import org.bitrepository.protocol.conversation.FinishedState;
 
@@ -36,7 +37,7 @@ public class AuditTrailConversation extends AbstractConversation {
     private final AuditTrailConversationContext context;
     
     public AuditTrailConversation (AuditTrailConversationContext context) {
-        super();
+        super(context.getMessageSender(), context.getConversationID(), null ,null);
         this.context = context;
         context.setState(new IdentifyingAuditTrailContributers(context));
     }
@@ -61,6 +62,14 @@ public class AuditTrailConversation extends AbstractConversation {
     @Override
     public void endConversation() {
         context.setState(new FinishedState(context));
+    }
+
+    /**
+     * Override to use the new context provided monitor.
+     * @return The monitor for distributing update information
+     */
+    public ConversationEventMonitor getMonitor() {
+        return context.getMonitor();
     }
 
     @Override

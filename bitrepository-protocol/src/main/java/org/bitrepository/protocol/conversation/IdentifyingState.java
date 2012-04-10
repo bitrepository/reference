@@ -7,7 +7,7 @@ public abstract class IdentifyingState extends GeneralConversationState {
     @Override
     protected GeneralConversationState handleStateTimeout() {
         if (getContext().getState() == this) {
-            if (getSelector().getOutstandingComponents().size() != 0) {
+            if (getSelector().hasSelectedComponent()) {
                 getContext().getMonitor().identifyPillarTimeout(
                         "Time has run out for looking up contributers. The following contributers " +
                                 "didn't respond: " + getSelector().getOutstandingComponents() +
@@ -15,8 +15,9 @@ public abstract class IdentifyingState extends GeneralConversationState {
                 return getOperationState();
             } else {
                 getContext().getMonitor().operationFailed(
-                        "Unable to select a pillar, time has run out. " +
-                                "The following pillars did't respond: " + getSelector().getOutstandingComponents());
+                        "Unable to select any contributers, time has run out. " +
+                                "The following contributers did't respond: " +
+                                getSelector().getOutstandingComponents());
                 return new FinishedState(getContext());
             }
         } else {
@@ -39,7 +40,8 @@ public abstract class IdentifyingState extends GeneralConversationState {
 
     @Override
     protected long getTimeout() {
-        return getContext().getSettings().getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue();
+        return getContext().getSettings().getCollectionSettings().getClientSettings().getIdentificationTimeout()
+                .longValue();
     }
 
     public abstract ComponentSelector getSelector();

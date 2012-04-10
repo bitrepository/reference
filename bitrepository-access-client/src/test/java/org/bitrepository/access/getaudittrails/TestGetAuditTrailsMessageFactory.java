@@ -34,23 +34,20 @@ public class TestGetAuditTrailsMessageFactory extends TestMessageFactory {
     }
 
     public IdentifyContributorsForGetAuditTrailsResponse createIdentifyContributorsForGetAuditTrailsResponse(
-            IdentifyContributorsForGetAuditTrailsRequest request, String componentId, String replyTo) {
+            IdentifyContributorsForGetAuditTrailsRequest request, String componentID, String replyTo) {
         IdentifyContributorsForGetAuditTrailsResponse response = new IdentifyContributorsForGetAuditTrailsResponse();
-        setMessageDetails(response);
-        response.setCorrelationID(request.getCorrelationID());
-        response.setTo(request.getReplyTo());
-        response.setReplyTo("ME");
+        setResponseDetails(response, request, componentID,  replyTo);
+        response.setContributor(componentID);
         response.setResponseInfo(IDENTIFY_INFO_DEFAULT);
         response.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
 
         return response;
     }
 
-    public GetAuditTrailsProgressResponse createGetAuditTrailsProgressResponse(GetAuditTrailsRequest request) {
+    public GetAuditTrailsProgressResponse createGetAuditTrailsProgressResponse(
+            GetAuditTrailsRequest request, String componentID, String replyTo) {
         GetAuditTrailsProgressResponse response = new GetAuditTrailsProgressResponse();
-        setMessageDetails(response);
-        response.setCorrelationID(request.getCorrelationID());
-        response.setTo(request.getReplyTo());
+        setResponseDetails(response, request, componentID,  replyTo);
         response.setFileIDs(request.getFileIDs());
         response.setResponseInfo(PROGRESS_INFO_DEFAULT);
         return response;

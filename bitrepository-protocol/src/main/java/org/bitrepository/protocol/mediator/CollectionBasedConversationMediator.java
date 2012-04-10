@@ -589,7 +589,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
                     log.warn("Failing timed out conversation " + conversation.getConversationID() + " " +
                     		"(Age " + (currentTime - conversation.getStartTime()) + "ms)");
                     failConversation(conversation, 
-                            "Failing timed ouConversation conversation " + conversation.getConversationID());
+                            "Failing timed out conversation " + conversation.getConversationID());
                 }
             }
         }       

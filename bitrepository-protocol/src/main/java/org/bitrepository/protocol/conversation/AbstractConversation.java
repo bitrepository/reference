@@ -65,10 +65,6 @@ public abstract class AbstractConversation extends AbstractMessageListener imple
         this.monitor = new ConversationEventMonitor(getConversationID(), eventHandler);
     }
 
-    public AbstractConversation() {
-        this.startTime = System.currentTimeMillis();
-    }
-
     @Override
     public String getConversationID() {
         return conversationID;
@@ -77,10 +73,6 @@ public abstract class AbstractConversation extends AbstractMessageListener imple
     @Override
     public long getStartTime() {
         return startTime;
-    }
-
-    public ConversationContext getContext() {
-        throw new UnsupportedOperationException();
     }
 
     /** 
@@ -114,7 +106,7 @@ public abstract class AbstractConversation extends AbstractMessageListener imple
 
     @Override
     public synchronized void failConversation(OperationFailedEvent failedEvent) {
-        monitor.operationFailed(failedEvent);
+        getMonitor().operationFailed(failedEvent);
         endConversation();
     }
 

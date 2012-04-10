@@ -47,6 +47,11 @@ public class MultipleComponentSelector implements ComponentSelector {
         }
     }
 
+    @Override
+    public boolean hasSelectedComponent() {
+        return !selectedComponents.isEmpty();
+    }
+
     /**
      * Method for identifying the components, which needs to be identified for this operation to be finished.
      * @return An array of the IDs of the components which have not yet responded.

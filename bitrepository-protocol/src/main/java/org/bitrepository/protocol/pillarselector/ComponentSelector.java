@@ -37,13 +37,13 @@ public interface ComponentSelector {
      *
      * @return A string representation of the selected contributors.
      */
-    public String getContributersAsString();
+    String getContributersAsString();
 
     /**
      * Method for identifying the components, which needs to be identified for this operation to be finished.
      * @return An array of the IDs of the components which have not yet responded.
      */
-    public List<String> getOutstandingComponents();
+    List<String> getOutstandingComponents();
     
     /**
      * Returns true if all the need information to select a pillar has been processed. <p>
@@ -52,5 +52,10 @@ public interface ComponentSelector {
      * has finished.
      * @throws UnableToFinishException Indicates that the selector was unable to find a pillar. 
      */
-    public boolean isFinished() throws UnableToFinishException;
+    boolean isFinished() throws UnableToFinishException;
+
+    /**
+     * @return <code>true</code> if any components have been selected, else <code>false</code>.
+     */
+    boolean hasSelectedComponent();
 }

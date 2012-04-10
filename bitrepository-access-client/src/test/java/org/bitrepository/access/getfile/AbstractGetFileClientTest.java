@@ -1,10 +1,4 @@
 /*
- * #%L
- * Bitrepository Access
- * 
- * $Id$
- * $HeadURL$
- * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify

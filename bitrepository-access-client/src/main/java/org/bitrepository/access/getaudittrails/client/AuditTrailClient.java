@@ -25,6 +25,7 @@
 package org.bitrepository.access.getaudittrails.client;
 
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
+import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.protocol.client.BitrepositoryClient;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 
@@ -40,6 +41,7 @@ public interface AuditTrailClient extends BitrepositoryClient {
      */
     void getAuditTrails(
             AuditTrailQuery[] componentQueries,
+            FileIDs fileIDs,
             String urlForResult,
             EventHandler eventHandler, String auditTrailInformation);
 }

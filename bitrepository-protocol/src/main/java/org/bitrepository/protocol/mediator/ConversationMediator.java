@@ -39,7 +39,7 @@ public interface ConversationMediator extends MessageListener {
     /**
      * Start a conversation of type T and begin delegating messages to this conversation when received.
      *
-     * @param The new conversation.
+     * @param conversation The new conversation.
      */
     void addConversation(Conversation conversation);
 }

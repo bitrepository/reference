@@ -1,10 +1,14 @@
 package org.bitrepository.access.getaudittrails;
 
+import java.math.BigInteger;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
 import org.bitrepository.access.getaudittrails.client.ConversationBasedAuditTrailClient;
+import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
@@ -21,6 +25,7 @@ import org.testng.annotations.Test;
 
 public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
     private TestGetAuditTrailsMessageFactory testMessageFactory;
+    private FileIDs ALL_FILE_IDS;
 
     @BeforeMethod(alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
@@ -33,6 +38,9 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         contributers.clear();
         contributers.add(PILLAR1_ID);
         contributers.add(PILLAR2_ID);
+
+        ALL_FILE_IDS = new FileIDs();
+        ALL_FILE_IDS.setAllFileIDs("TRUE");
     }
     /**
      * Test class for the 'AuditTrailClient'.
@@ -45,7 +53,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                         ConversationBasedAuditTrailClient.class.getName() + "'.");
     }
 
-    @Test(groups = {"testfirst"})
+    @Test(groups = {"regressiontest"})
     public void getAllAuditTrails() throws InterruptedException {
         addDescription("Tests the simplest case of getting all audit trail event for all contributers.");
 
@@ -56,7 +64,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
                 "This should be interpreted as a request for all audit trails from all the collection settings " +
                         "defined contributers.");
-        client.getAuditTrails(null, null, testEventHandler, null);
+        client.getAuditTrails(null, ALL_FILE_IDS, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
                 collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
@@ -81,9 +89,10 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                 OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
+
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
-
+        GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
     }
 
     /*
@@ -147,149 +156,98 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.IDENTIFY_TIMEOUT);
        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.REQUEST_SENT);
-   }
+   } */
 
    @Test(groups = {"regressiontest"})
    public void noIdentifyResponse() throws Exception {
-       addDescription("Tests the the AuditTrailClient handles lack of IdentifyPillarResponses gracefully  ");
-       addStep("Set the number of pillars to 1 and a 3 second timeout for identifying pillar.", "");
+       addDescription("Tests the the AuditTrailClient handles lack of IdentifyResponses gracefully  ");
+       addStep("Set a 3 second timeout for identifying contributers.", "");
 
-       settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-       settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
        settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
        AuditTrailClient client = createAuditTrailClient();
 
-       addStep("Make the GetClient ask for fastest pillar.",
-               "It should send message to identify which pillar can respond fastest.");
+       addStep("Make the client ask for all audit trails.",
+               "It should send a identify message");
        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-       client.getFileFromFastestPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), testEventHandler);
-       if (useMockupPillar()) {
-           collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
-       }
-       Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
+       client.getAuditTrails(null, ALL_FILE_IDS, null, testEventHandler, null);
+       IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
+               collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+       Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+               OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
-       addStep("Wait for 5 seconds", "An IdentifyPillarTimeout event should be received");
-
-       Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getType(), OperationEvent.OperationEventType.FAILED);
+       addStep("Wait for 5 seconds", "An failed event should be received");
+       Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getType(),
+               OperationEvent.OperationEventType.FAILED);
    }
+
+    @Test(groups = {"regressiontest"})
+    public void noFinalResponses() throws Exception {
+        addDescription("Tests the the AuditTrailClient handles lack of Final Responses gracefully  ");
+        addStep("Set a 3 second timeout for the operation.", "");
+
+        settings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
+        AuditTrailClient client = createAuditTrailClient();
+
+        addStep("Make the client ask for all audit trails.",
+                "It should send a identify message");
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        client.getAuditTrails(null, ALL_FILE_IDS, null, testEventHandler, null);
+        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
+                collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
+
+        addStep("Send a identifyResponse from each of the two pillars",
+                "COMPONENT_IDENTIFIED events and a IDENTIFICATION_COMPLETE event should be received." +
+                        "Rights after this a REQUEST_SENT should be received.");
+        IdentifyContributorsForGetAuditTrailsResponse responsePillar1 =
+                testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
+                        PILLAR1_ID, pillar1DestinationId);
+        messageBus.sendMessage(responsePillar1);
+        IdentifyContributorsForGetAuditTrailsResponse responsePillar2 =
+                testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
+                        PILLAR2_ID, pillar2DestinationId);
+        messageBus.sendMessage(responsePillar2);
+
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
+
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.REQUEST_SENT);
+
+        addStep("Wait for 5 seconds", "An failed event should be received");
+        Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getType(),
+                OperationEvent.OperationEventType.FAILED);
+    }
 
    @Test(groups = {"regressiontest"})
    public void conversationTimeout() throws Exception {
-       addDescription("Tests the the AuditTrailClient handles lack of IdentifyPillarResponses gracefully  ");
-       addStep("Set the number of pillars to 1 and a 3 second timeout for the conversation.", "");
+       addDescription("Tests a Audit Trail conversation times out grazefully.");
+       addStep("Set a 3 second timeout for conversations.", "");
 
        //We need to use a different collection ID to avoid using a existing conversation mediator.
-       String newCollectionID = "conversationTimeoutTest";
-       settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-       settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+       settings.getCollectionSettings().setCollectionID("conversationTimeoutTest");
        settings.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(3000));
        AuditTrailClient client = createAuditTrailClient();
 
-       addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.",
-               "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
+       addStep("Make the client ask for all audit trails.",
+               "It should send a identify message");
        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-       client.getFileFromSpecificPillar( DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), PILLAR1_ID,
-               testEventHandler);
-       IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
-       if (useMockupPillar()) {
-           receivedIdentifyRequestMessage =
-                   collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
-           IdentifyPillarsForGetFileRequest expectedMessage =
-                   testMessageFactory.createIdentifyPillarsForGetFileRequest(receivedIdentifyRequestMessage,
-                           collectionDestinationID);
-           Assert.assertEquals(receivedIdentifyRequestMessage, expectedMessage);
-       }
-       Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
+       client.getAuditTrails(null, ALL_FILE_IDS, null, testEventHandler, null);
+       IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
+               collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+       Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+               OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
-       addStep("The pillar sends a response to the identify message.",
-               "The callback listener should notify of the response and the client should send a GetFileRequest message to " +
-                       "the pillar");
-
-       if (useMockupPillar()) {
-           IdentifyPillarsForGetFileResponse identifyResponse =
-                   testMessageFactory.createIdentifyPillarsForGetFileResponse(
-                           receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
-           messageBus.sendMessage(identifyResponse);
-           pillar1Destination.waitForMessage(GetFileRequest.class);
-       }
-
-       Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-       Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
-       Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.REQUEST_SENT);
 
        addStep("Wait for 5 seconds", "An failed event should be received");
-       Assert.assertEquals(testEventHandler.waitForEvent(5, TimeUnit.SECONDS).getType(), OperationEvent.OperationEventType.FAILED);
+       Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getType(),
+               OperationEvent.OperationEventType.FAILED);
    }
-
-   @Test(groups = {"regressiontest"})
-   public void testNoSuchFileSpecificPillar() throws Exception {
-       addDescription("Testing how a request for a non-existing file is handled on a specific pillar request.");
-       addStep("Define 2 pillars.", "");
-       String fileName = "ERROR-NO-SUCH-FILE-ERROR";
-       TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-       URL url = httpServer.getURL(DEFAULT_FILE_ID);
-
-       addStep("Call getFileFromSpecificPillar.",
-               "An identify request should be sent and an IdentifyPillarsRequestSent event should be generate");
-       AuditTrailClient client = createAuditTrailClient();
-
-       client.getFileFromSpecificPillar(fileName, url, PILLAR1_ID, testEventHandler);
-       IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage =
-               collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
-       Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
-
-       addStep("The specified pillars sends a FILE_NOT_FOUND response",
-               "The client should generate 1 PillarIdentified event followed by a operation failed event.");
-       IdentifyPillarsForGetFileResponse pillar1Response = testMessageFactory.createIdentifyPillarsForGetFileResponse(
-               receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
-       pillar1Response.getResponseInfo().setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-       pillar1Response.getResponseInfo().setResponseText("File " +
-               receivedIdentifyRequestMessage.getFileID() + " not present on this pillar " + PILLAR1_ID);
-       messageBus.sendMessage(pillar1Response);
-
-       Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-       Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.FAILED);
-   }
-
-   @Test(groups = {"regressiontest"})
-   public void testNoSuchFileMultiplePillars() throws Exception {
-       addDescription("Testing how a request for a non-existing file is handled when all pillars miss the file.");
-
-       String fileName = "ERROR-NO-SUCH-FILE-ERROR";
-       AuditTrailClient client = createAuditTrailClient();
-       TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-       URL url = httpServer.getURL(DEFAULT_FILE_ID);
-
-       addStep("Use the default 2 pillars.", "");
-
-       addStep("Call getFileFromFastestPillar.",
-               "An identify request should be sent and a IdentifyPillarsRequestSent event should be generate");
-       client.getFileFromFastestPillar(fileName, url, testEventHandler);
-       IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage =
-               collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
-       Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
-
-       addStep("Both pillars sends a FILE_NOT_FOUND response",
-               "The client should generate 2 PillarIdentified events followed by a Failed event.");
-
-       IdentifyPillarsForGetFileResponse pillar1Response = testMessageFactory.createIdentifyPillarsForGetFileResponse(
-               receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
-       pillar1Response.getResponseInfo().setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-       pillar1Response.getResponseInfo().setResponseText("File " +
-               receivedIdentifyRequestMessage.getFileID() + "not present on this pillar " );
-       messageBus.sendMessage(pillar1Response);
-
-       IdentifyPillarsForGetFileResponse pillar2Response = testMessageFactory.createIdentifyPillarsForGetFileResponse(
-               receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
-       pillar2Response.getResponseInfo().setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-       pillar2Response.getResponseInfo().setResponseText("File " +
-               receivedIdentifyRequestMessage.getFileID() + "not present on this pillar " );
-       messageBus.sendMessage(pillar2Response);
-
-       Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-       Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-       Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.FAILED);
-   } */
 
     /**
      * Creates a new test AuditTrailClient based on the supplied settings.
