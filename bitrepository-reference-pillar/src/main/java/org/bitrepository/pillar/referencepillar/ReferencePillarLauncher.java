@@ -46,7 +46,7 @@ import org.bitrepository.protocol.security.SecurityManager;
  */
 public final class ReferencePillarLauncher {
     /** The default path for the settings in the development.*/
-    private static final String DEFAULT_PATH_TO_SETTINGS = "settings/xml";
+    private static final String DEFAULT_PATH_TO_SETTINGS = "conf";
     /** The default path for the settings in the development.*/
     private static final String DEFAULT_PATH_TO_KEY_FILE = "conf/client.pem";
 
@@ -65,10 +65,7 @@ public final class ReferencePillarLauncher {
     public static void main(String[] args) {
         String pathToSettings = DEFAULT_PATH_TO_SETTINGS;
         String privateKeyFile = DEFAULT_PATH_TO_KEY_FILE;
-        if(args.length >= 3) {
-            pathToSettings = args[0];
-            privateKeyFile = args[1];
-        } else if(args.length == 2) {
+        if(args.length == 2) {
             pathToSettings = args[0];
             privateKeyFile = args[1];
         } else if(args.length == 1) {
@@ -78,8 +75,7 @@ public final class ReferencePillarLauncher {
         // Instantiate the settings for the ChecksumPillar.
         Settings settings = null;
         try {
-            SettingsProvider settingsLoader = new SettingsProvider(
-                    new XMLFileSettingsLoader(pathToSettings));
+            SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(pathToSettings));
             settings = settingsLoader.getSettings();
         } catch (Exception e) {
             System.err.println("Could not load the settings from '" + pathToSettings + "'.");

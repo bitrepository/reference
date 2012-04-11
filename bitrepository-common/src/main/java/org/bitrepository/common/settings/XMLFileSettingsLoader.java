@@ -43,13 +43,20 @@ public class XMLFileSettingsLoader implements SettingsLoader {
 
     private String pathToSettingsFiles;
 
+    /** Directory seperator constant */
+    private static final String DIRECTORY_SEPERATOR = "/";
+    /** xml file extension constant */
+    private static final String XML_FILE_EXTENSION = ".xml";
+    /** xsd file extension constant */
+    private static final String XSD_FILE_EXTENSION = ".xsd";
+    /** xsd schema directory constant */
+    private static final String XSD_SCHEMA_DIR = "xsd/";
+    
     /**
      * Creates a new loader
      * @param pathToSettingsFiles The location of the files to load. The settings xml files are assume to be placed as
-     * ${COLLECTION_ID}/${CONFIGURATION_CLASS}.xml under this directory.
+     * ${CONFIGURATION_CLASS}.xml under this directory.
      * 
-     * Note the the file is loaded from the class path so the path should only be different from the default "" if a 
-     * need to 
      */
     public XMLFileSettingsLoader(String pathToSettingsFiles) {
         this.pathToSettingsFiles = pathToSettingsFiles;
@@ -62,9 +69,9 @@ public class XMLFileSettingsLoader implements SettingsLoader {
      * @return The loaded settings.
      */
     public <T> T loadSettings(Class<T> settingsClass) {
-        String fileLocation = pathToSettingsFiles + "/" + settingsClass.getSimpleName() + ".xml";
-        String schemaLocation = settingsClass.getSimpleName() + ".xsd";
-        JaxbHelper jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
+        String fileLocation = pathToSettingsFiles + DIRECTORY_SEPERATOR + settingsClass.getSimpleName() + XML_FILE_EXTENSION;
+        String schemaLocation = settingsClass.getSimpleName() + XSD_FILE_EXTENSION;
+        JaxbHelper jaxbHelper = new JaxbHelper(XSD_SCHEMA_DIR, schemaLocation);
 
         InputStream configStreamLoad = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileLocation);
         InputStream configStreamValidate = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileLocation);
