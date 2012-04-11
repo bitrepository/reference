@@ -27,6 +27,8 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.settings.collectionsettings.Certificate;
+import org.bitrepository.settings.collectionsettings.Operation;
 import org.bitrepository.settings.collectionsettings.OperationPermission;
 import org.bitrepository.settings.collectionsettings.Permission;
 import org.bitrepository.settings.collectionsettings.PermissionSet;
@@ -148,7 +150,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         addStep("Check signature matches the data ", "Signature and data matches does not match");
         String corruptData = SecurityTestConstants.getTestData() + "foobar";
         try {
-            securityManager.authenticateMessage(corruptData, signature);//signatureString);
+            securityManager.authenticateMessage(corruptData, signature);
             Assert.fail("Authentication did not fail as expected!");
         } catch (MessageAuthenticationException e) {
             log.info(e.getMessage());
@@ -158,9 +160,13 @@ public class SecurityManagerTest extends ExtendedTestCase  {
     private PermissionSet getSigningCertPermission() throws UnsupportedEncodingException {
         PermissionSet permissions = new PermissionSet();  
         Permission signingCertPerm = new Permission();
-        signingCertPerm.setCertificate(
-                SecurityTestConstants.getSigningCertificate().getBytes(SecurityModuleConstants.defaultEncodingType));
-        signingCertPerm.getOperationPermission().add(OperationPermission.ALL);   
+        Certificate signingCert = new Certificate();
+        signingCert.setCertificateData(SecurityTestConstants.getSigningCertificate()
+                .getBytes(SecurityModuleConstants.defaultEncodingType));
+        signingCertPerm.setCertificate(signingCert);
+        OperationPermission opPerm = new OperationPermission();
+        opPerm.setOperation(Operation.ALL);
+        signingCertPerm.getOperationPermission().add(opPerm);   
         permissions.getPermission().add(signingCertPerm); 
         return permissions;
     }

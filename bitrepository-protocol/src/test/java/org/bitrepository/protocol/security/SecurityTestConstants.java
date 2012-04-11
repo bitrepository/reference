@@ -21,6 +21,8 @@
  */
 package org.bitrepository.protocol.security;
 
+import org.bitrepository.settings.collectionsettings.Certificate;
+import org.bitrepository.settings.collectionsettings.Operation;
 import org.bitrepository.settings.collectionsettings.OperationPermission;
 import org.bitrepository.settings.collectionsettings.Permission;
 import org.bitrepository.settings.collectionsettings.PermissionSet;
@@ -103,10 +105,16 @@ public class SecurityTestConstants {
     public static PermissionSet getDefaultPermissions() {
         PermissionSet permissions = new PermissionSet();  
         Permission perm1 = new Permission();
-        perm1.setCertificate(positiveCert.getBytes());
-        perm1.getOperationPermission().add(OperationPermission.GET_FILE);
+        Certificate cert1 = new Certificate();
+        cert1.setCertificateData(positiveCert.getBytes());
+        perm1.setCertificate(cert1);
+        OperationPermission opPerm = new OperationPermission();
+        opPerm.setOperation(Operation.GET_FILE);
+        perm1.getOperationPermission().add(opPerm);
         Permission perm2 = new Permission();
-        perm2.setCertificate(negativeCert.getBytes());
+        Certificate cert2 = new Certificate();
+        cert2.setCertificateData(negativeCert.getBytes());
+        perm2.setCertificate(cert2);
         permissions.getPermission().add(perm1);
         permissions.getPermission().add(perm2);
 

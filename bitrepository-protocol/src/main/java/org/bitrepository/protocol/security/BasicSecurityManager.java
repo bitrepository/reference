@@ -272,7 +272,7 @@ public class BasicSecurityManager implements SecurityManager {
         for(Permission permission : permissions.getPermission()) {
             if(permission.getInfrastructurePermission().contains(InfrastructurePermission.MESSAGE_BUS_SERVER)) {
                 try {
-                    bs = new ByteArrayInputStream(permission.getCertificate());
+                    bs = new ByteArrayInputStream(permission.getCertificate().getCertificateData());
                     X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
                             SecurityModuleConstants.CertificateType).generateCertificate(bs);
                     keyStore.setEntry(getNewAlias(), new KeyStore.TrustedCertificateEntry(certificate), 
@@ -285,7 +285,7 @@ public class BasicSecurityManager implements SecurityManager {
             }
             if(permission.getInfrastructurePermission().contains(InfrastructurePermission.FILE_EXCHANGE_SERVER)) {
                 try {
-                    bs = new ByteArrayInputStream(permission.getCertificate());
+                    bs = new ByteArrayInputStream(permission.getCertificate().getCertificateData());
                     X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
                             SecurityModuleConstants.CertificateType).generateCertificate(bs);
                     keyStore.setEntry(getNewAlias(), new KeyStore.TrustedCertificateEntry(certificate), 

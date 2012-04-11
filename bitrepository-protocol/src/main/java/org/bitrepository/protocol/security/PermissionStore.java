@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bitrepository.settings.collectionsettings.InfrastructurePermission;
+import org.bitrepository.settings.collectionsettings.Operation;
 import org.bitrepository.settings.collectionsettings.OperationPermission;
 import org.bitrepository.settings.collectionsettings.PermissionSet;
 import org.bitrepository.settings.collectionsettings.Permission;
@@ -74,12 +75,16 @@ public class PermissionStore {
         if(permissions != null) {
             for(Permission permission : permissions.getPermission()) {
                 if(permission.getOperationPermission() != null) {
-                    ByteArrayInputStream bs = new ByteArrayInputStream(permission.getCertificate());
+                    ByteArrayInputStream bs = new ByteArrayInputStream(permission.getCertificate().getCertificateData());
                     X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
                             SecurityModuleConstants.CertificateType).generateCertificate(bs);
                     CertificateID certID = new CertificateID(certificate.getIssuerX500Principal(), certificate.getSerialNumber());
+                    HashSet<Operation> operationPermissions = new HashSet<Operation>();
+                    for(OperationPermission perm : permission.getOperationPermission()) {
+                        operationPermissions.add(perm.getOperation());
+                    }
                     CertificatePermission certificatePermission = new CertificatePermission(certificate, 
-                            permission.getOperationPermission());
+                            operationPermissions);
                     permissionMap.put(certID, certificatePermission);
                     try {
                         bs.close();
@@ -87,12 +92,12 @@ public class PermissionStore {
                         log.debug("Failed to close ByteArrayInputStream", e);
                     }
                 } else if(permission.getInfrastructurePermission().contains(InfrastructurePermission.MESSAGE_SIGNER)) {
-                    ByteArrayInputStream bs = new ByteArrayInputStream(permission.getCertificate());
+                    ByteArrayInputStream bs = new ByteArrayInputStream(permission.getCertificate().getCertificateData());
                     X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
                             SecurityModuleConstants.CertificateType).generateCertificate(bs);
                     CertificateID certID = new CertificateID(certificate.getIssuerX500Principal(), certificate.getSerialNumber());
                     CertificatePermission certificatePermission = new CertificatePermission(certificate, 
-                            new HashSet<OperationPermission>());
+                            new HashSet<Operation>());
                     permissionMap.put(certID, certificatePermission);
                     try {
                         bs.close();
@@ -130,7 +135,7 @@ public class PermissionStore {
      * @return true if the requested permission is present for the certificate belonging to the signer, otherwise false.
      * @throws PermissionStoreException in case no certificate and permission set can be found for the provided signer.
      */
-    public boolean checkPermission(SignerId signer, OperationPermission permission) throws PermissionStoreException {
+    public boolean checkPermission(SignerId signer, Operation permission) throws PermissionStoreException {
         CertificateID certificateID = new CertificateID(signer.getIssuer(), signer.getSerialNumber());
         CertificatePermission certificatePermission = permissionMap.get(certificateID);
         if(certificatePermission == null) {
@@ -145,7 +150,7 @@ public class PermissionStore {
      * Class to contain a X509Certificate and the permissions associated with it.    
      */
     private final class CertificatePermission {
-        private Set<OperationPermission> permissions;
+        private Set<Operation> permissions;
         private final X509Certificate certificate;
             
         /**
@@ -153,8 +158,8 @@ public class PermissionStore {
          * @param certificate, the certificate which permissions is to be represented.
          * @param permissions, the permissions related to the certificate. 
          */
-        public CertificatePermission(X509Certificate certificate, Collection<OperationPermission> permissions) {
-            this.permissions = new HashSet<OperationPermission>();
+        public CertificatePermission(X509Certificate certificate, Collection<Operation> permissions) {
+            this.permissions = new HashSet<Operation>();
             this.permissions.addAll(permissions);
             this.certificate = certificate;
         }
@@ -164,7 +169,7 @@ public class PermissionStore {
          *  @param permission, the permission to test for
          *  @return true if the permission is registered, false otherwise.
          */
-        public boolean hasPermission(OperationPermission permission) {
+        public boolean hasPermission(Operation permission) {
             return permissions.contains(permission);
         }
         /** 

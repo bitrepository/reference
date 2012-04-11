@@ -23,6 +23,7 @@ package org.bitrepository.protocol.security;
 
 import java.util.List;
 
+import org.bitrepository.settings.collectionsettings.Operation;
 import org.bitrepository.settings.collectionsettings.OperationPermission;
 import org.bouncycastle.cms.SignerId;
 
@@ -56,8 +57,8 @@ public class BasicOperationAuthorizor implements OperationAuthorizor {
     @Override
     public void authorizeOperation(String operationType, SignerId signer) throws OperationAuthorizationException, 
             UnregisteredPermissionException {
-        List<OperationPermission> permissions = requestToPermissionMapper.getRequiredPermissions(operationType);
-        for(OperationPermission permission : permissions) {
+        List<Operation> permissions = requestToPermissionMapper.getRequiredPermissions(operationType);
+        for(Operation permission : permissions) {
             try {
                 if(permissionStore.checkPermission(signer, permission)) {
                     return ;

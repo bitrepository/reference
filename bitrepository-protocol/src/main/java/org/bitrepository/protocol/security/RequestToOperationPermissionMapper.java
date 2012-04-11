@@ -42,7 +42,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
-import org.bitrepository.settings.collectionsettings.OperationPermission;
+import org.bitrepository.settings.collectionsettings.Operation;
 
 /**
  * Class to map between a Operation/RequestType (Bitrepository message request type) and
@@ -50,58 +50,58 @@ import org.bitrepository.settings.collectionsettings.OperationPermission;
  */
 public class RequestToOperationPermissionMapper {
     /** Mapping from MessageRequest type to a list of permissions */
-    private final Map<String, List<OperationPermission>> mapping;
+    private final Map<String, List<Operation>> mapping;
 
     /**
      * Constructor for the class. Initiates the default permission mappings.  
      */
     public RequestToOperationPermissionMapper() {
-        mapping = new HashMap<String, List<OperationPermission>>();
-        ArrayList<OperationPermission> requiredPermissions = new ArrayList<OperationPermission>();
-        requiredPermissions.add(OperationPermission.ALL);
-        requiredPermissions.add(OperationPermission.GET_FILE);
+        mapping = new HashMap<String, List<Operation>>();
+        ArrayList<Operation> requiredPermissions = new ArrayList<Operation>();
+        requiredPermissions.add(Operation.ALL);
+        requiredPermissions.add(Operation.GET_FILE);
         mapping.put(IdentifyPillarsForGetFileRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(GetFileRequest.class.getSimpleName(), requiredPermissions);
         
-        requiredPermissions = new ArrayList<OperationPermission>();
-        requiredPermissions.add(OperationPermission.ALL);
-        requiredPermissions.add(OperationPermission.PUT_FILE);
+        requiredPermissions = new ArrayList<Operation>();
+        requiredPermissions.add(Operation.ALL);
+        requiredPermissions.add(Operation.PUT_FILE);
         mapping.put(IdentifyPillarsForPutFileRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(PutFileRequest.class.getSimpleName(), requiredPermissions);
         
-        requiredPermissions = new ArrayList<OperationPermission>();
-        requiredPermissions.add(OperationPermission.ALL);
-        requiredPermissions.add(OperationPermission.GET_FILE_I_DS);
+        requiredPermissions = new ArrayList<Operation>();
+        requiredPermissions.add(Operation.ALL);
+        requiredPermissions.add(Operation.GET_FILE_I_DS);
         mapping.put(IdentifyPillarsForGetFileIDsRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(GetFileIDsRequest.class.getSimpleName(), requiredPermissions);
         
-        requiredPermissions = new ArrayList<OperationPermission>();
-        requiredPermissions.add(OperationPermission.ALL);
-        requiredPermissions.add(OperationPermission.GET_CHECKSUMS);
+        requiredPermissions = new ArrayList<Operation>();
+        requiredPermissions.add(Operation.ALL);
+        requiredPermissions.add(Operation.GET_CHECKSUMS);
         mapping.put(IdentifyPillarsForGetChecksumsRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(GetChecksumsRequest.class.getSimpleName(), requiredPermissions);
         
-        requiredPermissions = new ArrayList<OperationPermission>();
-        requiredPermissions.add(OperationPermission.ALL);
-        requiredPermissions.add(OperationPermission.GET_AUDIT_TRAILS);
+        requiredPermissions = new ArrayList<Operation>();
+        requiredPermissions.add(Operation.ALL);
+        requiredPermissions.add(Operation.GET_AUDIT_TRAILS);
         mapping.put(IdentifyContributorsForGetAuditTrailsRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(GetAuditTrailsRequest.class.getSimpleName(), requiredPermissions);
         
-        requiredPermissions = new ArrayList<OperationPermission>();
-        requiredPermissions.add(OperationPermission.ALL);
-        requiredPermissions.add(OperationPermission.DELETE_FILE);
+        requiredPermissions = new ArrayList<Operation>();
+        requiredPermissions.add(Operation.ALL);
+        requiredPermissions.add(Operation.DELETE_FILE);
         mapping.put(IdentifyPillarsForDeleteFileRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(DeleteFileRequest.class.getSimpleName(), requiredPermissions);
         
-        requiredPermissions = new ArrayList<OperationPermission>();
-        requiredPermissions.add(OperationPermission.ALL);
-        requiredPermissions.add(OperationPermission.REPLACE_FILE);
+        requiredPermissions = new ArrayList<Operation>();
+        requiredPermissions.add(Operation.ALL);
+        requiredPermissions.add(Operation.REPLACE_FILE);
         mapping.put(IdentifyPillarsForReplaceFileRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(ReplaceFileRequest.class.getSimpleName(), requiredPermissions);
 
-        requiredPermissions = new ArrayList<OperationPermission>();
-        requiredPermissions.add(OperationPermission.ALL);
-        requiredPermissions.add(OperationPermission.GET_STATUS);
+        requiredPermissions = new ArrayList<Operation>();
+        requiredPermissions.add(Operation.ALL);
+        requiredPermissions.add(Operation.GET_STATUS);
         mapping.put(IdentifyContributorsForGetStatusRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(GetStatusRequest.class.getSimpleName(), requiredPermissions);
     }
@@ -110,8 +110,8 @@ public class RequestToOperationPermissionMapper {
      * Get the required permission for the given operation type (bitrepository message request type) 
      * @throws UnregisteredPermissionException 
      */
-    public List<OperationPermission> getRequiredPermissions(String operationType) throws UnregisteredPermissionException {
-        List<OperationPermission> permissions = mapping.get(operationType);
+    public List<Operation> getRequiredPermissions(String operationType) throws UnregisteredPermissionException {
+        List<Operation> permissions = mapping.get(operationType);
         if(permissions == null) {
             throw new UnregisteredPermissionException("No permissions has been registered for: " + operationType);
         }
