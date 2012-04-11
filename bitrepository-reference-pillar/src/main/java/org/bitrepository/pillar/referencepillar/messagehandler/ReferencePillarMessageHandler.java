@@ -33,6 +33,7 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.AlarmDispatcher;
+import org.bitrepository.pillar.AuditTrailManager;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.ProtocolConstants;
@@ -65,6 +66,8 @@ public abstract class ReferencePillarMessageHandler<T> {
     private final MessageBus messagebus;
     /** The reference archive.*/
     private final ReferenceArchive archive;
+    /** The manager of audit trails.*/
+    private final AuditTrailManager auditManager;
     
     /**
      * Constructor. 
@@ -74,16 +77,18 @@ public abstract class ReferencePillarMessageHandler<T> {
      * @param referenceArchive The archive for the data.
      */
     protected ReferencePillarMessageHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher, 
-            ReferenceArchive referenceArchive) {
+            ReferenceArchive referenceArchive, AuditTrailManager auditManager) {
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(alarmDispatcher, "alarmDispatcher");
         ArgumentValidator.checkNotNull(referenceArchive, "referenceArchive");
+        ArgumentValidator.checkNotNull(auditManager, "auditManager");
 
         this.settings = settings;
         this.messagebus = messageBus;
         this.alarmDispatcher = alarmDispatcher;
         this.archive = referenceArchive;
+        this.auditManager = auditManager;
     }
     
     /**
@@ -112,6 +117,13 @@ public abstract class ReferencePillarMessageHandler<T> {
      */
     protected Settings getSettings() {
         return settings;
+    }
+    
+    /**
+     * @return The audit trail manager for this message sender.
+     */
+    protected AuditTrailManager getAuditManager() {
+        return auditManager;
     }
     
     /** 

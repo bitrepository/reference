@@ -30,6 +30,7 @@ import java.math.BigInteger;
 import java.net.URL;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
@@ -39,6 +40,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.AlarmDispatcher;
+import org.bitrepository.pillar.AuditTrailManager;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
@@ -64,10 +66,11 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
      * @param messageBus The bus for communication.
      * @param alarmDispatcher The dispatcher of alarms.
      * @param referenceArchive The archive for the data.
+     * @param auditManager The manager of audit trails.
      */
-    public PutFileRequestHandler(Settings settings, MessageBus messageBus,
-            AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
-        super(settings, messageBus, alarmDispatcher, referenceArchive);
+    public PutFileRequestHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher, 
+            ReferenceArchive referenceArchive, AuditTrailManager auditManager) {
+        super(settings, messageBus, alarmDispatcher, referenceArchive, auditManager);
     }
     
     /**
@@ -87,10 +90,12 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
             log.warn("Failed operation: '" + e + "'.");
             sendFailedResponse(message, e.getResponseInfo());
         } catch (IllegalArgumentException e) {
-            log.warn("Caught IllegalArgumentException. Possible intruder -> Sending alarm! ", e);
+            log.warn("Caught IllegalArgumentException. Wrong credentials -> Sending alarm! ", e);
             getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed deleting file.", 
+                    message.getAuditTrailInformation(), FileAction.FAILURE);
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText("Error: " + e.getMessage());
@@ -208,6 +213,8 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
             log.warn("No checksums for validating the retrieved file.");
         }
         
+        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Putting the downloaded file "
+                + "into archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE);
         getArchive().moveToArchive(message.getFileID());
     }
     
@@ -231,6 +238,8 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         ChecksumDataForFileTYPE checksumForValidation = new ChecksumDataForFileTYPE();
         
         if(message.getChecksumRequestForNewFile() != null) {
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating requested checksum.", 
+                    message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
             checksumForValidation.setChecksumValue(ChecksumUtils.generateChecksum(retrievedFile, 
                     message.getChecksumRequestForNewFile()).getBytes());
             checksumForValidation.setCalculationTimestamp(CalendarUtils.getNow());

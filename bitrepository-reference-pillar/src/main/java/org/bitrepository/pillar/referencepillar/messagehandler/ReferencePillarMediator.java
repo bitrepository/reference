@@ -49,7 +49,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.AuditTrailManager;
-import org.bitrepository.pillar.audit.MemorybasedAuditTrailManager;
+import org.bitrepository.pillar.audit.AuditTrailContributerDAO;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -101,7 +101,7 @@ public class ReferencePillarMediator extends AbstractMessageListener {
         this.messagebus = messagebus;
         this.archive = refArchive;
         this.settings = settings;
-        this.audits = new MemorybasedAuditTrailManager();
+        this.audits = new AuditTrailContributerDAO(settings);
         this.alarmDispatcher = new AlarmDispatcher(settings, messagebus);
 
         // Initialise the messagehandlers.
@@ -117,34 +117,39 @@ public class ReferencePillarMediator extends AbstractMessageListener {
      */
     private void initialiseHandlers() {
         this.handlers.put(IdentifyPillarsForGetFileRequest.class.getName(), 
-                new IdentifyPillarsForGetFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+                new IdentifyPillarsForGetFileRequestHandler(settings, messagebus, alarmDispatcher, archive, audits));
         this.handlers.put(GetFileRequest.class.getName(), 
-                new GetFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+                new GetFileRequestHandler(settings, messagebus, alarmDispatcher, archive, audits));
         this.handlers.put(IdentifyPillarsForGetFileIDsRequest.class.getName(), 
-                new IdentifyPillarsForGetFileIDsRequestHandler(settings, messagebus, alarmDispatcher, archive));
+                new IdentifyPillarsForGetFileIDsRequestHandler(settings, messagebus, alarmDispatcher, archive, 
+                        audits));
         this.handlers.put(GetFileIDsRequest.class.getName(), 
-                new GetFileIDsRequestHandler(settings, messagebus, alarmDispatcher, archive));
+                new GetFileIDsRequestHandler(settings, messagebus, alarmDispatcher, archive, audits));
         this.handlers.put(IdentifyPillarsForGetChecksumsRequest.class.getName(), 
-                new IdentifyPillarsForGetChecksumsRequestHandler(settings, messagebus, alarmDispatcher, archive));
+                new IdentifyPillarsForGetChecksumsRequestHandler(settings, messagebus, alarmDispatcher, archive, 
+                        audits));
         this.handlers.put(GetChecksumsRequest.class.getName(), 
-                new GetChecksumsRequestHandler(settings, messagebus, alarmDispatcher, archive));
+                new GetChecksumsRequestHandler(settings, messagebus, alarmDispatcher, archive, audits));
         this.handlers.put(IdentifyContributorsForGetStatusRequest.class.getName(), 
-                new IdentifyContributorsForGetStatusRequestHandler(settings, messagebus, alarmDispatcher, archive));
+                new IdentifyContributorsForGetStatusRequestHandler(settings, messagebus, alarmDispatcher, archive, 
+                        audits));
         this.handlers.put(GetStatusRequest.class.getName(),
-                new GetStatusRequestHandler(settings, messagebus, alarmDispatcher, archive));
+                new GetStatusRequestHandler(settings, messagebus, alarmDispatcher, archive, audits));
         
         this.handlers.put(IdentifyPillarsForPutFileRequest.class.getName(), 
-                new IdentifyPillarsForPutFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+                new IdentifyPillarsForPutFileRequestHandler(settings, messagebus, alarmDispatcher, archive, audits));
         this.handlers.put(PutFileRequest.class.getName(), 
-                new PutFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+                new PutFileRequestHandler(settings, messagebus, alarmDispatcher, archive, audits));
         this.handlers.put(IdentifyPillarsForDeleteFileRequest.class.getName(), 
-                new IdentifyPillarsForDeleteFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+                new IdentifyPillarsForDeleteFileRequestHandler(settings, messagebus, alarmDispatcher, archive, 
+                        audits));
         this.handlers.put(DeleteFileRequest.class.getName(), 
-                new DeleteFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+                new DeleteFileRequestHandler(settings, messagebus, alarmDispatcher, archive, audits));
         this.handlers.put(IdentifyPillarsForReplaceFileRequest.class.getName(), 
-                new IdentifyPillarsForReplaceFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+                new IdentifyPillarsForReplaceFileRequestHandler(settings, messagebus, alarmDispatcher, archive, 
+                        audits));
         this.handlers.put(ReplaceFileRequest.class.getName(), 
-                new ReplaceFileRequestHandler(settings, messagebus, alarmDispatcher, archive));
+                new ReplaceFileRequestHandler(settings, messagebus, alarmDispatcher, archive, audits));
     }
     
     /**

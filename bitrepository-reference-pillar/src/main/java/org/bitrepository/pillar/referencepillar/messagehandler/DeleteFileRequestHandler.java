@@ -26,6 +26,7 @@ package org.bitrepository.pillar.referencepillar.messagehandler;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
@@ -35,6 +36,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.AlarmDispatcher;
+import org.bitrepository.pillar.AuditTrailManager;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -56,10 +58,11 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
      * @param messageBus The bus for communication.
      * @param alarmDispatcher The dispatcher of alarms.
      * @param referenceArchive The archive for the data.
+     * @param auditManager The manager of audit trails.
      */
     protected DeleteFileRequestHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher,
-            ReferenceArchive referenceArchive) {
-        super(settings, messageBus, alarmDispatcher, referenceArchive);
+            ReferenceArchive referenceArchive, AuditTrailManager auditManager) {
+        super(settings, messageBus, alarmDispatcher, referenceArchive, auditManager);
     }
 
     @Override
@@ -79,6 +82,8 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
             getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), 
+                    "Failed deleting the file.", message.getAuditTrailInformation(), FileAction.FAILURE);
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText("Error: " + e.getMessage());
@@ -120,6 +125,9 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
             throw new InvalidMessageException(responseInfo);
         }
         
+        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation checksum "
+                + "on the file, which should be deleted.", message.getAuditTrailInformation(), 
+                FileAction.CHECKSUM_CALCULATED);
         String calculatedChecksum = ChecksumUtils.generateChecksum(getArchive().getFile(message.getFileID()), 
                 checksumType);
         String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
@@ -171,6 +179,9 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
             log.warn("No checksum requested for the file about to be deleted.");
             return null;
         }
+        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the requested checksum "
+                + "on the file, which should be deleted.", message.getAuditTrailInformation(), 
+                FileAction.CHECKSUM_CALCULATED);
         String checksum = ChecksumUtils.generateChecksum(getArchive().getFile(message.getFileID()), checksumType);
         
         res.setChecksumSpec(checksumType);
@@ -186,6 +197,8 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
      */
     protected void deleteTheFile(DeleteFileRequest message) {
         try {
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Deleting the file.", 
+                    message.getAuditTrailInformation(), FileAction.DELETE_FILE);
             getArchive().deleteFile(message.getFileID());
         } catch (Exception e) {
             ResponseInfo ir = new ResponseInfo();

@@ -26,6 +26,7 @@ package org.bitrepository.pillar.referencepillar.messagehandler;
 
 import java.math.BigInteger;
 
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
@@ -33,6 +34,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResp
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.AlarmDispatcher;
+import org.bitrepository.pillar.AuditTrailManager;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -54,10 +56,11 @@ public class IdentifyPillarsForReplaceFileRequestHandler
      * @param messageBus The bus for communication.
      * @param alarmDispatcher The dispatcher of alarms.
      * @param referenceArchive The archive for the data.
+     * @param auditManager The manager of audit trails.
      */
     protected IdentifyPillarsForReplaceFileRequestHandler(Settings settings, MessageBus messageBus,
-            AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
-        super(settings, messageBus, alarmDispatcher, referenceArchive);
+            AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive, AuditTrailManager auditManager) {
+        super(settings, messageBus, alarmDispatcher, referenceArchive, auditManager);
     }
 
     @Override
@@ -75,6 +78,8 @@ public class IdentifyPillarsForReplaceFileRequestHandler
             log.warn("Unsuccessful identification for the ReplaceFile operation.", e);
             respondUnsuccessfulIdentification(message, e);
         } catch (RuntimeException e) {
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed identifying pillar.", 
+                    message.getAuditTrailInformation(), FileAction.FAILURE);
             getAlarmDispatcher().handleRuntimeExceptions(e);
         }
     }

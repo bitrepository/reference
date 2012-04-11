@@ -98,10 +98,14 @@ public final class ChecksumPillarLauncher {
         
         try {
             MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
-            PillarComponentFactory.getInstance().getChecksumPillar(messageBus, settings);
+            ChecksumPillar pillar = PillarComponentFactory.getInstance().getChecksumPillar(messageBus, settings);
+            
+            synchronized(pillar) {
+                pillar.wait();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
-    }   
+    }
 }

@@ -100,10 +100,15 @@ public final class ReferencePillarLauncher {
         
         try {
             MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
-            PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
+            ReferencePillar pillar = PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
+            
+            synchronized(pillar) {
+                pillar.wait();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);
         }
+        
     }
 }

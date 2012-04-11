@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
 
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
@@ -38,6 +39,7 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.AlarmDispatcher;
+import org.bitrepository.pillar.AuditTrailManager;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
@@ -60,10 +62,12 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      * @param messageBus The bus for communication.
      * @param alarmDispatcher The dispatcher of alarms.
      * @param referenceArchive The archive for the data.
+     * @param auditManager The manager of audit trails.
+     * @param auditManager The manager of audit trails.
      */
-    public GetFileRequestHandler(Settings settings, MessageBus messageBus,
-            AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
-        super(settings, messageBus, alarmDispatcher, referenceArchive);
+    public GetFileRequestHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher, 
+            ReferenceArchive referenceArchive, AuditTrailManager auditManager) {
+        super(settings, messageBus, alarmDispatcher, referenceArchive, auditManager);
     }
     
     /**
@@ -86,6 +90,8 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
             getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed getting file.", 
+                    message.getAuditTrailInformation(), FileAction.FAILURE);
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText("Error: " + e.getMessage());
@@ -149,6 +155,8 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
         try {
             // Upload the file.
             log.info("Uploading file: " + requestedFile.getName() + " to " + message.getFileAddress());
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed identifying pillar.", 
+                    message.getAuditTrailInformation(), FileAction.GET_FILE);
             FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
             fe.uploadToServer(new FileInputStream(requestedFile), new URL(message.getFileAddress()));
         } catch (IOException e) {

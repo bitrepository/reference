@@ -33,6 +33,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.AlarmDispatcher;
+import org.bitrepository.pillar.AuditTrailManager;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -54,8 +55,8 @@ public class GetStatusRequestHandler extends ReferencePillarMessageHandler<GetSt
      * @param referenceArchive The archive for the data.
      */
     protected GetStatusRequestHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher,
-            ReferenceArchive referenceArchive) {
-        super(settings, messageBus, alarmDispatcher, referenceArchive);
+            ReferenceArchive referenceArchive, AuditTrailManager auditManager) {
+        super(settings, messageBus, alarmDispatcher, referenceArchive, auditManager);
     }
 
     @Override
