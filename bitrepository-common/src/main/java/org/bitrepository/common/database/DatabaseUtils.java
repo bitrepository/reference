@@ -138,6 +138,46 @@ public class DatabaseUtils {
             throw failedExecutionOfStatement(e, dbConnection, query, args);
         }
     }
+    
+    /**
+     * Retrieves a list of long values from the database through the use of a SQL query, which requests 
+     * the wanted long values, and the arguments for the query to become a proper SQL statement.
+     * 
+     * @param dbConnection The connection to the database.
+     * @param query The query for retrieving the long value.
+     * @param args The arguments for the database statement.
+     * @return The list of long values from the given statement.
+     */
+    public static List<Long> selectLongList(Connection dbConnection, String query, Object... args) {
+        ArgumentValidator.checkNotNull(dbConnection, "Connection dbConnection");
+        ArgumentValidator.checkNotNullOrEmpty(query, "String query");
+        ArgumentValidator.checkNotNull(args, "Object... args");
+        
+        try {
+            PreparedStatement ps = null;
+            ResultSet res = null;
+            List<Long> list = new ArrayList<Long>();
+            
+            try {
+                ps = createPreparedStatement(dbConnection, query, args);
+                res = ps.executeQuery();
+                
+                while(res.next()) {
+                    list.add(res.getLong(1));
+                }
+                return list;
+            } finally {
+                if(res != null) {
+                    res.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
+            }
+        } catch (SQLException e) {
+            throw failedExecutionOfStatement(e, dbConnection, query, args);
+        }
+    }
 
     /**
      * Retrieves an date value from the database through the use of a SQL query, which requests 
