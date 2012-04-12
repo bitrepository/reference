@@ -49,7 +49,6 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.AuditTrailManager;
-import org.bitrepository.pillar.audit.AuditTrailContributerDAO;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -91,9 +90,9 @@ public class ReferencePillarMediator extends AbstractMessageListener {
      * @param messagebus The messagebus for this instance.
      * @param settings The settings for the reference pillar.
      * @param refArchive The archive for the reference pillar.
-     * @param messageFactory The message factory.
      */
-    public ReferencePillarMediator(MessageBus messagebus, Settings settings, ReferenceArchive refArchive) {
+    public ReferencePillarMediator(MessageBus messagebus, Settings settings, ReferenceArchive refArchive, 
+            AuditTrailManager audits, AlarmDispatcher alarmDispatcher) {
         ArgumentValidator.checkNotNull(messagebus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(refArchive, "ReferenceArchive refArchive");
@@ -101,8 +100,8 @@ public class ReferencePillarMediator extends AbstractMessageListener {
         this.messagebus = messagebus;
         this.archive = refArchive;
         this.settings = settings;
-        this.audits = new AuditTrailContributerDAO(settings);
-        this.alarmDispatcher = new AlarmDispatcher(settings, messagebus);
+        this.audits = audits;
+        this.alarmDispatcher = alarmDispatcher;
 
         // Initialise the messagehandlers.
         initialiseHandlers();
@@ -171,7 +170,7 @@ public class ReferencePillarMediator extends AbstractMessageListener {
     
     @Override
     protected void reportUnsupported(Object message) {
-        audits.addAuditEvent("", "", "", "", FileAction.OTHER);
+        audits.addAuditEvent("", "", message.toString(), "", FileAction.OTHER);
         if(AlarmLevel.WARNING.equals(settings.getCollectionSettings().getPillarSettings().getAlarmLevel())) {
             noHandlerAlarm(message);
         }

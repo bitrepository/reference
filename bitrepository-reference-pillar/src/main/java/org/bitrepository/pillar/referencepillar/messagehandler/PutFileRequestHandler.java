@@ -199,6 +199,10 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         }
         
         if(message.getChecksumDataForNewFile() != null) {
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation "
+                    + "checksum for the file before putting it into archive.", message.getAuditTrailInformation(), 
+                    FileAction.CHECKSUM_CALCULATED);
+
             ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
             String calculatedChecksum = ChecksumUtils.generateChecksum(fileForValidation, csType.getChecksumSpec());
             String expectedChecksum = Base16Utils.decodeBase16(csType.getChecksumValue());

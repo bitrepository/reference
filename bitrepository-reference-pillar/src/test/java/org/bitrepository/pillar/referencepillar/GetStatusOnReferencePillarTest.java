@@ -32,6 +32,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusR
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
+import org.bitrepository.pillar.MockAlarmDispatcher;
+import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.testng.Assert;
@@ -44,6 +46,8 @@ public class GetStatusOnReferencePillarTest extends DefaultFixturePillarTest {
     
     ReferenceArchive archive;
     ReferencePillarMediator mediator;
+    MockAlarmDispatcher alarmDispatcher;
+    MockAuditManager audits;
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseDeleteFileTests() throws Exception {
@@ -55,7 +59,9 @@ public class GetStatusOnReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Initialize the pillar.", "Should not be a problem.");
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        mediator = new ReferencePillarMediator(messageBus, settings, archive);
+        audits = new MockAuditManager();
+        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        mediator = new ReferencePillarMediator(messageBus, settings, archive, audits, alarmDispatcher);
     }
     
     @AfterMethod (alwaysRun=true) 
@@ -120,6 +126,9 @@ public class GetStatusOnReferencePillarTest extends DefaultFixturePillarTest {
                 finalResponse.getResultingStatus(), clientDestinationId));
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getResultingStatus().getStatusInfo().getStatusCode(), StatusCode.OK);
+        
+        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 0, "Should not audit the GetStatus");
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
