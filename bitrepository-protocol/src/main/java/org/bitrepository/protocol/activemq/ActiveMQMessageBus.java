@@ -399,6 +399,7 @@ public class ActiveMQMessageBus implements MessageBus {
                 content = jaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
                                              new ByteArrayInputStream(text.getBytes()));
                 securityManager.authenticateMessage(text, signature);
+                securityManager.authorizeCertificateUse(((Message) content).getFrom(), text, signature);
                 securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature);
                 log.debug("Received message: " + text);
                 if(content.getClass().equals(AlarmMessage.class)){
