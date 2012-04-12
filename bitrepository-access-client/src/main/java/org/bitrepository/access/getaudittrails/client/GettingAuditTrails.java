@@ -62,7 +62,7 @@ public class GettingAuditTrails extends PerformingOperationState {
         msg.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         msg.setCollectionID(context.getSettings().getCollectionID());
         msg.setReplyTo(context.getSettings().getReferenceSettings().getClientSettings().getReceiverDestination());
-        msg.setFileIDs(context.getFileIDs());
+        msg.setFileID(context.getFileID());
         msg.setResultAddress(context.getUrlForResult());
         msg.setAuditTrailInformation(context.getAuditTrailInformation());
 

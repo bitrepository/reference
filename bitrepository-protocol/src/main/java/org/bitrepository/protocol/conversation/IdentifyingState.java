@@ -33,12 +33,16 @@ public abstract class IdentifyingState extends GeneralConversationState {
                         "Time has run out for looking up contributers. The following contributers " +
                                 "didn't respond: " + getSelector().getOutstandingComponents() +
                                 ". Using contributers based on uncomplete set of responses.");
+                getContext().getMonitor().pillarSelected("Identifyied contributers",
+                        getSelector().getContributersAsString());
                 return getOperationState();
             } else {
-                getContext().getMonitor().operationFailed(
+                getContext().getMonitor().identifyPillarTimeout(
                         "Unable to select any contributers, time has run out. " +
                                 "The following contributers did't respond: " +
                                 getSelector().getOutstandingComponents());
+                getContext().getMonitor().operationFailed(
+                        "Unable to continue with operation, no contributer responding");
                 return new FinishedState(getContext());
             }
         } else {

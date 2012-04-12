@@ -44,24 +44,23 @@ import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.protocol.TestMessageFactory;
 
 /**
- * Constructs the GetFile specific messages.
+ * Constructs the GetAuditTrails specific messages.
  * 
  * ToDo based on example messages.
  */
-public class TestGetAuditTrailsMessageFactory extends TestMessageFactory {
+public class GetAuditTrailsMessageFactory extends TestMessageFactory {
 
-    public TestGetAuditTrailsMessageFactory(String collectionID) {
+    public GetAuditTrailsMessageFactory(String collectionID) {
         super(collectionID);
     }
+
+    //---------------------------------------Responses--------------------------------------------
 
     public IdentifyContributorsForGetAuditTrailsResponse createIdentifyContributorsForGetAuditTrailsResponse(
             IdentifyContributorsForGetAuditTrailsRequest request, String componentID, String replyTo) {
         IdentifyContributorsForGetAuditTrailsResponse response = new IdentifyContributorsForGetAuditTrailsResponse();
         setResponseDetails(response, request, componentID,  replyTo);
-        response.setContributor(componentID);
         response.setResponseInfo(IDENTIFY_INFO_DEFAULT);
-        response.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
-
         return response;
     }
 
@@ -69,7 +68,6 @@ public class TestGetAuditTrailsMessageFactory extends TestMessageFactory {
             GetAuditTrailsRequest request, String componentID, String replyTo) {
         GetAuditTrailsProgressResponse response = new GetAuditTrailsProgressResponse();
         setResponseDetails(response, request, componentID,  replyTo);
-        response.setFileIDs(request.getFileIDs());
         response.setResponseInfo(PROGRESS_INFO_DEFAULT);
         return response;
     }
@@ -78,11 +76,22 @@ public class TestGetAuditTrailsMessageFactory extends TestMessageFactory {
             GetAuditTrailsRequest request, String componentID, String replyTo, ResultingAuditTrails result) {
         GetAuditTrailsFinalResponse response = new GetAuditTrailsFinalResponse();
         setResponseDetails(response, request, componentID,  replyTo);
-        response.setFileIDs(request.getFileIDs());
         response.setContributor(componentID);
         response.setResponseInfo(FINAL_INFO_DEFAULT);
         response.setResultingAuditTrails(result);
         return response;
+    }
+
+    //---------------------------------------Requests--------------------------------------------
+
+    public GetAuditTrailsRequest createGetAuditTrailsRequest(
+            IdentifyContributorsForGetAuditTrailsRequest identifyRequest, String toDestination) {
+        GetAuditTrailsRequest message = new GetAuditTrailsRequest();
+        setMessageDetails(message);
+        message.setCorrelationID(identifyRequest.getCorrelationID());
+        message.setReplyTo(identifyRequest.getReplyTo());
+        message.setTo(toDestination);
+        return message;
     }
 }
 

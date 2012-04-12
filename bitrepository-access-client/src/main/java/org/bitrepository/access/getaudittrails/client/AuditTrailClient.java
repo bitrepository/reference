@@ -25,7 +25,6 @@
 package org.bitrepository.access.getaudittrails.client;
 
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.protocol.client.BitrepositoryClient;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 
@@ -34,6 +33,8 @@ public interface AuditTrailClient extends BitrepositoryClient {
      * @param componentQueries Defines which components to retrieve audit trail from. Also defines a filter which
      *                         can be used to limit the audit trail result from each pillar. If null all audit trails
      *                         from all contributers are returned.
+     * @param fileID The optional fileID to retrieve audit trails for. If <code>null</code> audit trail are retrieved for
+     *               all files.
      * @param urlForResult If defined, the result is upload to this url (with a -componentID postfix) in stead of being
      *                     returned in a completeEvent.
      * @param eventHandler The handler which should receive notifications of the progress events.
@@ -41,7 +42,7 @@ public interface AuditTrailClient extends BitrepositoryClient {
      */
     void getAuditTrails(
             AuditTrailQuery[] componentQueries,
-            FileIDs fileIDs,
+            String fileID,
             String urlForResult,
             EventHandler eventHandler, String auditTrailInformation);
 }
