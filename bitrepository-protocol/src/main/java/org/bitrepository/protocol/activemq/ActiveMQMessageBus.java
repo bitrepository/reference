@@ -45,6 +45,7 @@ import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
+import org.bitrepository.protocol.security.CertificateUseException;
 import org.bitrepository.protocol.security.MessageAuthenticationException;
 import org.bitrepository.protocol.security.OperationAuthorizationException;
 import org.bitrepository.protocol.security.SecurityManager;
@@ -490,6 +491,8 @@ public class ActiveMQMessageBus implements MessageBus {
             } catch (MessageAuthenticationException e) {
                 log.error(e.getMessage(), e);
             } catch (OperationAuthorizationException e) {
+                log.error(e.getMessage(), e);
+            } catch (CertificateUseException e) {
                 log.error(e.getMessage(), e);
             } catch (Exception e) {
                 log.error("Error handling message. Received type was '" + type + "'.\n{}", text, e);
