@@ -24,7 +24,6 @@ package org.bitrepository.protocol.security;
 import java.util.List;
 
 import org.bitrepository.settings.collectionsettings.Operation;
-import org.bitrepository.settings.collectionsettings.OperationPermission;
 import org.bouncycastle.cms.SignerId;
 
 /**
@@ -47,7 +46,26 @@ public class BasicOperationAuthorizor implements OperationAuthorizor {
     }
     
     /**
-     * Method to determine whether an operation is allow
+     * Method to determine whether a given componentID is allowed to sign an operation with the given certificate.
+     * @param certificateUser, the componentID of the component that signed the message
+     * @param signer, the signerId of the certificate that signed the message
+     * @throws CertificateUseException in case the message has been signed by the wrong user. 
+     * 
+     */
+    public void authorizeCertificateUse(String certificateUser, SignerId signer) throws CertificateUseException {
+        try {
+            if(permissionStore.checkCertificateUser(signer, certificateUser)) {
+                return ;
+            }
+        } catch (PermissionStoreException e) {
+            throw new CertificateUseException(e.getMessage(), e);
+        }
+        throw new CertificateUseException("The user '" + certificateUser + "' does not have registered the needed " +
+        		"rights for being the signer: " + signer.toString());
+    }
+    
+    /**
+     * Method to determine whether an operation is allowed
      * @param operationType, the type of operation to authorize 
      * @param signer the signerId of the certificate used to create the signature belonging to the request 
      * which is to be authorized.  

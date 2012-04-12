@@ -47,4 +47,14 @@ public interface SecurityManager {
      */
     void authorizeOperation(String operationType, String messageData, String signature) 
             throws OperationAuthorizationException;
+    
+    /** 
+     * Method to authorize the use of a certificate
+     * @param certificateUser, the user who signed the message
+     * @param messageData, the data of the message request. 
+     * @param signature, the signature belonging to the message request. 
+     * @throws CertificateUseException in case the certificate use could not be authorized. 
+     */
+    void authorizeCertificateUse(String certificateUser, String messageData, String signature) 
+            throws CertificateUseException;
 }

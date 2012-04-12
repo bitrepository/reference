@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.settings.collectionsettings.Certificate;
+import org.bitrepository.settings.collectionsettings.ComponentIDs;
 import org.bitrepository.settings.collectionsettings.Operation;
 import org.bitrepository.settings.collectionsettings.OperationPermission;
 import org.bitrepository.settings.collectionsettings.Permission;
@@ -41,6 +42,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class SecurityManagerTest extends ExtendedTestCase  {
+    private static final String componentId = "TEST";
     private final Logger log = LoggerFactory.getLogger(getClass());
     private SecurityManager securityManager;
     private PermissionStore permissionStore;
@@ -64,7 +66,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
     }
     
     @Test(groups = {"regressiontest"})
-    public void authorizationBehaviourTest() throws Exception {
+    public void operationAuthorizationBehaviourTest() throws Exception {
         addDescription("Tests that a signature only allows the correct requests.");
         addStep("Check that GET_FILE is allowed.", "GET_FILE is allowed.");
 
@@ -78,12 +80,37 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         try {
             securityManager.authorizeOperation(PutFileRequest.class.getSimpleName(), 
                     SecurityTestConstants.getTestData(), SecurityTestConstants.getSignature());
-            Assert.fail("SecurityManager did not throw the expected exception");
+            Assert.fail("SecurityManager did not throw the expected OperationAuthorizationException");
         } catch (OperationAuthorizationException e) {
             
         }  
     }        
 
+    @Test(groups = {"regressiontest"})
+    public void certificateAuthorizationBehaviourTest() throws Exception {
+        addDescription("Tests that a certificate is only allowed by registered users (component).");
+        addStep("Check that the registered component is allowed.", "The registered component is allowed.");
+
+        permissionStore.loadPermissions(getSigningCertPermission(), componentId);
+
+        try {
+            securityManager.authorizeCertificateUse(SecurityTestConstants.getAllowedCertificateUser(), 
+                    SecurityTestConstants.getTestData(), SecurityTestConstants.getSignature());
+        } catch (CertificateUseException e) {
+            Assert.fail(e.getMessage());
+        }
+        Assert.assertNotNull(getSigningCertPermission().getPermission().get(0).getCertificate().getAllowedCertificateUsers());
+        addStep("Check that an unregistered component is not allowed.", "The unregistered component is not allowed.");
+        try {
+            securityManager.authorizeCertificateUse(SecurityTestConstants.getDisallowedCertificateUser(), 
+                    SecurityTestConstants.getTestData(), SecurityTestConstants.getSignature());
+            Assert.fail("SecurityManager did not throw the expected CertificateUseException");
+        } catch (CertificateUseException e) {
+            
+        }  
+    }        
+
+    
     @Test(groups = {"regressiontest"})
     public void positiveSigningAuthenticationRoundtripTest() throws Exception {
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating is succedes.");
@@ -94,14 +121,14 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         } catch (MessageSigningException e) {
             Assert.fail("Failed signing test data!", e);
         }
-        permissionStore.loadPermissions(getSigningCertPermission());
+        permissionStore.loadPermissions(getSigningCertPermission(), componentId);
         
         String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)));
         log.info("Signature for testdata is: " + signatureString);
         
         addStep("Check signature matches the data ", "Signature and data matches");
         try {
-            securityManager.authenticateMessage(SecurityTestConstants.getTestData(), signature);//signatureString);
+            securityManager.authenticateMessage(SecurityTestConstants.getTestData(), signature);
         } catch (MessageAuthenticationException e) {
            Assert.fail("Failed authenticating test data!", e);
         }  
@@ -142,7 +169,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         } catch (MessageSigningException e) {
             Assert.fail("Failed signing test data!", e);
         }
-        permissionStore.loadPermissions(getSigningCertPermission());
+        permissionStore.loadPermissions(getSigningCertPermission(), componentId);
         
         String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)));
         log.info("Signature for testdata is: " + signatureString);
@@ -158,11 +185,16 @@ public class SecurityManagerTest extends ExtendedTestCase  {
     }
     
     private PermissionSet getSigningCertPermission() throws UnsupportedEncodingException {
-        PermissionSet permissions = new PermissionSet();  
+        PermissionSet permissions = new PermissionSet();
+        ComponentIDs allowedUsers = new ComponentIDs();
+        allowedUsers.getIDs().add(SecurityTestConstants.getAllowedCertificateUser());
         Permission signingCertPerm = new Permission();
+        
         Certificate signingCert = new Certificate();
         signingCert.setCertificateData(SecurityTestConstants.getSigningCertificate()
                 .getBytes(SecurityModuleConstants.defaultEncodingType));
+        signingCert.setAllowedCertificateUsers(allowedUsers);
+        
         signingCertPerm.setCertificate(signingCert);
         OperationPermission opPerm = new OperationPermission();
         opPerm.setOperation(Operation.ALL);

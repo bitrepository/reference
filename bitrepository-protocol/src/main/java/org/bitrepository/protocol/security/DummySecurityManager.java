@@ -45,4 +45,10 @@ public class DummySecurityManager implements SecurityManager {
         // Safe empty implementation
     }
 
+    @Override
+    public void authorizeCertificateUse(String certificateUser, String messageData, String signature)
+            throws CertificateUseException {
+        // Safe empty implementation
+    }
+
 }

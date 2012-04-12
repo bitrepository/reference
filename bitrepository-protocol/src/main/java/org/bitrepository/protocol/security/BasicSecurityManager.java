@@ -92,6 +92,8 @@ public class BasicSecurityManager implements SecurityManager {
     private KeyStore keyStore; 
     /** Member for holding the PrivateKeyEntry containing the from privateKeyFile loaded key and certificate */
     private PrivateKeyEntry privateKeyEntry;
+    /** The ID of the component where this instance of the BasicSecurityManager is running */
+    private final String componentID;
     
     /**
      * Constructor for the SecurityManager.
@@ -116,6 +118,7 @@ public class BasicSecurityManager implements SecurityManager {
         this.signer = signer;
         this.authorizer = authorizer;
         this.permissionStore = permissionStore;
+        this.componentID = "FOOBAR"; //TODO parameterize!
         initialize();
     }
     
@@ -153,6 +156,29 @@ public class BasicSecurityManager implements SecurityManager {
             }           
         } else { 
             return null;
+        }
+    }
+    
+    /** 
+     * Method to authorize the use of a certificate
+     * @param certificateUser, the user who signed the message
+     * @param messageData, the data of the message request. 
+     * @param signature, the signature belonging to the message request. 
+     * @throws CertificateUseException in case the certificate use could not be authorized. 
+     */
+    public void authorizeCertificateUse(String certificateUser, String messageData, String signature) 
+            throws CertificateUseException {
+        if(collectionSettings.getProtocolSettings().isRequireOperationAuthorization()) {
+            byte[] decodeSig = Base64.decode(signature.getBytes());
+            CMSSignedData s;
+            try {
+                s = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes()), decodeSig);
+            } catch (CMSException e) {
+                throw new SecurityModuleException(e.getMessage(), e);
+            }
+    
+            SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
+            authorizer.authorizeCertificateUse(certificateUser, signer.getSID());    
         }
     }
     
@@ -199,7 +225,7 @@ public class BasicSecurityManager implements SecurityManager {
             keyStore.load(null);
             loadPrivateKey(privateKeyFile);
             loadInfrastructureCertificates(collectionSettings.getPermissionSet());
-            permissionStore.loadPermissions(collectionSettings.getPermissionSet());
+            permissionStore.loadPermissions(collectionSettings.getPermissionSet(), componentID);
             signer.setPrivateKeyEntry(privateKeyEntry);
             setupDefaultSSLContext();
         } catch (Exception e) {

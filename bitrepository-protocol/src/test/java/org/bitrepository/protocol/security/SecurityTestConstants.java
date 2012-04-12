@@ -22,6 +22,7 @@
 package org.bitrepository.protocol.security;
 
 import org.bitrepository.settings.collectionsettings.Certificate;
+import org.bitrepository.settings.collectionsettings.ComponentIDs;
 import org.bitrepository.settings.collectionsettings.Operation;
 import org.bitrepository.settings.collectionsettings.OperationPermission;
 import org.bitrepository.settings.collectionsettings.Permission;
@@ -77,6 +78,8 @@ public class SecurityTestConstants {
             "-----END CERTIFICATE-----\n";
 
     private static final String KEYFILE = "./target/test-classes/client-19.pem";
+    
+    private static final String allowedCertificateUser = "test-component";
 
     public static String getKeyFile() {
         return KEYFILE;
@@ -102,19 +105,34 @@ public class SecurityTestConstants {
         return signingCert;
     }
     
+    public static String getAllowedCertificateUser() {
+        return allowedCertificateUser;
+    }
+    
+    public static String getDisallowedCertificateUser() {
+        return allowedCertificateUser + "-bad";
+    }
+    
     public static PermissionSet getDefaultPermissions() {
-        PermissionSet permissions = new PermissionSet();  
+        PermissionSet permissions = new PermissionSet();
+        ComponentIDs allowedUsers = new ComponentIDs();
+        allowedUsers.getIDs().add(allowedCertificateUser);
+        
         Permission perm1 = new Permission();
         Certificate cert1 = new Certificate();
         cert1.setCertificateData(positiveCert.getBytes());
+        cert1.setAllowedCertificateUsers(allowedUsers);
         perm1.setCertificate(cert1);
         OperationPermission opPerm = new OperationPermission();
         opPerm.setOperation(Operation.GET_FILE);
         perm1.getOperationPermission().add(opPerm);
+        
         Permission perm2 = new Permission();
         Certificate cert2 = new Certificate();
         cert2.setCertificateData(negativeCert.getBytes());
+        cert2.setAllowedCertificateUsers(allowedUsers);
         perm2.setCertificate(cert2);
+        
         permissions.getPermission().add(perm1);
         permissions.getPermission().add(perm2);
 

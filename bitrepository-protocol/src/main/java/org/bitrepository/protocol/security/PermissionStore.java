@@ -68,51 +68,54 @@ public class PermissionStore {
     
     /**
      * Load permissions and certificates into the store based.
-     * @param PermissionSet the PermissionSet from CollectionSettings.
+     * @param permissions the PermissionSet from CollectionSettings.
+     * @param componentID the ID of the component using the PermissionStore. 
      * @throws CertificateException in case a bad certificate data in PermissionSet.   
      */
-    public void loadPermissions(PermissionSet permissions) throws CertificateException {
+    public void loadPermissions(PermissionSet permissions, String componentID) throws CertificateException {
         if(permissions != null) {
+            Set<Operation> allowedOperations;
+            Set<String> allowedUsers;
             for(Permission permission : permissions.getPermission()) {
-                if(permission.getOperationPermission() != null) {
-                    ByteArrayInputStream bs = new ByteArrayInputStream(permission.getCertificate().getCertificateData());
-                    X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
-                            SecurityModuleConstants.CertificateType).generateCertificate(bs);
-                    CertificateID certID = new CertificateID(certificate.getIssuerX500Principal(), certificate.getSerialNumber());
-                    HashSet<Operation> operationPermissions = new HashSet<Operation>();
-                    for(OperationPermission perm : permission.getOperationPermission()) {
-                        operationPermissions.add(perm.getOperation());
-                    }
-                    CertificatePermission certificatePermission = new CertificatePermission(certificate, 
-                            operationPermissions);
-                    permissionMap.put(certID, certificatePermission);
-                    try {
-                        bs.close();
-                    } catch (IOException e) {
-                        log.debug("Failed to close ByteArrayInputStream", e);
-                    }
-                } else if(permission.getInfrastructurePermission().contains(InfrastructurePermission.MESSAGE_SIGNER)) {
-                    ByteArrayInputStream bs = new ByteArrayInputStream(permission.getCertificate().getCertificateData());
-                    X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
-                            SecurityModuleConstants.CertificateType).generateCertificate(bs);
-                    CertificateID certID = new CertificateID(certificate.getIssuerX500Principal(), certificate.getSerialNumber());
-                    CertificatePermission certificatePermission = new CertificatePermission(certificate, 
-                            new HashSet<Operation>());
-                    permissionMap.put(certID, certificatePermission);
-                    try {
-                        bs.close();
-                    } catch (IOException e) {
-                        log.debug("Failed to close ByteArrayInputStream", e);
-                    }
+                if(permission.getCertificate().getAllowedCertificateUsers() != null) {
+                    allowedUsers = new HashSet<String>();
+                    allowedUsers.addAll(permission.getCertificate().getAllowedCertificateUsers().getIDs());    
                 } else {
-                    // Noting to do here
+                    allowedUsers = null;
+                }
+                
+                allowedOperations = new HashSet<Operation>();
+                X509Certificate certificate = null;
+                if(permission.getOperationPermission() != null) {
+                    for(OperationPermission perm : permission.getOperationPermission()) {
+                        if(perm.getAllowedComponents() == null || 
+                                perm.getAllowedComponents().getIDs().contains(componentID)) {
+                            allowedOperations.add(perm.getOperation());
+                        }
+                    }
+                    if(!allowedOperations.isEmpty()) {
+                        certificate = makeCertificate(permission.getCertificate().getCertificateData());    
+                    }
+                }
+                if(permission.getInfrastructurePermission().contains(InfrastructurePermission.MESSAGE_SIGNER)) {
+                    if(certificate == null) {
+                        certificate = makeCertificate(permission.getCertificate().getCertificateData());
+                    }
+                }
+                
+                if(certificate != null) {
+                    CertificateID certID = new CertificateID(certificate.getIssuerX500Principal(), 
+                            certificate.getSerialNumber());
+                    CertificatePermission certificatePermission = new CertificatePermission(certificate, allowedOperations, 
+                            allowedUsers);
+                    permissionMap.put(certID, certificatePermission);
                 }
             }
         } else {
             log.info("The provided PermissionSet was null");
         }
     }
-    
+        
     /**
      * Retrieve the certificate based on the signerId.
      * @param SignerId the identification data of the certificate to retrieve  
@@ -126,6 +129,24 @@ public class PermissionStore {
             return permission.getCertificate();
         } else {
             throw new PermissionStoreException("Failed to find certificate for the requested signer:" + certificateID.toString());
+        }
+    }
+    
+    /**
+     * @param signer, the signerId of the certificate used to sign the message.
+     * @param certificateUser, the user that claims to have used the certificate.
+     * @return true, if the certificateUser has been registered for use of the certificate indicated by signer, 
+     *         false otherwise.
+     * @throws PermissionStoreException in case no certificate has been registered for the given signerId
+     */
+    public boolean checkCertificateUser(SignerId signer, String certificateUser) throws PermissionStoreException {
+        CertificateID certificateID = new CertificateID(signer.getIssuer(), signer.getSerialNumber());
+        CertificatePermission certificatePermission = permissionMap.get(certificateID);
+        if(certificatePermission == null) {
+            throw new PermissionStoreException("Failed to find certificate and permissions for the requested signer: " +
+                    certificateID.toString());
+        } else {
+            return certificatePermission.isUserAllowed(certificateUser);
         }
     }
     
@@ -146,24 +167,45 @@ public class PermissionStore {
         }
     }
     
+    private X509Certificate makeCertificate(byte[] certificateData) throws CertificateException {
+        ByteArrayInputStream bs = new ByteArrayInputStream(certificateData);
+        X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
+                SecurityModuleConstants.CertificateType).generateCertificate(bs);
+        try {
+            bs.close();
+        } catch (IOException e) {
+            log.debug("Failed to close ByteArrayInputStream", e);
+        }
+        return certificate;
+    }
+    
     /**
      * Class to contain a X509Certificate and the permissions associated with it.    
      */
     private final class CertificatePermission {
-        private Set<Operation> permissions;
+        private final Set<Operation> permissions;
+        private final Set<String> allowedUsers;
         private final X509Certificate certificate;
             
         /**
          * Constructor
          * @param certificate, the certificate which permissions is to be represented.
-         * @param permissions, the permissions related to the certificate. 
+         * @param allowedOperations, the allowed operations related to the certificate.
+         * @param alloedUsers, the allowed users of this certificate, if users are not restricted provide null 
          */
-        public CertificatePermission(X509Certificate certificate, Collection<Operation> permissions) {
+        public CertificatePermission(X509Certificate certificate, Collection<Operation> allowedOperations,
+                Collection<String> allowedUsers) {
+            if(allowedUsers == null) {
+                this.allowedUsers = null;
+            } else {
+                this.allowedUsers = new HashSet<String>();
+                this.allowedUsers.addAll(allowedUsers);
+            }
             this.permissions = new HashSet<Operation>();
-            this.permissions.addAll(permissions);
             this.certificate = certificate;
+            this.permissions.addAll(allowedOperations);
         }
-        
+      
         /**
          *  Test if a certain permission has been registered for this object. 
          *  @param permission, the permission to test for
@@ -172,6 +214,20 @@ public class PermissionStore {
         public boolean hasPermission(Operation permission) {
             return permissions.contains(permission);
         }
+        
+        /**
+         *  Test if a certain certificate user has been registered as one allowed for use of this certificate.
+         *  @param certificateUser, the user to test for
+         *  @return true if the user has been registered, false otherwise. 
+         */
+        public boolean isUserAllowed(String certificateUser) {
+            if(allowedUsers == null) {
+                return true;
+            } else {
+                return allowedUsers.contains(certificateUser);    
+            }
+        }
+        
         /** 
          * Retrieve the certificate from the object. 
          * @return the X509Certificate from the object.

@@ -37,12 +37,13 @@ import org.testng.annotations.Test;
 
 public class PermissionStoreTest extends ExtendedTestCase  {
     
+    private static final String componentID = "TEST";
     private PermissionStore permissionStore;
     
     @BeforeMethod(alwaysRun = true)
     public void setUp() throws Exception {
         permissionStore = new PermissionStore();
-        permissionStore.loadPermissions(SecurityTestConstants.getDefaultPermissions());
+        permissionStore.loadPermissions(SecurityTestConstants.getDefaultPermissions(), componentID);
     }
     
     @Test(groups = {"regressiontest"})
