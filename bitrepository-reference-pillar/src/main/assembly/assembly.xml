@@ -52,6 +52,12 @@
             <directory>src/main/conf</directory>
         </fileSet>
         <fileSet>
+            <outputDirectory>conf</outputDirectory>
+            <fileMode>0740</fileMode>
+            <directoryMode>0740</directoryMode>
+            <directory>src/main/resources</directory>
+        </fileSet>
+        <fileSet>
             <outputDirectory>bin</outputDirectory>
             <directory>src/main/scripts</directory>
             <fileMode>0740</fileMode>

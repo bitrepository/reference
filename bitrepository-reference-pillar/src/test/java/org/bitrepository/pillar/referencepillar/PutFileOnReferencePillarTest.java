@@ -44,8 +44,9 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
+import org.bitrepository.pillar.MockAlarmDispatcher;
+import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
-import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.utils.Base16Utils;
@@ -64,6 +65,8 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
     
     ReferenceArchive archive;
     ReferencePillarMediator mediator;
+    MockAlarmDispatcher alarmDispatcher;
+    MockAuditManager audits;
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetChecksumsTests() throws Exception {
@@ -76,7 +79,9 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Initialize the pillar.", "Should not be a problem.");
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        mediator = new ReferencePillarMediator(messageBus, settings, archive);
+        audits = new MockAuditManager();
+        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        mediator = new ReferencePillarMediator(messageBus, settings, archive, audits, alarmDispatcher);
     }
     
     @AfterMethod (alwaysRun=true) 
@@ -197,6 +202,10 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         Assert.assertTrue(receivedChecksumData.getCalculationTimestamp().toGregorianCalendar().getTimeInMillis() > startDate.getTime(), 
                 "The received timestamp should be after the start of this test '" + startDate + "', but was "
                         + receivedChecksumData.getCalculationTimestamp().toGregorianCalendar().getTime() + "'");
+        
+        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 3, "Should deliver 3 audits: One for the operation, and "
+                + "two for calculating checksums (one for validation and one for the request)");
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

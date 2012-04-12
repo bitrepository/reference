@@ -64,9 +64,8 @@ create table audittrail (
     information varchar(255)        -- The information about the audit.
 );
 
-create index sequenceindex on audittrail ( sequence_number );
-create index dateindex on audittrail ( action_date );
-create index fileidindex on audittrail ( file_id );
+create index dateindex on audittrail ( operation_date );
+create index fileidindex on audittrail ( file_guid );
 
 --*************************************************************************--
 -- Name:     file

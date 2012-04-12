@@ -40,6 +40,7 @@ import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetChecksumsResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -52,6 +53,7 @@ import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.AlarmDispatcher;
+import org.bitrepository.pillar.AuditTrailManager;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
@@ -76,10 +78,11 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
      * @param messageBus The bus for communication.
      * @param alarmDispatcher The dispatcher of alarms.
      * @param referenceArchive The archive for the data.
+     * @param auditManager The manager of audit trails.
      */
-    public GetChecksumsRequestHandler(Settings settings, MessageBus messageBus,
-            AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
-        super(settings, messageBus, alarmDispatcher, referenceArchive);
+    public GetChecksumsRequestHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher, 
+            ReferenceArchive referenceArchive, AuditTrailManager auditManager) {
+        super(settings, messageBus, alarmDispatcher, referenceArchive, auditManager);
     }
     
     /**
@@ -102,6 +105,8 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
             getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
+            getAuditManager().addAuditEvent(message.getFileIDs().toString(), message.getFrom(), 
+                    "Failed calculating requested checksums.", message.getAuditTrailInformation(), FileAction.FAILURE);
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText("Error at my end: " + e.getMessage());
@@ -182,13 +187,17 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
         log.debug("Starting to calculate the checksum of the requested files.");
         
         FileIDs fileids = message.getFileIDs();
-        
+        getAuditManager().addAuditEvent(message.getFileIDs().toString(), message.getFrom(), 
+                "Calculating the requested checksums.", message.getAuditTrailInformation(), FileAction.GET_CHECKSUMS);
+
         if(fileids.isSetAllFileIDs()) {
             log.debug("Calculating the checksum for all the files.");
-            return calculateChecksumForAllFiles(message.getChecksumRequestForExistingFile());
+            return calculateChecksumForAllFiles(message);
         }
         
         log.debug("Calculating the checksum for specified files: " + fileids.getFileID());
+        getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
+                "Calculating the checksum.", message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         res.add(calculateSingleChecksum(fileids.getFileID(), message.getChecksumRequestForExistingFile()));
         
@@ -197,17 +206,18 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
     
     /**
      * Method for calculating the checksum on all the files in the archive.
-     * @param algorithm The algorithm for calculating the checksums.
-     * @param salt The salt of the checksum.
+     * @param message The message with the checksum request.
      * @return The list of checksums for requested files. 
      */
     private List<ChecksumDataForChecksumSpecTYPE> calculateChecksumForAllFiles(
-            ChecksumSpecTYPE csType) {
+            GetChecksumsRequest message) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         
         // Go through every file in the archive, calculate the checksum and put it into the results.
         for(String fileid : getArchive().getAllFileIds()) {
-            res.add(calculateSingleChecksum(fileid, csType));
+            getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
+                    "Calculating the checksum.", message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
+            res.add(calculateSingleChecksum(fileid, message.getChecksumRequestForExistingFile()));
         }
 
         return res;

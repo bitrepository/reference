@@ -36,8 +36,9 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReque
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
+import org.bitrepository.pillar.MockAlarmDispatcher;
+import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
-import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -52,7 +53,9 @@ public class GetFileIDsOnReferencePillarTest extends DefaultFixturePillarTest {
     
     ReferenceArchive archive;
     ReferencePillarMediator mediator;
-    
+    MockAlarmDispatcher alarmDispatcher;
+    MockAuditManager audits;
+
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetChecksumsTests() throws Exception {
         msgFactory = new GetFileIDsMessageFactory(settings);
@@ -63,7 +66,9 @@ public class GetFileIDsOnReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Initialize the pillar.", "Should not be a problem.");
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        mediator = new ReferencePillarMediator(messageBus, settings, archive);
+        audits = new MockAuditManager();
+        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        mediator = new ReferencePillarMediator(messageBus, settings, archive, audits, alarmDispatcher);
     }
     
     @AfterMethod (alwaysRun=true) 
@@ -163,6 +168,10 @@ public class GetFileIDsOnReferencePillarTest extends DefaultFixturePillarTest {
                         finalResponse.getResponseInfo(), 
                         finalResponse.getResultingFileIDs(),
                         finalResponse.getTo()));
+        
+        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 1, "Should deliver 1 audit. Handling of the GetFileIDs "
+                + "operation");
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

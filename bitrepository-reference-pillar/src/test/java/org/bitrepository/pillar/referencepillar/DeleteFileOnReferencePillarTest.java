@@ -27,12 +27,10 @@ package org.bitrepository.pillar.referencepillar;
 import java.io.File;
 import java.util.Date;
 
-import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
@@ -41,6 +39,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRespo
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
+import org.bitrepository.pillar.MockAlarmDispatcher;
+import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.messagefactories.DeleteFileMessageFactory;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.protocol.utils.Base16Utils;
@@ -58,6 +58,8 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
     
     ReferenceArchive archive;
     ReferencePillarMediator mediator;
+    MockAlarmDispatcher alarmDispatcher;
+    MockAuditManager audits;
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseDeleteFileTests() throws Exception {
@@ -69,7 +71,9 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Initialize the pillar.", "Should not be a problem.");
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        mediator = new ReferencePillarMediator(messageBus, settings, archive);
+        audits = new MockAuditManager();
+        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        mediator = new ReferencePillarMediator(messageBus, settings, archive, audits, alarmDispatcher);
     }
     
     @AfterMethod (alwaysRun=true) 
@@ -138,6 +142,7 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
                         receivedIdentifyResponse.getTimeToDeliver(), receivedIdentifyResponse.getTo()));
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 0);
         
         addStep("Create and send the actual DeleteFile message to the pillar.", 
                 "Should be received and handled by the pillar.");
@@ -167,6 +172,9 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 msgFactory.createDeleteFileFinalResponse(finalResponse.getChecksumDataForExistingFile(), 
                         finalResponse.getCorrelationID(), FILE_ID, pillarId, finalResponse.getReplyTo(), 
                         finalResponse.getResponseInfo(), finalResponse.getTo()));
+        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 3, "Should deliver 3 audits. One for delete and two for "
+                + "calculate checksums (both the validation and the requested).");
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -305,7 +313,6 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
                         finalResponse.getCorrelationID(), FILE_ID, pillarId, finalResponse.getReplyTo(), 
                         finalResponse.getResponseInfo(), finalResponse.getTo()));
         
-        AlarmMessage alarm = alarmDestination.waitForMessage(AlarmMessage.class);
-        Assert.assertEquals(alarm.getAlarm().getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
+        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 1, "Should have tried to send an alarm.");
     }
 }

@@ -38,6 +38,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReq
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
+import org.bitrepository.pillar.MockAlarmDispatcher;
+import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.testng.Assert;
@@ -53,6 +55,8 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
     
     ReferenceArchive archive;
     ReferencePillarMediator mediator;
+    MockAlarmDispatcher alarmDispatcher;
+    MockAuditManager audits;
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetChecksumsTests() throws Exception {
@@ -64,7 +68,9 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         
         addStep("Initialize the pillar.", "Should not be a problem.");
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        mediator = new ReferencePillarMediator(messageBus, settings, archive);
+        audits = new MockAuditManager();
+        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        mediator = new ReferencePillarMediator(messageBus, settings, archive, audits, alarmDispatcher);
     }
     
     @AfterMethod (alwaysRun=true) 
@@ -170,6 +176,10 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
                         finalResponse.getResponseInfo(), 
                         finalResponse.getResultingChecksums(),
                         finalResponse.getTo()));
+        
+        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 2, "Should deliver 2 audits. One for handling the "
+                + "GetChecksums operation and one for calculating the requested checksum.");
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

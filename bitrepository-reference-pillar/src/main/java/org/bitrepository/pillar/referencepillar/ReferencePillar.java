@@ -28,6 +28,9 @@ import javax.jms.JMSException;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.AlarmDispatcher;
+import org.bitrepository.pillar.AuditTrailManager;
+import org.bitrepository.pillar.audit.AuditTrailContributerDAO;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
@@ -60,7 +63,9 @@ public class ReferencePillar {
         log.info("Starting the reference pillar!");
         
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        mediator = new ReferencePillarMediator(messageBus, settings, archive);
+        AuditTrailManager audits = new AuditTrailContributerDAO(settings);
+        AlarmDispatcher alarms = new AlarmDispatcher(settings, messageBus);
+        mediator = new ReferencePillarMediator(messageBus, settings, archive, audits, alarms);
         log.info("ReferencePillar started!");
     }
     

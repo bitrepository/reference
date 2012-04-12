@@ -41,6 +41,7 @@ import org.bitrepository.bitrepositorydata.GetFileIDsResults;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -53,6 +54,7 @@ import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.AlarmDispatcher;
+import org.bitrepository.pillar.AuditTrailManager;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
@@ -75,10 +77,11 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      * @param messageBus The bus for communication.
      * @param alarmDispatcher The dispatcher of alarms.
      * @param referenceArchive The archive for the data.
+     * @param auditManager The manager of audit trails.
      */
-    public GetFileIDsRequestHandler(Settings settings, MessageBus messageBus,
-            AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive) {
-        super(settings, messageBus, alarmDispatcher, referenceArchive);
+    public GetFileIDsRequestHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher, 
+            ReferenceArchive referenceArchive, AuditTrailManager auditManager) {
+        super(settings, messageBus, alarmDispatcher, referenceArchive, auditManager);
     }
     
     /**
@@ -100,6 +103,8 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
             getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RuntimeException caught. Sending response for 'error at my end'.", e);
+            getAuditManager().addAuditEvent(message.getFileIDs().toString(), message.getFrom(), 
+                    "Failed getting file ids.", message.getAuditTrailInformation(), FileAction.FAILURE);
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText("GetFileIDs operation failed with the exception: " + e.getMessage());
@@ -180,12 +185,15 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
         ResultingFileIDs res = new ResultingFileIDs();
         FileIDsData data = retrieveFileIDsData(message.getFileIDs());
         
+        getAuditManager().addAuditEvent(message.getFileIDs().toString(), message.getFrom(), "Getting the requested "
+                + "file ids.", message.getAuditTrailInformation(), FileAction.GET_FILEID);
+        
         String resultingAddress = message.getResultAddress();
         if(resultingAddress == null || resultingAddress.isEmpty()) {
             res.setFileIDsData(data);
         } else {
             try {
-                File outputFile = makeTemporaryChecksumFile(message, data);
+                File outputFile = makeTemporaryResultFile(message, data);
                 uploadFile(outputFile, resultingAddress);
                 res.setResultAddress(resultingAddress);
             } catch (Exception e) {
@@ -264,7 +272,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
     }
     
     /**
-     * Method for creating a file containing the list of calculated checksums.
+     * Method for creating a file containing the resulting list of file ids.
      * 
      * @param message The GetChecksumMessage requesting the checksum calculations.
      * @param checksumList The list of checksums to put into the list.
@@ -272,13 +280,13 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      * @throws IOException If a problem occurs during accessing or handling the data.
      * @throws JAXBException If the resulting structure cannot be serialized or if it is invalid.
      */
-    private File makeTemporaryChecksumFile(GetFileIDsRequest message, FileIDsData fileIDs) 
+    private File makeTemporaryResultFile(GetFileIDsRequest message, FileIDsData fileIDs) 
             throws IOException, JAXBException {
         // Create the temporary file.
         File checksumResultFile = File.createTempFile(message.getCorrelationID(), new Date().getTime() + ".id");
         log.debug("Writing the requested fileids to the file '" + checksumResultFile + "'");
 
-        // Print all the checksums safely (close the streams!)
+        // Print all the file ids data safely (close the streams!)
         OutputStream is = null;
         try {
             is = new FileOutputStream(checksumResultFile);
