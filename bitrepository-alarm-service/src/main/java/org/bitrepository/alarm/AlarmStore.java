@@ -62,7 +62,8 @@ public class AlarmStore {
         signer = new BasicMessageSigner();
         authorizer = new BasicOperationAuthorizor(permissionStore);
         securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
-                authenticator, signer, authorizer, permissionStore);
+                authenticator, signer, authorizer, permissionStore, 
+                settings.getReferenceSettings().getAlarmServiceSettings().getID());
 		alarmService = AlarmComponentFactory.getInstance().getAlarmService(settings, securityManager);
 		collector = new AlarmCollector(this.alarmStoreFile, shortAlarmList);
 		alarmService.addHandler(collector, settings.getAlarmDestination()); 

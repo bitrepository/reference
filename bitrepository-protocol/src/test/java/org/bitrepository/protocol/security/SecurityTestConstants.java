@@ -81,6 +81,8 @@ public class SecurityTestConstants {
     
     private static final String allowedCertificateUser = "test-component";
 
+    private static final String componentID = "TEST";
+
     public static String getKeyFile() {
         return KEYFILE;
     }
@@ -111,6 +113,10 @@ public class SecurityTestConstants {
     
     public static String getDisallowedCertificateUser() {
         return allowedCertificateUser + "-bad";
+    }
+    
+    public static String getComponentID() {
+        return componentID;
     }
     
     public static PermissionSet getDefaultPermissions() {

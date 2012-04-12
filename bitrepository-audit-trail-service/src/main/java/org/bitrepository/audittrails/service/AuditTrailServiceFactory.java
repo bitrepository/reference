@@ -84,7 +84,8 @@ public final class AuditTrailServiceFactory {
                 signer = new BasicMessageSigner();
                 authorizer = new BasicOperationAuthorizor(permissionStore);
                 securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
-                        authenticator, signer, authorizer, permissionStore);
+                        authenticator, signer, authorizer, permissionStore, 
+                        settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
                 auditTrailService = new AuditTrailService();
             } catch (IOException e) {
                 throw new RuntimeException(e);

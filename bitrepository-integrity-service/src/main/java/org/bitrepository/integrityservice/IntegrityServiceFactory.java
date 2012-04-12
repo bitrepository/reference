@@ -114,7 +114,8 @@ public final class IntegrityServiceFactory {
             MessageSigner signer = new BasicMessageSigner();
             OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
             securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
-                    authenticator, signer, authorizer, permissionStore);
+                    authenticator, signer, authorizer, permissionStore,
+                    settings.getReferenceSettings().getIntegrityServiceSettings().getID());
         }
         
         return securityManager;

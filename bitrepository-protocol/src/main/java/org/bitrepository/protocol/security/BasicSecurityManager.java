@@ -106,7 +106,7 @@ public class BasicSecurityManager implements SecurityManager {
      * @param permissionStore, the PermissionStore to hold certificates and adjoining permissions  
      */
     public BasicSecurityManager(CollectionSettings collectionSettings, String privateKeyFile, MessageAuthenticator authenticator,
-            MessageSigner signer, OperationAuthorizor authorizer, PermissionStore permissionStore) {
+            MessageSigner signer, OperationAuthorizor authorizer, PermissionStore permissionStore, String componentID) {
         ArgumentValidator.checkNotNull(collectionSettings, "collectionSettings");
         ArgumentValidator.checkNotNull(authenticator, "authenticator");
         ArgumentValidator.checkNotNull(signer, "signer");
@@ -118,7 +118,7 @@ public class BasicSecurityManager implements SecurityManager {
         this.signer = signer;
         this.authorizer = authorizer;
         this.permissionStore = permissionStore;
-        this.componentID = "FOOBAR"; //TODO parameterize!
+        this.componentID = componentID;
         initialize();
     }
     

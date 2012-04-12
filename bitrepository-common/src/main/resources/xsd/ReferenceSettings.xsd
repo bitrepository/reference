@@ -48,6 +48,7 @@
         <xs:element ref="AlarmServiceSettings" minOccurs="0" />
         <xs:element ref="AuditTrailServiceSettings" minOccurs="0" />
         <xs:element ref="IntegrityServiceSettings" minOccurs="0" />
+        <xs:element ref="MonitoringServiceSettings" minOccurs="0" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -239,6 +240,19 @@
           The settings for the ReplaceFileClient
         </xs:documentation>
       </xs:annotation>
+    </xs:complexType>
+  </xs:element>
+    
+  <xs:element name="MonitoringServiceSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+          The settings for the Alarm service.
+        </xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="ID" type="xs:string" />
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
 

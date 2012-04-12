@@ -89,7 +89,8 @@ public final class ChecksumPillarLauncher {
             MessageSigner signer = new BasicMessageSigner();
             OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
             securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
-                    authenticator, signer, authorizer, permissionStore);
+                    authenticator, signer, authorizer, permissionStore,
+                    settings.getReferenceSettings().getPillarSettings().getPillarID());
         } catch (Exception e) {
             System.err.println("Could not instantiate the security manager.");
             e.printStackTrace();

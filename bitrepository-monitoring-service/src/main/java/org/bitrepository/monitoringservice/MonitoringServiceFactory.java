@@ -102,7 +102,8 @@ public class MonitoringServiceFactory {
             MessageSigner signer = new BasicMessageSigner();
             OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
             securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
-                    authenticator, signer, authorizer, permissionStore);
+                    authenticator, signer, authorizer, permissionStore, 
+                    settings.getReferenceSettings().getMonitoringServiceSettings().getID());
         }
         
         return securityManager;

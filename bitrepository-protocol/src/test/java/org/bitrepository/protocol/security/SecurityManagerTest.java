@@ -42,7 +42,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class SecurityManagerTest extends ExtendedTestCase  {
-    private static final String componentId = "TEST";
     private final Logger log = LoggerFactory.getLogger(getClass());
     private SecurityManager securityManager;
     private PermissionStore permissionStore;
@@ -62,7 +61,8 @@ public class SecurityManagerTest extends ExtendedTestCase  {
                         authenticator, 
                         messageSigner, 
                         authorizer, 
-                        permissionStore);
+                        permissionStore,
+                        SecurityTestConstants.getComponentID());
     }
     
     @Test(groups = {"regressiontest"})
@@ -91,7 +91,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         addDescription("Tests that a certificate is only allowed by registered users (component).");
         addStep("Check that the registered component is allowed.", "The registered component is allowed.");
 
-        permissionStore.loadPermissions(getSigningCertPermission(), componentId);
+        permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
 
         try {
             securityManager.authorizeCertificateUse(SecurityTestConstants.getAllowedCertificateUser(), 
@@ -121,7 +121,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         } catch (MessageSigningException e) {
             Assert.fail("Failed signing test data!", e);
         }
-        permissionStore.loadPermissions(getSigningCertPermission(), componentId);
+        permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
         
         String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)));
         log.info("Signature for testdata is: " + signatureString);
@@ -169,7 +169,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         } catch (MessageSigningException e) {
             Assert.fail("Failed signing test data!", e);
         }
-        permissionStore.loadPermissions(getSigningCertPermission(), componentId);
+        permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
         
         String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)));
         log.info("Signature for testdata is: " + signatureString);
