@@ -35,7 +35,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResp
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.protocol.exceptions.NegativeResponseException;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
 import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 
 /**
@@ -43,7 +43,7 @@ import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
  */
 public class PillarSelectorForReplaceFile {
     /** Used for tracking who has answered. */
-    private final PillarsResponseStatus responseStatus;
+    private final ContributorResponseStatus responseStatus;
     /** The pillars which have been selected for a replace request. */
     private final List<SelectedPillarInfo> selectedPillars = new LinkedList<SelectedPillarInfo>(); 
     
@@ -53,7 +53,7 @@ public class PillarSelectorForReplaceFile {
      */
     public PillarSelectorForReplaceFile(Collection<String> pillarsWhichShouldRespond) {
         ArgumentValidator.checkNotNullOrEmpty(pillarsWhichShouldRespond, "pillarsWhichShouldRespond");
-        responseStatus = new PillarsResponseStatus(pillarsWhichShouldRespond);
+        responseStatus = new ContributorResponseStatus(pillarsWhichShouldRespond);
     }
     
     /**

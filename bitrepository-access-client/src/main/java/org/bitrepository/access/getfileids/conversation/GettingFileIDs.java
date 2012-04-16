@@ -42,7 +42,7 @@ import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
 import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 
 /**
@@ -57,7 +57,7 @@ public class GettingFileIDs extends GetFileIDsState {
     /** The pillars, which has not yet answered.*/
     private List<SelectedPillarInfo> pillarsSelectedForRequest; 
     /** The status for the expected responses.*/
-    private final PillarsResponseStatus responseStatus;
+    private final ContributorResponseStatus responseStatus;
 
     /** 
      * The timer for the getFileTimeout. It is run as a daemon thread, eg. it will not prevent the application from 
@@ -76,7 +76,7 @@ public class GettingFileIDs extends GetFileIDsState {
     public GettingFileIDs(SimpleGetFileIDsConversation conversation) {
         super(conversation);
         pillarsSelectedForRequest = conversation.selector.getSelectedPillars();
-        responseStatus = new PillarsResponseStatus(
+        responseStatus = new ContributorResponseStatus(
                 pillarsSelectedForRequest.toArray(new SelectedPillarInfo[pillarsSelectedForRequest.size()]));
     }
 
@@ -141,7 +141,7 @@ public class GettingFileIDs extends GetFileIDsState {
                     results.put(response.getPillarID(), response.getResultingFileIDs());
                 }
             } else {
-                monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
+                monitor.contributorFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
             } 
         } catch (UnexpectedResponseException ure) {
             monitor.warning("Received bad FinalResponse from pillar: " + response.getResponseInfo(), ure);

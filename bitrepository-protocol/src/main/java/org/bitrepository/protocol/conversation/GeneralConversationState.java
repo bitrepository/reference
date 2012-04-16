@@ -24,14 +24,13 @@
  */
 package org.bitrepository.protocol.conversation;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Implements the generic conversation state functionality, 
@@ -64,18 +63,10 @@ public abstract class GeneralConversationState {
      */
     public synchronized final void handleMessage(Message message) {
         if (!(message instanceof MessageResponse)) {
-            getContext().getMonitor().outOfSequenceMessage("Can only handle responses, but received " +
-                    message.getClass().getSimpleName());
+            getContext().getMonitor().outOfSequenceMessage(
+                    "Can only handle responses, but received " + message.getClass().getSimpleName());
         }
         MessageResponse response = (MessageResponse)message;
-        if (!response.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE) &&
-            !response.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) &&
-            !response.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_PROGRESS) &&
-            !response.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_COMPLETED)    ) {
-            getContext().getMonitor().pillarFailed("Received negative response from component " +
-                    response.getFrom() +
-                    ":  " + response.getResponseInfo());
-        }
         try {
             processMessage(response);
         } catch (UnexpectedResponseException e) {

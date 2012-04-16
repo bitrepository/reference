@@ -36,14 +36,14 @@ import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
 import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 
 public class GettingStatus extends GetStatusState {
     /** The pillars, which has not yet answered.*/
     private List<SelectedPillarInfo> contributorsSelectedForRequest; 
     /** Tracks who have responded */
-    private final PillarsResponseStatus responseStatus;
+    private final ContributorResponseStatus responseStatus;
 
     /** Defines that the timer is a daemon thread. */
     private static final Boolean TIMER_IS_DAEMON = true;
@@ -58,7 +58,7 @@ public class GettingStatus extends GetStatusState {
     public GettingStatus(SimpleGetStatusConversation conversation) {
         super(conversation);
         contributorsSelectedForRequest = conversation.selector.getSelectedContributors();
-        responseStatus = new PillarsResponseStatus(
+        responseStatus = new ContributorResponseStatus(
                 contributorsSelectedForRequest.toArray(
                         new SelectedPillarInfo[conversation.selector.getSelectedContributors().size()]));
     }
@@ -99,7 +99,7 @@ public class GettingStatus extends GetStatusState {
                     "Received status result from " + response.getContributor(), 
                     response.getContributor(), response.getResultingStatus()));
         } else {
-            monitor.pillarFailed("Received negativ FinalResponse from contributor: " + response.getResponseInfo());
+            monitor.contributorFailed("Received negativ FinalResponse from contributor: " + response.getResponseInfo());
         } 
 
         if(responseStatus.haveAllPillarResponded()) {

@@ -36,11 +36,11 @@ import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.protocol.ProtocolConstants;
+import org.bitrepository.protocol.eventhandler.ContributorEvent;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
 import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 
 /**
@@ -62,7 +62,7 @@ public class DeletingFile extends DeleteFileState {
     /** The pillars, which has not yet answered.*/
     private List<SelectedPillarInfo> pillarsSelectedForRequest; 
     /** The responses for the pillars.*/
-    private final PillarsResponseStatus deleteResponseStatus;
+    private final ContributorResponseStatus deleteResponseStatus;
 
     /**
      * Constructor.
@@ -71,7 +71,7 @@ public class DeletingFile extends DeleteFileState {
     public DeletingFile(SimpleDeleteFileConversation conversation) {
         super(conversation);
         pillarsSelectedForRequest = conversation.pillarSelector.getSelectedPillars();
-        deleteResponseStatus = new PillarsResponseStatus(conversation.pillarId);
+        deleteResponseStatus = new ContributorResponseStatus(conversation.pillarId);
     }
 
     /**
@@ -122,7 +122,7 @@ public class DeletingFile extends DeleteFileState {
      */
     @Override
     public void onMessage(DeleteFileProgressResponse response) {
-        monitor.progress(new PillarOperationEvent(OperationEvent.OperationEventType.PROGRESS, 
+        monitor.progress(new ContributorEvent(OperationEvent.OperationEventType.PROGRESS,
                 "Received DeleteFileProgressResponse from pillar " + response.getPillarID() + ": " + 
                         response.getResponseInfo().getResponseText(), response.getPillarID(), 
                         conversation.getConversationID()));
@@ -142,7 +142,7 @@ public class DeletingFile extends DeleteFileState {
                     response.getPillarID(),
                     "Received delete file result from " + response.getPillarID()));
         } else {
-            monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
+            monitor.contributorFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
         }
         
         // Check if the conversation has finished.

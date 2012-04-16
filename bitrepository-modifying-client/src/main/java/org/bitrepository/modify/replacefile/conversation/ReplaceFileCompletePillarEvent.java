@@ -25,12 +25,12 @@
 package org.bitrepository.modify.replacefile.conversation;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
+import org.bitrepository.protocol.eventhandler.ContributorEvent;
 
 /**
 * Contains the result of a ReplaceFile request sent to a single pillar.
 */
-public class ReplaceFileCompletePillarEvent extends PillarOperationEvent {
+public class ReplaceFileCompletePillarEvent extends ContributorEvent {
     /** @see #getChecksumForDeletedFile(). */
     private final ChecksumDataForFileTYPE deletedFileChecksum;
     /** @see #getChecksumForNewFile(). */

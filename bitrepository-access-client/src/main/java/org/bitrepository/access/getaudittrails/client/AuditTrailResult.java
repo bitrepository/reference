@@ -22,12 +22,12 @@
 package org.bitrepository.access.getaudittrails.client;
 
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
+import org.bitrepository.protocol.eventhandler.ContributorEvent;
 
 /**
  * Returns the result of a Audit Trail final response.
  */
-public class AuditTrailResult extends PillarOperationEvent {
+public class AuditTrailResult extends ContributorEvent {
     private final ResultingAuditTrails auditTrailEvents;
 
     public AuditTrailResult(String info, String pillarID, ResultingAuditTrails auditTrailEvents, String conversationID) {

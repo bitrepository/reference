@@ -21,21 +21,18 @@
  */
 package org.bitrepository.access.getaudittrails.client;
 
+import org.bitrepository.access.getaudittrails.AuditTrailQuery;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
+import org.bitrepository.protocol.ProtocolConstants;
+import org.bitrepository.protocol.conversation.ConversationContext;
+import org.bitrepository.protocol.conversation.GeneralConversationState;
+import org.bitrepository.protocol.conversation.IdentifyingState;
+import org.bitrepository.protocol.pillarselector.ComponentSelector;
+import org.bitrepository.protocol.pillarselector.MultipleComponentSelector;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bitrepository.access.getaudittrails.AuditTrailQuery;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
-import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.conversation.GeneralConversationState;
-import org.bitrepository.protocol.conversation.ConversationContext;
-import org.bitrepository.protocol.conversation.IdentifyingState;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.ComponentSelector;
-import org.bitrepository.protocol.pillarselector.MultipleComponentSelector;
 
 public class IdentifyingAuditTrailContributers extends IdentifyingState {
     private final AuditTrailConversationContext context;
@@ -48,7 +45,7 @@ public class IdentifyingAuditTrailContributers extends IdentifyingState {
         for (AuditTrailQuery entry:context.getComponentQueries()) {
             expectedContributers.add(entry.getComponentID());
         }
-        selector = new MultipleComponentSelector(expectedContributers);
+        selector = new AuditTrailContributorSelector(expectedContributers);
     }
 
     @Override
@@ -64,17 +61,6 @@ public class IdentifyingAuditTrailContributers extends IdentifyingState {
 
         context.getMessageSender().sendMessage(identifyRequest);
         context.getMonitor().identifyPillarsRequestSent("Identifying contributers for audit trails");
-    }
-
-    @Override
-    protected void processMessage(MessageResponse msg) throws UnexpectedResponseException {
-        if (msg instanceof IdentifyContributorsForGetAuditTrailsResponse) {
-            IdentifyContributorsForGetAuditTrailsResponse response = (IdentifyContributorsForGetAuditTrailsResponse)msg;
-            selector.processResponse(response);
-            context.getMonitor().pillarIdentified(response);
-        } else {
-            throw new UnexpectedResponseException("Are currently only expecting IdentifyContributorsForGetAuditTrailsResponse's");
-        }
     }
 
     @Override

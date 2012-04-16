@@ -25,12 +25,12 @@
 package org.bitrepository.modify.deletefile.conversation;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
+import org.bitrepository.protocol.eventhandler.ContributorEvent;
 
 /**
 * Contains the result of a delete request sent to a single pillar.
 */
-public class DeleteFileCompletePillarEvent extends PillarOperationEvent {
+public class DeleteFileCompletePillarEvent extends ContributorEvent {
     /** @see #getDeleteResults(). */
     private final ChecksumDataForFileTYPE result;
     

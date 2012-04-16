@@ -22,9 +22,9 @@
 package org.bitrepository.access.getstatus.conversation;
 
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
+import org.bitrepository.protocol.eventhandler.ContributorEvent;
 
-public class StatusCompleteContributorEvent extends PillarOperationEvent {
+public class StatusCompleteContributorEvent extends ContributorEvent {
 
     private final ResultingStatus status;
     

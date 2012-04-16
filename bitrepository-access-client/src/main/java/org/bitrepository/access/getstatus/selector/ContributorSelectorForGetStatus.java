@@ -35,7 +35,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusR
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.protocol.exceptions.NegativeResponseException;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
 import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 
 /**
@@ -43,7 +43,7 @@ import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
  */
 public class ContributorSelectorForGetStatus {
     /** Used for tracking who has answered. */
-    private final PillarsResponseStatus responseStatus;
+    private final ContributorResponseStatus responseStatus;
     /** The contributors which have been selected for a status request. */
     private final List<SelectedPillarInfo> selectedContributors = new LinkedList<SelectedPillarInfo>(); 
     
@@ -53,7 +53,7 @@ public class ContributorSelectorForGetStatus {
      */
     public ContributorSelectorForGetStatus(Collection<String> contributorsWhichShouldRespond) {
         ArgumentValidator.checkNotNullOrEmpty(contributorsWhichShouldRespond, "contributorsWhichShouldRespond");
-        responseStatus = new PillarsResponseStatus(contributorsWhichShouldRespond);
+        responseStatus = new ContributorResponseStatus(contributorsWhichShouldRespond);
     }
     
     /**

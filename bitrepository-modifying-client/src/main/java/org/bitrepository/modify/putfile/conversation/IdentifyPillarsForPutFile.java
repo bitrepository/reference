@@ -39,7 +39,7 @@ import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
 
 /**
  * The first state of the PutFile communication. The identification of the pillars involved.
@@ -56,7 +56,7 @@ public class IdentifyPillarsForPutFile extends PutFileState {
     private TimerTask timerTask = new IdentifyTimerTask();
     
     /** Response status for the pillars.*/
-    final PillarsResponseStatus identifyResponseStatus;
+    final ContributorResponseStatus identifyResponseStatus;
 
     /**
      * Mapping between the identified pillars and their destinations.
@@ -69,7 +69,7 @@ public class IdentifyPillarsForPutFile extends PutFileState {
      */
     public IdentifyPillarsForPutFile(SimplePutFileConversation conversation) {
         super(conversation);
-        this.identifyResponseStatus = new PillarsResponseStatus(
+        this.identifyResponseStatus = new ContributorResponseStatus(
                 conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs());
     }
 
@@ -130,8 +130,8 @@ public class IdentifyPillarsForPutFile extends PutFileState {
             monitor.pillarIdentified("Identified the pillar '" + response.getPillarID() + "' for Put.", 
                     response.getPillarID());
         } else {
-            monitor.pillarFailed("Negative identification from pillar '" + response.getPillarID() + "' received: " 
-                    + rInfo);
+            monitor.contributorFailed("Negative identification from pillar '" + response.getPillarID() + "' received: "
+                                      + rInfo);
         }
     }
 

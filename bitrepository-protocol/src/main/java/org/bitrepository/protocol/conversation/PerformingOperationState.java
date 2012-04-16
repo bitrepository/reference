@@ -21,10 +21,37 @@
  */
 package org.bitrepository.protocol.conversation;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.exceptions.UnableToFinishException;
-import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
+import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
+import org.bitrepository.protocol.utils.MessageUtils;
 
 public abstract class PerformingOperationState extends GeneralConversationState {
+
+    @Override
+    protected void processMessage(MessageResponse msg) {
+        if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) ||
+            msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_PROGRESS)) {
+            getContext().getMonitor().progress(msg.getResponseInfo().getResponseText());
+        } else {
+            try {
+            if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_COMPLETED)) {
+                getResponseStatus().responseReceived(msg.getFrom());
+                generateCompleteEvent(msg);
+            } else if (MessageUtils.isIdentifyResponse(msg)) {
+                getContext().getMonitor().outOfSequenceMessage("Received identify response from " +
+                                                               msg.getFrom() + " after identification was finished");
+            } else {
+                getResponseStatus().responseReceived(msg.getFrom());
+                getContext().getMonitor().contributorFailed("Received negative response from component " + msg.getFrom() + ":  " + msg.getResponseInfo());
+            }
+            } catch(UnexpectedResponseException ure ) {
+                getContext().getMonitor().warning(ure.getMessage());
+            }
+        }
+    }
 
     @Override
     protected GeneralConversationState getNextState() throws UnableToFinishException {
@@ -39,7 +66,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     @Override
     protected GeneralConversationState handleStateTimeout() {
         getContext().getMonitor().operationFailed(getName() + " operation timed out, " +
-                "the following contributors didn't respond: " + getResponseStatus().getOutstandPillars());
+                                                  "the following contributors didn't respond: " + getResponseStatus().getOutstandPillars());
         return new FinishedState(getContext());
     }
 
@@ -48,5 +75,15 @@ public abstract class PerformingOperationState extends GeneralConversationState 
         return getContext().getSettings().getCollectionSettings().getClientSettings().getOperationTimeout().longValue();
     }
 
-    protected abstract PillarsResponseStatus getResponseStatus();
+    /**
+     * Delegating the generation of the COMPLETE_EVENT to the concrete state.
+     * @param msg The final response to process into result event.
+     * @throws UnexpectedResponseException Unable to generate a result event based on the supplied message.
+     */
+    protected abstract void generateCompleteEvent(MessageResponse msg) throws UnexpectedResponseException;
+
+    /**
+     * @return The concrete response status implemented by the subclass.
+     */
+    protected abstract ContributorResponseStatus getResponseStatus();
 }

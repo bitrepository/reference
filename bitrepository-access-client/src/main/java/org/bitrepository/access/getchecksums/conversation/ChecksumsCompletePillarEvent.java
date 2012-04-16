@@ -26,12 +26,12 @@ package org.bitrepository.access.getchecksums.conversation;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
+import org.bitrepository.protocol.eventhandler.ContributorEvent;
 
 /**
 * Contains the result of a checksum request sent to a single pillar.
 */
-public class ChecksumsCompletePillarEvent extends PillarOperationEvent {
+public class ChecksumsCompletePillarEvent extends ContributorEvent {
     /** @see #getChecksums(). */
     private final ResultingChecksums result;
     /** @see #getChecksumType(). */

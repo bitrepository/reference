@@ -50,8 +50,6 @@ public class AuditTrailQuery {
         this(componentID, minSequenceNumber, null);
     }
     /**
-     *
-     *
      * Queries for all Audit Trails with sequence number between minSequenceNumber and maxSequenceNumber.
      * @param minSequenceNumber
      * @param maxSequenceNumber

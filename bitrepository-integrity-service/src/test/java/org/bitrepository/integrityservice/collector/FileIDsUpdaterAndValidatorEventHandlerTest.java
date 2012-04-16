@@ -32,8 +32,8 @@ import org.bitrepository.integrityservice.collector.eventhandler.FileIDsUpdaterA
 import org.bitrepository.integrityservice.mocks.MockAlarmDispatcher;
 import org.bitrepository.integrityservice.mocks.MockChecker;
 import org.bitrepository.integrityservice.mocks.MockIntegrityModel;
+import org.bitrepository.protocol.eventhandler.ContributorEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -64,7 +64,7 @@ public class FileIDsUpdaterAndValidatorEventHandlerTest extends ExtendedTestCase
         Assert.assertEquals(alarmDispatcher.getCallsForIntegrityFailed(), 0, "Should not have integrity failures.");
         
         addStep("Handle Progress", "Should not call anything.");
-        PillarOperationEvent progressEvent = new PillarOperationEvent(OperationEventType.PROGRESS, "progess", pillarId);
+        ContributorEvent progressEvent = new ContributorEvent(OperationEventType.PROGRESS, "progess", pillarId);
         progressEvent.setConversationID(correlationId);
         eventHandler.handleEvent(progressEvent);
         Assert.assertEquals(mockCache.getCallsForAddChecksums(), 0, "Should be no calls for add checksums");
@@ -74,7 +74,7 @@ public class FileIDsUpdaterAndValidatorEventHandlerTest extends ExtendedTestCase
         Assert.assertEquals(alarmDispatcher.getCallsForIntegrityFailed(), 0, "Should not have integrity failures.");
 
         addStep("Handle Failure", "Should only perform a call to the checker.");
-        PillarOperationEvent failedEvent = new PillarOperationEvent(OperationEventType.FAILED, "failure", pillarId);
+        ContributorEvent failedEvent = new ContributorEvent(OperationEventType.FAILED, "failure", pillarId);
         failedEvent.setConversationID(correlationId);
         eventHandler.handleEvent(failedEvent);
         Assert.assertEquals(mockCache.getCallsForAddChecksums(), 0, "Should be no calls for add checksums");
@@ -84,7 +84,7 @@ public class FileIDsUpdaterAndValidatorEventHandlerTest extends ExtendedTestCase
         Assert.assertEquals(alarmDispatcher.getCallsForIntegrityFailed(), 0, "Should not have integrity failures.");
         
         addStep("Handle Complete", "Should only perform a call to the checker.");
-        PillarOperationEvent completeEvent = new PillarOperationEvent(OperationEventType.COMPLETE, "complete", pillarId);
+        ContributorEvent completeEvent = new ContributorEvent(OperationEventType.COMPLETE, "complete", pillarId);
         completeEvent.setConversationID(correlationId);
         eventHandler.handleEvent(completeEvent);
         Assert.assertEquals(mockCache.getCallsForAddChecksums(), 0, "Should be no calls for add checksums");
@@ -141,7 +141,7 @@ public class FileIDsUpdaterAndValidatorEventHandlerTest extends ExtendedTestCase
         Assert.assertEquals(alarmDispatcher.getCallsForIntegrityFailed(), 0, "Should not have integrity failures.");
         
         addStep("Handle Complete", "Should only perform a call to the checker.");
-        PillarOperationEvent completeEvent = new PillarOperationEvent(OperationEventType.COMPLETE, "complete", pillarId);
+        ContributorEvent completeEvent = new ContributorEvent(OperationEventType.COMPLETE, "complete", pillarId);
         completeEvent.setConversationID(correlationId);
         eventHandler.handleEvent(completeEvent);
         Assert.assertEquals(mockCache.getCallsForAddChecksums(), 0, "Should be no calls for add checksums");

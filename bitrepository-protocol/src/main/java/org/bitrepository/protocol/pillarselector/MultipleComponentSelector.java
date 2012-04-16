@@ -21,19 +21,19 @@
  */
 package org.bitrepository.protocol.pillarselector;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
 public class MultipleComponentSelector implements ComponentSelector {
     /** Used for tracking who has answered. */
-    private final PillarsResponseStatus responseStatus;
+    private final ContributorResponseStatus responseStatus;
     private final List<SelectedPillarInfo> selectedComponents = new LinkedList<SelectedPillarInfo>();
 
     /**
@@ -41,11 +41,11 @@ public class MultipleComponentSelector implements ComponentSelector {
      */
     public MultipleComponentSelector(Collection<String> pillarsWhichShouldRespond) {
         ArgumentValidator.checkNotNullOrEmpty(pillarsWhichShouldRespond, "pillarsWhichShouldRespond");
-        responseStatus = new PillarsResponseStatus(pillarsWhichShouldRespond);
+        responseStatus = new ContributorResponseStatus(pillarsWhichShouldRespond);
     }
 
     /**
-     * Method for processing a IdentifyPillarsForDeleteFileResponse. Checks whether the response is from the wanted
+     * Method for processing a IdentifyPillarsForDeleteFileResponse. Checks whether the response is from the
      * expected pillar.
      * @param response The response identifying a pillar for the DeleteFile operation.
      */
