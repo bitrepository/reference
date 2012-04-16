@@ -24,56 +24,29 @@
  */
 package org.bitrepository.monitoringservice.webservice;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
-import org.bitrepository.monitoringservice.MonitoringService;
 import org.bitrepository.monitoringservice.MonitoringServiceFactory;
-import org.bitrepository.monitoringservice.utils.LogbackConfigLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.bitrepository.protocol.service.AbstractBitrepositoryContextListener;
+import org.bitrepository.protocol.service.BitrepositoryService;
 
 
 /**
- * The Listener has two intentions
- * 1) Acquire necessary information at startup to locate configuration files and create the first instance 
- * 		of the basic client, so everything is setup before the first users start using the webservice. 
- * 2) In time shut the service down in a proper manner, so no threads will be orphaned.   
+ * The context listener for the monitoring service
  */
-public class MonitoringServiceContextListener implements ServletContextListener {
-    private final Logger log = LoggerFactory.getLogger(getClass());
-    
-    /**
-     * Do initialization work  
-     */
+public class MonitoringServiceContextListener extends AbstractBitrepositoryContextListener {
+
     @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        String confDir = sce.getServletContext().getInitParameter("monitoringServiceConfDir");
-        if(confDir == null) {
-            throw new RuntimeException("No configuration directory specified!");
-        }
-        log.debug("Configuration dir = " + confDir);
-        //System.setProperty(ConfigurationFactory.CONFIGURATION_DIR_SYSTEM_PROPERTY, confDir);
-        try {
-            new LogbackConfigLoader(confDir + "/logback.xml");
-        } catch (Exception e) {
-        	log.info("Failed to read log configuration file. Falling back to default.");
-        } 
-        MonitoringServiceFactory.init(confDir);
-        MonitoringService service = MonitoringServiceFactory.getMonitoringService();
-        log.debug("Servlet context initialized");
+    public String getSettingsParameter() {
+        return "monitoringServiceConfDir";
     }
-    
-    /**
-     * Do teardown work. 
-     */
+
     @Override
-    public void contextDestroyed(ServletContextEvent sce) {
-        // Method that's run when the war file is undeployed. 
-        // Can be used to shut everything down nicely..
-        MonitoringService service = MonitoringServiceFactory.getMonitoringService();
-        service.shutdown();
-        log.debug("Servlet context destroyed");
+    public BitrepositoryService getService() {
+        return MonitoringServiceFactory.getMonitoringService();
+    }
+
+    @Override
+    public void initialize(String configutrationDir) {
+        MonitoringServiceFactory.init(configutrationDir);        
     }
     
 }
