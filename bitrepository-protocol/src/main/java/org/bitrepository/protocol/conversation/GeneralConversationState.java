@@ -68,7 +68,10 @@ public abstract class GeneralConversationState {
                     message.getClass().getSimpleName());
         }
         MessageResponse response = (MessageResponse)message;
-        if (!response.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
+        if (!response.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE) &&
+            !response.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) &&
+            !response.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_PROGRESS) &&
+            !response.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_COMPLETED)    ) {
             getContext().getMonitor().pillarFailed("Received negative response from component " +
                     response.getFrom() +
                     ":  " + response.getResponseInfo());
