@@ -21,19 +21,12 @@
  */
 package org.bitrepository.access.getaudittrails;
 
-import java.math.BigInteger;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.access.getaudittrails.client.ConversationBasedAuditTrailClient;
 import org.bitrepository.bitrepositoryelements.*;
-import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.clienttest.TestEventHandler;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -47,14 +40,20 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.math.BigInteger;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Test the default AuditTrailClient.
+ */
 public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
     private GetAuditTrailsMessageFactory testMessageFactory;
     private FileIDs ALL_FILE_IDS;
-    private final String TEST_CLIENT_ID = "test-client";
 
     @BeforeMethod(alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
-        testMessageFactory = new GetAuditTrailsMessageFactory(settings.getCollectionID());
+        testMessageFactory = new GetAuditTrailsMessageFactory(settings.getCollectionID(), TEST_CLIENT_ID);
 
         if (settings.getCollectionSettings().getGetAuditTrailSettings() == null) {
             settings.getCollectionSettings().setGetAuditTrailSettings(new GetAuditTrailSettings());
@@ -72,7 +71,8 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
      */
     @Test(groups = {"regressiontest"})
     public void verifyAuditTrailClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createAuditTrailClient(settings, securityManager)
+        Assert.assertTrue(AccessComponentFactory.getInstance().createAuditTrailClient(
+                settings, securityManager, TEST_CLIENT_ID)
                 instanceof ConversationBasedAuditTrailClient,
                 "The default AuditTrailClient from the Access factory should be of the type '" +
                         ConversationBasedAuditTrailClient.class.getName() + "'.");
@@ -89,7 +89,190 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
                 "This should be interpreted as a request for all audit trails from all the collection settings " +
                         "defined contributers.");
-        client.getAuditTrails(null, null, null, TEST_CLIENT_ID, testEventHandler, null);
+        client.getAuditTrails(null, null, null, testEventHandler, null);
+        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
+                collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
+
+        addStep("Send a identifyResponse from each pillar",
+                "Two COMPONENT_IDENTIFIED events and a IDENTIFICATION_COMPLETE event should be received." +
+                "Rights after this a REQUEST_SENT should be received and a GetAuditTrailsRequest should " +
+                "be sent to each pillar");
+        IdentifyContributorsForGetAuditTrailsResponse responsePillar1 =
+                testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
+                        PILLAR1_ID, pillar1DestinationId);
+        messageBus.sendMessage(responsePillar1);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
+
+        IdentifyContributorsForGetAuditTrailsResponse responsePillar2 =
+                testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
+                        PILLAR2_ID, pillar2DestinationId);
+        messageBus.sendMessage(responsePillar2);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
+
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.REQUEST_SENT);
+        GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
+        Assert.assertEquals(requestPillar1, testMessageFactory.createGetAuditTrailsRequest(
+                identifyRequest, PILLAR1_ID, pillar1DestinationId));
+        GetAuditTrailsRequest requestPillar2 = pillar2Destination.waitForMessage(GetAuditTrailsRequest.class);
+        Assert.assertEquals(requestPillar2, testMessageFactory.createGetAuditTrailsRequest(
+                identifyRequest, PILLAR2_ID, pillar2DestinationId));
+
+        addStep("Send a final response from pillar 1",
+                "A COMPONENT_COMPLETE event should be generated with the audit trail results.");
+        ResultingAuditTrails result1 = createTestResultingAuditTrails(PILLAR1_ID);
+        GetAuditTrailsFinalResponse resultPillar1 =
+                testMessageFactory.createGetAuditTrailsFinalResponse(requestPillar1,
+                        PILLAR1_ID, pillar1DestinationId, result1);
+        messageBus.sendMessage(resultPillar1);
+        AuditTrailResult result1Event = (AuditTrailResult)testEventHandler.waitForEvent();
+        Assert.assertEquals(result1Event.getType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(result1Event.getAuditTrailEvents(), result1);
+
+        addStep("Send a final response from pillar 2",
+                "A COMPONENT_COMPLETE event should be generated with the audit trail results." +
+                        "This should be followed by a COMPLETE event");
+        ResultingAuditTrails result2 = createTestResultingAuditTrails(PILLAR2_ID);
+        GetAuditTrailsFinalResponse resultPillar2 =
+                testMessageFactory.createGetAuditTrailsFinalResponse(requestPillar1,
+                        PILLAR2_ID, pillar2DestinationId, result2);
+        messageBus.sendMessage(resultPillar2);
+
+        AuditTrailResult result2Event = (AuditTrailResult)testEventHandler.waitForEvent();
+        Assert.assertEquals(result2Event.getType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(result2Event.getAuditTrailEvents(), result2);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.COMPLETE);
+    }
+
+
+    @Test(groups = {"regressiontest"})
+    public void getSomeAuditTrails() throws InterruptedException {
+        addDescription("Tests the client mappes a AuditTrail query correctly to a GetAuditTrail request.");
+
+        addStep("Create a AuditTrailClient.", "");
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        AuditTrailClient client = createAuditTrailClient();
+
+        addStep("Request audit trails from pillar 1 with both min and max sequence number set.",
+                "A identify request is sent.");
+        AuditTrailQuery query1 = new AuditTrailQuery(PILLAR1_ID, 1, 3);
+        client.getAuditTrails(new AuditTrailQuery[] { query1 }, null, null, testEventHandler, null);
+        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
+                collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
+
+        addStep("Send a identifyResponse from pillar1",
+                "A COMPONENT_IDENTIFIED event and a IDENTIFICATION_COMPLETE event should be received." +
+                "Rights after this a REQUEST_SENT should be received and a GetAuditTrailsRequest should " +
+                "be sent to pillar1");
+        IdentifyContributorsForGetAuditTrailsResponse responsePillar1 =
+                testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
+                        PILLAR1_ID, pillar1DestinationId);
+        messageBus.sendMessage(responsePillar1);
+        IdentifyContributorsForGetAuditTrailsResponse responsePillar2 =
+                testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
+                        PILLAR2_ID, pillar2DestinationId);
+        messageBus.sendMessage(responsePillar2);
+
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
+
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.REQUEST_SENT);
+        GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
+        GetAuditTrailsRequest request = testMessageFactory.createGetAuditTrailsRequest(
+                identifyRequest, PILLAR1_ID, pillar1DestinationId);
+        request.setMinSequenceNumber(BigInteger.valueOf(1));
+        request.setMaxSequenceNumber(BigInteger.valueOf(3));
+        Assert.assertEquals(requestPillar1, request);
+
+        addStep("Verify no request is sent to pillar2", "");
+        pillar2Destination.checkNoMessageIsReceived(GetAuditTrailsRequest.class);
+
+        addStep("Send a final response from pillar 1",
+                "A COMPONENT_COMPLETE event should be generated with the audit trail results." +
+                "This should be followed by a COMPLETE event");
+        ResultingAuditTrails result = createTestResultingAuditTrails(PILLAR1_ID);
+        GetAuditTrailsFinalResponse resultResponse =
+                testMessageFactory.createGetAuditTrailsFinalResponse(requestPillar1,
+                        PILLAR1_ID, pillar1DestinationId, result);
+        messageBus.sendMessage(resultResponse);
+        AuditTrailResult resultEvent = (AuditTrailResult)testEventHandler.waitForEvent();
+        Assert.assertEquals(resultEvent.getType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(resultEvent.getAuditTrailEvents(), result);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.COMPLETE);
+    }
+
+    @Test(groups = {"regressiontest"})
+    public void negativIdentifyResponse() throws Exception {
+        addDescription("Verify that the GetAuditTrail client works correct when receiving a negativ " +
+                "identify response from one contributers.");
+
+        addStep("Create a AuditTrailClient.", "");
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        AuditTrailClient client = createAuditTrailClient();
+
+        addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
+                "");
+        client.getAuditTrails(null, null, null, testEventHandler, null);
+        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
+                collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
+
+        addStep("Send a negative identifyResponse from pillar 1.",
+                "A COMPONENT_FAILED event should be received");
+        IdentifyContributorsForGetAuditTrailsResponse responsePillar1 =
+                testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
+                        PILLAR1_ID, pillar1DestinationId);
+        ResponseInfo info = new ResponseInfo();
+        info.setResponseText("Identify failed");
+        info.setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);
+        responsePillar1.setResponseInfo(info);
+        messageBus.sendMessage(responsePillar1);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.COMPONENT_FAILED);
+
+        addStep("Send a positive identifyResponse from pillar 2.",
+                "An COMPONENT_IDENTIFIED and IDENTIFICATION_COMPLETE event should be received" +
+                "Right after this a GetAuditTrailRequest should be sent to pillar2");
+        IdentifyContributorsForGetAuditTrailsResponse responsePillar2 =
+                testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
+                        PILLAR2_ID, pillar2DestinationId);
+        messageBus.sendMessage(responsePillar2);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.REQUEST_SENT);
+        pillar2Destination.waitForMessage(GetAuditTrailsRequest.class);
+    }
+
+    @Test(groups = {"regressiontest"})
+    public void negativeGetAuditTrailsResponse() throws InterruptedException {
+        addDescription("Verify that the GetAuditTrail client works correct when receiving a negativ " +
+                       "GetAuditTrails response from one contributers.");
+
+        addStep("Create a AuditTrailClient.", "");
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        AuditTrailClient client = createAuditTrailClient();
+
+        addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
+                "This should be interpreted as a request for all audit trails from all the collection settings " +
+                "defined contributers.");
+        client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
                 collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
@@ -119,25 +302,28 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                 OperationEvent.OperationEventType.REQUEST_SENT);
         GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar1, testMessageFactory.createGetAuditTrailsRequest(
-                identifyRequest, PILLAR1_ID, pillar1DestinationId, TEST_CLIENT_ID));
+                identifyRequest, PILLAR1_ID, pillar1DestinationId));
         GetAuditTrailsRequest requestPillar2 = pillar2Destination.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar2, testMessageFactory.createGetAuditTrailsRequest(
-                identifyRequest, PILLAR2_ID, pillar2DestinationId, TEST_CLIENT_ID));
+                identifyRequest, PILLAR2_ID, pillar2DestinationId));
 
-        addStep("Send a final response from pillar 1",
-                "A COMPONENT_COMPLETE event should be generated with the audit trail results.");
+        addStep("Send a failed response from pillar 1",
+                "A COMPONENT_FAILED event should be generated.");
         ResultingAuditTrails result1 = createTestResultingAuditTrails(PILLAR1_ID);
-        GetAuditTrailsFinalResponse resultPillar1 =
+        GetAuditTrailsFinalResponse failedResponsePillar1 =
                 testMessageFactory.createGetAuditTrailsFinalResponse(requestPillar1,
                         PILLAR1_ID, pillar1DestinationId, result1);
-        messageBus.sendMessage(resultPillar1);
-        AuditTrailResult result1Event = (AuditTrailResult)testEventHandler.waitForEvent();
-        Assert.assertEquals(result1Event.getType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
-        Assert.assertEquals(result1Event.getAuditTrailEvents(), result1);
+        ResponseInfo failedInfo = new ResponseInfo();
+        failedInfo.setResponseText("GetAuditTrails failed");
+        failedInfo.setResponseCode(ResponseCode.FAILURE);
+        failedResponsePillar1.setResponseInfo(failedInfo);
+        messageBus.sendMessage(failedResponsePillar1);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.COMPONENT_FAILED);
 
         addStep("Send a final response from pillar 2",
                 "A COMPONENT_COMPLETE event should be generated with the audit trail results." +
-                        "This should be followed by a COMPLETE event");
+                "This should be followed by a COMPLETE event");
         ResultingAuditTrails result2 = createTestResultingAuditTrails(PILLAR2_ID);
         GetAuditTrailsFinalResponse resultPillar2 =
                 testMessageFactory.createGetAuditTrailsFinalResponse(requestPillar1,
@@ -151,9 +337,83 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                 OperationEvent.OperationEventType.COMPLETE);
     }
 
+    @Test(groups = {"regressiontest"})
+    public void progressEvents() throws InterruptedException {
+        addDescription("Tests that progress events are handled correctly.");
+
+        addStep("Create a AuditTrailClient.", "");
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        AuditTrailClient client = createAuditTrailClient();
+
+        addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
+                "This should be interpreted as a request for all audit trails from all the collection settings " +
+                "defined contributers.");
+        client.getAuditTrails(null, null, null, testEventHandler, null);
+        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
+                collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
+
+        addStep("Send a identifyResponse from each of the two pillars",
+                "COMPONENT_IDENTIFIED events and a IDENTIFICATION_COMPLETE event should be received." +
+                "Rights after this a REQUEST_SENT should be received and a GetAuditTrailsRequest should " +
+                "be sent to each pillar");
+        IdentifyContributorsForGetAuditTrailsResponse responsePillar1 =
+                testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
+                        PILLAR1_ID, pillar1DestinationId);
+        messageBus.sendMessage(responsePillar1);
+        IdentifyContributorsForGetAuditTrailsResponse responsePillar2 =
+                testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
+                        PILLAR2_ID, pillar2DestinationId);
+        messageBus.sendMessage(responsePillar2);
+
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
+
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.REQUEST_SENT);
+        GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
+        Assert.assertEquals(requestPillar1, testMessageFactory.createGetAuditTrailsRequest(
+                identifyRequest, PILLAR1_ID, pillar1DestinationId));
+        GetAuditTrailsRequest requestPillar2 = pillar2Destination.waitForMessage(GetAuditTrailsRequest.class);
+        Assert.assertEquals(requestPillar2, testMessageFactory.createGetAuditTrailsRequest(
+                identifyRequest, PILLAR2_ID, pillar2DestinationId));
+
+        addStep("Send a progress accepted response from pillar 1",
+                "A PROGRESS event should be generated.");
+        ResultingAuditTrails result1 = createTestResultingAuditTrails(PILLAR1_ID);
+        GetAuditTrailsProgressResponse progressResponse1 =
+                testMessageFactory.createGetAuditTrailsProgressResponse(requestPillar1,
+                        PILLAR1_ID, pillar1DestinationId);
+        ResponseInfo progressInfo1 = new ResponseInfo();
+        progressInfo1.setResponseText("GetAuditTrails request accepted");
+        progressInfo1.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
+        progressResponse1.setResponseInfo(progressInfo1);
+        messageBus.sendMessage(progressResponse1);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.PROGRESS);
+
+        addStep("Send a general progress response from pillar 2",
+                "A PROGRESS event should be generated with the audit trail results.");
+        GetAuditTrailsProgressResponse progressResponse2 =
+                testMessageFactory.createGetAuditTrailsProgressResponse(requestPillar1,
+                        PILLAR2_ID, pillar2DestinationId);
+        ResponseInfo progressInfo2 = new ResponseInfo();
+        progressInfo2.setResponseText("Still progressing");
+        progressInfo2.setResponseCode(ResponseCode.OPERATION_PROGRESS);
+        progressResponse2.setResponseInfo(progressInfo2);
+        messageBus.sendMessage(progressResponse2);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.PROGRESS);
+    }
+
    @Test(groups = {"regressiontest"})
    public void incompleteSetOfIdendifyResponses() throws Exception {
-       addDescription("Verify that the GetAuditTrails works correct without receiving responses from all " +
+       addDescription("Verify that the GetAuditTrail client works correct without receiving responses from all " +
                "contributers.");
        addStep("Configure 3 second timeout for identifying contributers. " +
                "The default 2 contributers collection is used", "");
@@ -162,7 +422,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
        AuditTrailClient client = createAuditTrailClient();
 
-       client.getAuditTrails(null, null, null, TEST_CLIENT_ID, testEventHandler, null);
+       client.getAuditTrails(null, null, null, testEventHandler, null);
        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
                collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
@@ -191,7 +451,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
     @Test(groups = {"regressiontest"})
     public void incompleteSetOfFinalResponses() throws Exception {
-        addDescription("Verify that the GetAuditTrails works correct without receiving responses from all " +
+        addDescription("Verify that the GetAuditTrail client works correct without receiving responses from all " +
                 "contributers.");
         addStep("Configure 3 second timeout for the operation itself. " +
                 "The default 2 contributers collection is used", "");
@@ -200,7 +460,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         AuditTrailClient client = createAuditTrailClient();
 
-        client.getAuditTrails(null, null, null, TEST_CLIENT_ID, testEventHandler, null);
+        client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
                 collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
@@ -233,7 +493,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
    @Test(groups = {"regressiontest"})
    public void noIdentifyResponse() throws Exception {
-       addDescription("Tests the the AuditTrailClient handles lack of IdentifyResponses gracefully  ");
+       addDescription("Tests the AuditTrailClient handles lack of IdentifyResponses gracefully  ");
        addStep("Set a 3 second timeout for identifying contributers.", "");
 
        settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
@@ -242,7 +502,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
        addStep("Make the client ask for all audit trails.",
                "It should send a identify message");
        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-       client.getAuditTrails(null, null, null, TEST_CLIENT_ID, testEventHandler, null);
+       client.getAuditTrails(null, null, null, testEventHandler, null);
        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
                collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
@@ -265,7 +525,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         addStep("Make the client ask for all audit trails.",
                 "It should send a identify message");
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        client.getAuditTrails(null, null, null, TEST_CLIENT_ID, testEventHandler, null);
+        client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
                 collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
@@ -311,7 +571,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
        addStep("Make the client ask for all audit trails.",
                "It should send a identify message");
        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-       client.getAuditTrails(null, null, null, TEST_CLIENT_ID, testEventHandler, null);
+       client.getAuditTrails(null, null, null, testEventHandler, null);
        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
                collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
@@ -334,8 +594,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
         ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
         return new AuditTrailClientTestWrapper(new ConversationBasedAuditTrailClient(
-                settings, conversationMediator, messageBus)
-                , testEventManager);
+                settings, conversationMediator, messageBus, TEST_CLIENT_ID) , testEventManager);
     }
 
     private ResultingAuditTrails createTestResultingAuditTrails(String componentID) {

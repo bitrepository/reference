@@ -39,8 +39,6 @@
  */
 package org.bitrepository.protocol;
 
-import java.math.BigInteger;
-
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
@@ -48,6 +46,8 @@ import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+
+import java.math.BigInteger;
 
 /**
  * Abstract message factory for use in tests, which are suppose to be subclasses by functionality specific factories.
@@ -95,11 +95,16 @@ public abstract class TestMessageFactory {
     }
 
     protected final String collectionID;
+    protected final String clientID;
 
-    public TestMessageFactory(String collectionID) {
+    public TestMessageFactory(String collectionID, String clientID) {
         this.collectionID = collectionID;
+        this.clientID = clientID;
     }
 
+    public TestMessageFactory(String collectionID) {
+        this(collectionID, null);
+    }
 
     protected void setResponseDetails(
             MessageResponse response, MessageRequest request, String componentID, String replyTo) {

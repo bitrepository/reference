@@ -24,13 +24,13 @@
  */
 package org.bitrepository.protocol.pillarselector;
 
+import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 /** Models the response state for a given set of pillars */
-public class  PillarsResponseStatus {
+public class ContributorResponseStatus {
     private final Set<String> pillarsWhichShouldRespond;
     private final Set<String> pillarsWithOutstandingResponse;
 
@@ -38,7 +38,7 @@ public class  PillarsResponseStatus {
      * Use for identify response bookkeeping.
      * @param pillarsWhichShouldRespond An array of pillar IDs specifying which pillars are expected to respond 
      */
-    public PillarsResponseStatus(Collection<String> pillarsWhichShouldRespond) {
+    public ContributorResponseStatus(Collection<String> pillarsWhichShouldRespond) {
         this.pillarsWhichShouldRespond = new HashSet<String>(pillarsWhichShouldRespond);
         this.pillarsWithOutstandingResponse = new HashSet<String>(pillarsWhichShouldRespond);
     }
@@ -47,7 +47,7 @@ public class  PillarsResponseStatus {
      * Use for operation response bookkeeping.
      * @param pillarsWhichShouldRespond An array of selected pillar specifying which pillars are expected to respond. 
      */
-    public PillarsResponseStatus(SelectedPillarInfo[] pillarsWhichShouldRespond) {
+    public ContributorResponseStatus(SelectedPillarInfo[] pillarsWhichShouldRespond) {
         this.pillarsWhichShouldRespond = new HashSet<String>();
         this.pillarsWithOutstandingResponse = new HashSet<String>();
         for (SelectedPillarInfo pillar: pillarsWhichShouldRespond) {
@@ -66,15 +66,15 @@ public class  PillarsResponseStatus {
      * </ol>
      *  
      */
-    public final void responseReceived(String pillarId) throws UnexpectedResponseException {
-        if (pillarId == null) {
-            throw new UnexpectedResponseException("Received response with null pillarID");
-        } else if (pillarsWithOutstandingResponse.contains(pillarId)) {
-            pillarsWithOutstandingResponse.remove(pillarId);
-        } else if (pillarsWhichShouldRespond.contains(pillarId)) {
-            throw new UnexpectedResponseException("Received more than one response from pillar " + pillarId);
+    public final void responseReceived(String componentId) throws UnexpectedResponseException {
+        if (componentId == null) {
+            throw new UnexpectedResponseException("Received response with null componentID");
+        } else if (pillarsWithOutstandingResponse.contains(componentId)) {
+            pillarsWithOutstandingResponse.remove(componentId);
+        } else if (pillarsWhichShouldRespond.contains(componentId)) {
+            throw new UnexpectedResponseException("Received more than one response from component " + componentId);
         } else {
-            throw new UnexpectedResponseException("Received response from unknown pillar " + pillarId);  
+            throw new UnexpectedResponseException("Received unexpected response from component " + componentId);
         }
     }
 

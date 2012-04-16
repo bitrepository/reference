@@ -133,11 +133,12 @@ public final class AccessComponentFactory {
      *
      * @return A AuditTrailClient.
      */
-    public AuditTrailClient createAuditTrailClient(Settings settings, SecurityManager securityManager) {
+    public AuditTrailClient createAuditTrailClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new ConversationBasedAuditTrailClient(
                 settings,
                         ConversationMediatorManager.getConversationMediator(settings, securityManager),
-                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager));
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager),
+                clientID);
     }
 
 }

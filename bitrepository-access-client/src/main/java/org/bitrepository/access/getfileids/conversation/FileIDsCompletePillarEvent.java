@@ -25,12 +25,12 @@
 package org.bitrepository.access.getfileids.conversation;
 
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
+import org.bitrepository.protocol.eventhandler.ContributorEvent;
 
 /**
 * Contains the result of a GetFileIDs request sent to a single pillar.
 */
-public class FileIDsCompletePillarEvent extends PillarOperationEvent{
+public class FileIDsCompletePillarEvent extends ContributorEvent {
     /** The result from the pillar.*/
     private final ResultingFileIDs result;
     

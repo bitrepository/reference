@@ -50,8 +50,8 @@ import org.bitrepository.protocol.TestMessageFactory;
  */
 public class GetAuditTrailsMessageFactory extends TestMessageFactory {
 
-    public GetAuditTrailsMessageFactory(String collectionID) {
-        super(collectionID);
+    public GetAuditTrailsMessageFactory(String collectionID, String clientID) {
+        super(collectionID, clientID);
     }
 
     //---------------------------------------Responses--------------------------------------------
@@ -86,14 +86,14 @@ public class GetAuditTrailsMessageFactory extends TestMessageFactory {
 
     public GetAuditTrailsRequest createGetAuditTrailsRequest(
             IdentifyContributorsForGetAuditTrailsRequest identifyRequest, String componentID, 
-            String toDestination, String from) {
+            String toDestination) {
         GetAuditTrailsRequest message = new GetAuditTrailsRequest();
         setMessageDetails(message);
         message.setCorrelationID(identifyRequest.getCorrelationID());
         message.setReplyTo(identifyRequest.getReplyTo());
         message.setTo(toDestination);
         message.setContributor(componentID);
-        message.setFrom(from);
+        message.setFrom(clientID);
         return message;
     }
 }

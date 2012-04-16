@@ -40,8 +40,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.clienttest.TestEventHandler;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
+import org.bitrepository.protocol.eventhandler.ContributorEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.bitrepository.protocol.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.protocol.mediator.ConversationMediator;
@@ -225,9 +225,9 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
-        PillarOperationEvent event = (PillarOperationEvent) testEventHandler.waitForEvent();
+        ContributorEvent event = (ContributorEvent) testEventHandler.waitForEvent();
         Assert.assertEquals(event.getType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(event.getPillarID(), fastPillarID);
+        Assert.assertEquals(event.getContributorID(), fastPillarID);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
     }
 

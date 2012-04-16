@@ -39,7 +39,7 @@ import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
 
 /**
  * The state for the PutFile communication, where the file is put to the pillars (the pillars are requested to retrieve
@@ -54,7 +54,7 @@ public class PuttingFile extends PutFileState {
     private TimerTask timerTask = null;
 
     /**The responses for the pillars.*/
-    final PillarsResponseStatus putResponseStatus;
+    final ContributorResponseStatus putResponseStatus;
 
     /**
      * Map between the pillars and their destinations.
@@ -68,7 +68,7 @@ public class PuttingFile extends PutFileState {
     public PuttingFile(SimplePutFileConversation conversation, Map<String, String> pillarsDests) {
         super(conversation);
         this.pillarDestinations = pillarsDests;
-        putResponseStatus = new PillarsResponseStatus(conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs());
+        putResponseStatus = new ContributorResponseStatus(conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs());
     }
 
     /**
@@ -142,7 +142,7 @@ public class PuttingFile extends PutFileState {
         try {
             putResponseStatus.responseReceived(response.getPillarID());
         } catch (UnexpectedResponseException ure) {
-            monitor.pillarFailed("Received unexpected final response from " + response.getPillarID() , ure);
+            monitor.contributorFailed("Received unexpected final response from " + response.getPillarID(), ure);
         }
 
         if(isResponseSuccess(response.getResponseInfo())) {
@@ -150,7 +150,7 @@ public class PuttingFile extends PutFileState {
                     response.getPillarID(),
                     "Received checksum result from " + response.getPillarID()));
         } else {
-            monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
+            monitor.contributorFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
         } 
 
         // Check if the conversation has finished.

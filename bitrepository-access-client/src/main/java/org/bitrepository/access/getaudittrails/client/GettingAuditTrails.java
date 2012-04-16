@@ -21,27 +21,26 @@
  */
 package org.bitrepository.access.getaudittrails.client;
 
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.conversation.ConversationContext;
 import org.bitrepository.protocol.conversation.PerformingOperationState;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
 import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
+
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GettingAuditTrails extends PerformingOperationState {
     private final AuditTrailConversationContext context;
     private Map<String,String> activeContributers;
-    private PillarsResponseStatus responseStatus;
+    private ContributorResponseStatus responseStatus;
 
     public GettingAuditTrails(AuditTrailConversationContext context, List<SelectedPillarInfo> contributors) {
         super();
@@ -51,7 +50,7 @@ public class GettingAuditTrails extends PerformingOperationState {
             activeContributers.put(contributorInfo.getID(), contributorInfo.getDestination());
         }
 
-        this.responseStatus = new PillarsResponseStatus(activeContributers.keySet());
+        this.responseStatus = new ContributorResponseStatus(activeContributers.keySet());
     }
 
     @Override
@@ -75,20 +74,20 @@ public class GettingAuditTrails extends PerformingOperationState {
                 if (query.getMinSequenceNumber() != null) {
                     msg.setMinSequenceNumber(BigInteger.valueOf(query.getMinSequenceNumber().intValue()));
                 }
+                if (query.getMaxSequenceNumber() != null) {
+                    msg.setMaxSequenceNumber(BigInteger.valueOf(query.getMaxSequenceNumber().intValue()));
+                }
                 context.getMessageSender().sendMessage(msg);
             }
         }
     }
 
     @Override
-    protected void processMessage(MessageResponse msg) throws UnexpectedResponseException {
-        if (msg instanceof GetAuditTrailsProgressResponse) {
-           getContext().getMonitor().progress(msg.getResponseInfo().getResponseText());
-        } else if (msg instanceof GetAuditTrailsFinalResponse) {
+    protected void generateCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
+        if (msg instanceof GetAuditTrailsFinalResponse) {
             GetAuditTrailsFinalResponse response = (GetAuditTrailsFinalResponse)msg;
-            responseStatus.responseReceived(response.getContributor());
             getContext().getMonitor().complete(
-                    new AuditTrailResult("Audit trails received from " + response.getFrom() ,
+                    new AuditTrailResult("Audit trails received from " + response.getFrom(),
                             response.getFrom(), response.getResultingAuditTrails()));
         } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
@@ -107,7 +106,7 @@ public class GettingAuditTrails extends PerformingOperationState {
     }
 
     @Override
-    protected PillarsResponseStatus getResponseStatus() {
+    protected ContributorResponseStatus getResponseStatus() {
         return responseStatus;
     }
 }

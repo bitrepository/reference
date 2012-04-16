@@ -24,9 +24,11 @@
  */
 package org.bitrepository.protocol.pillarselector;
 
-import java.util.List;
-
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.exceptions.UnableToFinishException;
+import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
+
+import java.util.List;
 
 /** Can be used to select a single pillar to run an operation on by handling the identify responses. <p>
  * The algorithm for selecting the pillar is implemented in the concrete classes.
@@ -58,4 +60,9 @@ public interface ComponentSelector {
      * @return <code>true</code> if any components have been selected, else <code>false</code>.
      */
     boolean hasSelectedComponent();
+
+    /**
+     * @param response The response to handle.
+     */
+    void processResponse(MessageResponse response)  throws UnexpectedResponseException;
 }

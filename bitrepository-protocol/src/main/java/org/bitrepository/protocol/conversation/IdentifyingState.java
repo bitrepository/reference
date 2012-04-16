@@ -21,10 +21,34 @@
  */
 package org.bitrepository.protocol.conversation;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.exceptions.UnableToFinishException;
+import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.ComponentSelector;
 
+/**
+ * Handles the general identifying state functionality. For common usage this class handles all messages by using
+ * the sub classe defined <code>selector</code>.
+ *
+ * This class also has a default implenentation for the <code>handleStateTimeout()</code>, <code>getNextState()</code>
+ * and <code>getTimeout()</code> operations.
+ * <code>getNextState()</code>
+ * more specialized
+ */
 public abstract class IdentifyingState extends GeneralConversationState {
+    @Override
+    protected void processMessage(MessageResponse msg) throws UnexpectedResponseException {
+        if (!msg.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)    ) {
+            getContext().getMonitor().contributorFailed(
+                    "Received negative response from component " + msg.getFrom() +
+                    ":  " + msg.getResponseInfo());
+        } else {
+            getContext().getMonitor().pillarIdentified(msg);
+        }
+        getSelector().processResponse(msg);
+    }
+
     @Override
     protected GeneralConversationState handleStateTimeout() {
         if (getContext().getState() == this) {
@@ -69,7 +93,13 @@ public abstract class IdentifyingState extends GeneralConversationState {
                 .longValue();
     }
 
+    /**
+     * @return The subclass specific selector
+     */
     public abstract ComponentSelector getSelector();
 
+    /**
+     * @return The concrete state (the subclass).
+     */
     public abstract GeneralConversationState getOperationState();
 }

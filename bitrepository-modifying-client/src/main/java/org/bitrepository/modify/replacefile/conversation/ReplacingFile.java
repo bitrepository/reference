@@ -36,11 +36,11 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.protocol.ProtocolConstants;
+import org.bitrepository.protocol.eventhandler.ContributorEvent;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
-import org.bitrepository.protocol.eventhandler.PillarOperationEvent;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
 import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 
 /**
@@ -62,7 +62,7 @@ public class ReplacingFile extends ReplaceFileState {
     /** The pillars, which has not yet answered.*/
     private List<SelectedPillarInfo> pillarsSelectedForRequest; 
     /** The responses for the pillars.*/
-    private final PillarsResponseStatus replaceResponseStatus;
+    private final ContributorResponseStatus replaceResponseStatus;
 
     /**
      * Constructor.
@@ -71,7 +71,7 @@ public class ReplacingFile extends ReplaceFileState {
     public ReplacingFile(SimpleReplaceFileConversation conversation) {
         super(conversation);
         pillarsSelectedForRequest = conversation.pillarSelector.getSelectedPillars();
-        replaceResponseStatus = new PillarsResponseStatus(conversation.pillarId);
+        replaceResponseStatus = new ContributorResponseStatus(conversation.pillarId);
     }
 
     /**
@@ -127,7 +127,7 @@ public class ReplacingFile extends ReplaceFileState {
      */
     @Override
     public void onMessage(ReplaceFileProgressResponse response) {
-        monitor.progress(new PillarOperationEvent(OperationEvent.OperationEventType.PROGRESS, 
+        monitor.progress(new ContributorEvent(OperationEvent.OperationEventType.PROGRESS,
                 "Received ReplaceFileProgressResponse from pillar " + response.getPillarID() + ": " + 
                         response.getResponseInfo().toString(), response.getPillarID(),
                         conversation.getConversationID()));
@@ -155,7 +155,7 @@ public class ReplacingFile extends ReplaceFileState {
                     response.getPillarID(),
                     "Received replace file result from " + response.getPillarID()));
         } else {
-            monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
+            monitor.contributorFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
         }
         
         // Check if the conversation has finished.

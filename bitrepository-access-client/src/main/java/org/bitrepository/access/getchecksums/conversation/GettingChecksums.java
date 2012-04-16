@@ -42,7 +42,7 @@ import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.eventhandler.DefaultEvent;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
 import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 
 /**
@@ -57,7 +57,7 @@ public class GettingChecksums extends GetChecksumsState {
     /** The pillars, which has not yet answered.*/
     private List<SelectedPillarInfo> pillarsSelectedForRequest; 
     /** Tracks who have responded */
-    private final PillarsResponseStatus responseStatus;
+    private final ContributorResponseStatus responseStatus;
 
     /** Defines that the timer is a daemon thread. */
     private static final Boolean TIMER_IS_DAEMON = true;
@@ -78,7 +78,7 @@ public class GettingChecksums extends GetChecksumsState {
     public GettingChecksums(SimpleGetChecksumsConversation conversation) {
         super(conversation);
         pillarsSelectedForRequest = conversation.selector.getSelectedPillars();
-        responseStatus = new PillarsResponseStatus(
+        responseStatus = new ContributorResponseStatus(
                 pillarsSelectedForRequest.toArray(new SelectedPillarInfo[pillarsSelectedForRequest.size()]));
     }
 
@@ -149,7 +149,7 @@ public class GettingChecksums extends GetChecksumsState {
                 results.put(response.getPillarID(), response.getResultingChecksums());
             }
         } else {
-            monitor.pillarFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
+            monitor.contributorFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
         } 
 
         if(responseStatus.haveAllPillarResponded()) {

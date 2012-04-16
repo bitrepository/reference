@@ -24,14 +24,14 @@
  */
 package org.bitrepository.protocol.client;
 
-import javax.jms.JMSException;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.conversation.Conversation;
 import org.bitrepository.protocol.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jms.JMSException;
 
 /**
  * Implements the generic functionality for a reference client
@@ -42,14 +42,18 @@ public class AbstractClient implements BitrepositoryClient {
     /** The settings for this instance.*/
     protected final Settings settings;
     /** The messagebus for communication.*/
-    protected final MessageBus messageBus;   
+    protected final MessageBus messageBus;
+    /** The mediator which should manage the conversations. */
+    protected final String clientID;
     /** The mediator which should manage the conversations. */
     private final ConversationMediator conversationMediator;
+
     
-    public AbstractClient(Settings settings, ConversationMediator conversationMediator, MessageBus messageBus) {
+    public AbstractClient(Settings settings, ConversationMediator conversationMediator, MessageBus messageBus, String clientID) {
         this.settings = settings;
         this.messageBus = messageBus;
         this.conversationMediator = conversationMediator;
+        this.clientID = clientID;
     }
     
     protected void startConversation(Conversation conversation) {

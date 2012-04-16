@@ -51,7 +51,7 @@ public class ConversationEventMonitor {
     }
 
     /**
-     * Indicates a identify request has been sent to the pillars.
+     * Indicates a identify request has been sent to the contributors.
      * @param info Description
      */
     public void identifyPillarsRequestSent(String info) {
@@ -63,20 +63,20 @@ public class ConversationEventMonitor {
     }
 
     /**
-     * Indicates a pillar has been identified and considered for selection.
+     * Indicates a contributor has been identified and considered for selection.
      * @param info Description
-     * @param pillarID The pillar identified
+     * @param contributorID The pillar identified
      */
-    public void pillarIdentified(String info, String pillarID) {
+    public void pillarIdentified(String info, String contributorID) {
         log.debug(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new PillarOperationEvent(
-                    OperationEventType.COMPONENT_IDENTIFIED, info, pillarID, conversationID));
+            eventHandler.handleEvent(new ContributorEvent(
+                    OperationEventType.COMPONENT_IDENTIFIED, info, contributorID, conversationID));
         }
     }
 
     /**
-     * Indicates a pillar has been identified and considered for selection.
+     * Indicates a contributor has been identified and considered for selection.
      * @param response The identify response.
      */
     public void pillarIdentified(MessageResponse response) {
@@ -84,7 +84,7 @@ public class ConversationEventMonitor {
                 response.getResponseInfo().getResponseText();
         log.debug(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new PillarOperationEvent(
+            eventHandler.handleEvent(new ContributorEvent(
                     OperationEventType.COMPONENT_IDENTIFIED, info, response.getFrom(), conversationID));
         }
     }
@@ -102,30 +102,30 @@ public class ConversationEventMonitor {
     }
 
     /**
-     * Indicates a pillar has been selected for a operation request.
+     * Indicates a contributor has been selected for a operation request.
      * @param info Description
-     * @param pillarID The pillar identified
+     * @param contributorID The pillar identified
      */
-    public void pillarSelected(String info, String pillarID) {
+    public void pillarSelected(String info, String contributorID) {
         log.debug(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new PillarOperationEvent(
-                    OperationEventType.IDENTIFICATION_COMPLETE, info, pillarID, conversationID));
+            eventHandler.handleEvent(new ContributorEvent(
+                    OperationEventType.IDENTIFICATION_COMPLETE, info, contributorID, conversationID));
         }
     }
 
     /**
-     * A request has been sent to a pillar.
+     * A request has been sent to a contributor.
      * @param info Description of the context.
-     * @param pillarID The receiving pillar.
+     * @param contributorID The receiving pillar.
      */
-    public void requestSent(String info, String pillarID) {
+    public void requestSent(String info, String contributorID) {
         log.debug(info);
         if (eventHandler != null) {
             eventHandler.handleEvent(
-                    new PillarOperationEvent(OperationEvent.OperationEventType.REQUEST_SENT, 
-                            pillarID, 
-                            pillarID, conversationID));
+                    new ContributorEvent(OperationEvent.OperationEventType.REQUEST_SENT,
+                            contributorID,
+                            contributorID, conversationID));
         }
     }
 
@@ -207,7 +207,7 @@ public class ConversationEventMonitor {
      */
     public void invalidMessage(Message message, Exception e) {
         log.warn("Received invalid " + message.getClass().getSimpleName() + " from " + message.getFrom(), e);
-        eventHandler.handleEvent(new PillarOperationEvent(
+        eventHandler.handleEvent(new ContributorEvent(
                 OperationEventType.WARNING, e.getMessage(), message.getFrom(), conversationID));
     }
 
@@ -258,7 +258,7 @@ public class ConversationEventMonitor {
      * A pillar has failed to handle a request successfully.
      * @param info Cause information
      */
-    public void pillarFailed(String info) {
+    public void contributorFailed(String info) {
         log.warn(info);
         if (eventHandler != null) {
             eventHandler.handleEvent(new DefaultEvent(OperationEventType.COMPONENT_FAILED, info, 
@@ -271,9 +271,9 @@ public class ConversationEventMonitor {
      * @param info Cause information
      * @param e The cause
      */
-    public void pillarFailed(String info, Exception e) {
+    public void contributorFailed(String info, Exception e) {
         if (e == null) {
-            pillarFailed(info);
+            contributorFailed(info);
         }
         log.warn(info, e);
         if (eventHandler != null) {

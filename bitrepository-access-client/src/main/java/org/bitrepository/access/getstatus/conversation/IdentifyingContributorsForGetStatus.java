@@ -80,9 +80,9 @@ public class IdentifyingContributorsForGetStatus extends GetStatusState {
             conversation.selector.processResponse(response);
             monitor.pillarIdentified("Received IdentifyContributorsForGetStatusResponse " + response, response.getContributor());
         } catch (UnexpectedResponseException e) {
-            monitor.pillarFailed("Unable to handle IdentifyContributorsForGetStatusResponse, ", e);
+            monitor.contributorFailed("Unable to handle IdentifyContributorsForGetStatusResponse, ", e);
         } catch (NegativeResponseException e) {
-            monitor.pillarFailed("Negativ IdentifyContributorsForGetStatusResponse from pillar " + response.getContributor(), e);
+            monitor.contributorFailed("Negativ IdentifyContributorsForGetStatusResponse from pillar " + response.getContributor(), e);
         }
         
         if (conversation.selector.isFinished()) {

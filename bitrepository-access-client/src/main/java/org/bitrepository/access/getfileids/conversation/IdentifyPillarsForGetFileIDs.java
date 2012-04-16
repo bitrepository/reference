@@ -95,9 +95,9 @@ public class IdentifyPillarsForGetFileIDs extends GetFileIDsState {
                     " from " + response.getPillarID() + " with response '" +
                     response.getResponseInfo().getResponseText() + "'", response.getPillarID());
         } catch (UnexpectedResponseException e) {
-            monitor.pillarFailed("Unable to handle IdentifyPillarsForGetFileIDsResponse, ", e);
+            monitor.contributorFailed("Unable to handle IdentifyPillarsForGetFileIDsResponse, ", e);
         } catch (NegativeResponseException e) {
-            monitor.pillarFailed("Negativ response from pillar " + response.getPillarID(), e);
+            monitor.contributorFailed("Negativ response from pillar " + response.getPillarID(), e);
         }
         if (conversation.selector.isFinished()) {
             identifyTimeoutTask.cancel();

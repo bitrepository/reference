@@ -95,7 +95,7 @@ public class ChecksumsUpdaterAndValidatorEventHandler implements EventHandler {
      */
     private void handleChecksumsComplete(ChecksumsCompletePillarEvent event) {
         informationCache.addChecksums(event.getChecksums().getChecksumDataItems(), event.getChecksumType(), 
-                event.getPillarID());
+                event.getContributorID());
     }
     
     /**

@@ -31,7 +31,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.PillarsResponseStatus;
+import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
 
 /**
@@ -39,7 +39,7 @@ import org.bitrepository.protocol.utils.TimeMeasurementUtils;
  * response.
  */
 public class FastestPillarSelectorForGetFile extends PillarSelectorForGetFile {
-    private final PillarsResponseStatus responseStatus;
+    private final ContributorResponseStatus responseStatus;
 
     /** The constructor
      * 
@@ -48,7 +48,7 @@ public class FastestPillarSelectorForGetFile extends PillarSelectorForGetFile {
      */
     public FastestPillarSelectorForGetFile(Collection<String> pillarsWhichShouldRespond) {
         ArgumentValidator.checkNotNullOrEmpty(pillarsWhichShouldRespond, "pillarsWhichShouldRespond");
-        responseStatus = new PillarsResponseStatus(pillarsWhichShouldRespond);
+        responseStatus = new ContributorResponseStatus(pillarsWhichShouldRespond);
     }
 
     @Override
