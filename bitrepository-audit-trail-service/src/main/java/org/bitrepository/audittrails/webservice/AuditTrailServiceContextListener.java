@@ -24,14 +24,9 @@
  */
 package org.bitrepository.audittrails.webservice;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
-import org.bitrepository.audittrails.service.AuditTrailService;
 import org.bitrepository.audittrails.service.AuditTrailServiceFactory;
-import org.bitrepository.audittrails.utils.LogbackConfigLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.bitrepository.protocol.service.AbstractBitrepositoryContextListener;
+import org.bitrepository.protocol.service.BitrepositoryService;
 
 
 /**
@@ -40,15 +35,31 @@ import org.slf4j.LoggerFactory;
  * 		of the basic client, so everything is setup before the first users start using the webservice. 
  * 2) In time shut the service down in a proper manner, so no threads will be orphaned.   
  */
-public class AuditTrailServiceContextListener implements ServletContextListener {
-    private final Logger log = LoggerFactory.getLogger(getClass());
+public class AuditTrailServiceContextListener extends AbstractBitrepositoryContextListener {
+       
+    @Override
+    public BitrepositoryService getService() {
+        return AuditTrailServiceFactory.getAuditTrailService();
+    }
+
+    @Override
+    public void setConfigurationDirectory(String configutrationDir) {
+        AuditTrailServiceFactory.init(configutrationDir);        
+    }
+
+    @Override
+    public String getSettingsParameter() {
+        return "auditTrailServiceConfDir";
+    }
+    
+    
     
     /**
      * Do initialization work  
      */
-    @Override
+    /*@Override
     public void contextInitialized(ServletContextEvent sce) {
-        String confDir = sce.getServletContext().getInitParameter("auditTrailServiceConfDir");
+        String confDir = sce.getServletContext().getInitParameter();
         if(confDir == null) {
             throw new RuntimeException("No configuration directory specified!");
         }
@@ -62,16 +73,16 @@ public class AuditTrailServiceContextListener implements ServletContextListener 
         AuditTrailServiceFactory.init(confDir);
         AuditTrailService service = AuditTrailServiceFactory.getAuditTrailService();
         log.debug("Servlet context initialized");
-    }
+    }*/
     
     /**
      * Do teardown work. 
      */
-    @Override
+   /* @Override
     public void contextDestroyed(ServletContextEvent sce) {
         // Method that's run when the war file is undeployed. 
         // Can be used to shut everything down nicely..
         log.debug("Servlet context destroyed");
-    }
+    }*/
     
 }

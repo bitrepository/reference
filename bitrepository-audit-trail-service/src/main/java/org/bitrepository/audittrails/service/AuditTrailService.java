@@ -29,12 +29,13 @@ import java.util.List;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.protocol.service.BitrepositoryService;
 
 /**
  * Class to expose the functionality of the AuditTrailService. 
  * Aggregates the needed classes.   
  */
-public class AuditTrailService {
+public class AuditTrailService implements BitrepositoryService {
     
     List<AuditTrailEvent> dummyEvents;
     
@@ -98,5 +99,10 @@ public class AuditTrailService {
     public List<AuditTrailEvent> queryAuditTrailEvents(String fromDate, String toDate, String fileID, String reportingComponent,
             String actor, String action) {
         return dummyEvents;
+    }
+
+    @Override
+    public void shutdown() {
+        // Nothing to do here yet..
     }
 }
