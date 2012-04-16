@@ -96,7 +96,8 @@ public class GettingChecksums extends GetChecksumsState {
         getChecksumsRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         getChecksumsRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         getChecksumsRequest.setAuditTrailInformation(conversation.auditTrailInformation);
-
+        getChecksumsRequest.setFrom(conversation.clientID);
+        
         // Sending one request to each of the identified pillars.
         for(SelectedPillarInfo pillar : pillarsSelectedForRequest) {
             getChecksumsRequest.setPillarID(pillar.getID());

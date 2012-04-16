@@ -72,6 +72,8 @@ import org.testng.annotations.Test;
 public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
     private TestGetChecksumsMessageFactory testMessageFactory;
     
+    private final String TEST_CLIENT_ID = "test-client";
+    
     private ChecksumSpecTYPE DEFAULT_CHECKSUM_SPECS;
     
     @BeforeMethod (alwaysRun=true)
@@ -87,8 +89,8 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
     @Test(groups = {"regressiontest"})
     public void verifyGetChecksumsClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager) 
-                instanceof CollectionBasedGetChecksumsClient, 
+        Assert.assertTrue(AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
+                TEST_CLIENT_ID) instanceof CollectionBasedGetChecksumsClient, 
                 "The default GetFileClient from the Access factory should be of the type '" + 
                 CollectionBasedGetChecksumsClient.class.getName() + "'.");
     }
@@ -127,7 +129,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     IdentifyPillarsForGetChecksumsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
-                            collectionDestinationID));
+                            collectionDestinationID, TEST_CLIENT_ID));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -142,7 +144,8 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(identifyResponse);
             receivedGetChecksumsRequest = pillar1Destination.waitForMessage(GetChecksumsRequest.class);
             Assert.assertEquals(receivedGetChecksumsRequest, 
-                    testMessageFactory.createGetChecksumsRequest(receivedGetChecksumsRequest,PILLAR1_ID, pillar1DestinationId));
+                    testMessageFactory.createGetChecksumsRequest(receivedGetChecksumsRequest, PILLAR1_ID, 
+                            pillar1DestinationId, TEST_CLIENT_ID));
         }
 
         for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
@@ -251,7 +254,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     IdentifyPillarsForGetChecksumsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
-                            collectionDestinationID));
+                            collectionDestinationID, TEST_CLIENT_ID));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -266,7 +269,8 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(identifyResponse);
             receivedGetChecksumsRequest = pillar1Destination.waitForMessage(GetChecksumsRequest.class);
             Assert.assertEquals(receivedGetChecksumsRequest, 
-                    testMessageFactory.createGetChecksumsRequest(receivedGetChecksumsRequest,PILLAR1_ID, pillar1DestinationId));
+                    testMessageFactory.createGetChecksumsRequest(receivedGetChecksumsRequest, PILLAR1_ID, 
+                            pillar1DestinationId, TEST_CLIENT_ID));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -309,7 +313,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                     IdentifyPillarsForGetChecksumsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
-                            collectionDestinationID));
+                            collectionDestinationID, TEST_CLIENT_ID));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -324,7 +328,8 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(identifyResponse);
             receivedGetChecksumsRequest = pillar1Destination.waitForMessage(GetChecksumsRequest.class);
             Assert.assertEquals(receivedGetChecksumsRequest, 
-                    testMessageFactory.createGetChecksumsRequest(receivedGetChecksumsRequest,PILLAR1_ID, pillar1DestinationId));
+                    testMessageFactory.createGetChecksumsRequest(receivedGetChecksumsRequest, PILLAR1_ID, 
+                            pillar1DestinationId, TEST_CLIENT_ID));
         }
 
         for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
@@ -362,7 +367,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
         ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
         return new GetChecksumsClientTestWrapper(new CollectionBasedGetChecksumsClient(
-                messageBus, conversationMediator, settings)
+                messageBus, conversationMediator, settings, TEST_CLIENT_ID)
         , testEventManager);
     }
 }

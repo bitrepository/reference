@@ -59,6 +59,9 @@ public class CollectionBasedGetChecksumsClient implements GetChecksumsClient {
     
     /** The mediator which should manage the conversations. */
     private final ConversationMediator conversationMediator;
+    
+    /** The client ID */
+    private final String clientID;
 
     /**
      * The constructor.
@@ -66,10 +69,12 @@ public class CollectionBasedGetChecksumsClient implements GetChecksumsClient {
      * @param conversationMediator2 
      * @param settings The settings for this instance.
      */
-    public CollectionBasedGetChecksumsClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings) {
+    public CollectionBasedGetChecksumsClient(MessageBus messageBus, ConversationMediator conversationMediator, 
+            Settings settings, String clientID) {
         this.bus = messageBus;
         this.settings = settings;
         this.conversationMediator = conversationMediator;
+        this.clientID = clientID;
     }
 
     @Override
@@ -84,7 +89,7 @@ public class CollectionBasedGetChecksumsClient implements GetChecksumsClient {
                 + pillarIDs + "' with the specifications '" + checksumSpec + "'. "
                 + "The result should be uploaded to '" + addressForResult + "'.");
         SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(
-                bus, settings, addressForResult, fileIDs, checksumSpec, pillarIDs, eventHandler,  
+                bus, settings, addressForResult, fileIDs, checksumSpec, pillarIDs, clientID, eventHandler,  
                 new FlowController(settings), auditTrailInformation);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();

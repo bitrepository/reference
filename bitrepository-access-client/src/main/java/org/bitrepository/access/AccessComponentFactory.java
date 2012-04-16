@@ -97,11 +97,11 @@ public final class AccessComponentFactory {
      * @param settings The settings for the GetChecksumsClient.
      * @return The GetChecksumsClient
      */
-    public GetChecksumsClient createGetChecksumsClient(Settings settings, SecurityManager securityManager) {
+    public GetChecksumsClient createGetChecksumsClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new CollectionBasedGetChecksumsClient(
                 ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
                 ConversationMediatorManager.getConversationMediator(settings, securityManager),
-                settings);
+                settings, clientID);
     }
 
     /**

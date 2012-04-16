@@ -123,7 +123,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         addStep("Create a GetChecksumsClient and start a get operation", 
                 "This should be caught by the pillar");
         GetChecksumsClient getChecksums = AccessComponentFactory.getInstance().createGetChecksumsClient(clientSettings,
-                securityManager);
+                securityManager, TEST_CLIENT_ID);
         FileIDs fileIDsForGetChecksums = new FileIDs();
         fileIDsForGetChecksums.setFileID(FILE_ID);
         

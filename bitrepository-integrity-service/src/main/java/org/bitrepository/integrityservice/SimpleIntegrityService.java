@@ -95,7 +95,8 @@ public class SimpleIntegrityService implements IntegrityService {
                 cache, checker, 
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager),
+                AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
+                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 settings, messageBus);
         
     }
