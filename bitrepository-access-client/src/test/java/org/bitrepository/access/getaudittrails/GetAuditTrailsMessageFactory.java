@@ -61,6 +61,7 @@ public class GetAuditTrailsMessageFactory extends TestMessageFactory {
         IdentifyContributorsForGetAuditTrailsResponse response = new IdentifyContributorsForGetAuditTrailsResponse();
         setResponseDetails(response, request, componentID,  replyTo);
         response.setResponseInfo(IDENTIFY_INFO_DEFAULT);
+        response.setFrom(componentID);
         return response;
     }
 
@@ -69,6 +70,7 @@ public class GetAuditTrailsMessageFactory extends TestMessageFactory {
         GetAuditTrailsProgressResponse response = new GetAuditTrailsProgressResponse();
         setResponseDetails(response, request, componentID,  replyTo);
         response.setResponseInfo(PROGRESS_INFO_DEFAULT);
+        response.setFrom(componentID);
         return response;
     }
 
@@ -79,18 +81,20 @@ public class GetAuditTrailsMessageFactory extends TestMessageFactory {
         response.setContributor(componentID);
         response.setResponseInfo(FINAL_INFO_DEFAULT);
         response.setResultingAuditTrails(result);
+        response.setFrom(componentID);
         return response;
     }
 
     //---------------------------------------Requests--------------------------------------------
 
     public GetAuditTrailsRequest createGetAuditTrailsRequest(
-            IdentifyContributorsForGetAuditTrailsRequest identifyRequest, String toDestination) {
+            IdentifyContributorsForGetAuditTrailsRequest identifyRequest, String toDestination, String from) {
         GetAuditTrailsRequest message = new GetAuditTrailsRequest();
         setMessageDetails(message);
         message.setCorrelationID(identifyRequest.getCorrelationID());
         message.setReplyTo(identifyRequest.getReplyTo());
         message.setTo(toDestination);
+        message.setFrom(from);
         return message;
     }
 }

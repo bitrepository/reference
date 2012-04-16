@@ -47,6 +47,7 @@ import org.testng.annotations.Test;
 public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
     private GetAuditTrailsMessageFactory testMessageFactory;
     private FileIDs ALL_FILE_IDS;
+    private final String TEST_CLIENT_ID = "test-client";
 
     @BeforeMethod(alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
@@ -85,7 +86,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
                 "This should be interpreted as a request for all audit trails from all the collection settings " +
                         "defined contributers.");
-        client.getAuditTrails(null, null, null, testEventHandler, null);
+        client.getAuditTrails(null, null, null, TEST_CLIENT_ID, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
                 collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
@@ -115,10 +116,10 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                 OperationEvent.OperationEventType.REQUEST_SENT);
         GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar1, testMessageFactory.createGetAuditTrailsRequest(
-                identifyRequest, pillar1DestinationId));
+                identifyRequest, pillar1DestinationId, TEST_CLIENT_ID));
         GetAuditTrailsRequest requestPillar2 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar2, testMessageFactory.createGetAuditTrailsRequest(
-                identifyRequest, pillar2DestinationId));
+                identifyRequest, pillar2DestinationId, TEST_CLIENT_ID));
 
         addStep("Send a final response from each pillar with 2 audit trail events in each",
                 "Two COMPONENT_COMPLETE event should be generated with the audit trail results. " +
@@ -136,7 +137,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
        AuditTrailClient client = createAuditTrailClient();
 
-       client.getAuditTrails(null, null, null, testEventHandler, null);
+       client.getAuditTrails(null, null, null, TEST_CLIENT_ID, testEventHandler, null);
        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
                collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
@@ -174,7 +175,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         AuditTrailClient client = createAuditTrailClient();
 
-        client.getAuditTrails(null, null, null, testEventHandler, null);
+        client.getAuditTrails(null, null, null, TEST_CLIENT_ID, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
                 collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
@@ -216,7 +217,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
        addStep("Make the client ask for all audit trails.",
                "It should send a identify message");
        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-       client.getAuditTrails(null, null, null, testEventHandler, null);
+       client.getAuditTrails(null, null, null, TEST_CLIENT_ID, testEventHandler, null);
        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
                collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
@@ -239,7 +240,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         addStep("Make the client ask for all audit trails.",
                 "It should send a identify message");
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        client.getAuditTrails(null, null, null, testEventHandler, null);
+        client.getAuditTrails(null, null, null, TEST_CLIENT_ID, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
                 collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
@@ -285,7 +286,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
        addStep("Make the client ask for all audit trails.",
                "It should send a identify message");
        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-       client.getAuditTrails(null, null, null, testEventHandler, null);
+       client.getAuditTrails(null, null, null, TEST_CLIENT_ID, testEventHandler, null);
        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
                collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
        Assert.assertEquals(testEventHandler.waitForEvent().getType(),

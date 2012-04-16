@@ -44,5 +44,6 @@ public interface AuditTrailClient extends BitrepositoryClient {
             AuditTrailQuery[] componentQueries,
             String fileID,
             String urlForResult,
+            String clientID,
             EventHandler eventHandler, String auditTrailInformation);
 }

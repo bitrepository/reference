@@ -54,6 +54,7 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
             AuditTrailQuery[] componentQueries,
             String fileID,
             String urlForResult,
+            String clientID,
             EventHandler eventHandler, String auditTrailInformation) {
         String newConversationID = ConversationIDGenerator.generateConversationID();
         if (componentQueries == null) {
@@ -61,7 +62,7 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
         }
         AuditTrailConversationContext context = new AuditTrailConversationContext(
                 componentQueries, fileID, urlForResult,
-                settings, messageBus, eventHandler, auditTrailInformation);
+                settings, messageBus, clientID, eventHandler, auditTrailInformation);
         AuditTrailConversation conversation = new AuditTrailConversation(context);
         startConversation(conversation);
     }

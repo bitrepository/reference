@@ -61,6 +61,7 @@ public class IdentifyingAuditTrailContributers extends IdentifyingState {
         identifyRequest.setReplyTo(context.getSettings().getReferenceSettings().getClientSettings().getReceiverDestination());
         identifyRequest.setTo(context.getSettings().getCollectionDestination());
         identifyRequest.setAuditTrailInformation(context.getAuditTrailInformation());
+        identifyRequest.setFrom(context.getClientID());
 
         context.getMessageSender().sendMessage(identifyRequest);
         context.getMonitor().identifyPillarsRequestSent("Identifying contributers for audit trails");
