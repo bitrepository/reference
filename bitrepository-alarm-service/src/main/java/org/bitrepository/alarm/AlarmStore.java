@@ -38,10 +38,11 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.protocol.service.BitrepositoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AlarmStore {
+public class AlarmStore implements BitrepositoryService {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private AlarmService alarmService;
 	private String alarmStoreFile;
