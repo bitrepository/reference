@@ -24,59 +24,27 @@
  */
 package org.bitrepository.integrityservice.web;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
-import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
-import org.bitrepository.integrityservice.utils.LogbackConfigLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.bitrepository.protocol.service.AbstractBitrepositoryContextListener;
+import org.bitrepository.protocol.service.BitrepositoryService;
 
 /**
- * The Listener has two intentions
- * 1) Acquire necessary information at startup to locate configuration files and create the first instance 
- *     of the basic client, so everything is setup before the first users start using the webservice. 
- * 2) In time shut the service down in a proper manner, so no threads will be orphaned.   
+ * The context listener for the Integrity service.
  */
-public class IntegrityServiceContextListener implements ServletContextListener {
-    /** The log.*/
-    private final Logger log = LoggerFactory.getLogger(getClass());
-    /** The wrapped integrity service for the web interface.*/
-    private IntegrityServiceWebInterface service = null;
-    
-    /**
-     * Do initialization work  
-     */
+public class IntegrityServiceContextListener extends AbstractBitrepositoryContextListener {
+
     @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        String confDir = sce.getServletContext().getInitParameter("integrityServiceConfDir");
-        if(confDir == null) {
-            throw new RuntimeException("No configuration directory specified!");
-        }
-        log.debug("Configuration dir = " + confDir);
-        System.setProperty(ConfigurationFactory.CONFIGURATION_DIR_SYSTEM_PROPERTY, confDir);
-        try {
-            new LogbackConfigLoader(confDir + "/logback.xml");
-        } catch (Exception e) {
-            log.info("Failed to read log configuration file. Falling back to default.");
-        } 
-        IntegrityServiceFactory.init(confDir);
-        service = IntegrityServiceFactory.getIntegrityServiceWebInterface();
-        log.debug("Servlet context initialized");
+    public String getSettingsParameter() {
+        return "integrityServiceConfDir";
     }
-    
-    /**
-     * Do teardown work. 
-     */
+
     @Override
-    public void contextDestroyed(ServletContextEvent sce) {
-        // Method that's run when the war file is undeployed. 
-        // Can be used to shut everything down nicely..
-        log.debug("Servlet context destroyed");
-        
-        if(service != null) {
-            service.close();
-        }
+    public BitrepositoryService getService() {
+        return IntegrityServiceFactory.getIntegrityServiceWebInterface();
+    }
+
+    @Override
+    public void initialize(String configutrationDir) {
+        IntegrityServiceFactory.init(configutrationDir);        
     }    
 }

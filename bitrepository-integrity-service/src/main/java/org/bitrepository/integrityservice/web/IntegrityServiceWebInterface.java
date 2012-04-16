@@ -31,11 +31,12 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.IntegrityService;
 import org.bitrepository.integrityservice.SimpleIntegrityService;
 import org.bitrepository.integrityservice.workflow.Workflow;
+import org.bitrepository.protocol.service.BitrepositoryService;
 
 /**
  * The IntegrityService wrapped into the interface for a web server.
  */
-public class IntegrityServiceWebInterface implements IntegrityService {
+public class IntegrityServiceWebInterface implements IntegrityService, BitrepositoryService {
     /** The wrapped IntegrityService.*/
     private final SimpleIntegrityService service;
     /** The settings for the wrapped integrity service.*/
@@ -86,7 +87,7 @@ public class IntegrityServiceWebInterface implements IntegrityService {
     }
     
     @Override
-    public void close() {
-        service.close();
+    public void shutdown() {
+        service.shutdown();
     }
 }

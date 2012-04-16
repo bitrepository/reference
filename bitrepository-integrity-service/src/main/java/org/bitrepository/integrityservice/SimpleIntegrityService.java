@@ -46,13 +46,14 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.protocol.service.BitrepositoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Simple integrity service.
  */
-public class SimpleIntegrityService implements IntegrityService {
+public class SimpleIntegrityService implements IntegrityService, BitrepositoryService {
     /** The log.*/
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -222,7 +223,7 @@ public class SimpleIntegrityService implements IntegrityService {
     }
     
     @Override
-    public void close() {
+    public void shutdown() {
         if(messageBus != null) {
             try {
                 messageBus.close();

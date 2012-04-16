@@ -16,7 +16,8 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractBitrepositoryContextListener implements ServletContextListener {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-        
+    private BitrepositoryService service;
+    
     /**
      * Return the path to the service's configuration directory 
      */
@@ -48,7 +49,7 @@ public abstract class AbstractBitrepositoryContextListener implements ServletCon
             log.info("Failed to read log configuration file. Falling back to default.");
         } 
         initialize(confDir);
-        getService();
+        service = getService();
         log.debug("Servlet context initialized");
         
     }
@@ -57,7 +58,9 @@ public abstract class AbstractBitrepositoryContextListener implements ServletCon
      * Method called at servlet shutdown. 
      */
     public void contextDestroyed(ServletContextEvent sce) {
-        getService().shutdown();
+        if(service != null) {
+            service.shutdown();
+        }
         log.debug("Servlet context destroyed");
     }
     
