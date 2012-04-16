@@ -24,10 +24,10 @@
  */
 package org.bitrepository.clienttest;
 
-import java.math.BigInteger;
-
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.TestMessageFactory;
+
+import java.math.BigInteger;
 
 /**
  * Contains the generic parts for tests integrating to the message bus. 
@@ -47,6 +47,8 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     protected static final String PILLAR2_ID = "Pillar2";
     
     protected static final BigInteger defaultTime = BigInteger.valueOf(3000);
+
+    protected final String TEST_CLIENT_ID = "test-client";
 
     /**
      * Indicated whether the embedded mockup pillars are going to be used in the test (means the test is run as a client 

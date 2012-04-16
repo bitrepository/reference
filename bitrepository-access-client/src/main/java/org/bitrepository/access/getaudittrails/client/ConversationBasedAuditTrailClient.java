@@ -24,9 +24,6 @@
  */
 package org.bitrepository.access.getaudittrails.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.client.AbstractClient;
@@ -37,6 +34,9 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The conversation based implementation of the {@link AuditTrailClient}.
  */
@@ -45,8 +45,8 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     public ConversationBasedAuditTrailClient(
-            Settings settings, ConversationMediator conversationMediator, MessageBus messageBus) {
-        super(settings, conversationMediator, messageBus);
+            Settings settings, ConversationMediator conversationMediator, MessageBus messageBus, String clientID) {
+        super(settings, conversationMediator, messageBus, clientID);
     }
 
     @Override
@@ -54,7 +54,6 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
             AuditTrailQuery[] componentQueries,
             String fileID,
             String urlForResult,
-            String clientID,
             EventHandler eventHandler, String auditTrailInformation) {
         String newConversationID = ConversationIDGenerator.generateConversationID();
         if (componentQueries == null) {
