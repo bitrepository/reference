@@ -167,7 +167,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         addStep("Create a ReplaceFileClient at start a replace operation", 
                 "This should be caught and handled by the pillar.");
         ReplaceFileClient replaceFile = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(clientSettings, 
-                securityManager);
+                securityManager, TEST_CLIENT_ID);
 
         ChecksumSpecTYPE checksumRequested = new ChecksumSpecTYPE();
         checksumRequested.setChecksumSalt(null);

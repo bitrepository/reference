@@ -93,6 +93,7 @@ public class ReplacingFile extends ReplaceFileState {
         request.setFileSize(BigInteger.valueOf(conversation.sizeOfNewFile));
         request.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         request.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        request.setFrom(conversation.clientID);
         request.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         
         for(SelectedPillarInfo pillarInfo : pillarsSelectedForRequest) {

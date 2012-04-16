@@ -58,7 +58,8 @@ import org.testng.annotations.Test;
 public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
     private TestReplaceFileMessageFactory messageFactory;
     private File testFile;
-
+    private final String TEST_CLIENT_ID = "test-client";
+    
     @BeforeMethod(alwaysRun=true)
     public void initialise() throws Exception {
         if(useMockupPillar()) {
@@ -73,7 +74,8 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Testing the initialization through the ModifyComponentFactory.");
         addStep("Use the ModifyComponentFactory to instantiate a ReplaceFileClient.", 
                 "It should be an instance of ConversationBasedReplaceFileClient");
-        ReplaceFileClient rfc = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings, securityManager);
+        ReplaceFileClient rfc = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings, securityManager, 
+                TEST_CLIENT_ID);
         Assert.assertTrue(rfc instanceof ConversationBasedReplaceFileClient, "The ReplaceFileClient '" + rfc 
                 + "' should be instance of '" + ConversationBasedReplaceFileClient.class.getName() + "'");
     }
@@ -122,7 +124,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getCorrelationID(),
                             receivedIdentifyRequestMessage.getReplyTo(),
                             receivedIdentifyRequestMessage.getTo(), 
-                            DEFAULT_FILE_ID, null));
+                            DEFAULT_FILE_ID, null, TEST_CLIENT_ID));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
         
@@ -138,7 +140,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                     messageFactory.createReplaceFileRequest(PILLAR1_ID, pillar1DestinationId,
                             receivedReplaceFileRequest.getReplyTo(),
                             receivedReplaceFileRequest.getCorrelationID(),
-                            address.toExternalForm(), BigInteger.valueOf(size), DEFAULT_FILE_ID, null,
+                            address.toExternalForm(), BigInteger.valueOf(size), DEFAULT_FILE_ID, null, TEST_CLIENT_ID,
                             checksumDataOldFile, checksumDataNewFile, checksumRequest));
         }
         
@@ -218,7 +220,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getCorrelationID(),
                             receivedIdentifyRequestMessage.getReplyTo(),
                             receivedIdentifyRequestMessage.getTo(), 
-                            DEFAULT_FILE_ID, null));
+                            DEFAULT_FILE_ID, null, TEST_CLIENT_ID));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
         
@@ -271,7 +273,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getCorrelationID(),
                             receivedIdentifyRequestMessage.getReplyTo(),
                             receivedIdentifyRequestMessage.getTo(), 
-                            DEFAULT_FILE_ID, null));
+                            DEFAULT_FILE_ID, null, TEST_CLIENT_ID));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
         
@@ -287,7 +289,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                     messageFactory.createReplaceFileRequest(PILLAR1_ID, pillar1DestinationId,
                             receivedReplaceFileRequest.getReplyTo(),
                             receivedReplaceFileRequest.getCorrelationID(),
-                            address.toExternalForm(), BigInteger.valueOf(size), DEFAULT_FILE_ID, null,
+                            address.toExternalForm(), BigInteger.valueOf(size), DEFAULT_FILE_ID, null, TEST_CLIENT_ID,
                             checksumDataOldFile, checksumDataNewFile, checksumRequest));
         }
         
@@ -347,7 +349,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getCorrelationID(),
                             receivedIdentifyRequestMessage.getReplyTo(),
                             receivedIdentifyRequestMessage.getTo(), 
-                            DEFAULT_FILE_ID, null));
+                            DEFAULT_FILE_ID, null, TEST_CLIENT_ID));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
         
@@ -363,7 +365,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                     messageFactory.createReplaceFileRequest(PILLAR1_ID, pillar1DestinationId,
                             receivedReplaceFileRequest.getReplyTo(),
                             receivedReplaceFileRequest.getCorrelationID(),
-                            address.toExternalForm(), BigInteger.valueOf(size), DEFAULT_FILE_ID, null,
+                            address.toExternalForm(), BigInteger.valueOf(size), DEFAULT_FILE_ID, null, TEST_CLIENT_ID,
                             checksumDataOldFile, checksumDataNewFile, checksumRequest));
         }
         
@@ -401,6 +403,6 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
         ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
         return new ReplaceClientTestWrapper(new ConversationBasedReplaceFileClient(
-                messageBus, conversationMediator, settings), testEventManager);
+                messageBus, conversationMediator, settings, TEST_CLIENT_ID), testEventManager);
     }
 }

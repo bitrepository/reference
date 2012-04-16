@@ -55,6 +55,8 @@ public class ConversationBasedReplaceFileClient implements ReplaceFileClient {
     private final MessageBus bus;
     /** The settings. */
     private Settings settings;
+    /** The client ID */
+    private final String clientID;
 
     /**
      * Constructor.
@@ -62,13 +64,14 @@ public class ConversationBasedReplaceFileClient implements ReplaceFileClient {
      * @param settings The configurations and settings.
      */
     public ConversationBasedReplaceFileClient(MessageBus messageBus, ConversationMediator conversationMediator, 
-            Settings settings) {
+            Settings settings, String clientID) {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(conversationMediator, "conversationMediator");
         this.conversationMediator = conversationMediator;;
         this.bus = messageBus;
         this.settings = settings;
+        this.clientID = clientID;
     }
     
     @Override
@@ -88,7 +91,7 @@ public class ConversationBasedReplaceFileClient implements ReplaceFileClient {
                 + "'");
         SimpleReplaceFileConversation conversation = new SimpleReplaceFileConversation(bus, settings, fileId, 
                 Arrays.asList(pillarId), checksumForDeleteAtPillar, checksumRequestedForDeletedFile, url, 
-                sizeOfNewFile, checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, 
+                sizeOfNewFile, checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, clientID, 
                 eventHandler, new FlowController(settings), auditTrailInformation);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
@@ -111,7 +114,7 @@ public class ConversationBasedReplaceFileClient implements ReplaceFileClient {
         SimpleReplaceFileConversation conversation = new SimpleReplaceFileConversation(bus, settings, fileId, 
                 settings.getCollectionSettings().getClientSettings().getPillarIDs(), checksumForDeleteAtPillar, 
                 checksumRequestedForDeletedFile, url, sizeOfNewFile, checksumForNewFileValidationAtPillar, 
-                checksumRequestsForNewFile, eventHandler, new FlowController(settings), auditTrailInformation);
+                checksumRequestsForNewFile, clientID, eventHandler, new FlowController(settings), auditTrailInformation);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }

@@ -52,13 +52,14 @@ public class TestReplaceFileMessageFactory extends TestMessageFactory{
      * Retrieves a generic Identify message for the Replace operation.
      * @return The IdentifyPillarsForReplaceFileRequest for the test.
      */
-    public IdentifyPillarsForReplaceFileRequest createIdentifyPillarsForReplaceFileRequest() {
+    public IdentifyPillarsForReplaceFileRequest createIdentifyPillarsForReplaceFileRequest(String from) {
         IdentifyPillarsForReplaceFileRequest identifyPillarsForReplaceFileRequest = new IdentifyPillarsForReplaceFileRequest();
         identifyPillarsForReplaceFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         identifyPillarsForReplaceFileRequest.setMinVersion(VERSION_DEFAULT);
         identifyPillarsForReplaceFileRequest.setCollectionID(collectionID);
         identifyPillarsForReplaceFileRequest.setVersion(VERSION_DEFAULT);
         identifyPillarsForReplaceFileRequest.setAuditTrailInformation(null);
+        identifyPillarsForReplaceFileRequest.setFrom(from);
         return identifyPillarsForReplaceFileRequest;
     }
 
@@ -70,8 +71,9 @@ public class TestReplaceFileMessageFactory extends TestMessageFactory{
      * @return The requested IdentifyPillarsForReplaceFileRequest.
      */
     public IdentifyPillarsForReplaceFileRequest createIdentifyPillarsForReplaceFileRequest(String correlationID, 
-            String replyTo, String toTopic, String fileId, String auditTrailInformation) {
-        IdentifyPillarsForReplaceFileRequest identifyPillarsForReplaceFileRequest = createIdentifyPillarsForReplaceFileRequest();
+            String replyTo, String toTopic, String fileId, String auditTrailInformation, String from) {
+        IdentifyPillarsForReplaceFileRequest identifyPillarsForReplaceFileRequest = 
+                createIdentifyPillarsForReplaceFileRequest(from);
         identifyPillarsForReplaceFileRequest.setCorrelationID(correlationID);
         identifyPillarsForReplaceFileRequest.setReplyTo(replyTo);
         identifyPillarsForReplaceFileRequest.setTo(toTopic);
@@ -101,6 +103,7 @@ public class TestReplaceFileMessageFactory extends TestMessageFactory{
         ipfrfResponse.setVersion(VERSION_DEFAULT);
         ipfrfResponse.setResponseInfo(IDENTIFY_INFO_DEFAULT);
         ipfrfResponse.setFileID(receivedIdentifyRequestMessage.getFileID());
+        ipfrfResponse.setFrom(pillarId);
 
         ipfrfResponse.setPillarChecksumSpec(null);
 
@@ -111,13 +114,14 @@ public class TestReplaceFileMessageFactory extends TestMessageFactory{
      * Method for creating a generic ReplaceFileRequest.
      * @return The requested ReplaceFileRequest.
      */
-    public ReplaceFileRequest createReplaceFileRequest() {
+    public ReplaceFileRequest createReplaceFileRequest(String from) {
         ReplaceFileRequest replaceFileRequest = new ReplaceFileRequest();
         replaceFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         replaceFileRequest.setFileID(FILE_ID_DEFAULT);
         replaceFileRequest.setMinVersion(VERSION_DEFAULT);
         replaceFileRequest.setVersion(VERSION_DEFAULT);
         replaceFileRequest.setCollectionID(collectionID);
+        replaceFileRequest.setFrom(from);
         return replaceFileRequest;
     }
 
@@ -132,9 +136,9 @@ public class TestReplaceFileMessageFactory extends TestMessageFactory{
      * @return The requested ReplaceFileRequest.
      */
     public ReplaceFileRequest createReplaceFileRequest(String pillarId, String toTopic, String replyTo, String correlationId,
-            String fileAddress, BigInteger filesize, String fileId, String auditTrailInformation, 
+            String fileAddress, BigInteger filesize, String fileId, String auditTrailInformation, String from, 
             ChecksumDataForFileTYPE oldChecksum, ChecksumDataForFileTYPE newChecksum, ChecksumSpecTYPE checksumRequested) {
-        ReplaceFileRequest replaceFileRequest = createReplaceFileRequest();
+        ReplaceFileRequest replaceFileRequest = createReplaceFileRequest(from);
         replaceFileRequest.setPillarID(pillarId);
         replaceFileRequest.setTo(toTopic);
         replaceFileRequest.setReplyTo(replyTo);
@@ -172,6 +176,7 @@ public class TestReplaceFileMessageFactory extends TestMessageFactory{
         progressResponse.setResponseInfo(PROGRESS_INFO_DEFAULT);
         progressResponse.setVersion(VERSION_DEFAULT);
         progressResponse.setMinVersion(VERSION_DEFAULT);
+        progressResponse.setFrom(pillarId);
         
         return progressResponse;
     }
@@ -199,6 +204,7 @@ public class TestReplaceFileMessageFactory extends TestMessageFactory{
         finalResponse.setResponseInfo(FINAL_INFO_DEFAULT);
         finalResponse.setTo(request.getReplyTo());
         finalResponse.setVersion(VERSION_DEFAULT);
+        finalResponse.setFrom(pillarId);
 
         return finalResponse;
     }

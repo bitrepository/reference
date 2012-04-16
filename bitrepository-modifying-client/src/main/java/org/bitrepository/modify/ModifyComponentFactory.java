@@ -102,10 +102,10 @@ public final class ModifyComponentFactory {
      * @param settings The settings for the DeleteFileClient.
      * @return The requested DeleteClient.
      */
-    public ReplaceFileClient retrieveReplaceFileClient(Settings settings, SecurityManager securityManager) {
+    public ReplaceFileClient retrieveReplaceFileClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new ConversationBasedReplaceFileClient(
                 ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
                 ConversationMediatorManager.getConversationMediator(settings, securityManager), 
-                settings);
+                settings, clientID);
     }
 }
