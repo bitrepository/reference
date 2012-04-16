@@ -107,7 +107,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         addStep("Create a GetFileClient and start a get operation", 
                 "This should be caught by the pillar");
         GetFileClient getClient = AccessComponentFactory.getInstance().createGetFileClient(clientSettings,
-                securityManager);
+                securityManager, TEST_CLIENT_ID);
         getClient.getFileFromSpecificPillar(FILE_ID, new URL(FILE_ADDRESS), 
                 settings.getReferenceSettings().getPillarSettings().getPillarID(), testEventHandler);
         

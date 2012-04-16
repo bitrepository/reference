@@ -77,7 +77,8 @@ class GettingFile extends GetFileState {
         getFileRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         getFileRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         getFileRequest.setTo(conversation.selector.getSelectedPillar().getDestination());
-
+        getFileRequest.setFrom(conversation.clientID);
+        
         monitor.requestSent("Sending getFileRequest to " + conversation.selector.getSelectedPillar().getID(), 
                 conversation.selector.getSelectedPillar().getID());
         conversation.messageSender.sendMessage(getFileRequest); 

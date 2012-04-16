@@ -53,6 +53,8 @@ public class SimpleGetFileConversation extends AbstractConversation {
     final URL uploadUrl;
     /** The ID of the file which should be uploaded to the supplied url */
     final String fileID;
+    /** The client ID */
+    final String clientID;
     /** Selects a pillar based on responses. */
     final PillarSelectorForGetFile selector;
     /** The conversation state (State pattern) */
@@ -69,6 +71,7 @@ public class SimpleGetFileConversation extends AbstractConversation {
             PillarSelectorForGetFile selector,
             String fileID,
             URL uploadUrl,
+            String clientID,
             EventHandler eventHandler,
             FlowController flowController) {
         super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
@@ -78,6 +81,7 @@ public class SimpleGetFileConversation extends AbstractConversation {
         this.selector = selector;
         this.uploadUrl = uploadUrl;
         this.fileID = fileID;
+        this.clientID = clientID;
         conversationState = new IdentifyingPillarsForGetFile(this);
     }
 

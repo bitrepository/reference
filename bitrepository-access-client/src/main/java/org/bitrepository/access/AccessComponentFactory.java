@@ -85,11 +85,11 @@ public final class AccessComponentFactory {
      * @param settings The settings for the GetFileClient.
      * @return A GetFileClient.
      */
-    public GetFileClient createGetFileClient(Settings settings, SecurityManager securityManager) {
+    public GetFileClient createGetFileClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new CollectionBasedGetFileClient(
                 ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
                 ConversationMediatorManager.getConversationMediator(settings, securityManager), 
-                settings);
+                settings, clientID);
     }
     
     /**
