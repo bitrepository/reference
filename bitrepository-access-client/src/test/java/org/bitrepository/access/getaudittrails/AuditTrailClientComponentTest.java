@@ -27,13 +27,16 @@ import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
+import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.access.getaudittrails.client.ConversationBasedAuditTrailClient;
-import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.bitrepositoryelements.*;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.clienttest.DefaultFixtureClientTest;
 import org.bitrepository.clienttest.TestEventHandler;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.eventhandler.OperationEvent;
 import org.bitrepository.protocol.mediator.CollectionBasedConversationMediator;
@@ -75,7 +78,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                         ConversationBasedAuditTrailClient.class.getName() + "'.");
     }
 
-    @Test(groups = {"testfirst"})
+    @Test(groups = {"regressiontest"})
     public void getAllAuditTrails() throws InterruptedException {
         addDescription("Tests the simplest case of getting all audit trail event for all contributers.");
 
@@ -116,14 +119,36 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                 OperationEvent.OperationEventType.REQUEST_SENT);
         GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar1, testMessageFactory.createGetAuditTrailsRequest(
-                identifyRequest, pillar1DestinationId, TEST_CLIENT_ID));
-        GetAuditTrailsRequest requestPillar2 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
+                identifyRequest, PILLAR1_ID, pillar1DestinationId));
+        GetAuditTrailsRequest requestPillar2 = pillar2Destination.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar2, testMessageFactory.createGetAuditTrailsRequest(
-                identifyRequest, pillar2DestinationId, TEST_CLIENT_ID));
+                identifyRequest, PILLAR2_ID, pillar2DestinationId));
 
-        addStep("Send a final response from each pillar with 2 audit trail events in each",
-                "Two COMPONENT_COMPLETE event should be generated with the audit trail results. " +
-                        "These should be followed by ");
+        addStep("Send a final response from pillar 1",
+                "A COMPONENT_COMPLETE event should be generated with the audit trail results.");
+        ResultingAuditTrails result1 = createTestResultingAuditTrails(PILLAR1_ID);
+        GetAuditTrailsFinalResponse resultPillar1 =
+                testMessageFactory.createGetAuditTrailsFinalResponse(requestPillar1,
+                        PILLAR1_ID, pillar1DestinationId, result1);
+        messageBus.sendMessage(resultPillar1);
+        AuditTrailResult result1Event = (AuditTrailResult)testEventHandler.waitForEvent();
+        Assert.assertEquals(result1Event.getType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(result1Event.getAuditTrailEvents(), result1);
+
+        addStep("Send a final response from pillar 2",
+                "A COMPONENT_COMPLETE event should be generated with the audit trail results." +
+                        "This should be followed by a COMPLETE event");
+        ResultingAuditTrails result2 = createTestResultingAuditTrails(PILLAR2_ID);
+        GetAuditTrailsFinalResponse resultPillar2 =
+                testMessageFactory.createGetAuditTrailsFinalResponse(requestPillar1,
+                        PILLAR2_ID, pillar2DestinationId, result2);
+        messageBus.sendMessage(resultPillar2);
+
+        AuditTrailResult result2Event = (AuditTrailResult)testEventHandler.waitForEvent();
+        Assert.assertEquals(result2Event.getType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(result2Event.getAuditTrailEvents(), result2);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+                OperationEvent.OperationEventType.COMPLETE);
     }
 
    @Test(groups = {"regressiontest"})
@@ -311,5 +336,35 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         return new AuditTrailClientTestWrapper(new ConversationBasedAuditTrailClient(
                 settings, conversationMediator, messageBus)
                 , testEventManager);
+    }
+
+    private ResultingAuditTrails createTestResultingAuditTrails(String componentID) {
+        ResultingAuditTrails auditTrails = new ResultingAuditTrails();
+        AuditTrailEvents events = new AuditTrailEvents();
+
+        AuditTrailEvent event1 = new AuditTrailEvent();
+        event1.setActorOnFile(componentID);
+        event1.setActionDateTime(CalendarUtils.getNow());
+        event1.setSequenceNumber(BigInteger.valueOf(1));
+        event1.setActionOnFile(FileAction.PUT_FILE);
+        event1.setReportingComponent(componentID);
+        event1.setAuditTrailInformation("Example audit trail information");
+        event1.setFileID("File1");
+        event1.setInfo("Test audit trail 1");
+
+        AuditTrailEvent event2 = new AuditTrailEvent();
+        event2.setActorOnFile(componentID);
+        event2.setActionDateTime(CalendarUtils.getNow());
+        event2.setSequenceNumber(BigInteger.valueOf(2));
+        event2.setActionOnFile(FileAction.CHECKSUM_CALCULATED);
+        event2.setReportingComponent(componentID);
+        event2.setAuditTrailInformation("Example audit trail information");
+        event2.setFileID("File1");
+        event2.setInfo("Test audit trail 2");
+
+        events.getAuditTrailEvent().add(event1);
+        events.getAuditTrailEvent().add(event2);
+        auditTrails.setAuditTrailEvents(events);
+        return auditTrails;
     }
 }

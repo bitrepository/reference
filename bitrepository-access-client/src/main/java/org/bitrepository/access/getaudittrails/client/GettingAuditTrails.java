@@ -87,6 +87,9 @@ public class GettingAuditTrails extends PerformingOperationState {
         } else if (msg instanceof GetAuditTrailsFinalResponse) {
             GetAuditTrailsFinalResponse response = (GetAuditTrailsFinalResponse)msg;
             responseStatus.responseReceived(response.getContributor());
+            getContext().getMonitor().complete(
+                    new AuditTrailResult("Audit trails received from " + response.getFrom() ,
+                            response.getFrom(), response.getResultingAuditTrails()));
         } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
                     " while waiting for Audit Trail response.");

@@ -88,13 +88,13 @@ public class GetAuditTrailsMessageFactory extends TestMessageFactory {
     //---------------------------------------Requests--------------------------------------------
 
     public GetAuditTrailsRequest createGetAuditTrailsRequest(
-            IdentifyContributorsForGetAuditTrailsRequest identifyRequest, String toDestination, String from) {
+            IdentifyContributorsForGetAuditTrailsRequest identifyRequest, String componentID, String toDestination) {
         GetAuditTrailsRequest message = new GetAuditTrailsRequest();
         setMessageDetails(message);
         message.setCorrelationID(identifyRequest.getCorrelationID());
         message.setReplyTo(identifyRequest.getReplyTo());
         message.setTo(toDestination);
-        message.setFrom(from);
+        message.setContributor(componentID);
         return message;
     }
 }
