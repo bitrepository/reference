@@ -46,7 +46,8 @@ public class MonitoringService {
 		this.settings = settings;
 		this.securityManager = securityManager;
 		statusStore = new ComponentStatusStore();
-		getStatusClient = AccessComponentFactory.getInstance().createGetStatusClient(settings, securityManager);
+		getStatusClient = AccessComponentFactory.getInstance().createGetStatusClient(settings, securityManager,
+		        settings.getReferenceSettings().getMonitoringServiceSettings().getID());
 		collector = new StatusCollector(getStatusClient, settings, statusStore);
 		collector.start();
 	}

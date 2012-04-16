@@ -36,11 +36,12 @@ public class TestGetStatusMessageFactory extends TestMessageFactory {
     }
     
     public IdentifyContributorsForGetStatusResponse createIdentifyContributorsForGetStatusResponse(
-            IdentifyContributorsForGetStatusRequest request) {
+            IdentifyContributorsForGetStatusRequest request, String from) {
         IdentifyContributorsForGetStatusResponse response = createIdentifyContributorsForGetStatusResponse();
         response.setCorrelationID(request.getCorrelationID());
         response.setTo(request.getReplyTo());
         response.setReplyTo("ME");
+        response.setFrom(from);
         response.setResponseInfo(IDENTIFY_INFO_DEFAULT);
         response.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
         
@@ -61,11 +62,12 @@ public class TestGetStatusMessageFactory extends TestMessageFactory {
         return response;
     }
     
-    public GetStatusFinalResponse createGetStatusFinalResponse(GetStatusRequest request) {
+    public GetStatusFinalResponse createGetStatusFinalResponse(GetStatusRequest request, String from) {
         GetStatusFinalResponse response = createGetStatusFinalResponse();
         response.setCorrelationID(request.getCorrelationID());
         response.setTo(request.getReplyTo());
         response.setReplyTo("ME");
+        response.setFrom(from);
         response.setContributor(request.getContributor());
         response.setResponseInfo(FINAL_INFO_DEFAULT);
         ResultingStatus status = new ResultingStatus();

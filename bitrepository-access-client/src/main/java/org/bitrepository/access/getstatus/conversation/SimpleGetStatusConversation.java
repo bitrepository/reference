@@ -41,6 +41,8 @@ public class SimpleGetStatusConversation extends AbstractConversation {
     final MessageSender messageSender; 
     /** The configuration specific to the BitRepositoryCollection related to this conversion. */
     final Settings settings;
+    /** The ID of the message sender */
+    final String clientID;
     
     /** Selects a pillar based on responses. */
     final ContributorSelectorForGetStatus selector;
@@ -48,10 +50,11 @@ public class SimpleGetStatusConversation extends AbstractConversation {
     GetStatusState conversationState;
     
     public SimpleGetStatusConversation(MessageSender messageSender, Settings settings, Collection<String> contributors, 
-            EventHandler eventHandler, FlowController flowController) {
+            String clientID, EventHandler eventHandler, FlowController flowController) {
         super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
         this.messageSender = messageSender;
         this.settings = settings;     
+        this.clientID = clientID;
         selector = new ContributorSelectorForGetStatus(contributors);
         conversationState = new IdentifyingContributorsForGetStatus(this);
     }

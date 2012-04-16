@@ -121,11 +121,11 @@ public final class AccessComponentFactory {
      *
      * @return A GetStatusClient.
      */
-    public GetStatusClient createGetStatusClient(Settings settings, SecurityManager securityManager) {
+    public GetStatusClient createGetStatusClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new CollectionBasedGetStatusClient(
                 ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
                 ConversationMediatorManager.getConversationMediator(settings, securityManager),
-                settings);
+                settings, clientID);
     }
 
     /**

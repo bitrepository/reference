@@ -64,4 +64,7 @@
     <DatabaseUrl>jdbc:derby:integritydb</DatabaseUrl>
     <TimeBeforeMissingFileCheck>60000</TimeBeforeMissingFileCheck>
   </IntegrityServiceSettings>
+  <MonitoringServiceSettings>
+    <ID>monitoring-service</ID>
+  </MonitoringServiceSettings>
 </ReferenceSettings>

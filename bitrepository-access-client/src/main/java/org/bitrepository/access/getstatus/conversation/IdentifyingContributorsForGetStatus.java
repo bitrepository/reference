@@ -54,6 +54,7 @@ public class IdentifyingContributorsForGetStatus extends GetStatusState {
         request.setCollectionID(conversation.settings.getCollectionID());
         request.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         request.setTo(conversation.settings.getCollectionDestination());
+        request.setFrom(conversation.clientID);
         
         monitor.identifyPillarsRequestSent("Identifying contributors for getting status");
         conversation.messageSender.sendMessage(request);
