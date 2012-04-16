@@ -56,6 +56,7 @@ import org.testng.annotations.Test;
  */
 public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
     
+    private static final String TEST_CLIENT_ID = "test-client";
 //    @Test(groups = {"regressiontest"})
     @Test(groups = {"integrationtest"})
     public void testPillarVsClients() throws Exception {
@@ -144,7 +145,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         addStep("Create a GetFileIDsClient and start a get operation", 
                 "This should be caught by the pillar");
         GetFileIDsClient getFileIDs = AccessComponentFactory.getInstance().createGetFileIDsClient(clientSettings, 
-                securityManager);
+                securityManager, TEST_CLIENT_ID);
         FileIDs fileIdsForGetFileIDs = new FileIDs();
         fileIdsForGetFileIDs.setFileID(FILE_ID);
         

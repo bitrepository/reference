@@ -93,7 +93,8 @@ public class SimpleIntegrityService implements IntegrityService {
         this.alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus);
         this.collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
                 cache, checker, 
-                AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager),
+                AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
+                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager),
                 settings, messageBus);
         

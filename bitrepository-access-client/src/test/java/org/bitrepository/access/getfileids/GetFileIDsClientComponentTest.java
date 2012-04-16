@@ -65,6 +65,9 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
     private TestGetFileIDsMessageFactory testMessageFactory;
     private TestFileStore pillar1FileStore;
 
+    private static final String TEST_PILLAR_ID = "Pillar1";
+    private static final String TEST_CLIENT_ID = "test-client";
+    
     /**
      * Set up the test scenario before running the tests in this class.
      * @throws javax.xml.bind.JAXBException
@@ -74,15 +77,15 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         // TODO getFileIDsFromFastestPillar settings
         if (useMockupPillar()) {
             testMessageFactory = new TestGetFileIDsMessageFactory(settings.getCollectionID());
-            pillar1FileStore = new TestFileStore("Pillar1");
+            pillar1FileStore = new TestFileStore(TEST_PILLAR_ID);
         }
         httpServer.clearFiles();
     }
 
     @Test(groups = {"regressiontest"})
     public void verifyGetFileIDsClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager) 
-                instanceof ConversationBasedGetFileIDsClient, 
+        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager,
+                TEST_CLIENT_ID) instanceof ConversationBasedGetFileIDsClient, 
                 "The default GetFileClient from the Access factory should be of the type '" + 
                         ConversationBasedGetFileIDsClient.class.getName() + "'.");
     }
@@ -476,6 +479,6 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
         ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
         return new GetFileIDsClientTestWrapper(new ConversationBasedGetFileIDsClient(
-                messageBus, conversationMediator, settings), testEventManager);
+                messageBus, conversationMediator, settings, TEST_CLIENT_ID), testEventManager);
     }
 }

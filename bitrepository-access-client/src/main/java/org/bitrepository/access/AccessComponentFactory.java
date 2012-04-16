@@ -109,11 +109,11 @@ public final class AccessComponentFactory {
      *
      * @return A GetFileIDsClient.
      */
-    public GetFileIDsClient createGetFileIDsClient(Settings settings, SecurityManager securityManager) {
+    public GetFileIDsClient createGetFileIDsClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new ConversationBasedGetFileIDsClient(
                 ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
                 ConversationMediatorManager.getConversationMediator(settings, securityManager),
-                settings);
+                settings, clientID);
     }
     
     /**
