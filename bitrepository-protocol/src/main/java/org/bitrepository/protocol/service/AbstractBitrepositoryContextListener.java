@@ -30,7 +30,7 @@ public abstract class AbstractBitrepositoryContextListener implements ServletCon
     /**
      * Sets up the configuration 
      */
-    public abstract void setConfigurationDirectory(String configutrationDir);
+    public abstract void initialize(String configutrationDir);
     
     /**
      * Method called at servlet initialization 
@@ -47,7 +47,7 @@ public abstract class AbstractBitrepositoryContextListener implements ServletCon
         } catch (Exception e) {
             log.info("Failed to read log configuration file. Falling back to default.");
         } 
-        setConfigurationDirectory(confDir);
+        initialize(confDir);
         getService();
         log.debug("Servlet context initialized");
         
@@ -58,6 +58,7 @@ public abstract class AbstractBitrepositoryContextListener implements ServletCon
      */
     public void contextDestroyed(ServletContextEvent sce) {
         getService().shutdown();
+        log.debug("Servlet context destroyed");
     }
     
 }
