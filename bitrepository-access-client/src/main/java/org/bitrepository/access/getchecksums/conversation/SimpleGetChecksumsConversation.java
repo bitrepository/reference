@@ -66,6 +66,8 @@ public class SimpleGetChecksumsConversation extends AbstractConversation {
     final ChecksumSpecTYPE checksumSpecifications;
     /** The text audittrail information for requesting the operation.*/
     final String auditTrailInformation;
+    /** The client ID */
+    final String clientID;
     
     Map<String, ResultingChecksums> mapOfResults = null;
 
@@ -80,8 +82,8 @@ public class SimpleGetChecksumsConversation extends AbstractConversation {
      * @param eventHandler The handler of events.
      */
     public SimpleGetChecksumsConversation(MessageSender messageSender, Settings settings, URL url,
-            FileIDs fileIds, ChecksumSpecTYPE checksumsSpecs, Collection<String> pillars, EventHandler eventHandler,
-            FlowController flowController, String auditTrailInformation) {
+            FileIDs fileIds, ChecksumSpecTYPE checksumsSpecs, Collection<String> pillars, String clientID, 
+            EventHandler eventHandler, FlowController flowController, String auditTrailInformation) {
         super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
         
         this.messageSender = messageSender;
@@ -92,6 +94,7 @@ public class SimpleGetChecksumsConversation extends AbstractConversation {
         this.checksumSpecifications = checksumsSpecs;
         this.conversationState = new IdentifyPillarsForGetChecksums(this);
         this.auditTrailInformation = auditTrailInformation;
+        this.clientID = clientID;
     }
 
     @Override

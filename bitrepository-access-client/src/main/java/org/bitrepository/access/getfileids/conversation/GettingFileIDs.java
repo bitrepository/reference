@@ -90,6 +90,7 @@ public class GettingFileIDs extends GetFileIDsState {
         getFileIDsRequest.setFileIDs(conversation.fileIDs);
         getFileIDsRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings()
                 .getReceiverDestination());
+        getFileIDsRequest.setFrom(conversation.clientID);
         getFileIDsRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         getFileIDsRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         getFileIDsRequest.setAuditTrailInformation(conversation.auditTrailInformation);

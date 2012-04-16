@@ -31,14 +31,17 @@ public class AuditTrailConversationContext extends ConversationContext {
     private final AuditTrailQuery[] componentQueries;
     private final String fileID;
     private final String urlForResult;
+    private final String clientID;
 
     public AuditTrailConversationContext(AuditTrailQuery[] componentQueries, String fileID, String urlForResult,
-            Settings settings, MessageSender messageSender, EventHandler eventHandler,
+            Settings settings, MessageSender messageSender, String clientID, EventHandler eventHandler,
             String auditTrailInformation) {
         super(settings, messageSender, eventHandler, auditTrailInformation);
         this.componentQueries = componentQueries;
         this.fileID = fileID;
         this.urlForResult = urlForResult;
+        this.clientID = clientID;
+        
     }
 
     public AuditTrailQuery[] getComponentQueries() {
@@ -51,5 +54,9 @@ public class AuditTrailConversationContext extends ConversationContext {
 
     public String getUrlForResult() {
         return urlForResult;
+    }
+    
+    public String getClientID() {
+        return clientID;
     }
 }

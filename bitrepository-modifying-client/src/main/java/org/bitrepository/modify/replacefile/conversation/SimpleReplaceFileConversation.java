@@ -74,6 +74,8 @@ public class SimpleReplaceFileConversation extends AbstractConversation {
     final String auditTrailInformation;
     /** The pillar selector*/
     final PillarSelectorForReplaceFile pillarSelector;
+    /** The client ID */
+    final String clientID;
 
     /**
      * Constructor.
@@ -99,6 +101,7 @@ public class SimpleReplaceFileConversation extends AbstractConversation {
             long sizeOfNewFile,
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar,
             ChecksumSpecTYPE checksumRequestForNewFile,
+            String clientID,
             EventHandler eventHandler,
             FlowController flowController,
             String auditTrailInformation) {
@@ -120,6 +123,7 @@ public class SimpleReplaceFileConversation extends AbstractConversation {
         this.checksumForNewFileValidationAtPillar = checksumForNewFileValidationAtPillar;
         this.checksumRequestForNewFile = checksumRequestForNewFile;
         this.auditTrailInformation = auditTrailInformation;
+        this.clientID = clientID;
         conversationState = new IdentifyPillarsForReplaceFile(this);
         pillarSelector = new PillarSelectorForReplaceFile(pillarIds);
     }

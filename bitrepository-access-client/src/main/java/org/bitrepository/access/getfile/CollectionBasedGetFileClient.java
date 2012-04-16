@@ -62,18 +62,22 @@ public class CollectionBasedGetFileClient implements GetFileClient {
     private final MessageBus messageBus;
     /** The mediator which should manage the conversations. */
     private final ConversationMediator conversationMediator;
-
+    /** The Client ID */
+    private final String clientID;
+    
     /** The constructor
      * 
      * @param messageBus The message bus to use.
      * @param settings The settings to use.
      */
-    public CollectionBasedGetFileClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings) {
+    public CollectionBasedGetFileClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings,
+            String clientID) {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         this.settings = settings;
         this.messageBus = messageBus;
         this.conversationMediator = conversationMediator;
+        this.clientID = clientID;
     }
 
     @Override
@@ -119,7 +123,7 @@ public class CollectionBasedGetFileClient implements GetFileClient {
     private void getFile(MessageBus messageBus, Settings settings, PillarSelectorForGetFile selector, 
             String fileID, URL uploadUrl, EventHandler eventHandler) {
         AbstractConversation  conversation =  new SimpleGetFileConversation(
-                messageBus, settings, selector, fileID, uploadUrl, eventHandler, new FlowController(settings));
+                messageBus, settings, selector, fileID, uploadUrl, clientID,eventHandler, new FlowController(settings));
         conversationMediator.addConversation(conversation);  
         conversation.startConversation();
     }
@@ -134,7 +138,7 @@ public class CollectionBasedGetFileClient implements GetFileClient {
             String fileID, URL uploadUrl) 
     throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
         SimpleGetFileConversation conversation = new SimpleGetFileConversation(
-                    messageBus, settings, selector, fileID, uploadUrl, null, new FlowController(settings));
+                    messageBus, settings, selector, fileID, uploadUrl, clientID, null, new FlowController(settings));
         conversationMediator.addConversation(conversation);  
         conversation.startConversation();
     }

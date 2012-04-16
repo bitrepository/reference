@@ -64,6 +64,7 @@ public class GettingAuditTrails extends PerformingOperationState {
         msg.setFileID(context.getFileID());
         msg.setResultAddress(context.getUrlForResult());
         msg.setAuditTrailInformation(context.getAuditTrailInformation());
+        msg.setFrom(context.getClientID());
 
         context.getMonitor().requestSent("Sending request for audit trails", activeContributers.keySet().toString());
         for(AuditTrailQuery query : context.getComponentQueries()) {

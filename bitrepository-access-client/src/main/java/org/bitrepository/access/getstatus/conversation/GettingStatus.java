@@ -71,6 +71,7 @@ public class GettingStatus extends GetStatusState {
         request.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         request.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         request.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
+        request.setFrom(conversation.clientID);
 
         // Sending one request to each of the identified pillars.
         for(SelectedPillarInfo contributor : contributorsSelectedForRequest) {

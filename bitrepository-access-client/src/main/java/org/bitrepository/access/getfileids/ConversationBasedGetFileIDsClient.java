@@ -58,17 +58,22 @@ public class ConversationBasedGetFileIDsClient implements GetFileIDsClient {
     
     /** The mediator which should manage the conversations. */
     private final ConversationMediator conversationMediator;
-
+    
+    /** The client ID */
+    private final String clientID;
+    
     /**
      * The constructor.
      * @param messageBus The messagebus for communication.
      * @param conversationMediator  The mediator for the conversation.
      * @param settings The settings for this instance.
      */
-    public ConversationBasedGetFileIDsClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings) {
+    public ConversationBasedGetFileIDsClient(MessageBus messageBus, ConversationMediator conversationMediator,
+            Settings settings, String clienID) {
         this.bus = messageBus;
         this.settings = settings;
         this.conversationMediator = conversationMediator;
+        this.clientID = clienID;
     }
 
     @Override
@@ -81,7 +86,7 @@ public class ConversationBasedGetFileIDsClient implements GetFileIDsClient {
                 + pillarIDs + "'. The result should be uploaded to '" + addressForResult + "'.");
         
         SimpleGetFileIDsConversation conversation = new SimpleGetFileIDsConversation(
-                bus, settings, addressForResult, fileIDs, pillarIDs, eventHandler,  
+                bus, settings, addressForResult, fileIDs, pillarIDs, clientID, eventHandler,  
                 new FlowController(settings), auditTrailInformation);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();

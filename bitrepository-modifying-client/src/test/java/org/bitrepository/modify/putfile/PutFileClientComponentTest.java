@@ -58,6 +58,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     private File testFile;
     private long fileSize;
 
+    private final String TEST_CLIENT_ID = "test-client";
+    
     @BeforeMethod(alwaysRun=true)
     public void initialise() throws Exception {
         if(useMockupPillar()) {
@@ -73,7 +75,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Testing the initialization through the ModifyComponentFactory.");
         addStep("Use the ModifyComponentFactory to instantiate a PutFileClient.", 
                 "It should be an instance of SimplePutFileClient");
-        PutFileClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager);
+        PutFileClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager, TEST_CLIENT_ID);
         Assert.assertTrue(pfc instanceof ConversationBasedPutFileClient, "The PutFileClient '" + pfc + "' should be instance of '" 
                 + ConversationBasedPutFileClient.class.getName() + "'");
     }
@@ -107,7 +109,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getTo(),
                             DEFAULT_FILE_ID,
                             fileSize,
-                            receivedIdentifyRequestMessage.getAuditTrailInformation()
+                            receivedIdentifyRequestMessage.getAuditTrailInformation(),
+                            TEST_CLIENT_ID
                             ));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -129,7 +132,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedPutFileRequest.getFileAddress(),
                             receivedPutFileRequest.getFileSize(),
                             DEFAULT_FILE_ID,
-                            receivedPutFileRequest.getAuditTrailInformation()
+                            receivedPutFileRequest.getAuditTrailInformation(),
+                            TEST_CLIENT_ID
                             ));
         }
 
@@ -193,7 +197,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getTo(),
                             DEFAULT_FILE_ID,
                             fileSize, 
-                            receivedIdentifyRequestMessage.getAuditTrailInformation()
+                            receivedIdentifyRequestMessage.getAuditTrailInformation(),
+                            TEST_CLIENT_ID
                             ));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -231,7 +236,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getTo(),
                             DEFAULT_FILE_ID,
                             fileSize,
-                            receivedIdentifyRequestMessage.getAuditTrailInformation()
+                            receivedIdentifyRequestMessage.getAuditTrailInformation(),
+                            TEST_CLIENT_ID
                             ));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -252,7 +258,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedPutFileRequest.getFileAddress(),
                             receivedPutFileRequest.getFileSize(),
                             DEFAULT_FILE_ID,
-                            receivedPutFileRequest.getAuditTrailInformation()
+                            receivedPutFileRequest.getAuditTrailInformation(),
+                            TEST_CLIENT_ID
                             ));
         }
 
@@ -297,7 +304,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getTo(),
                             DEFAULT_FILE_ID,
                             fileSize,
-                            receivedIdentifyRequestMessage.getAuditTrailInformation()
+                            receivedIdentifyRequestMessage.getAuditTrailInformation(),
+                            TEST_CLIENT_ID
                             ));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -319,7 +327,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedPutFileRequest.getFileAddress(),
                             receivedPutFileRequest.getFileSize(),
                             DEFAULT_FILE_ID,
-                            receivedPutFileRequest.getAuditTrailInformation()
+                            receivedPutFileRequest.getAuditTrailInformation(),
+                            TEST_CLIENT_ID
                             ));
         }
 
@@ -374,7 +383,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getTo(),
                             DEFAULT_FILE_ID,
                             fileSize,
-                            receivedIdentifyRequestMessage.getAuditTrailInformation()
+                            receivedIdentifyRequestMessage.getAuditTrailInformation(),
+                            TEST_CLIENT_ID
                             ));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -415,7 +425,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
         ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
         return new PutClientTestWrapper(new ConversationBasedPutFileClient(
-                messageBus, conversationMediator, settings)
+                messageBus, conversationMediator, settings, TEST_CLIENT_ID)
         , testEventManager);
     }
 }

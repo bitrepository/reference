@@ -59,6 +59,8 @@ public class SimpleGetFileIDsConversation extends AbstractConversation {
     GetFileIDsState conversationState;
     /** The text audit trail information for requesting the operation.*/
     final String auditTrailInformation;
+    /** The client ID */
+    final String clientID;
     
     /**
      * Constructor.
@@ -70,7 +72,7 @@ public class SimpleGetFileIDsConversation extends AbstractConversation {
      * @param eventHandler The handler of events.
      */
     public SimpleGetFileIDsConversation(MessageSender messageSender, Settings settings, URL url,
-            FileIDs fileIds, Collection<String> pillars, EventHandler eventHandler,
+            FileIDs fileIds, Collection<String> pillars, String clientID, EventHandler eventHandler,
             FlowController flowController, String auditTrailInformation) {
         super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
         this.settings = settings;
@@ -79,6 +81,7 @@ public class SimpleGetFileIDsConversation extends AbstractConversation {
         this.selector = new PillarSelectorForGetFileIDs(pillars);
         conversationState = new IdentifyPillarsForGetFileIDs(this);
         this.auditTrailInformation = auditTrailInformation;
+        this.clientID = clientID;
     }
 
     @Override

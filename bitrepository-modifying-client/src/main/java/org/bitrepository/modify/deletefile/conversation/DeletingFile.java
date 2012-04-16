@@ -89,6 +89,7 @@ public class DeletingFile extends DeleteFileState {
         request.setFileID(conversation.fileID);
         request.setChecksumRequestForExistingFile(conversation.checksumSpecRequested);
         request.setChecksumDataForExistingFile(conversation.checksumForFileToDelete);
+        request.setFrom(conversation.clientID);
         
         for(SelectedPillarInfo pillarInfo : pillarsSelectedForRequest) {
             request.setPillarID(pillarInfo.getID());

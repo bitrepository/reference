@@ -72,6 +72,7 @@ public class IdentifyPillarsForGetFileIDs extends GetFileIDsState {
         identifyRequest.setCollectionID(conversation.settings.getCollectionID());
         identifyRequest.setFileIDs(conversation.fileIDs);
         identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        identifyRequest.setFrom(conversation.clientID);
         identifyRequest.setTo(conversation.settings.getCollectionDestination());
         identifyRequest.setAuditTrailInformation(conversation.auditTrailInformation);
         

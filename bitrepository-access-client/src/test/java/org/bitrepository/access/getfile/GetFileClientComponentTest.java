@@ -55,6 +55,8 @@ import org.testng.annotations.Test;
  */
 public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
+    private final String TEST_CLIENT_ID = "test-client"; 
+    
     @BeforeMethod (alwaysRun=true)
     @Override
     public void beforeMethodSetup() throws Exception {
@@ -63,7 +65,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test(groups = {"regressiontest"})
     public void verifyGetFileClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(settings, securityManager) 
+        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(settings, securityManager, TEST_CLIENT_ID) 
                 instanceof CollectionBasedGetFileClient, 
                 "The default GetFileClient from the Access factory should be of the type '" + 
                         CollectionBasedGetFileClient.class.getName() + "'.");
@@ -96,7 +98,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
             receivedIdentifyRequestMessage = collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetFileRequest(receivedIdentifyRequestMessage, 
-                            collectionDestinationID));
+                            collectionDestinationID, TEST_CLIENT_ID));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -111,7 +113,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
             messageBus.sendMessage(identifyResponse);
             receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
             Assert.assertEquals(receivedGetFileRequest, 
-                    testMessageFactory.createGetFileRequest(receivedGetFileRequest,chosenPillar, pillar1DestinationId));
+                    testMessageFactory.createGetFileRequest(receivedGetFileRequest, chosenPillar, 
+                            pillar1DestinationId, TEST_CLIENT_ID));
         }
 
         for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
@@ -215,7 +218,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
             GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
             Assert.assertEquals(receivedGetFileRequest, 
-                    testMessageFactory.createGetFileRequest(receivedGetFileRequest, fastPillarID, pillar1DestinationId));
+                    testMessageFactory.createGetFileRequest(receivedGetFileRequest, fastPillarID, 
+                            pillar1DestinationId, TEST_CLIENT_ID));
         }
 
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
@@ -279,7 +283,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
             GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(
                     GetFileRequest.class, 5, TimeUnit.SECONDS );
             Assert.assertEquals(receivedGetFileRequest, 
-                    testMessageFactory.createGetFileRequest(receivedGetFileRequest, fastPillarID, pillar1DestinationId));
+                    testMessageFactory.createGetFileRequest(receivedGetFileRequest, fastPillarID, 
+                            pillar1DestinationId, TEST_CLIENT_ID));
         }
 
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
@@ -336,7 +341,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                     collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
             IdentifyPillarsForGetFileRequest expectedMessage = 
                     testMessageFactory.createIdentifyPillarsForGetFileRequest(receivedIdentifyRequestMessage, 
-                            collectionDestinationID);
+                            collectionDestinationID, TEST_CLIENT_ID);
             Assert.assertEquals(receivedIdentifyRequestMessage, expectedMessage);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -442,7 +447,6 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
         ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
         return new GetFileClientTestWrapper(new CollectionBasedGetFileClient(
-                messageBus, conversationMediator, settings)
-        , testEventManager);
+                messageBus, conversationMediator, settings, TEST_CLIENT_ID), testEventManager);
     }
 }

@@ -49,6 +49,7 @@ import org.testng.annotations.Test;
 public class SimpleGetStatusConversationTest extends IntegrationTest {
 
     private static final String CONTRIBUTOR_ID = "pillar1";
+    private static final String CLIENT_ID = "TestClient";
     
     private SimpleGetStatusConversation conversation;
     private MessageSenderStub messageSender = new MessageSenderStub(testEventManager);
@@ -63,7 +64,9 @@ public class SimpleGetStatusConversationTest extends IntegrationTest {
         contributors.add(CONTRIBUTOR_ID);
         settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(new BigInteger("2000"));
         settings.getCollectionSettings().getClientSettings().setOperationTimeout(new BigInteger("2000"));
-        conversation = new SimpleGetStatusConversation(messageSender, settings, contributors, eventHandler,
+        settings.getReferenceSettings().getMonitoringServiceSettings().setID(CLIENT_ID);
+        conversation = new SimpleGetStatusConversation(messageSender, settings, contributors, 
+                settings.getReferenceSettings().getMonitoringServiceSettings().getID(), eventHandler,
                 new FlowController(settings));
     }
     
@@ -94,7 +97,7 @@ public class SimpleGetStatusConversationTest extends IntegrationTest {
             		"and sends the actual GetStuatusRequest.");
             IdentifyContributorsForGetStatusResponse identifyResponse = 
                     messageFactory.createIdentifyContributorsForGetStatusResponse(
-                        (IdentifyContributorsForGetStatusRequest) identifyRequest);
+                        (IdentifyContributorsForGetStatusRequest) identifyRequest, CONTRIBUTOR_ID);
             identifyResponse.setContributor(CONTRIBUTOR_ID);
             conversation.onMessage(identifyResponse);
             event = eventHandler.waitForEvent();
@@ -112,7 +115,8 @@ public class SimpleGetStatusConversationTest extends IntegrationTest {
             checkEvent(event, OperationEventType.REQUEST_SENT);
             
             addStep("Send an GetStatusFinalResponse", "The conversation changes state to GetStatusFinished");
-            GetStatusFinalResponse response = messageFactory.createGetStatusFinalResponse((GetStatusRequest) getRequest);
+            GetStatusFinalResponse response = messageFactory.createGetStatusFinalResponse((GetStatusRequest) getRequest,
+                    CONTRIBUTOR_ID);
             conversation.onMessage(response);
             event = eventHandler.waitForEvent();
             checkEvent(event, OperationEventType.COMPONENT_COMPLETE);
@@ -164,7 +168,7 @@ public class SimpleGetStatusConversationTest extends IntegrationTest {
                     "and sends the actual GetStuatusRequest.");
             IdentifyContributorsForGetStatusResponse identifyResponse = 
                     messageFactory.createIdentifyContributorsForGetStatusResponse(
-                        (IdentifyContributorsForGetStatusRequest) identifyRequest);
+                        (IdentifyContributorsForGetStatusRequest) identifyRequest, CONTRIBUTOR_ID);
             identifyResponse.setContributor(CONTRIBUTOR_ID);
             conversation.onMessage(identifyResponse);
             event = eventHandler.waitForEvent();

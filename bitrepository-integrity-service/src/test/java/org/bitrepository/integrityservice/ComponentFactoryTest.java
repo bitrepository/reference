@@ -62,7 +62,6 @@ public class ComponentFactoryTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})
     public void verifyCacheFromFactory() throws Exception {
         Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings)
-//                instanceof MemoryBasedIntegrityCache,
                 instanceof IntegrityDatabase,
                 "The default Cache should be the '" + IntegrityDatabase.class.getName() + "' but was '"
                 + IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings).getClass().getName() + "'");
@@ -74,8 +73,10 @@ public class ComponentFactoryTest extends ExtendedTestCase {
         IntegrityInformationCollector collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
                 cache, 
                 IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache), 
-                AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager),
-                AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager),
+                AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
+                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
+                AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
+                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 settings, messageBus);
         Assert.assertTrue(collector instanceof DelegatingIntegrityInformationCollector, 
                 "The default Collector should be the '" + DelegatingIntegrityInformationCollector.class.getName() + "'");

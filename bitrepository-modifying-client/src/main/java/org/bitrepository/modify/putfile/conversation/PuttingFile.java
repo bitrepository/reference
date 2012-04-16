@@ -96,6 +96,7 @@ public class PuttingFile extends PutFileState {
         putMsg.setFileSize(conversation.fileSize);
         putMsg.setAuditTrailInformation(conversation.auditTrailInformation);
         putMsg.setChecksumDataForNewFile(conversation.validationChecksums);
+        putMsg.setFrom(conversation.clientID);
 
         // Send the message to each pillar.
         monitor.requestSent("Request to put file " + conversation.fileID + " has been sent to the pillars + " +

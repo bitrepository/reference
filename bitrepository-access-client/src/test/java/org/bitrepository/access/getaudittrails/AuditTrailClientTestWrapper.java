@@ -36,11 +36,11 @@ public class AuditTrailClientTestWrapper implements AuditTrailClient {
         this.testEventManager = testEventManager;
     }
     @Override
-    public void getAuditTrails(AuditTrailQuery[] componentQueries, String fileID, String urlForResult, EventHandler eventHandler,
-                               String auditTrailInformation) {
+    public void getAuditTrails(AuditTrailQuery[] componentQueries, String fileID, String urlForResult, String clientID, 
+            EventHandler eventHandler, String auditTrailInformation) {
         testEventManager.addStimuli(
                 "Calling getAuditTrails(" + componentQueries + ", " + fileID + ", " + urlForResult + ")");
-        auditTrailClient.getAuditTrails(componentQueries, fileID, urlForResult, eventHandler, auditTrailInformation);
+        auditTrailClient.getAuditTrails(componentQueries, fileID, urlForResult, clientID, eventHandler, auditTrailInformation);
     }
 
     @Override

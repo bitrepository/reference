@@ -44,6 +44,8 @@ public class CollectionBasedGetStatusClient implements GetStatusClient {
     private final MessageBus messageBus;
     /** The mediator which should manage the conversations. */
     private final ConversationMediator conversationMediator;
+    /** The ID of the client */
+    private final String clientID;
     
     /**
      * Constructor
@@ -52,14 +54,16 @@ public class CollectionBasedGetStatusClient implements GetStatusClient {
      * @param settings the settings to use.  
      */
     public CollectionBasedGetStatusClient(MessageBus messageBus, ConversationMediator conversationMediator, 
-            Settings settings) {
+            Settings settings, String clientID) {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         this.settings = settings;
         ArgumentValidator.checkNotNullOrEmpty(settings.getCollectionSettings().getGetStatusSettings().getContributorIDs(),
                 "ContributorIDs");
+        ArgumentValidator.checkNotNullOrEmpty(clientID, "ClientID");
         this.conversationMediator = conversationMediator;
         this.messageBus = messageBus;
+        this.clientID = clientID;
     }
     
 
@@ -70,7 +74,7 @@ public class CollectionBasedGetStatusClient implements GetStatusClient {
         log.info("Requesting status for collection of components.");
         SimpleGetStatusConversation conversation = new SimpleGetStatusConversation(messageBus, 
                 settings, settings.getCollectionSettings().getGetStatusSettings().getContributorIDs(), 
-                eventHandler, new FlowController(settings));
+                clientID, eventHandler, new FlowController(settings));
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }

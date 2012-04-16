@@ -69,6 +69,7 @@ public class IdentifyingPillarsForGetFile extends GetFileState {
         identifyRequest.setFileID(conversation.fileID);
         identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         identifyRequest.setTo(conversation.settings.getCollectionDestination());
+        identifyRequest.setFrom(conversation.clientID);
 
         monitor.identifyPillarsRequestSent("Identifying pillars for getting file ");
         messageSender.sendMessage(identifyRequest);

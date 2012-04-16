@@ -56,6 +56,7 @@ import org.testng.annotations.Test;
  */
 public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
     
+    private static final String TEST_CLIENT_ID = "test-client";
 //    @Test(groups = {"regressiontest"})
     @Test(groups = {"integrationtest"})
     public void testPillarVsClients() throws Exception {
@@ -90,7 +91,8 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         
         addStep("Create a putclient and start a put operation.", 
                 "This should be caught by the pillar.");
-        PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(clientSettings, securityManager);
+        PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(clientSettings, securityManager, 
+                TEST_CLIENT_ID);
         putClient.putFile(new URL(FILE_ADDRESS), FILE_ID, FILE_SIZE, 
                 (ChecksumDataForFileTYPE) null, (ChecksumSpecTYPE) null, testEventHandler, "TEST-AUDIT-TRAIL");
         
@@ -106,7 +108,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         addStep("Create a GetFileClient and start a get operation", 
                 "This should be caught by the pillar");
         GetFileClient getClient = AccessComponentFactory.getInstance().createGetFileClient(clientSettings,
-                securityManager);
+                securityManager, TEST_CLIENT_ID);
         getClient.getFileFromSpecificPillar(FILE_ID, new URL(FILE_ADDRESS), 
                 settings.getReferenceSettings().getPillarSettings().getPillarID(), testEventHandler);
         
@@ -122,7 +124,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         addStep("Create a GetChecksumsClient and start a get operation", 
                 "This should be caught by the pillar");
         GetChecksumsClient getChecksums = AccessComponentFactory.getInstance().createGetChecksumsClient(clientSettings,
-                securityManager);
+                securityManager, TEST_CLIENT_ID);
         FileIDs fileIDsForGetChecksums = new FileIDs();
         fileIDsForGetChecksums.setFileID(FILE_ID);
         
@@ -144,7 +146,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         addStep("Create a GetFileIDsClient and start a get operation", 
                 "This should be caught by the pillar");
         GetFileIDsClient getFileIDs = AccessComponentFactory.getInstance().createGetFileIDsClient(clientSettings, 
-                securityManager);
+                securityManager, TEST_CLIENT_ID);
         FileIDs fileIdsForGetFileIDs = new FileIDs();
         fileIdsForGetFileIDs.setFileID(FILE_ID);
         
@@ -166,7 +168,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         addStep("Create a ReplaceFileClient at start a replace operation", 
                 "This should be caught and handled by the pillar.");
         ReplaceFileClient replaceFile = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(clientSettings, 
-                securityManager);
+                securityManager, TEST_CLIENT_ID);
 
         ChecksumSpecTYPE checksumRequested = new ChecksumSpecTYPE();
         checksumRequested.setChecksumSalt(null);
@@ -199,7 +201,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         addStep("Create a DeleteFileClient and start a delete operation", 
                 "This should be caught by the pillar");
         DeleteFileClient deleteFile = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(clientSettings,
-                securityManager);
+                securityManager, TEST_CLIENT_ID);
 
         deleteFile.deleteFile(FILE_ID, settings.getReferenceSettings().getPillarSettings().getPillarID(), 
                 checksumDataNewFile, checksumRequested, testEventHandler, "AuditTrail: TESTING!!!");
