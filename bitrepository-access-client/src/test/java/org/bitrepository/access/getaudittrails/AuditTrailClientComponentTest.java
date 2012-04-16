@@ -119,10 +119,10 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                 OperationEvent.OperationEventType.REQUEST_SENT);
         GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar1, testMessageFactory.createGetAuditTrailsRequest(
-                identifyRequest, PILLAR1_ID, pillar1DestinationId));
+                identifyRequest, PILLAR1_ID, pillar1DestinationId, TEST_CLIENT_ID));
         GetAuditTrailsRequest requestPillar2 = pillar2Destination.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar2, testMessageFactory.createGetAuditTrailsRequest(
-                identifyRequest, PILLAR2_ID, pillar2DestinationId));
+                identifyRequest, PILLAR2_ID, pillar2DestinationId, TEST_CLIENT_ID));
 
         addStep("Send a final response from pillar 1",
                 "A COMPONENT_COMPLETE event should be generated with the audit trail results.");
