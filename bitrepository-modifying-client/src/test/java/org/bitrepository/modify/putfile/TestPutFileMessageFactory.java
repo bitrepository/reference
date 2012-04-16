@@ -65,13 +65,14 @@ public class TestPutFileMessageFactory extends TestMessageFactory {
      * Retrieves a generic Identify message for the Put operation.
      * @return The IdentifyPillarsForPutFileRequest for the test.
      */
-    public IdentifyPillarsForPutFileRequest createIdentifyPillarsForPutFileRequest() {
+    public IdentifyPillarsForPutFileRequest createIdentifyPillarsForPutFileRequest(String from) {
         IdentifyPillarsForPutFileRequest identifyPillarsForPutFileRequest = new IdentifyPillarsForPutFileRequest();
         identifyPillarsForPutFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         identifyPillarsForPutFileRequest.setMinVersion(VERSION_DEFAULT);
         identifyPillarsForPutFileRequest.setCollectionID(collectionID);
         identifyPillarsForPutFileRequest.setVersion(VERSION_DEFAULT);
         identifyPillarsForPutFileRequest.setAuditTrailInformation(null);
+        identifyPillarsForPutFileRequest.setFrom(from);
         return identifyPillarsForPutFileRequest;
     }
 
@@ -83,8 +84,8 @@ public class TestPutFileMessageFactory extends TestMessageFactory {
      * @return The requested IdentifyPillarsForPutFileRequest.
      */
     public IdentifyPillarsForPutFileRequest createIdentifyPillarsForPutFileRequest(String correlationID, 
-            String replyTo, String toTopic, String fileId, long fileSize, String auditTrailInformation) {
-        IdentifyPillarsForPutFileRequest identifyPillarsForPutFileRequest = createIdentifyPillarsForPutFileRequest();
+            String replyTo, String toTopic, String fileId, long fileSize, String auditTrailInformation, String from) {
+        IdentifyPillarsForPutFileRequest identifyPillarsForPutFileRequest = createIdentifyPillarsForPutFileRequest(from);
         identifyPillarsForPutFileRequest.setCorrelationID(correlationID);
         identifyPillarsForPutFileRequest.setReplyTo(replyTo);
         identifyPillarsForPutFileRequest.setTo(toTopic);
@@ -114,6 +115,7 @@ public class TestPutFileMessageFactory extends TestMessageFactory {
         ipfpfResponse.setMinVersion(VERSION_DEFAULT);
         ipfpfResponse.setVersion(VERSION_DEFAULT);
         ipfpfResponse.setResponseInfo(IDENTIFY_INFO_DEFAULT);
+        ipfpfResponse.setFrom(pillarId);
 
         ipfpfResponse.setPillarChecksumSpec(null);
 
@@ -124,13 +126,14 @@ public class TestPutFileMessageFactory extends TestMessageFactory {
      * Method for creating a generic PutFilRequest.
      * @return The requested PutFileRequest.
      */
-    public PutFileRequest createPutFileRequest() {
+    public PutFileRequest createPutFileRequest(String from) {
         PutFileRequest putFileRequest = new PutFileRequest();
         putFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         putFileRequest.setFileID(FILE_ID_DEFAULT);
         putFileRequest.setMinVersion(VERSION_DEFAULT);
         putFileRequest.setVersion(VERSION_DEFAULT);
         putFileRequest.setCollectionID(collectionID);
+        putFileRequest.setFrom(from);
         return putFileRequest;
     }
 
@@ -145,8 +148,8 @@ public class TestPutFileMessageFactory extends TestMessageFactory {
      * @return The requested PutFileRequest.
      */
     public PutFileRequest createPutFileRequest(String pillarId, String toTopic, String replyTo, String correlationId,
-            String fileAddress, BigInteger filesize, String fileId, String auditTrailInformation) {
-        PutFileRequest putFileRequest = createPutFileRequest();
+            String fileAddress, BigInteger filesize, String fileId, String auditTrailInformation, String from) {
+        PutFileRequest putFileRequest = createPutFileRequest(from);
         putFileRequest.setPillarID(pillarId);
         putFileRequest.setTo(toTopic);
         putFileRequest.setReplyTo(replyTo);
@@ -183,6 +186,7 @@ public class TestPutFileMessageFactory extends TestMessageFactory {
         progressResponse.setResponseInfo(PROGRESS_INFO_DEFAULT);
         progressResponse.setVersion(VERSION_DEFAULT);
         progressResponse.setMinVersion(VERSION_DEFAULT);
+        progressResponse.setFrom(pillarId);
         
         return progressResponse;
     }
@@ -209,6 +213,7 @@ public class TestPutFileMessageFactory extends TestMessageFactory {
         finalResponse.setResponseInfo(FINAL_INFO_DEFAULT);
         finalResponse.setVersion(VERSION_DEFAULT);
         finalResponse.setMinVersion(VERSION_DEFAULT);
+        finalResponse.setFrom(pillarId);
         
         return finalResponse;
     }

@@ -56,6 +56,8 @@ import org.testng.annotations.Test;
 public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     private TestDeleteFileMessageFactory messageFactory;
 
+    private final String TEST_CLIENT_ID = "test-client";
+    
     @BeforeMethod(alwaysRun=true)
     public void initialise() throws Exception {
         if(useMockupPillar()) {
@@ -68,7 +70,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Testing the initialization through the ModifyComponentFactory.");
         addStep("Use the ModifyComponentFactory to instantiate a PutFileClient.", 
                 "It should be an instance of SimplePutFileClient");
-        DeleteFileClient dfc = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, securityManager);
+        DeleteFileClient dfc = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, securityManager, 
+                TEST_CLIENT_ID);
         Assert.assertTrue(dfc instanceof ConversationBasedDeleteFileClient, "The DeleteFileClient '" + dfc 
                 + "' should be instance of '" + ConversationBasedDeleteFileClient.class.getName() + "'");
     }
@@ -107,7 +110,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getCorrelationID(),
                             receivedIdentifyRequestMessage.getReplyTo(),
                             receivedIdentifyRequestMessage.getTo(), 
-                            DEFAULT_FILE_ID
+                            DEFAULT_FILE_ID,
+                            TEST_CLIENT_ID
                             ));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -128,7 +132,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedDeleteFileRequest.getCorrelationID(),
                             DEFAULT_FILE_ID,
                             receivedDeleteFileRequest.getChecksumDataForExistingFile(),
-                            receivedDeleteFileRequest.getChecksumRequestForExistingFile()
+                            receivedDeleteFileRequest.getChecksumRequestForExistingFile(), 
+                            TEST_CLIENT_ID
                             ));
         }
 
@@ -200,7 +205,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getCorrelationID(),
                             receivedIdentifyRequestMessage.getReplyTo(),
                             receivedIdentifyRequestMessage.getTo(), 
-                            DEFAULT_FILE_ID
+                            DEFAULT_FILE_ID,
+                            TEST_CLIENT_ID
                             ));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -246,7 +252,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getCorrelationID(),
                             receivedIdentifyRequestMessage.getReplyTo(),
                             receivedIdentifyRequestMessage.getTo(), 
-                            DEFAULT_FILE_ID
+                            DEFAULT_FILE_ID,
+                            TEST_CLIENT_ID
                             ));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -267,7 +274,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedDeleteFileRequest.getCorrelationID(),
                             DEFAULT_FILE_ID,
                             receivedDeleteFileRequest.getChecksumDataForExistingFile(),
-                            receivedDeleteFileRequest.getChecksumRequestForExistingFile()
+                            receivedDeleteFileRequest.getChecksumRequestForExistingFile(),
+                            TEST_CLIENT_ID
                             ));
         }
 
@@ -318,7 +326,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getCorrelationID(),
                             receivedIdentifyRequestMessage.getReplyTo(),
                             receivedIdentifyRequestMessage.getTo(), 
-                            DEFAULT_FILE_ID
+                            DEFAULT_FILE_ID,
+                            TEST_CLIENT_ID
                             ));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -339,7 +348,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedDeleteFileRequest.getCorrelationID(),
                             DEFAULT_FILE_ID,
                             receivedDeleteFileRequest.getChecksumDataForExistingFile(),
-                            receivedDeleteFileRequest.getChecksumRequestForExistingFile()
+                            receivedDeleteFileRequest.getChecksumRequestForExistingFile(),
+                            TEST_CLIENT_ID
                             ));
         }
 
@@ -377,7 +387,6 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
         ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
         return new DeleteClientTestWrapper(new ConversationBasedDeleteFileClient(
-                messageBus, conversationMediator, settings)
-        , testEventManager);
+                messageBus, conversationMediator, settings, TEST_CLIENT_ID), testEventManager);
     }
 }

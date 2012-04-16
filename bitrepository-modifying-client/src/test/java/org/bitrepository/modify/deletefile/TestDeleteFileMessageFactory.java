@@ -68,13 +68,14 @@ public class TestDeleteFileMessageFactory extends TestMessageFactory {
      * Retrieves a generic Identify message for the Delete operation.
      * @return The IdentifyPillarsForDeleteFileRequest for the test.
      */
-    public IdentifyPillarsForDeleteFileRequest createIdentifyPillarsForDeleteFileRequest() {
+    public IdentifyPillarsForDeleteFileRequest createIdentifyPillarsForDeleteFileRequest(String from) {
         IdentifyPillarsForDeleteFileRequest identifyPillarsForDeleteFileRequest = new IdentifyPillarsForDeleteFileRequest();
         identifyPillarsForDeleteFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         identifyPillarsForDeleteFileRequest.setMinVersion(VERSION_DEFAULT);
         identifyPillarsForDeleteFileRequest.setCollectionID(collectionId);
         identifyPillarsForDeleteFileRequest.setVersion(VERSION_DEFAULT);
         identifyPillarsForDeleteFileRequest.setAuditTrailInformation(null);
+        identifyPillarsForDeleteFileRequest.setFrom(from);
         return identifyPillarsForDeleteFileRequest;
     }
 
@@ -86,8 +87,9 @@ public class TestDeleteFileMessageFactory extends TestMessageFactory {
      * @return The requested IdentifyPillarsForDeleteFileRequest.
      */
     public IdentifyPillarsForDeleteFileRequest createIdentifyPillarsForDeleteFileRequest(String correlationID, 
-            String replyTo, String toTopic, String fileId) {
-        IdentifyPillarsForDeleteFileRequest identifyPillarsForDeleteFileRequest = createIdentifyPillarsForDeleteFileRequest();
+            String replyTo, String toTopic, String fileId, String from) {
+        IdentifyPillarsForDeleteFileRequest identifyPillarsForDeleteFileRequest = 
+                createIdentifyPillarsForDeleteFileRequest(from);
         identifyPillarsForDeleteFileRequest.setCorrelationID(correlationID);
         identifyPillarsForDeleteFileRequest.setReplyTo(replyTo);
         identifyPillarsForDeleteFileRequest.setTo(toTopic);
@@ -114,7 +116,7 @@ public class TestDeleteFileMessageFactory extends TestMessageFactory {
         identifyResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
         identifyResponse.setMinVersion(VERSION_DEFAULT);
         identifyResponse.setVersion(VERSION_DEFAULT);
-
+        identifyResponse.setFrom(pillarId);
         identifyResponse.setPillarChecksumSpec(null);
         identifyResponse.setFileID(fileId);
         identifyResponse.setResponseInfo(IDENTIFY_INFO_DEFAULT);
@@ -133,12 +135,13 @@ public class TestDeleteFileMessageFactory extends TestMessageFactory {
      * @return The requested DeleteFileRequest.
      */
     public DeleteFileRequest createDeleteFileRequest(String pillarId, String toTopic, String replyTo, 
-            String correlationId, String fileId, ChecksumDataForFileTYPE checksumData, ChecksumSpecTYPE checksumType) {
+            String correlationId, String fileId, ChecksumDataForFileTYPE checksumData, 
+            ChecksumSpecTYPE checksumType, String from) {
         DeleteFileRequest deleteFileRequest = new DeleteFileRequest();
         deleteFileRequest.setMinVersion(VERSION_DEFAULT);
         deleteFileRequest.setVersion(VERSION_DEFAULT);
         deleteFileRequest.setCollectionID(collectionId);
-
+        deleteFileRequest.setFrom(from);
         deleteFileRequest.setPillarID(pillarId);
         deleteFileRequest.setTo(toTopic);
         deleteFileRequest.setReplyTo(replyTo);
@@ -171,6 +174,7 @@ public class TestDeleteFileMessageFactory extends TestMessageFactory {
         progressResponse.setResponseInfo(PROGRESS_INFO_DEFAULT);
         progressResponse.setVersion(VERSION_DEFAULT);
         progressResponse.setMinVersion(VERSION_DEFAULT);
+        progressResponse.setFrom(pillarId);
         
         return progressResponse;
     }
@@ -195,6 +199,7 @@ public class TestDeleteFileMessageFactory extends TestMessageFactory {
         finalResponse.setResponseInfo(FINAL_INFO_DEFAULT);
         finalResponse.setVersion(VERSION_DEFAULT);
         finalResponse.setMinVersion(VERSION_DEFAULT);
+        finalResponse.setFrom(pillarId);
         
         return finalResponse;
     }

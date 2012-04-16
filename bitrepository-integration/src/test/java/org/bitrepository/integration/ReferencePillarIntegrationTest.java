@@ -91,7 +91,8 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         
         addStep("Create a putclient and start a put operation.", 
                 "This should be caught by the pillar.");
-        PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(clientSettings, securityManager);
+        PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(clientSettings, securityManager, 
+                TEST_CLIENT_ID);
         putClient.putFile(new URL(FILE_ADDRESS), FILE_ID, FILE_SIZE, 
                 (ChecksumDataForFileTYPE) null, (ChecksumSpecTYPE) null, testEventHandler, "TEST-AUDIT-TRAIL");
         
@@ -200,7 +201,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         addStep("Create a DeleteFileClient and start a delete operation", 
                 "This should be caught by the pillar");
         DeleteFileClient deleteFile = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(clientSettings,
-                securityManager);
+                securityManager, TEST_CLIENT_ID);
 
         deleteFile.deleteFile(FILE_ID, settings.getReferenceSettings().getPillarSettings().getPillarID(), 
                 checksumDataNewFile, checksumRequested, testEventHandler, "AuditTrail: TESTING!!!");

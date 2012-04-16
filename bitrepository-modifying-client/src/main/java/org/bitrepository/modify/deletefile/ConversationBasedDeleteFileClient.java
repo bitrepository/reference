@@ -51,18 +51,22 @@ public class ConversationBasedDeleteFileClient implements DeleteFileClient {
     private final MessageBus bus;
     /** The settings. */
     private Settings settings;
-
+    /** The client ID */
+    private final String clientID;
+    
     /**
      * Constructor.
      * @param messageBus The messagebus for communication.
      * @param settings The configurations and settings.
      */
-    public ConversationBasedDeleteFileClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings) {
+    public ConversationBasedDeleteFileClient(MessageBus messageBus, ConversationMediator conversationMediator, 
+            Settings settings, String clientID) {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         this.conversationMediator = conversationMediator;;
         this.bus = messageBus;
         this.settings = settings;
+        this.clientID = clientID;
     }
     
     @Override
@@ -77,7 +81,7 @@ public class ConversationBasedDeleteFileClient implements DeleteFileClient {
                 + "'. And the audit trail information '" + auditTrailInformation + "'.");
         SimpleDeleteFileConversation conversation = new SimpleDeleteFileConversation(bus, settings, fileId, 
                 Arrays.asList(new String[]{pillarId}), checksumForPillar, checksumRequested, eventHandler, 
-                new FlowController(settings), auditTrailInformation);
+                new FlowController(settings), auditTrailInformation, clientID);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }
@@ -93,7 +97,7 @@ public class ConversationBasedDeleteFileClient implements DeleteFileClient {
         + "'. And the audit trail information '" + auditTrailInformation + "'.");
         SimpleDeleteFileConversation conversation = new SimpleDeleteFileConversation(bus, settings, fileId, 
                 settings.getCollectionSettings().getClientSettings().getPillarIDs(), checksumForPillar, 
-                checksumRequested, eventHandler, new FlowController(settings), auditTrailInformation);
+                checksumRequested, eventHandler, new FlowController(settings), auditTrailInformation, clientID);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }

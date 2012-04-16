@@ -80,22 +80,22 @@ public final class ModifyComponentFactory {
      * Method for initialising the PutClient.
      * @return The configured PutClient.
      */
-    public PutFileClient retrievePutClient(Settings settings, SecurityManager securityManager) {
+    public PutFileClient retrievePutClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new ConversationBasedPutFileClient(
                 ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
                 ConversationMediatorManager.getConversationMediator(settings, securityManager), 
-                settings);
+                settings, clientID);
     }
     
     /**
      * @param settings The settings for the DeleteFileClient.
      * @return The requested DeleteClient.
      */
-    public DeleteFileClient retrieveDeleteFileClient(Settings settings, SecurityManager securityManager) {
+    public DeleteFileClient retrieveDeleteFileClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new ConversationBasedDeleteFileClient(
                 ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
                 ConversationMediatorManager.getConversationMediator(settings, securityManager), 
-                settings);
+                settings, clientID);
     }
         
     /**

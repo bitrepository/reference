@@ -64,6 +64,8 @@ public class SimpleDeleteFileConversation extends AbstractConversation {
     final String auditTrailInformation;
     /** The selector for finding the pillar.*/
     final PillarSelectorForDeleteFile pillarSelector;
+    /** The client ID */
+    final String clientID;
 
     /**
      * Constructor.
@@ -87,7 +89,8 @@ public class SimpleDeleteFileConversation extends AbstractConversation {
             ChecksumSpecTYPE checksumSpecRequested,
             EventHandler eventHandler,
             FlowController flowController,
-            String auditTrailInformation) {
+            String auditTrailInformation,
+            String clientID) {
         super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
         
         this.messageSender = messageSender;
@@ -97,6 +100,7 @@ public class SimpleDeleteFileConversation extends AbstractConversation {
         this.checksumForFileToDelete = checksumSpecForPillar;
         this.checksumSpecRequested = checksumSpecRequested;
         this.auditTrailInformation = auditTrailInformation;
+        this.clientID = clientID;
         conversationState = new IdentifyPillarsForDeleteFile(this);
         pillarSelector = new PillarSelectorForDeleteFile(pillarIds);
     }

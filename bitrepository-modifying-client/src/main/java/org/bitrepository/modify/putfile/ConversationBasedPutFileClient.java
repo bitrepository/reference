@@ -57,6 +57,8 @@ public class ConversationBasedPutFileClient implements PutFileClient {
     private final MessageBus bus;
     /** The settings. */
     private Settings settings;
+    /** The client ID */
+    private final String clientID;
     
     /**
      * Constructor.
@@ -64,12 +66,13 @@ public class ConversationBasedPutFileClient implements PutFileClient {
      * @param settings The configurations and settings.
      */
     public ConversationBasedPutFileClient(MessageBus messageBus, ConversationMediator conversationMediator, 
-            Settings settings) {
+            Settings settings, String clientID) {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         this.conversationMediator = conversationMediator;;
         this.bus = messageBus;
         this.settings = settings;
+        this.clientID = clientID;
     }
     
     @Override
@@ -83,7 +86,7 @@ public class ConversationBasedPutFileClient implements PutFileClient {
         
         SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
                     BigInteger.valueOf(sizeOfFile), checksumForValidationAtPillar, checksumRequestsForValidation, 
-                    eventHandler, new FlowController(settings), auditTrailInformation);
+                    eventHandler, new FlowController(settings), auditTrailInformation, clientID);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }

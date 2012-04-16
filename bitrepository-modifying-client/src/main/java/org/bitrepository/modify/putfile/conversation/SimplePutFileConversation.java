@@ -67,6 +67,8 @@ public class SimplePutFileConversation extends AbstractConversation {
     final ChecksumSpecTYPE requestChecksums;
     /** The audit trail information for this conversation.*/
     final String auditTrailInformation;
+    /** The client ID */
+    final String clientID;
     
     /**
      * Constructor.
@@ -93,7 +95,8 @@ public class SimplePutFileConversation extends AbstractConversation {
             ChecksumSpecTYPE checksumRequestsForValidation,
             EventHandler eventHandler,
             FlowController flowController,
-            String auditTrailInformation) {
+            String auditTrailInformation, 
+            String clientID) {
         super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
         
         this.messageSender = messageSender;
@@ -105,6 +108,7 @@ public class SimplePutFileConversation extends AbstractConversation {
         this.requestChecksums = checksumRequestsForValidation;
         conversationState = new IdentifyPillarsForPutFile(this);
         this.auditTrailInformation = auditTrailInformation;
+        this.clientID = clientID;
     }
     
     @Override

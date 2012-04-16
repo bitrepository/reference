@@ -69,6 +69,7 @@ public class IdentifyPillarsForDeleteFile extends DeleteFileState {
         identifyRequest.setAuditTrailInformation(conversation.auditTrailInformation);
         identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
         identifyRequest.setTo(conversation.settings.getCollectionDestination());
+        identifyRequest.setFrom(conversation.clientID);
         
         monitor.identifyPillarsRequestSent("Identifying pillars for Delete file " + conversation.fileID);
         conversation.messageSender.sendMessage(identifyRequest);
