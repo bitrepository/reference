@@ -28,6 +28,9 @@ import org.bitrepository.audittrails.service.AuditTrailServiceFactory;
 import org.bitrepository.protocol.service.AbstractBitrepositoryContextListener;
 import org.bitrepository.protocol.service.BitrepositoryService;
 
+/**
+ * The Context listener for the AuditTrailService
+ */
 public class AuditTrailServiceContextListener extends AbstractBitrepositoryContextListener {
        
     @Override

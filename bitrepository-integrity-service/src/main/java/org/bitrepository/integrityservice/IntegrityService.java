@@ -49,9 +49,5 @@ public interface IntegrityService {
      * @return The number of files with checksum error at the given pillar.
      */
     long getNumberOfChecksumErrors(String pillarId);
-    
-    /**
-     * Closes the integrity service.
-     */
-    void close();
+
 }
