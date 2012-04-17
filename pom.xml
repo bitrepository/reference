@@ -16,7 +16,7 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>bitrepository-common</module>
+    <module>bitrepository-core</module>
     <module>bitrepository-access-client</module>
     <module>bitrepository-modifying-client</module>
     <module>bitrepository-integrity-service</module>

@@ -24,8 +24,6 @@
  */
 package org.bitrepository.alarm;
 
-import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration;
-import org.bitrepository.common.ConfigurationFactory;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -41,8 +39,6 @@ public final class AlarmComponentFactory {
     private static AlarmComponentFactory instance;
     /** The characteristics for this module.*/
     private ModuleCharacteristics moduleCharacter;
-    /** The configuration for this module.*/
-    private AlarmConfiguration config;
 
     /** Constructor. Private to avoid instantiation of this utility class.*/
     private AlarmComponentFactory() { 
@@ -66,18 +62,6 @@ public final class AlarmComponentFactory {
      */
     public ModuleCharacteristics getModuleCharacteristics() {
         return moduleCharacter;
-    }
-
-    /**
-     * Method for extracting the configuration for the access module.
-     * @return The access module configuration.
-     */
-    public AlarmConfiguration getConfig() {
-        if (config == null) {
-            ConfigurationFactory configurationFactory = new ConfigurationFactory();
-            config = configurationFactory.loadConfiguration(getModuleCharacteristics(), AlarmConfiguration.class);
-        }
-        return config;
     }
 
     /**

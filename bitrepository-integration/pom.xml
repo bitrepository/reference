@@ -23,11 +23,6 @@
     	<artifactId>jaccept-core</artifactId>
     	<version>0.2</version>
     </dependency>
-    <dependency>
-      <groupId>org.bitrepository.reference</groupId>
-      <artifactId>bitrepository-protocol</artifactId>
-      <version>${project.version}</version>
-    </dependency>
     <!-- THE TEST SCOPE -->
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
@@ -49,16 +44,9 @@
     </dependency>
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
-      <artifactId>bitrepository-common</artifactId>
+      <artifactId>bitrepository-core</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.bitrepository.reference</groupId>
-      <artifactId>bitrepository-protocol</artifactId>
-      <version>${project.version}</version>
-      <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.bitrepository.reference</groupId>

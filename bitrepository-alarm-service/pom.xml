@@ -40,12 +40,7 @@
     </dependency>
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
-      <artifactId>bitrepository-protocol</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bitrepository.reference</groupId>
-      <artifactId>bitrepository-common</artifactId>
+      <artifactId>bitrepository-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -74,14 +69,7 @@
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
-      <artifactId>bitrepository-protocol</artifactId>
-      <version>${project.version}</version>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.bitrepository.reference</groupId>
-      <artifactId>bitrepository-common</artifactId>
+      <artifactId>bitrepository-core</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
