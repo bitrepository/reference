@@ -28,7 +28,7 @@
   <CollectionID>TEST</CollectionID>
   <ProtocolSettings>
     <DefaultChecksumType>md5</DefaultChecksumType>
-    <AllowedFileIDs></AllowedFileIDs>
+    <AllowedFileIDPattern></AllowedFileIDPattern>
     <RequireMessageAuthentication>false</RequireMessageAuthentication>
     <RequireOperationAuthorization>false</RequireOperationAuthorization>
     <CollectionDestination>TEST-TOPIC</CollectionDestination>
