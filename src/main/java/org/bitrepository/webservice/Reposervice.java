@@ -329,6 +329,25 @@ public class Reposervice {
     	return sb.toString();
     }
     
+    /**
+     * getFileIDs exposes the possibility of requesting listing of all files present in the Bitrepository.
+     * @return A string containing one fileID per line.  
+     */
+    @GET
+    @Path("getFileIDs")
+    @Produces("text/plain")
+    public String getFileIDs() {
+        GetFileIDsResults results = client.getFileIDs("", true);
+        StringBuilder sb = new StringBuilder();
+        if(results.getResults() != null) {
+            for(String ID : results.getResults().keySet()) {
+                sb.append(ID + "\n");
+            }
+        }
+        
+        return sb.toString();
+    }
+    
     @GET
     @Path("deleteFile")
     @Produces("text/html")
