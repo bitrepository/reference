@@ -7,8 +7,9 @@
   </parent>
   <artifactId>bitrepository-protocol</artifactId>
   <name>Bitrepository Protocol</name>
-  <description>General functionality for communication with the Bitrepository protocol. 
-  This includes message bus integration and file exchange.</description>
+  <description>General functionality for communication with the Bitrepository
+      org.bitrepository.org.bitrepository.protocol.
+      This includes message bus integration and file exchange.</description>
   
   <dependencies>
     <dependency>
@@ -79,7 +80,7 @@
               <goal>process</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}</outputDirectory>
+              <outputDirectory>${project.build.directory}/xsd</outputDirectory>
               <!-- 
                 If attached is true (the default) the copy-resources step below will 
                 re-include the resources from the last build in the current.

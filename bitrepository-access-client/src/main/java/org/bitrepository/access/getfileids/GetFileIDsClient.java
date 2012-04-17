@@ -32,7 +32,7 @@ import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 
 /**
- * Interface for GetFileIDs client exposing the bit repository protocol GetFileIDs functionality.
+ * Interface for GetFileIDs client exposing the bit repository org.bitrepository.org.bitrepository.protocol GetFileIDs functionality.
  */
 public interface GetFileIDsClient {
     

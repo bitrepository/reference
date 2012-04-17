@@ -25,14 +25,14 @@
 <!-- URLs in schema targetNamespace must be updated later -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:tns="http://bitrepository.org/protocol/Configuration.xsd"
-        targetNamespace="http://bitrepository.org/protocol/Configuration.xsd"
+        targetNamespace="http://bitrepository.org/org.bitrepository.org.bitrepository.protocol.protocol/Configuration.xsd"
         elementFormDefault="qualified">
 
 
     <element name="ProtocolConfiguration">
         <annotation>
             <documentation xml:lang="en">
-                The full configuration for the protocol module
+                The full configuration for the org.bitrepository.protocol module
             </documentation>
         </annotation>
         <complexType>
@@ -59,7 +59,8 @@
             <element name="fileExchangeClass" type="string">
                 <annotation>
                     <documentation xml:lang="en">
-                        The class for the file exchange. E.g. org.bitrepository.protocol.http.HTTPFileExchange
+                        The class for the file exchange. E.g.
+                        org.bitrepository.org.bitrepository.protocol.http.HTTPFileExchange
                     </documentation>
                 </annotation>
             </element>

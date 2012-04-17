@@ -24,7 +24,7 @@
   #L%
   -->
   
-<CollectionSettings xmlns="http://bitrepository.org/settings/${collection.settings.version}/CollectionSettings.xsd">
+<CollectionSettings xmlns="http://bitrepository.org/settings/CollectionSettings.xsd">
   <CollectionID>TEST</CollectionID>
   <ProtocolSettings>
     <DefaultChecksumType>md5</DefaultChecksumType>

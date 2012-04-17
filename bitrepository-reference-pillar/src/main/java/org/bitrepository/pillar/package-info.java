@@ -45,7 +45,7 @@
  * <p/>
  * The {@link org.bitrepository.pillar.checksumpillar.ChecksumPillar} is the implementation of the checksum pillar.
  * It does not store the files, only their checksums, and it will therefore not be able to handle some parts of the 
- * protocol.  
+ * org.bitrepository.org.bitrepository.protocol.
  * 
  * <h3>Exceptions</h3>
  * All methods may throw {@link IllegalArgumentException} if parameters are null

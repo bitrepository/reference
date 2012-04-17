@@ -24,7 +24,7 @@
 
 <!-- Empty schema to satisfy the requirement for a configuration definition in each module -->
 <xs:schema 
-	targetNamespace="http://bitrepository.org/protocol/configuration/Configuration.xsd"
+	targetNamespace="http://bitrepository.org/org.bitrepository.org.bitrepository.protocol/configuration/Configuration.xsd"
     elementFormDefault="qualified"
-    xmlns="http://bitrepository.org/protocol/configuration/Configuration.xsd"
+    xmlns="http://bitrepository.org/org.bitrepository.org.bitrepository.protocol/configuration/Configuration.xsd"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"/>

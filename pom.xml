@@ -17,7 +17,6 @@
 
   <modules>
     <module>bitrepository-common</module>
-    <module>bitrepository-protocol</module>
     <module>bitrepository-access-client</module>
     <module>bitrepository-modifying-client</module>
     <module>bitrepository-integrity-service</module>
@@ -173,32 +172,61 @@
           <source>1.6</source>
           <target>1.6</target>
         </configuration>
-      </plugin>
+      </plugin>   <plugin>
+      <!-- Copies the jaxb bindings definition to the message xsd dir,
+in preparation for the xsd -> java class file generation -->
+      <artifactId>maven-resources-plugin</artifactId>
+      <version>2.5</version>
+      <executions>
+        <execution>
+          <id>copy-resources</id>
+          <phase>generate-sources</phase>
+          <goals>
+            <goal>copy-resources</goal>
+          </goals>
+          <configuration>
+            <outputDirectory>${project.build.directory}/xsd</outputDirectory>
+            <resources>
+              <resource>
+                <directory>src/main/resources/xsd</directory>
+                <filtering>true</filtering>
+              </resource>
+            </resources>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
         <executions>
           <execution>
-            <id>generate-configuration-class</id>
+            <id>generate-classes-from-xsds</id>
             <goals>
               <goal>generate</goal>
             </goals>
-            <phase>generate-sources</phase>
+            <phase>generate-resources</phase>
             <configuration>
-              <schemaDirectory>${basedir}/src/main/resources/configuration/schema</schemaDirectory>
+              <schemaDirectory>${project.build.directory}/xsd</schemaDirectory>
               <schemaIncludes>
                 <include>*.xsd</include>
               </schemaIncludes>
-              <generateDirectory>${project.build.directory}/generated-sources/configuration</generateDirectory>
+              <generateDirectory>${project.build.directory}/generated-sources/</generateDirectory>
               <args>
                 <arg>-XtoString</arg>
                 <arg>-Xequals</arg>
                 <arg>-XhashCode</arg>
+                <arg>-Xannotate</arg>
               </args>
               <plugins>
                 <plugin>
                   <groupId>org.jvnet.jaxb2_commons</groupId>
                   <artifactId>jaxb2-basics</artifactId>
+                  <version>0.6.2</version>
+                </plugin>
+                <plugin>
+                  <groupId>org.jvnet.jaxb2_commons</groupId>
+                  <artifactId>jaxb2-basics-annotate</artifactId>
                   <version>0.6.2</version>
                 </plugin>
               </plugins>

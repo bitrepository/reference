@@ -89,7 +89,7 @@
     <xs:complexType>
       <xs:annotation>
         <xs:documentation xml:lang="en">
-          The settings for the protocol
+            The settings for the org.bitrepository.protocol
         </xs:documentation>
       </xs:annotation>
       <xs:sequence>

@@ -36,7 +36,7 @@ import java.util.List;
 
 public class IdentifyingAuditTrailContributers extends IdentifyingState {
     private final AuditTrailConversationContext context;
-    private MultipleComponentSelector selector;
+    private final MultipleComponentSelector selector;
 
     public IdentifyingAuditTrailContributers (AuditTrailConversationContext context) {
         super();

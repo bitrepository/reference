@@ -24,15 +24,15 @@
  */
 package org.bitrepository.common;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.bitrepository.common.configuration.CommonConfiguration;
+import org.bitrepository.core.configuration.CoreConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Tests the <code>ConfigurationFactory</code> by running the functionality on the common modules own configuration
@@ -53,7 +53,7 @@ public class ConfigurationFactoryTest extends ExtendedTestCase {
     private static final File ORIGINAL_CONFIG_DIR = 
             new File("target" + FS + "classes" + FS + "configuration" + FS + "xml");
 
-    private static final CommonConfiguration referenceConfig = createDefaultConfiguration();
+    private static final CoreConfiguration referenceConfig = createDefaultConfiguration();
 
     /** 
      * Set working dir to the target folder to avoid. The ConfigurationFactory will look for configuration 
@@ -76,8 +76,8 @@ public class ConfigurationFactoryTest extends ExtendedTestCase {
         ORIGINAL_CONFIG_LOCATION.renameTo(ORIGINAL_TEST_CONFIG_LOCATION);
     }
 
-    private static CommonConfiguration createDefaultConfiguration() {
-        CommonConfiguration config = new CommonConfiguration();
+    private static CoreConfiguration createDefaultConfiguration() {
+        CoreConfiguration config = new CoreConfiguration();
         config.setEnvironmentName("TEST");
         return config;
     }
@@ -89,7 +89,7 @@ public class ConfigurationFactoryTest extends ExtendedTestCase {
         addStep("Attempt to load a test configuration with no configuration file with the correct name", 
                 "A Configuration exception should be thrown");
         try {
-            configurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class);
+            configurationFactory.loadConfiguration(moduleCharacteristics, CoreConfiguration.class);
             Assert.fail("Expected a ConfigurationException with a non-existing test configuration");
         } catch (ConfigurationException ce) {
             // That apparently worked
@@ -99,7 +99,7 @@ public class ConfigurationFactoryTest extends ExtendedTestCase {
                 "configuration", 
                 "The configuration should be loaded sucessfully");
         RENAMED_TEST_CONFIG_LOCATION.renameTo(ORIGINAL_TEST_CONFIG_LOCATION);
-        Assert.assertEquals(configurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class), 
+        Assert.assertEquals(configurationFactory.loadConfiguration(moduleCharacteristics, CoreConfiguration.class),
                 referenceConfig);
     }
 
@@ -110,7 +110,7 @@ public class ConfigurationFactoryTest extends ExtendedTestCase {
         addStep("Attempt to load a configuration with no configuration file with the correct name", 
                 "A Configuration exception should be thrown");
         try {
-            configurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class);
+            configurationFactory.loadConfiguration(moduleCharacteristics, CoreConfiguration.class);
             Assert.fail("Expected a ConfigurationException with a non-existing configuration");
         } catch (ConfigurationException ce) {
             // That apparently worked
@@ -119,7 +119,7 @@ public class ConfigurationFactoryTest extends ExtendedTestCase {
         addStep("Attempt to load the configuration after it has been rename to the correct name", 
                 "The configuration should be loaded sucessfully");
         RENAMED_TEST_CONFIG_LOCATION.renameTo(ORIGINAL_CONFIG_LOCATION);
-        Assert.assertEquals(configurationFactory.loadConfiguration(moduleCharacteristics, CommonConfiguration.class), 
+        Assert.assertEquals(configurationFactory.loadConfiguration(moduleCharacteristics, CoreConfiguration.class),
                 referenceConfig);
     }
 }

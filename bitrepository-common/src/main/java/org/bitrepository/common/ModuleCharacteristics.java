@@ -40,7 +40,7 @@ public final class ModuleCharacteristics {
     
     /**
      * Creates an immutable <code>ModuleCharacteristics</code> instance.
-     * @param lowerCaseNameWithHyphen The protocol name in lowerCaseNameWithHyphen notation
+     * @param lowerCaseNameWithHyphen The org.bitrepository.org.bitrepository.protocol name in lowerCaseNameWithHyphen notation
      */
     public ModuleCharacteristics(String lowerCaseNameWithHyphen) {
         if (containsUpperCaseChar(lowerCaseNameWithHyphen)) {

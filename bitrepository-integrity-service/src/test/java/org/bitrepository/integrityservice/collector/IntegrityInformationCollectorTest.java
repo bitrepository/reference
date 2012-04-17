@@ -30,8 +30,6 @@ import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.integrityservice.collector.DelegatingIntegrityInformationCollector;
-import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.protocol.eventhandler.EventHandler;
 import org.bitrepository.protocol.exceptions.OperationFailedException;
 import org.jaccept.structure.ExtendedTestCase;
