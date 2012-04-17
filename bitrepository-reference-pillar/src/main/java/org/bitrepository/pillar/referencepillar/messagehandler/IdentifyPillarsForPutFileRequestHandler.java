@@ -190,6 +190,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMess
         res.setMinVersion(MIN_VERSION);
         res.setVersion(VERSION);
         res.setCorrelationID(msg.getCorrelationID());
+        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setTo(msg.getReplyTo());
         res.setCollectionID(getSettings().getCollectionID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());

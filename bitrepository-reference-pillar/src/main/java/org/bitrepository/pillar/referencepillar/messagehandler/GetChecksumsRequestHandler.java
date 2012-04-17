@@ -385,6 +385,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
         res.setCorrelationID(message.getCorrelationID());
         res.setChecksumRequestForExistingFile(message.getChecksumRequestForExistingFile());
         res.setFileIDs(message.getFileIDs());
+        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setResultAddress(message.getResultAddress());
         res.setTo(message.getReplyTo());
         res.setCollectionID(getSettings().getCollectionID());
@@ -414,6 +415,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
         res.setCollectionID(getSettings().getCollectionID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         
         return res;
     }

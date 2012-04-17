@@ -166,6 +166,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         res.setVersion(VERSION);
         res.setCorrelationID(msg.getCorrelationID());
         res.setFileIDs(msg.getFileIDs());
+        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setCollectionID(getSettings().getCollectionID());

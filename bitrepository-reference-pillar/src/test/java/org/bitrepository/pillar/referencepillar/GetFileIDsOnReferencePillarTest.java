@@ -107,7 +107,7 @@ public class GetFileIDsOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileIDsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileIDsRequest(
-                auditTrail, fileids, clientDestinationId);
+                auditTrail, fileids, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -133,7 +133,7 @@ public class GetFileIDsOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the actual GetFileIDs message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
-                auditTrail, receivedIdentifyResponse.getCorrelationID(), fileids, pillarId, 
+                auditTrail, receivedIdentifyResponse.getCorrelationID(), fileids, FROM, pillarId, 
                 clientDestinationId, FILE_IDS_DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
         if(useEmbeddedPillar()) {
             mediator.onMessage(getFileIDsRequest);
@@ -187,7 +187,7 @@ public class GetFileIDsOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileIDsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileIDsRequest(
-                auditTrail, fileids, clientDestinationId);
+                auditTrail, fileids, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -225,7 +225,7 @@ public class GetFileIDsOnReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Create and send the GetFileIDs request message.", "Should be caught and handled by the pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
-                auditTrail, msgFactory.getNewCorrelationID(), fileids, pillarId, 
+                auditTrail, msgFactory.getNewCorrelationID(), fileids, FROM, pillarId, 
                 clientDestinationId, FILE_IDS_DELIVERY_ADDRESS, pillarDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(getFileIDsRequest);

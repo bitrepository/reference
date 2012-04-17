@@ -123,7 +123,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(
-                auditTrail, FILE_ID, FILE_SIZE, clientDestinationId);
+                auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -156,6 +156,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
+                FROM, 
                 pillarId, 
                 clientDestinationId, 
                 receivedIdentifyResponse.getReplyTo());
@@ -250,7 +251,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(
-                auditTrail, FILE_ID, FILE_SIZE, clientDestinationId);
+                auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -321,6 +322,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
+                FROM, 
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
@@ -402,6 +404,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
+                FROM, 
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
@@ -485,6 +488,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
+                FROM, 
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
@@ -568,6 +572,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
+                FROM, 
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
@@ -650,6 +655,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
+                FROM, 
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
@@ -733,6 +739,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
+                FROM, 
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
@@ -816,6 +823,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
+                FROM, 
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);

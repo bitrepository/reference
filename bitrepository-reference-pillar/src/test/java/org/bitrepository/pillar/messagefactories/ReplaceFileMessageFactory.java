@@ -64,13 +64,14 @@ public class ReplaceFileMessageFactory extends TestMessageFactory {
     }
     
     public IdentifyPillarsForReplaceFileRequest createIdentifyPillarsForReplaceFileRequest( 
-            String auditTrail, String fileId, long fileSize, String replyTo) {
+            String auditTrail, String fileId, long fileSize, String from, String replyTo) {
         IdentifyPillarsForReplaceFileRequest res = new IdentifyPillarsForReplaceFileRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFileID(fileId);
         res.setFileSize(BigInteger.valueOf(fileSize));
+        res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setTo(settings.getCollectionDestination());
@@ -86,6 +87,7 @@ public class ReplaceFileMessageFactory extends TestMessageFactory {
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileID(fileId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarChecksumSpec(csType);
         res.setPillarID(pillarId);
@@ -101,7 +103,7 @@ public class ReplaceFileMessageFactory extends TestMessageFactory {
     public ReplaceFileRequest createReplaceFileRequest(String auditTrail, ChecksumDataForFileTYPE existingChecksumData, 
             ChecksumDataForFileTYPE newChecksumData, ChecksumSpecTYPE csExistingRequest, 
             ChecksumSpecTYPE csNewRequest, String correlationId, String url, String fileId, long fileSize, 
-            String pillarId, String replyTo, String toTopic) {
+            String from, String pillarId, String replyTo, String toTopic) {
         ReplaceFileRequest res = new ReplaceFileRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setChecksumDataForExistingFile(existingChecksumData);
@@ -113,6 +115,7 @@ public class ReplaceFileMessageFactory extends TestMessageFactory {
         res.setFileAddress(url);
         res.setFileID(fileId);
         res.setFileSize(BigInteger.valueOf(fileSize));
+        res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
@@ -130,6 +133,7 @@ public class ReplaceFileMessageFactory extends TestMessageFactory {
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarChecksumSpec(pillarCsSpec);
         res.setPillarID(pillarId);
@@ -151,6 +155,7 @@ public class ReplaceFileMessageFactory extends TestMessageFactory {
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarChecksumSpec(pillarCsSpec);
         res.setPillarID(pillarId);
