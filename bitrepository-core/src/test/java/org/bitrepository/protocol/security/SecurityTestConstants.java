@@ -33,10 +33,10 @@ import org.bitrepository.settings.collectionsettings.PermissionSet;
  */
 public class SecurityTestConstants {
 
-    private static final String data = "Hello world!";
-    private static final String signature = "MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgMFADCABgkqhkiG9w0BBwEAADGB1zCB1AIBATAuMCExCzAJBgNVBAYTAkRLMRIwEAYDVQQDDAljbGllbnQtMTMCCQDMZo0ssJ6s7zANBglghkgBZQMEAgMFADANBgkqhkiG9w0BAQEFAASBgHhp9p/wAHX8zAEIamAnyIywpI0wBYvR62pkLIrHwpTgsnjFpJRZPYYiF1egsIcy7ZjQrkh4UtMRLZyGbzk/GeuExdSrj66gAG4j8NeS7Ekp1zb16SUH8bKu/H83PqLxYBvIyEks3lMKu5T76Bmwa9x32H2zpzJjSqLRZCNgwQnBAAAAAAAA";
+    private static final String DATA = "Hello world!";
+    private static final String SIGNATURE = "MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgMFADCABgkqhkiG9w0BBwEAADGB1zCB1AIBATAuMCExCzAJBgNVBAYTAkRLMRIwEAYDVQQDDAljbGllbnQtMTMCCQDMZo0ssJ6s7zANBglghkgBZQMEAgMFADANBgkqhkiG9w0BAQEFAASBgHhp9p/wAHX8zAEIamAnyIywpI0wBYvR62pkLIrHwpTgsnjFpJRZPYYiF1egsIcy7ZjQrkh4UtMRLZyGbzk/GeuExdSrj66gAG4j8NeS7Ekp1zb16SUH8bKu/H83PqLxYBvIyEks3lMKu5T76Bmwa9x32H2zpzJjSqLRZCNgwQnBAAAAAAAA";
    
-    private static final String positiveCert = "-----BEGIN CERTIFICATE-----\n" +
+    private static final String POSITIVECERT = "-----BEGIN CERTIFICATE-----\n" +
             "MIIBuTCCASICCQDMZo0ssJ6s7zANBgkqhkiG9w0BAQUFADAhMQswCQYDVQQG\n" +
             "EwJESzESMBAGA1UEAwwJY2xpZW50LTEzMB4XDTExMTAyMTA5MjAwMVoXDTE0\n" +
             "MDcxNzA5MjAwMVowITELMAkGA1UEBhMCREsxEjAQBgNVBAMMCWNsaWVudC0x\n" +
@@ -49,7 +49,7 @@ public class SecurityTestConstants {
             "me0coE/bZzOuq3gQ15XOkelIxmnrh2xnGotE6thmFFClT6VY8mqEFA==\n" +
             "-----END CERTIFICATE-----\n";
     
-    private static final String negativeCert =
+    private static final String NEGATIVECERT =
             "-----BEGIN CERTIFICATE-----\n" +
             "MIICCzCCAXQCCQCHLeckUtZcJDANBgkqhkiG9w0BAQUFADBKMQswCQYDVQQGEwJESzEgMB4GA1UE\n" +
             "ChMXRGV0IEtvbmdlbGlnZSBCaWJsaW90ZWsxDDAKBgNVBAsTA0RJUzELMAkGA1UEAxMCQ0EwHhcN\n" +
@@ -63,7 +63,7 @@ public class SecurityTestConstants {
             "77h9LapqyJ8S1GSKHr8=\n" +
             "-----END CERTIFICATE-----\n";
     
-    private static final String signingCert = 
+    private static final String SIGNINGCERT = 
             "-----BEGIN CERTIFICATE-----\n" +
             "MIIBuTCCASICCQDkYepx9PPiZTANBgkqhkiG9w0BAQUFADAhMQswCQYDVQQGEwJE\n" + 
             "SzESMBAGA1UEAwwJY2xpZW50LTE5MB4XDTExMTAyMTA5MjAwMloXDTE0MDcxNzA5\n" +
@@ -79,54 +79,54 @@ public class SecurityTestConstants {
 
     private static final String KEYFILE = "./target/test-classes/client-19.pem";
     
-    private static final String allowedCertificateUser = "test-component";
+    private static final String ALLOWEDCERTIFICATEUSER = "test-component";
 
-    private static final String componentID = "TEST";
+    private static final String COMPONENTID = "TEST";
 
     public static String getKeyFile() {
         return KEYFILE;
     }
     
     public static String getTestData() {
-        return data;
+        return DATA;
     }
     
     public static String getSignature() {
-        return signature;
+        return SIGNATURE;
     }
     
     public static String getPositiveCertificate() {
-        return positiveCert;
+        return POSITIVECERT;
     }
     
     public static String getNegativeCertificate() {
-        return negativeCert;
+        return NEGATIVECERT;
     }
     
     public static String getSigningCertificate() {
-        return signingCert;
+        return SIGNINGCERT;
     }
     
     public static String getAllowedCertificateUser() {
-        return allowedCertificateUser;
+        return ALLOWEDCERTIFICATEUSER;
     }
     
     public static String getDisallowedCertificateUser() {
-        return allowedCertificateUser + "-bad";
+        return ALLOWEDCERTIFICATEUSER + "-bad";
     }
     
     public static String getComponentID() {
-        return componentID;
+        return COMPONENTID;
     }
     
     public static PermissionSet getDefaultPermissions() {
         PermissionSet permissions = new PermissionSet();
         ComponentIDs allowedUsers = new ComponentIDs();
-        allowedUsers.getIDs().add(allowedCertificateUser);
+        allowedUsers.getIDs().add(ALLOWEDCERTIFICATEUSER);
         
         Permission perm1 = new Permission();
         Certificate cert1 = new Certificate();
-        cert1.setCertificateData(positiveCert.getBytes());
+        cert1.setCertificateData(POSITIVECERT.getBytes());
         cert1.setAllowedCertificateUsers(allowedUsers);
         perm1.setCertificate(cert1);
         OperationPermission opPerm = new OperationPermission();
@@ -135,7 +135,7 @@ public class SecurityTestConstants {
         
         Permission perm2 = new Permission();
         Certificate cert2 = new Certificate();
-        cert2.setCertificateData(negativeCert.getBytes());
+        cert2.setCertificateData(NEGATIVECERT.getBytes());
         cert2.setAllowedCertificateUsers(allowedUsers);
         perm2.setCertificate(cert2);
         

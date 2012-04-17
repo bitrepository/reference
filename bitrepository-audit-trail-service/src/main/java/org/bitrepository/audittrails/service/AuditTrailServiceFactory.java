@@ -42,6 +42,9 @@ import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 
+/**
+ * Factory class for accessing the AuditTrailService 
+ */
 public final class AuditTrailServiceFactory {
     
     private static AuditTrailService auditTrailService;
@@ -65,7 +68,10 @@ public final class AuditTrailServiceFactory {
         
     }
     
-    
+    /**
+     * Initialize the factory with configuration. 
+     * @param confDir String containing the path to the AuditTrailService's configuration directory
+     */
     public static synchronized void init(String confDir) {
         configurationDir = confDir;
     }
