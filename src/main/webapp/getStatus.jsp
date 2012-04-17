@@ -10,6 +10,9 @@
         div#monitoring-container { width: 500px; margin: 20px 0; }
         div#monitoring-container table { margin: 1em 0; border-collapse: collapse; width: 100%; }
         div#monitoring-container table td, div#alarm-container table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
+        .status-ok { background-color:#3eea5b; }
+        .status-warn { background-color:#ecea3a; }
+        .status-error { background-color:#f83127; }
 </style>
 
     <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
@@ -28,13 +31,19 @@
                 var htmlTable;
                 htmlTable = "<table id=\"users\" class=\"ui-widget ui-widget-content\">";
                 htmlTable += "<thead> <tr class=\"ui-widget-header\">";
-                htmlTable += "<th width=\"100\">Component ID</th>";
+                htmlTable += "<th width=\"120\">Component ID</th>";
                 htmlTable += "<th width=\"100\">Status</th>";
                 htmlTable += "<th width=\"100\">Timestamp</th>";
-                htmlTable += "<th width=\"300\">Info</th>";
                 htmlTable += "</tr></thead><tbody>";
                 for (var i = 0; i < j.length; i++) {
-                    htmlTable += "<tr><td>" + j[i].componentID + "</td><td>" + j[i].status + "</td> <td>" + j[i].timeStamp + "</td> <td>" + j[i].info + "</td></tr>";
+                    var rowClass = "status-ok";
+                    if(j[i].status == "WARNING") {
+                        rowClass = "status-warn";
+                    } 
+                    if(j[i].status == "ERROR") {
+                        rowClass = "status-error";
+                    }
+                    htmlTable += "<tr class=\"" + rowClass + "\"title=\"" + j[i].info + "\"><td>" + j[i].componentID + "</td><td>" + j[i].status + "</td> <td>" + j[i].timeStamp + "</td></tr>";
                }
                 htmlTable += "</tbody></table>"; 
                 $("#componentStatus").html(htmlTable);
