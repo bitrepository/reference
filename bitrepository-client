@@ -35,6 +35,11 @@ do_getchecksum() {
 	curl --silent $command
 }
 
+do_listfiles() {
+    command="$SERVICEURL/getFileIDs/"
+    curl --silent $command
+}
+
 do_webserver_remove_file() {
 	curl $CURLPARMS --silent -X DELETE $WEBDAVSERVER$filename > /dev/null 
 }
@@ -85,6 +90,9 @@ case "$1" in
 	salt=$4
 	do_getchecksum $filename $checksumType $salt
 	;;
+  list-files)
+    do_listfiles
+    ;;
   delete)
 	filename=$2
 	if [ -z $filename ] 
