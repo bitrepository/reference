@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  #%L
+  Bitrepository Common
+  
+  $Id$
+  $HeadURL$
+  %%
+  Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as 
+  published by the Free Software Foundation, either version 2.1 of the 
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Lesser Public License for more details.
+  
+  You should have received a copy of the GNU General Lesser Public 
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  #L%
+  -->
+
+
+<ReferenceSettings xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd">
+  <ClientSettings>
+    <ReceiverDestination>TEST-TOPIC-CLIENT</ReceiverDestination>
+    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
+    <ConversationTimeout>3600000</ConversationTimeout>
+  </ClientSettings>
+  <PillarSettings>
+    <PillarID>test-pillar</PillarID>
+    <FileDir>test-archive</FileDir>
+    <MinimumSizeLeft>1000000000</MinimumSizeLeft>
+    <TimeToStartDeliver>1000</TimeToStartDeliver>
+    <ReceiverDestination>TEST-TOPIC-PILLAR</ReceiverDestination>
+    <ChecksumPillarChecksumSpecificationType>MD5</ChecksumPillarChecksumSpecificationType>
+    <AuditContributerDatabaseUrl>jdbc:derby:auditcontributerdb</AuditContributerDatabaseUrl>
+  </PillarSettings>
+  <DeleteFileSettings></DeleteFileSettings>
+  <GetAuditTrailSettings></GetAuditTrailSettings>
+  <GetChecksumsSettings></GetChecksumsSettings>
+  <GetFileSettings></GetFileSettings>
+  <GetFileIDsSettings></GetFileIDsSettings>
+  <GetStatusSettings>
+    <CollectionInterval>300000</CollectionInterval>
+  </GetStatusSettings>
+  <PutFileSettings></PutFileSettings>
+  <ReplaceFileSettings></ReplaceFileSettings>
+  <AlarmServiceSettings>
+    <ID>alarm-service</ID>
+  </AlarmServiceSettings>
+  <AuditTrailServiceSettings>
+    <ID>audit-trail-service</ID>
+    <Contributors>test-pillar</Contributors>
+    <Contributors>integrity-service</Contributors>
+  </AuditTrailServiceSettings>
+  <IntegrityServiceSettings>
+    <ID>integrity-service</ID>
+    <SchedulerInterval>600000</SchedulerInterval>
+    <DatabaseUrl>jdbc:derby:integritydb</DatabaseUrl>
+    <TimeBeforeMissingFileCheck>60000</TimeBeforeMissingFileCheck>
+  </IntegrityServiceSettings>
+  <MonitoringServiceSettings>
+    <ID>monitoring-service</ID>
+  </MonitoringServiceSettings>
+</ReferenceSettings>

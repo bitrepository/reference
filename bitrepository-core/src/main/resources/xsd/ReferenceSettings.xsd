@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  #%L
+  Bitrepository Common
+  %%
+  Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as 
+  published by the Free Software Foundation, either version 2.1 of the 
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Lesser Public License for more details.
+  
+  You should have received a copy of the GNU General Lesser Public 
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  #L%
+  -->
+
+
+<xs:schema targetNamespace="http://bitrepository.org/settings/ReferenceSettings.xsd"
+  attributeFormDefault="unqualified" elementFormDefault="qualified"
+  xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <xs:element name="ReferenceSettings">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        The settings used in the reference implementation
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ClientSettings" minOccurs="0" />
+        <xs:element ref="PillarSettings" minOccurs="0" />
+        <xs:element ref="DeleteFileSettings" minOccurs="0" />
+        <xs:element ref="GetAuditTrailSettings" minOccurs="0" />
+        <xs:element ref="GetChecksumsSettings" minOccurs="0" />
+        <xs:element ref="GetFileSettings" minOccurs="0" />
+        <xs:element ref="GetFileIDsSettings" minOccurs="0" />
+        <xs:element ref="GetStatusSettings" minOccurs="0" />
+        <xs:element ref="PutFileSettings" minOccurs="0" />
+        <xs:element ref="ReplaceFileSettings" minOccurs="0" />
+        <xs:element ref="AlarmServiceSettings" minOccurs="0" />
+        <xs:element ref="AuditTrailServiceSettings" minOccurs="0" />
+        <xs:element ref="IntegrityServiceSettings" minOccurs="0" />
+        <xs:element ref="MonitoringServiceSettings" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ClientSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>General settings for a client</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="ReceiverDestination" type="xs:string">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The destination for receiving messages for a component.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="MediatorCleanupInterval" type="xs:nonNegativeInteger">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The amount of milliseconds between the cleanups in the
+              ConversationMediator.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ConversationTimeout" type="xs:nonNegativeInteger">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The timeout for a conversation in milliseconds.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="PillarSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation xml:lang="en">
+            The settings for the org.bitrepository.protocol
+        </xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="PillarID" type="xs:string">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The ID for this pillar.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="FileDir" type="xs:string">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Location for the base directory for storing the files.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="MinimumSizeLeft" type="xs:long">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The minimum amount of bytes left in the archive, when storing a
+              file.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="TimeToStartDeliver" type="xs:nonNegativeInteger">
+          <xs:annotation>
+            <xs:documentation>
+              The time to use as timeToStartDeliver in identification responses in milliseconds.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ReceiverDestination" type="xs:string">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The destination for receiving messages for the pillar.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ChecksumPillarChecksumSpecificationType" type="xs:string" maxOccurs="1">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The checksum specification for the checksum pillar.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ChecksumPillarChecksumSpecificationSalt" type="xs:string" maxOccurs="1" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The checksum specification for the checksum pillar.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="AuditContributerDatabaseUrl" type="xs:string">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The url to the database, which contains the audit data for the contributer.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="DeleteFileSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+          The settings for the DeleteFileClient
+        </xs:documentation>
+      </xs:annotation>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetAuditTrailSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+          The settings for the GetAuditTrailClient.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetChecksumsSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+          The settings for the GetChecksumsClient.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetFileSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+          The settings for the GetFileClient.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetFileIDsSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+          The settings for the GetFileIDsClient.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetStatusSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+          The settings for the GetStatusClient.
+        </xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="CollectionInterval" type="xs:long" minOccurs="1" maxOccurs="1">
+          <xs:annotation>
+            <xs:documentation>
+              Interval at which statuses is to be collected from components. Value in milliseconds. 
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="PutFileSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+          The settings for the PutFileClient.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ReplaceFileSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+          The settings for the ReplaceFileClient
+        </xs:documentation>
+      </xs:annotation>
+    </xs:complexType>
+  </xs:element>
+    
+  <xs:element name="MonitoringServiceSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+          The settings for the Alarm service.
+        </xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="ID" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+    <xs:element name="AlarmServiceSettings">
+      <xs:complexType>
+        <xs:annotation>
+          <xs:documentation>
+            The settings for the Alarm service.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+          <xs:element name="ID" type="xs:string" />
+          <xs:element ref="MailingConfiguration" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+  
+    <xs:element name="AuditTrailServiceSettings">
+      <xs:complexType>
+        <xs:annotation>
+          <xs:documentation>
+            The settings for the Alarm service.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+          <xs:element name="ID" type="xs:string" />
+          <xs:element name="Contributors" type="xs:string" maxOccurs="unbounded">
+            <xs:annotation>
+              <xs:documentation>
+                The list of expected audit trail contributers.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="SendAlarmOnMissingContributer" type="xs:boolean" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>
+                Specifies whether the audit trail services should send alarms when contributers defined to be part of
+                the collection, doesn't reply to identify requests. Default is false.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+
+    <xs:element name="IntegrityServiceSettings">
+      <xs:complexType>
+        <xs:annotation>
+          <xs:documentation>
+            The settings for the Alarm service.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+          <xs:element name="ID" type="xs:string" />
+          <xs:element name="SchedulerInterval" type="xs:long">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The amount of milliseconds between each time the scheduler collects integrity information.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="DatabaseUrl" type="xs:string">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The url to the database, which contains the integrity data.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="TimeBeforeMissingFileCheck" type="xs:long">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The url to the database, which contains the integrity data.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="MailingConfiguration">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="MailReceiver" type="xs:string">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The receiver of the mail. Several receiver will be split by a comma: ','.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="MailSender" type="xs:string">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The sender of the mail.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="MailServer" type="xs:string">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The server where the mail is sent from.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+</xs:schema>

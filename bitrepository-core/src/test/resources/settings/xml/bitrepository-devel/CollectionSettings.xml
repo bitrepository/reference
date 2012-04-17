@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  #%L
+  Bitrepository Common
+  
+  $Id$
+  $HeadURL$
+  %%
+  Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as 
+  published by the Free Software Foundation, either version 2.1 of the 
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Lesser Public License for more details.
+  
+  You should have received a copy of the GNU General Lesser Public 
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  #L%
+  -->
+  
+<CollectionSettings xmlns="http://bitrepository.org/settings/CollectionSettings.xsd">
+  <CollectionID>TEST</CollectionID>
+  <ProtocolSettings>
+    <DefaultChecksumType>md5</DefaultChecksumType>
+    <RequireMessageAuthentication>false</RequireMessageAuthentication>
+    <RequireOperationAuthorization>false</RequireOperationAuthorization>
+    <CollectionDestination>TEST-TOPIC</CollectionDestination>
+    <AlarmDestination>TEST-ALARM-TOPIC</AlarmDestination>
+    <MessageBusConfiguration>
+      <Name>MyMessageBus</Name>
+      <URL>failover://(tcp://sandkasse-01.kb.dk:61616)?timeout=10000</URL>
+    </MessageBusConfiguration>
+  </ProtocolSettings>
+  
+  <ClientSettings>
+    <IdentificationTimeout>60000</IdentificationTimeout>
+    <OperationTimeout>60000</OperationTimeout>
+    <PillarIDs>Pillar1</PillarIDs>
+    <PillarIDs>Pillar2</PillarIDs>
+  </ClientSettings>
+
+  <PillarSettings>
+    <RequestAcceptedProgressMandatory>false</RequestAcceptedProgressMandatory>
+    <AuditTrailLevel>MEDIUM</AuditTrailLevel>
+    <AlarmLevel>ERROR</AlarmLevel>
+  </PillarSettings>
+  
+</CollectionSettings>
