@@ -34,7 +34,7 @@ public class GetFileIDsEventHandler implements EventHandler {
 		case PROGRESS:
 		    break;
 		case COMPONENT_COMPLETE:
-		    results.addResultsFromPillar(((FileIDsCompletePillarEvent) event).getPillarID(), 
+		    results.addResultsFromPillar(((FileIDsCompletePillarEvent) event).getContributorID(), 
 		            ((FileIDsCompletePillarEvent) event).getFileIDs());
 		    break;
 		case COMPLETE:

@@ -27,9 +27,11 @@ public class BasicClientFactory {
     private static String confDir; 
     private static String logFile;
     private static String privateKeyFile;
+    private static String clientID;
     private static final String CONFIGFILE = "webclient.properties"; 
     private static final String LOGFILE = "org.bitrepository.webclient.logfile";
     private static final String PRIVATE_KEY_FILE = "org.bitrepository.webclient.privateKeyFile";
+    private static final String CLIENT_ID = "org.bitrepository.webclient.clientID";
     
     
     /**
@@ -51,17 +53,17 @@ public class BasicClientFactory {
         		throw new RuntimeException("No configuration dir has been set!");
         	}
         	SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
-            Settings settings = settingsLoader.getSettings("bitrepository-devel");	 
+            Settings settings = settingsLoader.getSettings();	 
             loadProperties();
             PermissionStore permissionStore = new PermissionStore();
             MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
             MessageSigner signer = new BasicMessageSigner();
             OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
             SecurityManager securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile,
-                    authenticator, signer, authorizer, permissionStore);
+                    authenticator, signer, authorizer, permissionStore, clientID);
             
             try {
-                client = new BasicClient(settings, securityManager, logFile);
+                client = new BasicClient(settings, securityManager, logFile, clientID);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 throw new RuntimeException(e);
@@ -82,6 +84,7 @@ public class BasicClientFactory {
  
             logFile = properties.getProperty(LOGFILE);
             privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
+            clientID = properties.getProperty(CLIENT_ID);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new RuntimeException(e);

@@ -52,8 +52,9 @@ public class BasicClient {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private ArrayBlockingQueue<String> shortLog;
     private List<URL> completedFiles;
+    private final String clientID;
     
-    public BasicClient(Settings settings, SecurityManager securityManager, String logFile) {
+    public BasicClient(Settings settings, SecurityManager securityManager, String logFile, String clientID) {
         log.debug("---- Basic client instanciating ----");
         this.logFile = logFile;
         changeLogFiles();
@@ -62,12 +63,17 @@ public class BasicClient {
         completedFiles = new CopyOnWriteArrayList<URL>();
         this.settings = settings;
         this.securityManager = securityManager;
-        putClient = ModifyComponentFactory.getInstance().retrievePutClient(settings, this.securityManager);
-        getClient = AccessComponentFactory.getInstance().createGetFileClient(settings, this.securityManager);
-        getChecksumClient = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, this.securityManager);
-        getFileIDsClient = AccessComponentFactory.getInstance().createGetFileIDsClient(settings, this.securityManager);
-        deleteFileClient = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, this.securityManager);
-        replaceFileClient = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings, this.securityManager);
+        this.clientID = clientID;
+        putClient = ModifyComponentFactory.getInstance().retrievePutClient(settings, this.securityManager, clientID);
+        getClient = AccessComponentFactory.getInstance().createGetFileClient(settings, this.securityManager, clientID);
+        getChecksumClient = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, 
+                this.securityManager, clientID);
+        getFileIDsClient = AccessComponentFactory.getInstance().createGetFileIDsClient(settings, 
+                this.securityManager, clientID);
+        deleteFileClient = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, 
+                this.securityManager, clientID);
+        replaceFileClient = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings, 
+                this.securityManager, clientID);
         log.debug("---- Basic client instanciated ----");
 
     }
