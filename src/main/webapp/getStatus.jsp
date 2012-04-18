@@ -9,7 +9,7 @@
 <style>
         div#monitoring-container { width: 500px; margin: 20px 0; }
         div#monitoring-container table { margin: 1em 0; border-collapse: collapse; width: 100%; }
-        div#monitoring-container table td, div#alarm-container table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
+        div#monitoring-container table td, div#monitoring-container table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
         .status-ok { background-color:#3eea5b; }
         .status-warn { background-color:#ecea3a; }
         .status-error { background-color:#f83127; }
