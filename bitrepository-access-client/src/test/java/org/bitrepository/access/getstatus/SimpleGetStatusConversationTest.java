@@ -28,10 +28,9 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.bitrepository.access.MessageSenderStub;
-import org.bitrepository.access.getstatus.conversation.GetStatusFinished;
+import org.bitrepository.access.getstatus.conversation.GetStatusConversation;
 import org.bitrepository.access.getstatus.conversation.GettingStatus;
 import org.bitrepository.access.getstatus.conversation.IdentifyingContributorsForGetStatus;
-import org.bitrepository.access.getstatus.conversation.SimpleGetStatusConversation;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
@@ -48,7 +47,7 @@ import org.testng.annotations.Test;
 
 public class SimpleGetStatusConversationTest extends IntegrationTest {
 
-    private static final String CONTRIBUTOR_ID = "pillar1";
+   /* private static final String CONTRIBUTOR_ID = "pillar1";
     private static final String CLIENT_ID = "TestClient";
     
     private SimpleGetStatusConversation conversation;
@@ -65,7 +64,7 @@ public class SimpleGetStatusConversationTest extends IntegrationTest {
         settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(new BigInteger("2000"));
         settings.getCollectionSettings().getClientSettings().setOperationTimeout(new BigInteger("2000"));
         settings.getReferenceSettings().getMonitoringServiceSettings().setID(CLIENT_ID);
-        conversation = new SimpleGetStatusConversation(messageSender, settings, contributors, 
+        conversation = new GetStatusConversation(messageSender, settings, contributors, 
                 settings.getReferenceSettings().getMonitoringServiceSettings().getID(), eventHandler,
                 new FlowController(settings));
     }
@@ -200,5 +199,5 @@ public class SimpleGetStatusConversationTest extends IntegrationTest {
         } else {
             Assert.fail("Event null, expected" + type.toString());
         }
-    }
+    }*/
 }
