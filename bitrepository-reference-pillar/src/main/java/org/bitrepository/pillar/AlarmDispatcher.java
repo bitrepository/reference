@@ -24,9 +24,6 @@
  */
 package org.bitrepository.pillar;
 
-import java.math.BigInteger;
-import java.util.UUID;
-
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
@@ -38,6 +35,9 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
+import java.util.UUID;
 /**
  * The class for dispatching alarms.
  */
@@ -140,6 +140,7 @@ public class AlarmDispatcher {
         message.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         message.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
         message.setTo(settings.getAlarmDestination());
+        message.setFrom(settings.getReferenceSettings().getPillarSettings().getPillarID());
         message.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         
         messageBus.sendMessage(message);
