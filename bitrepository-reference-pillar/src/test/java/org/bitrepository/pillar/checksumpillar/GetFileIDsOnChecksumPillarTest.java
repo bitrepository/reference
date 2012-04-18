@@ -96,7 +96,7 @@ public class GetFileIDsOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the checksum pillar.");
         IdentifyPillarsForGetFileIDsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileIDsRequest(
-                auditTrail, fileids, clientDestinationId);
+                auditTrail, fileids, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -122,7 +122,7 @@ public class GetFileIDsOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the actual GetFileIDs message to the checksum pillar.", 
                 "Should be received and handled by the checksum pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
-                auditTrail, receivedIdentifyResponse.getCorrelationID(), fileids, pillarId, 
+                auditTrail, receivedIdentifyResponse.getCorrelationID(), fileids, FROM, pillarId, 
                 clientDestinationId, FILE_IDS_DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
         if(useEmbeddedPillar()) {
             mediator.onMessage(getFileIDsRequest);
@@ -174,7 +174,7 @@ public class GetFileIDsOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the checksum pillar.");
         IdentifyPillarsForGetFileIDsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileIDsRequest(
-                auditTrail, fileids, clientDestinationId);
+                auditTrail, fileids, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -215,7 +215,7 @@ public class GetFileIDsOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the GetFileIDs request message.", 
                 "Should be caught and handled by the checksum pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
-                auditTrail, msgFactory.getNewCorrelationID(), fileids, pillarId, 
+                auditTrail, msgFactory.getNewCorrelationID(), fileids, FROM, pillarId, 
                 clientDestinationId, FILE_IDS_DELIVERY_ADDRESS, pillarDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(getFileIDsRequest);

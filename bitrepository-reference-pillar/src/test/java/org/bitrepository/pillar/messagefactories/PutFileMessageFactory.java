@@ -64,13 +64,14 @@ public class PutFileMessageFactory extends TestMessageFactory {
     }
     
     public IdentifyPillarsForPutFileRequest createIdentifyPillarsForPutFileRequest(String auditTrail, 
-            String fileId, long fileSize, String replyTo) {
+            String fileId, long fileSize, String from, String replyTo) {
         IdentifyPillarsForPutFileRequest res = new IdentifyPillarsForPutFileRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFileID(fileId);
         res.setFileSize(BigInteger.valueOf(fileSize));
+        res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setTo(settings.getCollectionDestination());
@@ -85,6 +86,7 @@ public class PutFileMessageFactory extends TestMessageFactory {
         IdentifyPillarsForPutFileResponse res = new IdentifyPillarsForPutFileResponse();
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarChecksumSpec(pillarCsType);
         res.setPillarID(pillarId);
@@ -99,7 +101,7 @@ public class PutFileMessageFactory extends TestMessageFactory {
     
     public PutFileRequest createPutFileRequest(String auditTrail, ChecksumDataForFileTYPE checksumDataForFile,
             ChecksumSpecTYPE csReturnSpec, String correlationId, String url, String fileId, Long fileSize,
-            String pillarId, String replyTo, String toTopic) {
+            String from, String pillarId, String replyTo, String toTopic) {
         PutFileRequest res = new PutFileRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setChecksumDataForNewFile(checksumDataForFile);
@@ -109,6 +111,7 @@ public class PutFileMessageFactory extends TestMessageFactory {
         res.setFileAddress(url);
         res.setFileID(fileId);
         res.setFileSize(BigInteger.valueOf(fileSize));
+        res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
@@ -125,6 +128,7 @@ public class PutFileMessageFactory extends TestMessageFactory {
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setPillarChecksumSpec(checksumSpec);
@@ -145,6 +149,7 @@ public class PutFileMessageFactory extends TestMessageFactory {
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarChecksumSpec(checksumSpec);
         res.setPillarID(pillarId);

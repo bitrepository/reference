@@ -112,7 +112,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetChecksumsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetChecksumsRequest(
-                auditTrail, csSpec, fileids, clientDestinationId);
+                auditTrail, csSpec, fileids, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -140,7 +140,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         addStep("Create and send the actual GetChecksums message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(auditTrail,
-                csSpec, receivedIdentifyResponse.getCorrelationID(), fileids, pillarId, 
+                csSpec, receivedIdentifyResponse.getCorrelationID(), fileids, FROM, pillarId, 
                 clientDestinationId, CS_DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
         if(useEmbeddedPillar()) {
             mediator.onMessage(getChecksumsRequest);
@@ -199,7 +199,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetChecksumsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetChecksumsRequest(
-                auditTrail, csSpec, fileids, clientDestinationId);
+                auditTrail, csSpec, fileids, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -244,7 +244,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         addStep("Create and send the actual GetChecksums message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
-                auditTrail, csSpec, msgFactory.getNewCorrelationID(), fileids, pillarId, 
+                auditTrail, csSpec, msgFactory.getNewCorrelationID(), fileids, FROM, pillarId, 
                 clientDestinationId, CS_DELIVERY_ADDRESS, pillarDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(getChecksumsRequest);

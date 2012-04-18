@@ -46,7 +46,7 @@ public class BasicOperationAuthorizor implements OperationAuthorizor {
     }
     
     /**
-     * Method to determine whether a given componentID is allowed to sign an operation with the given certificate.
+     * Method to determine whether a given componentID is allowed to sign a message with the given certificate.
      * @param certificateUser, the componentID of the component that signed the message
      * @param signer, the signerId of the certificate that signed the message
      * @throws CertificateUseException in case the message has been signed by the wrong user. 

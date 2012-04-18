@@ -386,6 +386,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         res.setCorrelationID(message.getCorrelationID());
         res.setFileAddress(message.getFileAddress());
         res.setFileID(message.getFileID());
+        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setMinVersion(MIN_VERSION);
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
@@ -410,6 +411,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         res.setCorrelationID(message.getCorrelationID());
         res.setFileAddress(message.getFileAddress());
         res.setFileID(message.getFileID());
+        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setMinVersion(MIN_VERSION);
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());

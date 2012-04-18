@@ -111,6 +111,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessa
         res.setVersion(VERSION);
         res.setCorrelationID(msg.getCorrelationID());
         res.setFileID(msg.getFileID());
+        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setCollectionID(getSettings().getCollectionID());

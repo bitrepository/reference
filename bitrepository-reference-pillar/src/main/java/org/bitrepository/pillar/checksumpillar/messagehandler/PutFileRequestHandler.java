@@ -235,6 +235,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         res.setCorrelationID(msg.getCorrelationID());
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
+        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setCollectionID(getSettings().getCollectionID());
@@ -262,6 +263,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         res.setCorrelationID(msg.getCorrelationID());
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
+        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setCollectionID(getSettings().getCollectionID());

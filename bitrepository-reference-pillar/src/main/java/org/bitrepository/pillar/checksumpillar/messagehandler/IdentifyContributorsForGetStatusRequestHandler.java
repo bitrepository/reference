@@ -121,16 +121,17 @@ public class IdentifyContributorsForGetStatusRequestHandler
      * @return The response to the request.
      */
     protected IdentifyContributorsForGetStatusResponse createResponse(IdentifyContributorsForGetStatusRequest message) {
-        IdentifyContributorsForGetStatusResponse response = new IdentifyContributorsForGetStatusResponse();
+        IdentifyContributorsForGetStatusResponse res = new IdentifyContributorsForGetStatusResponse();
         
-        response.setCollectionID(getSettings().getCollectionID());
-        response.setContributor(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        response.setCorrelationID(message.getCorrelationID());
-        response.setMinVersion(MIN_VERSION);
-        response.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
-        response.setTo(message.getReplyTo());
-        response.setVersion(VERSION);
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setContributor(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setCorrelationID(message.getCorrelationID());
+        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setMinVersion(MIN_VERSION);
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setTo(message.getReplyTo());
+        res.setVersion(VERSION);
         
-        return response;
+        return res;
     }
 }

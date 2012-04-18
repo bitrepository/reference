@@ -34,6 +34,7 @@ import org.bitrepository.protocol.TestMessageFactory;
  */
 public abstract class DefaultFixturePillarTest extends IntegrationTest {
     protected static final String DEFAULT_FILE_ID = TestMessageFactory.FILE_ID_DEFAULT;
+    protected static final String FROM = "UNIT-TEST";    
 
     protected static String pillarDestinationId;
     

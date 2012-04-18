@@ -324,18 +324,19 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      * @return The GetFileIDsFinalResponse.
      */
     private GetFileIDsProgressResponse createProgressResponse(GetFileIDsRequest message) {
-        GetFileIDsProgressResponse response = new GetFileIDsProgressResponse();
-        response.setMinVersion(MIN_VERSION);
-        response.setVersion(VERSION);
-        response.setCollectionID(getSettings().getCollectionID());
-        response.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        response.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
-        response.setCorrelationID(message.getCorrelationID());
-        response.setFileIDs(message.getFileIDs());
-        response.setResultAddress(message.getResultAddress());
-        response.setTo(message.getReplyTo());
+        GetFileIDsProgressResponse res = new GetFileIDsProgressResponse();
+        res.setMinVersion(MIN_VERSION);
+        res.setVersion(VERSION);
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setCorrelationID(message.getCorrelationID());
+        res.setFileIDs(message.getFileIDs());
+        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setResultAddress(message.getResultAddress());
+        res.setTo(message.getReplyTo());
 
-        return response;
+        return res;
     }
     
     /**
@@ -348,16 +349,17 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      * @return The GetFileIDsFinalResponse.
      */
     private GetFileIDsFinalResponse createFinalResponse(GetFileIDsRequest message) {
-        GetFileIDsFinalResponse response = new GetFileIDsFinalResponse();
-        response.setMinVersion(MIN_VERSION);
-        response.setVersion(VERSION);
-        response.setCollectionID(getSettings().getCollectionID());
-        response.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        response.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
-        response.setCorrelationID(message.getCorrelationID());
-        response.setFileIDs(message.getFileIDs());
-        response.setTo(message.getReplyTo());
+        GetFileIDsFinalResponse res = new GetFileIDsFinalResponse();
+        res.setMinVersion(MIN_VERSION);
+        res.setVersion(VERSION);
+        res.setCollectionID(getSettings().getCollectionID());
+        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setCorrelationID(message.getCorrelationID());
+        res.setFileIDs(message.getFileIDs());
+        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setTo(message.getReplyTo());
 
-        return response;
+        return res;
     }
 }

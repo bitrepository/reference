@@ -47,11 +47,12 @@ public class GetStatusMessageFactory extends TestMessageFactory {
     }
     
     public IdentifyContributorsForGetStatusRequest createIdentifyContributorsForGetStatusRequest( 
-            String auditTrail, String replyTo) {
+            String auditTrail, String from, String replyTo) {
         IdentifyContributorsForGetStatusRequest res = new IdentifyContributorsForGetStatusRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
+        res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setTo(settings.getCollectionDestination());
@@ -67,6 +68,7 @@ public class GetStatusMessageFactory extends TestMessageFactory {
         res.setCollectionID(settings.getCollectionID());
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
+        res.setFrom(contributorId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
@@ -78,12 +80,13 @@ public class GetStatusMessageFactory extends TestMessageFactory {
     }
     
     public GetStatusRequest createGetStatusRequest(String auditTrail, String contributorId, String correlationId, 
-            String replyTo, String toTopic) {
+            String from, String replyTo, String toTopic) {
         GetStatusRequest res = new GetStatusRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
+        res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setTo(toTopic);
@@ -98,6 +101,7 @@ public class GetStatusMessageFactory extends TestMessageFactory {
         res.setCollectionID(settings.getCollectionID());
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
+        res.setFrom(contributorId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
@@ -113,6 +117,7 @@ public class GetStatusMessageFactory extends TestMessageFactory {
         res.setCollectionID(settings.getCollectionID());
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
+        res.setFrom(contributorId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);

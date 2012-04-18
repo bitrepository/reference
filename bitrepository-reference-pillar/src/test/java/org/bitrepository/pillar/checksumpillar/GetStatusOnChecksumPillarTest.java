@@ -77,7 +77,7 @@ public class GetStatusOnChecksumPillarTest extends DefaultFixturePillarTest {
 
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
         IdentifyContributorsForGetStatusRequest identifyRequest = msgFactory.createIdentifyContributorsForGetStatusRequest(
-                auditTrail, clientDestinationId);
+                auditTrail, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -96,7 +96,7 @@ public class GetStatusOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Make and send the request for the actual GetStatus operation", 
                 "Should be caught and handled by the pillar.");
         GetStatusRequest request = msgFactory.createGetStatusRequest(auditTrail, contributorId, 
-                identifyRequest.getCorrelationID(), clientDestinationId, pillarDestinationId);
+                identifyRequest.getCorrelationID(), FROM, clientDestinationId, pillarDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(request);
         } else {
@@ -131,7 +131,7 @@ public class GetStatusOnChecksumPillarTest extends DefaultFixturePillarTest {
 
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
         IdentifyContributorsForGetStatusRequest identifyRequest = msgFactory.createIdentifyContributorsForGetStatusRequest(
-                auditTrail, clientDestinationId);
+                auditTrail, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -150,7 +150,7 @@ public class GetStatusOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Make and send the request for the actual GetStatus operation", 
                 "Should be caught and handled by the pillar.");
         GetStatusRequest request = msgFactory.createGetStatusRequest(auditTrail, wrongContributorId, 
-                identifyRequest.getCorrelationID(), clientDestinationId, pillarDestinationId);
+                identifyRequest.getCorrelationID(), FROM, clientDestinationId, pillarDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(request);
         } else {

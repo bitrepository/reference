@@ -161,6 +161,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         res.setPillarChecksumSpec(getChecksumType());
+        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         
         return res;
     }
