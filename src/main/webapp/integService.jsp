@@ -39,7 +39,7 @@
                 ,{}, function(j){
                 var options = '';
                 for (var i = 0; i < j.length; i++) {
-                    options += '<option value="' + j[i].optionValue + '">' + j[i].optionDisplay + '</option>';
+                    options += '<option value="' + j[i].workflowID + '">' + j[i].workflowID + '</option>';
                 }
                 $("select#workflowSelector").html(options);
             })
