@@ -25,22 +25,26 @@
 package org.bitrepository.protocol.eventhandler;
 
 /**
- * Event for a specific pillar.
+ * Event for a specific contributor.
  */
 public class ContributorEvent extends AbstractOperationEvent {
     private final String contributorID;
 
     /**
-     * Constructor with exception information
      * @param type The event type
      * @param info Free text description of the event
-     * @param contributorID The ID of the pillar this event relates to
+     * @param contributorID The ID of the contributor this event relates to
      */
     public ContributorEvent(OperationEventType type, String info, String contributorID, String conversationID) {
         super(type, info, conversationID);
         this.contributorID = contributorID;
     }
 
+    /**
+     * Same as {@link #ContributorEvent(OperationEventType,String,String,String)} but will not initialize the
+     * <code></code>conversationID</code>, this will need to be set afterwards. This is useful if the
+     * <code>conversationID</code> is set another place that the event is constructed.
+     */
     public ContributorEvent(OperationEventType type, String info, String contributorID) {
         this(type, info, contributorID, null);
     }
@@ -54,6 +58,6 @@ public class ContributorEvent extends AbstractOperationEvent {
     
     @Override
     public String additionalInfo() {
-        return "PillarID: " + getContributorID();
+        return "ContributorID: " + getContributorID();
     }
 }

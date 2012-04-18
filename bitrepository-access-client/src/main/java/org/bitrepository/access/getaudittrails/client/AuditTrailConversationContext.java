@@ -36,7 +36,7 @@ public class AuditTrailConversationContext extends ConversationContext {
     public AuditTrailConversationContext(AuditTrailQuery[] componentQueries, String fileID, String urlForResult,
             Settings settings, MessageSender messageSender, String clientID, EventHandler eventHandler,
             String auditTrailInformation) {
-        super(settings, messageSender, eventHandler, auditTrailInformation);
+        super(settings, messageSender, clientID, eventHandler, auditTrailInformation);
         this.componentQueries = componentQueries;
         this.fileID = fileID;
         this.urlForResult = urlForResult;

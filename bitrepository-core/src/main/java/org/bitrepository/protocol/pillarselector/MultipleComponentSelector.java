@@ -31,6 +31,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * The general selector for choosing multiple contributors during the identification phase of a operation.
+ */
 public class MultipleComponentSelector implements ComponentSelector {
     /** Used for tracking who has answered. */
     private final ContributorResponseStatus responseStatus;
@@ -47,6 +50,10 @@ public class MultipleComponentSelector implements ComponentSelector {
     /**
      * Method for processing a IdentifyPillarsForDeleteFileResponse. Checks whether the response is from the
      * expected pillar.
+     *
+     * Consider overriding this in subclasses to perform type cheking og the message before delegating back to this
+     * method (calling <code>super.processResponse(response)</code>).
+     *
      * @param response The response identifying a pillar for the DeleteFile operation.
      */
     public void processResponse(MessageResponse response) throws UnexpectedResponseException {

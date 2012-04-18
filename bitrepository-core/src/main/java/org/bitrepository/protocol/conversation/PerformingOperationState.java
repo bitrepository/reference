@@ -28,25 +28,29 @@ import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
 import org.bitrepository.protocol.utils.MessageUtils;
 
+/**
+ * Handles the booking of performing the request phase messaging. Only the specialized workflow steps are required to
+ * be implemented the subclass.
+ */
 public abstract class PerformingOperationState extends GeneralConversationState {
 
     @Override
     protected void processMessage(MessageResponse msg) {
         if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) ||
-            msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_PROGRESS)) {
+                msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_PROGRESS)) {
             getContext().getMonitor().progress(msg.getResponseInfo().getResponseText());
         } else {
             try {
-            if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_COMPLETED)) {
-                getResponseStatus().responseReceived(msg.getFrom());
-                generateCompleteEvent(msg);
-            } else if (MessageUtils.isIdentifyResponse(msg)) {
-                getContext().getMonitor().outOfSequenceMessage("Received identify response from " +
-                                                               msg.getFrom() + " after identification was finished");
-            } else {
-                getResponseStatus().responseReceived(msg.getFrom());
-                getContext().getMonitor().contributorFailed("Received negative response from component " + msg.getFrom() + ":  " + msg.getResponseInfo());
-            }
+                if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_COMPLETED)) {
+                    getResponseStatus().responseReceived(msg.getFrom());
+                    generateCompleteEvent(msg);
+                } else if (MessageUtils.isIdentifyResponse(msg)) {
+                    getContext().getMonitor().outOfSequenceMessage("Received identify response from " +
+                            msg.getFrom() + " after identification was finished");
+                } else {
+                    getResponseStatus().responseReceived(msg.getFrom());
+                    getContext().getMonitor().contributorFailed("Received negative response from component " + msg.getFrom() + ":  " + msg.getResponseInfo());
+                }
             } catch(UnexpectedResponseException ure ) {
                 getContext().getMonitor().warning(ure.getMessage());
             }
@@ -66,7 +70,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     @Override
     protected GeneralConversationState handleStateTimeout() {
         getContext().getMonitor().operationFailed(getName() + " operation timed out, " +
-                                                  "the following contributors didn't respond: " + getResponseStatus().getOutstandPillars());
+                "the following contributors didn't respond: " + getResponseStatus().getOutstandPillars());
         return new FinishedState(getContext());
     }
 

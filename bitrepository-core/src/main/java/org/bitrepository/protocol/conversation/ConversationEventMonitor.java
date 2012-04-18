@@ -26,9 +26,16 @@ package org.bitrepository.protocol.conversation;
 
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.protocol.eventhandler.AbstractOperationEvent;
+import org.bitrepository.protocol.eventhandler.ContributorEvent;
+import org.bitrepository.protocol.eventhandler.DefaultEvent;
+import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.protocol.eventhandler.OperationEvent;
+import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.bitrepository.protocol.eventhandler.*;
+
+import static org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType.*;
 
 /** 
  * Encapsulates the concrete handling of conversation events. Should be called every time a conversation event happens.
@@ -56,8 +63,7 @@ public class ConversationEventMonitor {
     public void identifyPillarsRequestSent(String info) {
         log.debug(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(
-                    OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT, info, conversationID));
+            eventHandler.handleEvent(new DefaultEvent(IDENTIFY_REQUEST_SENT, info, conversationID));
         }
     }
 
@@ -69,8 +75,7 @@ public class ConversationEventMonitor {
     public void pillarIdentified(String info, String contributorID) {
         log.debug(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new ContributorEvent(
-                    OperationEvent.OperationEventType.COMPONENT_IDENTIFIED, info, contributorID, conversationID));
+            eventHandler.handleEvent(new ContributorEvent(COMPONENT_IDENTIFIED, info, contributorID, conversationID));
         }
     }
 
@@ -83,8 +88,8 @@ public class ConversationEventMonitor {
                 response.getResponseInfo().getResponseText();
         log.debug(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new ContributorEvent(
-                    OperationEvent.OperationEventType.COMPONENT_IDENTIFIED, info, response.getFrom(), conversationID));
+            eventHandler.handleEvent(
+                    new ContributorEvent(COMPONENT_IDENTIFIED, info, response.getFrom(), conversationID));
         }
     }
     
@@ -95,8 +100,7 @@ public class ConversationEventMonitor {
     public void identifyPillarTimeout(String info) {
         log.debug(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent( OperationEvent.OperationEventType.IDENTIFY_TIMEOUT, info,
-                    conversationID));
+            eventHandler.handleEvent(new DefaultEvent( IDENTIFY_TIMEOUT, info, conversationID));
         }
     }
 
@@ -108,8 +112,8 @@ public class ConversationEventMonitor {
     public void pillarSelected(String info, String contributorID) {
         log.debug(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new ContributorEvent(
-                    OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE, info, contributorID, conversationID));
+            eventHandler.handleEvent(
+                    new ContributorEvent(IDENTIFICATION_COMPLETE, info, contributorID, conversationID));
         }
     }
 
@@ -122,9 +126,7 @@ public class ConversationEventMonitor {
         log.debug(info);
         if (eventHandler != null) {
             eventHandler.handleEvent(
-                    new ContributorEvent(OperationEvent.OperationEventType.REQUEST_SENT,
-                            contributorID,
-                            contributorID, conversationID));
+                    new ContributorEvent(REQUEST_SENT, contributorID, contributorID, conversationID));
         }
     }
 
@@ -147,7 +149,7 @@ public class ConversationEventMonitor {
     public void progress(String progressInfo) {
         log.debug(progressInfo);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(OperationEvent.OperationEventType.PROGRESS, progressInfo, conversationID));
+            eventHandler.handleEvent(new DefaultEvent(PROGRESS, progressInfo, conversationID));
         }
     }
     
@@ -187,7 +189,7 @@ public class ConversationEventMonitor {
         log.info(info);
         if (eventHandler != null) {
             eventHandler.handleEvent(new DefaultEvent(
-                    OperationEvent.OperationEventType.COMPLETE, info, conversationID));
+                    COMPLETE, info, conversationID));
         }
     }
 
@@ -206,8 +208,8 @@ public class ConversationEventMonitor {
      */
     public void invalidMessage(Message message, Exception e) {
         log.warn("Received invalid " + message.getClass().getSimpleName() + " from " + message.getFrom(), e);
-        eventHandler.handleEvent(new ContributorEvent(
-                OperationEvent.OperationEventType.WARNING, e.getMessage(), message.getFrom(), conversationID));
+        eventHandler.handleEvent(
+                new ContributorEvent(WARNING, e.getMessage(), message.getFrom(), conversationID));
     }
 
     /**
@@ -225,7 +227,7 @@ public class ConversationEventMonitor {
     public void warning(String info) {
         log.warn(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(OperationEvent.OperationEventType.WARNING, info, conversationID));
+            eventHandler.handleEvent(new DefaultEvent(WARNING, info, conversationID));
         }
     }
 
@@ -240,7 +242,7 @@ public class ConversationEventMonitor {
         }
         log.warn(info, e);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(OperationEvent.OperationEventType.WARNING, info + ", " + e.getMessage(),
+            eventHandler.handleEvent(new DefaultEvent(WARNING, info + ", " + e.getMessage(),
                     conversationID));
         }
     }
@@ -260,7 +262,7 @@ public class ConversationEventMonitor {
     public void contributorFailed(String info) {
         log.warn(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(OperationEvent.OperationEventType.COMPONENT_FAILED, info,
+            eventHandler.handleEvent(new DefaultEvent(COMPONENT_FAILED, info,
                     conversationID));
         }    
     }
@@ -276,7 +278,7 @@ public class ConversationEventMonitor {
         }
         log.warn(info, e);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(OperationEvent.OperationEventType.COMPONENT_FAILED, info + ", " + e.getMessage(),
+            eventHandler.handleEvent(new DefaultEvent(COMPONENT_FAILED, info + ", " + e.getMessage(),
                     conversationID));
         }
     }
