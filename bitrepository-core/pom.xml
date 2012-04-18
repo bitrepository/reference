@@ -154,43 +154,6 @@ in preparation for the xsd -> java class file generation -->
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.8.0</version>
-        <executions>
-          <execution>
-            <id>generate-classes-from-xsds</id>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <phase>process-sources</phase>
-            <configuration>
-              <schemaDirectory>${project.build.directory}/xsd</schemaDirectory>
-              <generateDirectory>${project.build.directory}/generated-sources</generateDirectory>
-              <extension>true</extension>
-              <args>
-                <arg>-XtoString</arg>
-                <arg>-Xequals</arg>
-                <arg>-XhashCode</arg>
-                <arg>-Xannotate</arg>
-              </args>
-              <plugins>
-                <plugin>
-                  <groupId>org.jvnet.jaxb2_commons</groupId>
-                  <artifactId>jaxb2-basics</artifactId>
-                  <version>0.6.2</version>
-                </plugin>
-                <plugin>
-                  <groupId>org.jvnet.jaxb2_commons</groupId>
-                  <artifactId>jaxb2-basics-annotate</artifactId>
-                  <version>0.6.2</version>
-                </plugin>
-              </plugins>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 

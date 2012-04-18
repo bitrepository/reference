@@ -211,7 +211,8 @@ in preparation for the xsd -> java class file generation -->
               <schemaIncludes>
                 <include>*.xsd</include>
               </schemaIncludes>
-              <generateDirectory>${project.build.directory}/generated-sources/</generateDirectory>
+              <generateDirectory>${project.build.directory}/generated-sources/jaxb</generateDirectory>
+              <extension>true</extension>
               <args>
                 <arg>-XtoString</arg>
                 <arg>-Xequals</arg>
