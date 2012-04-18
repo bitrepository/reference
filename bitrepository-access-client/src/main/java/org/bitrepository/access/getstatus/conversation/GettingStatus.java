@@ -85,7 +85,7 @@ public class GettingStatus extends PerformingOperationState {
         for(String ID : activeContributers.keySet()) {
             request.setContributor(ID);
             request.setTo(activeContributers.get(ID));
-            context.messageSender.sendMessage(request); 
+            context.getMessageSender().sendMessage(request); 
         }
     }
 

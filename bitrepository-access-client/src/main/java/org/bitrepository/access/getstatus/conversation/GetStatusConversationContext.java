@@ -11,11 +11,7 @@ public class GetStatusConversationContext extends ConversationContext {
     
     public GetStatusConversationContext(Settings settings, MessageSender messageSender, EventHandler eventHandler,
             String auditTrailInformation, String clientID) {
-        super(settings, messageSender, eventHandler, auditTrailInformation);
+        super(settings, messageSender, clientID, eventHandler, auditTrailInformation);
         this.clientID = clientID;
-    }
-    
-    public String getClientID() {
-        return clientID;
     }
 }
