@@ -157,20 +157,6 @@ public interface MessageListener {
      *
      * @param message The message received.
      */
-    void onMessage(GetStatusProgressResponse message);
-    
-    /**
-     * Action to perform upon receiving a message.
-     *
-     * @param message The message received.
-     */
-    void onMessage(GetStatusFinalResponse message);
-    
-    /**
-     * Action to perform upon receiving a message.
-     *
-     * @param message The message received.
-     */
     void onMessage(IdentifyPillarsForDeleteFileRequest message);
     
     /**
@@ -312,13 +298,6 @@ public interface MessageListener {
      * @param message The message received.
      */
     void onMessage(IdentifyContributorsForGetStatusRequest message);
-    
-    /**
-     * Action to perform upon receiving a general message.
-     *
-     * @param message The message received.
-     */
-    void onMessage(IdentifyContributorsForGetStatusResponse message);
 
     /**
      * Action to perform upon receiving a general message.

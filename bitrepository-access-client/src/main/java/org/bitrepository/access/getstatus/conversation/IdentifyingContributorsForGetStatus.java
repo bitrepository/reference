@@ -24,22 +24,11 @@ package org.bitrepository.access.getstatus.conversation;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.bitrepository.access.getaudittrails.AuditTrailQuery;
-import org.bitrepository.access.getaudittrails.client.AuditTrailContributorSelector;
-import org.bitrepository.access.getaudittrails.client.GettingAuditTrails;
-import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.conversation.ConversationContext;
 import org.bitrepository.protocol.conversation.GeneralConversationState;
 import org.bitrepository.protocol.conversation.IdentifyingState;
-import org.bitrepository.protocol.exceptions.NegativeResponseException;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.ComponentSelector;
 import org.bitrepository.protocol.pillarselector.MultipleComponentSelector;
 
@@ -55,7 +44,7 @@ public class IdentifyingContributorsForGetStatus extends IdentifyingState {
         for (String contributor : context.getSettings().getCollectionSettings().getGetStatusSettings().getContributorIDs()) {
             expectedContributers.add(contributor);
         }
-        selector = new AuditTrailContributorSelector(expectedContributers);
+        selector = new GetStatusContributorSelector(expectedContributers);
     }
     
     @Override

@@ -22,6 +22,7 @@
 package org.bitrepository.access.getstatus.conversation;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
@@ -43,6 +44,7 @@ public class GettingStatus extends PerformingOperationState {
     public GettingStatus(GetStatusConversationContext context, List<SelectedPillarInfo> contributors) {
         super();
         this.context = context;
+        this.activeContributers = new HashMap<String,String>();
         for (SelectedPillarInfo contributorInfo : contributors) {
             activeContributers.put(contributorInfo.getID(), contributorInfo.getDestination());
         }

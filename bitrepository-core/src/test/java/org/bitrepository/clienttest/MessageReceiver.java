@@ -242,14 +242,6 @@ public class MessageReceiver {
             messageModel.addMessage(message);
         }
         @Override
-        public void onMessage(GetStatusProgressResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(GetStatusFinalResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
         public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
             messageModel.addMessage(message);
         }
@@ -307,10 +299,6 @@ public class MessageReceiver {
         }
         @Override
         public void onMessage(IdentifyContributorsForGetStatusRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyContributorsForGetStatusResponse message) {
             messageModel.addMessage(message);
         }
         @Override
