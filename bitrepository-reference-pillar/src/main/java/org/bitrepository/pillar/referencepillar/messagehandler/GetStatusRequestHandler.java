@@ -182,6 +182,7 @@ public class GetStatusRequestHandler extends ReferencePillarMessageHandler<GetSt
         res.setCollectionID(getSettings().getCollectionID());
         res.setContributor(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setCorrelationID(message.getCorrelationID());
+        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setMinVersion(MIN_VERSION);
         res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         res.setTo(message.getReplyTo());
@@ -205,6 +206,7 @@ public class GetStatusRequestHandler extends ReferencePillarMessageHandler<GetSt
         res.setCollectionID(getSettings().getCollectionID());
         res.setContributor(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setCorrelationID(msg.getCorrelationID());
+        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setMinVersion(MIN_VERSION);
         res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         res.setTo(msg.getReplyTo());

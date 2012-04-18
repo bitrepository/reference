@@ -49,12 +49,13 @@ public class GetFileMessageFactory extends TestMessageFactory {
     }
     
     public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileRequest(String auditTrail, 
-            String fileId, String replyTo) {
+            String fileId, String from, String replyTo) {
         IdentifyPillarsForGetFileRequest res = new IdentifyPillarsForGetFileRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFileID(fileId);
+        res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setTo(settings.getCollectionDestination());
@@ -70,6 +71,7 @@ public class GetFileMessageFactory extends TestMessageFactory {
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileID(fileId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
@@ -82,7 +84,7 @@ public class GetFileMessageFactory extends TestMessageFactory {
     }
     
     public GetFileRequest createGetFileRequest(String auditTrail, String correlationId, String url, String fileId, 
-            FilePart filePart, String pillarId, String replyTo, String toTopic) {
+            FilePart filePart, String from, String pillarId, String replyTo, String toTopic) {
         GetFileRequest res = new GetFileRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
@@ -90,6 +92,7 @@ public class GetFileMessageFactory extends TestMessageFactory {
         res.setFileAddress(url);
         res.setFileID(fileId);
         res.setFilePart(filePart);
+        res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
@@ -110,6 +113,7 @@ public class GetFileMessageFactory extends TestMessageFactory {
         res.setFileID(fileId);
         res.setFilePart(filePart);
         res.setFileSize(BigInteger.valueOf(fileSize));
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
@@ -128,6 +132,7 @@ public class GetFileMessageFactory extends TestMessageFactory {
         res.setFileAddress(url);
         res.setFileID(fileId);
         res.setFilePart(filePart);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);

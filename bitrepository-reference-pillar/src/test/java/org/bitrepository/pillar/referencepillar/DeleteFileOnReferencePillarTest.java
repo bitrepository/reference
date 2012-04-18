@@ -60,7 +60,7 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
     ReferencePillarMediator mediator;
     MockAlarmDispatcher alarmDispatcher;
     MockAuditManager audits;
-    
+
     @BeforeMethod (alwaysRun=true)
     public void initialiseDeleteFileTests() throws Exception {
         msgFactory = new DeleteFileMessageFactory(settings);
@@ -121,7 +121,7 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForDeleteFileRequest identifyRequest = msgFactory.createIdentifyPillarsForDeleteFileRequest(
-                auditTrail, FILE_ID, clientDestinationId);
+                auditTrail, FILE_ID, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -148,7 +148,7 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         DeleteFileRequest deleteFileRequest = msgFactory.createDeleteFileRequest(auditTrail, 
                 csData, csSpecRequest, receivedIdentifyResponse.getCollectionID(), 
-                FILE_ID, pillarId, receivedIdentifyResponse.getTo(), receivedIdentifyResponse.getReplyTo());
+                FILE_ID, FROM, pillarId, receivedIdentifyResponse.getTo(), receivedIdentifyResponse.getReplyTo());
         if(useEmbeddedPillar()) {
             mediator.onMessage(deleteFileRequest);
         } else {
@@ -211,7 +211,7 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForDeleteFileRequest identifyRequest = msgFactory.createIdentifyPillarsForDeleteFileRequest(
-                auditTrail, wrongID, clientDestinationId);
+                auditTrail, wrongID, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -270,7 +270,7 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForDeleteFileRequest identifyRequest = msgFactory.createIdentifyPillarsForDeleteFileRequest(
-                auditTrail, FILE_ID, clientDestinationId);
+                auditTrail, FILE_ID, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -296,7 +296,7 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         DeleteFileRequest deleteFileRequest = msgFactory.createDeleteFileRequest(auditTrail, 
                 csData, csSpecRequest, receivedIdentifyResponse.getCollectionID(), 
-                FILE_ID, pillarId, receivedIdentifyResponse.getTo(), receivedIdentifyResponse.getReplyTo());
+                FILE_ID, FROM, pillarId, receivedIdentifyResponse.getTo(), receivedIdentifyResponse.getReplyTo());
         if(useEmbeddedPillar()) {
             mediator.onMessage(deleteFileRequest);
         } else {

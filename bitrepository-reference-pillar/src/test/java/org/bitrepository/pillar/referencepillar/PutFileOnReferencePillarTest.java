@@ -128,7 +128,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
-                auditTrail, FILE_ID, FILE_SIZE, clientDestinationId);
+                auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -153,7 +153,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         
         PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, checksumDataForFile, 
                 csSHA1, receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, FILE_SIZE, 
-                pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
+                FROM, pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
         if(useEmbeddedPillar()) {
             mediator.onMessage(putRequest);
         } else {
@@ -220,7 +220,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
-                auditTrail, FILE_ID, Long.MAX_VALUE, clientDestinationId);
+                auditTrail, FILE_ID, Long.MAX_VALUE, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -271,7 +271,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Create and send the operation message to the pillar.", "Should be received and handled by the pillar.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, checksumDataForFile, 
-                null, UUID.randomUUID().toString(), FILE_ADDRESS, FILE_ID, FILE_SIZE, 
+                null, UUID.randomUUID().toString(), FILE_ADDRESS, FILE_ID, FILE_SIZE, FROM, 
                 pillarId, clientDestinationId, pillarDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(putRequest);
@@ -318,7 +318,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
-                auditTrail, FILE_ID, FILE_SIZE, clientDestinationId);
+                auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -377,7 +377,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
 
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
-                auditTrail, FILE_ID, FILE_SIZE, clientDestinationId);
+                auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -401,7 +401,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, checksumDataForFile, 
                 csSHA1, receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, FILE_SIZE, 
-                pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
+                FROM, pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
         if(useEmbeddedPillar()) {
             mediator.onMessage(putRequest);
         } else {

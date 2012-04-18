@@ -91,7 +91,7 @@ public class GetFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the checksum pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
-                auditTrail, FILE_ID, clientDestinationId);
+                auditTrail, FILE_ID, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -132,7 +132,7 @@ public class GetFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the GetFile request message.", 
                 "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, msgFactory.getNewCorrelationID(), 
-                FILE_ADDRESS, FILE_ID, filePart, pillarId, clientDestinationId, pillarDestinationId);
+                FILE_ADDRESS, FILE_ID, filePart, FROM, pillarId, clientDestinationId, pillarDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(getRequest);
         } else {

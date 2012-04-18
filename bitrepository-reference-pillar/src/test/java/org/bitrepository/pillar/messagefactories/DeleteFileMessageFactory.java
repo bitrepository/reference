@@ -47,12 +47,13 @@ public class DeleteFileMessageFactory extends TestMessageFactory {
     }
     
     public IdentifyPillarsForDeleteFileRequest createIdentifyPillarsForDeleteFileRequest( 
-            String auditTrail, String fileId, String replyTo) {
+            String auditTrail, String fileId, String from, String replyTo) {
         IdentifyPillarsForDeleteFileRequest res = new IdentifyPillarsForDeleteFileRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFileID(fileId);
+        res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setTo(settings.getCollectionDestination());
@@ -68,6 +69,7 @@ public class DeleteFileMessageFactory extends TestMessageFactory {
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileID(fileId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarChecksumSpec(csType);
         res.setPillarID(pillarId);
@@ -81,7 +83,8 @@ public class DeleteFileMessageFactory extends TestMessageFactory {
     }
     
     public DeleteFileRequest createDeleteFileRequest(String auditTrail, ChecksumDataForFileTYPE existingData, 
-            ChecksumSpecTYPE csRequest, String correlationId, String fileId, String pillarId, String replyTo, String toTopic) {
+            ChecksumSpecTYPE csRequest, String correlationId, String fileId, String from, String pillarId, 
+            String replyTo, String toTopic) {
         DeleteFileRequest res = new DeleteFileRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setChecksumDataForExistingFile(existingData);
@@ -89,6 +92,7 @@ public class DeleteFileMessageFactory extends TestMessageFactory {
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileID(fileId);
+        res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
@@ -104,6 +108,7 @@ public class DeleteFileMessageFactory extends TestMessageFactory {
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileID(fileId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
@@ -121,6 +126,7 @@ public class DeleteFileMessageFactory extends TestMessageFactory {
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileID(fileId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);

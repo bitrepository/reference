@@ -48,12 +48,13 @@ public class GetFileIDsMessageFactory extends TestMessageFactory {
     }
     
     public IdentifyPillarsForGetFileIDsRequest createIdentifyPillarsForGetFileIDsRequest(String auditTrail,
-            FileIDs fileId, String replyTo) {
+            FileIDs fileId, String from, String replyTo) {
         IdentifyPillarsForGetFileIDsRequest res = new IdentifyPillarsForGetFileIDsRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFileIDs(fileId);
+        res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setTo(settings.getCollectionDestination());
@@ -69,6 +70,7 @@ public class GetFileIDsMessageFactory extends TestMessageFactory {
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
@@ -81,12 +83,13 @@ public class GetFileIDsMessageFactory extends TestMessageFactory {
     }
     
     public GetFileIDsRequest createGetFileIDsRequest(String auditTrail, String correlationId, FileIDs fileId, 
-            String pillarId, String replyTo, String url, String toTopic) {
+            String from, String pillarId, String replyTo, String url, String toTopic) {
         GetFileIDsRequest res = new GetFileIDsRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
+        res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
@@ -103,6 +106,7 @@ public class GetFileIDsMessageFactory extends TestMessageFactory {
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
@@ -120,6 +124,7 @@ public class GetFileIDsMessageFactory extends TestMessageFactory {
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);

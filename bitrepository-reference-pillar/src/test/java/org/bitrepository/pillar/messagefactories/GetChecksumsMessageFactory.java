@@ -49,13 +49,14 @@ public class GetChecksumsMessageFactory extends TestMessageFactory {
     }
     
     public IdentifyPillarsForGetChecksumsRequest createIdentifyPillarsForGetChecksumsRequest( 
-            String auditTrail, ChecksumSpecTYPE csSpec, FileIDs fileId, String replyTo) {
+            String auditTrail, ChecksumSpecTYPE csSpec, FileIDs fileId, String from, String replyTo) {
         IdentifyPillarsForGetChecksumsRequest res = new IdentifyPillarsForGetChecksumsRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setChecksumRequestForExistingFile(csSpec);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFileIDs(fileId);
+        res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setTo(settings.getCollectionDestination());
@@ -72,6 +73,7 @@ public class GetChecksumsMessageFactory extends TestMessageFactory {
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarChecksumSpec(pillarCsType);
         res.setPillarID(pillarId);
@@ -85,13 +87,15 @@ public class GetChecksumsMessageFactory extends TestMessageFactory {
     }
     
     public GetChecksumsRequest createGetChecksumsRequest(String auditTrail, ChecksumSpecTYPE csSpec, 
-            String correlationId, FileIDs fileId, String pillarId, String replyTo, String url, String toTopic) {
+            String correlationId, FileIDs fileId, String from, String pillarId, String replyTo, String url, 
+            String toTopic) {
         GetChecksumsRequest res = new GetChecksumsRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setChecksumRequestForExistingFile(csSpec);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
+        res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
@@ -110,6 +114,7 @@ public class GetChecksumsMessageFactory extends TestMessageFactory {
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
@@ -127,6 +132,7 @@ public class GetChecksumsMessageFactory extends TestMessageFactory {
         res.setChecksumRequestForExistingFile(csSpec);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
+        res.setFrom(pillarId);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);

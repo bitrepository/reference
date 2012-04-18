@@ -116,7 +116,7 @@ public class PutFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
-                auditTrail, FILE_ID, FILE_SIZE, clientDestinationId);
+                auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -141,7 +141,7 @@ public class PutFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         
         PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, checksumDataForFile, 
                 csMD5, receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, FILE_SIZE, 
-                pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
+                FROM, pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
         if(useEmbeddedPillar()) {
             mediator.onMessage(putRequest);
         } else {
@@ -226,7 +226,7 @@ public class PutFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
-                auditTrail, FILE_ID, FILE_SIZE, clientDestinationId);
+                auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -291,7 +291,7 @@ public class PutFileOnChecksumPillarTest extends DefaultFixturePillarTest {
 
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
-                auditTrail, FILE_ID, FILE_SIZE, clientDestinationId);
+                auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
         if(useEmbeddedPillar()) {
             mediator.onMessage(identifyRequest);
         } else {
@@ -315,7 +315,7 @@ public class PutFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, checksumDataForFile, 
                 csMD5, receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, FILE_SIZE, 
-                pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
+                FROM, pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
         if(useEmbeddedPillar()) {
             mediator.onMessage(putRequest);
         } else {
