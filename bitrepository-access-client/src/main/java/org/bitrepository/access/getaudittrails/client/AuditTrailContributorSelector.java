@@ -28,6 +28,9 @@ import org.bitrepository.protocol.pillarselector.MultipleComponentSelector;
 
 import java.util.Collection;
 
+/**
+ * Extends the <code>MultipleComponentSelector</code> with test of correct message type.
+ */
 public class AuditTrailContributorSelector extends MultipleComponentSelector {
     /**
      * @param pillarsWhichShouldRespond The IDs of the pillars to be selected.

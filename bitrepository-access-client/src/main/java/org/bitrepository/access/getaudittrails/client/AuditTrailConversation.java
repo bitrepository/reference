@@ -31,15 +31,17 @@ import org.bitrepository.protocol.conversation.ConversationState;
 import org.bitrepository.protocol.conversation.FinishedState;
 
 /**
- * Mostly just a event mediator.
+ * Mostly just a event mediator (in the new client design).
  */
 public class AuditTrailConversation extends AbstractConversation {
     private final AuditTrailConversationContext context;
     
     public AuditTrailConversation (AuditTrailConversationContext context) {
+        // The flow controller is obsolent (after blocking functionality has been removed) and is therefore nulled.
+        // EventHandler is access through the ConversationContext and is therefore nulled in the 'old' constructor).
         super(context.getMessageSender(), context.getConversationID(), null ,null);
         this.context = context;
-        context.setState(new IdentifyingAuditTrailContributers(context));
+        context.setState(new IdentifyingAuditTrailContributors(context));
     }
 
     @Override

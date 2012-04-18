@@ -31,7 +31,8 @@ import org.bitrepository.protocol.messagebus.MessageSender;
 public class ConversationContext {
     private final String conversationID;
     private final Settings settings;
-    public final MessageSender messageSender;
+    private final MessageSender messageSender;
+    private final String clientID;
     private final ConversationEventMonitor monitor;
     private final String auditTrailInformation;
     private GeneralConversationState state;
@@ -39,17 +40,23 @@ public class ConversationContext {
     public ConversationContext(
             Settings settings,
             MessageSender messageSender,
+            String clientID,
             EventHandler eventHandler,
             String auditTrailInformation) {
         this.settings = settings;
         this.messageSender = messageSender;
         this.conversationID = ConversationIDGenerator.generateConversationID();
+        this.clientID = clientID;
         this.monitor = new ConversationEventMonitor(conversationID, eventHandler);
         this.auditTrailInformation = auditTrailInformation;
     }
 
     public String getConversationID() {
         return conversationID;
+    }
+
+    public String getClientID() {
+        return clientID;
     }
 
     public Settings getSettings() {

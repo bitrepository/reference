@@ -23,44 +23,35 @@ package org.bitrepository.access.getaudittrails.client;
 
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
-import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.conversation.ConversationContext;
 import org.bitrepository.protocol.conversation.GeneralConversationState;
 import org.bitrepository.protocol.conversation.IdentifyingState;
 import org.bitrepository.protocol.pillarselector.ComponentSelector;
 import org.bitrepository.protocol.pillarselector.MultipleComponentSelector;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IdentifyingAuditTrailContributers extends IdentifyingState {
+public class IdentifyingAuditTrailContributors extends IdentifyingState {
     private final AuditTrailConversationContext context;
     private final MultipleComponentSelector selector;
 
-    public IdentifyingAuditTrailContributers (AuditTrailConversationContext context) {
+    public IdentifyingAuditTrailContributors(AuditTrailConversationContext context) {
         super();
         this.context = context;
-        List<String> expectedContributers = new ArrayList<String>(context.getComponentQueries().length);
+        List<String> expectedContributors = new ArrayList<String>(context.getComponentQueries().length);
         for (AuditTrailQuery entry:context.getComponentQueries()) {
-            expectedContributers.add(entry.getComponentID());
+            expectedContributors.add(entry.getComponentID());
         }
-        selector = new AuditTrailContributorSelector(expectedContributers);
+        selector = new AuditTrailContributorSelector(expectedContributors);
     }
 
     @Override
     protected void sendRequest() {
-        IdentifyContributorsForGetAuditTrailsRequest identifyRequest = new IdentifyContributorsForGetAuditTrailsRequest();
-        identifyRequest.setCorrelationID(context.getConversationID());
-        identifyRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        identifyRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        identifyRequest.setCollectionID(context.getSettings().getCollectionID());
-        identifyRequest.setReplyTo(context.getSettings().getReferenceSettings().getClientSettings().getReceiverDestination());
-        identifyRequest.setTo(context.getSettings().getCollectionDestination());
-        identifyRequest.setAuditTrailInformation(context.getAuditTrailInformation());
-        identifyRequest.setFrom(context.getClientID());
-
-        context.getMessageSender().sendMessage(identifyRequest);
+        IdentifyContributorsForGetAuditTrailsRequest msg = new IdentifyContributorsForGetAuditTrailsRequest();
+        initializeMessage(msg);
+        msg.setTo(context.getSettings().getCollectionDestination());
+        context.getMessageSender().sendMessage(msg);
         context.getMonitor().identifyPillarsRequestSent("Identifying contributers for audit trails");
     }
 

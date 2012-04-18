@@ -58,6 +58,10 @@ public class AuditTrailQuery {
     public AuditTrailQuery(String componentID, Integer minSequenceNumber, Integer maxSequenceNumber) {
         super();
         this.componentID = componentID;
+        if (minSequenceNumber != null && maxSequenceNumber != null && minSequenceNumber > maxSequenceNumber)
+            throw new IllegalArgumentException(
+                "minSequenceNumber=" + minSequenceNumber + " can not be greater than " +
+                "maxSequenceNumber=" + maxSequenceNumber);
         this.minSequenceNumber = minSequenceNumber;
         this.maxSequenceNumber = maxSequenceNumber;
     }

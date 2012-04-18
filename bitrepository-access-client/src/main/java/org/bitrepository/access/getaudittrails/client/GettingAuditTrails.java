@@ -25,7 +25,6 @@ import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.conversation.ConversationContext;
 import org.bitrepository.protocol.conversation.PerformingOperationState;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
@@ -39,38 +38,31 @@ import java.util.Map;
 
 public class GettingAuditTrails extends PerformingOperationState {
     private final AuditTrailConversationContext context;
-    private Map<String,String> activeContributers;
+    private Map<String,String> activeContributors;
     private ContributorResponseStatus responseStatus;
 
     public GettingAuditTrails(AuditTrailConversationContext context, List<SelectedPillarInfo> contributors) {
         super();
         this.context = context;
-        this.activeContributers = new HashMap<String,String>();
+        this.activeContributors = new HashMap<String,String>();
         for (SelectedPillarInfo contributorInfo : contributors) {
-            activeContributers.put(contributorInfo.getID(), contributorInfo.getDestination());
+            activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
         }
-
-        this.responseStatus = new ContributorResponseStatus(activeContributers.keySet());
+        this.responseStatus = new ContributorResponseStatus(activeContributors.keySet());
     }
 
     @Override
     protected void sendRequest() {
-        GetAuditTrailsRequest msg = new GetAuditTrailsRequest();
-        msg.setCorrelationID(context.getConversationID());
-        msg.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        msg.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        msg.setCollectionID(context.getSettings().getCollectionID());
-        msg.setReplyTo(context.getSettings().getReferenceSettings().getClientSettings().getReceiverDestination());
-        msg.setFileID(context.getFileID());
-        msg.setResultAddress(context.getUrlForResult());
-        msg.setAuditTrailInformation(context.getAuditTrailInformation());
-        msg.setFrom(context.getClientID());
-
-        context.getMonitor().requestSent("Sending request for audit trails", activeContributers.keySet().toString());
+        context.getMonitor().requestSent("Sending request for audit trails", activeContributors.keySet().toString());
         for(AuditTrailQuery query : context.getComponentQueries()) {
-            if (activeContributers.containsKey(query.getComponentID())) {
+            if (activeContributors.containsKey(query.getComponentID())) {
+                GetAuditTrailsRequest msg = new GetAuditTrailsRequest();
+                initializeMessage(msg);
+                msg.setFileID(context.getFileID());
+                msg.setResultAddress(context.getUrlForResult());
+
                 msg.setContributor(query.getComponentID());
-                msg.setTo(activeContributers.get(query.getComponentID()));
+                msg.setTo(activeContributors.get(query.getComponentID()));
                 if (query.getMinSequenceNumber() != null) {
                     msg.setMinSequenceNumber(BigInteger.valueOf(query.getMinSequenceNumber().intValue()));
                 }

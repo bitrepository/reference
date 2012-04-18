@@ -25,10 +25,13 @@
 package org.bitrepository.protocol.conversation;
 
 import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.exceptions.UnableToFinishException;
+import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 
+import java.math.BigInteger;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -104,6 +107,16 @@ public abstract class GeneralConversationState {
             getContext().setState(newState);
             newState.start();
         }
+    }
+
+    protected void initializeMessage(MessageRequest msg) {
+        msg.setCorrelationID(getContext().getConversationID());
+        msg.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
+        msg.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
+        msg.setCollectionID(getContext().getSettings().getCollectionID());
+        msg.setReplyTo(getContext().getSettings().getReferenceSettings().getClientSettings().getReceiverDestination());
+        msg.setAuditTrailInformation(getContext().getAuditTrailInformation());
+        msg.setFrom(getContext().getClientID());
     }
 
     /**
