@@ -109,7 +109,7 @@ public class RestIntegrityService {
         Iterator<Workflow> it = workflows.iterator();
         while(it.hasNext()) {
             String name = it.next().getName();
-            sb.append("{\"optionValue\":\"" + name + "\", \"optionDisplay\": \"" + name + "\"}");
+            sb.append("{\"workflowID\":\"" + name + "\"}");
             if(it.hasNext()) {
                 sb.append(",");
             }
