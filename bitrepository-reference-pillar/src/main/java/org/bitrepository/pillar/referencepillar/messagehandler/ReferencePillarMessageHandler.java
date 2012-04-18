@@ -24,50 +24,24 @@
  */
 package org.bitrepository.pillar.referencepillar.messagehandler;
 
-import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.AlarmDispatcher;
-import org.bitrepository.pillar.AuditTrailManager;
+import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.PillarMessageHandler;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
-import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 
 /**
  * Abstract level for message handling. 
  */
-public abstract class ReferencePillarMessageHandler<T> {
-
-    /** The constant for the VERSION of the messages.*/
-    protected static final BigInteger VERSION = BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION);
-    /** The constant for the MIN_VERSION of the messages.*/
-    protected static final BigInteger MIN_VERSION = BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION);
-    
-    /** The classpath to the 'xsd'.*/
-    protected static final String XSD_CLASSPATH = "xsd/";
-    /** The name of the XSD containing the BitRepositoryData elements. */
-    protected static final String XSD_BR_DATA = "BitRepositoryData.xsd";
-    
-    /** The response value for a positive identification.*/
-    protected static final String RESPONSE_FOR_POSITIVE_IDENTIFICATION = "Operation acknowledged and accepted.";
-    
-    /** The dispatcher for sending alarm messages.*/
-    private final AlarmDispatcher alarmDispatcher;
-    /** The settings for this setup.*/
-    private final Settings settings;
-    /** The messagebus for communication.*/ 
-    private final MessageBus messagebus;
+public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHandler<T> {
     /** The reference archive.*/
     private final ReferenceArchive archive;
-    /** The manager of audit trails.*/
-    private final AuditTrailManager auditManager;
     
     /**
      * Constructor. 
@@ -76,84 +50,18 @@ public abstract class ReferencePillarMessageHandler<T> {
      * @param alarmDispatcher The dispatcher of alarms.
      * @param referenceArchive The archive for the data.
      */
-    protected ReferencePillarMessageHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher, 
-            ReferenceArchive referenceArchive, AuditTrailManager auditManager) {
-        ArgumentValidator.checkNotNull(settings, "settings");
-        ArgumentValidator.checkNotNull(messageBus, "messageBus");
-        ArgumentValidator.checkNotNull(alarmDispatcher, "alarmDispatcher");
+    protected ReferencePillarMessageHandler(PillarContext context, ReferenceArchive referenceArchive) {
+        super(context);
         ArgumentValidator.checkNotNull(referenceArchive, "referenceArchive");
-        ArgumentValidator.checkNotNull(auditManager, "auditManager");
 
-        this.settings = settings;
-        this.messagebus = messageBus;
-        this.alarmDispatcher = alarmDispatcher;
         this.archive = referenceArchive;
-        this.auditManager = auditManager;
     }
     
-    /**
-     * @return The alarmDispatcher for this message handler.
-     */
-    protected AlarmDispatcher getAlarmDispatcher() {
-        return alarmDispatcher;
-    }
-
     /**
      * @return The cache for this message handler.
      */
     protected ReferenceArchive getArchive() {
         return archive;
-    }
-
-    /**
-     * @return The messagebus for this message handler.
-     */
-    protected MessageBus getMessageBus() {
-        return messagebus;
-    }
-
-    /**
-     * @return The settings for this message handler.
-     */
-    protected Settings getSettings() {
-        return settings;
-    }
-    
-    /**
-     * @return The audit trail manager for this message sender.
-     */
-    protected AuditTrailManager getAuditManager() {
-        return auditManager;
-    }
-    
-    /** 
-     * The method for handling the message connected to the specific handler.
-     * @param message The message to handle.
-     */
-    abstract void handleMessage(T message);
-    
-    /**
-     * Validates that it is the correct BitrepositoryCollectionId.
-     * @param bitrepositoryCollectionId The collection id to validate.
-     */
-    protected void validateBitrepositoryCollectionId(String bitrepositoryCollectionId) {
-        if(!bitrepositoryCollectionId.equals(settings.getCollectionID())) {
-            throw new IllegalArgumentException("The message had a wrong BitRepositoryIdCollection: "
-                    + "Expected '" + settings.getCollectionID() + "' but was '" 
-                    + bitrepositoryCollectionId + "'.");
-        }
-    }
-
-    /**
-     * Validates that it is the correct pillar id.
-     * @param pillarId The pillar id.
-     */
-    protected void validatePillarId(String pillarId) {
-        if(!pillarId.equals(settings.getReferenceSettings().getPillarSettings().getPillarID())) {
-            throw new IllegalArgumentException("The message had a wrong PillarId: "
-                    + "Expected '" + settings.getReferenceSettings().getPillarSettings().getPillarID() + "' but was '" 
-                    + pillarId + "'.");
-        }
     }
     
     /**

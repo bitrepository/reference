@@ -32,7 +32,6 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -41,15 +40,10 @@ public class AuditDatabaseTest extends ExtendedTestCase {
     Settings settings;
     
     @BeforeClass (alwaysRun = true)
-    public void setup() {
+    public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings();
-    }
-    
-    @AfterMethod (alwaysRun=true) 
-    public void closeArchive() throws Exception {
         clearDatabase(settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl());
     }
-
 
     @Test( groups = {"databasetest"})
     public void testFileBasedCacheFunctions() throws Exception {
@@ -70,21 +64,21 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         daba.addAuditEvent(fileId2, actor, info, auditTrail, FileAction.INCONSISTENCY);
         
         addStep("Test output", "Should be valid.");
-        Collection<AuditTrailEvent> events = daba.getAudits(null, null);
+        Collection<AuditTrailEvent> events = daba.getAudits(null, null, null, null, null);
         Assert.assertEquals(events.size(), 5);
         
-        events = daba.getAudits(fileId1, null);
+        events = daba.getAudits(fileId1, null, null, null, null);
         Assert.assertEquals(events.size(), 2);        
 
-        events = daba.getAudits(fileId2, null);
+        events = daba.getAudits(fileId2, null, null, null, null);
         Assert.assertEquals(events.size(), 3);
         
         Long seq = daba.extractLargestSequenceNumber();
         
-        events = daba.getAudits(null, seq);
+        events = daba.getAudits(null, seq, null, null, null);
         Assert.assertEquals(events.size(), 1);
         
-        events = daba.getAudits(fileId1, seq-3);
+        events = daba.getAudits(fileId1, seq-3, null, null, null);
         Assert.assertEquals(events.size(), 1);
     }
     

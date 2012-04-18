@@ -29,10 +29,8 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.AlarmDispatcher;
-import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
-import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
+import org.bitrepository.pillar.common.PillarContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,14 +43,11 @@ public class GetFileRequestHandler extends ChecksumPillarMessageHandler<GetFileR
 
     /**
      * Constructor.
-     * @param settings The settings for handling the message.
-     * @param messageBus The bus for communication.
-     * @param alarmDispatcher The dispatcher of alarms.
-     * @param referenceCache The archive for the data.
+     * @param context The context of the message handler.
+     * @param refCache The cache for the checksum data.
      */
-    public GetFileRequestHandler(Settings settings, MessageBus messageBus,
-            AlarmDispatcher alarmDispatcher, ChecksumCache referenceCache) {
-        super(settings, messageBus, alarmDispatcher, referenceCache);
+    public GetFileRequestHandler(PillarContext context, ChecksumStore refCache) {
+        super(context,  refCache);
     }
     
     /**

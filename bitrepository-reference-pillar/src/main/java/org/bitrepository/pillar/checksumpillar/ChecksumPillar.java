@@ -25,8 +25,12 @@ import javax.jms.JMSException;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
+import org.bitrepository.pillar.AlarmDispatcher;
+import org.bitrepository.pillar.AuditTrailManager;
+import org.bitrepository.pillar.audit.AuditTrailContributerDAO;
+import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
+import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +45,7 @@ public class ChecksumPillar {
     private final MessageBus messageBus;
     
     /** The cache for persisting the checksum data.*/
-    private final ChecksumCache cache;
+    private final ChecksumStore cache;
     /** The mediator for delegating the communication to the message handlers.*/
     private ChecksumPillarMediator mediator;
  
@@ -51,7 +55,7 @@ public class ChecksumPillar {
      * @param settings The settings for the checksum pillar.
      * @param refCache The cache for the checksum data to be stored.
      */
-    public ChecksumPillar(MessageBus messageBus, Settings settings, ChecksumCache refCache) {
+    public ChecksumPillar(MessageBus messageBus, Settings settings, ChecksumStore refCache) {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(refCache, "ChecksumCache refCache");
@@ -60,7 +64,10 @@ public class ChecksumPillar {
         this.cache = refCache;
         
         log.info("Starting the checksum pillar!");
-        mediator = new ChecksumPillarMediator(messageBus, settings, cache);
+        AuditTrailManager audits = new AuditTrailContributerDAO(settings);
+        AlarmDispatcher alarms = new AlarmDispatcher(settings, messageBus);
+        PillarContext context = new PillarContext(settings, messageBus, alarms, audits);
+        mediator = new ChecksumPillarMediator(context, cache);
         log.info("ReferencePillar started!");
     }
     

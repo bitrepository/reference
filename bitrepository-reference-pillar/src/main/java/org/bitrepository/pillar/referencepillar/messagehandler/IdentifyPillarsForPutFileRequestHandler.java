@@ -32,12 +32,9 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.AlarmDispatcher;
-import org.bitrepository.pillar.AuditTrailManager;
+import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,15 +49,11 @@ public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMess
 
     /**
      * Constructor.
-     * @param settings The settings for handling the message.
-     * @param messageBus The bus for communication.
-     * @param alarmDispatcher The dispatcher of alarms.
+     * @param context The context of the message handler.
      * @param referenceArchive The archive for the data.
-     * @param auditManager The manager of audit trails.
      */
-    public IdentifyPillarsForPutFileRequestHandler(Settings settings, MessageBus messageBus,
-            AlarmDispatcher alarmDispatcher, ReferenceArchive referenceArchive, AuditTrailManager auditManager) {
-        super(settings, messageBus, alarmDispatcher, referenceArchive, auditManager);
+    public IdentifyPillarsForPutFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
+        super(context, referenceArchive);
     }
 
     /**
@@ -198,5 +191,4 @@ public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMess
         
         return res;
     }
-
 }

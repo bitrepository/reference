@@ -133,25 +133,14 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     }
     
     @Override
-    public Collection<AuditTrailEvent> getAudits(String fileId, Long sequenceNumber) {
-        if(fileId == null && sequenceNumber == null) {
-            return extractEvents("", new Object[0]);
-        }
-        if(fileId == null && sequenceNumber != null) {
-            return extractEvents("WHERE " + AUDITTRAIL_SEQUENCE_NUMBER + " >= ? ", sequenceNumber);
-        }
-        Long fileGuid = retrieveFileGuid(fileId);
-        if(fileId != null && sequenceNumber == null) {
-            return extractEvents("WHERE " + AUDITTRAIL_FILE_GUID + " = ? ", fileGuid);
-        } 
-        
-        return extractEvents("WHERE " + AUDITTRAIL_SEQUENCE_NUMBER + " >= ? AND " + AUDITTRAIL_FILE_GUID + " = ? ", 
-                sequenceNumber, fileGuid);
+    public Collection<AuditTrailEvent> getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate, 
+            Date maxDate) {
+        return extractEvents(new AuditTrailExtractor(fileId, minSeqNumber, maxSeqNumber, minDate, maxDate));
     }
     
     /**
      * Extracts the largest sequence number from the database. 
-     * @return The largest sequence number.
+     * @return The largest sequence number. If no entry exists, then zero is returned.
      */
     public Long extractLargestSequenceNumber() {
         String sql = "SELECT " + AUDITTRAIL_SEQUENCE_NUMBER + " FROM " + AUDITTRAIL_TABLE + " ORDER BY " 
@@ -180,7 +169,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
      * @param args The arguments.
      * @return The extracted 
      */
-    private Collection<AuditTrailEvent> extractEvents(String restriction, Object ... args) {
+    private Collection<AuditTrailEvent> extractEvents(AuditTrailExtractor extractor) {
         
         final int sequencePosition = 1;
         final int fileGuidPosition = 2;
@@ -192,13 +181,15 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         
         String sql = "SELECT " + AUDITTRAIL_SEQUENCE_NUMBER + ", " + AUDITTRAIL_FILE_GUID + " , " 
                 + AUDITTRAIL_ACTOR_GUID + " , " + AUDITTRAIL_OPERATION_DATE + " , " + AUDITTRAIL_OPERATION + " , " 
-                + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " FROM " + AUDITTRAIL_TABLE + " " + restriction;
+                + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " FROM " + AUDITTRAIL_TABLE + " " 
+                + extractor.createRestriction();
         
         List<AuditTrailEvent> res = new ArrayList<AuditTrailEvent>();
         try {
             ResultSet results = null;
             try {
-                results = DatabaseUtils.selectObject(getConnection(), sql, args);
+                System.err.println(sql);
+                results = DatabaseUtils.selectObject(getConnection(), sql, extractor.getArguments());
                 
                 while(results.next()) {
                     AuditTrailEvent event = new AuditTrailEvent();
@@ -289,5 +280,117 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         String sqlRetrieve = "SELECT " + ACTOR_NAME + " FROM " + ACTOR_TABLE + " WHERE " + ACTOR_GUID + " = ?";
         
         return DatabaseUtils.selectStringValue(getConnection(), sqlRetrieve, actorGuid);        
+    }
+    
+    /**
+     * Class for encapsulating the request for extracting 
+     */
+    private class AuditTrailExtractor {
+        /** The file id limitation for the request. */
+        private Long fileGuid;
+        /** The minimum sequence number limitation for the request.*/
+        private Long minSeqNumber;
+        /** The maximum sequence number limitation for the request.*/
+        private Long maxSeqNumber;
+        /** The minimum date limitation for the request.*/
+        private Date minDate;
+        /** The maxmimum date limitation for the request.*/
+        private Date maxDate;
+        
+        /**
+         * Contructor.
+         * @param fileId The file id limitation for the request.
+         * @param minSeqNumber The minimum sequence number limitation for the request.
+         * @param maxSeqNumber The maximum sequence number limitation for the request.
+         * @param minDate The minimum date limitation for the request.
+         * @param maxDate The maximum date limitation for the request.
+         */
+        public AuditTrailExtractor(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate, 
+                Date maxDate) {
+            if(fileId == null) {
+                this.fileGuid = null;
+            } else {
+                this.fileGuid = retrieveFileGuid(fileId);
+            }
+            this.minSeqNumber = minSeqNumber;
+            this.maxSeqNumber = maxSeqNumber;
+            this.minDate = minDate; 
+            this.maxDate = maxDate;
+        }
+        
+        /**
+         * @return The restriction for the request.
+         */
+        public String createRestriction() {
+            // Handle the case with no restrictions.
+            if(fileGuid == null && minSeqNumber == null && maxSeqNumber == null && minDate == null && maxDate == null) {
+                return "";
+            }
+            
+            StringBuilder res = new StringBuilder();
+            
+            if(fileGuid != null) {
+                nextArgument(res);
+                res.append(AUDITTRAIL_FILE_GUID + " = ?");
+            }
+            
+            if(minSeqNumber != null) {
+                nextArgument(res);
+                res.append(AUDITTRAIL_SEQUENCE_NUMBER + " >= ?");
+            }
+            
+            if(maxSeqNumber != null) {
+                nextArgument(res);
+                res.append(AUDITTRAIL_SEQUENCE_NUMBER + " <= ?");
+            }
+            
+            if(minDate != null) {
+                nextArgument(res);
+                res.append(AUDITTRAIL_OPERATION_DATE + " >= ?");
+            }
+            
+            if(maxDate != null) {
+                nextArgument(res);
+                res.append(AUDITTRAIL_OPERATION_DATE + " <= ?");
+            }
+            
+            return res.toString();
+        }
+        
+        /**
+         * Adds either ' AND ' or 'WHERE ' depending on whether it is the first restriction.
+         * @param res The StringBuilder where the restrictions are combined.
+         */
+        private void nextArgument(StringBuilder res) {
+            if(res.length() > 0) {
+                res.append(" AND ");
+            } else {
+                res.append("WHERE ");
+            }            
+        }
+        
+        /**
+         * @return The arguments for the SQL statement.
+         */
+        public Object[] getArguments() {
+            List<Object> res = new ArrayList<Object>();
+            if(fileGuid != null) {
+                res.add(fileGuid);
+            }
+            if(minSeqNumber != null) {
+                res.add(minSeqNumber);
+            }
+            if(maxSeqNumber != null) {
+                res.add(maxSeqNumber);
+            }
+            if(minDate != null) {
+                res.add(minDate);
+            }
+            if(maxDate != null) {
+                res.add(maxDate);
+            }
+            
+            return res.toArray();
+        }
     }
 }

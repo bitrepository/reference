@@ -29,11 +29,9 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.AlarmDispatcher;
-import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
+import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
+import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,18 +46,15 @@ public class IdentifyPillarsForReplaceFileRequestHandler
 
     /**
      * Constructor.
-     * @param settings The settings for handling the message.
-     * @param messageBus The bus for communication.
-     * @param alarmDispatcher The dispatcher of alarms.
-     * @param referenceCache The archive for the data.
+     * @param context The context of the message handler.
+     * @param refCache The cache for the checksum data.
      */
-    protected IdentifyPillarsForReplaceFileRequestHandler(Settings settings, MessageBus messageBus,
-            AlarmDispatcher alarmDispatcher, ChecksumCache referenceCache) {
-        super(settings, messageBus, alarmDispatcher, referenceCache);
+    public IdentifyPillarsForReplaceFileRequestHandler(PillarContext context, ChecksumStore refCache) {
+        super(context, refCache);
     }
 
     @Override
-    void handleMessage(IdentifyPillarsForReplaceFileRequest message) {
+    public void handleMessage(IdentifyPillarsForReplaceFileRequest message) {
         ArgumentValidator.checkNotNull(message, "IdentifyPillarsForReplaceFileRequest message");
 
         try {

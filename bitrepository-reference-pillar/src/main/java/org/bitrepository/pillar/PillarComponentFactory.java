@@ -28,7 +28,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.checksumpillar.ChecksumPillar;
-import org.bitrepository.pillar.checksumpillar.cache.FilebasedChecksumCache;
+import org.bitrepository.pillar.checksumpillar.cache.FilebasedChecksumStore;
 import org.bitrepository.pillar.referencepillar.ReferencePillar;
 import org.bitrepository.protocol.messagebus.MessageBus;
 
@@ -93,7 +93,7 @@ public final class PillarComponentFactory {
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(messagebus, "messagebus");
         
-        return new ChecksumPillar(messagebus, settings, new FilebasedChecksumCache(settings));
+        return new ChecksumPillar(messagebus, settings, new FilebasedChecksumStore(settings));
     }
 
 }

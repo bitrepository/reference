@@ -29,13 +29,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
+import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 
 /**
  * Very simple memory based implementation of the ChecksumCache.
  * Everything is kept within a map between the file ids and their checksum.
  */
-public class MemoryCache implements ChecksumCache {
+public class MemoryCache implements ChecksumStore {
     
     /**
      * The checksum mapping between the file ids and their checksum.

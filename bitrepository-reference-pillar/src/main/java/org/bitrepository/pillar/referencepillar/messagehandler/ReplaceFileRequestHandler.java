@@ -37,16 +37,13 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.pillar.AlarmDispatcher;
-import org.bitrepository.pillar.AuditTrailManager;
+import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.slf4j.Logger;
@@ -71,19 +68,15 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
     
     /**
      * Constructor.
-     * @param settings The settings for handling the message.
-     * @param messageBus The bus for communication.
-     * @param alarmDispatcher The dispatcher of alarms.
+     * @param context The context of the message handler.
      * @param referenceArchive The archive for the data.
-     * @param auditManager The manager of audit trails.
      */
-    protected ReplaceFileRequestHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher,
-            ReferenceArchive referenceArchive, AuditTrailManager auditManager) {
-        super(settings, messageBus, alarmDispatcher, referenceArchive, auditManager);
+    public ReplaceFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
+        super(context, referenceArchive);
     }
 
     @Override
-    void handleMessage(ReplaceFileRequest message) {
+    public void handleMessage(ReplaceFileRequest message) {
         ArgumentValidator.checkNotNull(message, "ReplaceFileRequest message");
 
         try {

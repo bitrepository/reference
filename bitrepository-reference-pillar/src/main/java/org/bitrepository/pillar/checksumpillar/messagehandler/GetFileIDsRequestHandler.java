@@ -51,14 +51,12 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.JaxbHelper;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.pillar.AlarmDispatcher;
-import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
+import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
+import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -72,14 +70,11 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
     
     /**
      * Constructor.
-     * @param settings The settings for handling the message.
-     * @param messageBus The bus for communication.
-     * @param alarmDispatcher The dispatcher of alarms.
-     * @param referenceCache The cache for the data.
+     * @param context The context of the message handler.
+     * @param refCache The cache for the checksum data.
      */
-    public GetFileIDsRequestHandler(Settings settings, MessageBus messageBus,
-            AlarmDispatcher alarmDispatcher, ChecksumCache referenceCache) {
-        super(settings, messageBus, alarmDispatcher, referenceCache);
+    public GetFileIDsRequestHandler(PillarContext context, ChecksumStore refCache) {
+        super(context,  refCache);
     }
     
     /**

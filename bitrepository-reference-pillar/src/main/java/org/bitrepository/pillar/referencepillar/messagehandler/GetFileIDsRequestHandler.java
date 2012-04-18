@@ -38,10 +38,10 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetFileIDsResults;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -51,15 +51,12 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.JaxbHelper;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.pillar.AlarmDispatcher;
-import org.bitrepository.pillar.AuditTrailManager;
+import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -73,15 +70,11 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
     
     /**
      * Constructor.
-     * @param settings The settings for handling the message.
-     * @param messageBus The bus for communication.
-     * @param alarmDispatcher The dispatcher of alarms.
+     * @param context The context of the message handler.
      * @param referenceArchive The archive for the data.
-     * @param auditManager The manager of audit trails.
      */
-    public GetFileIDsRequestHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher, 
-            ReferenceArchive referenceArchive, AuditTrailManager auditManager) {
-        super(settings, messageBus, alarmDispatcher, referenceArchive, auditManager);
+    public GetFileIDsRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
+        super(context, referenceArchive);
     }
     
     /**
@@ -274,8 +267,8 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
     /**
      * Method for creating a file containing the resulting list of file ids.
      * 
-     * @param message The GetChecksumMessage requesting the checksum calculations.
-     * @param checksumList The list of checksums to put into the list.
+     * @param message The GetFileIDsMessage requesting the checksum calculations.
+     * @param fileIDs The file ids to be put into the result file.
      * @return A file containing all the checksums in the list.
      * @throws IOException If a problem occurs during accessing or handling the data.
      * @throws JAXBException If the resulting structure cannot be serialized or if it is invalid.

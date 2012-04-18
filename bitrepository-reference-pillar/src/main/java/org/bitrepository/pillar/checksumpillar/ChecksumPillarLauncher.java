@@ -22,19 +22,11 @@
 package org.bitrepository.pillar.checksumpillar;
 
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.pillar.PillarComponentFactory;
+import org.bitrepository.pillar.PillarLauncher;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.security.BasicMessageAuthenticator;
-import org.bitrepository.protocol.security.BasicMessageSigner;
-import org.bitrepository.protocol.security.BasicOperationAuthorizor;
-import org.bitrepository.protocol.security.BasicSecurityManager;
-import org.bitrepository.protocol.security.MessageAuthenticator;
-import org.bitrepository.protocol.security.MessageSigner;
-import org.bitrepository.protocol.security.OperationAuthorizor;
-import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 
 /**
@@ -42,11 +34,7 @@ import org.bitrepository.protocol.security.SecurityManager;
  * It just loads the settings from the given path, initiates the messagebus (with security) and then starts the 
  * ChecksumPillar.
  */
-public final class ChecksumPillarLauncher {
-    /** The default path for the settings in the development.*/
-    private static final String DEFAULT_PATH_TO_SETTINGS = "conf";
-    /** The default path for the settings in the development.*/
-    private static final String DEFAULT_PATH_TO_KEY_FILE = "conf/client.pem";
+public final class ChecksumPillarLauncher extends PillarLauncher {
     
     /**
      * Private constructor. To prevent instantiation of this utility class.
@@ -61,43 +49,10 @@ public final class ChecksumPillarLauncher {
      * </ol>
      */
     public static void main(String[] args) {
-        String pathToSettings = DEFAULT_PATH_TO_SETTINGS;
-        String privateKeyFile = DEFAULT_PATH_TO_KEY_FILE;
-        if(args.length == 2) {
-            pathToSettings = args[0];
-            privateKeyFile = args[1];
-        } else if(args.length == 1) {
-            pathToSettings = args[0];
-        }
-        
-        // Instantiate the settings for the ChecksumPillar.
-        Settings settings = null;
         try {
-            SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(pathToSettings));
-            settings = settingsLoader.getSettings();
-        } catch (Exception e) {
-            System.err.println("Could not load the settings from '" + pathToSettings + "'.");
-            e.printStackTrace();
-            System.exit(-1);
-        }
+            Settings settings = loadSettings(args[0]);
+            SecurityManager securityManager = loadSecurityManager(args[1], settings);
         
-        // Instantiate the security for the messagebus for the ChecksumPillar.
-        SecurityManager securityManager = null;
-        try {
-            PermissionStore permissionStore = new PermissionStore();
-            MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
-            MessageSigner signer = new BasicMessageSigner();
-            OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
-            securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
-                    authenticator, signer, authorizer, permissionStore,
-                    settings.getReferenceSettings().getPillarSettings().getPillarID());
-        } catch (Exception e) {
-            System.err.println("Could not instantiate the security manager.");
-            e.printStackTrace();
-            System.exit(-1);
-        }
-        
-        try {
             MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
             ChecksumPillar pillar = PillarComponentFactory.getInstance().getChecksumPillar(messageBus, settings);
             

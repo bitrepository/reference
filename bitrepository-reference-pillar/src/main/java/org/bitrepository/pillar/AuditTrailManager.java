@@ -25,6 +25,7 @@
 package org.bitrepository.pillar;
 
 import java.util.Collection;
+import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -46,8 +47,12 @@ public interface AuditTrailManager {
     /**
      * Method for extracting all the audit trails.
      * @param fileId [OPTIONAL] The id of the file to request audits for.
-     * @param sequenceNumber [OPTIONAL] The lowest sequence number
-     * @return The all audit trails.
+     * @param minSeqNumber [OPTIONAL] The lower sequence number requested. 
+     * @param maxSeqNumber [OPTIONAL] The upper sequence number requested.
+     * @param minDate [OPTIONAL] The earliest date requested.
+     * @param maxDate [OPTIONAL] The newest date requested.
+     * @return The audit trails corresponding to the requested arguments.
      */
-    Collection<AuditTrailEvent> getAudits(String fileId, Long sequenceNumber);
+    Collection<AuditTrailEvent> getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate, 
+            Date maxDate);
 }

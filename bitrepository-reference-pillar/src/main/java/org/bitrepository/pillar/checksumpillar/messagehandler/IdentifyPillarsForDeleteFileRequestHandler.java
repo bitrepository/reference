@@ -29,11 +29,9 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.AlarmDispatcher;
-import org.bitrepository.pillar.checksumpillar.cache.ChecksumCache;
+import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
+import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,18 +46,15 @@ public class IdentifyPillarsForDeleteFileRequestHandler
     
     /**
      * Constructor.
-     * @param settings The settings for handling the message.
-     * @param messageBus The bus for communication.
-     * @param alarmDispatcher The dispatcher of alarms.
-     * @param referenceArchive The archive for the data.
+     * @param context The context of the message handler.
+     * @param refCache The cache for the checksum data.
      */
-    protected IdentifyPillarsForDeleteFileRequestHandler(Settings settings, MessageBus messageBus,
-            AlarmDispatcher alarmDispatcher, ChecksumCache refCache) {
-        super(settings, messageBus, alarmDispatcher, refCache);
+    public IdentifyPillarsForDeleteFileRequestHandler(PillarContext context, ChecksumStore refCache) {
+        super(context, refCache);
     }
 
     @Override
-    void handleMessage(IdentifyPillarsForDeleteFileRequest message) {
+    public void handleMessage(IdentifyPillarsForDeleteFileRequest message) {
         ArgumentValidator.checkNotNull(message, "IdentifyPillarsForDeleteFileRequest message");
 
         try {

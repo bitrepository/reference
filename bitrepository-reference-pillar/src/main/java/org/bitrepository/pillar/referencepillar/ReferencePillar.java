@@ -31,6 +31,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.AuditTrailManager;
 import org.bitrepository.pillar.audit.AuditTrailContributerDAO;
+import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
@@ -65,7 +66,8 @@ public class ReferencePillar {
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
         AuditTrailManager audits = new AuditTrailContributerDAO(settings);
         AlarmDispatcher alarms = new AlarmDispatcher(settings, messageBus);
-        mediator = new ReferencePillarMediator(messageBus, settings, archive, audits, alarms);
+        PillarContext context = new PillarContext(settings, messageBus, alarms, audits);
+        mediator = new ReferencePillarMediator(context, archive);
         log.info("ReferencePillar started!");
     }
     

@@ -37,7 +37,10 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReque
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
+import org.bitrepository.pillar.MockAlarmDispatcher;
+import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
+import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -52,6 +55,8 @@ public class GetFileIDsOnChecksumPillarTest extends DefaultFixturePillarTest {
     
     MemoryCache cache;
     ChecksumPillarMediator mediator;
+    MockAlarmDispatcher alarmDispatcher;
+    MockAuditManager audits;
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseDeleteFileTests() throws Exception {
@@ -63,9 +68,11 @@ public class GetFileIDsOnChecksumPillarTest extends DefaultFixturePillarTest {
         
         addStep("Initialize the pillar.", "Should not be a problem.");
         cache = new MemoryCache();
-        mediator = new ChecksumPillarMediator(messageBus, settings, cache);
-    }
-    
+        audits = new MockAuditManager();
+        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
+        mediator = new ChecksumPillarMediator(context, cache);
+    }    
     @AfterMethod (alwaysRun=true) 
     public void closeArchive() {
         if(cache != null) {

@@ -23,6 +23,7 @@ package org.bitrepository.pillar;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -43,7 +44,8 @@ public class MockAuditManager implements AuditTrailManager {
 
     private int callsForGetAudits = 0;
     @Override
-    public Collection<AuditTrailEvent> getAudits(String fileId, Long sequenceNumber) {
+    public Collection<AuditTrailEvent> getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate, 
+            Date maxDate) {
         callsForGetAudits++;
         return new ArrayList<AuditTrailEvent>();
     }

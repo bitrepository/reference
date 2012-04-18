@@ -41,6 +41,7 @@ import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.MockAlarmDispatcher;
 import org.bitrepository.pillar.MockAuditManager;
+import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.DeleteFileMessageFactory;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.protocol.utils.Base16Utils;
@@ -73,7 +74,8 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
         audits = new MockAuditManager();
         alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
-        mediator = new ReferencePillarMediator(messageBus, settings, archive, audits, alarmDispatcher);
+        PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
+        mediator = new ReferencePillarMediator(context, archive);
     }
     
     @AfterMethod (alwaysRun=true) 

@@ -37,15 +37,12 @@ import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.AlarmDispatcher;
-import org.bitrepository.pillar.AuditTrailManager;
+import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,16 +55,11 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
     
     /**
      * Constructor.
-     * @param settings The settings for handling the message.
-     * @param messageBus The bus for communication.
-     * @param alarmDispatcher The dispatcher of alarms.
+     * @param context The context of the message handler.
      * @param referenceArchive The archive for the data.
-     * @param auditManager The manager of audit trails.
-     * @param auditManager The manager of audit trails.
      */
-    public GetFileRequestHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher, 
-            ReferenceArchive referenceArchive, AuditTrailManager auditManager) {
-        super(settings, messageBus, alarmDispatcher, referenceArchive, auditManager);
+    public GetFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
+        super(context, referenceArchive);
     }
     
     /**

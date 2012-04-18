@@ -33,13 +33,10 @@ import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.pillar.AlarmDispatcher;
-import org.bitrepository.pillar.AuditTrailManager;
+import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.slf4j.Logger;
@@ -54,19 +51,15 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
     
     /**
      * Constructor.
-     * @param settings The settings for handling the message.
-     * @param messageBus The bus for communication.
-     * @param alarmDispatcher The dispatcher of alarms.
+     * @param context The context of the message handler.
      * @param referenceArchive The archive for the data.
-     * @param auditManager The manager of audit trails.
      */
-    protected DeleteFileRequestHandler(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher,
-            ReferenceArchive referenceArchive, AuditTrailManager auditManager) {
-        super(settings, messageBus, alarmDispatcher, referenceArchive, auditManager);
+    public DeleteFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
+        super(context, referenceArchive);
     }
 
     @Override
-    void handleMessage(DeleteFileRequest message) {
+    public void handleMessage(DeleteFileRequest message) {
         ArgumentValidator.checkNotNull(message, "DeleteFileRequest message");
 
         try {

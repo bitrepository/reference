@@ -30,7 +30,7 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.pillar.checksumpillar.cache.FilebasedChecksumCache;
+import org.bitrepository.pillar.checksumpillar.cache.FilebasedChecksumStore;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -68,7 +68,7 @@ public class FileBasedCacheTest extends ExtendedTestCase {
         String GOOD_CHECKSUM = "1234cccc4321";
         String BAD_CHECKSUM = "cc43211234cc";
         
-        FilebasedChecksumCache cache = new FilebasedChecksumCache(settings);
+        FilebasedChecksumStore cache = new FilebasedChecksumStore(settings);
         Assert.assertTrue(csDir.isDirectory());
         
         
