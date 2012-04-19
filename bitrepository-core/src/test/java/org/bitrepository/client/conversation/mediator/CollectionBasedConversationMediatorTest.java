@@ -22,24 +22,16 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.mediator;
+package org.bitrepository.client.conversation.mediator;
 
-import org.bitrepository.client.conversation.Conversation;
-import org.bitrepository.protocol.messagebus.MessageListener;
+import org.bitrepository.common.settings.Settings;
+import org.testng.annotations.Test;
 
-/**
- * The interface for keeping track of conversations.
- *
- * Implementations must listen for messages and delegate them to the correct started conversation, until conversations
- * are ended.
- *
- * @param <T> The type of conversation to have.
- */
-public interface ConversationMediator extends MessageListener {
-    /**
-     * Start a conversation of type T and begin delegating messages to this conversation when received.
-     *
-     * @param conversation The new conversation.
-     */
-    void addConversation(Conversation conversation);
+@Test
+public class CollectionBasedConversationMediatorTest extends ConversationMediatorTest {
+
+    @Override
+    ConversationMediator createMediator(Settings settings) {
+        return new CollectionBasedConversationMediator(settings, securityManager);
+    }
 }

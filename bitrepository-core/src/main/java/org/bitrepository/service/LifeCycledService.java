@@ -1,9 +1,6 @@
 /*
  * #%L
- * Bitrepository Audit Trail Service
- * 
- * $Id$
- * $HeadURL$
+ * Bitrepository Core
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -22,30 +19,13 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.audittrails.webservice;
+package org.bitrepository.service;
 
-import org.bitrepository.audittrails.service.AuditTrailServiceFactory;
-import org.bitrepository.service.AbstractBitrepositoryContextListener;
-import org.bitrepository.service.LifeCycledService;
+public interface LifeCycledService {
 
-/**
- * The Context listener for the AuditTrailService
- */
-public class AuditTrailServiceContextListener extends AbstractBitrepositoryContextListener {
-       
-    @Override
-    public LifeCycledService getService() {
-        return AuditTrailServiceFactory.getAuditTrailService();
-    }
-
-    @Override
-    public void initialize(String configutrationDir) {
-        AuditTrailServiceFactory.init(configutrationDir);        
-    }
-
-    @Override
-    public String getSettingsParameter() {
-        return "auditTrailServiceConfDir";
-    }
     
+    /**
+     * Method called to shutdown the service. 
+     */
+    void shutdown();
 }

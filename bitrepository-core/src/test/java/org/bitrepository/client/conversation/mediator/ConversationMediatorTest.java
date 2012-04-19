@@ -22,22 +22,22 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.mediator;
-
-import static org.mockito.Mockito.mock;
+package org.bitrepository.client.conversation.mediator;
 
 import org.bitrepository.bitrepositorymessages.Message;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.client.conversation.AbstractConversation;
 import org.bitrepository.client.conversation.ConversationState;
 import org.bitrepository.client.conversation.FlowController;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.messagebus.MessageSender;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.Test;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * Test the general ConversationMediator functionality.

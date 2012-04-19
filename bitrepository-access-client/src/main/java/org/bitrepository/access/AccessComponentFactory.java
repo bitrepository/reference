@@ -37,7 +37,7 @@ import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.mediator.ConversationMediatorManager;
+import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
 import org.bitrepository.protocol.security.SecurityManager;
 
 /**

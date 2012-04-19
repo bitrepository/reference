@@ -26,7 +26,7 @@ package org.bitrepository.client;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.client.conversation.Conversation;
-import org.bitrepository.protocol.mediator.ConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

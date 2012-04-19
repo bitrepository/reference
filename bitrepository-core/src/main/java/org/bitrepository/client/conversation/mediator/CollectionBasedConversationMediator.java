@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.mediator;
+package org.bitrepository.client.conversation.mediator;
 
 import java.util.*;
 

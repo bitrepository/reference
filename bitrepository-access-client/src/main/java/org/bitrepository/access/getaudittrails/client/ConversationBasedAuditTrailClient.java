@@ -29,7 +29,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.ConversationIDGenerator;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.protocol.mediator.ConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

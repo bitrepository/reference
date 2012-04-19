@@ -25,8 +25,8 @@
 package org.bitrepository.monitoringservice.webservice;
 
 import org.bitrepository.monitoringservice.MonitoringServiceFactory;
-import org.bitrepository.protocol.service.AbstractBitrepositoryContextListener;
-import org.bitrepository.protocol.service.BitrepositoryService;
+import org.bitrepository.service.AbstractBitrepositoryContextListener;
+import org.bitrepository.service.LifeCycledService;
 
 
 /**
@@ -40,7 +40,7 @@ public class MonitoringServiceContextListener extends AbstractBitrepositoryConte
     }
 
     @Override
-    public BitrepositoryService getService() {
+    public LifeCycledService getService() {
         return MonitoringServiceFactory.getMonitoringService();
     }
 

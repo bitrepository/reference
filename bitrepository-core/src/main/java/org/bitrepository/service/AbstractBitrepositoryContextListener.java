@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.service;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+package org.bitrepository.service;
 
 import org.bitrepository.protocol.utils.LogbackConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 /**
  * The Listener has two intentions
@@ -46,7 +46,7 @@ public abstract class AbstractBitrepositoryContextListener implements ServletCon
     /**
      * Method to get an instance of the service for the context
      */
-    public abstract BitrepositoryService getService();
+    public abstract LifeCycledService getService();
     
     /**
      * Sets up the configuration 

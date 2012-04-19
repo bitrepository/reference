@@ -46,14 +46,14 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.protocol.service.BitrepositoryService;
+import org.bitrepository.service.LifeCycledService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Simple integrity service.
  */
-public class SimpleIntegrityService implements IntegrityService, BitrepositoryService {
+public class SimpleIntegrityService implements IntegrityService, LifeCycledService {
     /** The log.*/
     private final Logger log = LoggerFactory.getLogger(getClass());
 

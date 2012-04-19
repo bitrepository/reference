@@ -36,7 +36,7 @@ import org.bitrepository.modify.deletefile.conversation.SimpleDeleteFileConversa
 import org.bitrepository.client.conversation.FlowController;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
-import org.bitrepository.protocol.mediator.ConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
