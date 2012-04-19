@@ -57,7 +57,7 @@ public class RestAuditTrailService {
     public String getAllAuditTrails() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        List<AuditTrailEvent> events = service.getAllAuditTrailEvents();
+        /*List<AuditTrailEvent> events = service.getAllAuditTrailEvents();
         Iterator<AuditTrailEvent> it = events.iterator();
         while(it.hasNext()) {
             AuditTrailEvent event = it.next();
@@ -71,7 +71,7 @@ public class RestAuditTrailService {
             if(it.hasNext()) {
                 sb.append(",");
             }
-        }
+        }*/
         sb.append("]");
         return sb.toString();
     }
