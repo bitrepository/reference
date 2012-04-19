@@ -34,10 +34,10 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.conversation.AbstractConversation;
-import org.bitrepository.protocol.conversation.ConversationState;
-import org.bitrepository.protocol.conversation.FlowController;
-import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.client.conversation.AbstractConversation;
+import org.bitrepository.client.conversation.ConversationState;
+import org.bitrepository.client.conversation.FlowController;
+import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
 /**

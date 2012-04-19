@@ -29,11 +29,11 @@ import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.conversation.ConversationContext;
-import org.bitrepository.protocol.conversation.PerformingOperationState;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
-import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
+import org.bitrepository.client.conversation.ConversationContext;
+import org.bitrepository.client.conversation.PerformingOperationState;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
+import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
 
 public class GettingStatus extends PerformingOperationState {
     private final GetStatusConversationContext context;

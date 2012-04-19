@@ -26,9 +26,9 @@ package org.bitrepository.access.getaudittrails.client;
 
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.client.AbstractClient;
-import org.bitrepository.protocol.conversation.ConversationIDGenerator;
-import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.client.AbstractClient;
+import org.bitrepository.client.conversation.ConversationIDGenerator;
+import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.protocol.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;

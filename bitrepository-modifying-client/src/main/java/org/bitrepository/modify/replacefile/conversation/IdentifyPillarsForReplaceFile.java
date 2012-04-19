@@ -33,9 +33,9 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResp
 import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
-import org.bitrepository.protocol.exceptions.NegativeResponseException;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
+import org.bitrepository.client.exceptions.NegativeResponseException;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 /**
  * The first state of the ReplaceFile communication. The identification of the pillars involved.

@@ -28,8 +28,8 @@ import java.util.*;
 
 import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.conversation.Conversation;
-import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
+import org.bitrepository.client.conversation.Conversation;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.slf4j.Logger;

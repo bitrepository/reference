@@ -28,7 +28,7 @@ import java.util.Collection;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.EventHandler;
 
 /**
  * This is the interface for initiating collecting integrity information from pillars.

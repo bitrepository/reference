@@ -36,10 +36,10 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.replacefile.pillarselector.PillarSelectorForReplaceFile;
-import org.bitrepository.protocol.conversation.AbstractConversation;
-import org.bitrepository.protocol.conversation.ConversationState;
-import org.bitrepository.protocol.conversation.FlowController;
-import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.client.conversation.AbstractConversation;
+import org.bitrepository.client.conversation.ConversationState;
+import org.bitrepository.client.conversation.FlowController;
+import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
 /**

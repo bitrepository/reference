@@ -23,11 +23,11 @@ package org.bitrepository.access.getaudittrails.client;
 
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
-import org.bitrepository.protocol.conversation.ConversationContext;
-import org.bitrepository.protocol.conversation.GeneralConversationState;
-import org.bitrepository.protocol.conversation.IdentifyingState;
-import org.bitrepository.protocol.pillarselector.ComponentSelector;
-import org.bitrepository.protocol.pillarselector.MultipleComponentSelector;
+import org.bitrepository.client.conversation.ConversationContext;
+import org.bitrepository.client.conversation.GeneralConversationState;
+import org.bitrepository.client.conversation.IdentifyingState;
+import org.bitrepository.client.conversation.selector.ComponentSelector;
+import org.bitrepository.client.conversation.selector.MultipleComponentSelector;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.clienttest.MessageReceiver;
+import org.bitrepository.client.MessageReceiver;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.ExampleMessageFactory;

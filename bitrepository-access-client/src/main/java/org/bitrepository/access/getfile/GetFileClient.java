@@ -26,8 +26,8 @@ package org.bitrepository.access.getfile;
 
 import java.net.URL;
 
-import org.bitrepository.protocol.client.BitrepositoryClient;
-import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.client.BitrepositoryClient;
+import org.bitrepository.client.eventhandler.EventHandler;
 
 /**
  * The <code>GetFileClient</code> is used as a handle for the Bit Repository getFile operation. 

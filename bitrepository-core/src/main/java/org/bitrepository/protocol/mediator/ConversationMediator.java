@@ -24,7 +24,7 @@
  */
 package org.bitrepository.protocol.mediator;
 
-import org.bitrepository.protocol.conversation.Conversation;
+import org.bitrepository.client.conversation.Conversation;
 import org.bitrepository.protocol.messagebus.MessageListener;
 
 /**

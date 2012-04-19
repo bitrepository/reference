@@ -25,7 +25,7 @@
 package org.bitrepository.access.getfileids.conversation;
 
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
-import org.bitrepository.protocol.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorEvent;
 
 /**
 * Contains the result of a GetFileIDs request sent to a single pillar.

@@ -28,7 +28,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
-import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.EventHandler;
 
 /**
  * Collects all the checksums from all the pillars, put them into the IntegrityCache, and validate the checksum.

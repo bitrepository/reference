@@ -26,7 +26,7 @@ import java.util.Collection;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
-import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.EventHandler;
 
 public class MockCollector implements IntegrityInformationCollector {
 
