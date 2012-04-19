@@ -24,24 +24,54 @@
  */
 package org.bitrepository.audittrails.collector;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
+import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.common.settings.Settings;
 /**
  * Manages the retrieval of of AuditTrails from contributors
  */
 public class AuditTrailCollector {
-    private Map<String,Contributor> contributors = new HashMap<String,Contributor>();
+    private final TimerTask auditCollector;
+    private final Timer timer;
     
+    private final AuditTrailClient client;
+    
+    private final AuditTrailStore store;
+    
+    private final Settings settings;
+    
+    public AuditTrailCollector(Settings settings, AuditTrailClient client, AuditTrailStore store) {
+        this.client = client;
+        this.settings = settings;
+        this.store = store;
+        this.timer = new Timer();
+        
+        auditCollector = new AuditTimerTask();
+        timer.schedule(auditCollector, 3600000);
+    }
+    
+    public void collectNewestAudits() {
+        timer.purge();
+        auditCollector.cancel();
+        timer.schedule(auditCollector, 3600000);        
+    }
     
     public List<AuditTrailEvent> collectNewAuditTrails() {
         return null;
     }
     
-    private class Contributor {
-        private String id;
-        private int lastestSequenceNumber = 0; 
+    private class AuditTimerTask extends TimerTask {
+        @Override
+        public void run() {
+            collectNewestAudits();
+        }
     }
 }

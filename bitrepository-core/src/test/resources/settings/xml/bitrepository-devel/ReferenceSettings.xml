@@ -57,6 +57,8 @@
     <ID>audit-trail-service</ID>
     <Contributors>test-pillar</Contributors>
     <Contributors>integrity-service</Contributors>
+    <AuditContributerDatabaseUrl>jdbc:derby:auditservicedb</AuditContributerDatabaseUrl>
+    <CollectInterval>3600000</CollectInterval>
   </AuditTrailServiceSettings>
   <IntegrityServiceSettings>
     <ID>integrity-service</ID>

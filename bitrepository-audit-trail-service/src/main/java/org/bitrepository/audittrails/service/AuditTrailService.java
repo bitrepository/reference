@@ -25,7 +25,12 @@
 package org.bitrepository.audittrails.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+
+import org.bitrepository.audittrails.collector.AuditTrailCollector;
+import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -39,51 +44,51 @@ public class AuditTrailService implements LifeCycledService {
     
     List<AuditTrailEvent> dummyEvents;
     
-    public AuditTrailService() {
-        dummyEvents = new ArrayList<AuditTrailEvent>();
-        AuditTrailEvent event = new AuditTrailEvent();
-        event.setFileID("foo");
-        event.setReportingComponent("pillar1");
-        event.setActorOnFile("Benny");
-        event.setActionOnFile(FileAction.PUT_FILE);
-        event.setActionDateTime(CalendarUtils.getEpoch());
-        event.setInfo("Initial file upload");
-        event.setAuditTrailInformation("Delivery of foo");
-        dummyEvents.add(event);
-        event = new AuditTrailEvent();
-        event.setFileID("bar");
-        event.setReportingComponent("pillar1");
-        event.setActorOnFile("Hans");
-        event.setActionOnFile(FileAction.PUT_FILE);
-        event.setActionDateTime(CalendarUtils.getEpoch());
-        event.setInfo("Initial file upload");
-        event.setAuditTrailInformation("Delivery of bar");
-        dummyEvents.add(event);
-        event = new AuditTrailEvent();
-        event.setFileID("baz");
-        event.setReportingComponent("pillar1");
-        event.setActorOnFile("Hans");
-        event.setActionOnFile(FileAction.PUT_FILE);
-        event.setActionDateTime(CalendarUtils.getEpoch());
-        event.setInfo("Initial file upload");
-        event.setAuditTrailInformation("Delivery of baz");
-        dummyEvents.add(event);
-        event = new AuditTrailEvent();
-        event.setFileID("foo");
-        event.setReportingComponent("pillar1");
-        event.setActorOnFile("pillar1");
-        event.setActionOnFile(FileAction.CHECKSUM_CALCULATED);
-        event.setActionDateTime(CalendarUtils.getEpoch());
-        event.setInfo("Scheduled checksum calculation");
-        event.setAuditTrailInformation("Delivery of foo");
-        dummyEvents.add(event);
-    }
+    private final AuditTrailStore store;
+    private final AuditTrailCollector collector;
     
-    /**
-     * Retrieve all AuditTrailEvents in store. 
-     */
-    public List<AuditTrailEvent> getAllAuditTrailEvents() {
-        return dummyEvents;
+    public AuditTrailService(AuditTrailStore store, AuditTrailCollector collector) {
+        
+        this.store = store;
+        this.collector = collector;
+        
+//        dummyEvents = new ArrayList<AuditTrailEvent>();
+//        AuditTrailEvent event = new AuditTrailEvent();
+//        event.setFileID("foo");
+//        event.setReportingComponent("pillar1");
+//        event.setActorOnFile("Benny");
+//        event.setActionOnFile(FileAction.PUT_FILE);
+//        event.setActionDateTime(CalendarUtils.getEpoch());
+//        event.setInfo("Initial file upload");
+//        event.setAuditTrailInformation("Delivery of foo");
+//        dummyEvents.add(event);
+//        event = new AuditTrailEvent();
+//        event.setFileID("bar");
+//        event.setReportingComponent("pillar1");
+//        event.setActorOnFile("Hans");
+//        event.setActionOnFile(FileAction.PUT_FILE);
+//        event.setActionDateTime(CalendarUtils.getEpoch());
+//        event.setInfo("Initial file upload");
+//        event.setAuditTrailInformation("Delivery of bar");
+//        dummyEvents.add(event);
+//        event = new AuditTrailEvent();
+//        event.setFileID("baz");
+//        event.setReportingComponent("pillar1");
+//        event.setActorOnFile("Hans");
+//        event.setActionOnFile(FileAction.PUT_FILE);
+//        event.setActionDateTime(CalendarUtils.getEpoch());
+//        event.setInfo("Initial file upload");
+//        event.setAuditTrailInformation("Delivery of baz");
+//        dummyEvents.add(event);
+//        event = new AuditTrailEvent();
+//        event.setFileID("foo");
+//        event.setReportingComponent("pillar1");
+//        event.setActorOnFile("pillar1");
+//        event.setActionOnFile(FileAction.CHECKSUM_CALCULATED);
+//        event.setActionDateTime(CalendarUtils.getEpoch());
+//        event.setInfo("Scheduled checksum calculation");
+//        event.setAuditTrailInformation("Delivery of foo");
+//        dummyEvents.add(event);
     }
     
     /**
@@ -96,9 +101,16 @@ public class AuditTrailService implements LifeCycledService {
      * @param Actor Restrict the results to only be events caused by this actor
      * @param Action Restrict the results to only be about this type of action
      */
-    public List<AuditTrailEvent> queryAuditTrailEvents(String fromDate, String toDate, String fileID, String reportingComponent,
+    public Collection<AuditTrailEvent> queryAuditTrailEvents(Date fromDate, Date toDate, String fileID, String reportingComponent,
             String actor, String action) {
-        return dummyEvents;
+        FileAction operation;
+        if(action != null) {
+            operation = FileAction.fromValue(action);
+        } else {
+            operation = null;
+        }
+        
+        return store.getAuditTrails(fileID, actor, null, null, actor, operation, fromDate, toDate);
     }
 
     @Override
