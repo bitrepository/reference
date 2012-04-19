@@ -34,17 +34,15 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTR
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION_DATE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_SEQUENCE_NUMBER;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_ID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_GUID;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_ID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_TABLE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_FILEID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_GUID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TABLE;
 
-
 import java.io.File;
 import java.sql.Connection;
-import java.util.Collection;
 import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
