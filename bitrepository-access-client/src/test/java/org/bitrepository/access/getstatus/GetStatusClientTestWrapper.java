@@ -21,18 +21,26 @@
  */
 package org.bitrepository.access.getstatus;
 
-import org.bitrepository.protocol.client.BitrepositoryClient;
 import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.jaccept.TestEventManager;
 
-public interface GetStatusClient extends BitrepositoryClient {
-    
-    /**
-     * Method for retrieving statuses for all components in the system. 
-     * 
-     * The method will return as soon as the communication has been setup.
-     *
-     * @param eventHandler The handler which should receive notifications of the progress events. 
-     */
-    void getStatus(EventHandler eventHandler);
+public class GetStatusClientTestWrapper implements GetStatusClient {
+    private GetStatusClient getStatusClient;
+    private TestEventManager testEventManager;
 
+    public GetStatusClientTestWrapper(GetStatusClient getStatusClient,
+                                    TestEventManager testEventManager) {
+        this.getStatusClient = getStatusClient;
+        this.testEventManager = testEventManager;
+    }
+    @Override
+    public void getStatus(EventHandler eventHandler) {
+        testEventManager.addStimuli("Calling getAuditTrails()");
+        getStatusClient.getStatus(eventHandler);
+    }
+
+    @Override
+    public void shutdown() {
+        // Nothing to do
+    }
 }

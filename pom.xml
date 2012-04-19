@@ -211,7 +211,8 @@ in preparation for the xsd -> java class file generation -->
               <schemaIncludes>
                 <include>*.xsd</include>
               </schemaIncludes>
-              <generateDirectory>${project.build.directory}/generated-sources/</generateDirectory>
+              <generateDirectory>${project.build.directory}/generated-sources/jaxb</generateDirectory>
+              <extension>true</extension>
               <args>
                 <arg>-XtoString</arg>
                 <arg>-Xequals</arg>
@@ -419,8 +420,8 @@ in preparation for the xsd -> java class file generation -->
   </profiles>
 
   <properties>
-    <message.xml.version>14</message.xml.version>
-    <collection.settings.version>0.7-SNAPSHOT</collection.settings.version>
+    <message.xml.version>15</message.xml.version>
+    <collection.settings.version>0.7</collection.settings.version>
     <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
     <slf4j.version>1.6.4</slf4j.version>
   </properties>

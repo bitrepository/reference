@@ -22,127 +22,63 @@
 package org.bitrepository.access.getstatus.conversation;
 
 import java.math.BigInteger;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
+import java.util.ArrayList;
+import java.util.List;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.exceptions.NegativeResponseException;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
+import org.bitrepository.protocol.conversation.ConversationContext;
+import org.bitrepository.protocol.conversation.GeneralConversationState;
+import org.bitrepository.protocol.conversation.IdentifyingState;
+import org.bitrepository.protocol.pillarselector.ComponentSelector;
+import org.bitrepository.protocol.pillarselector.MultipleComponentSelector;
 
-public class IdentifyingContributorsForGetStatus extends GetStatusState {
-    /** Defines that the timer is a daemon thread. */
-    private static final Boolean TIMER_IS_DAEMON = true;
-    /** The timer used for timeout checks. */
-    final Timer timer = new Timer(TIMER_IS_DAEMON);
-    /** The timer task for timeout of identify in this conversation. */
-    final TimerTask identifyTimeoutTask = new IdentifyTimerTask();    
-    
-    public IdentifyingContributorsForGetStatus(SimpleGetStatusConversation conversation) {
-        super(conversation);
+public class IdentifyingContributorsForGetStatus extends IdentifyingState {
+    private final GetStatusConversationContext context;
+    private final MultipleComponentSelector selector;
+
+    public IdentifyingContributorsForGetStatus(GetStatusConversationContext context) {
+        super();
+        this.context = context;
+        List<String> expectedContributers = new ArrayList<String>(
+                context.getSettings().getCollectionSettings().getGetStatusSettings().getContributorIDs().size());
+        for (String contributor : context.getSettings().getCollectionSettings().getGetStatusSettings().getContributorIDs()) {
+            expectedContributers.add(contributor);
+        }
+        selector = new GetStatusContributorSelector(expectedContributers);
     }
-
+    
     @Override
-    public void start() {
+    protected void sendRequest() {
         IdentifyContributorsForGetStatusRequest request = new IdentifyContributorsForGetStatusRequest();
-        request.setCorrelationID(conversation.getConversationID());
+        request.setCorrelationID(context.getConversationID());
         request.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         request.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        request.setCollectionID(conversation.settings.getCollectionID());
-        request.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
-        request.setTo(conversation.settings.getCollectionDestination());
-        request.setFrom(conversation.clientID);
+        request.setCollectionID(context.getSettings().getCollectionID());
+        request.setReplyTo(context.getSettings().getReferenceSettings().getClientSettings().getReceiverDestination());
+        request.setTo(context.getSettings().getCollectionDestination());
+        request.setFrom(context.getClientID());
         
-        monitor.identifyPillarsRequestSent("Identifying contributors for getting status");
-        conversation.messageSender.sendMessage(request);
-        timer.schedule(identifyTimeoutTask,
-                        conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());
+        context.getMonitor().identifyPillarsRequestSent("Identifying contributors for getting status");
+        context.getMessageSender().sendMessage(request);
     }
     
     @Override
-    public synchronized void onMessage(GetStatusFinalResponse response) {
-        monitor.outOfSequenceMessage("Received GetStatusFinalResponse "
-                + "from " + response.getContributor() + " before sending GetStatusRequest.");
+    protected ConversationContext getContext() {
+        return context;
     }
 
     @Override
-    public synchronized void onMessage(GetStatusProgressResponse response) {
-        monitor.outOfSequenceMessage("Received GetStatusProgressResponse "
-                + "from " + response.getContributor() + " before sending GetStatusRequest.");    
+    protected String getName() {
+        return "Identify contributers for Get Status";
     }
 
     @Override
-    public synchronized void onMessage(IdentifyContributorsForGetStatusResponse response) {
-        try {
-            conversation.selector.processResponse(response);
-            monitor.pillarIdentified("Received IdentifyContributorsForGetStatusResponse " + response, response.getContributor());
-        } catch (UnexpectedResponseException e) {
-            monitor.contributorFailed("Unable to handle IdentifyContributorsForGetStatusResponse, ", e);
-        } catch (NegativeResponseException e) {
-            monitor.contributorFailed("Negativ IdentifyContributorsForGetStatusResponse from pillar " + response.getContributor(), e);
-        }
-        
-        if (conversation.selector.isFinished()) {
-            identifyTimeoutTask.cancel();
-            
-            if (conversation.selector.getSelectedContributors().isEmpty()) {
-                conversation.failConversation("Unable to getStatus, no contributors were identified");
-            }
-            monitor.pillarSelected("Identified contributors for getStatus", 
-                    conversation.selector.getSelectedContributors().toString());
-            getStatusFromSelectedPillar();
-        }
+    public ComponentSelector getSelector() {
+        return selector;
     }
-
     @Override
-    public boolean hasEnded() {
-        return false;
+    public GeneralConversationState getOperationState() {
+        return new GettingStatus(context, selector.getSelectedComponents());
     }
 
-    /**
-     * Method for moving to the next stage: GettingChecksum.
-     */
-    protected void getStatusFromSelectedPillar() {
-        identifyTimeoutTask.cancel();
-        GettingStatus nextConversationState = new GettingStatus(conversation);
-        conversation.conversationState = nextConversationState;
-        nextConversationState.start();
-    }
-    
-    /**
-     * Method for handling the timeout of the identification.
-     */
-    private void handleIdentificationTimeout() {
-        synchronized (conversation) {
-            if (conversation.conversationState == this) {
-                if (!conversation.selector.getSelectedContributors().isEmpty()) {
-                    monitor.identifyPillarTimeout("Time has run out for identifying contributors. The following " +
-                    		"contributors didn't respond: " + conversation.selector.getOutstandingContributors() + 
-                    ". Using contributors based on uncomplete set of responses.");
-                    getStatusFromSelectedPillar();
-                } else {
-                    conversation.failConversation("Unable to select contributors, time has run out. " +
-                            "The following contributors did't respond: " +
-                            conversation.selector.getOutstandingContributors());
-                }
-            } else {
-                monitor.warning("Identification timeout, but " +
-                        "the conversation state has already changed to " + conversation.conversationState);
-            }
-        }
-    }
-    
-    /**
-     * The timer task class for the outstanding identify requests. When the time is reached the selected pillar should
-     * be called requested for the delivery of the file.
-     */
-    private class IdentifyTimerTask extends TimerTask {
-        @Override
-        public void run() {
-            handleIdentificationTimeout();
-        }
-    }
 }

@@ -22,140 +22,82 @@
 package org.bitrepository.access.getstatus.conversation;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import java.util.Map;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.eventhandler.DefaultEvent;
-import org.bitrepository.protocol.eventhandler.OperationEvent;
+import org.bitrepository.protocol.conversation.ConversationContext;
+import org.bitrepository.protocol.conversation.PerformingOperationState;
 import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
 import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
 
-public class GettingStatus extends GetStatusState {
-    /** The pillars, which has not yet answered.*/
-    private List<SelectedPillarInfo> contributorsSelectedForRequest; 
+public class GettingStatus extends PerformingOperationState {
+    private final GetStatusConversationContext context;
+    private Map<String,String> activeContributers;
     /** Tracks who have responded */
-    private final ContributorResponseStatus responseStatus;
+    private final ContributorResponseStatus responseStatus;  
+    
+    public GettingStatus(GetStatusConversationContext context, List<SelectedPillarInfo> contributors) {
+        super();
+        this.context = context;
+        this.activeContributers = new HashMap<String,String>();
+        for (SelectedPillarInfo contributorInfo : contributors) {
+            activeContributers.put(contributorInfo.getID(), contributorInfo.getDestination());
+        }
 
-    /** Defines that the timer is a daemon thread. */
-    private static final Boolean TIMER_IS_DAEMON = true;
-    /** 
-     * The timer for the getChecksumsTimeout. It is run as a daemon thread, eg. it will not prevent the application 
-     * from exiting */
-    final Timer timer = new Timer(TIMER_IS_DAEMON);
-    /** The timer task for timeout of getFile in this conversation. */
-    final TimerTask getChecksumsTimeoutTask = new GetStatusTimerTask();
-    
-    
-    public GettingStatus(SimpleGetStatusConversation conversation) {
-        super(conversation);
-        contributorsSelectedForRequest = conversation.selector.getSelectedContributors();
-        responseStatus = new ContributorResponseStatus(
-                contributorsSelectedForRequest.toArray(
-                        new SelectedPillarInfo[conversation.selector.getSelectedContributors().size()]));
+        this.responseStatus = new ContributorResponseStatus(activeContributers.keySet());
     }
 
     @Override
-    public void start() {
+    protected void generateCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
+        if (msg instanceof GetStatusFinalResponse) {
+            GetStatusFinalResponse response = (GetStatusFinalResponse) msg;
+            getContext().getMonitor().complete(
+                    new StatusCompleteContributorEvent(
+                            "Received status result from " + response.getContributor(), 
+                            response.getContributor(), response.getResultingStatus()));
+         } else {
+            throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
+                    " while waiting for Get Status response.");
+        }        
+    }
+
+    @Override
+    protected ContributorResponseStatus getResponseStatus() {
+        return responseStatus;
+    }
+
+    @Override
+    protected void sendRequest() {
         GetStatusRequest request = new GetStatusRequest();
-        request.setCollectionID(conversation.settings.getCollectionID());
-        request.setCorrelationID(conversation.getConversationID());
-        request.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
+        request.setCollectionID(context.getSettings().getCollectionID());
+        request.setCorrelationID(context.getConversationID());
+        request.setReplyTo(context.getSettings().getReferenceSettings().getClientSettings().getReceiverDestination());
         request.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         request.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        request.setFrom(conversation.clientID);
+        request.setFrom(context.getClientID());
 
-        // Sending one request to each of the identified pillars.
-        for(SelectedPillarInfo contributor : contributorsSelectedForRequest) {
-            request.setContributor(contributor.getID());
-            request.setTo(contributor.getDestination());
-           
-            monitor.requestSent("GetChecksumRequest sent to: " + contributor.getID(), 
-                    contributor.getID());
-            conversation.messageSender.sendMessage(request); 
+        context.getMonitor().requestSent("Sending GetStatusRequest", activeContributers.keySet().toString());
+        for(String ID : activeContributers.keySet()) {
+            request.setContributor(ID);
+            request.setTo(activeContributers.get(ID));
+            context.getMessageSender().sendMessage(request); 
         }
-
-        timer.schedule(getChecksumsTimeoutTask,
-                conversation.settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue());
     }
 
     @Override
-    public synchronized void onMessage(GetStatusFinalResponse response) {
-        try {
-            responseStatus.responseReceived(response.getContributor());
-        } catch (UnexpectedResponseException ure) {
-            monitor.warning("Received unexpected final response from " + response.getContributor() , ure);
-        }
-
-        if(isReponseSuccess(response.getResponseInfo())) {
-            monitor.pillarComplete(new StatusCompleteContributorEvent(
-                    "Received status result from " + response.getContributor(), 
-                    response.getContributor(), response.getResultingStatus()));
-        } else {
-            monitor.contributorFailed("Received negativ FinalResponse from contributor: " + response.getResponseInfo());
-        } 
-
-        if(responseStatus.haveAllPillarResponded()) {
-            monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE, 
-                    "All contributors have delivered their status."));
-            conversation.conversationState = new GetStatusFinished(conversation);
-        }    }
-
-    @Override
-    public synchronized void onMessage(GetStatusProgressResponse response) {
-        monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.PROGRESS, 
-                "Received progress response for retrieval of status from " + response.getContributor()));
+    protected ConversationContext getContext() {
+        return context;
     }
 
     @Override
-    public synchronized void onMessage(IdentifyContributorsForGetStatusResponse response) {
-        monitor.outOfSequenceMessage("Received IdentifyContributorsForGetStatusResponse from " + response.getContributor() 
-                + " after the GetStatusRequest has been sent.");
-    }
-    
-    @Override
-    public boolean hasEnded() {
-        return false;
+    protected String getName() {
+        return "Getting status's";
     }
 
-    /**
-     * Method for validating the FinalResponseInfo.
-     * @param frInfo The FinalResponseInfo to be validated.
-     * @return Whether the FinalRepsonseInfo tells that the operation has been a success or a failure.
-     */
-    private boolean isReponseSuccess(ResponseInfo frInfo) { 
-        if(ResponseCode.OPERATION_COMPLETED.equals(frInfo.getResponseCode())) {
-            return true;
-        }
-        return false;
-    }
-    
-    /**
-     * Method for handling a timeout for this operation.
-     */
-    protected void handleTimeout() {
-        if (!conversation.hasEnded()) { 
-            conversation.failConversation("No GetStatusFinalResponse received before timeout");
-        }
-    }
-    
-    /**
-     * The timer task class for the outstanding get file request. When the time is reached the conversation should be
-     * marked as ended.
-     */
-    private class GetStatusTimerTask extends TimerTask {
-        @Override
-        public void run() {
-            handleTimeout();
-        }
-    }
 
 }
