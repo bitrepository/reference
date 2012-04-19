@@ -30,8 +30,8 @@ import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.modify.replacefile.ReplaceFileClient;
-import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.exceptions.OperationFailedException;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.exceptions.OperationFailedException;
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.bitrepository.utils.HexUtils;
 import org.bitrepository.utils.XMLGregorianCalendarConverter;
@@ -107,8 +107,8 @@ public class BasicClient {
         } catch (MalformedURLException e) {
             return "The string: '" + URLStr + "' is not a valid URL!";
         } catch (OperationFailedException e) {
-            return "The operation failed..";
-        }
+        	return "";
+		}
     }
     
     public String getFile(String fileID, String URLStr) {
@@ -201,11 +201,12 @@ public class BasicClient {
     	GetChecksumsEventHandler handler = new GetChecksumsEventHandler(results, eventHandler);
     	
     	try {
-            getChecksumClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
-                    fileIDs, checksumSpecItem, null, handler, "Arf arf, deliver those checksums");
-        } catch (OperationFailedException e1) {
-            // Jonas this should not throw exceptions... bleh!
-        }
+			getChecksumClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
+					fileIDs, checksumSpecItem, null, handler, "Arf arf, deliver those checksums");
+		} catch (OperationFailedException e1) {
+			return results.getResults();
+		}
+        
     	
         try {
             while(!results.isDone() && !results.hasFailed()) {
@@ -236,10 +237,11 @@ public class BasicClient {
     	    while(!results.isDone() && !results.hasFailed()) {
     	        Thread.sleep(500);
     	    }
-	    } catch (OperationFailedException e) {
-	            //This should not happen Jonas!
 		} catch (InterruptedException e) {
 			// Uhm, we got aborted, should return error..
+		} catch (OperationFailedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
     	return results;
@@ -267,12 +269,15 @@ public class BasicClient {
             requestedChecksumSpec = makeChecksumSpec(approveChecksumType, approveChecksumSalt);
         }
         
+        
         try {
-        deleteFileClient.deleteFile(fileID, pillarID, verifyingChecksum, requestedChecksumSpec, 
-                eventHandler, "Kick that file");
-        } catch (OperationFailedException e) {
-            //This should not happen Jonas!
-        }
+			deleteFileClient.deleteFile(fileID, pillarID, verifyingChecksum, requestedChecksumSpec, 
+			        eventHandler, "Kick that file");
+		} catch (OperationFailedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
         return "Deleting file";
     }
     
@@ -324,8 +329,9 @@ public class BasicClient {
         } catch (MalformedURLException e) {
             return "The string: '" + urlStr + "' is not a valid URL!";
         } catch (OperationFailedException e) {
-            //This should not happen Jonas!
-        }
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
         
     	return "Replacing file";
     }

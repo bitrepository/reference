@@ -14,6 +14,7 @@
     	$("#auditTrailsQuery").buttonset();
         $("#fromDate").datepicker();
         $("#toDate").datepicker();
+        $("#auditTrails").html("<p> No query sent </p>");
     });
 </script>
 
@@ -55,7 +56,7 @@
     </div>
 
 
-    <script>
+   */<script>
         $(function(){
             $.getJSON('<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/getAllAuditTrails/',{}, function(j){
                 var htmlTable;
@@ -79,7 +80,7 @@
                 $("#auditTrails").html(htmlTable);
             })
         })
-    </script>
+    </script>*/
 
 
     <script>

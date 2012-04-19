@@ -1,8 +1,8 @@
 package org.bitrepository;
 
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
-import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.eventhandler.OperationEvent;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.OperationEvent;
 
 /**
  *	Event handler for the asynchronous GetFileIDs method.   

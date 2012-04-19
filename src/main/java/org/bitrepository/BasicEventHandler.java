@@ -7,8 +7,8 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.eventhandler.OperationEvent;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.OperationEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
