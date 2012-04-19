@@ -24,21 +24,23 @@
  */
 package org.bitrepository.audittrails.store;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
+import org.bitrepository.bitrepositoryelements.FileAction;
 
-public class SimpleStore implements AuditTrailStore{
+public class SimpleStore implements AuditTrailStore {
     private Set<AuditTrailEvent> auditTrails = 
             new TreeSet<AuditTrailEvent>();
-    
+
     @Override
-    public AuditTrailEvent[] getAuditTrails(XMLGregorianCalendar starttime, XMLGregorianCalendar endtime, String url) {
-        return (AuditTrailEvent[])auditTrails.toArray(new AuditTrailEvent[auditTrails.size()]);
+    public Collection<AuditTrailEvent> getAuditTrails(String fileId, String contributorId, Long minSeqNumber, Long maxSeqNumber,
+            String actorName, FileAction operation, Date startDate, Date endDate) {
+        return auditTrails;
     }
 
     @Override

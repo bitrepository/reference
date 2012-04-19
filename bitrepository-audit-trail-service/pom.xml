@@ -18,6 +18,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-access-client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-server</artifactId>
       <version>1.8</version>
@@ -55,7 +60,14 @@
       <artifactId>jcl-over-slf4j</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
-    
+    <!-- THE TEST SCOPE -->
+    <dependency>
+      <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-core</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

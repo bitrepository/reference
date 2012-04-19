@@ -24,6 +24,7 @@
  */
 package org.bitrepository.audittrails.webservice;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,8 @@ public class RestAuditTrailService {
     public String getAllAuditTrails() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        /*List<AuditTrailEvent> events = service.getAllAuditTrailEvents();
+
+        Collection<AuditTrailEvent> events = service.queryAuditTrailEvents(null, null, getAllAuditTrails(), getAllAuditTrails(), getAllAuditTrails(), getAllAuditTrails());
         Iterator<AuditTrailEvent> it = events.iterator();
         while(it.hasNext()) {
             AuditTrailEvent event = it.next();
@@ -71,7 +73,7 @@ public class RestAuditTrailService {
             if(it.hasNext()) {
                 sb.append(",");
             }
-        }*/
+        }
         sb.append("]");
         return sb.toString();
     }

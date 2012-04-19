@@ -57,11 +57,12 @@ insert into tableversions ( tablename, version )
 create table audittrail (
     audit_guid bigint not null generated always as identity primary key,
                                     -- The key for this table.
-    sequence_number bigint not null -- The sequence number for the given audit trail.
-    contributor_guid bigint,        -- The identifier for the contributor of this audittrail.
+    sequence_number bigint not null,-- The sequence number for the given audit trail.
+    contributor_guid bigint not null,
+                                    -- The identifier for the contributor of this audittrail.
                                     -- Used for looking up in the contributor table.
-    file_guid bigint,               -- The identifier for the file. Used to lookup in the file table.
-    actor_guid bigint,              -- The identifier for the actor which performed the action for the audit. 
+    file_guid bigint not null,      -- The identifier for the file. Used to lookup in the file table.
+    actor_guid bigint not null,     -- The identifier for the actor which performed the action for the audit. 
                                     -- Used for looking up in the actor table.
     operation varchar(100),         -- The name of the action behind the audit.
     operation_date date,            -- The date when the action was performed.

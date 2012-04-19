@@ -34,23 +34,24 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTR
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION_DATE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_SEQUENCE_NUMBER;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_ID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_GUID;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_ID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_TABLE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_FILEID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_GUID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TABLE;
 
-
 import java.io.File;
 import java.sql.Connection;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.database.DBConnector;
 import org.bitrepository.common.database.DatabaseUtils;
@@ -114,24 +115,25 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     protected Connection getConnection() {
         try { 
             Connection dbConnection = dbConnector.getEmbeddedDBConnection(
-                    settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl());
+                    settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditContributerDatabaseUrl());
             return dbConnection;
         } catch (Exception e) {
             throw new IllegalStateException("Could not instantiate the database with the url '"
-                    + settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl() + "'", e);
+                    + settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditContributerDatabaseUrl() + "'", e);
         }
     }
     
     @Override
-    public AuditTrailEvent[] getAuditTrails(XMLGregorianCalendar starttime, XMLGregorianCalendar endtime, String url) {
-        List<Long> guids = retrieveAuditGuids(starttime, endtime);
-        
-        AuditTrailEvent[] res = new AuditTrailEvent[guids.size()];
-        for(int i = 0; i < guids.size(); i++) {
-            res[i] = retrieveEvent(guids.get(i));
-        }
-        
-        return res;
+    public Collection<AuditTrailEvent> getAuditTrails(String fileId, String contributorId, Long minSeqNumber, Long maxSeqNumber,
+            String actorName, FileAction operation, Date startDate, Date endDate) {
+//        List<Long> guids = retrieveAuditGuids(starttime, endtime);
+//        
+//        AuditTrailEvent[] res = new AuditTrailEvent[guids.size()];
+//        for(int i = 0; i < guids.size(); i++) {
+//            res[i] = retrieveEvent(guids.get(i));
+//        }
+//       
+        return null;
     }
     
     @Override
