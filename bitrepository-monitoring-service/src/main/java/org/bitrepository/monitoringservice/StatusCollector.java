@@ -44,7 +44,7 @@ public class StatusCollector {
     public StatusCollector(GetStatusClient getStatusClient, Settings settings, ComponentStatusStore statusStore) {
         this.getStatusClient = getStatusClient;
         eventHandler = new GetStatusEventHandler(statusStore);
-        collectionInterval = settings.getReferenceSettings().getGetStatusSettings().getCollectionInterval();
+        collectionInterval = settings.getReferenceSettings().getMonitoringServiceSettings().getCollectionInterval();
         timer = new Timer("GetStatus collection timer", TIMER_IS_DAEMON);
     }
     
