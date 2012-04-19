@@ -27,7 +27,7 @@ package org.bitrepository.integrityservice.workflow.scheduler;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
-import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.EventHandler;
 
 /**
  * Collects all the file ids from all the pillars, put them into the IntegrityCache, and validate them.

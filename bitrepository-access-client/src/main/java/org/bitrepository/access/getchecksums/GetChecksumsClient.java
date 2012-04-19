@@ -29,8 +29,8 @@ import java.util.Collection;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.exceptions.OperationFailedException;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.exceptions.OperationFailedException;
 
 /**
  * The <code>GetChecksumsClient</code> is used as a handle for the Bit Repository getChecksums operation.

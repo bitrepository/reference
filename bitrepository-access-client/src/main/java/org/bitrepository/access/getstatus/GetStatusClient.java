@@ -21,8 +21,8 @@
  */
 package org.bitrepository.access.getstatus;
 
-import org.bitrepository.protocol.client.BitrepositoryClient;
-import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.client.BitrepositoryClient;
+import org.bitrepository.client.eventhandler.EventHandler;
 
 public interface GetStatusClient extends BitrepositoryClient {
     

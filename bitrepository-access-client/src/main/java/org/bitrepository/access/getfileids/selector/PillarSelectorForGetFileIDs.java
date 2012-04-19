@@ -33,10 +33,10 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.protocol.exceptions.NegativeResponseException;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
-import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
+import org.bitrepository.client.exceptions.NegativeResponseException;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
+import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
 
 /**
  * Class for selecting pillars for the GetFileIDs operation.

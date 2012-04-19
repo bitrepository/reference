@@ -35,7 +35,7 @@ import org.bitrepository.integrityservice.workflow.TimerWorkflowScheduler;
 import org.bitrepository.integrityservice.workflow.scheduler.CollectAllChecksumsWorkflow;
 import org.bitrepository.integrityservice.workflow.scheduler.CollectAllFileIDsWorkflow;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;

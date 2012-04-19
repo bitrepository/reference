@@ -24,8 +24,8 @@
  */
 package org.bitrepository.modify.replacefile.conversation;
 
-import org.bitrepository.protocol.conversation.ConversationEventMonitor;
-import org.bitrepository.protocol.conversation.ConversationState;
+import org.bitrepository.client.conversation.ConversationEventMonitor;
+import org.bitrepository.client.conversation.ConversationState;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageSender;
 

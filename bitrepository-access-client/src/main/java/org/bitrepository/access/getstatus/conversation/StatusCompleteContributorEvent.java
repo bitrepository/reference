@@ -22,7 +22,7 @@
 package org.bitrepository.access.getstatus.conversation;
 
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
-import org.bitrepository.protocol.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorEvent;
 
 public class StatusCompleteContributorEvent extends ContributorEvent {
 

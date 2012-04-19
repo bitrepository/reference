@@ -26,8 +26,8 @@ package org.bitrepository.modify.deletefile;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.exceptions.OperationFailedException;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.exceptions.OperationFailedException;
 
 /**
  * Interface for the delete client.

@@ -28,9 +28,9 @@ import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.protocol.service.BitrepositoryService;
+import org.bitrepository.service.LifeCycledService;
 
-public class MonitoringService implements BitrepositoryService {
+public class MonitoringService implements LifeCycledService {
 
 	/** The settings. */
     private final Settings settings;

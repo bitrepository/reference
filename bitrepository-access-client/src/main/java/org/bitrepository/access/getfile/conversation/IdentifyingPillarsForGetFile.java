@@ -35,7 +35,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 /**
  * Models the functionality for identifying pillars prior to a get file request.

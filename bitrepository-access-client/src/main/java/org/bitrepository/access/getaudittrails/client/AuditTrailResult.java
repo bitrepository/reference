@@ -22,7 +22,7 @@
 package org.bitrepository.access.getaudittrails.client;
 
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
-import org.bitrepository.protocol.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorEvent;
 
 /**
  * Returns the result of a Audit Trail final response.

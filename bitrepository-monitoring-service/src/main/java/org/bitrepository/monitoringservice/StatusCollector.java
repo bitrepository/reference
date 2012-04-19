@@ -26,7 +26,7 @@ import java.util.TimerTask;
 
 import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.EventHandler;
 
 public class StatusCollector {
 

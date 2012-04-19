@@ -25,8 +25,8 @@
 package org.bitrepository.audittrails.webservice;
 
 import org.bitrepository.audittrails.service.AuditTrailServiceFactory;
-import org.bitrepository.protocol.service.AbstractBitrepositoryContextListener;
-import org.bitrepository.protocol.service.BitrepositoryService;
+import org.bitrepository.service.AbstractBitrepositoryContextListener;
+import org.bitrepository.service.LifeCycledService;
 
 /**
  * The Context listener for the AuditTrailService
@@ -34,7 +34,7 @@ import org.bitrepository.protocol.service.BitrepositoryService;
 public class AuditTrailServiceContextListener extends AbstractBitrepositoryContextListener {
        
     @Override
-    public BitrepositoryService getService() {
+    public LifeCycledService getService() {
         return AuditTrailServiceFactory.getAuditTrailService();
     }
 

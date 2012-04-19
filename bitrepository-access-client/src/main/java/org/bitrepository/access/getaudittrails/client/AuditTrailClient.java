@@ -25,8 +25,8 @@
 package org.bitrepository.access.getaudittrails.client;
 
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
-import org.bitrepository.protocol.client.BitrepositoryClient;
-import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.client.BitrepositoryClient;
+import org.bitrepository.client.eventhandler.EventHandler;
 
 public interface AuditTrailClient extends BitrepositoryClient {
     /**

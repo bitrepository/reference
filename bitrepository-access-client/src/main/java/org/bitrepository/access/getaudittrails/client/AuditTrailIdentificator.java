@@ -24,8 +24,8 @@
  */
 package org.bitrepository.access.getaudittrails.client;
 
-import org.bitrepository.protocol.client.BitrepositoryClient;
-import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.client.BitrepositoryClient;
+import org.bitrepository.client.eventhandler.EventHandler;
 
 /**
  * Provides functionality for retrieving the list of available audit trail contributors at a given time.

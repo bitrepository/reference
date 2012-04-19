@@ -34,7 +34,7 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.modify.replacefile.ConversationBasedReplaceFileClient;
 import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.mediator.ConversationMediatorManager;
+import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
 import org.bitrepository.protocol.security.SecurityManager;
 
 /**

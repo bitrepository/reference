@@ -26,7 +26,7 @@ package org.bitrepository.access.getchecksums.conversation;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
-import org.bitrepository.protocol.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorEvent;
 
 /**
 * Contains the result of a checksum request sent to a single pillar.

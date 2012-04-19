@@ -35,7 +35,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
-import org.bitrepository.protocol.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -33,8 +33,8 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.exceptions.NegativeResponseException;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.exceptions.NegativeResponseException;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 /**
  * Models the behavior of a GetChecksums conversation during the identification phase. That is, it begins with the 

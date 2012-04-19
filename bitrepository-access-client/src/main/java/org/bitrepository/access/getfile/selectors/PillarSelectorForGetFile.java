@@ -27,8 +27,8 @@ package org.bitrepository.access.getfile.selectors;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.exceptions.UnableToFinishException;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
 
 /**
  * Used to select a specific pillar and find the topic for this pillar. The selection is implemented by sending a 

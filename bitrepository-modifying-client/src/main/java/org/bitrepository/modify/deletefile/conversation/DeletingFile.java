@@ -36,12 +36,12 @@ import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.eventhandler.ContributorEvent;
-import org.bitrepository.protocol.eventhandler.DefaultEvent;
-import org.bitrepository.protocol.eventhandler.OperationEvent;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
-import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
+import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.DefaultEvent;
+import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
+import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
 
 /**
  * Models the behavior of a DeleteFile conversation during the operation phase. That is, it begins with the sending of

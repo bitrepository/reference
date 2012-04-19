@@ -24,7 +24,7 @@
  */
 package org.bitrepository.pillar;
 
-import org.bitrepository.clienttest.MessageReceiver;
+import org.bitrepository.client.MessageReceiver;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.TestMessageFactory;
 

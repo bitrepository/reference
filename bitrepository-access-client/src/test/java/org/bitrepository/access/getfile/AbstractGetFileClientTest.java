@@ -41,7 +41,7 @@ package org.bitrepository.access.getfile;
 
 import java.io.File;
 
-import org.bitrepository.clienttest.DefaultFixtureClientTest;
+import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.testng.annotations.BeforeMethod;
 

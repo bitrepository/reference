@@ -28,8 +28,8 @@ import java.net.URL;
 import java.util.Collection;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.exceptions.OperationFailedException;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.exceptions.OperationFailedException;
 import org.jaccept.TestEventManager;
 
 /**

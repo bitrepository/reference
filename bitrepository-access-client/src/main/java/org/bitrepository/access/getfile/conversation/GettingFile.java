@@ -36,8 +36,8 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.eventhandler.DefaultEvent;
-import org.bitrepository.protocol.eventhandler.OperationEvent;
+import org.bitrepository.client.eventhandler.DefaultEvent;
+import org.bitrepository.client.eventhandler.OperationEvent;
 /**
  * Models the behavior of a GetFile conversation during the file exchange phase. That is, it begins with the sending of
  * a <code>GetFileRequest</code> and finishes with on the reception of a <code>GetFileFinalResponse</code> message.
