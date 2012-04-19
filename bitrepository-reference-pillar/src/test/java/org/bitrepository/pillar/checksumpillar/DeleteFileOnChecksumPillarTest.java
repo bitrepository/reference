@@ -24,12 +24,10 @@ package org.bitrepository.pillar.checksumpillar;
 import java.io.File;
 import java.util.Date;
 
-import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
@@ -287,8 +285,8 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                         finalResponse.getCorrelationID(), FILE_ID, pillarId, finalResponse.getReplyTo(), 
                         finalResponse.getResponseInfo(), finalResponse.getTo()));
         
-        AlarmMessage alarm = alarmDestination.waitForMessage(AlarmMessage.class);
-        Assert.assertEquals(alarm.getAlarm().getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
+        addStep("Check the alarm dispatcher", "An alarm should have been sent.");
+        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 1);
         
         addStep("Validate the content of the cache", "Should still contain the good checksum of the file");
         Assert.assertEquals(cache.getChecksum(FILE_ID), GOOD_CHECKSUM);

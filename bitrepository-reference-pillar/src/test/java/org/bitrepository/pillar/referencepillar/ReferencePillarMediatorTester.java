@@ -116,7 +116,7 @@ public class ReferencePillarMediatorTester extends DefaultFixturePillarTest {
         audits.resetCallsForAuditEvent();
         mediator.onMessage(message);
         Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 1);
-        Assert.assertEquals(audits.getCallsForAuditEvent(), 1);
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 0);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -129,6 +129,6 @@ public class ReferencePillarMediatorTester extends DefaultFixturePillarTest {
         audits.resetCallsForAuditEvent();
         mediator.onMessage(new Message());
         Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0);
-        Assert.assertEquals(audits.getCallsForAuditEvent(), 1);
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 0);
     }
 }

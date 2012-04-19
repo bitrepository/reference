@@ -91,6 +91,7 @@ public class ChecksumPillarMediator extends PillarMediator {
                 new IdentifyPillarsForGetChecksumsRequestHandler(context, cache));
         this.handlers.put(GetChecksumsRequest.class.getName(), 
                 new GetChecksumsRequestHandler(context, cache));
+        
         this.handlers.put(IdentifyContributorsForGetStatusRequest.class.getName(), 
                 new IdentifyContributorsForGetStatusRequestHandler(context));
         this.handlers.put(GetStatusRequest.class.getName(),

@@ -37,6 +37,7 @@ import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
+import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -59,6 +60,7 @@ public class GetStatusOnChecksumPillarTest extends DefaultFixturePillarTest {
         }
         
         addStep("Initialize the pillar.", "Should not be a problem.");
+        settings.getCollectionSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         cache = new MemoryCache();
         audits = new MockAuditManager();
         alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
@@ -165,13 +167,14 @@ public class GetStatusOnChecksumPillarTest extends DefaultFixturePillarTest {
             messageBus.sendMessage(request);
         }
         
-        addStep("Receive and validate the final response", "Should be sent by the pillar.");
-        GetStatusFinalResponse finalResponse = clientTopic.waitForMessage(GetStatusFinalResponse.class);
-        Assert.assertEquals(finalResponse, msgFactory.createGetStatusFinalResponse(contributorId, 
-                request.getCorrelationID(), pillarDestinationId, finalResponse.getResponseInfo(), 
-                finalResponse.getResultingStatus(), clientDestinationId));
-        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
-        Assert.assertEquals(finalResponse.getResultingStatus().getStatusInfo().getStatusCode(), StatusCode.ERROR);
-        
+        addStep("The pillar should send an alarm.", "Validate the AlarmDispatcher");
+        synchronized(this) {
+            try {
+                wait(250);
+            } catch (Exception e) { 
+                // ignore
+            }
+        }
+        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 1);
     }
 }
