@@ -33,9 +33,9 @@ import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.eventhandler.OperationFailedEvent;
-import org.bitrepository.protocol.exceptions.NegativeResponseException;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
+import org.bitrepository.client.exceptions.NegativeResponseException;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 /**
  * The first state of the DeleteFile communication. The identification of the pillars involved.

@@ -31,7 +31,7 @@ import org.bitrepository.access.getfile.TestGetFileMessageFactory;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

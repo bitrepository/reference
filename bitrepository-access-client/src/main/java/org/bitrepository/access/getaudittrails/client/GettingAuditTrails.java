@@ -25,11 +25,11 @@ import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.protocol.conversation.ConversationContext;
-import org.bitrepository.protocol.conversation.PerformingOperationState;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
-import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
+import org.bitrepository.client.conversation.ConversationContext;
+import org.bitrepository.client.conversation.PerformingOperationState;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
+import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
 
 import java.math.BigInteger;
 import java.util.HashMap;

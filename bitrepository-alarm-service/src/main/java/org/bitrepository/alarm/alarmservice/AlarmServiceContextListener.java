@@ -25,8 +25,8 @@
 package org.bitrepository.alarm.alarmservice;
 
 import org.bitrepository.alarm.AlarmStoreFactory;
-import org.bitrepository.protocol.service.AbstractBitrepositoryContextListener;
-import org.bitrepository.protocol.service.BitrepositoryService;
+import org.bitrepository.service.AbstractBitrepositoryContextListener;
+import org.bitrepository.service.LifeCycledService;
 
 
 /**
@@ -40,7 +40,7 @@ public class AlarmServiceContextListener extends AbstractBitrepositoryContextLis
     }
 
     @Override
-    public BitrepositoryService getService() {
+    public LifeCycledService getService() {
         return AlarmStoreFactory.getAlarmStore();
     }
 

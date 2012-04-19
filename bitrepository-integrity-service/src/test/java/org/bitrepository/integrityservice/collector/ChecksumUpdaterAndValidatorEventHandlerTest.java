@@ -31,8 +31,8 @@ import org.bitrepository.integrityservice.collector.eventhandler.ChecksumsUpdate
 import org.bitrepository.integrityservice.mocks.MockAlarmDispatcher;
 import org.bitrepository.integrityservice.mocks.MockChecker;
 import org.bitrepository.integrityservice.mocks.MockIntegrityModel;
-import org.bitrepository.protocol.eventhandler.ContributorEvent;
-import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;

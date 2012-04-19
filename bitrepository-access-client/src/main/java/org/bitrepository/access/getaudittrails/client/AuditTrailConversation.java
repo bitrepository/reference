@@ -25,10 +25,10 @@
 package org.bitrepository.access.getaudittrails.client;
 
 import org.bitrepository.bitrepositorymessages.Message;
-import org.bitrepository.protocol.conversation.AbstractConversation;
-import org.bitrepository.protocol.conversation.ConversationEventMonitor;
-import org.bitrepository.protocol.conversation.ConversationState;
-import org.bitrepository.protocol.conversation.FinishedState;
+import org.bitrepository.client.conversation.AbstractConversation;
+import org.bitrepository.client.conversation.ConversationEventMonitor;
+import org.bitrepository.client.conversation.ConversationState;
+import org.bitrepository.client.conversation.FinishedState;
 
 /**
  * Mostly just a event mediator (in the new client design).

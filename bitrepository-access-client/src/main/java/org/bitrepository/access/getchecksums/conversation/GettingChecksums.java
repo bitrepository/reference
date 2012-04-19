@@ -39,11 +39,11 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.eventhandler.DefaultEvent;
-import org.bitrepository.protocol.eventhandler.OperationEvent;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.ContributorResponseStatus;
-import org.bitrepository.protocol.pillarselector.SelectedPillarInfo;
+import org.bitrepository.client.eventhandler.DefaultEvent;
+import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
+import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
 
 /**
  * Models the behavior of a GetChecksums conversation during the operation phase. That is, it begins with the 

@@ -33,8 +33,8 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.exceptions.NegativeResponseException;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.exceptions.NegativeResponseException;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 /**
  * Models the behavior of a GetFileIDs conversation during the identification phase. That is, it begins with the 

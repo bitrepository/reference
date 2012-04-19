@@ -31,12 +31,12 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.IntegrityService;
 import org.bitrepository.integrityservice.SimpleIntegrityService;
 import org.bitrepository.integrityservice.workflow.Workflow;
-import org.bitrepository.protocol.service.BitrepositoryService;
+import org.bitrepository.service.LifeCycledService;
 
 /**
  * The IntegrityService wrapped into the interface for a web server.
  */
-public class IntegrityServiceWebInterface implements IntegrityService, BitrepositoryService {
+public class IntegrityServiceWebInterface implements IntegrityService, LifeCycledService {
     /** The wrapped IntegrityService.*/
     private final SimpleIntegrityService service;
     /** The settings for the wrapped integrity service.*/

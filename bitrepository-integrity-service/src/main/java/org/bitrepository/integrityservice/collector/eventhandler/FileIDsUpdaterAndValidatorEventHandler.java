@@ -30,9 +30,9 @@ import org.bitrepository.integrityservice.AlarmDispatcher;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.checking.IntegrityReport;
-import org.bitrepository.protocol.eventhandler.EventHandler;
-import org.bitrepository.protocol.eventhandler.OperationEvent;
-import org.bitrepository.protocol.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

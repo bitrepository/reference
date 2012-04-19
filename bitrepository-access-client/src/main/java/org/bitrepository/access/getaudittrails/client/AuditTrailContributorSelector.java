@@ -23,8 +23,8 @@ package org.bitrepository.access.getaudittrails.client;
 
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.protocol.exceptions.UnexpectedResponseException;
-import org.bitrepository.protocol.pillarselector.MultipleComponentSelector;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.conversation.selector.MultipleComponentSelector;
 
 import java.util.Collection;
 

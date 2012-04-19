@@ -25,7 +25,7 @@
 package org.bitrepository.modify.putfile.conversation;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.protocol.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorEvent;
 
 /**
 * Contains the result of a put file request sent to a single pillar.
