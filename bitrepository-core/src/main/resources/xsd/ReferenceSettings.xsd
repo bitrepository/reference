@@ -211,15 +211,6 @@
           The settings for the GetStatusClient.
         </xs:documentation>
       </xs:annotation>
-      <xs:sequence>
-        <xs:element name="CollectionInterval" type="xs:long" minOccurs="1" maxOccurs="1">
-          <xs:annotation>
-            <xs:documentation>
-              Interval at which statuses is to be collected from components. Value in milliseconds. 
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
-      </xs:sequence>
     </xs:complexType>
   </xs:element>
 
@@ -252,6 +243,20 @@
       </xs:annotation>
       <xs:sequence>
         <xs:element name="ID" type="xs:string" />
+        <xs:element name="CollectionInterval" type="xs:long">
+          <xs:annotation>
+            <xs:documentation>
+              Interval at which statuses is to be collected from components. Value in milliseconds. 
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="MaxRetries" type="xs:positiveInteger">
+          <xs:annotation>
+            <xs:documentation>
+              Maximum number of times a component may fail to respond to a GetStatus.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

@@ -45,9 +45,7 @@
   <GetChecksumsSettings></GetChecksumsSettings>
   <GetFileSettings></GetFileSettings>
   <GetFileIDsSettings></GetFileIDsSettings>
-  <GetStatusSettings>
-    <CollectionInterval>300000</CollectionInterval>
-  </GetStatusSettings>
+  <GetStatusSettings></GetStatusSettings>
   <PutFileSettings></PutFileSettings>
   <ReplaceFileSettings></ReplaceFileSettings>
   <AlarmServiceSettings>
@@ -68,5 +66,7 @@
   </IntegrityServiceSettings>
   <MonitoringServiceSettings>
     <ID>monitoring-service</ID>
+    <CollectionInterval>300000</CollectionInterval>
+    <MaxRetries>3</MaxRetries>
   </MonitoringServiceSettings>
 </ReferenceSettings>
