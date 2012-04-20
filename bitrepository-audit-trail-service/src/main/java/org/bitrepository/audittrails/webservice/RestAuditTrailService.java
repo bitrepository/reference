@@ -24,7 +24,9 @@
  */
 package org.bitrepository.audittrails.webservice;
 
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,7 @@ import javax.ws.rs.Produces;
 import org.bitrepository.audittrails.service.AuditTrailService;
 import org.bitrepository.audittrails.service.AuditTrailServiceFactory;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 
 @Path("/AuditTrailService")
@@ -52,12 +55,13 @@ public class RestAuditTrailService {
         service = AuditTrailServiceFactory.getAuditTrailService();	
     }
       
-    @GET
+ /*   @GET
     @Path("/getAllAuditTrails/")
     @Produces("application/json")
     public String getAllAuditTrails() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
+
         Collection<AuditTrailEvent> events = service.queryAuditTrailEvents(null, null, getAllAuditTrails(), getAllAuditTrails(), getAllAuditTrails(), getAllAuditTrails());
         Iterator<AuditTrailEvent> it = events.iterator();
         while(it.hasNext()) {
@@ -75,7 +79,7 @@ public class RestAuditTrailService {
         }
         sb.append("]");
         return sb.toString();
-    }
+    }*/
 
     
     @POST
@@ -89,8 +93,48 @@ public class RestAuditTrailService {
             @FormParam ("reportingComponent") String reportingComponent,
             @FormParam ("actor") String actor,
             @FormParam ("action") String action) {
-        //List<AuditTrailEvent> = service.queryAuditTrailEvents(fromDate, toDate, fileID, reportingComponent, actor, action);
-        return getAllAuditTrails();
+    	Date from = makeDateObject(fromDate);
+    	Date to = makeDateObject(toDate);
+        StringBuilder sb = new StringBuilder();
+
+    	Collection<AuditTrailEvent> events = service.queryAuditTrailEvents(from, to, fileID,
+    			reportingComponent, actor, action);
+    	
+        sb.append("[");
+    	Iterator<AuditTrailEvent> it = events.iterator();
+        while(it.hasNext()) {
+            AuditTrailEvent event = it.next();
+            sb.append("{\"fileID\": \"" + event.getFileID() + "\"," +
+                    "\"reportingComponent\":\" " + event.getReportingComponent() + "\"," +
+                    "\"actor\":\" " + event.getActorOnFile() + "\"," +
+                    "\"action\":\" " + event.getActionOnFile() + "\"," +
+                    "\"timeStamp\":\" " + event.getActionDateTime() + "\"," + 
+                    "\"info\":\" " + event.getInfo() + "\"," +
+                    "\"auditTrailInfo\":\" " + event.getAuditTrailInformation() + "\"}");
+            if(it.hasNext()) {
+                sb.append(",");
+            }
+        }
+        sb.append("]");
+        return sb.toString();        
     }
+    
+    private Date makeDateObject(String dateStr) {
+    	if(dateStr == null) {
+    		return null;
+    	} else {
+    		String[] components = dateStr.split("/");
+    		int year = Integer.parseInt(components[0]);
+    		int month = Integer.parseInt(components[1]);
+    		int day = Integer.parseInt(components[2]);
+    		Calendar time = Calendar.getInstance();
+    		time.set(year, month, day);
+    		
+    		return time.getTime();
+    	}
+    }
+    
+    
+    
     
 }
