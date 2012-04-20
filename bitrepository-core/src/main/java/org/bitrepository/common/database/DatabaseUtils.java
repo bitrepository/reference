@@ -114,8 +114,8 @@ public class DatabaseUtils {
                 ps = createPreparedStatement(dbConnection, query, args);
                 res = ps.executeQuery();
                 if (!res.next()) {
-                    log.info("Got an empty result set for statement '" + query + "' on database '"
-                            + dbConnection + "'. Returning a null.");
+                    log.info("Got an empty result set for statement '" + query + "' with arguments '" 
+                            + Arrays.asList(args) + "' on database '" + dbConnection + "'. Returning a null.");
                     return null;
                 }
                 Long resultLong = res.getLong(1);
@@ -124,6 +124,50 @@ public class DatabaseUtils {
                 }
                 if (res.next()) {
                     throw new IllegalStateException("Too many results from " + ps);
+                }
+                return resultLong;
+            } finally {
+                if(res != null) {
+                    res.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
+            }
+        } catch (SQLException e) {
+            throw failedExecutionOfStatement(e, dbConnection, query, args);
+        }
+    }
+    
+    /**
+     * Retrieves the first long value from the database through the use of a SQL query and the arguments for the query 
+     * to become a proper SQL statement, which requests the wanted set of long values, where only the first is 
+     * returned.
+     * 
+     * @param dbConnection The connection to the database.
+     * @param query The query for retrieving the long value.
+     * @param args The arguments for the database statement.
+     * @return The long value from the given statement.
+     */
+    public static Long selectFirstLongValue(Connection dbConnection, String query, Object... args) {
+        ArgumentValidator.checkNotNull(dbConnection, "Connection dbConnection");
+        ArgumentValidator.checkNotNullOrEmpty(query, "String query");
+        ArgumentValidator.checkNotNull(args, "Object... args");
+        
+        try {
+            PreparedStatement ps = null;
+            ResultSet res = null; 
+            try {
+                ps = createPreparedStatement(dbConnection, query, args);
+                res = ps.executeQuery();
+                if (!res.next()) {
+                    log.info("Got an empty result set for statement '" + query + "' with arguments '" 
+                            + Arrays.asList(args) + "' on database '" + dbConnection + "'. Returning a null.");
+                    return null;
+                }
+                Long resultLong = res.getLong(1);
+                if (res.wasNull()) {
+                    resultLong = null;
                 }
                 return resultLong;
             } finally {

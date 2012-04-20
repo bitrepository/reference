@@ -49,4 +49,10 @@ public class SimpleStore implements AuditTrailStore {
             auditTrails.add(event);
         }
     }
+
+    @Override
+    public int largestSequenceNumber(String contributorId) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 }
