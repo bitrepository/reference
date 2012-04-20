@@ -25,6 +25,7 @@
 package org.bitrepository.audittrails.collector;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -42,9 +43,9 @@ import org.bitrepository.common.settings.Settings;
  */
 public class AuditTrailCollector {
     /** The task for collecting the audits.*/
-    private final TimerTask auditCollector;
+    private final AuditTimerTask auditCollector;
     /** The timer for keeping track of the collecting task.*/
-    private final Timer timer;
+    private Timer timer;
     
     /** The audit trail client for collecting the audit trails.*/
     private final AuditTrailClient client;
@@ -59,6 +60,8 @@ public class AuditTrailCollector {
     private static final String NO_FILE_ID = null;
     /** When no delivery address is wanted for the collecting of audit trails.*/
     private static final String NO_DELIVERY_URL = null;
+    /** The time between checking whether the audits should be collected*/
+    private static final Long TIME_BETWEEN_COLLECT_CHECKS = 500L;
     
     /**
      * Constructor.
@@ -72,38 +75,75 @@ public class AuditTrailCollector {
         this.store = store;
         this.timer = new Timer();
         
-        auditCollector = new AuditTimerTask();
-        timer.schedule(auditCollector, 3600000);
+        auditCollector = new AuditTimerTask(
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectInterval());
+        timer.scheduleAtFixedRate(auditCollector, 0, TIME_BETWEEN_COLLECT_CHECKS);
     }
     
     /**
      * Instantiates a collection of all the newest audit trails.
      */
     public void collectNewestAudits() {
-        timer.purge();
-        auditCollector.cancel();
-        timer.schedule(auditCollector, 3600000);        
-        
+        auditCollector.performCollection();
+    }
+
+    /**
+     * Setup and initiates the collection of audit trails through the client.
+     * Adds one to the sequence number to request only newer audit trails.
+     */
+    private void performCollectionOfAudits() {
         List<AuditTrailQuery> queries = new ArrayList<AuditTrailQuery>();
         
         for(String contributorId : settings.getReferenceSettings().getAuditTrailServiceSettings().getContributors()) {
             int seq = store.largestSequenceNumber(contributorId);
-            queries.add(new AuditTrailQuery(contributorId, seq));
+            queries.add(new AuditTrailQuery(contributorId, seq + 1));
         }
         
         EventHandler handler = new AuditCollectorEventHandler();
         
-        client.getAuditTrails((AuditTrailQuery[]) queries.toArray(), NO_FILE_ID, NO_DELIVERY_URL, handler, 
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
+        client.getAuditTrails(queries.toArray(new AuditTrailQuery[queries.size()]), NO_FILE_ID, NO_DELIVERY_URL, 
+                handler, settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
     }
     
+    /**
+     * Closes the AuditTrailCollector.
+     */
+    public void close() {
+        auditCollector.cancel();
+        timer.cancel();
+    }
+
     /**
      * Timer task for keeping track of the automated collecting of audit trails.
      */
     private class AuditTimerTask extends TimerTask {
+        /** The interval between running this timer task.*/
+        private final long interval;
+        /** The date for the next run.*/
+        private Date nextRun;
+        
+        /**
+         * Constructor.
+         * @param interval The interval between running this timer task.
+         */
+        private AuditTimerTask(long interval) {
+            this.interval = interval;
+            nextRun = new Date(System.currentTimeMillis() + interval);
+        }
+        
+        /**
+         * Reset the date for next run and then run the operation.
+         */
+        public void performCollection() {
+            nextRun = new Date(System.currentTimeMillis() + interval);
+            performCollectionOfAudits();
+        }
+        
         @Override
         public void run() {
-            collectNewestAudits();
+            if(nextRun.getTime() < System.currentTimeMillis()) {
+                performCollection();
+            }
         }
     }
     
@@ -120,5 +160,5 @@ public class AuditTrailCollector {
                 store.addAuditTrails(auditEvent.getAuditTrailEvents().getAuditTrailEvents());
             }
         }
-    }
+    }    
 }

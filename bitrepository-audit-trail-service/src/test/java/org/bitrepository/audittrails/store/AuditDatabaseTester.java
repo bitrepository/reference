@@ -23,7 +23,6 @@ package org.bitrepository.audittrails.store;
 
 import java.math.BigInteger;
 import java.sql.Connection;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -40,7 +39,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class AuditDatabaseTester extends ExtendedTestCase{
+public class AuditDatabaseTester extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
     String DATABASE_URL = "jdbc:derby:auditservicedb";
