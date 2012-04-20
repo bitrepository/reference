@@ -54,39 +54,12 @@ public class RestAuditTrailService {
     public RestAuditTrailService() {
         service = AuditTrailServiceFactory.getAuditTrailService();	
     }
-      
- /*   @GET
-    @Path("/getAllAuditTrails/")
-    @Produces("application/json")
-    public String getAllAuditTrails() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-
-        Collection<AuditTrailEvent> events = service.queryAuditTrailEvents(null, null, getAllAuditTrails(), getAllAuditTrails(), getAllAuditTrails(), getAllAuditTrails());
-        Iterator<AuditTrailEvent> it = events.iterator();
-        while(it.hasNext()) {
-            AuditTrailEvent event = it.next();
-            sb.append("{\"fileID\": \"" + event.getFileID() + "\"," +
-                    "\"reportingComponent\":\" " + event.getReportingComponent() + "\"," +
-                    "\"actor\":\" " + event.getActorOnFile() + "\"," +
-                    "\"action\":\" " + event.getActionOnFile() + "\"," +
-                    "\"timeStamp\":\" " + event.getActionDateTime() + "\"," + 
-                    "\"info\":\" " + event.getInfo() + "\"," +
-                    "\"auditTrailInfo\":\" " + event.getAuditTrailInformation() + "\"}");
-            if(it.hasNext()) {
-                sb.append(",");
-            }
-        }
-        sb.append("]");
-        return sb.toString();
-    }*/
-
     
     @POST
     @Path("/queryAuditTrailEvents/")
     @Consumes("application/x-www-form-urlencoded")
     @Produces("application/json")
-    public String startChecksumCheckFromPillar(
+    public String queryAuditTrailEvents(
             @FormParam ("fromDate") String fromDate,
             @FormParam ("toDate") String toDate,
             @FormParam ("fileID") String fileID,
@@ -96,23 +69,30 @@ public class RestAuditTrailService {
     	Date from = makeDateObject(fromDate);
     	Date to = makeDateObject(toDate);
         StringBuilder sb = new StringBuilder();
-
+        String filteredAction;
+        if(action.equals("ALL")) {
+            filteredAction = null;
+        } else {
+            filteredAction = action;
+        }
     	Collection<AuditTrailEvent> events = service.queryAuditTrailEvents(from, to, fileID,
-    			reportingComponent, actor, action);
+    			reportingComponent, actor, filteredAction);
     	
         sb.append("[");
-    	Iterator<AuditTrailEvent> it = events.iterator();
-        while(it.hasNext()) {
-            AuditTrailEvent event = it.next();
-            sb.append("{\"fileID\": \"" + event.getFileID() + "\"," +
-                    "\"reportingComponent\":\" " + event.getReportingComponent() + "\"," +
-                    "\"actor\":\" " + event.getActorOnFile() + "\"," +
-                    "\"action\":\" " + event.getActionOnFile() + "\"," +
-                    "\"timeStamp\":\" " + event.getActionDateTime() + "\"," + 
-                    "\"info\":\" " + event.getInfo() + "\"," +
-                    "\"auditTrailInfo\":\" " + event.getAuditTrailInformation() + "\"}");
-            if(it.hasNext()) {
-                sb.append(",");
+        if(events != null) {
+        	Iterator<AuditTrailEvent> it = events.iterator();
+            while(it.hasNext()) {
+                AuditTrailEvent event = it.next();
+                sb.append("{\"fileID\": \"" + event.getFileID() + "\"," +
+                        "\"reportingComponent\":\" " + event.getReportingComponent() + "\"," +
+                        "\"actor\":\" " + event.getActorOnFile() + "\"," +
+                        "\"action\":\" " + event.getActionOnFile() + "\"," +
+                        "\"timeStamp\":\" " + event.getActionDateTime() + "\"," + 
+                        "\"info\":\" " + event.getInfo() + "\"," +
+                        "\"auditTrailInfo\":\" " + event.getAuditTrailInformation() + "\"}");
+                if(it.hasNext()) {
+                    sb.append(",");
+                }
             }
         }
         sb.append("]");
@@ -120,7 +100,7 @@ public class RestAuditTrailService {
     }
     
     private Date makeDateObject(String dateStr) {
-    	if(dateStr == null) {
+    	if(dateStr == null || dateStr.trim().isEmpty()) {
     		return null;
     	} else {
     		String[] components = dateStr.split("/");

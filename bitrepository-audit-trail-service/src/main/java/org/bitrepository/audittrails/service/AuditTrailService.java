@@ -52,44 +52,6 @@ public class AuditTrailService implements LifeCycledService {
         
         this.store = store;
         this.collector = collector;
-        
-//        dummyEvents = new ArrayList<AuditTrailEvent>();
-//        AuditTrailEvent event = new AuditTrailEvent();
-//        event.setFileID("foo");
-//        event.setReportingComponent("pillar1");
-//        event.setActorOnFile("Benny");
-//        event.setActionOnFile(FileAction.PUT_FILE);
-//        event.setActionDateTime(CalendarUtils.getEpoch());
-//        event.setInfo("Initial file upload");
-//        event.setAuditTrailInformation("Delivery of foo");
-//        dummyEvents.add(event);
-//        event = new AuditTrailEvent();
-//        event.setFileID("bar");
-//        event.setReportingComponent("pillar1");
-//        event.setActorOnFile("Hans");
-//        event.setActionOnFile(FileAction.PUT_FILE);
-//        event.setActionDateTime(CalendarUtils.getEpoch());
-//        event.setInfo("Initial file upload");
-//        event.setAuditTrailInformation("Delivery of bar");
-//        dummyEvents.add(event);
-//        event = new AuditTrailEvent();
-//        event.setFileID("baz");
-//        event.setReportingComponent("pillar1");
-//        event.setActorOnFile("Hans");
-//        event.setActionOnFile(FileAction.PUT_FILE);
-//        event.setActionDateTime(CalendarUtils.getEpoch());
-//        event.setInfo("Initial file upload");
-//        event.setAuditTrailInformation("Delivery of baz");
-//        dummyEvents.add(event);
-//        event = new AuditTrailEvent();
-//        event.setFileID("foo");
-//        event.setReportingComponent("pillar1");
-//        event.setActorOnFile("pillar1");
-//        event.setActionOnFile(FileAction.CHECKSUM_CALCULATED);
-//        event.setActionDateTime(CalendarUtils.getEpoch());
-//        event.setInfo("Scheduled checksum calculation");
-//        event.setAuditTrailInformation("Delivery of foo");
-//        dummyEvents.add(event);
     }
     
     /**
