@@ -32,6 +32,7 @@ public class StatusCollector {
 
     /** The getStatusClient */
     private GetStatusClient getStatusClient;
+    private final ComponentStatusStore statusStore;
     /** The EventHandler */
     private EventHandler eventHandler;
     /** Defines that the timer is a daemon thread. */
@@ -41,9 +42,11 @@ public class StatusCollector {
     /** Time between getStatus collections */
     private long collectionInterval = 300000;
     
-    public StatusCollector(GetStatusClient getStatusClient, Settings settings, ComponentStatusStore statusStore) {
+    public StatusCollector(GetStatusClient getStatusClient, Settings settings, ComponentStatusStore statusStore, 
+            MonitoringServiceAlerter alerter) {
         this.getStatusClient = getStatusClient;
-        eventHandler = new GetStatusEventHandler(statusStore);
+        eventHandler = new GetStatusEventHandler(statusStore, alerter);
+        this.statusStore = statusStore;
         collectionInterval = settings.getReferenceSettings().getMonitoringServiceSettings().getCollectionInterval();
         timer = new Timer("GetStatus collection timer", TIMER_IS_DAEMON);
     }
@@ -61,6 +64,7 @@ public class StatusCollector {
     private class StatusCollectorTimerTask extends TimerTask {
         @Override
         public void run() {
+            statusStore.updateReplyCounts();
             getStatusClient.getStatus(eventHandler);
         }
     }

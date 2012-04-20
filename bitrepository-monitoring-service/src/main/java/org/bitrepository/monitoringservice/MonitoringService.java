@@ -27,6 +27,7 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.LifeCycledService;
 
@@ -40,20 +41,24 @@ public class MonitoringService implements LifeCycledService {
 	private final ComponentStatusStore statusStore;
 	/** The client for getting statuses. */
 	private final GetStatusClient getStatusClient;
+	/** The alerter for sending alarms */
+	private final MonitoringServiceAlerter alerter;
 	/** The status collector */
 	private final StatusCollector collector;
     
 	public MonitoringService(Settings settings, SecurityManager securityManager) {
 		this.settings = settings;
 		this.securityManager = securityManager;
-		statusStore = new ComponentStatusStore();
+		statusStore = new ComponentStatusStore(settings.getCollectionSettings().getGetStatusSettings().getContributorIDs());
+		alerter = new MonitoringServiceAlerter(settings, 
+		        ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), statusStore);
 		getStatusClient = AccessComponentFactory.getInstance().createGetStatusClient(settings, securityManager,
 		        settings.getReferenceSettings().getMonitoringServiceSettings().getID());
-		collector = new StatusCollector(getStatusClient, settings, statusStore);
+		collector = new StatusCollector(getStatusClient, settings, statusStore, alerter);
 		collector.start();
 	}
 	
-	public Map<String, ResultingStatus> getStatus() {
+	public Map<String, ComponentStatus> getStatus() {
 	    return statusStore.getStatusMap();
 	}
 	

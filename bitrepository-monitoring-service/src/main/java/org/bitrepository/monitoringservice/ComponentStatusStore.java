@@ -21,30 +21,41 @@
  */
 package org.bitrepository.monitoringservice;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ComponentStatusStore {
-
-    ConcurrentMap<String, ResultingStatus> statusMap;
+    private Logger log = LoggerFactory.getLogger(getClass());
+    private final ConcurrentMap<String, ComponentStatus> statusMap;
     
-    public ComponentStatusStore() {
-        statusMap = new ConcurrentHashMap<String, ResultingStatus>();
+    public ComponentStatusStore(List<String> components) {
+        statusMap = new ConcurrentHashMap<String, ComponentStatus>();
+        for(String component : components) {
+            statusMap.put(component, new ComponentStatus());
+        }
     }
     
     public synchronized void updateStatus(String componentID, ResultingStatus status) {
         if(statusMap.containsKey(componentID)) {
-            statusMap.replace(componentID, status);
+            statusMap.get(componentID).updateStatus(status);
         } else {
-            statusMap.put(componentID, status);            
+            log.error("Got status from an unexpected component");
         }
-
     }
     
-    public synchronized Map<String, ResultingStatus> getStatusMap() {
+    public synchronized void updateReplyCounts() {
+        for(String ID : statusMap.keySet()) {
+            statusMap.get(ID).updateReplys();
+        }
+    }
+    
+    public synchronized Map<String, ComponentStatus> getStatusMap() {
         return statusMap;
     }
 }
