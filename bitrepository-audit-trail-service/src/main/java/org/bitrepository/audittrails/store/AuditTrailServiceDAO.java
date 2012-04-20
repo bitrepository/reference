@@ -21,24 +21,12 @@
  */
 package org.bitrepository.audittrails.store;
 
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_NAME;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_ACTOR_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_AUDIT;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_CONTRIBUTOR_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_FILE_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_INFORMATION;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION_DATE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_SEQUENCE_NUMBER;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_TABLE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_GUID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_ID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_FILEID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TABLE;
 
 import java.io.File;
 import java.sql.Connection;
@@ -53,7 +41,6 @@ import org.bitrepository.common.database.DBConnector;
 import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.common.database.DerbyDBConnector;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,13 +127,15 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     public void addAuditTrails(AuditTrailEvents newAuditTrails) {
         ArgumentValidator.checkNotNull(newAuditTrails, "AuditTrailEvents newAuditTrails");
         
+        AuditDatabaseIngestor ingestor = new AuditDatabaseIngestor(getConnection());
         for(AuditTrailEvent event : newAuditTrails.getAuditTrailEvent()) {
-            insertAuditTrailEvent(event);
+            ingestor.ingestAuditEvents(event);
         }
     }
     
     @Override
     public int largestSequenceNumber(String contributorId) {
+        ArgumentValidator.checkNotNullOrEmpty(contributorId, "String contributorId");
         String sql = "SELECT " + AUDITTRAIL_SEQUENCE_NUMBER + " FROM " + AUDITTRAIL_TABLE + " WHERE " 
                 + AUDITTRAIL_CONTRIBUTOR_GUID + " = ( SELECT " + CONTRIBUTOR_GUID + " FROM " + CONTRIBUTOR_TABLE 
                 + " WHERE " + CONTRIBUTOR_ID + " = ? ) ORDER BY " + AUDITTRAIL_SEQUENCE_NUMBER + " DESC";
@@ -156,93 +145,5 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
             return seq.intValue();
         }
         return 0;
-    }
-    
-    /**
-     * Inserts a single audit trail event into the database.
-     * @param event The event to be inserted into the database.
-     */
-    private void insertAuditTrailEvent(AuditTrailEvent event) {
-        // retrieve the different guids
-        long actorGuid = retrieveActorGuid(event.getActorOnFile());
-        long fileGuid = retrieveFileGuid(event.getFileID());
-        long contributorGuid = retrieveContributorGuid(event.getReportingComponent());
-        
-        String sqlInsert = "INSERT INTO " + AUDITTRAIL_TABLE + " ( " + AUDITTRAIL_ACTOR_GUID + " , "
-                + AUDITTRAIL_FILE_GUID + " , " + AUDITTRAIL_CONTRIBUTOR_GUID + " , " + AUDITTRAIL_AUDIT + " , "
-                + AUDITTRAIL_INFORMATION + " , " + AUDITTRAIL_OPERATION + " , " + AUDITTRAIL_OPERATION_DATE + " , "
-                + AUDITTRAIL_SEQUENCE_NUMBER + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? )";
-        
-        DatabaseUtils.executeStatement(getConnection(), sqlInsert, actorGuid, fileGuid, contributorGuid,
-                event.getAuditTrailInformation(), event.getInfo(), event.getActionOnFile().toString(),
-                CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime()), 
-                event.getSequenceNumber().longValue());
-    }
-    
-    /**
-     * Retrieve the guid for a given contributor. If the contributor does not exist within the contributor table, 
-     * then it is created.
-     * 
-     * @param contributorId The name of the actor.
-     * @return The guid of the actor with the given name.
-     */
-    private long retrieveContributorGuid(String contributorId) {
-        String sqlRetrieve = "SELECT " + CONTRIBUTOR_GUID + " FROM " + CONTRIBUTOR_TABLE + " WHERE " 
-                + CONTRIBUTOR_ID + " = ?";
-        
-        Long guid = DatabaseUtils.selectLongValue(getConnection(), sqlRetrieve, contributorId);
-        
-        if(guid == null) {
-            log.debug("Inserting contributor '" + contributorId + "' into the contributor table.");
-            String sqlInsert = "INSERT INTO " + CONTRIBUTOR_TABLE + " ( " + CONTRIBUTOR_ID + " ) VALUES ( ? )";
-            DatabaseUtils.executeStatement(getConnection(), sqlInsert, contributorId);
-            
-            guid = DatabaseUtils.selectLongValue(getConnection(), sqlRetrieve, contributorId);
-        }
-        
-        return guid;
-    }
-    
-    /**
-     * Retrieve the guid for a given file. If the file does not exist within the file table, then it is created.
-     * 
-     * @param fileId The id of the file.
-     * @return The guid of the file with the given id.
-     */
-    private long retrieveFileGuid(String fileId) {
-        String sqlRetrieve = "SELECT " + FILE_GUID + " FROM " + FILE_TABLE + " WHERE " + FILE_FILEID + " = ?";
-        Long guid = DatabaseUtils.selectLongValue(getConnection(), sqlRetrieve, fileId);
-        
-        if(guid == null) {
-            log.debug("Inserting file '" + fileId + "' into the file table.");
-            String sqlInsert = "INSERT INTO " + FILE_TABLE + " ( " + FILE_FILEID + " ) VALUES ( ? )";
-            DatabaseUtils.executeStatement(getConnection(), sqlInsert, fileId);
-            
-            guid = DatabaseUtils.selectLongValue(getConnection(), sqlRetrieve, fileId);
-        }
-        
-        return guid;
-    }
-    
-    /**
-     * Retrieve the guid for a given actor. If the actor does not exist within the actor, then it is created.
-     * 
-     * @param actor The name of the actor.
-     * @return The guid of the actor with the given name.
-     */
-    private long retrieveActorGuid(String actorName) {
-        String sqlRetrieve = "SELECT " + ACTOR_GUID + " FROM " + ACTOR_TABLE + " WHERE " + ACTOR_NAME + " = ?";
-        
-        Long guid = DatabaseUtils.selectLongValue(getConnection(), sqlRetrieve, actorName);
-        
-        if(guid == null) {
-            log.debug("Inserting actor '" + actorName + "' into the actor table.");
-            String sqlInsert = "INSERT INTO " + ACTOR_TABLE + " ( " + ACTOR_NAME + " ) VALUES ( ? )";
-            DatabaseUtils.executeStatement(getConnection(), sqlInsert, actorName);
-            
-            guid = DatabaseUtils.selectLongValue(getConnection(), sqlRetrieve, actorName);
-        }
-        
-        return guid;
     }    
 }
