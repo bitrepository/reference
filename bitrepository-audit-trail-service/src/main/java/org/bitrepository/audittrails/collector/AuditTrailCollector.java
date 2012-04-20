@@ -76,7 +76,7 @@ public class AuditTrailCollector {
         this.timer = new Timer();
         
         auditCollector = new AuditTimerTask(
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectInterval());
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval());
         timer.scheduleAtFixedRate(auditCollector, 0, TIME_BETWEEN_COLLECT_CHECKS);
     }
     
@@ -156,7 +156,6 @@ public class AuditTrailCollector {
         public void handleEvent(OperationEvent event) {
             if(event instanceof AuditTrailResult) {
                 AuditTrailResult auditEvent = (AuditTrailResult) event;
-                
                 store.addAuditTrails(auditEvent.getAuditTrailEvents().getAuditTrailEvents());
             }
         }

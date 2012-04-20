@@ -20,7 +20,7 @@ public class AuditCollectorTester extends ExtendedTestCase {
     public void AuditCollectorIntervalTest() throws Exception {
         addDescription("Test that the collector calls the AuditClient at the correct intervals.");
         addStep("Setup varables", "Should be OK.");
-        settings.getReferenceSettings().getAuditTrailServiceSettings().setCollectInterval(950);
+        settings.getReferenceSettings().getAuditTrailServiceSettings().setCollectAuditInterval(950);
         
         MockAuditClient client = new MockAuditClient();
         MockAuditStore store = new MockAuditStore();
