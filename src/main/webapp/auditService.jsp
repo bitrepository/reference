@@ -55,34 +55,6 @@
         <div id="actionStatus"> </div>
     </div>
 
-
-   */<script>
-        $(function(){
-            $.getJSON('<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/getAllAuditTrails/',{}, function(j){
-                var htmlTable;
-                htmlTable = "<table class=\"ui-widget ui-widget-content\">";
-                htmlTable += "<thead> <tr class=\"ui-widget-header\">";
-                htmlTable += "<th width=\"100\">FileID</th>";
-                htmlTable += "<th width=\"100\">Reporting component</th>";
-                htmlTable += "<th width=\"100\">Actor</th>";
-                htmlTable += "<th width=\"100\">Action</th>";
-                htmlTable += "<th width=\"100\">Timestamp</th>";
-                htmlTable += "<th width=\"100\">Info</th>";
-                htmlTable += "<th>Message from client</th>";
-                htmlTable += "</tr></thead><tbody>";
-                for (var i = 0; i < j.length; i++) {
-                    htmlTable += "<tr><td>" + j[i].fileID + "</td><td>" + j[i].reportingComponent 
-                        + "</td><td>" + j[i].actor + "</td><td>" + j[i].action
-                        + "</td><td>" + j[i].timeStamp + "</td><td>" + j[i].info
-                        + "</td> <td>" + j[i].auditTrailInfo + "</td></tr>";
-               }
-                htmlTable += "</tbody></table>"; 
-                $("#auditTrails").html(htmlTable);
-            })
-        })
-    </script>*/
-
-
     <script>
        $("#auditTrailsQueryForm").submit(function() {
             var fromDateStr = $("#fromDate").val();
@@ -92,7 +64,7 @@
             var actorStr = $("#actorFilter").val();
             var actionStr = $("#actionFilter").val();
             
-            $.getJSON('<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/queryAuditTrailEvents/',
+            $.post('<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/queryAuditTrailEvents/',
                 {fromDate: fromDateStr,
                  toDate: toDateStr,
                  fileID: fileIDStr,
@@ -120,7 +92,7 @@
                     htmlTable += "</tbody></table>"; 
                     $("#auditTrails").html(htmlTable);
                 }
-            )
+            , "json")
         });
     </script> 
     
