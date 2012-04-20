@@ -24,16 +24,13 @@
  */
 package org.bitrepository.audittrails.service;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.LifeCycledService;
 
 /**
@@ -41,12 +38,16 @@ import org.bitrepository.service.LifeCycledService;
  * Aggregates the needed classes.   
  */
 public class AuditTrailService implements LifeCycledService {
-    
-    List<AuditTrailEvent> dummyEvents;
-    
+    /** The storage of audit trail information.*/
     private final AuditTrailStore store;
+    /** The collector of new audit trails.*/
     private final AuditTrailCollector collector;
     
+    /**
+     * Constructor.
+     * @param store The store for the audit trail data.
+     * @param collector The collector of new audit trail data.
+     */
     public AuditTrailService(AuditTrailStore store, AuditTrailCollector collector) {
         
         this.store = store;
@@ -111,6 +112,13 @@ public class AuditTrailService implements LifeCycledService {
         }
         
         return store.getAuditTrails(fileID, actor, null, null, actor, operation, fromDate, toDate);
+    }
+    
+    /**
+     * Collects all the newest audit trails.
+     */
+    public void collectAuditTrails() {
+        collector.collectNewestAudits();
     }
 
     @Override

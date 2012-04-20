@@ -26,12 +26,14 @@ package org.bitrepository.audittrails.store;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
 
+/**
+ * Interface for the storage of audit trail information for the AuditTrailService.
+ */
 public interface AuditTrailStore {
     /** 
      * Extract audit trails from the store.
@@ -53,4 +55,12 @@ public interface AuditTrailStore {
      * @param newAuditTrails The audit trails to be ingested into the store.
      */
     public void addAuditTrails(AuditTrailEvents newAuditTrails);
+    
+    /**
+     * Retrieves the largest sequence number for a given contributor.
+     * 
+     * @param contributorId The id of the contributor to retrieve the largest sequence number from.
+     * @return The largest sequence number.
+     */
+    public int largestSequenceNumber(String contributorId);
 }

@@ -31,7 +31,6 @@ import java.util.Properties;
 
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
-import org.bitrepository.access.getaudittrails.client.ConversationBasedAuditTrailClient;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.audittrails.store.AuditTrailServiceDAO;
 import org.bitrepository.audittrails.store.AuditTrailStore;

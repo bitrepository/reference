@@ -28,7 +28,6 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTR
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_AUDIT;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_CONTRIBUTOR_GUID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_FILE_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_GUID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_INFORMATION;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION_DATE;
@@ -43,11 +42,8 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TA
 
 import java.io.File;
 import java.sql.Connection;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
@@ -124,16 +120,20 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
     
     @Override
-    public Collection<AuditTrailEvent> getAuditTrails(String fileId, String contributorId, Long minSeqNumber, Long maxSeqNumber,
-            String actorName, FileAction operation, Date startDate, Date endDate) {
-//        List<Long> guids = retrieveAuditGuids(starttime, endtime);
-//        
-//        AuditTrailEvent[] res = new AuditTrailEvent[guids.size()];
-//        for(int i = 0; i < guids.size(); i++) {
-//            res[i] = retrieveEvent(guids.get(i));
-//        }
-//       
-        return null;
+    public List<AuditTrailEvent> getAuditTrails(String fileId, String contributorId, Long minSeqNumber, 
+            Long maxSeqNumber, String actorName, FileAction operation, Date startDate, Date endDate) {
+        ExtractModel model = new ExtractModel();
+        model.setFileId(fileId);
+        model.setContributorId(contributorId);
+        model.setMinSeqNumber(minSeqNumber);
+        model.setMaxSeqNumber(maxSeqNumber);
+        model.setActorName(actorName);
+        model.setOperation(operation);
+        model.setStartDate(startDate);
+        model.setEndDate(endDate);
+
+        AuditDatabaseExtractor extractor = new AuditDatabaseExtractor(model, getConnection());
+        return extractor.extractAuditEvents();
     }
     
     @Override
@@ -143,6 +143,19 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         for(AuditTrailEvent event : newAuditTrails.getAuditTrailEvent()) {
             insertAuditTrailEvent(event);
         }
+    }
+    
+    @Override
+    public int largestSequenceNumber(String contributorId) {
+        String sql = "SELECT " + AUDITTRAIL_SEQUENCE_NUMBER + " FROM " + AUDITTRAIL_TABLE + " WHERE " 
+                + AUDITTRAIL_CONTRIBUTOR_GUID + " = ( SELECT " + CONTRIBUTOR_GUID + " FROM " + CONTRIBUTOR_TABLE 
+                + " WHERE " + CONTRIBUTOR_ID + " = ? ) ORDER BY " + AUDITTRAIL_SEQUENCE_NUMBER + " DESC";
+        
+        Long seq = DatabaseUtils.selectFirstLongValue(getConnection(), sql, contributorId);
+        if(seq != null) {
+            return seq.intValue();
+        }
+        return 0;
     }
     
     /**
@@ -162,48 +175,8 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         
         DatabaseUtils.executeStatement(getConnection(), sqlInsert, actorGuid, fileGuid, contributorGuid,
                 event.getAuditTrailInformation(), event.getInfo(), event.getActionOnFile().toString(),
-                CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime()), event.getSequenceNumber());
-    }
-    
-    /**
-     * Retrieves the guids for the entries between two dates. 
-     * 
-     * @param starttime [OPTIONAL] The start time.
-     * @param endtime [OPTIONAL] The end time.
-     * @return The list of guids for all the 
-     */
-    private List<Long> retrieveAuditGuids(XMLGregorianCalendar starttime, XMLGregorianCalendar endtime) {
-        String sqlRetrieve = "SELECT " + AUDITTRAIL_GUID + " FROM " + AUDITTRAIL_TABLE;
-        
-        if(starttime != null && endtime != null) {
-            sqlRetrieve += " WHERE " + AUDITTRAIL_OPERATION_DATE + " >= ? AND " + AUDITTRAIL_OPERATION_DATE + " <= ?";
-            return DatabaseUtils.selectLongList(getConnection(), sqlRetrieve, 
-                    CalendarUtils.convertFromXMLGregorianCalendar(starttime),
-                    CalendarUtils.convertFromXMLGregorianCalendar(endtime));
-        }
-        if(starttime != null && endtime == null) {
-            sqlRetrieve += " WHERE " + AUDITTRAIL_OPERATION_DATE + " >= ? ";
-            return DatabaseUtils.selectLongList(getConnection(), sqlRetrieve, 
-                    CalendarUtils.convertFromXMLGregorianCalendar(starttime));
-        }
-        if(starttime == null && endtime != null) {
-            sqlRetrieve += " WHERE " + AUDITTRAIL_OPERATION_DATE + " <= ?";
-            return DatabaseUtils.selectLongList(getConnection(), sqlRetrieve, 
-                    CalendarUtils.convertFromXMLGregorianCalendar(endtime));
-        }
-        
-        return DatabaseUtils.selectLongList(getConnection(), sqlRetrieve, new Object[0]);
-    }
-    
-    /**
-     * Retrieves the audit trail event for the given guid.
-     * 
-     * @param guid The guid of the audit trail event.
-     * @return The audit trail corresponding to the guid.
-     */
-    private AuditTrailEvent retrieveEvent(long guid) {
-        // TODO implements this!
-        return null;
+                CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime()), 
+                event.getSequenceNumber().longValue());
     }
     
     /**
@@ -231,18 +204,6 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
     
     /**
-     * Retrieves a id of a contributor based on the guid. 
-     * @param contributorGuid The guid of the contributor.
-     * @return The id of the contributor corresponding to guid.
-     */
-    private String retrieveContributorId(long contributorGuid) {
-        String sqlRetrieve = "SELECT " + CONTRIBUTOR_ID + " FROM " + CONTRIBUTOR_TABLE + " WHERE " + CONTRIBUTOR_GUID 
-                + " = ?";
-        
-        return DatabaseUtils.selectStringValue(getConnection(), sqlRetrieve, contributorGuid);        
-    }
-    
-    /**
      * Retrieve the guid for a given file. If the file does not exist within the file table, then it is created.
      * 
      * @param fileId The id of the file.
@@ -261,17 +222,6 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         }
         
         return guid;
-    }
-    
-    /**
-     * Retrieves a id of a file based on the guid. 
-     * @param fileGuid The guid of the file.
-     * @return The id of the file corresponding to guid.
-     */
-    private String retrieveFileId(long fileGuid) {
-        String sqlRetrieve = "SELECT " + FILE_FILEID + " FROM " + FILE_TABLE + " WHERE " + FILE_GUID + " = ?";
-        
-        return DatabaseUtils.selectStringValue(getConnection(), sqlRetrieve, fileGuid);        
     }
     
     /**
@@ -294,16 +244,5 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         }
         
         return guid;
-    }
-    
-    /**
-     * Retrieves a name of an actor based on the guid. 
-     * @param actorGuid The guid of the actor.
-     * @return The name of the actor corresponding to guid.
-     */
-    private String retrieveActorName(long actorGuid) {
-        String sqlRetrieve = "SELECT " + ACTOR_NAME + " FROM " + ACTOR_TABLE + " WHERE " + ACTOR_GUID + " = ?";
-        
-        return DatabaseUtils.selectStringValue(getConnection(), sqlRetrieve, actorGuid);        
-    }
+    }    
 }

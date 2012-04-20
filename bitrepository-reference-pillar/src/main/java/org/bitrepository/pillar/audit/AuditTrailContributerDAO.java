@@ -188,7 +188,6 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         try {
             ResultSet results = null;
             try {
-                System.err.println(sql);
                 results = DatabaseUtils.selectObject(getConnection(), sql, extractor.getArguments());
                 
                 while(results.next()) {
