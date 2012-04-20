@@ -24,7 +24,6 @@
  */
 package org.bitrepository.audittrails.service;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +32,6 @@ import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.LifeCycledService;
 
 /**
@@ -51,44 +49,6 @@ public class AuditTrailService implements LifeCycledService {
         
         this.store = store;
         this.collector = collector;
-        
-//        dummyEvents = new ArrayList<AuditTrailEvent>();
-//        AuditTrailEvent event = new AuditTrailEvent();
-//        event.setFileID("foo");
-//        event.setReportingComponent("pillar1");
-//        event.setActorOnFile("Benny");
-//        event.setActionOnFile(FileAction.PUT_FILE);
-//        event.setActionDateTime(CalendarUtils.getEpoch());
-//        event.setInfo("Initial file upload");
-//        event.setAuditTrailInformation("Delivery of foo");
-//        dummyEvents.add(event);
-//        event = new AuditTrailEvent();
-//        event.setFileID("bar");
-//        event.setReportingComponent("pillar1");
-//        event.setActorOnFile("Hans");
-//        event.setActionOnFile(FileAction.PUT_FILE);
-//        event.setActionDateTime(CalendarUtils.getEpoch());
-//        event.setInfo("Initial file upload");
-//        event.setAuditTrailInformation("Delivery of bar");
-//        dummyEvents.add(event);
-//        event = new AuditTrailEvent();
-//        event.setFileID("baz");
-//        event.setReportingComponent("pillar1");
-//        event.setActorOnFile("Hans");
-//        event.setActionOnFile(FileAction.PUT_FILE);
-//        event.setActionDateTime(CalendarUtils.getEpoch());
-//        event.setInfo("Initial file upload");
-//        event.setAuditTrailInformation("Delivery of baz");
-//        dummyEvents.add(event);
-//        event = new AuditTrailEvent();
-//        event.setFileID("foo");
-//        event.setReportingComponent("pillar1");
-//        event.setActorOnFile("pillar1");
-//        event.setActionOnFile(FileAction.CHECKSUM_CALCULATED);
-//        event.setActionDateTime(CalendarUtils.getEpoch());
-//        event.setInfo("Scheduled checksum calculation");
-//        event.setAuditTrailInformation("Delivery of foo");
-//        dummyEvents.add(event);
     }
     
     /**
