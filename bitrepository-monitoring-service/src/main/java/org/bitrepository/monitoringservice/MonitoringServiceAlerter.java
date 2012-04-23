@@ -86,6 +86,7 @@ public class MonitoringServiceAlerter {
 	    alarm.setAlarmRaiser(settings.getReferenceSettings().getMonitoringServiceSettings().getID());
 	    alarm.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
 	    alarm.setAlarmText("The following components has become unresponsive: " + components.toString());
+	    msg.setAlarm(alarm);
 	    messageSender.sendMessage(msg);
 	}
 	
