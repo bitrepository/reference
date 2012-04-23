@@ -110,7 +110,7 @@ public class AuditDatabaseExtractor {
             List<AuditTrailEvent> res = new ArrayList<AuditTrailEvent>();
             
             try {
-                log.info("Extracting sql '" + sql + "' with arguments '" + Arrays.asList(extractArgumentsFromModel()));
+                log.debug("Extracting sql '" + sql + "' with arguments '" + Arrays.asList(extractArgumentsFromModel()));
                 result = DatabaseUtils.selectObject(dbConnection, sql, extractArgumentsFromModel());
                 
                 while(result.next()) {

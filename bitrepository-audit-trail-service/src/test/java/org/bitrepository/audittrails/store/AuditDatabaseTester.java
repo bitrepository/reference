@@ -137,7 +137,7 @@ public class AuditDatabaseTester extends ExtendedTestCase {
         event1.setActorOnFile(actor1);
         event1.setAuditTrailInformation("I AM AUDIT");
         event1.setFileID(fileId);
-        event1.setInfo("WHY AM I DOING THIS?");
+        event1.setInfo(null);
         event1.setReportingComponent(pillarId);
         event1.setSequenceNumber(BigInteger.ONE);
         events.getAuditTrailEvent().add(event1);
@@ -146,7 +146,7 @@ public class AuditDatabaseTester extends ExtendedTestCase {
         event2.setActionDateTime(CalendarUtils.getNow());
         event2.setActionOnFile(FileAction.FAILURE);
         event2.setActorOnFile(actor2);
-        event2.setAuditTrailInformation("AUDITTIDUA");
+        event2.setAuditTrailInformation(null);
         event2.setFileID(fileId2);
         event2.setInfo("WHAT AM I DOING?");
         event2.setReportingComponent(pillarId);
