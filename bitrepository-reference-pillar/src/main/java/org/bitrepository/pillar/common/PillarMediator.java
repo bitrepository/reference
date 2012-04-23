@@ -43,6 +43,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReque
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.ArgumentValidator;
@@ -113,6 +114,19 @@ public abstract class PillarMediator extends AbstractMessageListener {
     @Override
     protected void reportUnsupported(Object message) {
         if(AlarmLevel.WARNING.equals(context.getSettings().getCollectionSettings().getPillarSettings().getAlarmLevel())) {
+            noHandlerAlarm(message);
+        }
+    }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    public void onMessage(Message message) {
+        log.info("Received Message of super type <MESSAGE>: " + message);
+        
+        PillarMessageHandler handler = handlers.get(message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        } else {
             noHandlerAlarm(message);
         }
     }

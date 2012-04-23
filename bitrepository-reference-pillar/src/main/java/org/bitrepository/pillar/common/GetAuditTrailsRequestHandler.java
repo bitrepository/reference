@@ -21,6 +21,8 @@
  */
 package org.bitrepository.pillar.common;
 
+import java.util.Date;
+
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -108,12 +110,26 @@ public class GetAuditTrailsRequestHandler extends PillarMessageHandler<GetAuditT
     protected ResultingAuditTrails collectAudits(GetAuditTrailsRequest message) {
         ResultingAuditTrails res = new ResultingAuditTrails();
         
+        Long minSeq = null;
+        if(message.getMinSequenceNumber() != null) {
+            minSeq = message.getMinSequenceNumber().longValue();
+        }
+        Long maxSeq = null;
+        if(message.getMaxSequenceNumber() != null) {
+            maxSeq = message.getMaxSequenceNumber().longValue();
+        }
+        Date minDate = null;
+        if(message.getMinTimestamp() != null) {
+            minDate = CalendarUtils.convertFromXMLGregorianCalendar(message.getMinTimestamp());
+        }
+        Date maxDate = null;
+        if(message.getMaxTimestamp() != null) {
+            maxDate = CalendarUtils.convertFromXMLGregorianCalendar(message.getMaxTimestamp());
+        }
         
         AuditTrailEvents events = new AuditTrailEvents();
         for(AuditTrailEvent event :  getAuditManager().getAudits(message.getFileID(), 
-                message.getMinSequenceNumber().longValue(), message.getMaxSequenceNumber().longValue(), 
-                CalendarUtils.convertFromXMLGregorianCalendar(message.getMinTimestamp()), 
-                CalendarUtils.convertFromXMLGregorianCalendar(message.getMaxTimestamp()))) {
+                minSeq, maxSeq, minDate, maxDate)) {
             events.getAuditTrailEvent().add(event);
         }
         

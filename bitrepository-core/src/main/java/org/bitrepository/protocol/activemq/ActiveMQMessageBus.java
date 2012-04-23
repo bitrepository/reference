@@ -399,14 +399,20 @@ public class ActiveMQMessageBus implements MessageBus {
                 securityManager.authorizeCertificateUse(((Message) content).getFrom(), text, signature);
                 securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature);
                 log.debug("Received message: " + text);
-                if(content.getClass().equals(AlarmMessage.class)){
-                	listener.onMessage((AlarmMessage) content);
+                if(content.getClass().equals(AlarmMessage.class)) {
+                    listener.onMessage((AlarmMessage) content);
                 } else if (content.getClass().equals(DeleteFileFinalResponse.class)) {
                     listener.onMessage((DeleteFileFinalResponse) content);
                 } else if (content.getClass().equals(DeleteFileProgressResponse.class)) {
                     listener.onMessage((DeleteFileProgressResponse) content);
                 } else if (content.getClass().equals(DeleteFileRequest.class)) {
                     listener.onMessage((DeleteFileRequest) content);
+                } else if (content.getClass().equals(GetAuditTrailsRequest.class)) {
+                    listener.onMessage((GetAuditTrailsRequest) content);
+                } else if (content.getClass().equals(GetAuditTrailsProgressResponse.class)) {
+                    listener.onMessage((GetAuditTrailsProgressResponse) content);
+                } else if (content.getClass().equals(GetAuditTrailsFinalResponse.class)) {
+                    listener.onMessage((GetAuditTrailsFinalResponse) content);
                 } else if (content.getClass().equals(GetChecksumsFinalResponse.class)) {
                     listener.onMessage((GetChecksumsFinalResponse) content);
                 } else if (content.getClass().equals(GetChecksumsRequest.class)) {
@@ -425,6 +431,12 @@ public class ActiveMQMessageBus implements MessageBus {
                     listener.onMessage((GetFileRequest) content);
                 } else if (content.getClass().equals(GetFileProgressResponse.class)) {
                     listener.onMessage((GetFileProgressResponse) content);
+                } else if (content.getClass().equals(GetStatusRequest.class)) {
+                    listener.onMessage((GetStatusRequest) content);
+                } else if (content.getClass().equals(GetStatusProgressResponse.class)) {
+                    listener.onMessage((GetStatusProgressResponse) content);
+                } else if (content.getClass().equals(GetStatusFinalResponse.class)) {
+                    listener.onMessage((GetStatusFinalResponse) content);
                 } else if (content.getClass().equals(IdentifyContributorsForGetStatusRequest.class)) {
                     listener.onMessage((IdentifyContributorsForGetStatusRequest) content);
                 } else if (content.getClass().equals(IdentifyContributorsForGetStatusResponse.class)) {
@@ -457,18 +469,6 @@ public class ActiveMQMessageBus implements MessageBus {
                     listener.onMessage((IdentifyPillarsForReplaceFileResponse) content);
                 } else if (content.getClass().equals(IdentifyPillarsForReplaceFileRequest.class)) {
                     listener.onMessage((IdentifyPillarsForReplaceFileRequest) content);
-                } else if (content.getClass().equals(GetStatusRequest.class)) {
-                    listener.onMessage((GetStatusRequest) content);
-                } else if (content.getClass().equals(GetStatusProgressResponse.class)) {
-                    listener.onMessage((GetStatusProgressResponse) content);
-                } else if (content.getClass().equals(GetStatusFinalResponse.class)) {
-                    listener.onMessage((GetStatusFinalResponse) content);
-                } else if (content.getClass().equals(GetStatusRequest.class)) {
-                    listener.onMessage((GetStatusRequest) content);
-                } else if (content.getClass().equals(GetStatusProgressResponse.class)) {
-                    listener.onMessage((GetStatusProgressResponse) content);
-                } else if (content.getClass().equals(GetStatusFinalResponse.class)) {
-                    listener.onMessage((GetStatusFinalResponse) content);
                 } else if (content.getClass().equals(PutFileFinalResponse.class)) {
                     listener.onMessage((PutFileFinalResponse) content);
                 } else if (content.getClass().equals(PutFileRequest.class)) {

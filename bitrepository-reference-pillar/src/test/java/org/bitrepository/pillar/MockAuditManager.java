@@ -21,19 +21,34 @@
  */
 package org.bitrepository.pillar;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.common.utils.CalendarUtils;
 
 public class MockAuditManager implements AuditTrailManager {
 
+    List<AuditTrailEvent> events = new ArrayList<AuditTrailEvent>();
+    
     private int callsForAuditEvent = 0;
     @Override
     public void addAuditEvent(String fileId, String actor, String info, String auditTrail, FileAction operation) {
         callsForAuditEvent++;
+        AuditTrailEvent audit = new AuditTrailEvent();
+        audit.setActionDateTime(CalendarUtils.getNow());
+        audit.setActionOnFile(operation);
+        audit.setActorOnFile(actor);
+        audit.setAuditTrailInformation(auditTrail);
+        audit.setFileID(fileId);
+        audit.setInfo(info);
+        audit.setReportingComponent("MOCK-AUDIT-MANAGER");
+        audit.setSequenceNumber(BigInteger.valueOf(events.size()+1));
+        events.add(audit);
     }
     public int getCallsForAuditEvent() {
         return callsForAuditEvent;
@@ -47,7 +62,28 @@ public class MockAuditManager implements AuditTrailManager {
     public Collection<AuditTrailEvent> getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate, 
             Date maxDate) {
         callsForGetAudits++;
-        return new ArrayList<AuditTrailEvent>();
+        List<AuditTrailEvent> res = new ArrayList<AuditTrailEvent>();
+        for(AuditTrailEvent event : events) {
+            if(fileId != null && !event.getFileID().equals(fileId)) {
+                continue;
+            }
+            if(minSeqNumber != null && event.getSequenceNumber().longValue() < minSeqNumber) {
+                continue;
+            }
+            if(maxSeqNumber != null && event.getSequenceNumber().longValue() > maxSeqNumber) {
+                continue;
+            }
+            if(minDate != null && CalendarUtils.convertFromXMLGregorianCalendar(
+                    event.getActionDateTime()).getTime() < minDate.getTime()) {
+                continue;
+            }
+            if(maxDate != null && CalendarUtils.convertFromXMLGregorianCalendar(
+                    event.getActionDateTime()).getTime() > maxDate.getTime()) {
+                continue;
+            }
+            res.add(event);
+        }
+        return res;
     }
     public int getCallsForGetAudits() {
         return callsForGetAudits;
