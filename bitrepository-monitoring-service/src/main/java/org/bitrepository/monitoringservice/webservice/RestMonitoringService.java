@@ -32,6 +32,9 @@ import javax.ws.rs.Produces;
 import org.bitrepository.monitoringservice.ComponentStatus;
 import org.bitrepository.monitoringservice.MonitoringService;
 import org.bitrepository.monitoringservice.MonitoringServiceFactory;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 @Path("/MonitoringService")
 public class RestMonitoringService {
@@ -46,12 +49,12 @@ public class RestMonitoringService {
 	@Path("/getMonitoringConfiguration/")
 	@Produces("application/json")
 	public String getMonitoringServiceConfiguration() {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append("[");
-        sb.append("{\"confOption\":\" Check interval \", \"confValue\": \"" + service.getCollectionInterval() +"\"},");
-        sb.append("{\"confOption\":\" Max retries \", \"confValue\": \"" + service.getMaxRetries() + "\"}");
-        sb.append("]");
-		return sb.toString();
+	    JSONArray array = new JSONArray();
+	    
+	    array.put(makeConfigurationEntry("Check interval", Long.toString(service.getCollectionInterval())));
+	    array.put(makeConfigurationEntry("Max retries", Long.toString(service.getMaxRetries())));
+	    
+	    return array.toString();
 	}
 	
 	@GET
@@ -60,21 +63,35 @@ public class RestMonitoringService {
 	public String getComponentStatus() {
 	    Map<String, ComponentStatus> statusMap = service.getStatus();
 	    Set<String> components = statusMap.keySet();
-	    StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        Iterator<String> it = components.iterator();
-        while(it.hasNext()) {
-            String component = it.next();
-            sb.append("{\"componentID\": \"" + component + "\"," +
-                    "\"status\":\"" + statusMap.get(component).getStatus() + "\"," + 
-                    "\"info\":\"" + statusMap.get(component).getInfo() + "\"," + 
-                    "\"timeStamp\":\"" + statusMap.get(component).getLastReply() + "\"" + 
-                "}");
-            if(it.hasNext()) {
-                sb.append(",");
-            }
+	    JSONArray array = new JSONArray();
+	    
+	    for(String component : statusMap.keySet()) {
+	        array.put(makeJSONStatusObject(component, statusMap.get(component)));
+	    }
+	    return array.toString();
+	}
+	
+	private JSONObject makeJSONStatusObject(String componentID, ComponentStatus status) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("componentID", componentID);
+            obj.put("status", status.getStatus());
+            obj.put("info", status.getInfo());
+            obj.put("timeStamp", status.getLastReply());
+            return obj;
+        } catch (JSONException e) {
+            return (JSONObject) JSONObject.NULL;
         }
-        sb.append("]");
-        return sb.toString();
+	}
+	
+	private JSONObject makeConfigurationEntry(String option, String value) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("confOption", option);            
+            obj.put("confValue", value);
+            return obj;
+        } catch (JSONException e) {
+            return (JSONObject) JSONObject.NULL;
+        }
 	}
 }
