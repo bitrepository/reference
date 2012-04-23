@@ -14,7 +14,7 @@ public class ComponentStatus {
      * Enumeration of possible status states for a component.  
      */
     public enum ComponentStatusCode {
-        UNKONWN,
+        UNKNOWN,
         OK,
         WARNING,
         ERROR,
@@ -39,7 +39,7 @@ public class ComponentStatus {
      */
     public ComponentStatus() {
         numberOfMissingReplys = 0;
-        status = ComponentStatusCode.UNKONWN;
+        status = ComponentStatusCode.UNKNOWN;
         lastReply = CalendarUtils.getEpoch();
         info = "No status requested yet.";
     }

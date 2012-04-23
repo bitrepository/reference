@@ -62,6 +62,14 @@ public class MonitoringService implements LifeCycledService {
 	    return statusStore.getStatusMap();
 	}
 	
+	public int getMaxRetries() {
+	    return settings.getReferenceSettings().getMonitoringServiceSettings().getMaxRetries().intValue();
+	} 
+	
+	public long getCollectionInterval() {
+	    return settings.getReferenceSettings().getMonitoringServiceSettings().getCollectionInterval();
+	}
+	
 	public void shutdown() {
 	    collector.stop();
 	    getStatusClient.shutdown();

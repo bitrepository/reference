@@ -48,10 +48,9 @@ public class RestMonitoringService {
 	public String getMonitoringServiceConfiguration() {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("[");
-        sb.append("{\"confOption\":\" Check interval \", \"confValue\": \" 60000 \"},");
-        sb.append("{\"confOption\":\" Max retries \", \"confValue\": \" 3 \"},");
-        sb.append("{\"confOption\":\" Timeout \", \"confValue\": \" 5000 \"}");
-	    sb.append("]");
+        sb.append("{\"confOption\":\" Check interval \", \"confValue\": \"" + service.getCollectionInterval() +"\"},");
+        sb.append("{\"confOption\":\" Max retries \", \"confValue\": \"" + service.getMaxRetries() + "\"}");
+        sb.append("]");
 		return sb.toString();
 	}
 	
