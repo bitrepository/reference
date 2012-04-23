@@ -42,6 +42,8 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
@@ -65,8 +67,8 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
-import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.messagebus.SpecificMessageListener;
 import org.bitrepository.protocol.security.CertificateUseException;
 import org.bitrepository.protocol.security.MessageAuthenticationException;
@@ -125,9 +127,6 @@ public class ActiveMQMessageBus implements MessageBus {
     /** The session for receiving messages. */
     private final Session consumerSession;
 
-    /** The session for receiving messages. */
-    private final Session manAckConsumerSession;
-
     /**
      * Map of the consumers, mapping from a hash of "destinations and listener" to consumer.
      * Used to identify if a listener is already registered.
@@ -164,7 +163,6 @@ public class ActiveMQMessageBus implements MessageBus {
 
             producerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
             consumerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
-            manAckConsumerSession = connection.createSession(TRANSACTED, Session.CLIENT_ACKNOWLEDGE);
 
             startListeningForMessages();
 
@@ -207,7 +205,7 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     /*
-    public synchronized void addDurableListener(String destinationID, final SpecificMessageListener listener) {
+    public synchronized void addDurableListener(String destinationID, final MessageListener listener) {
         log.debug("Adding durable listener '{}' to destination: '{}' on message-bus '{}'.",
                 new Object[] {listener, destinationID, configuration.getName()});
         MessageConsumer consumer = getDurableMessageConsumer(destinationID, listener);
@@ -311,6 +309,7 @@ public class ActiveMQMessageBus implements MessageBus {
         }
         return consumers.get(key);
     }
+
     /**
      * Creates a unique hash of the message listener and the destination id.
      *
@@ -470,6 +469,14 @@ public class ActiveMQMessageBus implements MessageBus {
                         listener.onMessage((GetFileRequest) content);
                     } else if (content.getClass().equals(GetFileProgressResponse.class)) {
                         listener.onMessage((GetFileProgressResponse) content);
+                    } else if (content.getClass().equals(IdentifyContributorsForGetStatusRequest.class)) {
+                        listener.onMessage((IdentifyContributorsForGetStatusRequest) content);
+                    } else if (content.getClass().equals(IdentifyContributorsForGetStatusResponse.class)) {
+                        listener.onMessage((IdentifyContributorsForGetStatusResponse) content);
+                    } else if (content.getClass().equals(IdentifyContributorsForGetAuditTrailsRequest.class)) {
+                        listener.onMessage((IdentifyContributorsForGetAuditTrailsRequest) content);
+                    } else if (content.getClass().equals(IdentifyContributorsForGetAuditTrailsResponse.class)) {
+                        listener.onMessage((IdentifyContributorsForGetAuditTrailsResponse) content);
                     } else if (content.getClass().equals(IdentifyPillarsForDeleteFileRequest.class)) {
                         listener.onMessage((IdentifyPillarsForDeleteFileRequest) content);
                     } else if (content.getClass().equals(IdentifyPillarsForDeleteFileResponse.class)) {

@@ -24,7 +24,7 @@
  */
 package org.bitrepository.client;
 
-import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.jaccept.TestEventManager;
 import org.slf4j.Logger;
@@ -170,7 +170,6 @@ public class MessageReceiver {
             return "TestMessageHandler [listenerName=" + listenerName + "]";
         }
 
-        @Override
         public void onMessage(Message message) {
             messageModel.addMessage(message);
         }

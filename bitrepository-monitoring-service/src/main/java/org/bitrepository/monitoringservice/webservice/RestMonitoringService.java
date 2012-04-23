@@ -29,7 +29,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import org.bitrepository.bitrepositoryelements.ResultingStatus;
+import org.bitrepository.monitoringservice.ComponentStatus;
 import org.bitrepository.monitoringservice.MonitoringService;
 import org.bitrepository.monitoringservice.MonitoringServiceFactory;
 
@@ -48,10 +48,9 @@ public class RestMonitoringService {
 	public String getMonitoringServiceConfiguration() {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("[");
-        sb.append("{\"confOption\":\" Check interval \", \"confValue\": \" 60000 \"},");
-        sb.append("{\"confOption\":\" Max retries \", \"confValue\": \" 3 \"},");
-        sb.append("{\"confOption\":\" Timeout \", \"confValue\": \" 5000 \"}");
-	    sb.append("]");
+        sb.append("{\"confOption\":\" Check interval \", \"confValue\": \"" + service.getCollectionInterval() +"\"},");
+        sb.append("{\"confOption\":\" Max retries \", \"confValue\": \"" + service.getMaxRetries() + "\"}");
+        sb.append("]");
 		return sb.toString();
 	}
 	
@@ -59,7 +58,7 @@ public class RestMonitoringService {
     @Path("/getComponentStatus/")
     @Produces("application/json")
 	public String getComponentStatus() {
-	    Map<String, ResultingStatus> statusMap = service.getStatus();
+	    Map<String, ComponentStatus> statusMap = service.getStatus();
 	    Set<String> components = statusMap.keySet();
 	    StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -67,9 +66,9 @@ public class RestMonitoringService {
         while(it.hasNext()) {
             String component = it.next();
             sb.append("{\"componentID\": \"" + component + "\"," +
-                    "\"status\":\"" + statusMap.get(component).getStatusInfo().getStatusCode() + "\"," + 
-                    "\"info\":\"" + statusMap.get(component).getStatusInfo().getStatusText() + "\"," + 
-                    "\"timeStamp\":\"" + statusMap.get(component).getStatusTimestamp() + "\"" + 
+                    "\"status\":\"" + statusMap.get(component).getStatus() + "\"," + 
+                    "\"info\":\"" + statusMap.get(component).getInfo() + "\"," + 
+                    "\"timeStamp\":\"" + statusMap.get(component).getLastReply() + "\"" + 
                 "}");
             if(it.hasNext()) {
                 sb.append(",");

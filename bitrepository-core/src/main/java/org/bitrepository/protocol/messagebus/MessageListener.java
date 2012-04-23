@@ -5,7 +5,7 @@
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as 
@@ -24,10 +24,15 @@
  */
 package org.bitrepository.protocol.messagebus;
 
-import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.bitrepositorymessages.*;
 
+
+/** This interface defines a consumer of messages in the bitrepository
+ * org.bitrepository.org.bitrepository.protocol.
+ *
+ * If an implementation does not support a method, it may throw {@link UnsupportedOperationException}
+ */
 public interface MessageListener {
-
     /**
      * Action to perform upon receiving a general message.
      *

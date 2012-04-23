@@ -26,13 +26,14 @@ package org.bitrepository.protocol;
 
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.MessageReceiver;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
-import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.jaccept.TestEventManager;
@@ -298,20 +299,16 @@ public class MessageBusTest extends IntegrationTest {
         }
     }
 
-    protected class TestMessageListener extends AbstractMessageListener {
+    protected class TestMessageListener implements MessageListener {
         /** Container for a message, when it is received.*/
         private Object message = null;
         @Override
-        public final void onMessage(IdentifyPillarsForGetFileRequest message) {
+        public final void onMessage(Message message) {
             try {
                 this.message = message;
             } catch (Exception e) {
                 Assert.fail("Should not throw an exception: ", e);
             }
-        }
-        @Override
-        public final void onMessage(AlarmMessage message) {
-            this.message = message;
         }
 
         /**

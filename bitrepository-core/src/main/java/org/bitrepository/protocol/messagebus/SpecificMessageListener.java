@@ -299,4 +299,6 @@ public interface SpecificMessageListener extends MessageListener {
      * @param message The message received.
      */
     void onMessage(IdentifyContributorsForGetStatusRequest message);
+
+    void onMessage(IdentifyContributorsForGetStatusResponse message);
 }

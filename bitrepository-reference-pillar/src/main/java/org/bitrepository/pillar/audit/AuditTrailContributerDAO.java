@@ -188,7 +188,6 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         try {
             ResultSet results = null;
             try {
-                System.err.println(sql);
                 results = DatabaseUtils.selectObject(getConnection(), sql, extractor.getArguments());
                 
                 while(results.next()) {
@@ -197,7 +196,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                     event.setSequenceNumber(BigInteger.valueOf(results.getLong(sequencePosition)));
                     event.setFileID(retrieveFileId(results.getLong(fileGuidPosition))); 
                     event.setActorOnFile(retrieveActorName(results.getLong(actorPosition)));
-                    event.setActionDateTime(CalendarUtils.getXmlGregorianCalendar(results.getDate(actionDatePosition)));
+                    event.setActionDateTime(CalendarUtils.getFromMillis(results.getTimestamp(actionDatePosition).getTime()));
                     event.setActionOnFile(FileAction.fromValue(results.getString(operationPosition)));
                     event.setAuditTrailInformation(results.getString(auditTrailInformationPosition));
                     event.setInfo(results.getString(infoPosition));

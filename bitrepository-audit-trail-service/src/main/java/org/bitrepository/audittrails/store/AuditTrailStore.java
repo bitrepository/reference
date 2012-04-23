@@ -24,13 +24,43 @@
  */
 package org.bitrepository.audittrails.store;
 
-import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Collection;
+import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
+import org.bitrepository.bitrepositoryelements.FileAction;
 
+/**
+ * Interface for the storage of audit trail information for the AuditTrailService.
+ */
 public interface AuditTrailStore {
-    public AuditTrailEvent[] getAuditTrails(XMLGregorianCalendar starttime, XMLGregorianCalendar endtime, String url);
+    /** 
+     * Extract audit trails from the store.
+     * @param fileId [OPTIONAL] The id of the file for restricting the extraction.
+     * @param contributorId [OPTIONAL] The id of the contributor for restricting the extraction.
+     * @param minSeqNumber [OPTIONAL] The minimum sequence number for restricting the extraction.
+     * @param maxSeqNumber [OPTIONAL] The maximum sequence number for restricting the extraction.
+     * @param actorName [OPTIONAL] The name of the actor for restricting the extraction.
+     * @param operation [OPTIONAL] The FileAction operation for restricting the extraction.
+     * @param startDate [OPTIONAL] The earliest date for the audits for restricting the extraction.
+     * @param endDate [OPTIONAL] The latest date for the audits for restricting the extraction.
+     * @return The requested audit trails from the store.
+     */
+    public Collection<AuditTrailEvent> getAuditTrails(String fileId, String contributorId, Long minSeqNumber, Long maxSeqNumber, 
+            String actorName, FileAction operation, Date startDate, Date endDate);
     
+    /**
+     * ingest audit trails into the store. 
+     * @param newAuditTrails The audit trails to be ingested into the store.
+     */
     public void addAuditTrails(AuditTrailEvents newAuditTrails);
+    
+    /**
+     * Retrieves the largest sequence number for a given contributor.
+     * 
+     * @param contributorId The id of the contributor to retrieve the largest sequence number from.
+     * @return The largest sequence number.
+     */
+    public int largestSequenceNumber(String contributorId);
 }

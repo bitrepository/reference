@@ -24,6 +24,9 @@
  */
 package org.bitrepository.audittrails.webservice;
 
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -39,57 +42,102 @@ import javax.ws.rs.Produces;
 import org.bitrepository.audittrails.service.AuditTrailService;
 import org.bitrepository.audittrails.service.AuditTrailServiceFactory;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/AuditTrailService")
 
 public class RestAuditTrailService {
-    
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
     private AuditTrailService service;
     
     public RestAuditTrailService() {
         service = AuditTrailServiceFactory.getAuditTrailService();	
     }
-      
-    @GET
-    @Path("/getAllAuditTrails/")
-    @Produces("application/json")
-    public String getAllAuditTrails() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        List<AuditTrailEvent> events = service.getAllAuditTrailEvents();
-        Iterator<AuditTrailEvent> it = events.iterator();
-        while(it.hasNext()) {
-            AuditTrailEvent event = it.next();
-            sb.append("{\"fileID\": \"" + event.getFileID() + "\"," +
-                    "\"reportingComponent\":\" " + event.getReportingComponent() + "\"," +
-                    "\"actor\":\" " + event.getActorOnFile() + "\"," +
-                    "\"action\":\" " + event.getActionOnFile() + "\"," +
-                    "\"timeStamp\":\" " + event.getActionDateTime() + "\"," + 
-                    "\"info\":\" " + event.getInfo() + "\"," +
-                    "\"auditTrailInfo\":\" " + event.getAuditTrailInformation() + "\"}");
-            if(it.hasNext()) {
-                sb.append(",");
-            }
-        }
-        sb.append("]");
-        return sb.toString();
-    }
-
     
     @POST
     @Path("/queryAuditTrailEvents/")
     @Consumes("application/x-www-form-urlencoded")
     @Produces("application/json")
-    public String startChecksumCheckFromPillar(
+    public String queryAuditTrailEvents(
             @FormParam ("fromDate") String fromDate,
             @FormParam ("toDate") String toDate,
             @FormParam ("fileID") String fileID,
             @FormParam ("reportingComponent") String reportingComponent,
             @FormParam ("actor") String actor,
             @FormParam ("action") String action) {
-        //List<AuditTrailEvent> = service.queryAuditTrailEvents(fromDate, toDate, fileID, reportingComponent, actor, action);
-        return getAllAuditTrails();
+    	Date from = makeDateObject(fromDate);
+    	Date to = makeDateObject(toDate);
+        StringBuilder sb = new StringBuilder();
+        String filteredAction;
+        if(action.equals("ALL")) {
+            filteredAction = null;
+        } else {
+            filteredAction = action;
+        }
+        
+    	Collection<AuditTrailEvent> events = service.queryAuditTrailEvents(from, to, contentOrNull(fileID),
+    	        contentOrNull(reportingComponent), contentOrNull(actor), filteredAction);
+    	
+    	JSONArray array = new JSONArray();
+        if(events != null) {
+            log.debug("Got " + events.size() + " AuditTrailEvents!");
+            for(AuditTrailEvent event : events) {
+                array.put(makeJSONEntry(event));
+            }
+        } else {
+            log.debug("Got null queryAuditTrailEvents call!");
+        }
+        return array.toString();
     }
+    
+    private JSONObject makeJSONEntry(AuditTrailEvent event) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("fileID", event.getFileID());
+            obj.put("reportingComponent", event.getReportingComponent());
+            obj.put("actor", event.getActorOnFile());
+            obj.put("action", event.getActionOnFile());
+            obj.put("timeStamp", event.getActionDateTime());
+            obj.put("info", event.getInfo());
+            obj.put("auditTrailInfo", event.getAuditTrailInformation());
+            return obj;
+        } catch (JSONException e) {
+            return (JSONObject) JSONObject.NULL;
+        }
+        
+    }
+    
+    private Date makeDateObject(String dateStr) {
+    	if(dateStr == null || dateStr.trim().isEmpty()) {
+    		return null;
+    	} else {
+    		String[] components = dateStr.split("/");
+    		int year = Integer.parseInt(components[0]);
+    		int month = Integer.parseInt(components[1]);
+    		int day = Integer.parseInt(components[2]);
+    		Calendar time = Calendar.getInstance();
+    		time.set(year, month, day);
+    		
+    		return time.getTime();
+    	}
+    }
+    
+    private String contentOrNull(String input) {
+        if(input != null && input.trim().isEmpty()) {
+            return null;
+        } else {
+            return input.trim();
+        }
+    }
+    
+    
+    
     
 }

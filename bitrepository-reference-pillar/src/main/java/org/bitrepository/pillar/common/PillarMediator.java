@@ -35,6 +35,7 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
@@ -192,6 +193,20 @@ public abstract class PillarMediator extends AbstractMessageListener {
         } else {
             noHandlerAlarm(message);
         }    
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onMessage(IdentifyContributorsForGetAuditTrailsRequest message) {
+        log.info("Received: " + message);
+
+        PillarMessageHandler<IdentifyContributorsForGetAuditTrailsRequest> handler = handlers.get(
+                message.getClass().getName());
+        if(handler != null) {
+            handler.handleMessage(message);
+        } else {
+            noHandlerAlarm(message);
+        }
     }
 
     @SuppressWarnings("unchecked")

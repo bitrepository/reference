@@ -30,10 +30,13 @@ import org.slf4j.LoggerFactory;
 public class GetStatusEventHandler implements EventHandler {
 
     private final ComponentStatusStore statusStore;
+    private final MonitoringServiceAlerter alerter;
     private final Logger log = LoggerFactory.getLogger(GetStatusEventHandler.class);
 
-    public GetStatusEventHandler(ComponentStatusStore statusStore) {
+    public GetStatusEventHandler(ComponentStatusStore statusStore, MonitoringServiceAlerter alerter) {
         this.statusStore = statusStore;
+        this.alerter = alerter;
+        
     }
     
     @Override
@@ -56,6 +59,7 @@ public class GetStatusEventHandler implements EventHandler {
             statusStore.updateStatus(statusEvent.getContributorID(), statusEvent.getStatus());
             break;
         case COMPLETE:
+            alerter.checkStatuses();
             break;
         case COMPONENT_FAILED:
             break;

@@ -194,7 +194,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
 
         /**
          * Constructor.
-         * @param confs The configurations for declaring the messagebus.
+         * @param conf The configurations for declaring the messagebus.
          */
         public ResendMessageListener(MessageBusConfiguration conf) {
             this.bus = new ActiveMQMessageBus(conf, securityManager);

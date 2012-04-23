@@ -44,6 +44,7 @@ import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
@@ -330,6 +331,51 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     }
 
     @Override
+    public void onMessage(IdentifyContributorsForGetAuditTrailsRequest message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            handleNoConversation(messageCorrelationID);
+        }
+    }
+    
+
+    @Override
+    public void onMessage(IdentifyContributorsForGetAuditTrailsResponse message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            handleNoConversation(messageCorrelationID);
+        }
+    }
+    
+    @Override
+    public void onMessage(IdentifyContributorsForGetStatusRequest message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            handleNoConversation(messageCorrelationID);
+        }
+    }
+
+    @Override
+    public void onMessage(IdentifyContributorsForGetStatusResponse message) {
+        String messageCorrelationID = message.getCorrelationID();
+        Conversation conversation = conversations.get(messageCorrelationID);
+        if (conversation != null) {
+            conversation.onMessage(message);
+        } else {
+            handleNoConversation(messageCorrelationID);
+        }
+    }
+
+    @Override
     public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
         String messageCorrelationID = message.getCorrelationID();
         Conversation conversation = conversations.get(messageCorrelationID);
@@ -461,40 +507,6 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         }
     }
     
-    @Override
-    public void onMessage(IdentifyContributorsForGetAuditTrailsRequest message) {
-        String messageCorrelationID = message.getCorrelationID();
-        Conversation conversation = conversations.get(messageCorrelationID);
-        if (conversation != null) {
-            conversation.onMessage(message);
-        } else {
-            handleNoConversation(messageCorrelationID);
-        }
-    }
-    
-
-    @Override
-    public void onMessage(IdentifyContributorsForGetAuditTrailsResponse message) {
-        String messageCorrelationID = message.getCorrelationID();
-        Conversation conversation = conversations.get(messageCorrelationID);
-        if (conversation != null) {
-            conversation.onMessage(message);
-        } else {
-            handleNoConversation(messageCorrelationID);
-        }
-    }
-    
-    @Override
-    public void onMessage(IdentifyContributorsForGetStatusRequest message) {
-        String messageCorrelationID = message.getCorrelationID();
-        Conversation conversation = conversations.get(messageCorrelationID);
-        if (conversation != null) {
-            conversation.onMessage(message);
-        } else {
-            handleNoConversation(messageCorrelationID);
-        }
-    }
-
     @Override
     public void onMessage(PutFileFinalResponse message) {
         String messageCorrelationID = message.getCorrelationID();

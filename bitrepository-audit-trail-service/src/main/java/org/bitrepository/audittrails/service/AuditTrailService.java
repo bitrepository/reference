@@ -24,67 +24,34 @@
  */
 package org.bitrepository.audittrails.service;
 
+import java.util.Collection;
+import java.util.Date;
+
+import org.bitrepository.audittrails.collector.AuditTrailCollector;
+import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.LifeCycledService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class to expose the functionality of the AuditTrailService. 
  * Aggregates the needed classes.   
  */
 public class AuditTrailService implements LifeCycledService {
-    
-    List<AuditTrailEvent> dummyEvents;
-    
-    public AuditTrailService() {
-        dummyEvents = new ArrayList<AuditTrailEvent>();
-        AuditTrailEvent event = new AuditTrailEvent();
-        event.setFileID("foo");
-        event.setReportingComponent("pillar1");
-        event.setActorOnFile("Benny");
-        event.setActionOnFile(FileAction.PUT_FILE);
-        event.setActionDateTime(CalendarUtils.getEpoch());
-        event.setInfo("Initial file upload");
-        event.setAuditTrailInformation("Delivery of foo");
-        dummyEvents.add(event);
-        event = new AuditTrailEvent();
-        event.setFileID("bar");
-        event.setReportingComponent("pillar1");
-        event.setActorOnFile("Hans");
-        event.setActionOnFile(FileAction.PUT_FILE);
-        event.setActionDateTime(CalendarUtils.getEpoch());
-        event.setInfo("Initial file upload");
-        event.setAuditTrailInformation("Delivery of bar");
-        dummyEvents.add(event);
-        event = new AuditTrailEvent();
-        event.setFileID("baz");
-        event.setReportingComponent("pillar1");
-        event.setActorOnFile("Hans");
-        event.setActionOnFile(FileAction.PUT_FILE);
-        event.setActionDateTime(CalendarUtils.getEpoch());
-        event.setInfo("Initial file upload");
-        event.setAuditTrailInformation("Delivery of baz");
-        dummyEvents.add(event);
-        event = new AuditTrailEvent();
-        event.setFileID("foo");
-        event.setReportingComponent("pillar1");
-        event.setActorOnFile("pillar1");
-        event.setActionOnFile(FileAction.CHECKSUM_CALCULATED);
-        event.setActionDateTime(CalendarUtils.getEpoch());
-        event.setInfo("Scheduled checksum calculation");
-        event.setAuditTrailInformation("Delivery of foo");
-        dummyEvents.add(event);
-    }
+    /** The storage of audit trail information.*/
+    private final AuditTrailStore store;
+    /** The collector of new audit trails.*/
+    private final AuditTrailCollector collector;
     
     /**
-     * Retrieve all AuditTrailEvents in store. 
+     * Constructor.
+     * @param store The store for the audit trail data.
+     * @param collector The collector of new audit trail data.
      */
-    public List<AuditTrailEvent> getAllAuditTrailEvents() {
-        return dummyEvents;
+    public AuditTrailService(AuditTrailStore store, AuditTrailCollector collector) {
+        
+        this.store = store;
+        this.collector = collector;
     }
     
     /**
@@ -94,15 +61,32 @@ public class AuditTrailService implements LifeCycledService {
      * @param toDate Restrict the results to only provide events up till this point in time
      * @param fileID Restrict the results to only be about this fileID
      * @param reportingComponent Restrict the results to only be reported by this component
+     * @param actor Restrict the results to only be events caused by this actor
+     * @param action Restrict the results to only be about this type of action
      */
-    public List<AuditTrailEvent> queryAuditTrailEvents(String fromDate, String toDate, String fileID, String reportingComponent,
-            String actor, String action) {
-        return dummyEvents;
+    public Collection<AuditTrailEvent> queryAuditTrailEvents(Date fromDate, Date toDate, String fileID, 
+            String reportingComponent, String actor, String action) {
+        FileAction operation;
+        if(action != null) {
+            operation = FileAction.fromValue(action);
+        } else {
+            operation = null;
+        }
+        
+        
+        return store.getAuditTrails(fileID, actor, null, null, actor, operation, fromDate, toDate);
+    }
+    
+    /**
+     * Collects all the newest audit trails.
+     */
+    public void collectAuditTrails() {
+        collector.collectNewestAudits();
     }
 
-    public void start() {
-        //Nothing to do
-    }
+
+    @Override
+    public void start() {}
 
     @Override
     public void shutdown() {

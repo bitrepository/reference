@@ -45,9 +45,7 @@
   <GetChecksumsSettings></GetChecksumsSettings>
   <GetFileSettings></GetFileSettings>
   <GetFileIDsSettings></GetFileIDsSettings>
-  <GetStatusSettings>
-    <CollectionInterval>300000</CollectionInterval>
-  </GetStatusSettings>
+  <GetStatusSettings></GetStatusSettings>
   <PutFileSettings></PutFileSettings>
   <ReplaceFileSettings></ReplaceFileSettings>
   <AlarmServiceSettings>
@@ -57,6 +55,8 @@
     <ID>audit-trail-service</ID>
     <Contributors>test-pillar</Contributors>
     <Contributors>integrity-service</Contributors>
+    <AuditContributerDatabaseUrl>jdbc:derby:auditservicedb</AuditContributerDatabaseUrl>
+    <CollectAuditInterval>3600000</CollectAuditInterval>
   </AuditTrailServiceSettings>
   <IntegrityServiceSettings>
     <ID>integrity-service</ID>
@@ -66,5 +66,7 @@
   </IntegrityServiceSettings>
   <MonitoringServiceSettings>
     <ID>monitoring-service</ID>
+    <CollectionInterval>300000</CollectionInterval>
+    <MaxRetries>3</MaxRetries>
   </MonitoringServiceSettings>
 </ReferenceSettings>

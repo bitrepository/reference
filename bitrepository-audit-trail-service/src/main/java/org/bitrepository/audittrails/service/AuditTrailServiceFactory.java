@@ -29,6 +29,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
+import org.bitrepository.audittrails.collector.AuditTrailCollector;
+import org.bitrepository.audittrails.store.AuditTrailServiceDAO;
+import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
@@ -92,7 +97,12 @@ public final class AuditTrailServiceFactory {
                 securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
                         authenticator, signer, authorizer, permissionStore, 
                         settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
-                auditTrailService = new AuditTrailService();
+                
+                AuditTrailStore store = new AuditTrailServiceDAO(settings);
+                AuditTrailClient client = AccessComponentFactory.getInstance().createAuditTrailClient(settings, 
+                        securityManager, settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
+                AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
+                auditTrailService = new AuditTrailService(store, collector);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
