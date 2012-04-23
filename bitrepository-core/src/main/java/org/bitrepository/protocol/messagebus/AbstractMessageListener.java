@@ -144,6 +144,26 @@ public abstract class AbstractMessageListener implements MessageListener {
     }
 
     @Override
+    public void onMessage(IdentifyContributorsForGetAuditTrailsRequest message) {
+        reportUnsupported(message);
+    }
+
+    @Override
+    public void onMessage(IdentifyContributorsForGetAuditTrailsResponse message) {
+        reportUnsupported(message);
+    }
+    
+    @Override
+    public void onMessage(IdentifyContributorsForGetStatusRequest message) {
+        reportUnsupported(message);
+    }
+  
+    @Override
+    public void onMessage(IdentifyContributorsForGetStatusResponse message) {
+        reportUnsupported(message);
+    }
+  
+    @Override
     public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
         reportUnsupported(message);
     }
@@ -203,21 +223,6 @@ public abstract class AbstractMessageListener implements MessageListener {
         reportUnsupported(message);
     }
     
-    @Override
-    public void onMessage(IdentifyContributorsForGetAuditTrailsRequest message) {
-        reportUnsupported(message);
-    }
-
-    @Override
-    public void onMessage(IdentifyContributorsForGetAuditTrailsResponse message) {
-        reportUnsupported(message);
-    }
-    
-    @Override
-    public void onMessage(IdentifyContributorsForGetStatusRequest message) {
-        reportUnsupported(message);
-    }
-  
     @Override
     public void onMessage(PutFileFinalResponse message) {
         reportUnsupported(message);

@@ -89,9 +89,6 @@ public class ActiveMQMessageBus implements MessageBus {
     /** The session for receiving messages. */
     private final Session consumerSession;
 
-    /** The session for receiving messages. */
-    private final Session manAckConsumerSession;
-
     /**
      * Map of the consumers, mapping from a hash of "destinations and listener" to consumer.
      * Used to identify if a listener is already registered.
@@ -128,7 +125,6 @@ public class ActiveMQMessageBus implements MessageBus {
             
             producerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
             consumerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
-            manAckConsumerSession = connection.createSession(TRANSACTED, Session.CLIENT_ACKNOWLEDGE);
             
             startListeningForMessages();
             
@@ -429,6 +425,14 @@ public class ActiveMQMessageBus implements MessageBus {
                     listener.onMessage((GetFileRequest) content);
                 } else if (content.getClass().equals(GetFileProgressResponse.class)) {
                     listener.onMessage((GetFileProgressResponse) content);
+                } else if (content.getClass().equals(IdentifyContributorsForGetStatusRequest.class)) {
+                    listener.onMessage((IdentifyContributorsForGetStatusRequest) content);
+                } else if (content.getClass().equals(IdentifyContributorsForGetStatusResponse.class)) {
+                    listener.onMessage((IdentifyContributorsForGetStatusResponse) content);
+                } else if (content.getClass().equals(IdentifyContributorsForGetAuditTrailsRequest.class)) {
+                    listener.onMessage((IdentifyContributorsForGetAuditTrailsRequest) content);
+                } else if (content.getClass().equals(IdentifyContributorsForGetAuditTrailsResponse.class)) {
+                    listener.onMessage((IdentifyContributorsForGetAuditTrailsResponse) content);
                 } else if (content.getClass().equals(IdentifyPillarsForDeleteFileRequest.class)) {
                     listener.onMessage((IdentifyPillarsForDeleteFileRequest) content);
                 } else if (content.getClass().equals(IdentifyPillarsForDeleteFileResponse.class)) {
@@ -453,10 +457,6 @@ public class ActiveMQMessageBus implements MessageBus {
                     listener.onMessage((IdentifyPillarsForReplaceFileResponse) content);
                 } else if (content.getClass().equals(IdentifyPillarsForReplaceFileRequest.class)) {
                     listener.onMessage((IdentifyPillarsForReplaceFileRequest) content);
-                } else if (content.getClass().equals(IdentifyContributorsForGetStatusResponse.class)) {
-                    listener.onMessage((IdentifyContributorsForGetStatusResponse) content);
-                } else if (content.getClass().equals(IdentifyContributorsForGetStatusRequest.class)) {
-                    listener.onMessage((IdentifyContributorsForGetStatusRequest) content);
                 } else if (content.getClass().equals(GetStatusRequest.class)) {
                     listener.onMessage((GetStatusRequest) content);
                 } else if (content.getClass().equals(GetStatusProgressResponse.class)) {

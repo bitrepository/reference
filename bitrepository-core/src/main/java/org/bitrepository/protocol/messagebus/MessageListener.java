@@ -153,6 +153,34 @@ public interface MessageListener {
     void onMessage(GetStatusRequest message);
     
     /**
+     * Action to perform upon receiving a general message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyContributorsForGetAuditTrailsRequest message);
+    
+    /**
+     * Action to perform upon receiving a general message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyContributorsForGetAuditTrailsResponse message);
+    
+    /**
+     * Action to perform upon receiving a general message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyContributorsForGetStatusRequest message);
+    
+    /**
+     * Action to perform upon receiving a general message.
+     *
+     * @param message The message received.
+     */
+    void onMessage(IdentifyContributorsForGetStatusResponse message);
+
+    /**
      * Action to perform upon receiving a message.
      *
      * @param message The message received.
@@ -277,27 +305,6 @@ public interface MessageListener {
      * @param message The message received.
      */
     void onMessage(ReplaceFileProgressResponse message);
-
-    /**
-     * Action to perform upon receiving a general message.
-     *
-     * @param message The message received.
-     */
-    void onMessage(IdentifyContributorsForGetAuditTrailsRequest message);
-    
-    /**
-     * Action to perform upon receiving a general message.
-     *
-     * @param message The message received.
-     */
-    void onMessage(IdentifyContributorsForGetAuditTrailsResponse message);
-    
-    /**
-     * Action to perform upon receiving a general message.
-     *
-     * @param message The message received.
-     */
-    void onMessage(IdentifyContributorsForGetStatusRequest message);
 
     /**
      * Action to perform upon receiving a general message.
