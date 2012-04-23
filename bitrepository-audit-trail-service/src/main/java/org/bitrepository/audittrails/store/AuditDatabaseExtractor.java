@@ -147,7 +147,7 @@ public class AuditDatabaseExtractor {
         Long contributorGuid = resultSet.getLong(POSITION_CONTRIBUTOR_GUID);
         String contributorId = retrieveContributorId(contributorGuid);
         
-        event.setActionDateTime(CalendarUtils.getXmlGregorianCalendar(resultSet.getDate(POSITION_OPERATION_DATE)));
+        event.setActionDateTime(CalendarUtils.getFromMillis(resultSet.getTimestamp(POSITION_OPERATION_DATE).getTime()));
         event.setActionOnFile(FileAction.fromValue(resultSet.getString(POSITION_OPERATION)));
         event.setAuditTrailInformation(resultSet.getString(POSITION_AUDIT_TRAIL));
         event.setActorOnFile(actorName);
