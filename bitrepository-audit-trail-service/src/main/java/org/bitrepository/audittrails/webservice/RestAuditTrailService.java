@@ -44,11 +44,17 @@ import org.bitrepository.audittrails.service.AuditTrailServiceFactory;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/AuditTrailService")
 
 public class RestAuditTrailService {
-    
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
     private AuditTrailService service;
     
     public RestAuditTrailService() {
@@ -75,28 +81,37 @@ public class RestAuditTrailService {
         } else {
             filteredAction = action;
         }
-    	Collection<AuditTrailEvent> events = service.queryAuditTrailEvents(from, to, fileID,
-    			reportingComponent, actor, filteredAction);
+        
+    	Collection<AuditTrailEvent> events = service.queryAuditTrailEvents(from, to, contentOrNull(fileID),
+    	        contentOrNull(reportingComponent), contentOrNull(actor), filteredAction);
     	
-        sb.append("[");
+    	JSONArray array = new JSONArray();
         if(events != null) {
-        	Iterator<AuditTrailEvent> it = events.iterator();
-            while(it.hasNext()) {
-                AuditTrailEvent event = it.next();
-                sb.append("{\"fileID\": \"" + event.getFileID() + "\"," +
-                        "\"reportingComponent\":\" " + event.getReportingComponent() + "\"," +
-                        "\"actor\":\" " + event.getActorOnFile() + "\"," +
-                        "\"action\":\" " + event.getActionOnFile() + "\"," +
-                        "\"timeStamp\":\" " + event.getActionDateTime() + "\"," + 
-                        "\"info\":\" " + event.getInfo() + "\"," +
-                        "\"auditTrailInfo\":\" " + event.getAuditTrailInformation() + "\"}");
-                if(it.hasNext()) {
-                    sb.append(",");
-                }
+            log.debug("Got " + events.size() + " AuditTrailEvents!");
+            for(AuditTrailEvent event : events) {
+                array.put(makeJSONEntry(event));
             }
+        } else {
+            log.debug("Got null queryAuditTrailEvents call!");
         }
-        sb.append("]");
-        return sb.toString();        
+        return array.toString();
+    }
+    
+    private JSONObject makeJSONEntry(AuditTrailEvent event) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("fileID", event.getFileID());
+            obj.put("reportingComponent", event.getReportingComponent());
+            obj.put("actor", event.getActorOnFile());
+            obj.put("action", event.getActionOnFile());
+            obj.put("timeStamp", event.getActionDateTime());
+            obj.put("info", event.getInfo());
+            obj.put("auditTrailInfo", event.getAuditTrailInformation());
+            return obj;
+        } catch (JSONException e) {
+            return (JSONObject) JSONObject.NULL;
+        }
+        
     }
     
     private Date makeDateObject(String dateStr) {
@@ -112,6 +127,14 @@ public class RestAuditTrailService {
     		
     		return time.getTime();
     	}
+    }
+    
+    private String contentOrNull(String input) {
+        if(input != null && input.trim().isEmpty()) {
+            return null;
+        } else {
+            return input.trim();
+        }
     }
     
     
