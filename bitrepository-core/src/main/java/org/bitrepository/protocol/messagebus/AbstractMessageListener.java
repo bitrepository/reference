@@ -60,197 +60,197 @@ public abstract class AbstractMessageListener implements MessageListener {
     
     @Override
     public void onMessage(AlarmMessage message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
     
     @Override
     public void onMessage(DeleteFileFinalResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(DeleteFileProgressResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(DeleteFileRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
     
     @Override
     public void onMessage(GetAuditTrailsFinalResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
     
     @Override
     public void onMessage(GetAuditTrailsProgressResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(GetAuditTrailsRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
     
     @Override
     public void onMessage(GetChecksumsFinalResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(GetChecksumsRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(GetChecksumsProgressResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(GetFileFinalResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(GetFileIDsFinalResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(GetFileIDsRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(GetFileIDsProgressResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(GetFileRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(GetFileProgressResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(GetStatusRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(IdentifyContributorsForGetAuditTrailsRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(IdentifyContributorsForGetAuditTrailsResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
     
     @Override
     public void onMessage(IdentifyContributorsForGetStatusRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
   
     @Override
     public void onMessage(IdentifyContributorsForGetStatusResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
   
     @Override
     public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForDeleteFileResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
     
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetChecksumsRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetFileIDsResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetFileResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForGetFileRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForPutFileResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForPutFileRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(IdentifyPillarsForReplaceFileRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
     
     @Override
     public void onMessage(IdentifyPillarsForReplaceFileResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
     
     @Override
     public void onMessage(PutFileFinalResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(PutFileRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
     public void onMessage(PutFileProgressResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
     
     @Override
     public void onMessage(ReplaceFileRequest message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
     
     @Override
     public void onMessage(ReplaceFileFinalResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
     
     @Override
     public void onMessage(ReplaceFileProgressResponse message) {
-        reportUnsupported(message);
+        onMessage((Message) message);
     }
 
     @Override
