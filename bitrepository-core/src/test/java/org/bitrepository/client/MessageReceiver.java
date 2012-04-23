@@ -242,6 +242,22 @@ public class MessageReceiver {
             messageModel.addMessage(message);
         }
         @Override
+        public void onMessage(IdentifyContributorsForGetAuditTrailsRequest message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(IdentifyContributorsForGetAuditTrailsResponse message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(IdentifyContributorsForGetStatusRequest message) {
+            messageModel.addMessage(message);
+        }
+        @Override
+        public void onMessage(IdentifyContributorsForGetStatusResponse message) {
+            messageModel.addMessage(message);
+        }
+        @Override
         public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
             messageModel.addMessage(message);
         }
@@ -287,18 +303,6 @@ public class MessageReceiver {
         }
         @Override
         public void onMessage(IdentifyPillarsForReplaceFileRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyContributorsForGetAuditTrailsRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyContributorsForGetAuditTrailsResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyContributorsForGetStatusRequest message) {
             messageModel.addMessage(message);
         }
         @Override
