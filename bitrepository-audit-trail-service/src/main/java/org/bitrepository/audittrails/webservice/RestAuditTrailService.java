@@ -111,7 +111,6 @@ public class RestAuditTrailService {
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;
         }
-        
     }
     
     private Date makeDateObject(String dateStr) {
