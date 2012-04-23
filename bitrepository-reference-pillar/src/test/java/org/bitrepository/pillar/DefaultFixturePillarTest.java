@@ -26,14 +26,14 @@ package org.bitrepository.pillar;
 
 import org.bitrepository.client.MessageReceiver;
 import org.bitrepository.protocol.IntegrationTest;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /**
  * Contains the generic parts for pillar tests integrating to the message bus. 
  * Mostly copied from DefaultFixtureClientTest...
  */
 public abstract class DefaultFixturePillarTest extends IntegrationTest {
-    protected static final String DEFAULT_FILE_ID = TestMessageFactory.FILE_ID_DEFAULT;
+    protected static final String DEFAULT_FILE_ID = ClientTestMessageFactory.FILE_ID_DEFAULT;
     protected static final String FROM = "UNIT-TEST";    
 
     protected static String pillarDestinationId;

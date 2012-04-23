@@ -36,8 +36,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.bitrepository.common.FileStore;
-import org.bitrepository.protocol.TestMessageFactory;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /** 
  * Models the storing and retrieval of files as needed in test modeling pillar behavior.
@@ -46,9 +45,9 @@ public class TestFileStore implements FileStore {
     private static final String ROOT_STORE = "target/test-classes/filestorage";
     private final String storageDir;
     /** The file store already contains this file when it created. The fileID corresponds to the file ID found in the 
-     * {@LINK TestMessageFactory}
+     * {@LINK ClientTestMessageFactory}
      */
-    public static final String DEFAULT_FILE_ID = TestMessageFactory.FILE_ID_DEFAULT;
+    public static final String DEFAULT_FILE_ID = ClientTestMessageFactory.FILE_ID_DEFAULT;
     private final String storeName;
     
     /** The default test file.*/

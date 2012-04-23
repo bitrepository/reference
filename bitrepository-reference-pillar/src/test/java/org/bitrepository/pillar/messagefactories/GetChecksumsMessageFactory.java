@@ -37,9 +37,9 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
-public class GetChecksumsMessageFactory extends TestMessageFactory {
+public class GetChecksumsMessageFactory extends ClientTestMessageFactory {
 
     final Settings settings;
     

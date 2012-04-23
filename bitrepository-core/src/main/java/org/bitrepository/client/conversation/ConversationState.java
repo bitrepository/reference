@@ -24,12 +24,12 @@
  */
 package org.bitrepository.client.conversation;
 
-import org.bitrepository.protocol.messagebus.MessageListener;
+import org.bitrepository.protocol.messagebus.SpecificMessageListener;
 
 /**
  * Models a specific state of a conversation.
  */
-public interface ConversationState extends MessageListener {
+public interface ConversationState extends SpecificMessageListener {
 
     /**
      * Starts this state.

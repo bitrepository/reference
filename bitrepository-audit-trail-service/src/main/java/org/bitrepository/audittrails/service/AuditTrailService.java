@@ -24,12 +24,13 @@
  */
 package org.bitrepository.audittrails.service;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.LifeCycledService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class to expose the functionality of the AuditTrailService. 
@@ -93,12 +94,14 @@ public class AuditTrailService implements LifeCycledService {
      * @param toDate Restrict the results to only provide events up till this point in time
      * @param fileID Restrict the results to only be about this fileID
      * @param reportingComponent Restrict the results to only be reported by this component
-     * @param Actor Restrict the results to only be events caused by this actor
-     * @param Action Restrict the results to only be about this type of action
      */
     public List<AuditTrailEvent> queryAuditTrailEvents(String fromDate, String toDate, String fileID, String reportingComponent,
             String actor, String action) {
         return dummyEvents;
+    }
+
+    public void start() {
+        //Nothing to do
     }
 
     @Override

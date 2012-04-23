@@ -23,6 +23,7 @@ package org.bitrepository.client.conversation;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.protocol.CorrelationIDGenerator;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
 /**
@@ -45,7 +46,7 @@ public class ConversationContext {
             String auditTrailInformation) {
         this.settings = settings;
         this.messageSender = messageSender;
-        this.conversationID = ConversationIDGenerator.generateConversationID();
+        this.conversationID = CorrelationIDGenerator.generateConversationID();
         this.clientID = clientID;
         this.monitor = new ConversationEventMonitor(conversationID, eventHandler);
         this.auditTrailInformation = auditTrailInformation;

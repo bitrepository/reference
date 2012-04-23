@@ -24,9 +24,58 @@
  */
 package org.bitrepository.protocol.activemq;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.util.ByteArrayInputStream;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
+import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
+import org.bitrepository.common.JaxbHelper;
+import org.bitrepository.protocol.CoordinationLayerException;
+import org.bitrepository.protocol.messagebus.MessageListener;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.SpecificMessageListener;
+import org.bitrepository.protocol.security.CertificateUseException;
+import org.bitrepository.protocol.security.MessageAuthenticationException;
+import org.bitrepository.protocol.security.OperationAuthorizationException;
+import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
@@ -37,22 +86,9 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.util.ByteArrayInputStream;
-import org.bitrepository.bitrepositorymessages.*;
-import org.bitrepository.common.JaxbHelper;
-import org.bitrepository.protocol.CoordinationLayerException;
-import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.messagebus.MessageListener;
-import org.bitrepository.protocol.security.CertificateUseException;
-import org.bitrepository.protocol.security.MessageAuthenticationException;
-import org.bitrepository.protocol.security.OperationAuthorizationException;
-import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Contains the basic functionality for connection and communicating with the
@@ -85,7 +121,7 @@ public class ActiveMQMessageBus implements MessageBus {
      * https://sbforge.org/jira/browse/BITMAG-357.
      */
     private final Session producerSession;
-    
+
     /** The session for receiving messages. */
     private final Session consumerSession;
 
@@ -106,7 +142,7 @@ public class ActiveMQMessageBus implements MessageBus {
     private final JaxbHelper jaxbHelper;
     private final Connection connection;
     private final SecurityManager securityManager;
-    
+
     /**
      * Use the {@link org.bitrepository.protocol.ProtocolComponentFactory} to get a handle on a instance of
      * MessageBusConnections. This constructor is for the
@@ -118,26 +154,26 @@ public class ActiveMQMessageBus implements MessageBus {
         log.debug("Initializing ActiveMQConnection to '" + messageBusConfiguration + "'.");
         this.configuration = messageBusConfiguration;
         this.securityManager = securityManager;
-        jaxbHelper = new JaxbHelper("xsd/", schemaLocation); 
+        jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
         // Retrieve factory for connection
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getURL());
 
         try {
             connection = connectionFactory.createConnection();
             connection.setExceptionListener(new MessageBusExceptionListener());
-            
+
             producerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
             consumerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
             manAckConsumerSession = connection.createSession(TRANSACTED, Session.CLIENT_ACKNOWLEDGE);
-            
+
             startListeningForMessages();
-            
+
         } catch (JMSException e) {
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
         log.debug("ActiveMQConnection initialized for '" + configuration + "'.");
     }
-    
+
     /**
      * Start to listen for message on the message bus. This is done in a separate thread to avoid blocking, 
      * so the main thread can continue without having to wait for the messagebus listening to start.
@@ -151,7 +187,7 @@ public class ActiveMQMessageBus implements MessageBus {
                 } catch (Exception e) {
                     log.error("Unable to start listening on the message bus", e);
                 }
-            }               
+            }
         });
         connectionStarter.start();
 
@@ -159,7 +195,7 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public synchronized void addListener(String destinationID, final MessageListener listener) {
-        log.debug("Adding listener '{}' to destination: '{}' on message-bus '{}'.", 
+        log.debug("Adding listener '{}' to destination: '{}' on message-bus '{}'.",
                 new Object[] {listener, destinationID, configuration.getName()});
         MessageConsumer consumer = getMessageConsumer(destinationID, listener);
         try {
@@ -171,7 +207,7 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     /*
-    public synchronized void addDurableListener(String destinationID, final MessageListener listener) {
+    public synchronized void addDurableListener(String destinationID, final SpecificMessageListener listener) {
         log.debug("Adding durable listener '{}' to destination: '{}' on message-bus '{}'.",
                 new Object[] {listener, destinationID, configuration.getName()});
         MessageConsumer consumer = getDurableMessageConsumer(destinationID, listener);
@@ -186,7 +222,7 @@ public class ActiveMQMessageBus implements MessageBus {
     @Override
     public synchronized void removeListener(String destinationID, MessageListener listener) {
         log.debug("Removing listener '" + listener + "' from destination: '" + destinationID + "' " +
-        		"on message-bus '" + configuration + "'.");
+                "on message-bus '" + configuration + "'.");
         MessageConsumer consumer = getMessageConsumer(destinationID, listener);
         try {
             // We need to set the listener to null to have the removeListerer take effect at once. 
@@ -199,8 +235,8 @@ public class ActiveMQMessageBus implements MessageBus {
         }
         consumers.remove(getConsumerHash(destinationID, listener));
     }
-    
-    @Override 
+
+    @Override
     public void close() throws JMSException {
         connection.close();
     }
@@ -213,7 +249,7 @@ public class ActiveMQMessageBus implements MessageBus {
 
     /**
      * Send a message using ActiveMQ.
-     * 
+     *
      * Note that the method is synchronized to avoid multithreaded usage of the providerSession.
      *
      * @param destinationID Name of destination to send message to.
@@ -223,13 +259,13 @@ public class ActiveMQMessageBus implements MessageBus {
      * @param content       JAXB-serializable object to send.
      */
     private synchronized void sendMessage(String destinationID, String replyTo, String collectionID, String correlationID,
-                             Object content) {
+                                          Object content) {
         String xmlContent = null;
         try {
             xmlContent = jaxbHelper.serializeToXml(content);
             jaxbHelper.validate(new ByteArrayInputStream(xmlContent.getBytes()));
             log.debug("The following message is sent to the destination '" + destinationID + "'" + " on message-bus '"
-                              + configuration.getName() + "': \n{}", xmlContent);
+                    + configuration.getName() + "': \n{}", xmlContent);
             MessageProducer producer = addDestinationMessageProducer(destinationID);
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
@@ -261,7 +297,7 @@ public class ActiveMQMessageBus implements MessageBus {
     private MessageConsumer getMessageConsumer(String destinationID, MessageListener listener) {
         String key = getConsumerHash(destinationID, listener);
         log.debug("Retrieving message consumer on destination '" + destinationID + "' for listener '" + listener
-                          + "'. Key: '" + key + "'.");
+                + "'. Key: '" + key + "'.");
         if (!consumers.containsKey(key)) {
             log.debug("No consumer known. Creating new for key '" + key + "'.");
             Destination destination = getDestination(destinationID, consumerSession);
@@ -275,7 +311,6 @@ public class ActiveMQMessageBus implements MessageBus {
         }
         return consumers.get(key);
     }
-
     /**
      * Creates a unique hash of the message listener and the destination id.
      *
@@ -315,7 +350,7 @@ public class ActiveMQMessageBus implements MessageBus {
         Destination destination = destinations.get(destinationID);
         if (destination == null) {
             try {
-                
+
                 String[] parts = destinationID.split("://");
                 if (parts.length == 1) {
                     destination = session.createTopic(destinationID);
@@ -329,11 +364,11 @@ public class ActiveMQMessageBus implements MessageBus {
                     } else if (parts[0].equals("temporary-topic")) {
                         destination = session.createTemporaryTopic();
                     } else {
-                        throw new CoordinationLayerException("Unable to create destination '" + 
+                        throw new CoordinationLayerException("Unable to create destination '" +
                                 destination + "'. Unknown type.");
                     }
                 }
-                
+
                 // TODO: According to javadoc, topics should be looked up in another fashion.
                 // See http://download.oracle.com/javaee/6/api/javax/jms/Session.html#createTopic(java.lang.String)
             } catch (JMSException e) {
@@ -362,7 +397,7 @@ public class ActiveMQMessageBus implements MessageBus {
         private Logger log = LoggerFactory.getLogger(getClass());
 
         /** The org.bitrepository.org.bitrepository.protocol message listener that receives the messages. */
-        private final MessageListener listener;
+        private final MessageListener messageListener;
 
         /**
          * Initialise the adapter from ActiveMQ message listener to org.bitrepository.org.bitrepository.protocol
@@ -370,9 +405,11 @@ public class ActiveMQMessageBus implements MessageBus {
          *
          * @param listener The org.bitrepository.org.bitrepository.protocol message listener that should receive the
          *                 messages.
+         * Note this class should be replaced by the ActiveMQGeneralMessageListener class as soon as the
+         *                 SpecificMessageListener class is replace by the MessageListener.
          */
         public ActiveMQMessageListener(MessageListener listener) {
-            this.listener = listener;
+            this.messageListener = listener;
         }
 
         /**
@@ -389,7 +426,7 @@ public class ActiveMQMessageBus implements MessageBus {
             String type = null;
             String text = null;
             String signature = null;
-            
+
             Object content;
             try {
                 type = jmsMessage.getStringProperty(MESSAGE_TYPE_KEY);
@@ -398,93 +435,96 @@ public class ActiveMQMessageBus implements MessageBus {
                 text = ((TextMessage) jmsMessage).getText();
                 jaxbHelper.validate(new ByteArrayInputStream(text.getBytes()));
                 content = jaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
-                                             new ByteArrayInputStream(text.getBytes()));
+                        new ByteArrayInputStream(text.getBytes()));
                 securityManager.authenticateMessage(text, signature);
                 securityManager.authorizeCertificateUse(((Message) content).getFrom(), text, signature);
                 securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature);
                 log.debug("Received message: " + text);
-                if(content.getClass().equals(AlarmMessage.class)){
-                	listener.onMessage((AlarmMessage) content);
-                } else if (content.getClass().equals(DeleteFileFinalResponse.class)) {
-                    listener.onMessage((DeleteFileFinalResponse) content);
-                } else if (content.getClass().equals(DeleteFileProgressResponse.class)) {
-                    listener.onMessage((DeleteFileProgressResponse) content);
-                } else if (content.getClass().equals(DeleteFileRequest.class)) {
-                    listener.onMessage((DeleteFileRequest) content);
-                } else if (content.getClass().equals(GetChecksumsFinalResponse.class)) {
-                    listener.onMessage((GetChecksumsFinalResponse) content);
-                } else if (content.getClass().equals(GetChecksumsRequest.class)) {
-                    listener.onMessage((GetChecksumsRequest) content);
-                } else if (content.getClass().equals(GetChecksumsProgressResponse.class)) {
-                    listener.onMessage((GetChecksumsProgressResponse) content);
-                } else if (content.getClass().equals(GetFileFinalResponse.class)) {
-                    listener.onMessage((GetFileFinalResponse) content);
-                } else if (content.getClass().equals(GetFileIDsFinalResponse.class)) {
-                    listener.onMessage((GetFileIDsFinalResponse) content);
-                } else if (content.getClass().equals(GetFileIDsRequest.class)) {
-                    listener.onMessage((GetFileIDsRequest) content);
-                } else if (content.getClass().equals(GetFileIDsProgressResponse.class)) {
-                    listener.onMessage((GetFileIDsProgressResponse) content);
-                } else if (content.getClass().equals(GetFileRequest.class)) {
-                    listener.onMessage((GetFileRequest) content);
-                } else if (content.getClass().equals(GetFileProgressResponse.class)) {
-                    listener.onMessage((GetFileProgressResponse) content);
-                } else if (content.getClass().equals(IdentifyPillarsForDeleteFileRequest.class)) {
-                    listener.onMessage((IdentifyPillarsForDeleteFileRequest) content);
-                } else if (content.getClass().equals(IdentifyPillarsForDeleteFileResponse.class)) {
-                    listener.onMessage((IdentifyPillarsForDeleteFileResponse) content);
-                } else if (content.getClass().equals(IdentifyPillarsForGetChecksumsResponse.class)) {
-                    listener.onMessage((IdentifyPillarsForGetChecksumsResponse) content);
-                } else if (content.getClass().equals(IdentifyPillarsForGetChecksumsRequest.class)) {
-                    listener.onMessage((IdentifyPillarsForGetChecksumsRequest) content);
-                } else if (content.getClass().equals(IdentifyPillarsForGetFileIDsResponse.class)) {
-                    listener.onMessage((IdentifyPillarsForGetFileIDsResponse) content);
-                } else if (content.getClass().equals(IdentifyPillarsForGetFileIDsRequest.class)) {
-                    listener.onMessage((IdentifyPillarsForGetFileIDsRequest) content);
-                } else if (content.getClass().equals(IdentifyPillarsForGetFileResponse.class)) {
-                    listener.onMessage((IdentifyPillarsForGetFileResponse) content);
-                } else if (content.getClass().equals(IdentifyPillarsForGetFileRequest.class)) {
-                    listener.onMessage((IdentifyPillarsForGetFileRequest) content);
-                } else if (content.getClass().equals(IdentifyPillarsForPutFileResponse.class)) {
-                    listener.onMessage((IdentifyPillarsForPutFileResponse) content);
-                } else if (content.getClass().equals(IdentifyPillarsForPutFileRequest.class)) {
-                    listener.onMessage((IdentifyPillarsForPutFileRequest) content);
-                } else if (content.getClass().equals(IdentifyPillarsForReplaceFileResponse.class)) {
-                    listener.onMessage((IdentifyPillarsForReplaceFileResponse) content);
-                } else if (content.getClass().equals(IdentifyPillarsForReplaceFileRequest.class)) {
-                    listener.onMessage((IdentifyPillarsForReplaceFileRequest) content);
-                } else if (content.getClass().equals(IdentifyContributorsForGetStatusResponse.class)) {
-                    listener.onMessage((IdentifyContributorsForGetStatusResponse) content);
-                } else if (content.getClass().equals(IdentifyContributorsForGetStatusRequest.class)) {
-                    listener.onMessage((IdentifyContributorsForGetStatusRequest) content);
-                } else if (content.getClass().equals(GetStatusRequest.class)) {
-                    listener.onMessage((GetStatusRequest) content);
-                } else if (content.getClass().equals(GetStatusProgressResponse.class)) {
-                    listener.onMessage((GetStatusProgressResponse) content);
-                } else if (content.getClass().equals(GetStatusFinalResponse.class)) {
-                    listener.onMessage((GetStatusFinalResponse) content);
-                } else if (content.getClass().equals(GetStatusRequest.class)) {
-                    listener.onMessage((GetStatusRequest) content);
-                } else if (content.getClass().equals(GetStatusProgressResponse.class)) {
-                    listener.onMessage((GetStatusProgressResponse) content);
-                } else if (content.getClass().equals(GetStatusFinalResponse.class)) {
-                    listener.onMessage((GetStatusFinalResponse) content);
-                } else if (content.getClass().equals(PutFileFinalResponse.class)) {
-                    listener.onMessage((PutFileFinalResponse) content);
-                } else if (content.getClass().equals(PutFileRequest.class)) {
-                    listener.onMessage((PutFileRequest) content);
-                } else if (content.getClass().equals(PutFileProgressResponse.class)) {
-                    listener.onMessage((PutFileProgressResponse) content);
-                } else if (content.getClass().equals(ReplaceFileFinalResponse.class)) {
-                    listener.onMessage((ReplaceFileFinalResponse) content);
-                } else if (content.getClass().equals(ReplaceFileRequest.class)) {
-                    listener.onMessage((ReplaceFileRequest) content);
-                } else if (content.getClass().equals(ReplaceFileProgressResponse.class)) {
-                    listener.onMessage((ReplaceFileProgressResponse) content);
-                } else if (content instanceof Message) {
-                    listener.onMessage((Message) content);
+                if (!(messageListener instanceof SpecificMessageListener)) {
+                    messageListener.onMessage((Message) content);
                 } else {
-                    log.error("Received message of unknown type '" + type + "'\n{}", text);
+                    SpecificMessageListener listener = (SpecificMessageListener)messageListener;
+                    if(content.getClass().equals(AlarmMessage.class)){
+                        listener.onMessage((AlarmMessage) content);
+                    } else if (content.getClass().equals(DeleteFileFinalResponse.class)) {
+                        listener.onMessage((DeleteFileFinalResponse) content);
+                    } else if (content.getClass().equals(DeleteFileProgressResponse.class)) {
+                        listener.onMessage((DeleteFileProgressResponse) content);
+                    } else if (content.getClass().equals(DeleteFileRequest.class)) {
+                        listener.onMessage((DeleteFileRequest) content);
+                    } else if (content.getClass().equals(GetChecksumsFinalResponse.class)) {
+                        listener.onMessage((GetChecksumsFinalResponse) content);
+                    } else if (content.getClass().equals(GetChecksumsRequest.class)) {
+                        listener.onMessage((GetChecksumsRequest) content);
+                    } else if (content.getClass().equals(GetChecksumsProgressResponse.class)) {
+                        listener.onMessage((GetChecksumsProgressResponse) content);
+                    } else if (content.getClass().equals(GetFileFinalResponse.class)) {
+                        listener.onMessage((GetFileFinalResponse) content);
+                    } else if (content.getClass().equals(GetFileIDsFinalResponse.class)) {
+                        listener.onMessage((GetFileIDsFinalResponse) content);
+                    } else if (content.getClass().equals(GetFileIDsRequest.class)) {
+                        listener.onMessage((GetFileIDsRequest) content);
+                    } else if (content.getClass().equals(GetFileIDsProgressResponse.class)) {
+                        listener.onMessage((GetFileIDsProgressResponse) content);
+                    } else if (content.getClass().equals(GetFileRequest.class)) {
+                        listener.onMessage((GetFileRequest) content);
+                    } else if (content.getClass().equals(GetFileProgressResponse.class)) {
+                        listener.onMessage((GetFileProgressResponse) content);
+                    } else if (content.getClass().equals(IdentifyPillarsForDeleteFileRequest.class)) {
+                        listener.onMessage((IdentifyPillarsForDeleteFileRequest) content);
+                    } else if (content.getClass().equals(IdentifyPillarsForDeleteFileResponse.class)) {
+                        listener.onMessage((IdentifyPillarsForDeleteFileResponse) content);
+                    } else if (content.getClass().equals(IdentifyPillarsForGetChecksumsResponse.class)) {
+                        listener.onMessage((IdentifyPillarsForGetChecksumsResponse) content);
+                    } else if (content.getClass().equals(IdentifyPillarsForGetChecksumsRequest.class)) {
+                        listener.onMessage((IdentifyPillarsForGetChecksumsRequest) content);
+                    } else if (content.getClass().equals(IdentifyPillarsForGetFileIDsResponse.class)) {
+                        listener.onMessage((IdentifyPillarsForGetFileIDsResponse) content);
+                    } else if (content.getClass().equals(IdentifyPillarsForGetFileIDsRequest.class)) {
+                        listener.onMessage((IdentifyPillarsForGetFileIDsRequest) content);
+                    } else if (content.getClass().equals(IdentifyPillarsForGetFileResponse.class)) {
+                        listener.onMessage((IdentifyPillarsForGetFileResponse) content);
+                    } else if (content.getClass().equals(IdentifyPillarsForGetFileRequest.class)) {
+                        listener.onMessage((IdentifyPillarsForGetFileRequest) content);
+                    } else if (content.getClass().equals(IdentifyPillarsForPutFileResponse.class)) {
+                        listener.onMessage((IdentifyPillarsForPutFileResponse) content);
+                    } else if (content.getClass().equals(IdentifyPillarsForPutFileRequest.class)) {
+                        listener.onMessage((IdentifyPillarsForPutFileRequest) content);
+                    } else if (content.getClass().equals(IdentifyPillarsForReplaceFileResponse.class)) {
+                        listener.onMessage((IdentifyPillarsForReplaceFileResponse) content);
+                    } else if (content.getClass().equals(IdentifyPillarsForReplaceFileRequest.class)) {
+                        listener.onMessage((IdentifyPillarsForReplaceFileRequest) content);
+                    } else if (content.getClass().equals(IdentifyContributorsForGetStatusResponse.class)) {
+                        listener.onMessage((IdentifyContributorsForGetStatusResponse) content);
+                    } else if (content.getClass().equals(IdentifyContributorsForGetStatusRequest.class)) {
+                        listener.onMessage((IdentifyContributorsForGetStatusRequest) content);
+                    } else if (content.getClass().equals(GetStatusRequest.class)) {
+                        listener.onMessage((GetStatusRequest) content);
+                    } else if (content.getClass().equals(GetStatusProgressResponse.class)) {
+                        listener.onMessage((GetStatusProgressResponse) content);
+                    } else if (content.getClass().equals(GetStatusFinalResponse.class)) {
+                        listener.onMessage((GetStatusFinalResponse) content);
+                    } else if (content.getClass().equals(GetStatusRequest.class)) {
+                        listener.onMessage((GetStatusRequest) content);
+                    } else if (content.getClass().equals(GetStatusProgressResponse.class)) {
+                        listener.onMessage((GetStatusProgressResponse) content);
+                    } else if (content.getClass().equals(GetStatusFinalResponse.class)) {
+                        listener.onMessage((GetStatusFinalResponse) content);
+                    } else if (content.getClass().equals(PutFileFinalResponse.class)) {
+                        listener.onMessage((PutFileFinalResponse) content);
+                    } else if (content.getClass().equals(PutFileRequest.class)) {
+                        listener.onMessage((PutFileRequest) content);
+                    } else if (content.getClass().equals(PutFileProgressResponse.class)) {
+                        listener.onMessage((PutFileProgressResponse) content);
+                    } else if (content.getClass().equals(ReplaceFileFinalResponse.class)) {
+                        listener.onMessage((ReplaceFileFinalResponse) content);
+                    } else if (content.getClass().equals(ReplaceFileRequest.class)) {
+                        listener.onMessage((ReplaceFileRequest) content);
+                    } else if (content.getClass().equals(ReplaceFileProgressResponse.class)) {
+                        listener.onMessage((ReplaceFileProgressResponse) content);
+                    } else if (content instanceof Message) {
+                        listener.onMessage((Message) content);
+                    }
                 }
             } catch (SAXException e) {
                 log.error("Error validating message " + jmsMessage, e);
@@ -497,7 +537,6 @@ public class ActiveMQMessageBus implements MessageBus {
             } catch (Exception e) {
                 log.error("Error handling message. Received type was '" + type + "'.\n{}", text, e);
             }
-
         }
     }
 }

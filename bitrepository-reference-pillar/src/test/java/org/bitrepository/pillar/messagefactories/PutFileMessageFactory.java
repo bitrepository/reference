@@ -52,9 +52,9 @@ import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
-public class PutFileMessageFactory extends TestMessageFactory {
+public class PutFileMessageFactory extends ClientTestMessageFactory {
 
     final Settings settings;
     

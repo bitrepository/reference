@@ -46,12 +46,12 @@ import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /**
  * Messages creation factory for the DeleteFile tests.
  */
-public class TestDeleteFileMessageFactory extends TestMessageFactory {
+public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
     /** The collection id for the factory.*/
     private final String collectionId;
     

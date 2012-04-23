@@ -47,5 +47,4 @@ public class AuditTrailServiceContextListener extends AbstractBitrepositoryConte
     public String getSettingsParameter() {
         return "auditTrailServiceConfDir";
     }
-    
 }

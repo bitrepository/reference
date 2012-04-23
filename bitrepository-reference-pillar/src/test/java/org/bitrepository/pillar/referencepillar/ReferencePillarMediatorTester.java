@@ -89,7 +89,7 @@ public class ReferencePillarMediatorTester extends DefaultFixturePillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void handleMessagesWithNoHandlers() throws Exception {
         addDescription("Test the mediators handling of messages, where it does not have any handler.");
-        addStep("Clean up the mediator.", "The mediator should no longer contain any message handlers.");
+        addStep("Clean up the mediator.", "The mediator should no longer contain any message handler.");
         mediator.close();
         
         testMessage(new Message());

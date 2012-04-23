@@ -36,9 +36,9 @@ import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
-public class DeleteFileMessageFactory extends TestMessageFactory {
+public class DeleteFileMessageFactory extends ClientTestMessageFactory {
     final Settings settings;
     
     public DeleteFileMessageFactory(Settings pSettings) {

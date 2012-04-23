@@ -33,12 +33,12 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResp
 import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /**
  * Messages creation factory for the ReplaceFile tests.
  */
-public class TestReplaceFileMessageFactory extends TestMessageFactory{
+public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
 
     /**
      * Constructor.

@@ -30,7 +30,7 @@ import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
 /**
- * Super class for the concrete GetFiles state handlers.
+ * Super class for the concrete GetFiles state handler.
  */
 public abstract class GetFileState extends AbstractMessageListener implements ConversationState {
     /** The parent conversation containing the general context. */

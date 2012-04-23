@@ -25,7 +25,7 @@
 package org.bitrepository.client;
 
 import org.bitrepository.protocol.IntegrationTest;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 import java.math.BigInteger;
 
@@ -33,7 +33,7 @@ import java.math.BigInteger;
  * Contains the generic parts for tests integrating to the message bus. 
  */
 public abstract class DefaultFixtureClientTest extends IntegrationTest {
-    protected static final String DEFAULT_FILE_ID = TestMessageFactory.FILE_ID_DEFAULT;
+    protected static final String DEFAULT_FILE_ID = ClientTestMessageFactory.FILE_ID_DEFAULT;
 
     protected static String clientDestinationId;
     protected MessageReceiver clientTopic;
@@ -48,13 +48,13 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     
     protected static final BigInteger defaultTime = BigInteger.valueOf(3000);
 
-    protected final String TEST_CLIENT_ID = "test-client";
+    protected final String TEST_CLIENT_ID = "test-client" + getTopicPostfix();
 
     /**
      * Indicated whether the embedded mockup pillars are going to be used in the test (means the test is run as a client 
      * component test, or if external pillar are going to be used. If external pillar are going to be used they need 
      * to be started before running the test, and have the following configuration: <ul>
-     * <li>The pillar should contain one file, the {@link TestMessageFactory#FILE_ID_DEFAULT} file. The c
+     * <li>The pillar should contain one file, the {@link org.bitrepository.protocol.message.ClientTestMessageFactory#FILE_ID_DEFAULT} file. The c
      */
     public boolean useMockupPillar() {
         return System.getProperty("useMockupPillar", "true").equals("true");
@@ -77,7 +77,8 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     @Override
     protected void initializeMessageBusListeners() {
         super.initializeMessageBusListeners();
-        clientDestinationId = settings.getReferenceSettings().getClientSettings().getReceiverDestination() + getTopicPostfix();
+        //settings.setComponentID(TEST_CLIENT_ID);
+        clientDestinationId = settings.getReceiverDestination();
         settings.getReferenceSettings().getClientSettings().setReceiverDestination(clientDestinationId);
         pillar1DestinationId = "Pillar1_topic" + getTopicPostfix();
         pillar2DestinationId = "Pillar2_topic" + getTopicPostfix();

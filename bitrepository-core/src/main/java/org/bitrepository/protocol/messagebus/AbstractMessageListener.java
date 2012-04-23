@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * This implementation will log received messages as warnings, and throw an
  * exception about these being unsupported.
  */
-public abstract class AbstractMessageListener implements MessageListener {
+public abstract class AbstractMessageListener implements SpecificMessageListener {
     /** Logger for this class. */
     private Logger log = LoggerFactory.getLogger(getClass());
 

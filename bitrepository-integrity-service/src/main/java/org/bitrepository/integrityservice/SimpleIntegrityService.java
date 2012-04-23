@@ -24,12 +24,11 @@
  */
 package org.bitrepository.integrityservice;
 
-import java.util.Collection;
-
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
@@ -43,12 +42,13 @@ import org.bitrepository.integrityservice.workflow.scheduler.CollectAllFileIDsWo
 import org.bitrepository.integrityservice.workflow.scheduler.CollectObsoleteChecksumsWorkflow;
 import org.bitrepository.integrityservice.workflow.scheduler.IntegrityValidatorWorkflow;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.LifeCycledService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
 
 /**
  * Simple integrity service.
@@ -221,7 +221,12 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
     public long getNumberOfChecksumErrors(String pillarId) {
         return cache.getNumberOfChecksumErrors(pillarId);
     }
-    
+
+    @Override
+    public void start() {
+        //Nothing to do.
+    }
+
     @Override
     public void shutdown() {
         if(messageBus != null) {

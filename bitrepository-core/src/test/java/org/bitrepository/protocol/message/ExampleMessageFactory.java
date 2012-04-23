@@ -22,13 +22,13 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol;
-
-import java.io.File;
-import java.io.FileInputStream;
+package org.bitrepository.protocol.message;
 
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.common.JaxbHelper;
+
+import java.io.File;
+import java.io.FileInputStream;
 
 /** Used to create message objects based on the example xml found in the message-xml module. */
 public class ExampleMessageFactory {

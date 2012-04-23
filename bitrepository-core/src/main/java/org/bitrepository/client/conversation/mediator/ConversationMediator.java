@@ -25,7 +25,7 @@
 package org.bitrepository.client.conversation.mediator;
 
 import org.bitrepository.client.conversation.Conversation;
-import org.bitrepository.protocol.messagebus.MessageListener;
+import org.bitrepository.protocol.messagebus.SpecificMessageListener;
 
 /**
  * The interface for keeping track of conversations.
@@ -35,7 +35,7 @@ import org.bitrepository.protocol.messagebus.MessageListener;
  *
  * @param <T> The type of conversation to have.
  */
-public interface ConversationMediator extends MessageListener {
+public interface ConversationMediator extends SpecificMessageListener {
     /**
      * Start a conversation of type T and begin delegating messages to this conversation when received.
      *

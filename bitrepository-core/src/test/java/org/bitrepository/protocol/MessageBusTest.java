@@ -24,14 +24,13 @@
  */
 package org.bitrepository.protocol;
 
-import java.util.Date;
-
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.client.MessageReceiver;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
+import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
@@ -39,6 +38,8 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.jaccept.TestEventManager;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Date;
 
 /**
  * Class for testing the interface with the message bus.

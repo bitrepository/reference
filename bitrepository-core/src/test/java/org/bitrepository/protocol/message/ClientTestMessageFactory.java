@@ -19,13 +19,12 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol;
+package org.bitrepository.protocol.message;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
-import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 
@@ -34,12 +33,10 @@ import java.math.BigInteger;
 /**
  * Abstract message factory for use in tests, which are suppose to be subclasses by functionality specific factories.
  */
-public abstract class TestMessageFactory {
+public abstract class ClientTestMessageFactory extends TestMessageFactory {
     //ToDo All default messages should be converted to be loaded from the ExampleMessageFactory. This means all the
     // default attributes is specified through the example messages and the constants below can be removed
     protected static final String CORRELATION_ID_DEFAULT = "CorrelationID";
-    protected static final String SLA_ID_DEFAULT = "SlaID";
-    protected static final String REPLY_TO_DEFAULT = "ReplyTo";
     public static final String FILE_ID_DEFAULT = "default-test-file.txt";
     protected static final BigInteger VERSION_DEFAULT = BigInteger.valueOf(1L);
 
@@ -48,10 +45,6 @@ public abstract class TestMessageFactory {
     protected static final BigInteger TIME_MEASURE_VALUE_DEFAULT = BigInteger.valueOf(1000L);
     protected static final ResponseCode RESPONSE_CODE_DEFAULT = ResponseCode.OPERATION_ACCEPTED_PROGRESS;
     protected static final ResponseCode IDENTIFY_RESPONSE_CODE_DEFAULT = ResponseCode.IDENTIFICATION_POSITIVE;
-    protected static final String RESPONSE_TEXT_DEFAULT = "Message request has been received and is expected to be met successfully";
-    protected static final String COMPLETE_CODE_DEFAULT = "480";
-    protected static final String COMPLETE_TEXT_DEFAULT = "successful completion";
-
     protected static final TimeMeasureTYPE TIME_TO_DELIVER_DEFAULT = new TimeMeasureTYPE();
     static {
         TIME_TO_DELIVER_DEFAULT.setTimeMeasureUnit(TIME_MEASURE_UNIT_DEFAULT);
@@ -76,30 +69,23 @@ public abstract class TestMessageFactory {
         FINAL_INFO_DEFAULT.setResponseText("We have liftoff");
     }
 
-    protected final String collectionID;
     protected final String clientID;
 
-    public TestMessageFactory(String collectionID, String clientID) {
-        this.collectionID = collectionID;
+    public ClientTestMessageFactory(String collectionID, String clientID) {
+        super(collectionID);
         this.clientID = clientID;
     }
 
-    public TestMessageFactory(String collectionID) {
+    public ClientTestMessageFactory(String collectionID) {
         this(collectionID, null);
     }
 
     protected void setResponseDetails(
             MessageResponse response, MessageRequest request, String componentID, String replyTo) {
-        setMessageDetails(response);
+        initializeMessageDetails(response);
         response.setCorrelationID(request.getCorrelationID());
         response.setTo(request.getReplyTo());
         response.setReplyTo(replyTo);
         response.setFrom(componentID);
-    }
-
-    protected void setMessageDetails(Message msg) {
-        msg.setCollectionID(collectionID);
-        msg.setVersion(VERSION_DEFAULT);
-        msg.setMinVersion(VERSION_DEFAULT);
     }
 }

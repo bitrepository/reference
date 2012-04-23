@@ -24,7 +24,7 @@
  */
 package org.bitrepository.client;
 
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.jaccept.TestEventManager;
 import org.slf4j.Logger;
@@ -170,159 +170,8 @@ public class MessageReceiver {
             return "TestMessageHandler [listenerName=" + listenerName + "]";
         }
 
+        @Override
         public void onMessage(Message message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(AlarmMessage message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(DeleteFileFinalResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(DeleteFileProgressResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(DeleteFileRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(GetAuditTrailsRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(GetAuditTrailsProgressResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(GetAuditTrailsFinalResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(GetChecksumsFinalResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(GetChecksumsRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(GetChecksumsProgressResponse message) {
-            messageModel.addMessage(message);            
-        }
-        @Override
-        public void onMessage(GetFileFinalResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(GetFileIDsFinalResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(GetFileIDsRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(GetFileIDsProgressResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(GetFileRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(GetFileProgressResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(GetStatusRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyPillarsForDeleteFileRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyPillarsForDeleteFileResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyPillarsForGetChecksumsResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyPillarsForGetChecksumsRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyPillarsForGetFileIDsResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyPillarsForGetFileIDsRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyPillarsForGetFileResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyPillarsForGetFileRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyPillarsForPutFileResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyPillarsForPutFileRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyPillarsForReplaceFileResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyPillarsForReplaceFileRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyContributorsForGetAuditTrailsRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyContributorsForGetAuditTrailsResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(IdentifyContributorsForGetStatusRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(PutFileFinalResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(PutFileRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(ReplaceFileProgressResponse message) {
-            messageModel.addMessage(message);
-        }  
-        @Override
-        public void onMessage(ReplaceFileFinalResponse message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(ReplaceFileRequest message) {
-            messageModel.addMessage(message);
-        }
-        @Override
-        public void onMessage(PutFileProgressResponse message) {
             messageModel.addMessage(message);
         }
 
