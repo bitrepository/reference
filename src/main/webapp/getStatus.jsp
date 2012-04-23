@@ -13,6 +13,7 @@
         .status-ok { background-color:#3eea5b; }
         .status-warn { background-color:#ecea3a; }
         .status-error { background-color:#f83127; }
+        .status-unknown { background-color:#399fff; }
 </style>
 
     <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
@@ -40,8 +41,11 @@
                     if(j[i].status == "WARNING") {
                         rowClass = "status-warn";
                     } 
-                    if(j[i].status == "ERROR") {
+                    if(j[i].status == "ERROR" || j[i].status == "UNRESPONSIVE") {
                         rowClass = "status-error";
+                    }
+                    if(j[i].status == "UNKNOWN") { 
+                        rowClass = "status-unknown";
                     }
                     htmlTable += "<tr class=\"" + rowClass + "\"title=\"" + j[i].info + "\"><td>" + j[i].componentID + "</td><td>" + j[i].status + "</td> <td>" + j[i].timeStamp + "</td></tr>";
                }
