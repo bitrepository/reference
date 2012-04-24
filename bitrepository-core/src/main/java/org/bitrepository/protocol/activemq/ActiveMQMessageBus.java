@@ -469,6 +469,24 @@ public class ActiveMQMessageBus implements MessageBus {
                         listener.onMessage((GetFileRequest) content);
                     } else if (content.getClass().equals(GetFileProgressResponse.class)) {
                         listener.onMessage((GetFileProgressResponse) content);
+                    } else if (content.getClass().equals(GetStatusRequest.class)) {
+                        listener.onMessage((GetStatusRequest) content);
+                    } else if (content.getClass().equals(GetStatusProgressResponse.class)) {
+                        listener.onMessage((GetStatusProgressResponse) content);
+                    } else if (content.getClass().equals(GetStatusFinalResponse.class)) {
+                        listener.onMessage((GetStatusFinalResponse) content);
+                    } else if (content.getClass().equals(PutFileFinalResponse.class)) {
+                        listener.onMessage((PutFileFinalResponse) content);
+                    } else if (content.getClass().equals(PutFileRequest.class)) {
+                        listener.onMessage((PutFileRequest) content);
+                    } else if (content.getClass().equals(PutFileProgressResponse.class)) {
+                        listener.onMessage((PutFileProgressResponse) content);
+                    } else if (content.getClass().equals(ReplaceFileFinalResponse.class)) {
+                        listener.onMessage((ReplaceFileFinalResponse) content);
+                    } else if (content.getClass().equals(ReplaceFileRequest.class)) {
+                        listener.onMessage((ReplaceFileRequest) content);
+                    } else if (content.getClass().equals(ReplaceFileProgressResponse.class)) {
+                        listener.onMessage((ReplaceFileProgressResponse) content);
                     } else if (content.getClass().equals(IdentifyContributorsForGetStatusRequest.class)) {
                         listener.onMessage((IdentifyContributorsForGetStatusRequest) content);
                     } else if (content.getClass().equals(IdentifyContributorsForGetStatusResponse.class)) {
@@ -505,30 +523,6 @@ public class ActiveMQMessageBus implements MessageBus {
                         listener.onMessage((IdentifyContributorsForGetStatusResponse) content);
                     } else if (content.getClass().equals(IdentifyContributorsForGetStatusRequest.class)) {
                         listener.onMessage((IdentifyContributorsForGetStatusRequest) content);
-                    } else if (content.getClass().equals(GetStatusRequest.class)) {
-                        listener.onMessage((GetStatusRequest) content);
-                    } else if (content.getClass().equals(GetStatusProgressResponse.class)) {
-                        listener.onMessage((GetStatusProgressResponse) content);
-                    } else if (content.getClass().equals(GetStatusFinalResponse.class)) {
-                        listener.onMessage((GetStatusFinalResponse) content);
-                    } else if (content.getClass().equals(GetStatusRequest.class)) {
-                        listener.onMessage((GetStatusRequest) content);
-                    } else if (content.getClass().equals(GetStatusProgressResponse.class)) {
-                        listener.onMessage((GetStatusProgressResponse) content);
-                    } else if (content.getClass().equals(GetStatusFinalResponse.class)) {
-                        listener.onMessage((GetStatusFinalResponse) content);
-                    } else if (content.getClass().equals(PutFileFinalResponse.class)) {
-                        listener.onMessage((PutFileFinalResponse) content);
-                    } else if (content.getClass().equals(PutFileRequest.class)) {
-                        listener.onMessage((PutFileRequest) content);
-                    } else if (content.getClass().equals(PutFileProgressResponse.class)) {
-                        listener.onMessage((PutFileProgressResponse) content);
-                    } else if (content.getClass().equals(ReplaceFileFinalResponse.class)) {
-                        listener.onMessage((ReplaceFileFinalResponse) content);
-                    } else if (content.getClass().equals(ReplaceFileRequest.class)) {
-                        listener.onMessage((ReplaceFileRequest) content);
-                    } else if (content.getClass().equals(ReplaceFileProgressResponse.class)) {
-                        listener.onMessage((ReplaceFileProgressResponse) content);
                     } else if (content instanceof Message) {
                         listener.onMessage((Message) content);
                     }
