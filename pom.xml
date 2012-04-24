@@ -3,7 +3,7 @@
 
   <groupId>org.bitrepository</groupId>
   <artifactId>bitrepository-webclient</artifactId>
-  <version>0.13-SNAPSHOT</version>
+  <version>0.13</version>
   <packaging>war</packaging>
 
   <parent>
