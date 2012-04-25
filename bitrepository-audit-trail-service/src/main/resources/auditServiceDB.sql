@@ -1,6 +1,6 @@
 ---
 -- #%L
--- Bitrepository Reference Pillar
+-- Bitrepository Audit Trail Service
 -- %%
 -- Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
 -- %%

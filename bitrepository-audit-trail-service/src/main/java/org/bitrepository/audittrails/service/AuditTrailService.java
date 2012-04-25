@@ -31,6 +31,7 @@ import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.service.LifeCycledService;
 
 /**
@@ -49,6 +50,8 @@ public class AuditTrailService implements LifeCycledService {
      * @param collector The collector of new audit trail data.
      */
     public AuditTrailService(AuditTrailStore store, AuditTrailCollector collector) {
+        ArgumentValidator.checkNotNull(collector, "AuditTrailCollector collector");
+        ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
         
         this.store = store;
         this.collector = collector;
@@ -73,7 +76,6 @@ public class AuditTrailService implements LifeCycledService {
             operation = null;
         }
         
-        
         return store.getAuditTrails(fileID, reportingComponent, null, null, actor, operation, fromDate, toDate);
     }
     
@@ -86,6 +88,7 @@ public class AuditTrailService implements LifeCycledService {
 
     @Override
     public void shutdown() {
-        // Nothing to do here yet..
+        collector.close();
+        store.close();
     }
 }

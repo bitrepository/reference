@@ -45,4 +45,11 @@ public class MockAuditStore implements AuditTrailStore {
         return callsToLargestSequenceNumber;
     }
     
+    @Override
+    public void close() {
+        callsToGetAuditTrails = 0;
+        callsToAddAuditTrails = 0;
+        callsToLargestSequenceNumber = 0;
+        largestSequenceNumber = 0;
+    }
 }

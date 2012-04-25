@@ -30,6 +30,7 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIB
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -146,4 +147,13 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         }
         return 0;
     }    
+    
+    @Override
+    public void close() {
+        try {
+            getConnection().close();
+        } catch (SQLException e) {
+            log.warn("Cannot close the database properly.", e);
+        }
+    }
 }

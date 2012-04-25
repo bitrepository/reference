@@ -63,4 +63,9 @@ public interface AuditTrailStore {
      * @return The largest sequence number.
      */
     public int largestSequenceNumber(String contributorId);
+    
+    /**
+     * Closes the store.
+     */
+    public void close();
 }

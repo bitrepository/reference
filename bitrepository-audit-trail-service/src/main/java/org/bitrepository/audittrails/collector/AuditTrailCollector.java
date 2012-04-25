@@ -36,12 +36,18 @@ import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manages the retrieval of of AuditTrails from contributors.
  */
 public class AuditTrailCollector {
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
     /** The task for collecting the audits.*/
     private final AuditTimerTask auditCollector;
     /** The timer for keeping track of the collecting task.*/
@@ -61,7 +67,7 @@ public class AuditTrailCollector {
     /** When no delivery address is wanted for the collecting of audit trails.*/
     private static final String NO_DELIVERY_URL = null;
     /** The time between checking whether the audits should be collected*/
-    private static final Long TIME_BETWEEN_COLLECT_CHECKS = 500L;
+    private final Long timebetweenCollectChecksum;
     
     /**
      * Constructor.
@@ -70,14 +76,20 @@ public class AuditTrailCollector {
      * @param store The storage of the audit trails data.
      */
     public AuditTrailCollector(Settings settings, AuditTrailClient client, AuditTrailStore store) {
+        ArgumentValidator.checkNotNull(settings, "settings");
+        ArgumentValidator.checkNotNull(client, "AuditTrailClient client");
+        ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
+        
         this.client = client;
         this.settings = settings;
         this.store = store;
         this.timer = new Timer();
+        this.timebetweenCollectChecksum 
+                = settings.getReferenceSettings().getAuditTrailServiceSettings().getTimerTaskCheckInterval();
         
         auditCollector = new AuditTimerTask(
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval());
-        timer.scheduleAtFixedRate(auditCollector, 0, TIME_BETWEEN_COLLECT_CHECKS);
+        timer.scheduleAtFixedRate(auditCollector, 0, timebetweenCollectChecksum);
     }
     
     /**
@@ -85,24 +97,6 @@ public class AuditTrailCollector {
      */
     public void collectNewestAudits() {
         auditCollector.performCollection();
-    }
-
-    /**
-     * Setup and initiates the collection of audit trails through the client.
-     * Adds one to the sequence number to request only newer audit trails.
-     */
-    private void performCollectionOfAudits() {
-        List<AuditTrailQuery> queries = new ArrayList<AuditTrailQuery>();
-        
-        for(String contributorId : settings.getReferenceSettings().getAuditTrailServiceSettings().getContributors()) {
-            int seq = store.largestSequenceNumber(contributorId);
-            queries.add(new AuditTrailQuery(contributorId, seq + 1));
-        }
-        
-        EventHandler handler = new AuditCollectorEventHandler();
-        
-        client.getAuditTrails(queries.toArray(new AuditTrailQuery[queries.size()]), NO_FILE_ID, NO_DELIVERY_URL, 
-                handler, settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
     }
     
     /**
@@ -139,6 +133,23 @@ public class AuditTrailCollector {
             performCollectionOfAudits();
         }
         
+        /**
+         * Setup and initiates the collection of audit trails through the client.
+         * Adds one to the sequence number to request only newer audit trails.
+         */
+        private void performCollectionOfAudits() {
+            List<AuditTrailQuery> queries = new ArrayList<AuditTrailQuery>();
+            
+            for(String contributorId : settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs()) {
+                int seq = store.largestSequenceNumber(contributorId);
+                queries.add(new AuditTrailQuery(contributorId, seq + 1));
+            }
+            
+            EventHandler handler = new AuditCollectorEventHandler();
+            client.getAuditTrails(queries.toArray(new AuditTrailQuery[queries.size()]), NO_FILE_ID, NO_DELIVERY_URL, 
+                    handler, settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
+        }
+        
         @Override
         public void run() {
             if(nextRun.getTime() < System.currentTimeMillis()) {
@@ -157,6 +168,13 @@ public class AuditTrailCollector {
             if(event instanceof AuditTrailResult) {
                 AuditTrailResult auditEvent = (AuditTrailResult) event;
                 store.addAuditTrails(auditEvent.getAuditTrailEvents().getAuditTrailEvents());
+            } else if(event.getType() == OperationEventType.COMPONENT_FAILED ||
+                    event.getType() == OperationEventType.FAILED ||
+                    event.getType() == OperationEventType.IDENTIFY_TIMEOUT ||
+                    event.getType() == OperationEventType.NO_COMPONENT_FOUND) {
+                log.warn("Event: " + event.toString());
+            } else {
+                log.debug("Event:" + event.toString());
             }
         }
     }    

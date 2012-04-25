@@ -50,6 +50,7 @@ import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.slf4j.Logger;
@@ -93,6 +94,9 @@ public class AuditDatabaseExtractor {
      * @param dbConnection The connection to the database, where the audit trails are to be extracted.
      */
     public AuditDatabaseExtractor(ExtractModel model, Connection dbConnection) {
+        ArgumentValidator.checkNotNull(model, "ExtractModel model");
+        ArgumentValidator.checkNotNull(dbConnection, "Connection dbConnection");
+        
         this.model = model;
         this.dbConnection = dbConnection;
     }
@@ -102,7 +106,6 @@ public class AuditDatabaseExtractor {
      * @return The audit trails requested through the ExtractModel.
      */
     public List<AuditTrailEvent> extractAuditEvents() {
-        
         String sql = createSelectString() + " FROM " + AUDITTRAIL_TABLE + createRestriction();
         
         try {
@@ -160,6 +163,8 @@ public class AuditDatabaseExtractor {
     }
     
     /**
+     * NOTE: This is where the position of the constants come into play. 
+     * E.g. POSITION_FILE_GUID = 1 refers to the first extracted element being the AUDITTRAIL_FILE_GUID.
      * @return Creates the SELECT string for the retrieval of the audit events.
      */
     private String createSelectString() {

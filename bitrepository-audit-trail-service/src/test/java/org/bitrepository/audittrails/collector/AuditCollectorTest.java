@@ -7,7 +7,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class AuditCollectorTester extends ExtendedTestCase {
+public class AuditCollectorTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
     
@@ -21,6 +21,7 @@ public class AuditCollectorTester extends ExtendedTestCase {
         addDescription("Test that the collector calls the AuditClient at the correct intervals.");
         addStep("Setup varables", "Should be OK.");
         settings.getReferenceSettings().getAuditTrailServiceSettings().setCollectAuditInterval(950);
+        settings.getReferenceSettings().getAuditTrailServiceSettings().setTimerTaskCheckInterval(500L);
         
         MockAuditClient client = new MockAuditClient();
         MockAuditStore store = new MockAuditStore();
