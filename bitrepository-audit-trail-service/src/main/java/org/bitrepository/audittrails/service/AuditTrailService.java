@@ -74,7 +74,7 @@ public class AuditTrailService implements LifeCycledService {
         }
         
         
-        return store.getAuditTrails(fileID, actor, null, null, actor, operation, fromDate, toDate);
+        return store.getAuditTrails(fileID, reportingComponent, null, null, actor, operation, fromDate, toDate);
     }
     
     /**
