@@ -7,13 +7,18 @@ import org.bitrepository.client.eventhandler.EventHandler;
 public class MockAuditClient implements AuditTrailClient {
     
     @Override
-    public void shutdown() {
+    public void shutdown() {}
+    
+    private EventHandler latestEventHandler = null;
+    public EventHandler getLatestEventHandler() {
+        return latestEventHandler;
     }
     
     private int callsToGetAuditTrails = 0;
     @Override
     public void getAuditTrails(AuditTrailQuery[] componentQueries, String fileID, String urlForResult,
             EventHandler eventHandler, String auditTrailInformation) {
+        latestEventHandler = eventHandler;
         callsToGetAuditTrails++;
     }
     public int getCallsToGetAuditTrails() {
