@@ -24,9 +24,8 @@ package org.bitrepository.pillar.common;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.protocol.utils.TimeMeasurementUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,11 +75,8 @@ public class IdentifyContributorsForGetAuditTrailsRequestHandler
      * @param message The request to base the response upon.
      */
     protected void respondSuccessfulIdentification(IdentifyContributorsForGetAuditTrailsRequest message) {
-        IdentifyContributorsForGetStatusResponse response = createResponse(message);
-        
-        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
-        
+        IdentifyContributorsForGetAuditTrailsResponse response = createResponse(message);
+
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
         irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
@@ -96,29 +92,26 @@ public class IdentifyContributorsForGetAuditTrailsRequestHandler
      */
     protected void respondFailedIdentification(IdentifyContributorsForGetAuditTrailsRequest message, 
             ResponseInfo responseInfo) {
-        IdentifyContributorsForGetStatusResponse response = createResponse(message);
+        IdentifyContributorsForGetAuditTrailsResponse response = createResponse(message);
         
-        response.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
         response.setResponseInfo(responseInfo);
         
         getMessageBus().sendMessage(response);                
     }
     
     /**
-     * Creates a IdentifyContributorsForGetStatusResponse based on a 
-     * IdentifyContributorsForGetStatusRequest. The following fields are not inserted:
-     * <br/> - TimeToDeliver
+     * Creates a IdentifyContributorsForGetAuditTrailsResponse based on a
+     * IdentifyContributorsForGetAuditTrailsResponse. The following fields are not inserted:
      * <br/> - ResponseInfo
      * 
-     * @param msg The IdentifyContributorsForGetStatusRequest to base the response on.
+     * @param message The IdentifyContributorsForGetAuditTrailsResponse to base the response on.
      * @return The response to the request.
      */
-    protected IdentifyContributorsForGetStatusResponse createResponse(
+    protected IdentifyContributorsForGetAuditTrailsResponse createResponse(
             IdentifyContributorsForGetAuditTrailsRequest message) {
-        IdentifyContributorsForGetStatusResponse res = new IdentifyContributorsForGetStatusResponse();
+        IdentifyContributorsForGetAuditTrailsResponse res = new IdentifyContributorsForGetAuditTrailsResponse();
         
         res.setCollectionID(getSettings().getCollectionID());
-        res.setContributor(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setCorrelationID(message.getCorrelationID());
         res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setMinVersion(MIN_VERSION);
