@@ -341,6 +341,11 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         getMessageBus().sendMessage(fResponse);        
     }
     
+    /**
+     * Method for sending a fnial response reporting a failure.
+     * @param message The GetChecksumRequest to base the response upon.
+     * @param fri The response info telling about why the operation failed.
+     */
     private void sendFailedResponse(GetChecksumsRequest message, ResponseInfo fri) {
         GetChecksumsFinalResponse fResponse = createFinalResponse(message);
         fResponse.setResponseInfo(fri);

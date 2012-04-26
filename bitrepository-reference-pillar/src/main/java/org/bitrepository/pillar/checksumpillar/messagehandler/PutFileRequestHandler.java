@@ -97,7 +97,9 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         // validate message
         validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
-        validateChecksumSpec(message.getChecksumDataForNewFile().getChecksumSpec());
+        if(message.getChecksumDataForNewFile() != null) {
+            validateChecksumSpec(message.getChecksumDataForNewFile().getChecksumSpec());
+        }
         validateChecksumSpec(message.getChecksumRequestForNewFile());
         
         // verify, that we already have the file
