@@ -1,5 +1,7 @@
 package org.bitrepository.service.contributor.handler;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.StatusCode;
 import org.bitrepository.bitrepositoryelements.StatusInfo;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
@@ -7,19 +9,13 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusR
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.protocol.ResponseFactory;
 import org.bitrepository.service.contributor.ContributorContext;
 
 public class GetContributorsForGetStatusRequestHandler extends AbstractRequestHandler {
     private final ContributorContext context;
-    private final ResponseFactory responseFactory;
 
     public GetContributorsForGetStatusRequestHandler(ContributorContext context) {
         this.context = context;
-        responseFactory = new ResponseFactory(
-                context.getSettings().getCollectionID(),
-                context.getComponentID(),
-                context.getReplyTo());
     }
 
     @Override
@@ -31,7 +27,12 @@ public class GetContributorsForGetStatusRequestHandler extends AbstractRequestHa
     public void processRequest(MessageRequest request) {
         IdentifyContributorsForGetStatusResponse response = new IdentifyContributorsForGetStatusResponse();
 
-        //response.setResponseInfo("");
+        ResponseInfo info = new ResponseInfo();
+        info.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
+        info.setResponseText("Ready to service status request");
+        response.setResponseInfo(info);
+        response.setContributor(context.getComponentID());
+
         dispatchResponse(request, response);
     }
 

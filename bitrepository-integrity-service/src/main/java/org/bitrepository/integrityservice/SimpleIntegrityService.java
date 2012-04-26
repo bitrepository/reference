@@ -35,6 +35,7 @@ import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityservice.collector.eventhandler.ChecksumsUpdaterAndValidatorEventHandler;
 import org.bitrepository.integrityservice.collector.eventhandler.FileIDsUpdaterAndValidatorEventHandler;
+import org.bitrepository.integrityservice.contributor.ContributorForIntegrityService;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowScheduler;
 import org.bitrepository.integrityservice.workflow.Workflow;
 import org.bitrepository.integrityservice.workflow.scheduler.CollectAllChecksumsWorkflow;
@@ -45,6 +46,7 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.LifeCycledService;
+import org.bitrepository.service.contributor.ContributorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +80,8 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
     private final Settings settings;
     /** The dispatcher of alarms.*/
     private final IntegrityAlarmDispatcher alarmDispatcher;
+    /** Provides GetStatus and GetAuditTrails functionality. */
+    private final ContributorForIntegrityService contributor;
     /** The messagebus for communication.*/
     private final MessageBus messageBus;
     
@@ -87,11 +91,16 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
      */
     public SimpleIntegrityService(Settings settings, SecurityManager securityManager) {
         this.settings = settings;
+        settings.setComponentID(settings.getReferenceSettings().getIntegrityServiceSettings().getID());
         this.messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager); 
         this.cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings);
         this.scheduler = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settings);
         this.checker = IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache);
         this.alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus);
+        this.contributor = new ContributorForIntegrityService(messageBus,
+                new ContributorContext(messageBus, settings,
+                        settings.getReferenceSettings().getIntegrityServiceSettings().getID(),
+                        settings.getReceiverDestination()));
         this.collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
                 cache, checker, 
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 

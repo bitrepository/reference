@@ -1,5 +1,7 @@
 package org.bitrepository.service.contributor.handler;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositoryelements.StatusCode;
 import org.bitrepository.bitrepositoryelements.StatusInfo;
@@ -29,7 +31,16 @@ public class GetStatusRequestHandler extends AbstractRequestHandler {
         status.setStatusTimestamp(CalendarUtils.getNow());
         status.setStatusInfo(getStatus());
         response.setResultingStatus(status);
+
+        ResponseInfo info = new ResponseInfo();
+        info.setResponseCode(ResponseCode.OPERATION_COMPLETED);
+        info.setResponseText("Returning status");
+        response.setResponseInfo(info);
+
+        response.setContributor(context.getComponentID());
+
         dispatchResponse(request, response);
+
     }
 
     @Override

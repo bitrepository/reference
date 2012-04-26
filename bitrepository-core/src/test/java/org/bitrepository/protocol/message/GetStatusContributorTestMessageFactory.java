@@ -1,7 +1,7 @@
 package org.bitrepository.protocol.message;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
@@ -10,11 +10,12 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusR
 
 public class GetStatusContributorTestMessageFactory extends ContributorTestMessageFactory {
     public GetStatusContributorTestMessageFactory(String collectionID,
-                                                  String contributorID,
                                                   String collectionDestination,
+                                                  String contributorID,
+                                                  String contributorDestination,
                                                   String clientID,
                                                   String clientDestination) {
-        super(collectionID, contributorID, collectionDestination, clientID, clientDestination);
+        super(collectionID, collectionDestination, contributorID, contributorDestination, clientID, clientDestination);
     }
 
 
@@ -31,29 +32,42 @@ public class GetStatusContributorTestMessageFactory extends ContributorTestMessa
         response.setCorrelationID(received.getCorrelationID());
         response.setTimeToDeliver(received.getTimeToDeliver());
         response.setContributor(contributorID);
+        response.setTo(clientDestination);
+        response.setReplyTo(contributorDestination);
         response.setFrom(contributorID);
-        response.setTo(clientID);
-        response.setReplyTo(clientDestination);
+        ResponseInfo info = new ResponseInfo();
+        info.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
+        info.setResponseText(received.getResponseInfo().getResponseText());
+        response.setResponseInfo(info);
         return response;
     }
 
-    public GetStatusRequest createGetStatusRequest(String auditTrail, String contributorId, String correlationId,
-                                                   String from, String replyTo, String toTopic) {
-        GetStatusRequest res = new GetStatusRequest();
+    public GetStatusFinalResponse createExpectedGetStatusFinalResponse(
+            GetStatusFinalResponse received) {
+        GetStatusFinalResponse response = new GetStatusFinalResponse();
+        initializeMessageDetails(response);
+        response.setCorrelationID(received.getCorrelationID());
+        response.setContributor(contributorID);
+        response.setTo(clientDestination);
+        response.setReplyTo(contributorDestination);
+        response.setFrom(contributorID);
+        ResponseInfo info = new ResponseInfo();
+        info.setResponseCode(ResponseCode.OPERATION_COMPLETED);
+        info.setResponseText(received.getResponseInfo().getResponseText());
+        response.setResponseInfo(info);
+        response.setResultingStatus(received.getResultingStatus());
+        return response;
+    }
 
-        return res;
+    public GetStatusRequest createGetStatusRequest(String correlationID) {
+        GetStatusRequest request = new GetStatusRequest();
+        initializeRequestDetails(request, correlationID);
+        return request;
     }
 
     public GetStatusProgressResponse createGetStatusProgressResponse(String contributorId, String correlationId,
                                                                      String replyTo, ResponseInfo responseInfo, String toTopic) {
         GetStatusProgressResponse res = new GetStatusProgressResponse();
-
-        return res;
-    }
-
-    public GetStatusFinalResponse createGetStatusFinalResponse(String contributorId, String correlationId,
-                                                               String replyTo, ResponseInfo responseInfo, ResultingStatus status, String toTopic) {
-        GetStatusFinalResponse res = new GetStatusFinalResponse();
 
         return res;
     }

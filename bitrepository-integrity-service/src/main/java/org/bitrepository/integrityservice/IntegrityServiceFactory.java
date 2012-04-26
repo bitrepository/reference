@@ -23,11 +23,6 @@
  * #L%
  */
 package org.bitrepository.integrityservice;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
@@ -40,6 +35,11 @@ import org.bitrepository.protocol.security.MessageAuthenticator;
 import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Factory class for instantiating the integrity service
@@ -103,7 +103,7 @@ public final class IntegrityServiceFactory {
     /**
      * Instantiated the security manager for the integrity service.
      * @return The security manager.
-     * @see getSettings()
+     * @see #getSettings()
      * @see {@link BasicSecurityManager}
      */
     public static synchronized BasicSecurityManager getSecurityManager() {
@@ -125,8 +125,8 @@ public final class IntegrityServiceFactory {
      * Factory method to get a singleton instance of the SimpleIntegrityService. 
      * Uses the settings and the security manager.
      * @return The SimpleIntegrityService
-     * @see getSecurityManager()
-     * @see getSettings()
+     * @see #getSecurityManager()
+     * @see #getSettings()
      * @see {@link SimpleIntegrityService} 
      */
     public static synchronized SimpleIntegrityService getIntegrityService() {
@@ -143,8 +143,8 @@ public final class IntegrityServiceFactory {
      * Factory method to get a singleton instance of the web interface for the integrity service.
      * Uses the Settings and the SimpleIntegrityService.
      * @return The IntegrityServiceWebInterface instance.
-     * @see getSettings()
-     * @see getSimpleIntegrityService()
+     * @see #getSettings()
+     * @see #getIntegrityService()
      * @see {@link IntegrityServiceWebInterface}
      */
     public static synchronized IntegrityServiceWebInterface getIntegrityServiceWebInterface() {
