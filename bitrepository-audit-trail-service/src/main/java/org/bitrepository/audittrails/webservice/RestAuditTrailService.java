@@ -27,14 +27,9 @@ package org.bitrepository.audittrails.webservice;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -42,8 +37,6 @@ import javax.ws.rs.Produces;
 import org.bitrepository.audittrails.service.AuditTrailService;
 import org.bitrepository.audittrails.service.AuditTrailServiceFactory;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
-import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
-import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,9 +65,8 @@ public class RestAuditTrailService {
             @FormParam ("reportingComponent") String reportingComponent,
             @FormParam ("actor") String actor,
             @FormParam ("action") String action) {
-    	Date from = makeDateObject(fromDate);
-    	Date to = makeDateObject(toDate);
-        StringBuilder sb = new StringBuilder();
+        Date from = makeDateObject(fromDate);
+        Date to = makeDateObject(toDate);
         String filteredAction;
         if(action.equals("ALL")) {
             filteredAction = null;
@@ -82,10 +74,10 @@ public class RestAuditTrailService {
             filteredAction = action;
         }
         
-    	Collection<AuditTrailEvent> events = service.queryAuditTrailEvents(from, to, contentOrNull(fileID),
-    	        contentOrNull(reportingComponent), contentOrNull(actor), filteredAction);
-    	
-    	JSONArray array = new JSONArray();
+        Collection<AuditTrailEvent> events = service.queryAuditTrailEvents(from, to, contentOrNull(fileID),
+                contentOrNull(reportingComponent), contentOrNull(actor), filteredAction);
+        
+        JSONArray array = new JSONArray();
         if(events != null) {
             log.debug("Got " + events.size() + " AuditTrailEvents!");
             for(AuditTrailEvent event : events) {
@@ -114,18 +106,18 @@ public class RestAuditTrailService {
     }
     
     private Date makeDateObject(String dateStr) {
-    	if(dateStr == null || dateStr.trim().isEmpty()) {
-    		return null;
-    	} else {
-    		String[] components = dateStr.split("/");
-    		int year = Integer.parseInt(components[0]);
-    		int month = Integer.parseInt(components[1]);
-    		int day = Integer.parseInt(components[2]);
-    		Calendar time = Calendar.getInstance();
-    		time.set(year, month, day);
-    		
-    		return time.getTime();
-    	}
+        if(dateStr == null || dateStr.trim().isEmpty()) {
+            return null;
+        } else {
+            String[] components = dateStr.split("/");
+            int year = Integer.parseInt(components[2]);
+            int month = Integer.parseInt(components[0]);
+            int day = Integer.parseInt(components[1]);
+            Calendar time = Calendar.getInstance();
+            time.set(year, month, day);
+            
+            return time.getTime();
+        }
     }
     
     private String contentOrNull(String input) {
@@ -135,8 +127,4 @@ public class RestAuditTrailService {
             return input.trim();
         }
     }
-    
-    
-    
-    
 }

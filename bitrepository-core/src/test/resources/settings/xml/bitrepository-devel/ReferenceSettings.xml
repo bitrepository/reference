@@ -57,6 +57,7 @@
     <Contributors>integrity-service</Contributors>
     <AuditContributerDatabaseUrl>jdbc:derby:auditservicedb</AuditContributerDatabaseUrl>
     <CollectAuditInterval>3600000</CollectAuditInterval>
+    <TimerTaskCheckInterval>60000</TimerTaskCheckInterval>
   </AuditTrailServiceSettings>
   <IntegrityServiceSettings>
     <ID>integrity-service</ID>

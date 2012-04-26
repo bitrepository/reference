@@ -52,4 +52,8 @@
     <AlarmLevel>ERROR</AlarmLevel>
   </PillarSettings>
   
+  <GetAuditTrailSettings>
+    <ContributorIDs>test-pillar</ContributorIDs>
+    <ContributorIDs>integrity-service</ContributorIDs>
+  </GetAuditTrailSettings>
 </CollectionSettings>

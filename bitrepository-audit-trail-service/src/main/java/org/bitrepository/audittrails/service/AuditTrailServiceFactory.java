@@ -25,6 +25,7 @@
 package org.bitrepository.audittrails.service;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
@@ -51,15 +52,13 @@ import org.bitrepository.protocol.security.SecurityManager;
  * Factory class for accessing the AuditTrailService 
  */
 public final class AuditTrailServiceFactory {
-    
+    /** The audit trail service. 
+     * @see getAuditTrailService().*/
     private static AuditTrailService auditTrailService;
+    /** The path to the directory containing the configuration files.*/
     private static String configurationDir;
+    /** The path to the private key file.*/
     private static String privateKeyFile;
-    private static MessageAuthenticator authenticator;
-    private static MessageSigner signer;
-    private static OperationAuthorizor authorizer;
-    private static PermissionStore permissionStore;
-    private static SecurityManager securityManager;
     
     /** The properties file holding implementation specifics for the alarm service. */
     private static final String CONFIGFILE = "audittrails.properties";
@@ -69,9 +68,7 @@ public final class AuditTrailServiceFactory {
     /**
      * Private constructor as the class is meant to be used in a static way.
      */
-    private AuditTrailServiceFactory() {
-        
-    }
+    private AuditTrailServiceFactory() { }
     
     /**
      * Initialize the factory with configuration. 
@@ -83,9 +80,15 @@ public final class AuditTrailServiceFactory {
     
     /**
      * Factory method to retrieve AuditTrailService  
+     * @return The AuditTrailService.
      */
     public static synchronized AuditTrailService getAuditTrailService() {
         if(auditTrailService == null) {
+            MessageAuthenticator authenticator;
+            MessageSigner signer;
+            OperationAuthorizor authorizer;
+            PermissionStore permissionStore;
+            SecurityManager securityManager;
             SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(configurationDir));
             Settings settings = settingsLoader.getSettings();
             try {
@@ -111,9 +114,13 @@ public final class AuditTrailServiceFactory {
         return auditTrailService;
     }
     
+    /**
+     * Loads the properties.
+     * @throws IOException If any input/output issues occurs.
+     */
     private static void loadProperties() throws IOException {
         Properties properties = new Properties();
-        String propertiesFile = configurationDir + "/" + CONFIGFILE;
+        File propertiesFile = new File(configurationDir, CONFIGFILE);
         BufferedReader propertiesReader = new BufferedReader(new FileReader(propertiesFile));
         properties.load(propertiesReader);
         privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);

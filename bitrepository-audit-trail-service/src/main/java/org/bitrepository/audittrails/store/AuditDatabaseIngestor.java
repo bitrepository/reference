@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.slf4j.Logger;
@@ -75,6 +76,7 @@ public class AuditDatabaseIngestor {
      * @param dbConnection The connection to the database, where the audit trails are to be ingested.
      */
     public AuditDatabaseIngestor(Connection dbConnection) {
+        ArgumentValidator.checkNotNull(dbConnection, "Connection dbConnection");
         this.dbConnection = dbConnection;
     }
     
@@ -83,6 +85,8 @@ public class AuditDatabaseIngestor {
      * @param event The auditTrail event to ingest into the database.
      */
     public void ingestAuditEvents(AuditTrailEvent event) {
+        ArgumentValidator.checkNotNull(event, "AuditTrailEvent event");
+        
         String sqlInsert = "INSERT INTO " + AUDITTRAIL_TABLE + " ( " + createIngestElementString(event) + " ) VALUES ( " 
                 + createIngestArgumentString(event) + " )";
         DatabaseUtils.executeStatement(dbConnection, sqlInsert, extractArgumentsFromEvent(event));
