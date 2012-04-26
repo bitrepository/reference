@@ -8,7 +8,7 @@ public interface RequestHandler {
     /**
      * Return the simple name for the message with are handled by this class.
      */
-    public String getRequestType();
+    public Class getRequestClass();
 
     public void processRequest(MessageRequest request);
 

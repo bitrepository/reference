@@ -21,7 +21,7 @@ public class ContributorForIntegrityServiceTest extends ContributerTest {
     @BeforeMethod
     public void setupContext() {
         context = new ContributorContext(
-                messageBus, settings.getCollectionID(), CONTRIBUTOR_ID, contributorDestinationId);
+                messageBus, settings, CONTRIBUTOR_ID, contributorDestinationId);
         statusMessageFactory = new GetStatusContributorTestMessageFactory(settings.getCollectionID(), CONTRIBUTOR_ID,
                 collectionDestinationID, CLIENT_ID, clientDestinationId);
     }

@@ -1,5 +1,6 @@
 package org.bitrepository.service.contributor;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
 /**
@@ -7,13 +8,17 @@ import org.bitrepository.protocol.messagebus.MessageSender;
  */
 public class ContributorContext {
     private final MessageSender dispatcher;
-    private final String collectionID;
+    private final Settings settings;
     private final String componentID;
     private final String replyTo;
 
-    public ContributorContext(MessageSender dispatcher, String collectionID, String componentID, String replyTo) {
+    public ContributorContext(
+            MessageSender dispatcher,
+            Settings settings,
+            String componentID,
+            String replyTo) {
         this.dispatcher = dispatcher;
-        this.collectionID = collectionID;
+        this.settings = settings;
         this.componentID = componentID;
         this.replyTo = replyTo;
     }
@@ -22,8 +27,8 @@ public class ContributorContext {
         return dispatcher;
     }
 
-    public String getCollectionID() {
-        return collectionID;
+    public Settings getSettings() {
+        return settings;
     }
 
     public String getComponentID() {

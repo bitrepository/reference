@@ -4,6 +4,7 @@ import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositoryelements.StatusCode;
 import org.bitrepository.bitrepositoryelements.StatusInfo;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -17,8 +18,8 @@ public class GetStatusRequestHandler extends AbstractRequestHandler {
     }
 
     @Override
-    public String getRequestType() {
-        return "GetStatusRequest";  //To change body of implemented methods use File | Settings | File Templates.
+    public Class getRequestClass() {
+        return GetStatusRequest.class;
     }
 
     @Override

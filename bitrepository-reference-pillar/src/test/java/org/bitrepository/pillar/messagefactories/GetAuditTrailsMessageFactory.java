@@ -24,23 +24,21 @@
  */
 package org.bitrepository.pillar.messagefactories;
 
-import java.math.BigInteger;
-import java.util.UUID;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
-public class GetAuditTrailsMessageFactory extends TestMessageFactory {
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.math.BigInteger;
+import java.util.UUID;
+
+public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
 
     final Settings settings;
     

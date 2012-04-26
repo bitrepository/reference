@@ -14,7 +14,7 @@ public abstract class AbstractRequestHandler implements RequestHandler {
     protected void dispatchResponse(MessageRequest originalRequest, MessageResponse response){
         response.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         response.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        response.setCollectionID(getContext().getCollectionID());
+        response.setCollectionID(getContext().getSettings().getCollectionID());
         response.setCorrelationID(originalRequest.getCorrelationID());
         response.setFrom(getContext().getComponentID());
         response.setReplyTo(getContext().getReplyTo());
