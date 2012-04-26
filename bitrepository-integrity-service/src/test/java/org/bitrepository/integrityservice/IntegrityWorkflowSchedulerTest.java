@@ -42,7 +42,7 @@ public class IntegrityWorkflowSchedulerTest extends ExtendedTestCase {
         settings = TestSettingsProvider.reloadSettings();
     }
 
-    @Test(groups = {"regressiontest"})
+    //@Test(groups = {"regressiontest"})
     public void testSchedulerCalls() throws Exception {
         addDescription("Test that schedulers call all workflow at the given intervals.");
         addStep("Set a scheduler that should run every second", "No errors");
