@@ -48,6 +48,11 @@
       <artifactId>mail</artifactId>
       <version>1.4.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20090211</version>
+    </dependency>
     
     <!-- Hook up the other loggers to use SLF4J -->
     <dependency>

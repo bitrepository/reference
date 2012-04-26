@@ -34,6 +34,10 @@ import javax.ws.rs.Produces;
 import org.bitrepository.alarm.AlarmStore;
 import org.bitrepository.alarm.AlarmStoreDataItem;
 import org.bitrepository.alarm.AlarmStoreFactory;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 
 @Path("/AlarmService")
@@ -52,22 +56,13 @@ public class RestAlarmService {
     @Path("/getShortAlarmList/")
     @Produces("application/json")
     public String getShortAlarmList() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        JSONArray array = new JSONArray();
         ArrayBlockingQueue<AlarmStoreDataItem> alarmList = alarmStore.getShortList();
-        Iterator<AlarmStoreDataItem> it = alarmList.iterator();
-        while(it.hasNext()) {
-            AlarmStoreDataItem item = it.next();
-            sb.append("{\"date\": \"" + item.getDate() + "\"," +
-                    "\"raiser\": \"" + item.getRaiserID() + "\"," +
-                    "\"alarmCode\": \"" + item.getAlarmCode() + "\"," +
-                    "\"description\": \"" + item.getAlarmText() + "\"}");
-            if(it.hasNext()) {
-                sb.append(",");
-            }
+        for(AlarmStoreDataItem item : alarmList) {
+            array.put(makeJSONAlarmEntry(item));
         }
-        sb.append("]");
-        return sb.toString();
+        
+        return array.toString();
     }
     
     
@@ -80,5 +75,18 @@ public class RestAlarmService {
     @Produces("text/html")
     public String getFullAlarmList() {
         return alarmStore.getFullList();     
+    }
+    
+    private JSONObject makeJSONAlarmEntry(AlarmStoreDataItem item) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("date", item.getDate());
+            obj.put("raiser", item.getRaiserID());
+            obj.put("alarmCode", item.getAlarmCode());
+            obj.put("description", item.getAlarmText());
+            return obj;
+        } catch (JSONException e) {
+            return (JSONObject) JSONObject.NULL;
+        }
     }
 }
