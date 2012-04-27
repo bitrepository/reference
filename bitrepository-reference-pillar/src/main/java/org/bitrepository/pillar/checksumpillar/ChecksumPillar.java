@@ -25,11 +25,11 @@ import javax.jms.JMSException;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.AuditTrailManager;
 import org.bitrepository.pillar.audit.AuditTrailContributerDAO;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
+import org.bitrepository.pillar.common.AlarmDispatcher;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;

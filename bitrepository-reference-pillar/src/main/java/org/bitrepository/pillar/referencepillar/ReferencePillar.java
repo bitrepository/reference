@@ -28,9 +28,9 @@ import javax.jms.JMSException;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.AuditTrailManager;
 import org.bitrepository.pillar.audit.AuditTrailContributerDAO;
+import org.bitrepository.pillar.common.AlarmDispatcher;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;

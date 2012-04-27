@@ -30,8 +30,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +39,6 @@ import javax.xml.bind.JAXBException;
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetChecksumsResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -58,6 +55,7 @@ import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.utils.Base16Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -120,7 +118,6 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         validateChecksumSpec(message.getChecksumRequestForExistingFile());
         
         validateFileIDs(message);
-        validateChecksum(message);
         
         log.debug("Message '" + message.getCorrelationID() + "' validated and accepted.");
     }
@@ -152,39 +149,6 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
             fri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             fri.setResponseText(errText);
             throw new InvalidMessageException(fri);
-        }
-    }
-    
-    /**
-     * Method for validating the checksum algorithm in the GetChecksumsRequest message.
-     * Do we access to the Algorithm?
-     * Also validates whether an algorithm has been granted.
-     * 
-     * @param message The message to have its checksum algorithm validated.
-     */
-    private void validateChecksum(GetChecksumsRequest message) {
-        // validate the checksum function
-        ChecksumSpecTYPE checksumSpec = message.getChecksumRequestForExistingFile();
-        
-        // validate that this non-mandatory field has been filled out.
-        if(checksumSpec == null || checksumSpec.getChecksumType() == null) {
-            String errText = "No checksumSpec in the request. Needs an algorithm to calculate checksums!";
-            log.warn(errText);
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText(errText);
-            throw new InvalidMessageException(fri);
-        }
-        
-        try {
-            MessageDigest.getInstance(checksumSpec.getChecksumType().value());
-        } catch (NoSuchAlgorithmException e) {
-            String errText = "Could not instantiate the given messagedigester for calculating a checksum.";
-            log.warn(errText, e);
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText(errText);
-            throw new InvalidMessageException(fri, e);
         }
     }
     
@@ -222,7 +186,8 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
             ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
             singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
             singleFileResult.setFileID(fileid);
-            singleFileResult.setChecksumValue(getCache().getChecksum(fileid).getBytes());
+            byte[] checksum = Base16Utils.encodeBase16(getCache().getChecksum(fileid));
+            singleFileResult.setChecksumValue(checksum);
             
             res.add(singleFileResult);
         }

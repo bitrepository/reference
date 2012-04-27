@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar;
+package org.bitrepository.pillar.common;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.util.UUID;
+
 /**
  * The class for dispatching alarms.
  */
@@ -92,7 +93,8 @@ public class AlarmDispatcher {
      */
     public void handleRuntimeExceptions(RuntimeException exception) {
         ArgumentValidator.checkNotNull(exception, "RuntimeException exception");
-        if(settings.getCollectionSettings().getPillarSettings().getAlarmLevel() == AlarmLevel.EMERGENCY) {
+        if(settings.getCollectionSettings().getPillarSettings() != null 
+                && settings.getCollectionSettings().getPillarSettings().getAlarmLevel() == AlarmLevel.EMERGENCY) {
             log.error("RuntimeException caught, but we do not issue alarms for this, when the alarm level is '"
                     + settings.getCollectionSettings().getPillarSettings().getAlarmLevel() + "'", exception);
             return;
