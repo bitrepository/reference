@@ -59,7 +59,7 @@ create table audittrail (
     actor_guid bigint,              -- The identifier for the actor which performed the action for the audit. 
                                     -- Used for looking up in the 
     operation varchar(100),         -- The name of the action behind the audit.
-    operation_date date,            -- The date when the action was performed.
+    operation_date timestamp,       -- The date when the action was performed.
     audit varchar(255),             -- The audit trail delivered from the actor. 
     information varchar(255)        -- The information about the audit.
 );

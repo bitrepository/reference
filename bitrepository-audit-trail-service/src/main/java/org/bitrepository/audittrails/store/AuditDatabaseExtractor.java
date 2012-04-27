@@ -124,6 +124,7 @@ public class AuditDatabaseExtractor {
                     result.close();
                 }
             }
+            log.debug("Extracted the audit trails: {}", res);
             
             return res;
         } catch (Exception e) {
