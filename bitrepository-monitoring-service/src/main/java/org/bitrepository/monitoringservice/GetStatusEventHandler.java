@@ -64,6 +64,7 @@ public class GetStatusEventHandler implements EventHandler {
         case COMPONENT_FAILED:
             break;
         case FAILED:
+            alerter.checkStatuses();
             break;
         case NO_COMPONENT_FOUND:
             break;
