@@ -153,7 +153,8 @@ public class ReplacingFile extends ReplaceFileState {
                     response.getChecksumDataForExistingFile(),
                     response.getChecksumDataForNewFile(),
                     response.getPillarID(),
-                    "Received replace file result from " + response.getPillarID()));
+                    "Received replace file result from " + response.getPillarID(),
+                    conversation.getConversationID()));
         } else {
             monitor.contributorFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
         }

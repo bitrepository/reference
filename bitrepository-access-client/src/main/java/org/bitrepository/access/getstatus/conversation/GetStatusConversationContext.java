@@ -35,4 +35,9 @@ public class GetStatusConversationContext extends ConversationContext {
         super(settings, messageSender, clientID, eventHandler, auditTrailInformation);
         this.clientID = clientID;
     }
+    
+    @Override
+    public String toString() {
+        return super.toString() + " , clientID = " + clientID;
+    }
 }

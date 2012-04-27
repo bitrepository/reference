@@ -39,12 +39,14 @@ public class ChecksumsCompletePillarEvent extends ContributorEvent {
     
     /**
      * @param result The result returned by the pillar.
+     * @param checksumType The checksum specification type.
      * @param pillarID The pillar which generated the result
      * @param info Additional information.
+     * @param conversationID The id of the conversation.
      */
     public ChecksumsCompletePillarEvent(ResultingChecksums result, ChecksumSpecTYPE checksumType, String pillarID, 
-            String info) {
-        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID);
+            String info, String conversationID) {
+        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID, conversationID);
         this.result = result;
         this.checksumType = checksumType;
     }
@@ -61,5 +63,10 @@ public class ChecksumsCompletePillarEvent extends ContributorEvent {
      */
     public ChecksumSpecTYPE getChecksumType() {
         return checksumType;
+    }
+    
+    @Override
+    public String additionalInfo() {
+        return super.additionalInfo() + ", checksumType=" + checksumType + ", result=" + result;
     }
 }

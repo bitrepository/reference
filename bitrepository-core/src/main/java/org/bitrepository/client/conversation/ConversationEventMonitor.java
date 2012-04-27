@@ -281,14 +281,14 @@ public class ConversationEventMonitor {
      * @param info Cause information
      * @param e The cause
      */
-    public void contributorFailed(String info, Exception e) {
+    public void contributorFailed(String info, String componentId, Exception e) {
         if (e == null) {
             contributorFailed(info);
         }
         log.warn(info, e);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(COMPONENT_FAILED, info + ", " + e.getMessage(),
-                    conversationID));
+            eventHandler.handleEvent(new ContributorEvent(COMPONENT_FAILED, info + ", " + e.getMessage(),
+                    componentId, conversationID));
         }
     }
     /**

@@ -33,20 +33,12 @@ public class ContributorEvent extends AbstractOperationEvent {
     /**
      * @param type The event type
      * @param info Free text description of the event
-     * @param contributorID The ID of the contributor this event relates to
+     * @param contributorID The ID of the contributor this event relates to.
+     * @param conversationID The ID of the conversation, which caused this event.
      */
     public ContributorEvent(OperationEventType type, String info, String contributorID, String conversationID) {
         super(type, info, conversationID);
         this.contributorID = contributorID;
-    }
-
-    /**
-     * Same as {@link #ContributorEvent(OperationEventType,String,String,String)} but will not initialize the
-     * <code></code>conversationID</code>, this will need to be set afterwards. This is useful if the
-     * <code>conversationID</code> is set another place that the event is constructed.
-     */
-    public ContributorEvent(OperationEventType type, String info, String contributorID) {
-        this(type, info, contributorID, null);
     }
 
     /**

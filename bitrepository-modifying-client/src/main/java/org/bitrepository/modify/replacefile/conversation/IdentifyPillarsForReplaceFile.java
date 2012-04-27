@@ -88,7 +88,8 @@ public class IdentifyPillarsForReplaceFile extends ReplaceFileState {
         } catch (UnexpectedResponseException e) {
             monitor.debug("Unexpected IdentifyPillarsForReplaceFileResponse", e);
         } catch (NegativeResponseException e) {
-            monitor.contributorFailed("Negativ IdentifyPillarsForReplaceFileResponse from pillar " + response.getPillarID(), e);
+            monitor.contributorFailed("Negativ IdentifyPillarsForReplaceFileResponse from pillar", 
+                    response.getPillarID(), e);
         }
         
         if (conversation.pillarSelector.isFinished()) {

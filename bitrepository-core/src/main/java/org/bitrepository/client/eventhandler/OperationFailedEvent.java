@@ -29,8 +29,6 @@ package org.bitrepository.client.eventhandler;
  * Indicates and operation has failed to complete
  */
 public class OperationFailedEvent extends AbstractOperationEvent {
-    /** @see #getInfo() */
-    private final String info;
     /** @see #getType() */
     private final static OperationEventType type = OperationEventType.FAILED;
     private final Exception exception;
@@ -42,7 +40,6 @@ public class OperationFailedEvent extends AbstractOperationEvent {
      */
     public OperationFailedEvent(String info, Exception exception, String conversationID) {
         super(type, info, conversationID);
-        this.info = info;
         this.exception = exception;
     }
 

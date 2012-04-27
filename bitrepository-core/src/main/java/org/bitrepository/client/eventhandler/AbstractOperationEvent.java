@@ -27,7 +27,7 @@ package org.bitrepository.client.eventhandler;
 /**
  * A general implementation of <code>OperationEvent</code>.
  */
-public class AbstractOperationEvent implements OperationEvent {
+public abstract class AbstractOperationEvent implements OperationEvent {
     private final OperationEventType type;
     private final String info;
     private String conversationID;
@@ -73,7 +73,5 @@ public class AbstractOperationEvent implements OperationEvent {
     /**
      * Deliver additional information in a string form. The string returned will be appended to the toString value.
      */
-    protected String additionalInfo() {
-        return "";
-    }
+    abstract protected String additionalInfo();
 }

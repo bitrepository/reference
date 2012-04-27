@@ -38,9 +38,11 @@ public class DeleteFileCompletePillarEvent extends ContributorEvent {
      * @param result The result returned by the pillar.
      * @param pillarID The pillar which generated the result
      * @param info Additional information.
+     * @param conversationID The ID of the conversation, which caused this event.
      */
-    public DeleteFileCompletePillarEvent(ChecksumDataForFileTYPE result, String pillarID, String info) {
-        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID);
+    public DeleteFileCompletePillarEvent(ChecksumDataForFileTYPE result, String pillarID, String info,
+            String conversationID) {
+        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID, conversationID);
         this.result = result;
     }
 
@@ -49,5 +51,10 @@ public class DeleteFileCompletePillarEvent extends ContributorEvent {
      */
     public ChecksumDataForFileTYPE getChecksums() {
         return result;
+    }
+    
+    @Override
+    public String additionalInfo() {
+        return super.additionalInfo() + ", DeleteFileResult=" + result;
     }
 }

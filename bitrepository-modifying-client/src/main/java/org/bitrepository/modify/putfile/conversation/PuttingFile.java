@@ -142,13 +142,14 @@ public class PuttingFile extends PutFileState {
         try {
             putResponseStatus.responseReceived(response.getPillarID());
         } catch (UnexpectedResponseException ure) {
-            monitor.contributorFailed("Received unexpected final response from " + response.getPillarID(), ure);
+            monitor.contributorFailed("Received unexpected final response ", response.getPillarID(), ure);
         }
 
         if(isResponseSuccess(response.getResponseInfo())) {
             monitor.pillarComplete(new PutFileCompletePillarEvent(response.getChecksumDataForNewFile(),
                     response.getPillarID(),
-                    "Received checksum result from " + response.getPillarID()));
+                    "Received checksum result from " + response.getPillarID(),
+                    conversation.getConversationID()));
         } else {
             monitor.contributorFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
         } 

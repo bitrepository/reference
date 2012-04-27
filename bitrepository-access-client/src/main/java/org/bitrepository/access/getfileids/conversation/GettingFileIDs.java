@@ -136,7 +136,8 @@ public class GettingFileIDs extends GetFileIDsState {
                 monitor.pillarComplete(new FileIDsCompletePillarEvent(
                         response.getResultingFileIDs(),
                         response.getPillarID(),
-                        "Received file ids result from " + response.getPillarID()));
+                        "Received file ids result from " + response.getPillarID(), 
+                        conversation.getConversationID()));
                 // If calculations in message, then put them into the results map.
                 if(response.getResultingFileIDs() != null) {
                     results.put(response.getPillarID(), response.getResultingFileIDs());

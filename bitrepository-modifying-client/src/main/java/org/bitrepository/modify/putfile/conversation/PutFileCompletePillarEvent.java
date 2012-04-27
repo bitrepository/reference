@@ -38,9 +38,11 @@ public class PutFileCompletePillarEvent extends ContributorEvent {
      * @param result The result returned by the pillar.
      * @param pillarID The pillar which generated the result
      * @param info Additional information.
+     * @param conversationID The ID of the conversation, which caused this event.
      */
-    public PutFileCompletePillarEvent(ChecksumDataForFileTYPE result, String pillarID, String info) {
-        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID);
+    public PutFileCompletePillarEvent(ChecksumDataForFileTYPE result, String pillarID, String info,
+            String conversationID) {
+        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID, conversationID);
         this.result = result;
     }
 
@@ -51,4 +53,8 @@ public class PutFileCompletePillarEvent extends ContributorEvent {
         return result;
     }
     
+    @Override
+    public String additionalInfo() {
+        return super.additionalInfo() + ", requestedChecksumResult=" + result;
+    }
 }

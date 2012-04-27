@@ -141,7 +141,8 @@ public class DeletingFile extends DeleteFileState {
             monitor.pillarComplete(new DeleteFileCompletePillarEvent(
                     response.getChecksumDataForExistingFile(),
                     response.getPillarID(),
-                    "Received delete file result from " + response.getPillarID()));
+                    "Received delete file result from " + response.getPillarID(),
+                    conversation.getConversationID()));
         } else {
             monitor.contributorFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
         }

@@ -87,8 +87,7 @@ public class IdentifyPillarsForDeleteFile extends DeleteFileState {
         } catch (UnexpectedResponseException e) {
             monitor.debug("Unexpected IdentifyPillarsForDeleteFileResponse", e);
         } catch (NegativeResponseException e) {
-            monitor.contributorFailed("Negativ IdentifyPillarsForDeleteFileResponse from pillar " 
-                    + response.getPillarID(), e);
+            monitor.contributorFailed("Negativ IdentifyPillarsForDeleteFileResponse", response.getPillarID(), e);
         }
         
         if (conversation.pillarSelector.isFinished()) {

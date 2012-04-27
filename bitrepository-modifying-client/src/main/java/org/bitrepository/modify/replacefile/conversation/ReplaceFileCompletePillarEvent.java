@@ -41,10 +41,11 @@ public class ReplaceFileCompletePillarEvent extends ContributorEvent {
      * @param newFile The results of the checksum request for the new file from the pillar.
      * @param pillarID The pillar which generated the result
      * @param info Additional information.
+     * @param conversationID The ID of the conversation, which caused this event.
      */
     public ReplaceFileCompletePillarEvent(ChecksumDataForFileTYPE deletedFile, ChecksumDataForFileTYPE newFile, 
-            String pillarID, String info) {
-        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID);
+            String pillarID, String info, String conversationID) {
+        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID, conversationID);
         this.newFileChecksum = newFile;
         this.deletedFileChecksum = deletedFile;
     }
@@ -65,8 +66,7 @@ public class ReplaceFileCompletePillarEvent extends ContributorEvent {
     
     @Override 
     public String additionalInfo() {
-        return "checksum for new file: '" + newFileChecksum + "'," +
+        return super.additionalInfo() + ", checksum for new file: '" + newFileChecksum + "'," +
                 "checksum for deleted file: '" + deletedFileChecksum + "' ";
     }
-
 }

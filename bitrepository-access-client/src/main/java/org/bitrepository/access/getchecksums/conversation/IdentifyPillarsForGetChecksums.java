@@ -97,9 +97,10 @@ public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
             conversation.selector.processResponse(response);
             monitor.pillarIdentified("Received IdentifyPillarsForGetChecksumsResponse " + response, response.getPillarID());
         } catch (UnexpectedResponseException e) {
-            monitor.contributorFailed("Unable to handle IdentifyPillarsForGetChecksumsResponse, ", e);
+            monitor.debug("Unable to handle IdentifyPillarsForGetChecksumsResponse", e);
         } catch (NegativeResponseException e) {
-            monitor.contributorFailed("Negativ IdentifyPillarsForGetChecksumsResponse from pillar " + response.getPillarID(), e);
+            monitor.contributorFailed("Negativ IdentifyPillarsForGetChecksumsResponse from pillar", 
+                    response.getPillarID(), e);
         }
         
         if (conversation.selector.isFinished()) {

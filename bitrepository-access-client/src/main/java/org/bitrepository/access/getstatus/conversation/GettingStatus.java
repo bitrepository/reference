@@ -59,7 +59,8 @@ public class GettingStatus extends PerformingOperationState {
             getContext().getMonitor().complete(
                     new StatusCompleteContributorEvent(
                             "Received status result from " + response.getContributor(), 
-                            response.getContributor(), response.getResultingStatus()));
+                            response.getContributor(), response.getResultingStatus(), 
+                            getContext().getConversationID()));
          } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
                     " while waiting for Get Status response.");

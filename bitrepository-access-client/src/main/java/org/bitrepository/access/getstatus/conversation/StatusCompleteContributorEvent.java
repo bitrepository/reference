@@ -24,18 +24,36 @@ package org.bitrepository.access.getstatus.conversation;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 
+/**
+ * The event for a complete GetStatus operation with a contributor.
+ */
 public class StatusCompleteContributorEvent extends ContributorEvent {
 
+    /** The status for the contributor.*/
     private final ResultingStatus status;
     
-    public StatusCompleteContributorEvent(String info, String contributor, ResultingStatus status) {
-        super(OperationEventType.COMPONENT_COMPLETE, info, contributor);
+    /**
+     * Constructor.
+     * @param info The information about the event.
+     * @param contributorID The ID of the contributor.
+     * @param status The status for the contributor.
+     * @param conversationID The ID for the conversation.
+     */
+    public StatusCompleteContributorEvent(String info, String contributorID, ResultingStatus status, 
+            String conversationID) {
+        super(OperationEventType.COMPONENT_COMPLETE, info, contributorID, conversationID);
         this.status = status;
     }
     
+    /**
+     * @return The status of for the contributor.
+     */
     public ResultingStatus getStatus() {
         return status;
     }
     
-
+    @Override
+    public String additionalInfo() {
+        return super.additionalInfo() + ", resulting status: " + status;
+    }
 }
