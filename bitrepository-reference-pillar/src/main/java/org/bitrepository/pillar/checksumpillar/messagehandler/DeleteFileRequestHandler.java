@@ -26,6 +26,7 @@ package org.bitrepository.pillar.checksumpillar.messagehandler;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
@@ -73,6 +74,8 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
             getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), 
+                    "Failed deleting the file.", message.getAuditTrailInformation(), FileAction.FAILURE);
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText("Error: " + e.getMessage());
@@ -176,6 +179,8 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
      */
     protected void deleteTheFile(DeleteFileRequest message) {
         try {
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Deleting the file.", 
+                    message.getAuditTrailInformation(), FileAction.DELETE_FILE);
             getCache().deleteEntry(message.getFileID());
         } catch (Exception e) {
             ResponseInfo ir = new ResponseInfo();

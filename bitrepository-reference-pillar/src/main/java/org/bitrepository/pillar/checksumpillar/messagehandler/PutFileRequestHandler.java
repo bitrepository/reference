@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
@@ -82,6 +83,8 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
             getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed deleting file.", 
+                    message.getAuditTrailInformation(), FileAction.FAILURE);
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText("Error: " + e.getMessage());
@@ -144,6 +147,9 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         
         String calculatedChecksum = null;
         try {
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation "
+                    + "checksum for the file before putting it into the cache.", message.getAuditTrailInformation(), 
+                    FileAction.CHECKSUM_CALCULATED);
             calculatedChecksum = ChecksumUtils.generateChecksum(fe.downloadFromServer(new URL(message.getFileAddress())),
                     getChecksumType());
         } catch (IOException e) {
@@ -165,6 +171,8 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
             log.warn("No checksums for validating the retrieved file.");
         }
         
+        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Putting the downloaded file "
+                + "into archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE);
         getCache().putEntry(message.getFileID(), calculatedChecksum);
     }
     

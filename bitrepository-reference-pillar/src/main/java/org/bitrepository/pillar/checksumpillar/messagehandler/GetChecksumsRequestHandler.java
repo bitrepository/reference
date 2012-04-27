@@ -42,6 +42,7 @@ import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetChecksumsResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -97,6 +98,8 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
             getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
+            getAuditManager().addAuditEvent(message.getFileIDs().toString(), message.getFrom(), 
+                    "Failed calculating requested checksums.", message.getAuditTrailInformation(), FileAction.FAILURE);
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText("Error: " + e.getMessage());
@@ -209,7 +212,9 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      */
     private List<ChecksumDataForChecksumSpecTYPE> calculateChecksumResults(GetChecksumsRequest message) {
         log.debug("Starting to calculate the checksum of the requested files.");
-        
+        getAuditManager().addAuditEvent(message.getFileIDs().toString(), message.getFrom(), 
+                "Calculating the requested checksums.", message.getAuditTrailInformation(), FileAction.GET_CHECKSUMS);
+
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         
         // Go through every file in the archive, calculate the checksum and put it into the results.
