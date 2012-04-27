@@ -97,7 +97,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
             getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RuntimeException caught. Sending response for 'error at my end'.", e);
-            getAuditManager().addAuditEvent(message.getFileIDs().toString(), message.getFrom(), 
+            getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
                     "Failed getting file ids.", message.getAuditTrailInformation(), FileAction.FAILURE);
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
@@ -179,7 +179,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
         ResultingFileIDs res = new ResultingFileIDs();
         FileIDsData data = retrieveFileIDsData(message.getFileIDs());
         
-        getAuditManager().addAuditEvent(message.getFileIDs().toString(), message.getFrom(), "Getting the requested "
+        getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), "Getting the requested "
                 + "file ids.", message.getAuditTrailInformation(), FileAction.GET_FILEID);
         
         String resultingAddress = message.getResultAddress();
