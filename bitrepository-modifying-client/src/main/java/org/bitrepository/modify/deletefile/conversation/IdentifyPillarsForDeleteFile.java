@@ -85,9 +85,10 @@ public class IdentifyPillarsForDeleteFile extends DeleteFileState {
                     "' " + "from '" + response.getPillarID() + "' with response '" + 
                     response.getResponseInfo().getResponseText() + "'", response.getPillarID());
         } catch (UnexpectedResponseException e) {
-            monitor.contributorFailed("Unable to handle IdentifyPillarsForDeleteFileResponse, ", e);
+            monitor.debug("Unexpected IdentifyPillarsForDeleteFileResponse", e);
         } catch (NegativeResponseException e) {
-            monitor.contributorFailed("Negativ IdentifyPillarsForDeleteFileResponse from pillar " + response.getPillarID(), e);
+            monitor.contributorFailed("Negativ IdentifyPillarsForDeleteFileResponse from pillar " 
+                    + response.getPillarID(), e);
         }
         
         if (conversation.pillarSelector.isFinished()) {

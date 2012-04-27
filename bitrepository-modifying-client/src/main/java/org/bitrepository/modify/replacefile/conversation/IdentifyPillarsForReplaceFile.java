@@ -86,7 +86,7 @@ public class IdentifyPillarsForReplaceFile extends ReplaceFileState {
                     "' from '" + response.getPillarID() + "' with response '" + 
                     response.getResponseInfo().getResponseText() + "'", response.getPillarID());
         } catch (UnexpectedResponseException e) {
-            monitor.contributorFailed("Unable to handle IdentifyPillarsForReplaceFileResponse, ", e);
+            monitor.debug("Unexpected IdentifyPillarsForReplaceFileResponse", e);
         } catch (NegativeResponseException e) {
             monitor.contributorFailed("Negativ IdentifyPillarsForReplaceFileResponse from pillar " + response.getPillarID(), e);
         }
