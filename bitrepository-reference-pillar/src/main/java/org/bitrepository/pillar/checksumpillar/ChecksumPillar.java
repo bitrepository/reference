@@ -46,7 +46,7 @@ public class ChecksumPillar {
     
     /** The cache for persisting the checksum data.*/
     private final ChecksumStore cache;
-    /** The mediator for delegating the communication to the message handlers.*/
+    /** The mediator for delegating the communication to the message handler.*/
     private ChecksumPillarMediator mediator;
  
     /**

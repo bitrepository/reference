@@ -24,18 +24,18 @@
  */
 package org.bitrepository.integrityservice;
 
-import java.util.Collection;
-
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityservice.collector.eventhandler.ChecksumsUpdaterAndValidatorEventHandler;
 import org.bitrepository.integrityservice.collector.eventhandler.FileIDsUpdaterAndValidatorEventHandler;
+import org.bitrepository.integrityservice.contributor.ContributorForIntegrityService;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowScheduler;
 import org.bitrepository.integrityservice.workflow.Workflow;
 import org.bitrepository.integrityservice.workflow.scheduler.CollectAllChecksumsWorkflow;
@@ -43,12 +43,14 @@ import org.bitrepository.integrityservice.workflow.scheduler.CollectAllFileIDsWo
 import org.bitrepository.integrityservice.workflow.scheduler.CollectObsoleteChecksumsWorkflow;
 import org.bitrepository.integrityservice.workflow.scheduler.IntegrityValidatorWorkflow;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.LifeCycledService;
+import org.bitrepository.service.contributor.ContributorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
 
 /**
  * Simple integrity service.
@@ -78,6 +80,8 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
     private final Settings settings;
     /** The dispatcher of alarms.*/
     private final IntegrityAlarmDispatcher alarmDispatcher;
+    /** Provides GetStatus and GetAuditTrails functionality. */
+    private final ContributorForIntegrityService contributor;
     /** The messagebus for communication.*/
     private final MessageBus messageBus;
     
@@ -87,11 +91,16 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
      */
     public SimpleIntegrityService(Settings settings, SecurityManager securityManager) {
         this.settings = settings;
+        settings.setComponentID(settings.getReferenceSettings().getIntegrityServiceSettings().getID());
         this.messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager); 
         this.cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings);
         this.scheduler = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settings);
         this.checker = IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache);
         this.alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus);
+        this.contributor = new ContributorForIntegrityService(messageBus,
+                new ContributorContext(messageBus, settings,
+                        settings.getReferenceSettings().getIntegrityServiceSettings().getID(),
+                        settings.getReceiverDestination()));
         this.collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
                 cache, checker, 
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
@@ -221,7 +230,12 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
     public long getNumberOfChecksumErrors(String pillarId) {
         return cache.getNumberOfChecksumErrors(pillarId);
     }
-    
+
+    @Override
+    public void start() {
+        //Nothing to do.
+    }
+
     @Override
     public void shutdown() {
         if(messageBus != null) {

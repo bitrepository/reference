@@ -19,15 +19,29 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access.getstatus;
+package org.bitrepository.protocol.message;
 
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
-import org.bitrepository.bitrepositorymessages.*;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 
-public class TestGetStatusMessageFactory extends TestMessageFactory {
+public class TestGetStatusMessageFactory extends ClientTestMessageFactory {
     public TestGetStatusMessageFactory(String collectionID, String clientID) {
         super(collectionID, clientID);
+    }
+
+    public IdentifyContributorsForGetStatusRequest createIdentifyContributorsForGetStatusRequest(
+            IdentifyContributorsForGetStatusRequest request, String componentID,
+            String toDestination) {
+        IdentifyContributorsForGetStatusRequest message = new IdentifyContributorsForGetStatusRequest();
+        initializeMessageDetails(message);
+        message.setCorrelationID(request.getCorrelationID());
+        message.setReplyTo(request.getReplyTo());
+        message.setTo(toDestination);
+        message.setFrom(componentID);
+        return message;
     }
 
     public IdentifyContributorsForGetStatusResponse createIdentifyContributorsForGetStatusResponse(
@@ -49,23 +63,10 @@ public class TestGetStatusMessageFactory extends TestMessageFactory {
         return response;        
     }
     
-    public IdentifyContributorsForGetStatusRequest createIdentifyContributorsForGetStatusRequest(
-            IdentifyContributorsForGetStatusRequest request, String componentID, 
-            String toDestination) {
-        IdentifyContributorsForGetStatusRequest message = new IdentifyContributorsForGetStatusRequest();
-        setMessageDetails(message);
-        message.setCorrelationID(request.getCorrelationID());
-        message.setReplyTo(request.getReplyTo());
-        message.setTo(toDestination);
-        message.setFrom(componentID);
-        
-        return message;
-    }
-    
     public GetStatusRequest createGetStatusRequest(GetStatusRequest request, String componentID, 
             String toDestination) {
         GetStatusRequest message = new GetStatusRequest();
-        setMessageDetails(message);
+        initializeMessageDetails(message);
         message.setCorrelationID(request.getCorrelationID());
         message.setReplyTo(request.getReplyTo());
         message.setTo(toDestination);

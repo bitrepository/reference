@@ -37,7 +37,7 @@ import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.client.DefaultFixtureClientTest;
-import org.bitrepository.protocol.ExampleMessageFactory;
+import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

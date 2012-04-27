@@ -24,16 +24,59 @@
  */
 package org.bitrepository.client.conversation.mediator;
 
-import java.util.*;
-
-import org.bitrepository.bitrepositorymessages.*;
-import org.bitrepository.common.settings.Settings;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
+import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.client.conversation.Conversation;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Conversation handler that delegates messages to registered conversations.
@@ -61,7 +104,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         log.debug("Initializing the CollectionBasedConversationMediator");
         this.conversations = Collections.synchronizedMap(new HashMap<String, Conversation>());
         MessageBusManager.getMessageBus(settings, securityManager).
-            addListener(settings.getReferenceSettings().getClientSettings().getReceiverDestination(), this);
+            addListener(settings.getReceiverDestination(), this);
         this.settings = settings;
         cleanTimer = new Timer(true);
         cleanTimer.scheduleAtFixedRate( new ConversationCleaner(), 0, 

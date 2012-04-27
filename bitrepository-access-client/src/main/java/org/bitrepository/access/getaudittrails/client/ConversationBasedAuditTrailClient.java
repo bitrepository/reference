@@ -25,9 +25,9 @@
 package org.bitrepository.access.getaudittrails.client;
 
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
+import org.bitrepository.protocol.CorrelationIDGenerator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.client.AbstractClient;
-import org.bitrepository.client.conversation.ConversationIDGenerator;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -55,7 +55,7 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
             String fileID,
             String urlForResult,
             EventHandler eventHandler, String auditTrailInformation) {
-        String newConversationID = ConversationIDGenerator.generateConversationID();
+        String newConversationID = CorrelationIDGenerator.generateConversationID();
         if (componentQueries == null) {
             componentQueries = createFullAuditTrailQuery();
         }

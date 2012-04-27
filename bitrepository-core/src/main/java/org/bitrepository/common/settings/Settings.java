@@ -37,6 +37,7 @@ import org.bitrepository.settings.referencesettings.ReferenceSettings;
 public class Settings {
     protected ReferenceSettings referenceSettings;
     protected CollectionSettings collectionSettings;
+    protected String componentID;
     
     protected Settings(CollectionSettings collectionSettings, ReferenceSettings referenceSettings) {
         this.referenceSettings = referenceSettings;
@@ -97,5 +98,21 @@ public class Settings {
      */
     public CollectionSettings getCollectionSettings() {
         return collectionSettings;
+    }
+
+    // ToDo Upgrade to constructor to force the settings of the componentID at construction time.
+    public String getComponentID() {
+        return componentID;
+    }
+
+    public void setComponentID(String componentID) {
+        this.componentID = componentID;
+    }
+
+    public String getReceiverDestination() {
+        if (componentID != null) {
+            return getReferenceSettings().getClientSettings().getReceiverDestination() + "-" + componentID;
+        }
+        else return getReferenceSettings().getClientSettings().getReceiverDestination();
     }
 }

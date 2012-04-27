@@ -32,8 +32,8 @@ public class UnexpectedResponseException extends Exception {
 
     /**
      * Constructor with both message and cause exception
-     * @param Description of this exception
-     * @param The throwable causing of the exception
+     * @param message of this exception
+     * @param cause The throwable causing of the exception
      */
     public UnexpectedResponseException(String message, Throwable cause) {
         super(message, cause);
@@ -41,7 +41,7 @@ public class UnexpectedResponseException extends Exception {
 
     /**
      * Constructor with only a message 
-     * @param Description of this exception
+     * @param message of this exception
      */
     public UnexpectedResponseException(String message) {
         super(message);

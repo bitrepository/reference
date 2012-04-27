@@ -66,7 +66,7 @@ public abstract class PillarMediator extends AbstractMessageListener {
     private final PillarContext context;
 
     // THE MESSAGE HANDLERS!
-    /** The map between the messagenames and their respective handlers.*/
+    /** The map between the messagenames and their respective handler.*/
     @SuppressWarnings("rawtypes")
     protected Map<String, PillarMessageHandler> handlers = new HashMap<String, PillarMessageHandler>();
 
@@ -90,7 +90,7 @@ public abstract class PillarMediator extends AbstractMessageListener {
     }
     
     /**
-     * Method for instantiating the handlers.
+     * Method for instantiating the handler.
      */
     protected abstract void initialiseHandlers(PillarContext context); 
     
@@ -348,7 +348,7 @@ public abstract class PillarMediator extends AbstractMessageListener {
     }
 
     /**
-    * Closes the mediator by removing all the message handlers.
+    * Closes the mediator by removing all the message handler.
     */
     public void close() {
         handlers.clear();

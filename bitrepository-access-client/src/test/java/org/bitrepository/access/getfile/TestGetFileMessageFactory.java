@@ -46,14 +46,14 @@ import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /**
  * Constructs the GetFile specific messages.
  * 
  * ToDo based on example messages.
  */
-public class TestGetFileMessageFactory extends TestMessageFactory {
+public class TestGetFileMessageFactory extends ClientTestMessageFactory {
 
     public TestGetFileMessageFactory(String collectionID) {
         super(collectionID);

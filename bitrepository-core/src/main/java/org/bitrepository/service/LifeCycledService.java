@@ -22,7 +22,7 @@
 package org.bitrepository.service;
 
 public interface LifeCycledService {
-
+    void start();
     
     /**
      * Method called to shutdown the service. 

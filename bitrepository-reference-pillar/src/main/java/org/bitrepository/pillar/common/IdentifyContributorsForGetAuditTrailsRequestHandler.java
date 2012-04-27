@@ -76,7 +76,7 @@ public class IdentifyContributorsForGetAuditTrailsRequestHandler
      */
     protected void respondSuccessfulIdentification(IdentifyContributorsForGetAuditTrailsRequest message) {
         IdentifyContributorsForGetAuditTrailsResponse response = createResponse(message);
-        
+
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
         irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
@@ -100,11 +100,11 @@ public class IdentifyContributorsForGetAuditTrailsRequestHandler
     }
     
     /**
-     * Creates a IdentifyContributorsForGetAuditTrailsResponse based on a 
+     * Creates a IdentifyContributorsForGetAuditTrailsResponse based on a
      * IdentifyContributorsForGetAuditTrailsResponse. The following fields are not inserted:
      * <br/> - ResponseInfo
      * 
-     * @param msg The IdentifyContributorsForGetAuditTrailsResponse to base the response on.
+     * @param message The IdentifyContributorsForGetAuditTrailsResponse to base the response on.
      * @return The response to the request.
      */
     protected IdentifyContributorsForGetAuditTrailsResponse createResponse(

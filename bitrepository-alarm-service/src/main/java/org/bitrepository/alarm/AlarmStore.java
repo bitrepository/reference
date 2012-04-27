@@ -24,8 +24,6 @@
  */
 package org.bitrepository.alarm;
 
-import java.util.concurrent.ArrayBlockingQueue;
-
 import org.bitrepository.alarm.handler.AlarmCollector;
 import org.bitrepository.alarm.handler.AlarmMailer;
 import org.bitrepository.common.settings.Settings;
@@ -41,6 +39,8 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.LifeCycledService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class AlarmStore implements LifeCycledService {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -77,6 +77,9 @@ public class AlarmStore implements LifeCycledService {
 		}
 
 	}
+    public void start() {
+        //Nothing to do
+    }
 
 	public void shutdown() {
 		alarmService.shutdown();

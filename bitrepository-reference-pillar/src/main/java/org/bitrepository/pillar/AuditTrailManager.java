@@ -31,7 +31,7 @@ import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 
 /**
- * The interface for the audit trail handlers.
+ * The interface for the audit trail handler.
  */
 public interface AuditTrailManager {
     /**

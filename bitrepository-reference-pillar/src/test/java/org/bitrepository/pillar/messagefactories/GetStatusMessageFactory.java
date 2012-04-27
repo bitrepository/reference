@@ -24,8 +24,6 @@
  */
 package org.bitrepository.pillar.messagefactories;
 
-import java.util.UUID;
-
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
@@ -35,9 +33,11 @@ import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
-public class GetStatusMessageFactory extends TestMessageFactory {
+import java.util.UUID;
+
+public class GetStatusMessageFactory extends ClientTestMessageFactory {
 
     final Settings settings;
     

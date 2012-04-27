@@ -21,8 +21,6 @@
  */
 package org.bitrepository.monitoringservice;
 
-import java.util.Map;
-
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
@@ -30,6 +28,8 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.LifeCycledService;
+
+import java.util.Map;
 
 public class MonitoringService implements LifeCycledService {
 
@@ -61,6 +61,10 @@ public class MonitoringService implements LifeCycledService {
 	public Map<String, ComponentStatus> getStatus() {
 	    return statusStore.getStatusMap();
 	}
+
+    public void start() {
+        //Nothing to do
+    }
 	
 	public int getMaxRetries() {
 	    return settings.getReferenceSettings().getMonitoringServiceSettings().getMaxRetries().intValue();

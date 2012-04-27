@@ -64,8 +64,8 @@ public class AuditTrailService implements LifeCycledService {
      * @param toDate Restrict the results to only provide events up till this point in time
      * @param fileID Restrict the results to only be about this fileID
      * @param reportingComponent Restrict the results to only be reported by this component
-     * @param Actor Restrict the results to only be events caused by this actor
-     * @param Action Restrict the results to only be about this type of action
+     * @param actor Restrict the results to only be events caused by this actor
+     * @param action Restrict the results to only be about this type of action
      */
     public Collection<AuditTrailEvent> queryAuditTrailEvents(Date fromDate, Date toDate, String fileID, 
             String reportingComponent, String actor, String action) {
@@ -85,6 +85,10 @@ public class AuditTrailService implements LifeCycledService {
     public void collectAuditTrails() {
         collector.collectNewestAudits();
     }
+
+
+    @Override
+    public void start() {}
 
     @Override
     public void shutdown() {

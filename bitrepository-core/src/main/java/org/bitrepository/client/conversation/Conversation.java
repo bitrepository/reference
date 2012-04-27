@@ -25,7 +25,7 @@
 package org.bitrepository.client.conversation;
 
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
-import org.bitrepository.protocol.messagebus.MessageListener;
+import org.bitrepository.protocol.messagebus.SpecificMessageListener;
 
 /**
  * A conversation models the messaging based workflow used to accomplish a operation called on a client interface.
@@ -49,7 +49,7 @@ import org.bitrepository.protocol.messagebus.MessageListener;
  *
  * @param <T> The outcome of the conversation.
  */
-public interface Conversation extends MessageListener {
+public interface Conversation extends SpecificMessageListener {
     /**
      * Get the conversation ID for this conversation.
      *

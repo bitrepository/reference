@@ -41,14 +41,14 @@ package org.bitrepository.access.getaudittrails;
 
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
 import org.bitrepository.bitrepositorymessages.*;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /**
  * Constructs the GetAuditTrails specific messages.
  * 
  * ToDo based on example messages.
  */
-public class GetAuditTrailsMessageFactory extends TestMessageFactory {
+public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
 
     public GetAuditTrailsMessageFactory(String collectionID, String clientID) {
         super(collectionID, clientID);
@@ -88,7 +88,7 @@ public class GetAuditTrailsMessageFactory extends TestMessageFactory {
             IdentifyContributorsForGetAuditTrailsRequest identifyRequest, String componentID, 
             String toDestination) {
         GetAuditTrailsRequest message = new GetAuditTrailsRequest();
-        setMessageDetails(message);
+        initializeMessageDetails(message);
         message.setCorrelationID(identifyRequest.getCorrelationID());
         message.setReplyTo(identifyRequest.getReplyTo());
         message.setTo(toDestination);
