@@ -28,7 +28,7 @@ import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.protocol.ExampleMessageFactory;
+import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
@@ -194,7 +194,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
 
         /**
          * Constructor.
-         * @param confs The configurations for declaring the messagebus.
+         * @param conf The configurations for declaring the messagebus.
          */
         public ResendMessageListener(MessageBusConfiguration conf) {
             this.bus = new ActiveMQMessageBus(conf, securityManager);

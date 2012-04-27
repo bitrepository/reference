@@ -24,14 +24,14 @@
  */
 package org.bitrepository.integrityservice.web;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.IntegrityService;
 import org.bitrepository.integrityservice.SimpleIntegrityService;
 import org.bitrepository.integrityservice.workflow.Workflow;
 import org.bitrepository.service.LifeCycledService;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * The IntegrityService wrapped into the interface for a web server.
@@ -85,7 +85,12 @@ public class IntegrityServiceWebInterface implements IntegrityService, LifeCycle
     public Collection<Workflow> getWorkflows() {
         return service.getWorkflows();
     }
-    
+
+    @Override
+    public void start() {
+        //Nothing to do
+    }
+
     @Override
     public void shutdown() {
         service.shutdown();

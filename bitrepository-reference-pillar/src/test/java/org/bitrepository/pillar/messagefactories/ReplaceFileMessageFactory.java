@@ -52,9 +52,9 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
-public class ReplaceFileMessageFactory extends TestMessageFactory {
+public class ReplaceFileMessageFactory extends ClientTestMessageFactory {
 
     final Settings settings;
     

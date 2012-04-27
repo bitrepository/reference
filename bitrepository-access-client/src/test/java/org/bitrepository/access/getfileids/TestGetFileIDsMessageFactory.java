@@ -44,12 +44,12 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /**
  * Generates test messages for use in GetFileIDsClientTest.
  */
-public class TestGetFileIDsMessageFactory extends TestMessageFactory {
+public class TestGetFileIDsMessageFactory extends ClientTestMessageFactory {
 
     public TestGetFileIDsMessageFactory(String collectionID) {
         super(collectionID);

@@ -24,12 +24,12 @@
  */
 package org.bitrepository.protocol.bus;
 
-import javax.jms.JMSException;
-
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.jaccept.TestEventManager;
+
+import javax.jms.JMSException;
 
 public class MessageBusWrapper implements MessageBus {
     private final MessageBus messageBus;

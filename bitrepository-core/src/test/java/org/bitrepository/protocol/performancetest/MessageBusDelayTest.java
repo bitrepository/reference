@@ -33,7 +33,7 @@ import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.client.MessageReceiver;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.protocol.ExampleMessageFactory;
+import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.DummySecurityManager;

@@ -29,7 +29,7 @@ import org.bitrepository.client.conversation.ConversationState;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 
 /**
- * Super class for the concrete GetChecksums state handlers.
+ * Super class for the concrete GetChecksums state handler.
  */
 public abstract class GetChecksumsState extends AbstractMessageListener implements ConversationState {
     /** The conversation, where the state belong.*/

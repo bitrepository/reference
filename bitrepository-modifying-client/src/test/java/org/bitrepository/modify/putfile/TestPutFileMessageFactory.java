@@ -46,12 +46,12 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /**
  * Messages creation factory for the PutFile tests.
  */
-public class TestPutFileMessageFactory extends TestMessageFactory {
+public class TestPutFileMessageFactory extends ClientTestMessageFactory {
     
     /**
      * Constructor.

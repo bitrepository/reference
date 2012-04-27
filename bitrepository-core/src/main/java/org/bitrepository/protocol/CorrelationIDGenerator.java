@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.client.conversation;
+package org.bitrepository.protocol;
 
 import java.util.UUID;
 
-public class ConversationIDGenerator {
+public class CorrelationIDGenerator {
     public static String generateConversationID() {
         return UUID.randomUUID().toString();
     }

@@ -44,14 +44,14 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
-import org.bitrepository.protocol.TestMessageFactory;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /**
  * Constructs the GetFile specific messages.
  * 
  * ToDo based on example messages.
  */
-public class TestGetChecksumsMessageFactory extends TestMessageFactory {
+public class TestGetChecksumsMessageFactory extends ClientTestMessageFactory {
 
     public TestGetChecksumsMessageFactory(String collectionID) {
         super(collectionID);

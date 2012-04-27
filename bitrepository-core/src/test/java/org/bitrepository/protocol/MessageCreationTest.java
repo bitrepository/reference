@@ -35,6 +35,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
+import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;

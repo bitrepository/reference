@@ -79,7 +79,7 @@ public class ChecksumPillarMediator extends PillarMediator {
     }
     
     /**
-     * Method for instantiating the handlers.
+     * Method for instantiating the handler.
      */
     @Override
     protected void initialiseHandlers(PillarContext context) {
