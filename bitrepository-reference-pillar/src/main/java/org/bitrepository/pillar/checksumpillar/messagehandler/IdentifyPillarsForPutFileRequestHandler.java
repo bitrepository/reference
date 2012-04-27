@@ -24,6 +24,7 @@
  */
 package org.bitrepository.pillar.checksumpillar.messagehandler;
 
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
@@ -70,6 +71,8 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
             log.warn("Unsuccessfull identification for the GetChecksums operation.", e);
             respondUnsuccessfulIdentification(message, e);
         } catch (RuntimeException e) {
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed identifying pillar.", 
+                    message.getAuditTrailInformation(), FileAction.FAILURE);
             getAlarmDispatcher().handleRuntimeExceptions(e);
         }
     }

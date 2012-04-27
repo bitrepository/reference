@@ -43,6 +43,7 @@ import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
+import org.bitrepository.protocol.utils.Base16Utils;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -91,7 +92,8 @@ public class GetChecksumsOnChecksumPillarTest extends DefaultFixturePillarTest {
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String auditTrail = "GET-CHECKSUMS-TEST";
         String CHECKSUM = "1234cccccccc4321";
-        String CS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
+//        String CS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
+        String CS_DELIVERY_ADDRESS = null;
         String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
         settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
                 ChecksumType.MD5.toString());
@@ -172,6 +174,9 @@ public class GetChecksumsOnChecksumPillarTest extends DefaultFixturePillarTest {
                         finalResponse.getResponseInfo(), 
                         finalResponse.getResultingChecksums(),
                         finalResponse.getTo()));
+        Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 1);
+        Assert.assertEquals(Base16Utils.decodeBase16(finalResponse.getResultingChecksums().getChecksumDataItems().get(0).getChecksumValue()), 
+                CHECKSUM);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

@@ -29,6 +29,7 @@ import java.net.URL;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
@@ -93,6 +94,8 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
             getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed replacing file.", 
+                    message.getAuditTrailInformation(), FileAction.FAILURE);
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
             fri.setResponseText("Error: " + e.getMessage());
@@ -187,6 +190,9 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
 
         String checksum = null;
         try {
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the checksum of the "
+                    + "downloaded file for the replace operation.", message.getAuditTrailInformation(), 
+                    FileAction.CHECKSUM_CALCULATED);
             checksum = ChecksumUtils.generateChecksum(fe.downloadFromServer(new URL(message.getFileAddress())), 
                     getChecksumType());
         } catch (IOException e) {
@@ -221,6 +227,8 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
      */
     private void replaceTheEntry(ReplaceFileRequest message, String newChecksum) {
         String oldChecksum = Base16Utils.decodeBase16(message.getChecksumDataForExistingFile().getChecksumValue());
+        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Replacing the file.", 
+                message.getAuditTrailInformation(), FileAction.REPLACE_FILE); 
         getCache().replaceEntry(message.getFileID(), oldChecksum, newChecksum);
     }
 

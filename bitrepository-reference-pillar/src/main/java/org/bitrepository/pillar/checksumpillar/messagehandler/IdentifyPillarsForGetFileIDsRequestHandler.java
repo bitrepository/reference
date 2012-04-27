@@ -27,6 +27,7 @@ package org.bitrepository.pillar.checksumpillar.messagehandler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -74,6 +75,8 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
             log.warn("Unsuccessfull identification for the GetFileIDs.", e);
             respondUnsuccessfulIdentification(message, e);
         } catch (RuntimeException e) {
+            getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
+                    "Failed identifying pillar.", message.getAuditTrailInformation(), FileAction.FAILURE);
             getAlarmDispatcher().handleRuntimeExceptions(e);
         }
     }
