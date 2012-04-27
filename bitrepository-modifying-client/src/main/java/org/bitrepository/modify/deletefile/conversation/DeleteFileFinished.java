@@ -43,19 +43,19 @@ public class DeleteFileFinished extends DeleteFileState {
     @Override
     public void onMessage(IdentifyPillarsForDeleteFileResponse response) {
         monitor.warning("Received IdentifyPillarsForPutFileResponse from '" + response.getPillarID() 
-                + "' after the PutFile has ended.");
+                + "' after the DeleteFile operation has ended.");
     }
     
     @Override
     public void onMessage(DeleteFileProgressResponse response) {
         monitor.warning("Received PutFileProgressResponse from '" + response.getPillarID() 
-                + "' after the PutFile has ended.");
+                + "' after the DeleteFile operation has ended.");
     }
     
     @Override
     public void onMessage(DeleteFileFinalResponse response) {
         monitor.warning("Received PutFileFinalResponse from '" + response.getPillarID() 
-                + "' after the PutFile has ended.");
+                + "' after the DeleteFile operation has ended.");
     }
     
     @Override

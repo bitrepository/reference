@@ -98,7 +98,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
             getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
-            getAuditManager().addAuditEvent(message.getFileIDs().toString(), message.getFrom(), 
+            getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
                     "Failed calculating requested checksums.", message.getAuditTrailInformation(), FileAction.FAILURE);
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
@@ -180,7 +180,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
         log.debug("Starting to calculate the checksum of the requested files.");
         
         FileIDs fileids = message.getFileIDs();
-        getAuditManager().addAuditEvent(message.getFileIDs().toString(), message.getFrom(), 
+        getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
                 "Calculating the requested checksums.", message.getAuditTrailInformation(), FileAction.GET_CHECKSUMS);
 
         if(fileids.isSetAllFileIDs()) {

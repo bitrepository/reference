@@ -75,7 +75,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
             log.warn("Unsuccessfull identification for the GetFileIDs.", e);
             respondUnsuccessfulIdentification(message, e);
         } catch (RuntimeException e) {
-            getAuditManager().addAuditEvent(message.getFileIDs().toString(), message.getFrom(), 
+            getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
                     "Failed identifying pillar.", message.getAuditTrailInformation(), FileAction.FAILURE);
             getAlarmDispatcher().handleRuntimeExceptions(e);
         }

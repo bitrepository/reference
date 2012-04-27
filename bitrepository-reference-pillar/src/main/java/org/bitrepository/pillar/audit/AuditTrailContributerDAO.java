@@ -212,6 +212,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
             throw new IllegalStateException("Issue regarding", e);
         }
         
+        log.debug("Extracted audit trail events: {}", res);
         return res;
     }
     

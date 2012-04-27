@@ -23,6 +23,7 @@ package org.bitrepository.pillar;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.common.AlarmDispatcher;
 import org.bitrepository.protocol.messagebus.MessageBus;
 
 public class MockAlarmDispatcher extends AlarmDispatcher {

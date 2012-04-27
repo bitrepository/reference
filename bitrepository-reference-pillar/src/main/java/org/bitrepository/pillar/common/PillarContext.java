@@ -23,7 +23,6 @@ package org.bitrepository.pillar.common;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.AlarmDispatcher;
 import org.bitrepository.pillar.AuditTrailManager;
 import org.bitrepository.protocol.messagebus.MessageBus;
 

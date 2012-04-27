@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -76,6 +77,8 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
             log.warn("Unsuccessfull identification for the GetChecksums operation.", e);
             respondUnsuccessfulIdentification(message, e);
         } catch (RuntimeException e) {
+            getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), "Failed identifying pillar.", 
+                    message.getAuditTrailInformation(), FileAction.FAILURE);
             getAlarmDispatcher().handleRuntimeExceptions(e);
         }
     }

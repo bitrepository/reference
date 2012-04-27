@@ -254,7 +254,16 @@ public class ConversationEventMonitor {
     public void debug(String info) {
         log.debug(info);
     }
-
+    
+    /**
+     * Logs debug information.
+     * @param info The debug info to log.
+     * 
+     */
+    public void debug(String info, Exception e) {
+        log.debug(info, e);
+    }
+    
     /**
      * A pillar has failed to handle a request successfully.
      * @param info Cause information
@@ -329,6 +338,11 @@ public class ConversationEventMonitor {
         /** Delegates to the normal logger debug */
         public void debug(String info) {
             logger.debug("Conversation(" + conversationID + " ) event:" +info);
+        }
+
+        /** Delegates to the normal logger debug */
+        public void debug(String info, Exception e) {
+            logger.debug("Conversation(" + conversationID + " ) event:" + info, e);
         }
 
         /** Delegates to the normal logger info */

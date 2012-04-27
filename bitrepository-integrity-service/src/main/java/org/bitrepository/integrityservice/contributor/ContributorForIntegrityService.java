@@ -3,7 +3,7 @@ package org.bitrepository.integrityservice.contributor;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.contributor.AbstractContributor;
 import org.bitrepository.service.contributor.ContributorContext;
-import org.bitrepository.service.contributor.handler.GetContributorsForGetStatusRequestHandler;
+import org.bitrepository.service.contributor.handler.IdentifyContributorsForGetStatusRequestRequestHandler;
 import org.bitrepository.service.contributor.handler.GetStatusRequestHandler;
 import org.bitrepository.service.contributor.handler.RequestHandler;
 
@@ -20,7 +20,7 @@ public class ContributorForIntegrityService extends AbstractContributor {
     @Override
     public RequestHandler[] createListOfHandlers() {
         return new RequestHandler[] {
-            new GetContributorsForGetStatusRequestHandler(context),
+            new IdentifyContributorsForGetStatusRequestRequestHandler(context),
             new GetStatusRequestHandler(context)
         };
     }

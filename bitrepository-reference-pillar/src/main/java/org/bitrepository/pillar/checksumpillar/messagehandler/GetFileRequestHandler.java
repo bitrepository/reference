@@ -24,6 +24,7 @@
  */
 package org.bitrepository.pillar.checksumpillar.messagehandler;
 
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
@@ -59,12 +60,14 @@ public class GetFileRequestHandler extends ChecksumPillarMessageHandler<GetFileR
         ArgumentValidator.checkNotNull(message, "GetFileRequest message");
 
         try {
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed getting file.", 
+                    message.getAuditTrailInformation(), FileAction.FAILURE);
+
             ResponseInfo ri = new ResponseInfo();
             ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
             ri.setResponseText("The ChecksumPillar '" 
                     + getSettings().getReferenceSettings().getPillarSettings().getPillarID() + "' cannot handle a "
                     + "request for the actual file, since it only contains the checksum of the file.");
-            
             sendFailedResponse(message, ri);
         } catch (RuntimeException e) {
             log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
