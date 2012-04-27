@@ -12,7 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * General class for handling the general
+ * Defines the general functionality for handling a set of requests. Does this by delegating the
+ * handling of the specific request to appropriate <code>RequestHandler</code>s.
+ *
  */
 public abstract class AbstractContributor implements Contributor {
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -36,10 +38,17 @@ public abstract class AbstractContributor implements Contributor {
         messageBus.addListener(getContext().getSettings().getCollectionDestination(), messageHandler);
     }
 
-    public abstract RequestHandler[] createListOfHandlers();
+    /**
+     * @return The set of <code>RequestHandler</code>s used for this contributor.
+     */
+    protected abstract RequestHandler[] createListOfHandlers();
 
+    /**
+     * @return The concrete context used for this contributor.
+     */
     protected abstract ContributorContext getContext();
 
+    // ToDo Introduce fault barrier
     private class GeneralMessageHandler implements MessageListener {
         @Override
         public void onMessage(Message message) {

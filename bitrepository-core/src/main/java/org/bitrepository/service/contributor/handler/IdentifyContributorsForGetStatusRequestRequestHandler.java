@@ -11,10 +11,10 @@ import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.service.contributor.ContributorContext;
 
-public class GetContributorsForGetStatusRequestHandler extends AbstractRequestHandler {
+public class IdentifyContributorsForGetStatusRequestRequestHandler extends AbstractRequestHandler {
     private final ContributorContext context;
 
-    public GetContributorsForGetStatusRequestHandler(ContributorContext context) {
+    public IdentifyContributorsForGetStatusRequestRequestHandler(ContributorContext context) {
         this.context = context;
     }
 
