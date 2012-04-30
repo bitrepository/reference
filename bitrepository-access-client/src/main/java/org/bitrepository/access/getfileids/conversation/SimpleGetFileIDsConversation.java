@@ -24,21 +24,11 @@
  */
 package org.bitrepository.access.getfileids.conversation;
 
-import java.net.URL;
-import java.util.Collection;
-import java.util.UUID;
-
-import org.bitrepository.access.getfileids.selector.PillarSelectorForGetFileIDs;
-import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
-import org.bitrepository.common.settings.Settings;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.conversation.AbstractConversation;
+import org.bitrepository.client.conversation.ConversationEventMonitor;
 import org.bitrepository.client.conversation.ConversationState;
-import org.bitrepository.client.conversation.FlowController;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.client.conversation.FinishedState;
 
 /**
  * A conversation for GetFileIDs.
@@ -46,21 +36,7 @@ import org.bitrepository.protocol.messagebus.MessageSender;
  * Logic for behaving sanely in GetFileIDs conversations.
  */
 public class SimpleGetFileIDsConversation extends AbstractConversation {
-    /** The configuration specific to the BitRepositoryCollection related to this conversion. */
-    final Settings settings;
-
-    /** The url which the pillar should upload the file to. */
-    final URL uploadUrl;
-    /** The ID of the file which should be uploaded to the supplied url */
-    final FileIDs fileIDs;
-    /** Selects a pillar based on responses. */
-    final PillarSelectorForGetFileIDs selector;
-    /** The conversation state (State pattern) */
-    GetFileIDsState conversationState;
-    /** The text audit trail information for requesting the operation.*/
-    final String auditTrailInformation;
-    /** The client ID */
-    final String clientID;
+    private final GetFileIDsConversationContext context;
     
     /**
      * Constructor.
@@ -71,46 +47,44 @@ public class SimpleGetFileIDsConversation extends AbstractConversation {
      * @param pillars The pillars to retrieve the checksums from.
      * @param eventHandler The handler of events.
      */
-    public SimpleGetFileIDsConversation(MessageSender messageSender, Settings settings, URL url,
-            FileIDs fileIds, Collection<String> pillars, String clientID, EventHandler eventHandler,
-            FlowController flowController, String auditTrailInformation) {
-        super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
-        this.settings = settings;
-        this.uploadUrl = url;
-        this.fileIDs = fileIds;
-        this.selector = new PillarSelectorForGetFileIDs(pillars);
-        conversationState = new IdentifyPillarsForGetFileIDs(this);
-        this.auditTrailInformation = auditTrailInformation;
-        this.clientID = clientID;
+    public SimpleGetFileIDsConversation(GetFileIDsConversationContext context) {
+        super(context.getMessageSender(), context.getConversationID(), null, null);
+        this.context = context;
+        context.setState(new IdentifyPillarsForGetFileIDs(context));
     }
 
     @Override
     public boolean hasEnded() {
-        return conversationState.hasEnded();
+        return context.getState() instanceof FinishedState;
     }
     
     @Override
-    public synchronized void onMessage(GetFileIDsFinalResponse message) {
-        conversationState.onMessage(message);
+    public void onMessage(Message message) {
+        context.getState().handleMessage(message);
     }
 
     @Override
-    public synchronized void onMessage(GetFileIDsProgressResponse message) {
-        conversationState.onMessage(message);
+    public void startConversation() {
+        context.getState().start();
     }
-
-    @Override
-    public synchronized void onMessage(IdentifyPillarsForGetFileIDsResponse message) {
-        conversationState.onMessage(message);
-    }
-
+    
     @Override
     public void endConversation() {
-        conversationState.endConversation();
+        context.setState(new FinishedState(context));
+    }
+    
+    /**
+     * Override to use the new context provided monitor.
+     * @return The monitor for distributing update information
+     */
+    public ConversationEventMonitor getMonitor() {
+        return context.getMonitor();
     }
 
     @Override
     public ConversationState getConversationState() {
-        return conversationState;
+        // Only used to start conversation, which has been oveloaded. This is because the current parent state isn't of
+        // type ConversationState in the AuditTrailCLient.
+        return null;
     }
 }

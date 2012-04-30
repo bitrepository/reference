@@ -27,13 +27,12 @@ package org.bitrepository.access.getfileids;
 import java.net.URL;
 import java.util.Collection;
 
-import javax.jms.JMSException;
-
+import org.bitrepository.access.getfileids.conversation.GetFileIDsConversationContext;
 import org.bitrepository.access.getfileids.conversation.SimpleGetFileIDsConversation;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.client.conversation.FlowController;
+import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -47,20 +46,9 @@ import org.slf4j.LoggerFactory;
  * This class is just a thin wrapper which creates a conversion each time a operation is started. The conversations 
  * takes over the rest of the operation handling.
  */
-public class ConversationBasedGetFileIDsClient implements GetFileIDsClient {
+public class ConversationBasedGetFileIDsClient extends AbstractClient implements GetFileIDsClient {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
-
-    /** The settings for this instance.*/
-    private final Settings settings;
-    /** The messagebus for communication.*/
-    private final MessageBus bus;
-    
-    /** The mediator which should manage the conversations. */
-    private final ConversationMediator conversationMediator;
-    
-    /** The client ID */
-    private final String clientID;
     
     /**
      * The constructor.
@@ -70,10 +58,7 @@ public class ConversationBasedGetFileIDsClient implements GetFileIDsClient {
      */
     public ConversationBasedGetFileIDsClient(MessageBus messageBus, ConversationMediator conversationMediator,
             Settings settings, String clienID) {
-        this.bus = messageBus;
-        this.settings = settings;
-        this.conversationMediator = conversationMediator;
-        this.clientID = clienID;
+        super(settings, conversationMediator, messageBus, clienID);
     }
 
     @Override
@@ -85,20 +70,10 @@ public class ConversationBasedGetFileIDsClient implements GetFileIDsClient {
         log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"
                 + pillarIDs + "'. The result should be uploaded to '" + addressForResult + "'.");
         
-        SimpleGetFileIDsConversation conversation = new SimpleGetFileIDsConversation(
-                bus, settings, addressForResult, fileIDs, pillarIDs, clientID, eventHandler,  
-                new FlowController(settings), auditTrailInformation);
-        conversationMediator.addConversation(conversation);
-        conversation.startConversation();
+        GetFileIDsConversationContext context = new GetFileIDsConversationContext(fileIDs, addressForResult, 
+                settings, messageBus, clientID, eventHandler, auditTrailInformation);
+        SimpleGetFileIDsConversation conversation = new SimpleGetFileIDsConversation(context);
+        startConversation(conversation);
     }
     
-    @Override
-    public void shutdown() {
-        try {
-            bus.close();
-            // TODO Kill any lingering timer threads
-        } catch (JMSException e) {
-            log.info("Error during shutdown of messagebus ", e);
-        }
-    }
 }

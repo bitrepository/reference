@@ -24,24 +24,15 @@
  */
 package org.bitrepository.access.getfileids.conversation;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
-import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.client.eventhandler.DefaultEvent;
-import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.conversation.ConversationContext;
+import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
 
@@ -53,143 +44,68 @@ import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
  * Note that this is only used by the GetFileIDsConversation in the same package, therefore the visibility is package 
  * protected.
  */
-public class GettingFileIDs extends GetFileIDsState {
-    /** The pillars, which has not yet answered.*/
-    private List<SelectedPillarInfo> pillarsSelectedForRequest; 
+public class GettingFileIDs extends PerformingOperationState {
+    private final GetFileIDsConversationContext context;
+    private Map<String,String> activeContributors;
     /** The status for the expected responses.*/
     private final ContributorResponseStatus responseStatus;
-
-    /** 
-     * The timer for the getFileTimeout. It is run as a daemon thread, eg. it will not prevent the application from 
-     * exiting */
-    final Timer timer = new Timer(true);
-    /** The timer task for timeout of getFile in this conversation. */
-    final TimerTask getFileIDsTimeoutTask = new GetFileIDsTimerTask();
-
-    /** The results of the checksums calculations. A map between the pillar and its calculated checksums.*/
-    private Map<String, ResultingFileIDs> results = new HashMap<String, ResultingFileIDs>();
 
     /**
      * Constructor.
      * @param conversation The conversation where this state belongs.
      */
-    public GettingFileIDs(SimpleGetFileIDsConversation conversation) {
-        super(conversation);
-        pillarsSelectedForRequest = conversation.selector.getSelectedPillars();
-        responseStatus = new ContributorResponseStatus(
-                pillarsSelectedForRequest.toArray(new SelectedPillarInfo[pillarsSelectedForRequest.size()]));
-    }
-
-    /**
-     * Method for initiating this part of the conversation. Sending the GetFileIDsRequest.
-     */
-    public void start() {
-        GetFileIDsRequest getFileIDsRequest = new GetFileIDsRequest();
-        getFileIDsRequest.setCollectionID(conversation.settings.getCollectionID());
-        getFileIDsRequest.setCorrelationID(conversation.getConversationID());
-        getFileIDsRequest.setFileIDs(conversation.fileIDs);
-        getFileIDsRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings()
-                .getReceiverDestination());
-        getFileIDsRequest.setFrom(conversation.clientID);
-        getFileIDsRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        getFileIDsRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        getFileIDsRequest.setAuditTrailInformation(conversation.auditTrailInformation);
-
-        // Sending one request to each of the identified pillars.
-        for(SelectedPillarInfo pillar : pillarsSelectedForRequest) {
-            getFileIDsRequest.setPillarID(pillar.getID());
-            getFileIDsRequest.setTo(pillar.getDestination());
-
-            if(conversation.uploadUrl != null) {
-                // making the URL: 'baseUrl'-'pillarId'
-                getFileIDsRequest.setResultAddress(conversation.uploadUrl.toExternalForm() + "-" 
-                        + pillar.getID());
-            }
-
-            monitor.requestSent("GetFileIDsRequest sent to: " + pillar.getID(), 
-                    pillar.getID());
-            conversation.messageSender.sendMessage(getFileIDsRequest); 
+    public GettingFileIDs(GetFileIDsConversationContext context, List<SelectedPillarInfo> contributors) {
+        super();
+        this.context = context;
+        this.activeContributors = new HashMap<String,String>();
+        for (SelectedPillarInfo contributorInfo : contributors) {
+            activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
         }
-
-        timer.schedule(getFileIDsTimeoutTask,
-                conversation.settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue());
-    }
-
-    @Override
-    public void onMessage(IdentifyPillarsForGetFileIDsResponse response) {
-        monitor.outOfSequenceMessage("Received IdentifyPillarsForGetFileIDsResponse from " + response.getPillarID() 
-                + " after the GetFileIDsRequest has been sent.");
-    }
-
-    @Override
-    public void onMessage(GetFileIDsProgressResponse response) {
-        monitor.progress(new DefaultEvent(OperationEvent.OperationEventType.PROGRESS, 
-                "Received progress response for retrieval of file ids " + response.getFileIDs()));
-    }
-
-    @Override
-    public void onMessage(GetFileIDsFinalResponse response) {
-        try {
-            responseStatus.responseReceived(response.getPillarID());
-            
-            if(isReponseSuccess(response.getResponseInfo())) {
-                monitor.pillarComplete(new FileIDsCompletePillarEvent(
-                        response.getResultingFileIDs(),
-                        response.getPillarID(),
-                        "Received file ids result from " + response.getPillarID(), 
-                        conversation.getConversationID()));
-                // If calculations in message, then put them into the results map.
-                if(response.getResultingFileIDs() != null) {
-                    results.put(response.getPillarID(), response.getResultingFileIDs());
-                }
-            } else {
-                monitor.contributorFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
-            } 
-        } catch (UnexpectedResponseException ure) {
-            monitor.warning("Received bad FinalResponse from pillar: " + response.getResponseInfo(), ure);
-        }
-
-        if(responseStatus.haveAllPillarResponded()) {
-            monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE, 
-                    "All pillars have delivered their FileIDs.", conversation.getConversationID()));
-            conversation.conversationState = new GetFileIDsFinished(conversation);
-        }
-    }
-
-    /**
-     * Method for validating the FinalResponseInfo.
-     * @param frInfo The FinalResponseInfo to be validated.
-     * @return Whether the FinalRepsonseInfo tells that the operation has been a success or a failure.
-     */
-    private boolean isReponseSuccess(ResponseInfo frInfo) throws UnexpectedResponseException { 
-        if(ResponseCode.OPERATION_COMPLETED.equals(frInfo.getResponseCode())) {
-            return true;
-        } 
-        return false;
+        this.responseStatus = new ContributorResponseStatus(activeContributors.keySet());
     }
     
-    /**
-     * Method for handling a timeout for this operation.
-     */
-    protected void handleTimeout() {
-        if (!conversation.hasEnded()) { 
-            conversation.failConversation("No GetFileFinalResponse received before timeout");
+    @Override
+    protected void sendRequest() {
+        context.getMonitor().requestSent("Sending request for audit trails", activeContributors.keySet().toString());
+        for(String pillar : activeContributors.keySet()) {
+            GetFileIDsRequest msg = new GetFileIDsRequest();
+            initializeMessage(msg);
+            msg.setFileIDs(context.getFileIDs());
+            if(context.getUrlForResult() != null) {
+                msg.setResultAddress(context.getUrlForResult().toExternalForm() + "-" + pillar);    
+            }
+            msg.setPillarID(pillar);
+            msg.setTo(activeContributors.get(pillar));
+            context.getMessageSender().sendMessage(msg);
         }
     }
-
-    /**
-     * The timer task class for the outstanding get file ids request. When the time is reached the conversation 
-     * should be marked as ended.
-     */
-    private class GetFileIDsTimerTask extends TimerTask {
-        @Override
-        public void run() {
-            handleTimeout();
+    
+    @Override
+    protected void generateCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
+        if (msg instanceof GetFileIDsFinalResponse) {
+            GetFileIDsFinalResponse response = (GetFileIDsFinalResponse)msg;
+            getContext().getMonitor().complete(
+                    new FileIDsCompletePillarEvent(response.getResultingFileIDs(), response.getFrom(),
+                            "Audit trails received from " + response.getFrom(), response.getCorrelationID()));
+        } else {
+            throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
+                    " while waiting for Audit Trail response.");
         }
+    }
+    
+    @Override
+    protected ConversationContext getContext() {
+        return context;
     }
 
     @Override
-    public boolean hasEnded() {
-        return false;
+    protected String getName() {
+        return "Fetch audit trails";
     }
+
+    @Override
+    protected ContributorResponseStatus getResponseStatus() {
+        return responseStatus;
+    }
+
 }
