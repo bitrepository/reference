@@ -30,6 +30,8 @@ import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.common.database.DerbyDBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.service.audit.AuditDatabaseConstants;
+import org.bitrepository.service.audit.AuditTrailContributerDAO;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;

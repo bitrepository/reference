@@ -27,17 +27,17 @@ package org.bitrepository.pillar.referencepillar.messagehandler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
-import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
+import org.bitrepository.service.exception.IdentifyContributorException;
+import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,36 +58,30 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         super(context, referenceArchive);
     }
     
-    /**
-     * Handles the identification messages for the GetFileIDs operation.
-     * @param message The IdentifyPillarsForGetFileIDsRequest message to handle.
-     */
-    public void handleMessage(IdentifyPillarsForGetFileIDsRequest message) {
-        ArgumentValidator.checkNotNull(message, "IdentifyPillarsForGetFileIDsRequest message");
+    @Override
+    public Class<IdentifyPillarsForGetFileIDsRequest> getRequestClass() {
+        return IdentifyPillarsForGetFileIDsRequest.class;
+    }
 
-        try {
-            validateBitrepositoryCollectionId(message.getCollectionID());
-            checkThatAllRequestedFilesAreAvailable(message);
-            respondSuccesfullIdentification(message);
-        } catch (IllegalArgumentException e) {
-            getAlarmDispatcher().handleIllegalArgumentException(e);
-        } catch (IdentifyPillarsException e) {
-            log.warn("Unsuccessfull identification for the GetFileIDs.", e);
-            respondUnsuccessfulIdentification(message, e);
-        } catch (RuntimeException e) {
-            getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
-                    "Failed identifying pillar.", message.getAuditTrailInformation(), FileAction.FAILURE);
-            getAlarmDispatcher().handleRuntimeExceptions(e);
-        }
+    @Override
+    public void processRequest(IdentifyPillarsForGetFileIDsRequest message) throws RequestHandlerException {
+        checkThatAllRequestedFilesAreAvailable(message);
+        respondSuccesfullIdentification(message);
+    }
+
+    @Override
+    public MessageResponse generateFailedResponse(IdentifyPillarsForGetFileIDsRequest message) {
+        return createFinalResponse(message);
     }
     
     /**
      * Validates that all the requested files in the filelist are present. 
-     * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
+     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
      * @param message The message containing the list files. An empty filelist is expected 
      * when "AllFiles" or the parameter option is used.
      */
-    public void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetFileIDsRequest message) {
+    public void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetFileIDsRequest message) 
+            throws RequestHandlerException {
         FileIDs fileids = message.getFileIDs();
         if(fileids == null) {
             log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
@@ -106,7 +100,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
             
-            throw new IdentifyPillarsException(irInfo);
+            throw new IdentifyContributorException(irInfo);
         }
     }
     
@@ -116,7 +110,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
      */
     private void respondSuccesfullIdentification(IdentifyPillarsForGetFileIDsRequest message) {
         // Create the response.
-        IdentifyPillarsForGetFileIDsResponse reply = createIdentifyPillarsForGetFileIDsResponse(message);
+        IdentifyPillarsForGetFileIDsResponse reply = createFinalResponse(message);
         
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
                 getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
@@ -131,23 +125,6 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
     }
     
     /**
-     * Sending a bad response with the 
-     * @param message The identification request to respond to.
-     * @param cause The cause of the unsuccessful identification (e.g. which files are missing).
-     */
-    private void respondUnsuccessfulIdentification(IdentifyPillarsForGetFileIDsRequest message, 
-            IdentifyPillarsException cause) {
-        IdentifyPillarsForGetFileIDsResponse reply = createIdentifyPillarsForGetFileIDsResponse(message);
-        
-        reply.setResponseInfo(cause.getResponseInfo());
-        
-        // Set to maximum time to indicate that it is a bad reply.
-        reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
-        
-        getMessageBus().sendMessage(reply);
-    }
-    
-    /**
      * Creates a IdentifyPillarsForGetFileIDsResponse based on a 
      * IdentifyPillarsForGetFileIDsRequest. The following fields are not inserted:
      * <br/> - TimeToDeliver
@@ -156,19 +133,11 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
      * @param msg The IdentifyPillarsForGetFileIDsRequest to base the response on.
      * @return The response to the request.
      */
-    private IdentifyPillarsForGetFileIDsResponse createIdentifyPillarsForGetFileIDsResponse(
-            IdentifyPillarsForGetFileIDsRequest msg) {
-        IdentifyPillarsForGetFileIDsResponse res 
-                = new IdentifyPillarsForGetFileIDsResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
+    private IdentifyPillarsForGetFileIDsResponse createFinalResponse(IdentifyPillarsForGetFileIDsRequest msg) {
+        IdentifyPillarsForGetFileIDsResponse res = new IdentifyPillarsForGetFileIDsResponse();
+        populateResponse(msg, res);
         res.setFileIDs(msg.getFileIDs());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

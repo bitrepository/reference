@@ -68,7 +68,6 @@ public class FileIDsUpdaterAndValidatorEventHandler implements EventHandler {
     }
     
     @Override
-    @SuppressWarnings("rawtypes")
     public void handleEvent(OperationEvent event) {
         if(event.getType().equals(OperationEventType.FAILED)) {
             handleFailure(event);
@@ -100,7 +99,6 @@ public class FileIDsUpdaterAndValidatorEventHandler implements EventHandler {
      * Method for handling a failure.
      * @param event The event that failed.
      */
-    @SuppressWarnings("rawtypes")
     private void handleFailure(OperationEvent event) {
         log.warn(event.getType() + " : " + event.getInfo());
         performIntegrityCheck();
@@ -110,7 +108,6 @@ public class FileIDsUpdaterAndValidatorEventHandler implements EventHandler {
      * Handles a Complete for the whole operation by performing a integrity check on the given checksums.
      * @param event The event that has completed.
      */
-    @SuppressWarnings("rawtypes")
     private void handleComplete(OperationEvent event) {
         log.info(event.getType() + " : " + event.getInfo());
         performIntegrityCheck();

@@ -24,30 +24,18 @@
  */
 package org.bitrepository.pillar.checksumpillar.messagehandler;
 
-import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
-import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.GetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
-import org.bitrepository.pillar.common.GetAuditTrailsRequestHandler;
-import org.bitrepository.pillar.common.GetStatusRequestHandler;
-import org.bitrepository.pillar.common.IdentifyContributorsForGetAuditTrailsRequestHandler;
-import org.bitrepository.pillar.common.IdentifyContributorsForGetStatusRequestHandler;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.common.PillarMediator;
+import org.bitrepository.service.contributor.handler.GetAuditTrailsRequestHandler;
+import org.bitrepository.service.contributor.handler.GetStatusRequestHandler;
+import org.bitrepository.service.contributor.handler.IdentifyContributorsForGetAuditTrailsRequestHandler;
+import org.bitrepository.service.contributor.handler.IdentifyContributorsForGetStatusRequestHandler;
+import org.bitrepository.service.contributor.handler.RequestHandler;
 
 /**
  * This instance handles the conversations for the checksum pillar.
@@ -73,49 +61,31 @@ public class ChecksumPillarMediator extends PillarMediator {
         super(context);
         ArgumentValidator.checkNotNull(refCache, "ChecksumCache refCache");
         this.cache = refCache;
-
-        // Initialise the messagehandlers.
-        initialiseHandlers(context);
     }
-    
-    /**
-     * Method for instantiating the handler.
-     */
+
+    @SuppressWarnings("rawtypes")
     @Override
-    protected void initialiseHandlers(PillarContext context) {
-        this.handlers.put(IdentifyPillarsForGetFileRequest.class.getName(), 
-                new IdentifyPillarsForGetFileRequestHandler(context, cache));
-        this.handlers.put(GetFileRequest.class.getName(), 
-                new GetFileRequestHandler(context, cache));
-        this.handlers.put(IdentifyPillarsForGetFileIDsRequest.class.getName(), 
-                new IdentifyPillarsForGetFileIDsRequestHandler(context, cache));
-        this.handlers.put(GetFileIDsRequest.class.getName(), 
-                new GetFileIDsRequestHandler(context, cache));
-        this.handlers.put(IdentifyPillarsForGetChecksumsRequest.class.getName(), 
-                new IdentifyPillarsForGetChecksumsRequestHandler(context, cache));
-        this.handlers.put(GetChecksumsRequest.class.getName(), 
-                new GetChecksumsRequestHandler(context, cache));
+    protected RequestHandler[] createListOfHandlers() {
+        List<RequestHandler> res = new ArrayList<RequestHandler>();
+        res.add(new IdentifyPillarsForGetFileRequestHandler(getPillarContext(), cache));
+        res.add(new GetFileRequestHandler(getPillarContext(), cache));
+        res.add(new IdentifyPillarsForGetFileIDsRequestHandler(getPillarContext(), cache));
+        res.add(new GetFileIDsRequestHandler(getPillarContext(), cache));
+        res.add(new IdentifyPillarsForGetChecksumsRequestHandler(getPillarContext(), cache));
+        res.add(new GetChecksumsRequestHandler(getPillarContext(), cache));
         
-        this.handlers.put(IdentifyContributorsForGetStatusRequest.class.getName(), 
-                new IdentifyContributorsForGetStatusRequestHandler(context));
-        this.handlers.put(GetStatusRequest.class.getName(),
-                new GetStatusRequestHandler(context));
-        this.handlers.put(IdentifyContributorsForGetAuditTrailsRequest.class.getName(), 
-                new IdentifyContributorsForGetAuditTrailsRequestHandler(context));
-        this.handlers.put(GetAuditTrailsRequest.class.getName(), 
-                new GetAuditTrailsRequestHandler(context));
+        res.add(new IdentifyContributorsForGetStatusRequestHandler(getContext()));
+        res.add(new GetStatusRequestHandler(getContext()));
+        res.add(new IdentifyContributorsForGetAuditTrailsRequestHandler(getContext()));
+        res.add(new GetAuditTrailsRequestHandler(getContext(), getPillarContext().getAuditTrailManager()));
         
-        this.handlers.put(IdentifyPillarsForPutFileRequest.class.getName(), 
-                new IdentifyPillarsForPutFileRequestHandler(context, cache));
-        this.handlers.put(PutFileRequest.class.getName(), 
-                new PutFileRequestHandler(context, cache));
-        this.handlers.put(IdentifyPillarsForDeleteFileRequest.class.getName(), 
-                new IdentifyPillarsForDeleteFileRequestHandler(context, cache));
-        this.handlers.put(DeleteFileRequest.class.getName(), 
-                new DeleteFileRequestHandler(context, cache));
-        this.handlers.put(IdentifyPillarsForReplaceFileRequest.class.getName(), 
-                new IdentifyPillarsForReplaceFileRequestHandler(context, cache));
-        this.handlers.put(ReplaceFileRequest.class.getName(), 
-                new ReplaceFileRequestHandler(context, cache));
-    }    
+        res.add(new IdentifyPillarsForPutFileRequestHandler(getPillarContext(), cache));
+        res.add(new PutFileRequestHandler(getPillarContext(), cache));
+        res.add(new IdentifyPillarsForDeleteFileRequestHandler(getPillarContext(), cache));
+        res.add(new DeleteFileRequestHandler(getPillarContext(), cache));
+        res.add(new IdentifyPillarsForReplaceFileRequestHandler(getPillarContext(), cache));
+        res.add(new ReplaceFileRequestHandler(getPillarContext(), cache));
+        
+        return res.toArray(new RequestHandler[res.size()]);
+    }
 }

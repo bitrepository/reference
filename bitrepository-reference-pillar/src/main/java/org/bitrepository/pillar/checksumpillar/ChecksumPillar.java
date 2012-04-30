@@ -25,13 +25,14 @@ import javax.jms.JMSException;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.AuditTrailManager;
-import org.bitrepository.pillar.audit.AuditTrailContributerDAO;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
-import org.bitrepository.pillar.common.AlarmDispatcher;
+import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.service.audit.AuditTrailContributerDAO;
+import org.bitrepository.service.audit.AuditTrailManager;
+import org.bitrepository.service.contributor.ContributorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,9 +66,13 @@ public class ChecksumPillar {
         
         log.info("Starting the checksum pillar!");
         AuditTrailManager audits = new AuditTrailContributerDAO(settings);
-        AlarmDispatcher alarms = new AlarmDispatcher(settings, messageBus);
+        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
+                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        PillarAlarmDispatcher alarms = new PillarAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(settings, messageBus, alarms, audits);
         mediator = new ChecksumPillarMediator(context, cache);
+        mediator.start();
         log.info("ReferencePillar started!");
     }
     

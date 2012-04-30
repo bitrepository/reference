@@ -31,19 +31,20 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
+import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,41 +65,29 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         super(context, refCache);
     }
     
-    /**
-     * Handles the identification messages for the PutFile operation.
-     * @param message The IdentifyPillarsForPutFileRequest message to handle.
-     */
-    public void handleMessage(PutFileRequest message) {
-        ArgumentValidator.checkNotNull(message, "PutFileRequest message");
-        
-        try {
-            validateMessage(message);
-            tellAboutProgress(message);
-            retrieveFile(message);
-            sendFinalResponse(message);
-        } catch (InvalidMessageException e) {
-            sendFailedResponse(message, e.getResponseInfo());
-        } catch (IllegalArgumentException e) {
-            log.warn("Caught IllegalArgumentException. Possible intruder -> Sending alarm! ", e);
-            getAlarmDispatcher().handleIllegalArgumentException(e);
-        } catch (RuntimeException e) {
-            log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed deleting file.", 
-                    message.getAuditTrailInformation(), FileAction.FAILURE);
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText("Error: " + e.getMessage());
-            sendFailedResponse(message, fri);
-        }
+    @Override
+    public Class<PutFileRequest> getRequestClass() {
+        return PutFileRequest.class;
+    }
+
+    @Override
+    public void processRequest(PutFileRequest message) throws RequestHandlerException {
+        validateMessage(message);
+        tellAboutProgress(message);
+        retrieveFile(message);
+        sendFinalResponse(message);
+    }
+
+    @Override
+    public MessageResponse generateFailedResponse(PutFileRequest message) {
+        return createFinalResponse(message);
     }
     
     /**
      * Validates the message.
      * @param message The message to validate.
      */
-    private void validateMessage(PutFileRequest message) {
-        // validate message
-        validateBitrepositoryCollectionId(message.getCollectionID());
+    private void validateMessage(PutFileRequest message) throws RequestHandlerException {
         validatePillarId(message.getPillarID());
         if(message.getChecksumDataForNewFile() != null) {
             validateChecksumSpec(message.getChecksumDataForNewFile().getChecksumSpec());
@@ -132,7 +121,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         prInfo.setResponseText("Started to receive date.");  
         pResponse.setResponseInfo(prInfo);
         
-        log.info("Sending ProgressResponseInfo: " + prInfo);
+        log.debug("Sending ProgressResponseInfo: " + prInfo);
         getMessageBus().sendMessage(pResponse);
     }
     
@@ -181,8 +170,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
      * @param message The message requesting the put operation.
      */
     private void sendFinalResponse(PutFileRequest message) {
-        
-        PutFileFinalResponse fResponse = createPutFileFinalResponse(message);
+        PutFileFinalResponse fResponse = createFinalResponse(message);
         
         // insert: AuditTrailInformation, ChecksumsDataForNewFile, FinalResponseInfo, PillarChecksumSpec
         ResponseInfo frInfo = new ResponseInfo();
@@ -197,7 +185,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
             checksumForValidation.setChecksumValue(getCache().getChecksum(message.getFileID()).getBytes());
             checksumForValidation.setCalculationTimestamp(CalendarUtils.getNow());
             checksumForValidation.setChecksumSpec(message.getChecksumRequestForNewFile());
-            log.info("Requested checksum calculated: " + checksumForValidation);
+            log.debug("Requested checksum calculated: " + checksumForValidation);
         } else {
             // TODO is such a request required?
             log.info("No checksum validation requested.");
@@ -206,21 +194,8 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         
         fResponse.setChecksumDataForNewFile(checksumForValidation);
         
-        // Finish by sending final response.
-        log.info("Sending PutFileFinalResponse: " + fResponse);
-        getMessageBus().sendMessage(fResponse);
-    }
-    
-    /**
-     * Method for sending a response telling, that the operation has failed.
-     * @param message The message requesting the put operation.
-     * @param frInfo The information about why it has failed.
-     */
-    private void sendFailedResponse(PutFileRequest message, ResponseInfo frInfo) {
-        // send final response telling, that the file already exists!
-        PutFileFinalResponse fResponse = createPutFileFinalResponse(message);
-        fResponse.setResponseInfo(frInfo);
-        getMessageBus().sendMessage(fResponse);
+        log.debug("Sending PutFileFinalResponse: " + fResponse);
+        getContext().getDispatcher().sendMessage(fResponse);
     }
     
     /**
@@ -235,16 +210,10 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
      */
     private PutFileProgressResponse createPutFileProgressResponse(PutFileRequest msg) {
         PutFileProgressResponse res = new PutFileProgressResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
+        populateResponse(msg, res);
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         res.setPillarChecksumSpec(getChecksumType());
         
         return res;
@@ -261,18 +230,12 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
      * @param msg The PutFileRequest to base the final response message on.
      * @return The PutFileFinalResponse message based on the request.
      */
-    private PutFileFinalResponse createPutFileFinalResponse(PutFileRequest msg) {
+    private PutFileFinalResponse createFinalResponse(PutFileRequest msg) {
         PutFileFinalResponse res = new PutFileFinalResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
+        populateResponse(msg, res);
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         res.setPillarChecksumSpec(getChecksumType());
         
         return res;

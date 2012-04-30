@@ -42,6 +42,7 @@ import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
+import org.bitrepository.service.contributor.ContributorContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -69,10 +70,15 @@ public class GetFileIDsOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Initialize the pillar.", "Should not be a problem.");
         cache = new MemoryCache();
         audits = new MockAuditManager();
-        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
+                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
         mediator = new ChecksumPillarMediator(context, cache);
+        mediator.start();
     }    
+    
     @AfterMethod (alwaysRun=true) 
     public void closeArchive() {
         if(cache != null) {
@@ -104,11 +110,7 @@ public class GetFileIDsOnChecksumPillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the checksum pillar.");
         IdentifyPillarsForGetFileIDsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileIDsRequest(
                 auditTrail, fileids, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the checksum pillar.", 
                 "The checksum pillar should make a response.");
@@ -131,11 +133,7 @@ public class GetFileIDsOnChecksumPillarTest extends DefaultFixturePillarTest {
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
                 auditTrail, receivedIdentifyResponse.getCorrelationID(), fileids, FROM, pillarId, 
                 clientDestinationId, FILE_IDS_DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(getFileIDsRequest);
-        } else {
-            messageBus.sendMessage(getFileIDsRequest);
-        }
+        messageBus.sendMessage(getFileIDsRequest);
         
         addStep("Retrieve the ProgressResponse for the GetFileIDs request", 
                 "The GetFileIDs progress response should be sent by the checksum pillar.");
@@ -182,11 +180,7 @@ public class GetFileIDsOnChecksumPillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the checksum pillar.");
         IdentifyPillarsForGetFileIDsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileIDsRequest(
                 auditTrail, fileids, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the checksum pillar.", 
                 "The checksum pillar should make a response.");
@@ -224,11 +218,7 @@ public class GetFileIDsOnChecksumPillarTest extends DefaultFixturePillarTest {
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
                 auditTrail, msgFactory.getNewCorrelationID(), fileids, FROM, pillarId, 
                 clientDestinationId, FILE_IDS_DELIVERY_ADDRESS, pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(getFileIDsRequest);
-        } else {
-            messageBus.sendMessage(getFileIDsRequest);
-        }
+        messageBus.sendMessage(getFileIDsRequest);
         
         addStep("Retrieve the FinalResponse for the GetFileIDs request", 
                 "The GetFileIDs response should be sent by the checksum pillar.");

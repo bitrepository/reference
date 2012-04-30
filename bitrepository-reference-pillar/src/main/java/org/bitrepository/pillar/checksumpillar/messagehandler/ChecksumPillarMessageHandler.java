@@ -32,8 +32,8 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.common.PillarMessageHandler;
-import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.utils.Base16Utils;
+import org.bitrepository.service.exception.InvalidMessageException;
 
 /**
  * Abstract level for message handling. 
@@ -80,8 +80,9 @@ public abstract class ChecksumPillarMessageHandler<T> extends PillarMessageHandl
      * Validates the checksum specification.
      * A null as checksum argument is ignored.
      * @param csSpec The checksum specification to validate. 
+     * @throws InvalidMessageException If the checksum does not validate.
      */
-    protected void validateChecksumSpec(ChecksumSpecTYPE csSpec) {
+    protected void validateChecksumSpec(ChecksumSpecTYPE csSpec) throws InvalidMessageException {
         if(csSpec == null) {
             return;
         }
@@ -92,6 +93,6 @@ public abstract class ChecksumPillarMessageHandler<T> extends PillarMessageHandl
             ri.setResponseText("Cannot handle the checksum specification '" + csSpec + "'."
                     + "This checksum pillar can only handle '" + checksumType + "'");
             throw new InvalidMessageException(ri);
-        }        
+        }
     }
 }

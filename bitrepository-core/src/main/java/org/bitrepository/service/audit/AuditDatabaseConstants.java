@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.audit;
+package org.bitrepository.service.audit;
 
 /**
  * Container for the constants for the audit trail database.

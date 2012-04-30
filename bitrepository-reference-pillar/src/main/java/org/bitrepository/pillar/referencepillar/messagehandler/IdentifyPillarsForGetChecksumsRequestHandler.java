@@ -27,17 +27,17 @@ package org.bitrepository.pillar.referencepillar.messagehandler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
-import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
+import org.bitrepository.service.exception.IdentifyContributorException;
+import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,37 +58,31 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         super(context, referenceArchive);
     }
 
-    /**
-     * Handles the identification messages for the GetChecksums operation.
-     * @param message The IdentifyPillarsForGetChecksumsRequest message to handle.
-     */
-    public void handleMessage(IdentifyPillarsForGetChecksumsRequest message) {
-        ArgumentValidator.checkNotNull(message, "IdentifyPillarsForGetChecksumsRequest message");
+    @Override
+    public Class<IdentifyPillarsForGetChecksumsRequest> getRequestClass() {
+        return IdentifyPillarsForGetChecksumsRequest.class;
+    }
 
-        try {
-            validateBitrepositoryCollectionId(message.getCollectionID());
-            validateChecksumSpecification(message.getChecksumRequestForExistingFile());
-            checkThatAllRequestedFilesAreAvailable(message);
-            respondSuccesfullIdentification(message);
-        } catch (IllegalArgumentException e) {
-            getAlarmDispatcher().handleIllegalArgumentException(e);
-        } catch (IdentifyPillarsException e) {
-            log.warn("Unsuccessfull identification for the GetChecksums operation.", e);
-            respondUnsuccessfulIdentification(message, e);
-        } catch (RuntimeException e) {
-            getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
-                    "Failed identifying pillar.", message.getAuditTrailInformation(), FileAction.FAILURE);
-            getAlarmDispatcher().handleRuntimeExceptions(e);
-        }
+    @Override
+    public void processRequest(IdentifyPillarsForGetChecksumsRequest message) throws RequestHandlerException {
+        validateChecksumSpecification(message.getChecksumRequestForExistingFile());
+        checkThatAllRequestedFilesAreAvailable(message);
+        respondSuccesfullIdentification(message);
+    }
+
+    @Override
+    public MessageResponse generateFailedResponse(IdentifyPillarsForGetChecksumsRequest message) {
+        return createFinalResponse(message);
     }
     
     /**
      * Validates that all the requested files in the filelist are present. 
-     * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
+     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
      * @param message The message containing the list files. An empty filelist is expected 
      * when "AllFiles" or the parameter option is used.
      */
-    public void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetChecksumsRequest message) {
+    public void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetChecksumsRequest message) 
+            throws RequestHandlerException {
         FileIDs fileids = message.getFileIDs();
         if(fileids == null) {
             log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
@@ -107,7 +101,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
             
-            throw new IdentifyPillarsException(irInfo);
+            throw new IdentifyContributorException(irInfo);
         }
     }
     
@@ -117,7 +111,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
      */
     private void respondSuccesfullIdentification(IdentifyPillarsForGetChecksumsRequest message) {
         // Create the response.
-        IdentifyPillarsForGetChecksumsResponse reply = createIdentifyPillarsForGetChecksumsResponse(message);
+        IdentifyPillarsForGetChecksumsResponse reply = createFinalResponse(message);
         
         // set the missing variables in the reply:
         // TimeToDeliver, AuditTrailInformation, IdentifyResponseInfo
@@ -134,21 +128,6 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     }
     
     /**
-     * Sends a bad response with the given cause.
-     * @param message The identification request to respond to.
-     * @param cause The cause of the bad identification (e.g. which files are missing).
-     */
-    private void respondUnsuccessfulIdentification(IdentifyPillarsForGetChecksumsRequest message, 
-            IdentifyPillarsException cause) {
-        IdentifyPillarsForGetChecksumsResponse reply = createIdentifyPillarsForGetChecksumsResponse(message);
-        
-        reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
-        reply.setResponseInfo(cause.getResponseInfo());
-        
-        getMessageBus().sendMessage(reply);
-    }
-    
-    /**
      * Creates a IdentifyPillarsForGetChecksumsResponse based on a 
      * IdentifyPillarsForGetFileRequest. The following fields are not inserted:
      * <br/> - TimeToDeliver
@@ -159,20 +138,12 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
      * @param msg The IdentifyPillarsForGetFileRequest to base the response on.
      * @return The response to the request.
      */
-    private IdentifyPillarsForGetChecksumsResponse createIdentifyPillarsForGetChecksumsResponse(
-            IdentifyPillarsForGetChecksumsRequest msg) {
-        IdentifyPillarsForGetChecksumsResponse res 
-                = new IdentifyPillarsForGetChecksumsResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
+    private IdentifyPillarsForGetChecksumsResponse createFinalResponse(IdentifyPillarsForGetChecksumsRequest msg) {
+        IdentifyPillarsForGetChecksumsResponse res = new IdentifyPillarsForGetChecksumsResponse();
+        populateResponse(msg, res);
         res.setFileIDs(msg.getFileIDs());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(msg.getReplyTo());
         res.setChecksumRequestForExistingFile(msg.getChecksumRequestForExistingFile());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

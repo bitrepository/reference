@@ -43,6 +43,7 @@ import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
+import org.bitrepository.service.contributor.ContributorContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -70,9 +71,13 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         addStep("Initialize the pillar.", "Should not be a problem.");
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
         audits = new MockAuditManager();
-        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
+                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
         mediator = new ReferencePillarMediator(context, archive);
+        mediator.start();
     }
     
     @AfterMethod (alwaysRun=true) 
@@ -115,11 +120,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetChecksumsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetChecksumsRequest(
                 auditTrail, csSpec, fileids, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -144,11 +145,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(auditTrail,
                 csSpec, receivedIdentifyResponse.getCorrelationID(), fileids, FROM, pillarId, 
                 clientDestinationId, CS_DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(getChecksumsRequest);
-        } else {
-            messageBus.sendMessage(getChecksumsRequest);
-        }
+        messageBus.sendMessage(getChecksumsRequest);
         
         addStep("Retrieve the ProgressResponse for the GetChecksums request", 
                 "The GetChecksums progress response should be sent by the pillar.");
@@ -202,11 +199,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetChecksumsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetChecksumsRequest(
                 auditTrail, csSpec, fileids, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -248,11 +241,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
         GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
                 auditTrail, csSpec, msgFactory.getNewCorrelationID(), fileids, FROM, pillarId, 
                 clientDestinationId, CS_DELIVERY_ADDRESS, pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(getChecksumsRequest);
-        } else {
-            messageBus.sendMessage(getChecksumsRequest);
-        }
+        messageBus.sendMessage(getChecksumsRequest);
         
         addStep("Retrieve the FinalResponse for the GetChecksums request", 
                 "The GetChecksums response should be sent by the pillar.");

@@ -49,6 +49,7 @@ import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
+import org.bitrepository.service.contributor.ContributorContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -76,9 +77,13 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Initialize the pillar.", "Should not be a problem.");
         cache = new MemoryCache();
         audits = new MockAuditManager();
-        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
+                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
         mediator = new ChecksumPillarMediator(context, cache);
+        mediator.start();
     }
     
     @AfterMethod (alwaysRun=true) 
@@ -132,11 +137,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(
                 auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", "The pillar should make a response.");
         IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
@@ -168,11 +169,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 pillarId, 
                 clientDestinationId, 
                 receivedIdentifyResponse.getReplyTo());
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(replaceRequest);
-        } else {
-            messageBus.sendMessage(replaceRequest);
-        }
+        messageBus.sendMessage(replaceRequest);
         
         addStep("Retrieve the ProgressResponse for the replace request", "The replace response should be sent by the pillar.");
         ReplaceFileProgressResponse progressResponse = clientTopic.waitForMessage(ReplaceFileProgressResponse.class);
@@ -260,11 +257,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(
                 auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", "The pillar should make a response.");
         IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
@@ -334,11 +327,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(replaceRequest);
-        } else {
-            messageBus.sendMessage(replaceRequest);
-        }
+        messageBus.sendMessage(replaceRequest);
         
         addStep("Retrieve the FinalResponse for the replace request", "The replace response should be sent by the pillar.");
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
@@ -416,11 +405,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(replaceRequest);
-        } else {
-            messageBus.sendMessage(replaceRequest);
-        }
+        messageBus.sendMessage(replaceRequest);
         
         addStep("Retrieve the FinalResponse for the replace request", "The replace response should be sent by the pillar.");
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
@@ -500,11 +485,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(replaceRequest);
-        } else {
-            messageBus.sendMessage(replaceRequest);
-        }
+        messageBus.sendMessage(replaceRequest);
         
         addStep("Retrieve the FinalResponse for the replace request", "The replace response should be sent by the pillar.");
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
@@ -584,11 +565,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(replaceRequest);
-        } else {
-            messageBus.sendMessage(replaceRequest);
-        }
+        messageBus.sendMessage(replaceRequest);
         
         addStep("Retrieve the FinalResponse for the replace request", "The replace response should be sent by the pillar.");
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
@@ -667,11 +644,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(replaceRequest);
-        } else {
-            messageBus.sendMessage(replaceRequest);
-        }
+        messageBus.sendMessage(replaceRequest);
         
         addStep("Retrieve the FinalResponse for the replace request", "The replace response should be sent by the pillar.");
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
@@ -751,11 +724,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(replaceRequest);
-        } else {
-            messageBus.sendMessage(replaceRequest);
-        }
+        messageBus.sendMessage(replaceRequest);
         
         addStep("Retrieve the FinalResponse for the replace request", "The replace response should be sent by the pillar.");
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
@@ -835,11 +804,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(replaceRequest);
-        } else {
-            messageBus.sendMessage(replaceRequest);
-        }
+        messageBus.sendMessage(replaceRequest);
         
         addStep("Retrieve the FinalResponse for the replace request", "The replace response should be sent by the pillar.");
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);

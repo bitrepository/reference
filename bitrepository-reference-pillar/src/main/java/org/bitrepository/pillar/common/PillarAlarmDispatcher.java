@@ -26,43 +26,30 @@ package org.bitrepository.pillar.common;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.settings.collectionsettings.AlarmLevel;
+import org.bitrepository.service.AlarmDispatcher;
+import org.bitrepository.service.contributor.ContributorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.math.BigInteger;
-import java.util.UUID;
 
 /**
  * The class for dispatching alarms.
  */
-public class AlarmDispatcher {
+public class PillarAlarmDispatcher extends AlarmDispatcher {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /** The settings for this AlarmDispatcher.*/
-    private final Settings settings;
-    
-    /** The messagebus for communication.*/
-    private final MessageBus messageBus;
+    private final ContributorContext context;
     
     /**
      * Constructor.
-     * @param settings The settings for the dispatcher.
-     * @param messageBus The bus for sending the alarms.
+     * @param context The context for the contributor for this alarm dispatcher.
      */
-    public AlarmDispatcher(Settings settings, MessageBus messageBus) {
-        ArgumentValidator.checkNotNull(settings, "settings");
-        ArgumentValidator.checkNotNull(messageBus, "messageBus");
-        
-        this.settings = settings;
-        this.messageBus = messageBus;
+    public PillarAlarmDispatcher(ContributorContext context) {
+        super(context, context.getSettings().getCollectionSettings().getPillarSettings().getAlarmLevel());
+        this.context = context;
     }
     
     /**
@@ -72,18 +59,15 @@ public class AlarmDispatcher {
      */
     public void handleIllegalArgumentException(IllegalArgumentException exception) {
         ArgumentValidator.checkNotNull(exception, "IllegalArgumentException exception");
-        if(settings.getCollectionSettings().getPillarSettings().getAlarmLevel() != AlarmLevel.WARNING) {
-            log.warn("IllegalArgumentException caught, but we do not issue alarms for this, when the alarm level is '"
-                    + settings.getCollectionSettings().getPillarSettings().getAlarmLevel() + "'", exception);
-            return;
-        }
         
         // create a descriptor.
         Alarm ad = new Alarm();
         ad.setAlarmCode(AlarmCode.INCONSISTENT_REQUEST);
         ad.setAlarmText(exception.getMessage());
+        ad.setAlarmRaiser(context.getComponentID());
+        ad.setOrigDateTime(CalendarUtils.getNow());
         
-        sendAlarm(ad);
+        warning(ad);
     }
     
     /**
@@ -93,22 +77,15 @@ public class AlarmDispatcher {
      */
     public void handleRuntimeExceptions(RuntimeException exception) {
         ArgumentValidator.checkNotNull(exception, "RuntimeException exception");
-        if(settings.getCollectionSettings().getPillarSettings() != null 
-                && settings.getCollectionSettings().getPillarSettings().getAlarmLevel() == AlarmLevel.EMERGENCY) {
-            log.error("RuntimeException caught, but we do not issue alarms for this, when the alarm level is '"
-                    + settings.getCollectionSettings().getPillarSettings().getAlarmLevel() + "'", exception);
-            return;
-        }
-        
-        log.error("Sending alarm for RunTimeException", exception);
         
         // create a descriptor.
         Alarm alarm = new Alarm();
         alarm.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
         alarm.setAlarmText(exception.getMessage());
-        alarm.setAlarmRaiser(settings.getReferenceSettings().getPillarSettings().getPillarID());
+        alarm.setAlarmRaiser(context.getComponentID());
+        alarm.setOrigDateTime(CalendarUtils.getNow());
         
-        sendAlarm(alarm);
+        error(alarm);
     }
     
     /**
@@ -123,28 +100,6 @@ public class AlarmDispatcher {
         alarm.setAlarmCode(AlarmCode.CHECKSUM_ALARM);
         alarm.setFileID(fileId);
         alarm.setOrigDateTime(CalendarUtils.getNow());
-        sendAlarm(alarm);
-    }
-    
-    /**
-     * Method for sending an Alarm when something bad happens.
-     * @param alarm The alarm to send to the destination for the alarm service.
-     */
-    public void sendAlarm(Alarm alarm) {
-        ArgumentValidator.checkNotNull(alarm, "alarm");
-        AlarmMessage message = new AlarmMessage();
-        alarm.setAlarmRaiser(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        alarm.setOrigDateTime(CalendarUtils.getNow());
-
-        message.setAlarm(alarm);
-        message.setCollectionID(settings.getCollectionID());
-        message.setCorrelationID(UUID.randomUUID().toString());
-        message.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        message.setReplyTo(settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
-        message.setTo(settings.getAlarmDestination());
-        message.setFrom(settings.getReferenceSettings().getPillarSettings().getPillarID());
-        message.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        
-        messageBus.sendMessage(message);
+        error(alarm);
     }
 }

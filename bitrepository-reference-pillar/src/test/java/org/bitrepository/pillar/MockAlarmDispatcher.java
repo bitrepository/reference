@@ -22,20 +22,35 @@
 package org.bitrepository.pillar;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.common.AlarmDispatcher;
-import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.pillar.common.PillarAlarmDispatcher;
+import org.bitrepository.service.contributor.ContributorContext;
 
-public class MockAlarmDispatcher extends AlarmDispatcher {
+public class MockAlarmDispatcher extends PillarAlarmDispatcher {
 
-    public MockAlarmDispatcher(Settings settings, MessageBus messageBus) {
-        super(settings, messageBus);
+    public MockAlarmDispatcher(ContributorContext context) {
+        super(context);
     }
 
     private int callsForSendAlarm = 0;
     @Override
-    public void sendAlarm(Alarm alarm) {
+    public void warning(Alarm alarm) {
+        sendAlarm();
+    }
+    @Override
+    public void error(Alarm alarm) {
+        sendAlarm();
+    }
+    @Override
+    public void emergency(Alarm alarm) {
+        sendAlarm();
+    }
+    private void sendAlarm() {
         callsForSendAlarm++;
+        try {
+            this.notifyAll();
+        } catch (Exception e) {
+            // do nothing
+        }
     }
     public int getCallsForSendAlarm() {
         return callsForSendAlarm;

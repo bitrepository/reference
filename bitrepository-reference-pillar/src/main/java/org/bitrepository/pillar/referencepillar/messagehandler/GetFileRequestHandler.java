@@ -36,13 +36,14 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,33 +63,22 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
         super(context, referenceArchive);
     }
     
-    /**
-     * Performs the GetFile operation.
-     * @param message The GetFileRequest message to handle.
-     */
     @Override
-    public void handleMessage(GetFileRequest message) {
-        ArgumentValidator.checkNotNull(message, "GetFileRequest message");
+    public Class<GetFileRequest> getRequestClass() {
+        return GetFileRequest.class;
+    }
 
-        try {
-            validateMessage(message);
-            sendProgressMessage(message);
-            uploadToClient(message);
-            sendFinalResponse(message);
-        } catch (InvalidMessageException e) {
-            sendFailedResponse(message, e.getResponseInfo());
-        } catch (IllegalArgumentException e) {
-            log.warn("Caught IllegalArgumentException. Message ", e);
-            getAlarmDispatcher().handleIllegalArgumentException(e);
-        } catch (RuntimeException e) {
-            log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed getting file.", 
-                    message.getAuditTrailInformation(), FileAction.FAILURE);
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText("Error: " + e.getMessage());
-            sendFailedResponse(message, fri);
-        }
+    @Override
+    public void processRequest(GetFileRequest message) throws RequestHandlerException {
+        validateMessage(message);
+        sendProgressMessage(message);
+        uploadToClient(message);
+        sendFinalResponse(message);
+    }
+
+    @Override
+    public MessageResponse generateFailedResponse(GetFileRequest message) {
+        return createFinalResponse(message);
     }
     
     /**
@@ -96,9 +86,8 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      * @param message The message requesting the operation, which should be validated.
      * @return Whether it was valid.
      */
-    protected void validateMessage(GetFileRequest message) {
+    protected void validateMessage(GetFileRequest message) throws RequestHandlerException {
         // Validate the message.
-        validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
 
         // Validate, that we have the requested file.
@@ -163,7 +152,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      */
     protected void sendFinalResponse(GetFileRequest message) {
         // make ProgressResponse to tell that we are handling this.
-        GetFileFinalResponse fResponse = createGetFileFinalResponse(message);
+        GetFileFinalResponse fResponse = createFinalResponse(message);
         ResponseInfo frInfo = new ResponseInfo();
         frInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);
         frInfo.setResponseText("Data delivered.");
@@ -171,18 +160,6 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
 
         // send the FinalResponse.
         log.info("Sending GetFileFinalResponse: " + fResponse);
-        getMessageBus().sendMessage(fResponse);
-    }
-    
-    /**
-     * Method for sending a response telling that the operation has failed.
-     * @param message The message requesting the operation.
-     * @param frInfo The information about what went wrong.
-     */
-    protected void sendFailedResponse(GetFileRequest message, ResponseInfo frInfo) {
-        log.info("Sending bad GetFileFinalResponse: " + frInfo);
-        GetFileFinalResponse fResponse = createGetFileFinalResponse(message);
-        fResponse.setResponseInfo(frInfo);
         getMessageBus().sendMessage(fResponse);
     }
     
@@ -199,17 +176,11 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      */
     private GetFileProgressResponse createGetFileProgressResponse(GetFileRequest msg) {
         GetFileProgressResponse res = new GetFileProgressResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
+        populateResponse(msg, res);
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
         res.setFilePart(msg.getFilePart());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
 
         return res;
     }
@@ -223,19 +194,13 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      * @param msg The GetFileRequest to base the final response on.
      * @return The GetFileFinalResponse based on the request.
      */
-    private GetFileFinalResponse createGetFileFinalResponse(GetFileRequest msg) {
+    private GetFileFinalResponse createFinalResponse(GetFileRequest msg) {
         GetFileFinalResponse res = new GetFileFinalResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
+        populateResponse(msg, res);
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
         res.setFilePart(msg.getFilePart());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
 
         return res;
     }

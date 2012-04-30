@@ -32,12 +32,14 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
-import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.ResponseInfoUtils;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.utils.Base16Utils;
+import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,40 +58,32 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
     public DeleteFileRequestHandler(PillarContext context, ChecksumStore refCache) {
         super(context, refCache);
     }
+    
+    @Override
+    public Class<DeleteFileRequest> getRequestClass() {
+        return DeleteFileRequest.class;
+    }
 
     @Override
-    public void handleMessage(DeleteFileRequest message) {
-        ArgumentValidator.checkNotNull(message, "DeleteFileRequest message");
+    public void processRequest(DeleteFileRequest message) throws RequestHandlerException {
+        validateMessage(message);
+        sendProgressMessage(message);
+        ChecksumDataForFileTYPE resultingChecksum = calculatedRequestedChecksum(message);
+        deleteTheFile(message);
+        sendFinalResponse(message, resultingChecksum);
+    }
 
-        try {
-            validateMessage(message);
-            sendProgressMessage(message);
-            ChecksumDataForFileTYPE resultingChecksum = calculatedRequestedChecksum(message);
-            deleteTheFile(message);
-            sendFinalResponse(message, resultingChecksum);
-        } catch (InvalidMessageException e) {
-            sendFailedResponse(message, e.getResponseInfo());
-        } catch (IllegalArgumentException e) {
-            log.warn("Caught IllegalArgumentException. Message ", e);
-            getAlarmDispatcher().handleIllegalArgumentException(e);
-        } catch (RuntimeException e) {
-            log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), 
-                    "Failed deleting the file.", message.getAuditTrailInformation(), FileAction.FAILURE);
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText("Error: " + e.getMessage());
-            sendFailedResponse(message, fri);
-        }
+    @Override
+    public MessageResponse generateFailedResponse(DeleteFileRequest request) {
+        return createDeleteFileFinalResponse(request);
     }
     
     /**
      * Method for validating the content of the message.
      * @param message The message requesting the operation, which should be validated.
      */
-    protected void validateMessage(DeleteFileRequest message) {
+    protected void validateMessage(DeleteFileRequest message) throws RequestHandlerException {
         // Validate the message.
-        validateBitrepositoryCollectionId(message.getCollectionID());
         validatePillarId(message.getPillarID());
         validateChecksumSpec(message.getChecksumRequestForExistingFile());
         validateChecksumSpec(message.getChecksumDataForExistingFile().getChecksumSpec());
@@ -137,16 +131,8 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
      * @param message The request for the GetFile operation.
      */
     protected void sendProgressMessage(DeleteFileRequest message) {
-        // make ProgressResponse to tell that we are handling the requested operation.
         DeleteFileProgressResponse pResponse = createDeleteFileProgressResponse(message);
-        
-        // set missing variables in the message: ResponseInfo
-        ResponseInfo prInfo = new ResponseInfo();
-        prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-        prInfo.setResponseText("Starting to delete the file entry.");
-        pResponse.setResponseInfo(prInfo);
-
-        // Send the ProgressResponse
+        pResponse.setResponseInfo(ResponseInfoUtils.getInitialProgressResponse());
         getMessageBus().sendMessage(pResponse);
     }
     
@@ -177,7 +163,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
      * Performs the operation of deleting the file from the archive.
      * @param message The message requesting the file to be deleted.
      */
-    protected void deleteTheFile(DeleteFileRequest message) {
+    protected void deleteTheFile(DeleteFileRequest message) throws RequestHandlerException {
         try {
             getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Deleting the file.", 
                     message.getAuditTrailInformation(), FileAction.DELETE_FILE);
@@ -209,18 +195,6 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
     }
     
     /**
-     * Method for sending a response telling that the operation has failed.
-     * @param message The message requesting the operation.
-     * @param frInfo The information about what went wrong.
-     */
-    protected void sendFailedResponse(DeleteFileRequest message, ResponseInfo frInfo) {
-        log.info("Sending bad DeleteFileFinalResponse: " + frInfo);
-        DeleteFileFinalResponse fResponse = createDeleteFileFinalResponse(message);
-        fResponse.setResponseInfo(frInfo);
-        getMessageBus().sendMessage(fResponse);
-    }
-    
-    /**
      * Creates a DeleteFileProgressResponse based on a DeleteFileRequest. Missing the 
      * following fields:
      * <br/> - ResponseInfo
@@ -230,15 +204,9 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
      */
     private DeleteFileProgressResponse createDeleteFileProgressResponse(DeleteFileRequest message) {
         DeleteFileProgressResponse res = new DeleteFileProgressResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(message.getCorrelationID());
+        populateResponse(message, res);
         res.setFileID(message.getFileID());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(message.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }
@@ -254,15 +222,9 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
      */
     private DeleteFileFinalResponse createDeleteFileFinalResponse(DeleteFileRequest msg) {
         DeleteFileFinalResponse res = new DeleteFileFinalResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
+        populateResponse(msg, res);
         res.setFileID(msg.getFileID());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
 
         return res;
     }

@@ -42,6 +42,7 @@ import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMedi
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.DeleteFileMessageFactory;
 import org.bitrepository.protocol.utils.Base16Utils;
+import org.bitrepository.service.contributor.ContributorContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -66,9 +67,13 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Initialize the pillar.", "Should not be a problem.");
         cache = new MemoryCache();
         audits = new MockAuditManager();
-        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
+                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
         mediator = new ChecksumPillarMediator(context, cache);
+        mediator.start();
     }
     
     @AfterMethod (alwaysRun=true) 
@@ -108,11 +113,7 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 "The checksum pillar receive and handle the message.");
         IdentifyPillarsForDeleteFileRequest identifyRequest = msgFactory.createIdentifyPillarsForDeleteFileRequest(auditTrail, 
                 FILE_ID, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Receive and validate response from the checksum pillar.",
                 "The pillar should make a positive response.");
@@ -134,11 +135,7 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         DeleteFileRequest deleteFileRequest = msgFactory.createDeleteFileRequest(auditTrail, 
                 csData, csSpec, receivedIdentifyResponse.getCollectionID(), FILE_ID, FROM, pillarId, 
                 receivedIdentifyResponse.getTo(), receivedIdentifyResponse.getReplyTo());
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(deleteFileRequest);
-        } else {
-            messageBus.sendMessage(deleteFileRequest);
-        }
+        messageBus.sendMessage(deleteFileRequest);
         
         addStep("Retrieve the ProgressResponse for the DeleteFile request", 
                 "The DeleteFile progress response should be sent by the checksum pillar.");
@@ -189,11 +186,7 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForDeleteFileRequest identifyRequest = msgFactory.createIdentifyPillarsForDeleteFileRequest(
                 auditTrail, FILE_ID, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the checksum pillar.", 
                 "The checksum pillar should make a response for 'FILE_NOT_FOUND'.");
@@ -243,11 +236,7 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForDeleteFileRequest identifyRequest = msgFactory.createIdentifyPillarsForDeleteFileRequest(
                 auditTrail, FILE_ID, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -269,11 +258,7 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         DeleteFileRequest deleteFileRequest = msgFactory.createDeleteFileRequest(auditTrail, 
                 csData, csSpec, receivedIdentifyResponse.getCollectionID(), 
                 FILE_ID, FROM, pillarId, receivedIdentifyResponse.getTo(), receivedIdentifyResponse.getReplyTo());
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(deleteFileRequest);
-        } else {
-            messageBus.sendMessage(deleteFileRequest);
-        }
+        messageBus.sendMessage(deleteFileRequest);
         
         addStep("Retrieve the FinalResponse for the DeleteFile request", 
                 "The DeleteFile response should be sent by the pillar.");
@@ -320,11 +305,7 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 "The checksum pillar receive and handle the message.");
         IdentifyPillarsForDeleteFileRequest identifyRequest = msgFactory.createIdentifyPillarsForDeleteFileRequest(auditTrail, 
                 FILE_ID, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Receive and validate response from the checksum pillar.",
                 "The pillar should make a positive response.");
@@ -346,11 +327,7 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         DeleteFileRequest deleteFileRequest = msgFactory.createDeleteFileRequest(auditTrail, 
                 csData, csSpec, receivedIdentifyResponse.getCollectionID(), FILE_ID, FROM, pillarId, 
                 receivedIdentifyResponse.getTo(), receivedIdentifyResponse.getReplyTo());
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(deleteFileRequest);
-        } else {
-            messageBus.sendMessage(deleteFileRequest);
-        }
+        messageBus.sendMessage(deleteFileRequest);
         
         addStep("Retrieve the FinalResponse for the DeleteFile request", 
                 "The DeleteFile response should be sent by the checksum pillar.");

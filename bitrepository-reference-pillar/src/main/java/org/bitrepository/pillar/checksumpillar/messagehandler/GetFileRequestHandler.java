@@ -29,19 +29,16 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.RequestHandlerException;
 
 /**
  * Class for performing the GetFile operation.
  */
 public class GetFileRequestHandler extends ChecksumPillarMessageHandler<GetFileRequest> {
-    /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
-
     /**
      * Constructor.
      * @param context The context of the message handler.
@@ -51,67 +48,42 @@ public class GetFileRequestHandler extends ChecksumPillarMessageHandler<GetFileR
         super(context,  refCache);
     }
     
-    /**
-     * Performs the GetFile operation.
-     * @param message The GetFileRequest message to handle.
-     */
     @Override
-    public void handleMessage(GetFileRequest message) {
-        ArgumentValidator.checkNotNull(message, "GetFileRequest message");
-
-        try {
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed getting file.", 
-                    message.getAuditTrailInformation(), FileAction.FAILURE);
-
-            ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
-            ri.setResponseText("The ChecksumPillar '" 
-                    + getSettings().getReferenceSettings().getPillarSettings().getPillarID() + "' cannot handle a "
-                    + "request for the actual file, since it only contains the checksum of the file.");
-            sendFailedResponse(message, ri);
-        } catch (RuntimeException e) {
-            log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText("Error: " + e.getMessage());
-            sendFailedResponse(message, fri);
-        }
+    public Class<GetFileRequest> getRequestClass() {
+        return GetFileRequest.class;
     }
-    
-    /**
-     * Method for sending a response telling that the operation has failed.
-     * @param message The message requesting the operation.
-     * @param frInfo The information about what went wrong.
-     */
-    protected void sendFailedResponse(GetFileRequest message, ResponseInfo frInfo) {
-        log.info("Sending bad GetFileFinalResponse: " + frInfo);
-        GetFileFinalResponse fResponse = createGetFileFinalResponse(message);
-        fResponse.setResponseInfo(frInfo);
-        getMessageBus().sendMessage(fResponse);
+
+    @Override
+    public void processRequest(GetFileRequest message) throws RequestHandlerException {
+        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed getting file.", 
+                message.getAuditTrailInformation(), FileAction.FAILURE);
+
+        ResponseInfo ri = new ResponseInfo();
+        ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+        ri.setResponseText("The Checksum pillar is unable to deliver actual files.");
+        throw new InvalidMessageException(ri);
+    }
+
+    @Override
+    public MessageResponse generateFailedResponse(GetFileRequest message) {
+        return createFinalResponse(message);
     }
 
     /**
      * Creates a GetFileFinalResponse based on a GetFileRequest. Missing the 
      * following fields:
-     * <br/> - AuditTrailInformation
      * <br/> - FinalResponseInfo
      * 
      * @param msg The GetFileRequest to base the final response on.
      * @return The GetFileFinalResponse based on the request.
      */
-    private GetFileFinalResponse createGetFileFinalResponse(GetFileRequest msg) {
+    private GetFileFinalResponse createFinalResponse(GetFileRequest msg) {
         GetFileFinalResponse res = new GetFileFinalResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
+        populateResponse(msg, res);
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
         res.setFilePart(msg.getFilePart());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
 
         return res;
     }

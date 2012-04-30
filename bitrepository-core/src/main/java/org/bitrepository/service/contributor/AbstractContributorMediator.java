@@ -14,21 +14,30 @@ import java.util.Map;
 /**
  * Defines the general functionality for handling a set of requests. Does this by delegating the
  * handling of the specific request to appropriate <code>RequestHandler</code>s.
- *
  */
-public abstract class AbstractContributor implements Contributor {
+@SuppressWarnings("rawtypes")
+public abstract class AbstractContributorMediator implements ContributorMediator {
+    /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
+    /** The map of request handlers. Mapping between request name and message handler for the given request.*/
     private final Map<String, RequestHandler> handlerMap = new HashMap<String, RequestHandler>();
+    /** The message bus.*/
     private final MessageBus messageBus;
+    /**  */
     private final GeneralMessageHandler messageHandler;
 
-    public AbstractContributor(MessageBus messageBus) {
+    /**
+     * 
+     * @param messageBus
+     */
+    public AbstractContributorMediator(MessageBus messageBus) {
         this.messageBus = messageBus;
         messageHandler = new GeneralMessageHandler();
     }
 
     /**
-     * Starts listening for requests
+     * Starts listening for requests.
+     * Listens both to the general collection destination and to the local destination for the contributor.
      */
     public final void start() {
         for (RequestHandler handler : createListOfHandlers()) {
@@ -47,21 +56,41 @@ public abstract class AbstractContributor implements Contributor {
      * @return The concrete context used for this contributor.
      */
     protected abstract ContributorContext getContext();
+    
+    /**
+     * Make the inheriting class create the environment for safely handling the request. 
+     * E.g. creating the specific fault barrier.
+     * @param request The request to handle.
+     * @param handler The handler for the request.
+     */
+    protected abstract void handleRequest(MessageRequest request, RequestHandler handler);
 
-    // ToDo Introduce fault barrier
+    /**
+     * 
+     */
     private class GeneralMessageHandler implements MessageListener {
         @Override
         public void onMessage(Message message) {
             if (message instanceof MessageRequest) {
                 RequestHandler handler = handlerMap.get(message.getClass().getSimpleName());
                 if (handler != null) {
-                    handler.processRequest((MessageRequest)message);
+                    handleRequest((MessageRequest) message, handler);
                 } else {
                     log.debug("Received unsupported request type");
                 }
             } else {
-                log.warn("Can only handle requests, but received " + message);
+                log.warn("Can only handle message requests, but received: \n{}", message);
             }
         }
+    }
+    
+    /**
+    * Closes the mediator by removing all the message handler.
+    */
+    public void close() {
+        handlerMap.clear();
+        // removes to both the general topic and the local queue.
+        messageBus.removeListener(getContext().getSettings().getCollectionDestination(), messageHandler);
+        messageBus.removeListener(getContext().getReplyTo(), messageHandler);
     }
 }

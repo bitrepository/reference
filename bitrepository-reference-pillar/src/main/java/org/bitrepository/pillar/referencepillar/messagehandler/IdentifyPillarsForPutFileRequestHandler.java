@@ -26,27 +26,28 @@ package org.bitrepository.pillar.referencepillar.messagehandler;
 
 import java.math.BigInteger;
 
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
+import org.bitrepository.service.exception.IdentifyContributorException;
+import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Class for handling the identification of this pillar for the purpose of performing the PutFile operation.
  */
-public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMessageHandler<IdentifyPillarsForPutFileRequest> {
-
+public class IdentifyPillarsForPutFileRequestHandler 
+        extends ReferencePillarMessageHandler<IdentifyPillarsForPutFileRequest> {
+    
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-
+    
     /**
      * Constructor.
      * @param context The context of the message handler.
@@ -55,37 +56,31 @@ public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMess
     public IdentifyPillarsForPutFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
         super(context, referenceArchive);
     }
-
-    /**
-     * Handles the identification messages for the PutFile operation.
-     * @param message The IdentifyPillarsForPutFileRequest message to handle.
-     */
-    public void handleMessage(IdentifyPillarsForPutFileRequest message) {
-        ArgumentValidator.checkNotNull(message, "IdentifyPillarsForPutFileRequest message");
-
-        try {
-            validateBitrepositoryCollectionId(message.getCollectionID());
-            checkThatTheFileDoesNotAlreadyExist(message);
-            checkSpaceForStoringNewFile(message);
-            respondSuccesfullIdentification(message);
-        } catch (IllegalArgumentException e) {
-            getAlarmDispatcher().handleIllegalArgumentException(e);
-        } catch (IdentifyPillarsException e) {
-            log.warn("Unsuccessfull identification for the GetChecksums operation.", e);
-            respondUnsuccessfulIdentification(message, e);
-        } catch (RuntimeException e) {
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed identifying pillar.", 
-                    message.getAuditTrailInformation(), FileAction.FAILURE);
-            getAlarmDispatcher().handleRuntimeExceptions(e);
-        }
+    
+    @Override
+    public Class<IdentifyPillarsForPutFileRequest> getRequestClass() {
+        return IdentifyPillarsForPutFileRequest.class;
+    }
+    
+    @Override
+    public void processRequest(IdentifyPillarsForPutFileRequest message) throws RequestHandlerException {
+        checkThatTheFileDoesNotAlreadyExist(message);
+        checkSpaceForStoringNewFile(message);
+        respondSuccesfullIdentification(message);
+    }
+    
+    @Override
+    public MessageResponse generateFailedResponse(IdentifyPillarsForPutFileRequest message) {
+        return createFinalResponse(message);
     }
     
     /**
      * Validates that the file is not already within the archive. 
-     * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
+     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
      * @param message The request with the filename to validate.
      */
-    private void checkThatTheFileDoesNotAlreadyExist(IdentifyPillarsForPutFileRequest message) {
+    private void checkThatTheFileDoesNotAlreadyExist(IdentifyPillarsForPutFileRequest message) 
+            throws RequestHandlerException {
         if(message.getFileID() == null) {
             log.debug("No fileid given in the identification request.");
             return;
@@ -97,16 +92,17 @@ public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMess
             irInfo.setResponseText("The file '" + message.getFileID() 
                     + "' already exists within the archive.");
             
-            throw new IdentifyPillarsException(irInfo);
+            throw new IdentifyContributorException(irInfo);
         }
     }
     
     /**
      * Validates that enough space exists is left in the archive.
-     * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
+     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
      * @param message The request with the size of the file.
      */
-    private void checkSpaceForStoringNewFile(IdentifyPillarsForPutFileRequest message) {
+    private void checkSpaceForStoringNewFile(IdentifyPillarsForPutFileRequest message) 
+            throws RequestHandlerException {
         BigInteger fileSize = message.getFileSize();
         if(fileSize == null) {
             log.debug("No file size given in the identification request. "
@@ -122,24 +118,8 @@ public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMess
             irInfo.setResponseText("Not enough space left in this pillar. Requires '" 
                     + fileSize.longValue() + "' but has only '" + useableSizeLeft + "'");
             
-            throw new IdentifyPillarsException(irInfo);
+            throw new IdentifyContributorException(irInfo);
         }
-    }
-    
-    /**
-     * Sending a response telling, that the file is already in the archive.
-     * @param message The message requesting the identification of the operation.
-     * @param cause The cause of the bad identification (e.g. that the file already exists).
-     */
-    protected void respondUnsuccessfulIdentification(IdentifyPillarsForPutFileRequest message,
-            IdentifyPillarsException cause) {
-        log.info("Creating 'duplicate file' reply for '" + message + "'");
-        IdentifyPillarsForPutFileResponse reply = createIdentifyPillarsForPutFileResponse(message);
-        
-        reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
-        reply.setResponseInfo(cause.getResponseInfo());
-        
-        getMessageBus().sendMessage(reply);
     }
     
     /**
@@ -148,7 +128,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMess
      */
     protected void respondSuccesfullIdentification(IdentifyPillarsForPutFileRequest message)  {
         log.info("Creating positive reply for '" + message + "'");
-        IdentifyPillarsForPutFileResponse reply = createIdentifyPillarsForPutFileResponse(message);
+        IdentifyPillarsForPutFileResponse reply = createFinalResponse(message);
 
         // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
         reply.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
@@ -176,18 +156,10 @@ public class IdentifyPillarsForPutFileRequestHandler extends ReferencePillarMess
      * @param msg The IdentifyPillarsForPutFileRequest to base the response on.
      * @return A IdentifyPillarsForPutFileResponse from the request.
      */
-    private IdentifyPillarsForPutFileResponse createIdentifyPillarsForPutFileResponse(
-            IdentifyPillarsForPutFileRequest msg) {
-        IdentifyPillarsForPutFileResponse res
-                = new IdentifyPillarsForPutFileResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(msg.getReplyTo());
-        res.setCollectionID(getSettings().getCollectionID());
+    private IdentifyPillarsForPutFileResponse createFinalResponse(IdentifyPillarsForPutFileRequest msg) {
+        IdentifyPillarsForPutFileResponse res = new IdentifyPillarsForPutFileResponse();
+        populateResponse(msg, res);
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

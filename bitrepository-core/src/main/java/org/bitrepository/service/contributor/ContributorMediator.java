@@ -1,8 +1,9 @@
 package org.bitrepository.service.contributor;
 
 /**
+ * 
  */
-public interface Contributor {
+public interface ContributorMediator {
 
     void start();
 }
