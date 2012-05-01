@@ -43,6 +43,7 @@ import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetAuditTrailsMessageFactory;
+import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -69,9 +70,13 @@ public class GetAuditTrailsOnChecksumPillarTest extends DefaultFixturePillarTest
         settings.getCollectionSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         cache = new MemoryCache();
         audits = new MockAuditManager();
-        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
+                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
         mediator = new ChecksumPillarMediator(context, cache);
+        mediator.start();
     }
     
     @AfterMethod (alwaysRun=true) 
@@ -96,11 +101,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends DefaultFixturePillarTest
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest = msgFactory.createIdentifyContributorsForGetAuditTrailsRequest(
                 auditTrail, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
         IdentifyContributorsForGetAuditTrailsResponse identifyResponse = clientTopic.waitForMessage(
@@ -116,11 +117,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends DefaultFixturePillarTest
         GetAuditTrailsRequest request = msgFactory.createGetAuditTrailsRequest(auditTrail, contributorId, 
                 identifyRequest.getCorrelationID(), null, FROM, null, null, null, null, clientDestinationId, null, 
                 pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(request);
-        } else {
-            messageBus.sendMessage(request);
-        }
+        messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
         GetAuditTrailsProgressResponse progressResponse = clientTopic.waitForMessage(GetAuditTrailsProgressResponse.class);
@@ -158,11 +155,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends DefaultFixturePillarTest
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest = msgFactory.createIdentifyContributorsForGetAuditTrailsRequest(
                 auditTrail, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
         IdentifyContributorsForGetAuditTrailsResponse identifyResponse = clientTopic.waitForMessage(
@@ -178,11 +171,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends DefaultFixturePillarTest
         GetAuditTrailsRequest request = msgFactory.createGetAuditTrailsRequest(auditTrail, contributorId, 
                 identifyRequest.getCorrelationID(), FILE_ID, FROM, BigInteger.ONE, maxDate, BigInteger.ONE, 
                 minDate, clientDestinationId, null, pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(request);
-        } else {
-            messageBus.sendMessage(request);
-        }
+        messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
         GetAuditTrailsProgressResponse progressResponse = clientTopic.waitForMessage(GetAuditTrailsProgressResponse.class);
@@ -210,11 +199,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends DefaultFixturePillarTest
                 "Should be handled by the pillar.");
         request = msgFactory.createGetAuditTrailsRequest(auditTrail, contributorId, 
                 identifyRequest.getCorrelationID(), null, FROM, null, null, null, null, clientDestinationId, null, pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(request);
-        } else {
-            messageBus.sendMessage(request);
-        }
+        messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
         progressResponse = clientTopic.waitForMessage(GetAuditTrailsProgressResponse.class);

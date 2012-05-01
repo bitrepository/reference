@@ -39,10 +39,10 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetFileIDsResults;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -50,14 +50,15 @@ import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -78,32 +79,22 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
         super(context,  refCache);
     }
     
-    /**
-     * Handles the requests for the GetFileIDs operation.
-     * @param message The IdentifyPillarsForGetFileIDsRequest message to handle.
-     */
-    public void handleMessage(GetFileIDsRequest message) {
-        ArgumentValidator.checkNotNull(message, "GetFileIDsRequest message");
+    @Override
+    public Class<GetFileIDsRequest> getRequestClass() {
+        return GetFileIDsRequest.class;
+    }
 
-        try {
-            validateMessage(message);
-            sendInitialProgressMessage(message);
-            ResultingFileIDs results = performGetFileIDsOperation(message);
-            sendFinalResponse(message, results);
-        } catch (InvalidMessageException e) {
-            sendFailedResponse(message, e.getResponseInfo());
-        } catch (IllegalArgumentException e) {
-            log.warn("Caught IllegalArgumentException. Message ", e);
-            getAlarmDispatcher().handleIllegalArgumentException(e);
-        } catch (RuntimeException e) {
-            log.warn("Internal RuntimeException caught. Sending response for 'error at my end'.", e);
-            getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
-                    "Failed getting file ids.", message.getAuditTrailInformation(), FileAction.FAILURE);
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText("GetFileIDs operation failed with the exception: " + e.getMessage());
-            sendFailedResponse(message, fri);
-        }
+    @Override
+    public void processRequest(GetFileIDsRequest message) throws RequestHandlerException {
+        validateMessage(message);
+        sendInitialProgressMessage(message);
+        ResultingFileIDs results = performGetFileIDsOperation(message);
+        sendFinalResponse(message, results);
+    }
+
+    @Override
+    public MessageResponse generateFailedResponse(GetFileIDsRequest message) {
+        return createFinalResponse(message);
     }
     
     /**
@@ -113,11 +104,8 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      * @param message The message to validate.
      * @return Whether it is valid.
      */
-    private void validateMessage(GetFileIDsRequest message) {
-        // Validate the message.
-        validateBitrepositoryCollectionId(message.getCollectionID());
+    private void validateMessage(GetFileIDsRequest message) throws RequestHandlerException {
         validatePillarId(message.getPillarID());
-
         checkThatAllRequestedFilesAreAvailable(message);
 
         log.debug("Message '" + message.getCorrelationID() + "' validated and accepted.");
@@ -129,7 +117,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      * @param message The message containing the list files. An empty filelist is expected 
      * when "AllFiles" or the parameter option is used.
      */
-    public void checkThatAllRequestedFilesAreAvailable(GetFileIDsRequest message) {
+    public void checkThatAllRequestedFilesAreAvailable(GetFileIDsRequest message) throws RequestHandlerException {
         FileIDs fileids = message.getFileIDs();
         if(fileids == null) {
             log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
@@ -175,7 +163,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      * @return The ResultingFileIDs with either the list of fileids or the final address for where the 
      * list of fileids is uploaded.
      */
-    private ResultingFileIDs performGetFileIDsOperation(GetFileIDsRequest message) {
+    private ResultingFileIDs performGetFileIDsOperation(GetFileIDsRequest message) throws RequestHandlerException {
         ResultingFileIDs res = new ResultingFileIDs();
         FileIDsData data = retrieveFileIDsData(message.getFileIDs());
         
@@ -305,18 +293,6 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
     }
     
     /**
-     * Method for sending a response telling that the operation failed.
-     * @param message The message to base the response upon.
-     * @param fri The information about why the operation failed.
-     */
-    private void sendFailedResponse(GetFileIDsRequest message, ResponseInfo fri) {
-        GetFileIDsFinalResponse fResponse = createFinalResponse(message);
-        fResponse.setResponseInfo(fri);
-        
-        getMessageBus().sendMessage(fResponse);        
-    }
-    
-    /**
      * Create a generic final response message for the GetFileIDs conversation.
      * Missing:
      * <br/> - ProgressResponseInfo
@@ -326,16 +302,10 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      */
     private GetFileIDsProgressResponse createProgressResponse(GetFileIDsRequest message) {
         GetFileIDsProgressResponse res = new GetFileIDsProgressResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCollectionID(getSettings().getCollectionID());
+        populateResponse(message, res);
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
-        res.setCorrelationID(message.getCorrelationID());
         res.setFileIDs(message.getFileIDs());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setResultAddress(message.getResultAddress());
-        res.setTo(message.getReplyTo());
 
         return res;
     }
@@ -351,15 +321,9 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      */
     private GetFileIDsFinalResponse createFinalResponse(GetFileIDsRequest message) {
         GetFileIDsFinalResponse res = new GetFileIDsFinalResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCollectionID(getSettings().getCollectionID());
+        populateResponse(message, res);
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
-        res.setCorrelationID(message.getCorrelationID());
         res.setFileIDs(message.getFileIDs());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(message.getReplyTo());
 
         return res;
     }

@@ -49,14 +49,15 @@ import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -77,32 +78,22 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
         super(context, referenceArchive);
     }
     
-    /**
-     * Handles the requests for the GetFileIDs operation.
-     * @param message The IdentifyPillarsForGetFileIDsRequest message to handle.
-     */
-    public void handleMessage(GetFileIDsRequest message) {
-        ArgumentValidator.checkNotNull(message, "GetFileIDsRequest message");
+    @Override
+    public Class<GetFileIDsRequest> getRequestClass() {
+        return GetFileIDsRequest.class;
+    }
 
-        try {
-            validateMessage(message);
-            sendInitialProgressMessage(message);
-            ResultingFileIDs results = performGetFileIDsOperation(message);
-            sendFinalResponse(message, results);
-        } catch (InvalidMessageException e) {
-            sendFailedResponse(message, e.getResponseInfo());
-        } catch (IllegalArgumentException e) {
-            log.warn("Caught IllegalArgumentException. Message ", e);
-            getAlarmDispatcher().handleIllegalArgumentException(e);
-        } catch (RuntimeException e) {
-            log.warn("Internal RuntimeException caught. Sending response for 'error at my end'.", e);
-            getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
-                    "Failed getting file ids.", message.getAuditTrailInformation(), FileAction.FAILURE);
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText("GetFileIDs operation failed with the exception: " + e.getMessage());
-            sendFailedResponse(message, fri);
-        }
+    @Override
+    public void processRequest(GetFileIDsRequest message) throws RequestHandlerException {
+        validateMessage(message);
+        sendInitialProgressMessage(message);
+        ResultingFileIDs results = performGetFileIDsOperation(message);
+        sendFinalResponse(message, results);
+    }
+
+    @Override
+    public MessageResponse generateFailedResponse(GetFileIDsRequest message) {
+        return createFinalResponse(message);
     }
     
     /**
@@ -112,9 +103,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      * @param message The message to validate.
      * @return Whether it is valid.
      */
-    private void validateMessage(GetFileIDsRequest message) {
-        // Validate the message.
-        validateBitrepositoryCollectionId(message.getCollectionID());
+    private void validateMessage(GetFileIDsRequest message) throws RequestHandlerException {
         validatePillarId(message.getPillarID());
 
         checkThatAllRequestedFilesAreAvailable(message);
@@ -128,7 +117,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      * @param message The message containing the list files. An empty filelist is expected 
      * when "AllFiles" or the parameter option is used.
      */
-    public void checkThatAllRequestedFilesAreAvailable(GetFileIDsRequest message) {
+    public void checkThatAllRequestedFilesAreAvailable(GetFileIDsRequest message) throws RequestHandlerException {
         FileIDs fileids = message.getFileIDs();
         if(fileids == null) {
             log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
@@ -174,7 +163,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      * @return The ResultingFileIDs with either the list of fileids or the final address for where the 
      * list of fileids is uploaded.
      */
-    private ResultingFileIDs performGetFileIDsOperation(GetFileIDsRequest message) {
+    private ResultingFileIDs performGetFileIDsOperation(GetFileIDsRequest message) throws RequestHandlerException {
         ResultingFileIDs res = new ResultingFileIDs();
         FileIDsData data = retrieveFileIDsData(message.getFileIDs());
         
@@ -207,7 +196,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      * @return The resulting collection of FileIDs found.
      * file. 
      */
-    private FileIDsData retrieveFileIDsData(FileIDs fileIDs) {
+    private FileIDsData retrieveFileIDsData(FileIDs fileIDs) throws RequestHandlerException {
         if(fileIDs.isSetAllFileIDs()) {
             log.debug("Retrieving the id for all the files.");
             return retrieveAllFileIDs();
@@ -221,7 +210,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      * Retrieves all the fileIDs.
      * @return The list of the ids of all the files in the archive, wrapped in the requested datastructure.
      */
-    private FileIDsData retrieveAllFileIDs() {
+    private FileIDsData retrieveAllFileIDs() throws RequestHandlerException {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems fileIDList = new FileIDsDataItems();
         for(String fileID : getArchive().getAllFileIds()) {
@@ -236,7 +225,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      * @param fileID The requested fileID to find and validate the existence of.
      * @return The list of the ids of the requested files in the archive, wrapped in the requested datastructure.
      */
-    private FileIDsData retrieveSpecifiedFileIDs(String fileID) {
+    private FileIDsData retrieveSpecifiedFileIDs(String fileID) throws RequestHandlerException {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems fileIDList = new FileIDsDataItems();
         fileIDList.getFileIDsDataItem().add(getDataItemForFileID(fileID));            
@@ -249,14 +238,14 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      * @param fileID The fileID to validate and make into a FileIDsDataItem.
      * @return The FileIDsDataItem for the requested fileID.
      */
-    private FileIDsDataItem getDataItemForFileID(String fileID) {
+    private FileIDsDataItem getDataItemForFileID(String fileID) throws RequestHandlerException {
         if(!getArchive().getFile(fileID).isFile()) {
             ResponseInfo ri = new ResponseInfo();
             ri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             ri.setResponseText("The file '" + fileID + "' is not valid. It either does not exist or "
                     +" it is a directory instead of a file.");
             throw new InvalidMessageException(ri);
-        }        
+        }
         FileIDsDataItem fileIDData = new FileIDsDataItem();
         long timestamp = getArchive().getFile(fileID).lastModified();
         fileIDData.setLastModificationTime(CalendarUtils.getFromMillis(timestamp));
@@ -277,7 +266,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
             throws IOException, JAXBException {
         // Create the temporary file.
         File checksumResultFile = File.createTempFile(message.getCorrelationID(), new Date().getTime() + ".id");
-        log.debug("Writing the requested fileids to the file '" + checksumResultFile + "'");
+        log.info("Writing the requested fileids to the file '" + checksumResultFile + "'");
 
         // Print all the file ids data safely (close the streams!)
         OutputStream is = null;
@@ -341,19 +330,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
         fri.setResponseText("Finished locating the requested files.");
         fResponse.setResponseInfo(fri);
         fResponse.setResultingFileIDs(results);
-        
-        getMessageBus().sendMessage(fResponse);        
-    }
-    
-    /**
-     * Method for sending a response telling that the operation failed.
-     * @param message The message to base the response upon.
-     * @param fri The information about why the operation failed.
-     */
-    private void sendFailedResponse(GetFileIDsRequest message, ResponseInfo fri) {
-        GetFileIDsFinalResponse fResponse = createFinalResponse(message);
-        fResponse.setResponseInfo(fri);
-        
+
         getMessageBus().sendMessage(fResponse);        
     }
     
@@ -367,16 +344,10 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      */
     private GetFileIDsProgressResponse createProgressResponse(GetFileIDsRequest message) {
         GetFileIDsProgressResponse res = new GetFileIDsProgressResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCollectionID(getSettings().getCollectionID());
+        populateResponse(message, res);
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
-        res.setCorrelationID(message.getCorrelationID());
         res.setFileIDs(message.getFileIDs());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setResultAddress(message.getResultAddress());
-        res.setTo(message.getReplyTo());
 
         return res;
     }
@@ -392,15 +363,9 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      */
     private GetFileIDsFinalResponse createFinalResponse(GetFileIDsRequest message) {
         GetFileIDsFinalResponse res = new GetFileIDsFinalResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCollectionID(getSettings().getCollectionID());
+        populateResponse(message, res);
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
-        res.setCorrelationID(message.getCorrelationID());
         res.setFileIDs(message.getFileIDs());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(message.getReplyTo());
 
         return res;
     }

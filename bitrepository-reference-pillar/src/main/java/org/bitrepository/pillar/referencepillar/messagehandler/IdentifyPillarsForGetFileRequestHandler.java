@@ -24,26 +24,22 @@
  */
 package org.bitrepository.pillar.referencepillar.messagehandler;
 
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.bitrepository.service.exception.IdentifyContributorException;
+import org.bitrepository.service.exception.RequestHandlerException;
 
 /**
  * Class for handling the identification of this pillar for the purpose of performing the GetFile operation.
  */
-public class IdentifyPillarsForGetFileRequestHandler extends ReferencePillarMessageHandler<IdentifyPillarsForGetFileRequest> {
-    /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
-
+public class IdentifyPillarsForGetFileRequestHandler 
+        extends ReferencePillarMessageHandler<IdentifyPillarsForGetFileRequest> {
     /**
      * Constructor.
      * @param context The context of the message handler.
@@ -53,42 +49,36 @@ public class IdentifyPillarsForGetFileRequestHandler extends ReferencePillarMess
         super(context, referenceArchive);
     }
     
-    /**
-     * Handles the identification messages for the GetFile operation.
-     * @param message The IdentifyPillarsForGetFileRequest message to handle.
-     */
-    public void handleMessage(IdentifyPillarsForGetFileRequest message) {
-        ArgumentValidator.checkNotNull(message, "IdentifyPillarsForGetFileRequest message");
+    @Override
+    public Class<IdentifyPillarsForGetFileRequest> getRequestClass() {
+        return IdentifyPillarsForGetFileRequest.class;
+    }
 
-        try {
-            validateBitrepositoryCollectionId(message.getCollectionID());
-            checkThatFileIsAvailable(message);
-            respondSuccesfullIdentification(message);
-        } catch (IllegalArgumentException e) {
-            getAlarmDispatcher().handleIllegalArgumentException(e);
-        } catch (IdentifyPillarsException e) {
-            log.warn("Unsuccessfull identification for the GetFile operation.", e);
-            respondUnsuccessfulIdentification(message, e);
-        } catch (RuntimeException e) {
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed identifying pillar.", 
-                    message.getAuditTrailInformation(), FileAction.FAILURE);
-            getAlarmDispatcher().handleRuntimeExceptions(e);
-        }
+    @Override
+    public void processRequest(IdentifyPillarsForGetFileRequest message) throws RequestHandlerException {
+        checkThatFileIsAvailable(message);
+        respondSuccesfullIdentification(message);
+    }
+
+    @Override
+    public MessageResponse generateFailedResponse(IdentifyPillarsForGetFileRequest message) {
+        return createFinalResponse(message);
     }
     
     /**
      * Validates that the requested file is within the archive. 
-     * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
+     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
      * @param message The request for the identification for the GetFileRequest operation.
      */
-    private void checkThatFileIsAvailable(IdentifyPillarsForGetFileRequest message) {
+    private void checkThatFileIsAvailable(IdentifyPillarsForGetFileRequest message) 
+            throws RequestHandlerException {
         if(!getArchive().hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("The file '" + message.getFileID() 
                     + "' does not exist within the archive.");
             
-            throw new IdentifyPillarsException(irInfo);
+            throw new IdentifyContributorException(irInfo);
         }
     }
     
@@ -98,7 +88,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends ReferencePillarMess
      */
     private void respondSuccesfullIdentification(IdentifyPillarsForGetFileRequest message) {
         // Create the response.
-        IdentifyPillarsForGetFileResponse reply = createIdentifyPillarsForGetFileResponse(message);
+        IdentifyPillarsForGetFileResponse reply = createFinalResponse(message);
         
         // set the missing variables in the reply:
         // TimeToDeliver, AuditTrailInformation, IdentifyResponseInfo
@@ -115,22 +105,6 @@ public class IdentifyPillarsForGetFileRequestHandler extends ReferencePillarMess
     }
     
     /**
-     * Method for sending a bad response.
-     * @param message The identification request to respond to.
-     */
-    private void respondUnsuccessfulIdentification(IdentifyPillarsForGetFileRequest message, 
-            IdentifyPillarsException cause) {
-        // Create the response.
-        IdentifyPillarsForGetFileResponse reply = createIdentifyPillarsForGetFileResponse(message);
-        
-        reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
-        reply.setResponseInfo(cause.getResponseInfo());
-        
-        // Send resulting file.
-        getMessageBus().sendMessage(reply);
-    }
-    
-    /**
      * Creates a IdentifyPillarsForGetFileResponse based on a 
      * IdentifyPillarsForGetFileRequest. The following fields are not inserted:
      * <br/> - TimeToDeliver
@@ -140,19 +114,11 @@ public class IdentifyPillarsForGetFileRequestHandler extends ReferencePillarMess
      * @param msg The IdentifyPillarsForGetFileRequest to base the response on.
      * @return The response to the request.
      */
-    private IdentifyPillarsForGetFileResponse createIdentifyPillarsForGetFileResponse(
-            IdentifyPillarsForGetFileRequest msg) {
-        IdentifyPillarsForGetFileResponse res 
-                = new IdentifyPillarsForGetFileResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
+    private IdentifyPillarsForGetFileResponse createFinalResponse(IdentifyPillarsForGetFileRequest msg) {
+        IdentifyPillarsForGetFileResponse res = new IdentifyPillarsForGetFileResponse();
+        populateResponse(msg, res);
         res.setFileID(msg.getFileID());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

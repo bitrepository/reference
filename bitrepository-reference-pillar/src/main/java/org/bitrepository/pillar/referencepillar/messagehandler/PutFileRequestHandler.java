@@ -33,19 +33,20 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
+import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,42 +67,29 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         super(context, referenceArchive);
     }
     
-    /**
-     * Handles the identification messages for the PutFile operation.
-     * @param message The IdentifyPillarsForPutFileRequest message to handle.
-     */
-    public void handleMessage(PutFileRequest message) {
-        ArgumentValidator.checkNotNull(message, "PutFileRequest message");
-        
-        try {
-            validateMessage(message);
-            tellAboutProgress(message);
-            retrieveFile(message);
-            sendFinalResponse(message);
-        } catch (InvalidMessageException e) {
-            log.warn("Failed operation: '" + e + "'.");
-            sendFailedResponse(message, e.getResponseInfo());
-        } catch (IllegalArgumentException e) {
-            log.warn("Caught IllegalArgumentException. Wrong credentials -> Sending alarm! ", e);
-            getAlarmDispatcher().handleIllegalArgumentException(e);
-        } catch (RuntimeException e) {
-            log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed deleting file.", 
-                    message.getAuditTrailInformation(), FileAction.FAILURE);
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText("Error: " + e.getMessage());
-            sendFailedResponse(message, fri);
-        }
+    @Override
+    public Class<PutFileRequest> getRequestClass() {
+        return PutFileRequest.class;
+    }
+
+    @Override
+    public void processRequest(PutFileRequest message) throws RequestHandlerException {
+        validateMessage(message);
+        tellAboutProgress(message);
+        retrieveFile(message);
+        sendFinalResponse(message);
+    }
+
+    @Override
+    public MessageResponse generateFailedResponse(PutFileRequest message) {
+        return createFinalResponse(message);
     }
     
     /**
      * Validates the message.
      * @param message The message to validate.
      */
-    private void validateMessage(PutFileRequest message) {
-        // validate message
-        validateBitrepositoryCollectionId(message.getCollectionID());
+    private void validateMessage(PutFileRequest message) throws RequestHandlerException {
         validatePillarId(message.getPillarID());
         if(message.getChecksumDataForNewFile() != null) {
             validateChecksumSpecification(message.getChecksumDataForNewFile().getChecksumSpec());
@@ -117,7 +105,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
      * Otherwise an {@link InvalidMessageException} with the appropriate errorcode is thrown.
      * @param message The request with the filename to validate.
      */
-    private void checkThatTheFileDoesNotAlreadyExist(PutFileRequest message) {
+    private void checkThatTheFileDoesNotAlreadyExist(PutFileRequest message) throws RequestHandlerException {
         if(getArchive().hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
@@ -133,7 +121,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
      * Otherwise an {@link InvalidMessageException} with the appropriate errorcode is thrown.
      * @param message The request with the size of the file.
      */
-    private void checkSpaceForStoringNewFile(PutFileRequest message) {
+    private void checkSpaceForStoringNewFile(PutFileRequest message) throws RequestHandlerException {
         BigInteger fileSize = message.getFileSize();
         if(fileSize == null) {
             log.debug("No file size given in the identification request. "
@@ -222,7 +210,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         
         File retrievedFile = getArchive().getFile(message.getFileID());
         
-        PutFileFinalResponse fResponse = createPutFileFinalResponse(message);
+        PutFileFinalResponse fResponse = createFinalResponse(message);
         
         // insert: AuditTrailInformation, ChecksumsDataForNewFile, FinalResponseInfo, PillarChecksumSpec
         ResponseInfo frInfo = new ResponseInfo();
@@ -254,17 +242,6 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         getMessageBus().sendMessage(fResponse);
     }
     
-    /**
-     * Method for sending a response telling, that the operation has failed.
-     * @param message The message requesting the put operation.
-     * @param frInfo The information about why it has failed.
-     */
-    private void sendFailedResponse(PutFileRequest message, ResponseInfo frInfo) {
-        // send final response telling, that the file already exists!
-        PutFileFinalResponse fResponse = createPutFileFinalResponse(message);
-        fResponse.setResponseInfo(frInfo);
-        getMessageBus().sendMessage(fResponse);
-    }
     
     /**
      * Creates a PutFileProgressResponse based on a PutFileRequest. Missing the 
@@ -278,16 +255,10 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
      */
     private PutFileProgressResponse createPutFileProgressResponse(PutFileRequest msg) {
         PutFileProgressResponse res = new PutFileProgressResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
+        populateResponse(msg, res);
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }
@@ -303,18 +274,12 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
      * @param msg The PutFileRequest to base the final response message on.
      * @return The PutFileFinalResponse message based on the request.
      */
-    private PutFileFinalResponse createPutFileFinalResponse(PutFileRequest msg) {
+    private PutFileFinalResponse createFinalResponse(PutFileRequest msg) {
         PutFileFinalResponse res = new PutFileFinalResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
+        populateResponse(msg, res);
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

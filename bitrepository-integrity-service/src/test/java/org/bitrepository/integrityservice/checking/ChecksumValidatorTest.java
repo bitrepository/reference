@@ -22,7 +22,6 @@
 package org.bitrepository.integrityservice.checking;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;

@@ -47,15 +47,16 @@ import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.utils.Base16Utils;
+import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -75,34 +76,24 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
     public GetChecksumsRequestHandler(PillarContext context, ChecksumStore refCache) {
         super(context,  refCache);
     }
-    
-    /**
-     * Handles the messages for the GetChecksums operation.
-     * @param message The GetChecksumsRequest message to handle.
-     */
-    public void handleMessage(GetChecksumsRequest message) {
-        ArgumentValidator.checkNotNull(message, "GetChecksumsRequest message");
 
-        try {
-            validateMessage(message);
-            sendInitialProgressMessage(message);
-            List<ChecksumDataForChecksumSpecTYPE> checksumList = calculateChecksumResults(message);
-            ResultingChecksums compiledResults = performPostProcessing(message, checksumList);
-            sendFinalResponse(message, compiledResults);
-        } catch (InvalidMessageException e) {
-            sendFailedResponse(message, e.getResponseInfo());
-        } catch (IllegalArgumentException e) {
-            log.warn("Caught IllegalArgumentException. Message ", e);
-            getAlarmDispatcher().handleIllegalArgumentException(e);
-        } catch (RuntimeException e) {
-            log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
-            getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
-                    "Failed calculating requested checksums.", message.getAuditTrailInformation(), FileAction.FAILURE);
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText("Error: " + e.getMessage());
-            sendFailedResponse(message, fri);
-        }
+    @Override
+    public Class<GetChecksumsRequest> getRequestClass() {
+        return GetChecksumsRequest.class;
+    }
+
+    @Override
+    public void processRequest(GetChecksumsRequest message) throws RequestHandlerException {
+        validateMessage(message);
+        sendInitialProgressMessage(message);
+        List<ChecksumDataForChecksumSpecTYPE> checksumList = calculateChecksumResults(message);
+        ResultingChecksums compiledResults = performPostProcessing(message, checksumList);
+        sendFinalResponse(message, compiledResults);
+    }
+
+    @Override
+    public MessageResponse generateFailedResponse(GetChecksumsRequest message) {
+        return createFinalResponse(message);
     }
     
     /**
@@ -111,12 +102,9 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      * 
      * @param message The message to validate.
      */
-    private void validateMessage(GetChecksumsRequest message) {
-        // Validate the message.
-        validateBitrepositoryCollectionId(message.getCollectionID());
+    private void validateMessage(GetChecksumsRequest message) throws RequestHandlerException {
         validatePillarId(message.getPillarID());
         validateChecksumSpec(message.getChecksumRequestForExistingFile());
-        
         validateFileIDs(message);
         
         log.debug("Message '" + message.getCorrelationID() + "' validated and accepted.");
@@ -129,7 +117,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      *  
      * @param message The message to validate the FileIDs of.
      */
-    private void validateFileIDs(GetChecksumsRequest message) {
+    private void validateFileIDs(GetChecksumsRequest message) throws RequestHandlerException {
         // Validate the requested files
         FileIDs fileids = message.getFileIDs();
 
@@ -205,7 +193,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      * @return The result structure.
      */
     private ResultingChecksums performPostProcessing(GetChecksumsRequest message, 
-            List<ChecksumDataForChecksumSpecTYPE> checksumList) {
+            List<ChecksumDataForChecksumSpecTYPE> checksumList) throws RequestHandlerException {
         ResultingChecksums res = new ResultingChecksums();
         
         String url = message.getResultAddress();
@@ -312,40 +300,18 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
     }
     
     /**
-     * Method for sending a fnial response reporting a failure.
-     * @param message The GetChecksumRequest to base the response upon.
-     * @param fri The response info telling about why the operation failed.
-     */
-    private void sendFailedResponse(GetChecksumsRequest message, ResponseInfo fri) {
-        GetChecksumsFinalResponse fResponse = createFinalResponse(message);
-        fResponse.setResponseInfo(fri);
-        
-        // Send the FinalResponse
-        log.info("Sending GetFileFinalResponse: " + fResponse);
-        getMessageBus().sendMessage(fResponse);        
-    }
-    
-    /**
      * Method for creating a GetChecksumProgressResponse based on a request.
-     * Missing arguments:
-     * <br/> AuditTrailInformation
      * 
      * @param message The GetChecksumsRequest to base the results upon.
      * @return The GetChecksumsProgressResponse based on the GetChecksumsRequest.
      */
     private GetChecksumsProgressResponse createProgressResponse(GetChecksumsRequest message) {
         GetChecksumsProgressResponse res = new GetChecksumsProgressResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(message.getCorrelationID());
+        populateResponse(message, res);
         res.setChecksumRequestForExistingFile(message.getChecksumRequestForExistingFile());
         res.setFileIDs(message.getFileIDs());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setResultAddress(message.getResultAddress());
-        res.setTo(message.getReplyTo());
-        res.setCollectionID(getSettings().getCollectionID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
 
         return res;
     }
@@ -353,7 +319,6 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
     /**
      * Method for creating the generic GetChecksumsFinalResponse based on a GetChecksumRequest.
      * Missing fields:
-     * <br/> - AuditTrailInformation
      * <br/> - FinalResponseInfo
      * <br/> - ResultingChecksums
      * 
@@ -362,15 +327,9 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      */
     private GetChecksumsFinalResponse createFinalResponse(GetChecksumsRequest message) {
         GetChecksumsFinalResponse res = new GetChecksumsFinalResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(message.getCorrelationID());
+        populateResponse(message, res);
         res.setChecksumRequestForExistingFile(message.getChecksumRequestForExistingFile());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(message.getReplyTo());
-        res.setCollectionID(getSettings().getCollectionID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

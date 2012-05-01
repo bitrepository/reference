@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.exceptions;
+package org.bitrepository.service.exception;
 
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 
@@ -30,17 +30,13 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
  * Exception which wraps bad response information for the validation of the operation requests. 
  */
 @SuppressWarnings("serial")
-public class InvalidMessageException extends RuntimeException {
-    /** The ResponseInfo wrapped by this exception. Tells the reason for the exception.*/
-    private final ResponseInfo responseInfo;
-    
+public class InvalidMessageException extends RequestHandlerException {
     /**
      * Constructor.
      * @param rInfo The ResponseInfo for this class to wrap.
      */
     public InvalidMessageException(ResponseInfo rInfo) {
-        super(rInfo.getResponseText());
-        responseInfo = rInfo;
+        super(rInfo);
     }
     
     /**
@@ -49,19 +45,6 @@ public class InvalidMessageException extends RuntimeException {
      * @param e The exception to wrap into the StackTrace.
      */
     public InvalidMessageException(ResponseInfo rInfo, Exception e) {
-        super(rInfo.getResponseText(), e);
-        responseInfo = rInfo;
-    }
-    
-    /**
-     * @return The wrapped ResponseInfo.
-     */
-    public ResponseInfo getResponseInfo() {
-        return responseInfo;
-    }
-    
-    @Override
-    public String toString() {
-        return super.toString() + ", " + responseInfo.toString();
+        super(rInfo, e);
     }
 }

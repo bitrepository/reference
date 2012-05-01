@@ -46,6 +46,7 @@ import org.bitrepository.pillar.messagefactories.DeleteFileMessageFactory;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
+import org.bitrepository.service.contributor.ContributorContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -73,9 +74,13 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Initialize the pillar.", "Should not be a problem.");
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
         audits = new MockAuditManager();
-        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
+                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
         mediator = new ReferencePillarMediator(context, archive);
+        mediator.start();
     }
     
     @AfterMethod (alwaysRun=true) 
@@ -124,11 +129,7 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForDeleteFileRequest identifyRequest = msgFactory.createIdentifyPillarsForDeleteFileRequest(
                 auditTrail, FILE_ID, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -151,11 +152,7 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
         DeleteFileRequest deleteFileRequest = msgFactory.createDeleteFileRequest(auditTrail, 
                 csData, csSpecRequest, receivedIdentifyResponse.getCollectionID(), 
                 FILE_ID, FROM, pillarId, receivedIdentifyResponse.getTo(), receivedIdentifyResponse.getReplyTo());
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(deleteFileRequest);
-        } else {
-            messageBus.sendMessage(deleteFileRequest);
-        }
+        messageBus.sendMessage(deleteFileRequest);
         
         addStep("Retrieve the ProgressResponse for the DeleteFile request", 
                 "The DeleteFile progress response should be sent by the pillar.");
@@ -214,11 +211,7 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForDeleteFileRequest identifyRequest = msgFactory.createIdentifyPillarsForDeleteFileRequest(
                 auditTrail, wrongID, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -273,11 +266,7 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForDeleteFileRequest identifyRequest = msgFactory.createIdentifyPillarsForDeleteFileRequest(
                 auditTrail, FILE_ID, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -299,11 +288,7 @@ public class DeleteFileOnReferencePillarTest extends DefaultFixturePillarTest {
         DeleteFileRequest deleteFileRequest = msgFactory.createDeleteFileRequest(auditTrail, 
                 csData, csSpecRequest, receivedIdentifyResponse.getCollectionID(), 
                 FILE_ID, FROM, pillarId, receivedIdentifyResponse.getTo(), receivedIdentifyResponse.getReplyTo());
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(deleteFileRequest);
-        } else {
-            messageBus.sendMessage(deleteFileRequest);
-        }
+        messageBus.sendMessage(deleteFileRequest);
         
         addStep("Retrieve the FinalResponse for the DeleteFile request", 
                 "The DeleteFile response should be sent by the pillar.");

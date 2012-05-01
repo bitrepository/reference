@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.common;
+package org.bitrepository.service.contributor.handler;
 
 import java.util.Date;
 
@@ -31,48 +31,49 @@ import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
-import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.pillar.exceptions.InvalidMessageException;
+import org.bitrepository.service.audit.AuditTrailManager;
+import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Class for handling the GetAuditTrails operation.
  */
-public class GetAuditTrailsRequestHandler extends PillarMessageHandler<GetAuditTrailsRequest> {
+public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAuditTrailsRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
+    /** The audit trail manager.*/
+    private final AuditTrailManager auditManager;
     
     /**
      * Constructor.
      * @param context The context of the message handler.
      */
-    public GetAuditTrailsRequestHandler(PillarContext context) {
+    public GetAuditTrailsRequestHandler(ContributorContext context, AuditTrailManager auditManager) {
         super(context);
+        this.auditManager = auditManager;
     }
 
     @Override
-    public void handleMessage(GetAuditTrailsRequest message) {
-        ArgumentValidator.checkNotNull(message, "DeleteFileRequest message");
-        
-        try {
-            validateMessage(message);
-            sendProgressMessage(message);
-            ResultingAuditTrails resAudits = collectAudits(message);
-            sendFinalResponse(message, resAudits);
-        } catch (InvalidMessageException e) {
-            sendFailedResponse(message, e.getResponseInfo());
-        } catch (IllegalArgumentException e) {
-            log.warn("Caught IllegalArgumentException. Message ", e);
-            getAlarmDispatcher().handleIllegalArgumentException(e);
-        } catch (RuntimeException e) {
-            log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText("Error: " + e.getMessage());
-            sendFailedResponse(message, fri);
-        }
+    public Class<GetAuditTrailsRequest> getRequestClass() {
+        return GetAuditTrailsRequest.class;
+    }
+
+    @Override
+    public void processRequest(GetAuditTrailsRequest message) throws RequestHandlerException {
+        validateMessage(message);
+        sendProgressMessage(message);
+        ResultingAuditTrails resAudits = collectAudits(message);
+        sendFinalResponse(message, resAudits);
+    }
+
+    @Override
+    public MessageResponse generateFailedResponse(GetAuditTrailsRequest request) {
+        return createFinalResponse(request);
     }
 
     /**
@@ -80,9 +81,13 @@ public class GetAuditTrailsRequestHandler extends PillarMessageHandler<GetAuditT
      * @param message The message requesting the operation, which should be validated.
      * @return Whether it was valid.
      */
-    protected void validateMessage(GetAuditTrailsRequest message) {
-        validateBitrepositoryCollectionId(message.getCollectionID());
-        validatePillarId(message.getContributor());
+    protected void validateMessage(GetAuditTrailsRequest message) throws RequestHandlerException {
+        if(!message.getContributor().equals(getContext().getComponentID())) {
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+            ri.setResponseText("Invalid contributor id.");
+            throw new InvalidMessageException(ri);
+        }
     }
     
     /**
@@ -90,16 +95,16 @@ public class GetAuditTrailsRequestHandler extends PillarMessageHandler<GetAuditT
      * @param message The request for the GetStatus operation.
      */
     protected void sendProgressMessage(GetAuditTrailsRequest message) {
-        GetAuditTrailsProgressResponse pResponse = createProgressResponse(message);
+        GetAuditTrailsProgressResponse response = createProgressResponse(message);
         
         // set missing variables in the message: ResponseInfo
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Starting to check the status.");
-        pResponse.setResponseInfo(prInfo);
+        response.setResponseInfo(prInfo);
         
         // Send the ProgressResponse
-        getMessageBus().sendMessage(pResponse);
+        getContext().getDispatcher().sendMessage(response);
     }
     
     /**
@@ -112,24 +117,29 @@ public class GetAuditTrailsRequestHandler extends PillarMessageHandler<GetAuditT
         
         Long minSeq = null;
         if(message.getMinSequenceNumber() != null) {
+            log.trace("Minimum sequence value: {}", message.getMinSequenceNumber().longValue());
             minSeq = message.getMinSequenceNumber().longValue();
         }
         Long maxSeq = null;
         if(message.getMaxSequenceNumber() != null) {
+            log.trace("Maximum sequence value: {}", message.getMaxSequenceNumber().longValue());
             maxSeq = message.getMaxSequenceNumber().longValue();
         }
         Date minDate = null;
         if(message.getMinTimestamp() != null) {
+            log.trace("Minimum date value: {}", message.getMinTimestamp());
             minDate = CalendarUtils.convertFromXMLGregorianCalendar(message.getMinTimestamp());
         }
         Date maxDate = null;
         if(message.getMaxTimestamp() != null) {
+            log.trace("Maximum date value: {}", message.getMaxTimestamp());
             maxDate = CalendarUtils.convertFromXMLGregorianCalendar(message.getMaxTimestamp());
         }
         
         AuditTrailEvents events = new AuditTrailEvents();
-        for(AuditTrailEvent event :  getAuditManager().getAudits(message.getFileID(), 
+        for(AuditTrailEvent event :  auditManager.getAudits(message.getFileID(), 
                 minSeq, maxSeq, minDate, maxDate)) {
+            log.trace("Adding audit trail event to results: {}", event);
             events.getAuditTrailEvent().add(event);
         }
         
@@ -137,17 +147,6 @@ public class GetAuditTrailsRequestHandler extends PillarMessageHandler<GetAuditT
         res.setResultAddress(message.getResultAddress());
         
         return res;
-    }
-    
-    /**
-     * Method for sending a response telling that the operation has failed.
-     * @param message The message requesting the operation.
-     * @param ri The information about what went wrong.
-     */
-    protected void sendFailedResponse(GetAuditTrailsRequest message, ResponseInfo ri) {
-        GetAuditTrailsFinalResponse response = createFinalResponse(message);
-        response.setResponseInfo(ri);
-        getMessageBus().sendMessage(response);
     }
 
     /**
@@ -164,52 +163,38 @@ public class GetAuditTrailsRequestHandler extends PillarMessageHandler<GetAuditT
         responseInfo.setResponseText("OperationSucessful performed.");
         response.setResponseInfo(responseInfo);
 
-        getMessageBus().sendMessage(response);
+        getContext().getDispatcher().sendMessage(response);
     }
     
     /**
      * Creates a GetStatusProgressResponse based on a GetStatusRequest. Missing the 
-     * following fields:
+     * following fields (besides the ones in dispatchResponse):
      * <br/> - ResponseInfo
      * 
-     * @param msg The GetStatusRequest to base the progress response on.
+     * @param message The message to base the response upon.
      * @return The GetStatusProgressResponse based on the request.
      */
     private GetAuditTrailsProgressResponse createProgressResponse(GetAuditTrailsRequest message) {
         GetAuditTrailsProgressResponse res = new GetAuditTrailsProgressResponse();
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setContributor(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCorrelationID(message.getCorrelationID());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setMinVersion(MIN_VERSION);
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
+        populateResponse(message, res);
+        res.setContributor(getContext().getComponentID());
         res.setResultAddress(message.getResultAddress());
-        res.setTo(message.getReplyTo());
-        res.setVersion(VERSION);
         
         return res;
     }
     
     /**
      * Creates a GetStatusFinalResponse based on a GetStatusRequest. Missing the 
-     * following fields:
+     * following fields (besides the ones in dispatchResponse):
      * <br/> - ResponseInfo
      * <br/> - ResultingAuditTrails
      * 
-     * @param msg The GetStatusRequest to base the final response on.
      * @return The GetStatusFinalResponse based on the request.
      */
-    protected GetAuditTrailsFinalResponse createFinalResponse(GetAuditTrailsRequest msg) {
+    protected GetAuditTrailsFinalResponse createFinalResponse(GetAuditTrailsRequest request) {
         GetAuditTrailsFinalResponse res = new GetAuditTrailsFinalResponse();
-        
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setContributor(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCorrelationID(msg.getCorrelationID());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setMinVersion(MIN_VERSION);
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
-        res.setTo(msg.getReplyTo());
-        res.setVersion(VERSION);
+        populateResponse(request, res);
+        res.setContributor(getContext().getComponentID());
         
         return res;
     }

@@ -42,6 +42,7 @@ import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
+import org.bitrepository.service.contributor.ContributorContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -69,10 +70,15 @@ public class GetFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Initialize the pillar.", "Should not be a problem.");
         cache = new MemoryCache();
         audits = new MockAuditManager();
-        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
+                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
         mediator = new ChecksumPillarMediator(context, cache);
+        mediator.start();
     }    
+    
     @AfterMethod (alwaysRun=true) 
     public void closeArchive() {
         if(cache != null) {
@@ -99,11 +105,7 @@ public class GetFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the checksum pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
                 auditTrail, FILE_ID, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the checksum pillar.", 
                 "The checksum pillar should make a response.");
@@ -140,11 +142,7 @@ public class GetFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, msgFactory.getNewCorrelationID(), 
                 FILE_ADDRESS, FILE_ID, filePart, FROM, pillarId, clientDestinationId, pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(getRequest);
-        } else {
-            messageBus.sendMessage(getRequest);
-        }
+        messageBus.sendMessage(getRequest);
         
         addStep("Retrieve and validate the final response from the checksum pillar.", 
                 "The checksum pillar should reject the operation.");

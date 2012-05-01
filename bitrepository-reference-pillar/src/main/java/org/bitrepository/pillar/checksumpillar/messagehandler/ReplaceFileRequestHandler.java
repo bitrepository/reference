@@ -32,19 +32,20 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
-import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
+import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,42 +76,33 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     }
 
     @Override
-    public void handleMessage(ReplaceFileRequest message) {
-        ArgumentValidator.checkNotNull(message, "ReplaceFileRequest message");
-
-        try {
-            validateMessage(message);
-            sendProgressMessageDownloadNewFile(message);
-            String newChecksum = downloadTheNewFile(message);
-            sendProgressMessageDeleteOldFile(message);
-            ChecksumDataForFileTYPE requestedOldChecksum = calculateChecksumOnOldFile(message);
-            replaceTheEntry(message, newChecksum);
-            ChecksumDataForFileTYPE requestedNewChecksum = calculateChecksumOnNewFile(message);
-            sendFinalResponse(message, requestedOldChecksum, requestedNewChecksum);
-        } catch (InvalidMessageException e) {
-            sendFailedResponse(message, e.getResponseInfo());
-        } catch (IllegalArgumentException e) {
-            log.warn("Caught IllegalArgumentException. Message '" + message + "'.", e);
-            getAlarmDispatcher().handleIllegalArgumentException(e);
-        } catch (RuntimeException e) {
-            log.warn("Internal RunTimeException caught. Sending response for 'error at my end'.", e);
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed replacing file.", 
-                    message.getAuditTrailInformation(), FileAction.FAILURE);
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText("Error: " + e.getMessage());
-            sendFailedResponse(message, fri);
-        }
+    public Class<ReplaceFileRequest> getRequestClass() {
+        return ReplaceFileRequest.class;
     }
 
+    @Override
+    public void processRequest(ReplaceFileRequest message) throws RequestHandlerException {
+        validateMessage(message);
+        sendProgressMessageDownloadNewFile(message);
+        String newChecksum = downloadTheNewFile(message);
+        sendProgressMessageDeleteOldFile(message);
+        ChecksumDataForFileTYPE requestedOldChecksum = calculateChecksumOnOldFile(message);
+        replaceTheEntry(message, newChecksum);
+        ChecksumDataForFileTYPE requestedNewChecksum = calculateChecksumOnNewFile(message);
+        sendFinalResponse(message, requestedOldChecksum, requestedNewChecksum);
+    }
+
+    @Override
+    public MessageResponse generateFailedResponse(ReplaceFileRequest message) {
+        return createFinalResponse(message);
+    }
+    
     /**
      * Method for validating the content of the message.
      * @param message The message requesting the operation, which should be validated.
      * @return Whether it was valid.
      */
-    protected void validateMessage(ReplaceFileRequest message) {
-        // Validate the message.
-        validateBitrepositoryCollectionId(message.getCollectionID());
+    protected void validateMessage(ReplaceFileRequest message) throws RequestHandlerException {
         validatePillarId(message.getPillarID());
         validateChecksumSpec(message.getChecksumRequestForExistingFile());
         validateChecksumSpec(message.getChecksumRequestForNewFile());
@@ -121,7 +113,6 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
             validateChecksumSpec(message.getChecksumDataForNewFile().getChecksumSpec());
         }
         
-
         // Validate, that we have the requested file.
         if(!getCache().hasFile(message.getFileID())) {
             ResponseInfo responseInfo = new ResponseInfo();
@@ -184,7 +175,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
      * @param message The request containing the location of the file and the checksum of it.
      */
     @SuppressWarnings("deprecation")
-    private String downloadTheNewFile(ReplaceFileRequest message) {
+    private String downloadTheNewFile(ReplaceFileRequest message) throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
 
@@ -324,18 +315,6 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     }
     
     /**
-     * Sends the final response for a failed operation.
-     * @param message The message to base the response upon.
-     * @param ri The reason it has failed.
-     */
-    private void sendFailedResponse(ReplaceFileRequest message, ResponseInfo ri) {
-        ReplaceFileFinalResponse response = createFinalResponse(message);
-        response.setResponseInfo(ri);
-        
-        getMessageBus().sendMessage(response);
-    }
-    
-    /**
      * Creates the generic ReplaceFileFinalResponse based on the request message.
      * Missing fields:
      * <br/> ResponseInfo
@@ -345,16 +324,10 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
      */
     private ReplaceFileProgressResponse createProgressResponse(ReplaceFileRequest message) {
         ReplaceFileProgressResponse res = new ReplaceFileProgressResponse();
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setCorrelationID(message.getCorrelationID());
+        populateResponse(message, res);
         res.setFileAddress(message.getFileAddress());
         res.setFileID(message.getFileID());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setMinVersion(MIN_VERSION);
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
-        res.setTo(message.getReplyTo());
-        res.setVersion(VERSION);
         res.setPillarChecksumSpec(getChecksumType());
 
         return res;
@@ -371,16 +344,10 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
      */
     private ReplaceFileFinalResponse createFinalResponse(ReplaceFileRequest message) {
         ReplaceFileFinalResponse res = new ReplaceFileFinalResponse();
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setCorrelationID(message.getCorrelationID());
+        populateResponse(message, res);
         res.setFileAddress(message.getFileAddress());
         res.setFileID(message.getFileID());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setMinVersion(MIN_VERSION);
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
-        res.setTo(message.getReplyTo());
-        res.setVersion(VERSION);
         res.setPillarChecksumSpec(getChecksumType());
 
         return res;

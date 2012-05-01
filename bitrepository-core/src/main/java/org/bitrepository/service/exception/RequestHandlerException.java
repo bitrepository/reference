@@ -1,11 +1,8 @@
 /*
  * #%L
- * Bitrepository Reference Pillar
- * 
- * $Id$
- * $HeadURL$
+ * Bitrepository Core
  * %%
- * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as 
@@ -22,46 +19,47 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.exceptions;
+package org.bitrepository.service.exception;
 
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 
 /**
- * Exception which wraps bad response information for the identifications. 
+ * The exception for the request handlers.
  */
 @SuppressWarnings("serial")
-public class IdentifyPillarsException extends RuntimeException {
-    /** The IdentifyResponseInfo wrapped by this exception. Tells the reason for the exception.*/
-    private final ResponseInfo identifyResponseInfo;
+public abstract class RequestHandlerException extends Exception {
+    /** The ResponseInfo wrapped by this exception. Tells the reason for the exception.*/
+    private final ResponseInfo responseInfo;
     
     /**
      * Constructor.
-     * @param irInfo The IdentifyResponseInfo for this class to wrap.
+     * @param rInfo The ResponseInfo for this class to wrap.
      */
-    public IdentifyPillarsException(ResponseInfo irInfo) {
-        super(irInfo.getResponseText());
-        identifyResponseInfo = irInfo;
+    public RequestHandlerException(ResponseInfo rInfo) {
+        super(rInfo.getResponseText());
+        responseInfo = rInfo;
     }
     
     /**
      * Constructor.
-     * @param irInfo The IdentifyResponseInfo for this class to wrap.
+     * @param rInfo The ResponseInfo for this class to wrap.
      * @param e The exception to wrap into the StackTrace.
      */
-    public IdentifyPillarsException(ResponseInfo irInfo, Exception e) {
-        super(irInfo.getResponseText(), e);
-        identifyResponseInfo = irInfo;
+    public RequestHandlerException(ResponseInfo rInfo, Exception e) {
+        super(rInfo.getResponseText(), e);
+        responseInfo = rInfo;
     }
     
     /**
-     * @return The wrapped IdentifyResponseInfo.
+     * @return The wrapped ResponseInfo.
      */
     public ResponseInfo getResponseInfo() {
-        return identifyResponseInfo;
+        return responseInfo;
     }
     
     @Override
     public String toString() {
-        return super.toString() + ", " + identifyResponseInfo.toString();
+        return super.toString() + ", " + responseInfo.toString();
     }
+
 }

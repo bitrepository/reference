@@ -26,16 +26,16 @@ package org.bitrepository.pillar.referencepillar.messagehandler;
 
 import java.math.BigInteger;
 
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
-import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.exceptions.IdentifyPillarsException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
+import org.bitrepository.service.exception.IdentifyContributorException;
+import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,46 +57,44 @@ public class IdentifyPillarsForReplaceFileRequestHandler
     }
 
     @Override
-    public void handleMessage(IdentifyPillarsForReplaceFileRequest message) {
-        ArgumentValidator.checkNotNull(message, "IdentifyPillarsForReplaceFileRequest message");
+    public Class<IdentifyPillarsForReplaceFileRequest> getRequestClass() {
+        return IdentifyPillarsForReplaceFileRequest.class;
+    }
 
-        try {
-            validateBitrepositoryCollectionId(message.getCollectionID());
-            checkThatRequestedFileIsAvailable(message);
-            checkSpaceForStoringNewFile(message);
-            respondSuccessfulIdentification(message);
-        } catch (IllegalArgumentException e) {
-            getAlarmDispatcher().handleIllegalArgumentException(e);
-        } catch (IdentifyPillarsException e) {
-            log.warn("Unsuccessful identification for the ReplaceFile operation.", e);
-            respondUnsuccessfulIdentification(message, e);
-        } catch (RuntimeException e) {
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed identifying pillar.", 
-                    message.getAuditTrailInformation(), FileAction.FAILURE);
-            getAlarmDispatcher().handleRuntimeExceptions(e);
-        }
+    @Override
+    public void processRequest(IdentifyPillarsForReplaceFileRequest message) throws RequestHandlerException {
+        checkThatRequestedFileIsAvailable(message);
+        checkSpaceForStoringNewFile(message);
+        respondSuccessfulIdentification(message);
+    }
+
+    @Override
+    public MessageResponse generateFailedResponse(IdentifyPillarsForReplaceFileRequest message) {
+        return createFinalResponse(message);
     }
     
     /**
      * Validates that the requested files are present in the archive. 
-     * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
+     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
      * @param message The message containing the id of the file. 
      */
-    public void checkThatRequestedFileIsAvailable(IdentifyPillarsForReplaceFileRequest message) {
+    public void checkThatRequestedFileIsAvailable(IdentifyPillarsForReplaceFileRequest message) 
+            throws RequestHandlerException {
         if(!getArchive().hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("Could not find the requested file to delete.");
-            throw new IdentifyPillarsException(irInfo);
+            throw new IdentifyContributorException(irInfo);
         }
     }
     
     /**
      * Validates that enough space exists is left in the archive.
-     * Otherwise an {@link IdentifyPillarsException} with the appropriate errorcode is thrown.
+     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
      * @param message The request with the size of the file.
      */
-    private void checkSpaceForStoringNewFile(IdentifyPillarsForReplaceFileRequest message) {
+    private void checkSpaceForStoringNewFile(IdentifyPillarsForReplaceFileRequest message) 
+            throws RequestHandlerException {
         BigInteger fileSize = message.getFileSize();
         if(fileSize == null) {
             log.debug("No file size given in the identification request. "
@@ -112,7 +110,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
             irInfo.setResponseText("Not enough space left in this pillar. Requires '" 
                     + fileSize.longValue() + "' but has only '" + useableSizeLeft + "'");
             
-            throw new IdentifyPillarsException(irInfo);
+            throw new IdentifyContributorException(irInfo);
         }
     }
 
@@ -122,7 +120,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
      */
     private void respondSuccessfulIdentification(IdentifyPillarsForReplaceFileRequest message) {
         // Create the response.
-        IdentifyPillarsForReplaceFileResponse reply = createIdentifyPillarsForReplaceFileResponse(message);
+        IdentifyPillarsForReplaceFileResponse reply = createFinalResponse(message);
         
         // set the missing variables in the reply:
         // TimeToDeliver, IdentifyResponseInfo (ignore PillarChecksumSpec)
@@ -138,20 +136,6 @@ public class IdentifyPillarsForReplaceFileRequestHandler
     }
     
     /**
-     * Sends a bad response with the given cause.
-     * @param message The identification request to respond to.
-     * @param cause The cause of the bad identification (e.g. which file is missing).
-     */
-    private void respondUnsuccessfulIdentification(IdentifyPillarsForReplaceFileRequest message, 
-            IdentifyPillarsException cause) {
-        IdentifyPillarsForReplaceFileResponse reply = createIdentifyPillarsForReplaceFileResponse(message);
-        
-        reply.setResponseInfo(cause.getResponseInfo());
-        
-        getMessageBus().sendMessage(reply);
-    }
-    
-    /**
      * Creates a IdentifyPillarsForGetChecksumsResponse based on a 
      * IdentifyPillarsForReplaceFileRequest. The following fields are not inserted:
      * <br/> - TimeToDeliver
@@ -161,18 +145,11 @@ public class IdentifyPillarsForReplaceFileRequestHandler
      * @param msg The IdentifyPillarsForReplaceFileRequest to base the response on.
      * @return The response to the request.
      */
-    private IdentifyPillarsForReplaceFileResponse createIdentifyPillarsForReplaceFileResponse(
-            IdentifyPillarsForReplaceFileRequest msg) {
+    private IdentifyPillarsForReplaceFileResponse createFinalResponse(IdentifyPillarsForReplaceFileRequest msg) {
         IdentifyPillarsForReplaceFileResponse res = new IdentifyPillarsForReplaceFileResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
+        populateResponse(msg, res);
         res.setFileID(msg.getFileID());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

@@ -24,29 +24,17 @@
  */
 package org.bitrepository.pillar.referencepillar.messagehandler;
 
-import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
-import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.GetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
-import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
-import org.bitrepository.pillar.common.GetAuditTrailsRequestHandler;
-import org.bitrepository.pillar.common.GetStatusRequestHandler;
-import org.bitrepository.pillar.common.IdentifyContributorsForGetAuditTrailsRequestHandler;
-import org.bitrepository.pillar.common.IdentifyContributorsForGetStatusRequestHandler;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.common.PillarMediator;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
+import org.bitrepository.service.contributor.handler.GetAuditTrailsRequestHandler;
+import org.bitrepository.service.contributor.handler.GetStatusRequestHandler;
+import org.bitrepository.service.contributor.handler.IdentifyContributorsForGetAuditTrailsRequestHandler;
+import org.bitrepository.service.contributor.handler.IdentifyContributorsForGetStatusRequestHandler;
+import org.bitrepository.service.contributor.handler.RequestHandler;
 
 /**
  * This instance handles the conversations for the reference pillar.
@@ -72,46 +60,32 @@ public class ReferencePillarMediator extends PillarMediator {
     public ReferencePillarMediator(PillarContext context, ReferenceArchive archive) {
         super(context);
         this.archive = archive;
-        
-        // Initialise the messagehandlers.
-        initialiseHandlers(context);
     }
-    
+
+    @SuppressWarnings("rawtypes")
     @Override
-    protected void initialiseHandlers(PillarContext context) {
-        this.handlers.put(IdentifyPillarsForGetFileRequest.class.getName(), 
-                new IdentifyPillarsForGetFileRequestHandler(context, archive));
-        this.handlers.put(GetFileRequest.class.getName(), 
-                new GetFileRequestHandler(context, archive));
-        this.handlers.put(IdentifyPillarsForGetFileIDsRequest.class.getName(), 
-                new IdentifyPillarsForGetFileIDsRequestHandler(context, archive));
-        this.handlers.put(GetFileIDsRequest.class.getName(), 
-                new GetFileIDsRequestHandler(context, archive));
-        this.handlers.put(IdentifyPillarsForGetChecksumsRequest.class.getName(), 
-                new IdentifyPillarsForGetChecksumsRequestHandler(context, archive));
-        this.handlers.put(GetChecksumsRequest.class.getName(), 
-                new GetChecksumsRequestHandler(context, archive));
+    protected RequestHandler[] createListOfHandlers() {
+        List<RequestHandler> handlers = new ArrayList<RequestHandler>();
         
-        this.handlers.put(IdentifyContributorsForGetStatusRequest.class.getName(), 
-                new IdentifyContributorsForGetStatusRequestHandler(context));
-        this.handlers.put(GetStatusRequest.class.getName(),
-                new GetStatusRequestHandler(context));
-        this.handlers.put(IdentifyContributorsForGetAuditTrailsRequest.class.getName(), 
-                new IdentifyContributorsForGetAuditTrailsRequestHandler(context));
-        this.handlers.put(GetAuditTrailsRequest.class.getName(), 
-                new GetAuditTrailsRequestHandler(context));
+        handlers.add(new IdentifyPillarsForGetFileRequestHandler(getPillarContext(), archive));
+        handlers.add(new GetFileRequestHandler(getPillarContext(), archive));
+        handlers.add(new IdentifyPillarsForGetFileIDsRequestHandler(getPillarContext(), archive));
+        handlers.add(new GetFileIDsRequestHandler(getPillarContext(), archive));
+        handlers.add(new IdentifyPillarsForGetChecksumsRequestHandler(getPillarContext(), archive));
+        handlers.add(new GetChecksumsRequestHandler(getPillarContext(), archive));
         
-        this.handlers.put(IdentifyPillarsForPutFileRequest.class.getName(), 
-                new IdentifyPillarsForPutFileRequestHandler(context, archive));
-        this.handlers.put(PutFileRequest.class.getName(), 
-                new PutFileRequestHandler(context, archive));
-        this.handlers.put(IdentifyPillarsForDeleteFileRequest.class.getName(), 
-                new IdentifyPillarsForDeleteFileRequestHandler(context, archive));
-        this.handlers.put(DeleteFileRequest.class.getName(), 
-                new DeleteFileRequestHandler(context, archive));
-        this.handlers.put(IdentifyPillarsForReplaceFileRequest.class.getName(), 
-                new IdentifyPillarsForReplaceFileRequestHandler(context, archive));
-        this.handlers.put(ReplaceFileRequest.class.getName(), 
-                new ReplaceFileRequestHandler(context, archive));
+        handlers.add(new IdentifyContributorsForGetStatusRequestHandler(getContext()));
+        handlers.add(new GetStatusRequestHandler(getContext()));
+        handlers.add(new IdentifyContributorsForGetAuditTrailsRequestHandler(getContext()));
+        handlers.add(new GetAuditTrailsRequestHandler(getContext(), getPillarContext().getAuditTrailManager()));
+        
+        handlers.add(new IdentifyPillarsForPutFileRequestHandler(getPillarContext(), archive));
+        handlers.add(new PutFileRequestHandler(getPillarContext(), archive));
+        handlers.add(new IdentifyPillarsForDeleteFileRequestHandler(getPillarContext(), archive));
+        handlers.add(new DeleteFileRequestHandler(getPillarContext(), archive));
+        handlers.add(new IdentifyPillarsForReplaceFileRequestHandler(getPillarContext(), archive));
+        handlers.add(new ReplaceFileRequestHandler(getPillarContext(), archive));
+        
+        return handlers.toArray(new RequestHandler[handlers.size()]);
     }    
 }

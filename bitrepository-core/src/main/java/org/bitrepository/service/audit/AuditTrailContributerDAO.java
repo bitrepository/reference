@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.audit;
+package org.bitrepository.service.audit;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -38,23 +38,23 @@ import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.common.database.DerbyDBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.pillar.AuditTrailManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.bitrepository.pillar.audit.AuditDatabaseConstants.ACTOR_GUID;
-import static org.bitrepository.pillar.audit.AuditDatabaseConstants.ACTOR_NAME;
-import static org.bitrepository.pillar.audit.AuditDatabaseConstants.ACTOR_TABLE;
-import static org.bitrepository.pillar.audit.AuditDatabaseConstants.AUDITTRAIL_AUDIT;
-import static org.bitrepository.pillar.audit.AuditDatabaseConstants.AUDITTRAIL_ACTOR_GUID;
-import static org.bitrepository.pillar.audit.AuditDatabaseConstants.AUDITTRAIL_FILE_GUID;
-import static org.bitrepository.pillar.audit.AuditDatabaseConstants.AUDITTRAIL_INFORMATION;
-import static org.bitrepository.pillar.audit.AuditDatabaseConstants.AUDITTRAIL_OPERATION;
-import static org.bitrepository.pillar.audit.AuditDatabaseConstants.AUDITTRAIL_OPERATION_DATE;
-import static org.bitrepository.pillar.audit.AuditDatabaseConstants.AUDITTRAIL_SEQUENCE_NUMBER;
-import static org.bitrepository.pillar.audit.AuditDatabaseConstants.AUDITTRAIL_TABLE;
-import static org.bitrepository.pillar.audit.AuditDatabaseConstants.FILE_TABLE;
-import static org.bitrepository.pillar.audit.AuditDatabaseConstants.FILE_GUID;
-import static org.bitrepository.pillar.audit.AuditDatabaseConstants.FILE_FILEID;
+
+import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_NAME;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_TABLE;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_ACTOR_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_AUDIT;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_FILE_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_INFORMATION;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_OPERATION;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_OPERATION_DATE;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_SEQUENCE_NUMBER;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_TABLE;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILEID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
 
 /**
  * Access interface for communication with the audit trail database.

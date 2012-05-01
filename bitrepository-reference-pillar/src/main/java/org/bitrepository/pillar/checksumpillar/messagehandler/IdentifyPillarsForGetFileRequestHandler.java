@@ -29,20 +29,17 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.protocol.utils.TimeMeasurementUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.RequestHandlerException;
 
 /**
  * Class for handling the identification of this pillar for the purpose of performing the GetFile operation.
  */
 public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessageHandler<IdentifyPillarsForGetFileRequest> {
-    /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
-
     /**
      * Constructor.
      * @param context The context of the message handler.
@@ -50,6 +47,31 @@ public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessa
      */
     public IdentifyPillarsForGetFileRequestHandler(PillarContext context, ChecksumStore refCache) {
         super(context, refCache);
+    }
+    
+    @Override
+    public Class<IdentifyPillarsForGetFileRequest> getRequestClass() {
+        return IdentifyPillarsForGetFileRequest.class;
+    }
+
+    @Override
+    public void processRequest(IdentifyPillarsForGetFileRequest message) throws RequestHandlerException {
+        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed identification, since the "
+                + "checksum pillar cannot perform the GetFile operation.", message.getAuditTrailInformation(), 
+                FileAction.FAILURE);
+        
+        ResponseInfo ri = new ResponseInfo();
+        ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+        ri.setResponseText("The ChecksumPillar '" 
+                + getSettings().getReferenceSettings().getPillarSettings().getPillarID() + "' cannot handle a "
+                + "request for the actual file, since it only contains the checksum of the file.");
+        
+        throw new InvalidMessageException(ri);
+    }
+
+    @Override
+    public MessageResponse generateFailedResponse(IdentifyPillarsForGetFileRequest message) {
+        return createFinalResponse(message);
     }
     
     /**
@@ -60,37 +82,9 @@ public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessa
         ArgumentValidator.checkNotNull(message, "IdentifyPillarsForGetFileRequest message");
 
         try {
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed identification, since the "
-                    + "checksum pillar cannot perform the GetFile operation.", message.getAuditTrailInformation(), 
-                    FileAction.FAILURE);
-            
-            ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
-            ri.setResponseText("The ChecksumPillar '" 
-                    + getSettings().getReferenceSettings().getPillarSettings().getPillarID() + "' cannot handle a "
-                    + "request for the actual file, since it only contains the checksum of the file.");
-            
-            sendFailedResponse(message, ri);
         } catch (RuntimeException e) {
             getAlarmDispatcher().handleRuntimeExceptions(e);
         }
-    }
-    
-    /**
-     * Method for sending a bad response.
-     * @param message The identification request to respond to.
-     */
-    private void sendFailedResponse(IdentifyPillarsForGetFileRequest message, ResponseInfo ri) {
-        log.info("Sending failed identification with response info '" + ri + "' for message '" + message + "'");
-        
-        // Create the response.
-        IdentifyPillarsForGetFileResponse reply = createIdentifyPillarsForGetFileResponse(message);
-        
-        reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
-        reply.setResponseInfo(ri);
-        
-        // Send resulting file.
-        getMessageBus().sendMessage(reply);
     }
     
     /**
@@ -103,19 +97,11 @@ public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessa
      * @param msg The IdentifyPillarsForGetFileRequest to base the response on.
      * @return The response to the request.
      */
-    private IdentifyPillarsForGetFileResponse createIdentifyPillarsForGetFileResponse(
-            IdentifyPillarsForGetFileRequest msg) {
-        IdentifyPillarsForGetFileResponse res 
-                = new IdentifyPillarsForGetFileResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
+    private IdentifyPillarsForGetFileResponse createFinalResponse(IdentifyPillarsForGetFileRequest msg) {
+        IdentifyPillarsForGetFileResponse res = new IdentifyPillarsForGetFileResponse();
+        populateResponse(msg, res);
         res.setFileID(msg.getFileID());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(msg.getReplyTo());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
         
         return res;
     }

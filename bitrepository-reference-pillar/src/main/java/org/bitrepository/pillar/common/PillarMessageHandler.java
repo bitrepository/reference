@@ -32,16 +32,18 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.AuditTrailManager;
-import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.utils.ChecksumUtils;
+import org.bitrepository.service.audit.AuditTrailManager;
+import org.bitrepository.service.contributor.handler.AbstractRequestHandler;
+import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.RequestHandlerException;
 
 /**
  * Abstract level for message handling for both types of pillar.
  */
-public abstract class PillarMessageHandler<T> {
+public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> {
 
     /** The constant for the VERSION of the messages.*/
     protected static final BigInteger VERSION = BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION);
@@ -67,6 +69,7 @@ public abstract class PillarMessageHandler<T> {
      * @param referenceArchive The archive for the data.
      */
     protected PillarMessageHandler(PillarContext context) {
+        super(context.getMediatorContext());
         ArgumentValidator.checkNotNull(context, "PillarContext context");
         this.context = context;
     }
@@ -74,7 +77,7 @@ public abstract class PillarMessageHandler<T> {
     /**
      * @return The alarmDispatcher for this message handler.
      */
-    protected AlarmDispatcher getAlarmDispatcher() {
+    protected PillarAlarmDispatcher getAlarmDispatcher() {
         return context.getAlarmDispatcher();
     }
 
@@ -89,7 +92,7 @@ public abstract class PillarMessageHandler<T> {
      * @return The settings for this message handler.
      */
     protected Settings getSettings() {
-        return context.getSettings();
+        return context.getMediatorContext().getSettings();
     }
     
     /**
@@ -99,24 +102,6 @@ public abstract class PillarMessageHandler<T> {
         return context.getAuditTrailManager();
     }
     
-    /** 
-     * The method for handling the message connected to the specific handler.
-     * @param message The message to handle.
-     */
-    public abstract void handleMessage(T message);
-    
-    /**
-     * Validates that it is the correct BitrepositoryCollectionId.
-     * @param bitrepositoryCollectionId The collection id to validate.
-     */
-    protected void validateBitrepositoryCollectionId(String bitrepositoryCollectionId) {
-        if(!bitrepositoryCollectionId.equals(getSettings().getCollectionID())) {
-            throw new IllegalArgumentException("The message had a wrong BitRepositoryIdCollection: "
-                    + "Expected '" + getSettings().getCollectionID() + "' but was '" 
-                    + bitrepositoryCollectionId + "'.");
-        }
-    }
-
     /**
      * Validates that it is the correct pillar id.
      * @param pillarId The pillar id.
@@ -124,8 +109,8 @@ public abstract class PillarMessageHandler<T> {
     protected void validatePillarId(String pillarId) {
         if(!pillarId.equals(getSettings().getReferenceSettings().getPillarSettings().getPillarID())) {
             throw new IllegalArgumentException("The message had a wrong PillarId: "
-                    + "Expected '" + getSettings().getReferenceSettings().getPillarSettings().getPillarID() + "' but was '" 
-                    + pillarId + "'.");
+                    + "Expected '" + getSettings().getReferenceSettings().getPillarSettings().getPillarID() 
+                    + "' but was '" + pillarId + "'.");
         }
     }
     
@@ -133,8 +118,9 @@ public abstract class PillarMessageHandler<T> {
      * Validates a given checksum calculation.
      * Ignores if the checksum type is null.
      * @param checksumSpec The checksum specification to validate.
+     * @throws RequestHandlerException If the algorithm is invalid.
      */
-    protected void validateChecksumSpecification(ChecksumSpecTYPE checksumSpec) {
+    protected void validateChecksumSpecification(ChecksumSpecTYPE checksumSpec) throws RequestHandlerException {
         if(checksumSpec == null) {
             return;
         }

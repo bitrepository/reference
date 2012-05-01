@@ -23,21 +23,22 @@ package org.bitrepository.pillar.common;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.AuditTrailManager;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.service.audit.AuditTrailManager;
+import org.bitrepository.service.contributor.ContributorContext;
 
 /**
  * Container for the context of the pillar, e.g. all the components needed for the message handling.
  */
 public class PillarContext {
-    /** The settings.*/
-    private final Settings settings;
     /** The message bus.*/
     private final MessageBus messageBus;
     /** The alarm dispatcher.*/
-    private final AlarmDispatcher alarmDispatcher;
+    private final PillarAlarmDispatcher alarmDispatcher;
     /** The audit trail manager.*/
     private final AuditTrailManager auditTrailManager;
+    /** The mediator context.*/
+    private final ContributorContext mediatorContext;
     
     /**
      * Constructor.
@@ -46,24 +47,26 @@ public class PillarContext {
      * @param alarmDispatcher The alarm dispatcher.
      * @param auditTrailManager The audit trial manager.
      */
-    public PillarContext(Settings settings, MessageBus messageBus, AlarmDispatcher alarmDispatcher, 
+    public PillarContext(Settings settings, MessageBus messageBus, PillarAlarmDispatcher alarmDispatcher, 
             AuditTrailManager auditTrailManager) {
-        ArgumentValidator.checkNotNull(settings, "Settings");
-        ArgumentValidator.checkNotNull(messageBus, "MessageBus");
+        ArgumentValidator.checkNotNull(settings, "settings");
+        ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(alarmDispatcher, "AlarmDispatcher");
         ArgumentValidator.checkNotNull(auditTrailManager, "AuditTrailManager");
         
-        this.settings = settings;
+        mediatorContext = new ContributorContext(messageBus, settings, 
+                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
         this.messageBus = messageBus;
         this.alarmDispatcher = alarmDispatcher;
         this.auditTrailManager = auditTrailManager;
     }
     
     /**
-     * @return The settings for this context.
+     * @return The mediator context.
      */
-    public Settings getSettings() {
-        return settings;
+    public ContributorContext getMediatorContext() {
+        return mediatorContext;
     }
     
     /**
@@ -76,7 +79,7 @@ public class PillarContext {
     /**
      * @return The alarm dispatcher for this context.
      */
-    public AlarmDispatcher getAlarmDispatcher() {
+    public PillarAlarmDispatcher getAlarmDispatcher() {
         return alarmDispatcher;
     }
     
@@ -85,5 +88,12 @@ public class PillarContext {
      */
     public AuditTrailManager getAuditTrailManager() {
         return auditTrailManager;
+    }
+    
+    /**
+     * @return The settings for this context.
+     */
+    public Settings getSettings() {
+        return mediatorContext.getSettings();
     }
 }

@@ -37,6 +37,7 @@ import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
+import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -63,9 +64,13 @@ public class GetStatusOnChecksumPillarTest extends DefaultFixturePillarTest {
         settings.getCollectionSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         cache = new MemoryCache();
         audits = new MockAuditManager();
-        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
+                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
         mediator = new ChecksumPillarMediator(context, cache);
+        mediator.start();
     }
     
     @AfterMethod (alwaysRun=true) 
@@ -88,11 +93,7 @@ public class GetStatusOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
         IdentifyContributorsForGetStatusRequest identifyRequest = msgFactory.createIdentifyContributorsForGetStatusRequest(
                 auditTrail, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
         IdentifyContributorsForGetStatusResponse identifyResponse = clientTopic.waitForMessage(
@@ -107,11 +108,7 @@ public class GetStatusOnChecksumPillarTest extends DefaultFixturePillarTest {
                 "Should be caught and handled by the pillar.");
         GetStatusRequest request = msgFactory.createGetStatusRequest(auditTrail, contributorId, 
                 identifyRequest.getCorrelationID(), FROM, clientDestinationId, pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(request);
-        } else {
-            messageBus.sendMessage(request);
-        }
+        messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
         GetStatusProgressResponse progressResponse = clientTopic.waitForMessage(GetStatusProgressResponse.class);
@@ -142,11 +139,7 @@ public class GetStatusOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
         IdentifyContributorsForGetStatusRequest identifyRequest = msgFactory.createIdentifyContributorsForGetStatusRequest(
                 auditTrail, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
         IdentifyContributorsForGetStatusResponse identifyResponse = clientTopic.waitForMessage(
@@ -161,16 +154,12 @@ public class GetStatusOnChecksumPillarTest extends DefaultFixturePillarTest {
                 "Should be caught and handled by the pillar.");
         GetStatusRequest request = msgFactory.createGetStatusRequest(auditTrail, wrongContributorId, 
                 identifyRequest.getCorrelationID(), FROM, clientDestinationId, pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(request);
-        } else {
-            messageBus.sendMessage(request);
-        }
+        messageBus.sendMessage(request);
         
         addStep("The pillar should send an alarm.", "Validate the AlarmDispatcher");
         synchronized(this) {
             try {
-                wait(250);
+                wait(5000);
             } catch (Exception e) { 
                 // ignore
             }

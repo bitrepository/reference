@@ -32,9 +32,10 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.common.PillarMessageHandler;
-import org.bitrepository.pillar.exceptions.InvalidMessageException;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.utils.ChecksumUtils;
+import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.RequestHandlerException;
 
 /**
  * Abstract level for message handling. 
@@ -69,7 +70,7 @@ public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHand
      * Ignores if the checksum type is null.
      * @param checksumSpec The checksum specification to validate.
      */
-    protected void validateChecksumSpecification(ChecksumSpecTYPE checksumSpec) {
+    protected void validateChecksumSpecification(ChecksumSpecTYPE checksumSpec) throws RequestHandlerException {
         if(checksumSpec == null) {
             return;
         }

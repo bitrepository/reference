@@ -52,6 +52,7 @@ import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMe
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
+import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -81,9 +82,13 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Initialize the pillar.", "Should not be a problem.");
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
         audits = new MockAuditManager();
-        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
+                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
         mediator = new ReferencePillarMediator(context, archive);
+        mediator.start();
     }
     
     @AfterMethod (alwaysRun=true) 
@@ -131,11 +136,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
                 auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", "The pillar should make a response.");
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
@@ -156,11 +157,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, checksumDataForFile, 
                 csSHA1, receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, FILE_SIZE, 
                 FROM, pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(putRequest);
-        } else {
-            messageBus.sendMessage(putRequest);
-        }
+        messageBus.sendMessage(putRequest);
         
         addStep("Retrieve the ProgressResponse for the put request", "The put response should be sent by the pillar.");
         PutFileProgressResponse progressResponse = clientTopic.waitForMessage(PutFileProgressResponse.class);
@@ -223,11 +220,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
                 auditTrail, FILE_ID, Long.MAX_VALUE, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -275,11 +268,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, checksumDataForFile, 
                 null, UUID.randomUUID().toString(), FILE_ADDRESS, FILE_ID, FILE_SIZE, FROM, 
                 pillarId, clientDestinationId, pillarDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(putRequest);
-        } else {
-            messageBus.sendMessage(putRequest);
-        }
+        messageBus.sendMessage(putRequest);
         
         addStep("Retrieve the FinalResponse for the put request", "The put response should be sent by the pillar.");
         PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
@@ -321,11 +310,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
                 auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -380,11 +365,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
                 auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", "The pillar should make a response.");
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
@@ -404,11 +385,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, checksumDataForFile, 
                 csSHA1, receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, FILE_SIZE, 
                 FROM, pillarId, clientDestinationId, receivedIdentifyResponse.getReplyTo());
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(putRequest);
-        } else {
-            messageBus.sendMessage(putRequest);
-        }
+        messageBus.sendMessage(putRequest);
         
         addStep("Retrieve the ProgressResponse for the put request", "The put response should be sent by the pillar.");
         PutFileProgressResponse progressResponse = clientTopic.waitForMessage(PutFileProgressResponse.class);

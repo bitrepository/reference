@@ -42,6 +42,7 @@ import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
+import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.settings.collectionsettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -71,9 +72,13 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Initialize the pillar.", "Should not be a problem.");
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
         audits = new MockAuditManager();
-        alarmDispatcher = new MockAlarmDispatcher(settings, messageBus);
+        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
+                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
         mediator = new ReferencePillarMediator(context, archive);
+        mediator.start();
     }
     
     @AfterMethod (alwaysRun=true) 
@@ -113,11 +118,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
                 auditTrail, FILE_ID, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -140,11 +141,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, 
                 receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, FROM, pillarId, 
                 clientDestinationId, receivedIdentifyResponse.getReplyTo());
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(getRequest);
-        } else {
-            messageBus.sendMessage(getRequest);
-        }
+        messageBus.sendMessage(getRequest);
         
         addStep("Retrieve the ProgressResponse for the GetFile request", 
                 "The GetFile progress response should be sent by the pillar.");
@@ -197,11 +194,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
                 auditTrail, FILE_ID, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -234,11 +227,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
                 auditTrail, FILE_ID, FROM, clientDestinationId);
         identifyRequest.setCollectionID(settings.getCollectionID() + "ERROR");
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         // TODO fix this!
 //      addStep("Validate that the pillar has sent an Alarm.", 
@@ -269,11 +258,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
                 auditTrail, FILE_ID, FROM, clientDestinationId);
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(identifyRequest);
-        } else {
-            messageBus.sendMessage(identifyRequest);
-        }
+        messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the pillar.", 
                 "The pillar should make a response.");
@@ -297,11 +282,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
                 receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, FROM, pillarId, 
                 clientDestinationId, receivedIdentifyResponse.getReplyTo());
         getRequest.setPillarID(pillarId + "-ERROR");
-        if(useEmbeddedPillar()) {
-            mediator.onMessage(getRequest);
-        } else {
-            messageBus.sendMessage(getRequest);
-        }
+        messageBus.sendMessage(getRequest);
         
         // TODO fix this!
 //        addStep("Validate that the pillar has sent an Alarm.", 
