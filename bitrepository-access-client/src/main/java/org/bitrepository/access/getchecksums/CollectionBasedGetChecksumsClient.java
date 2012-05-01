@@ -27,8 +27,6 @@ package org.bitrepository.access.getchecksums;
 import java.net.URL;
 import java.util.Collection;
 
-import javax.jms.JMSException;
-
 import org.bitrepository.access.getchecksums.conversation.GetChecksumsConversationContext;
 import org.bitrepository.access.getchecksums.conversation.SimpleGetChecksumsConversation;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -36,7 +34,6 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.client.AbstractClient;
-import org.bitrepository.client.conversation.FlowController;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
@@ -81,12 +78,6 @@ public class CollectionBasedGetChecksumsClient extends AbstractClient implements
                 eventHandler, auditTrailInformation);
         SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(context);
         startConversation(conversation);
-        
-        /*SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(
-                bus, settings, addressForResult, fileIDs, checksumSpec, pillarIDs, clientID, eventHandler,  
-                new FlowController(settings), auditTrailInformation);
-        conversationMediator.addConversation(conversation);
-        conversation.startConversation();*/
     }
     
 }

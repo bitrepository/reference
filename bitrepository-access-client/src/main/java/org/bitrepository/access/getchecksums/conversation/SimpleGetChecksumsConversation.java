@@ -37,28 +37,6 @@ import org.bitrepository.client.conversation.FinishedState;
  */
 public class SimpleGetChecksumsConversation extends AbstractConversation {
     private final GetChecksumsConversationContext context;
-    
-    /** The sender to use for dispatching messages */
-    //final MessageSender messageSender; 
-    /** The configuration specific to the BitRepositoryCollection related to this conversion. */
-    //final Settings settings;
-
-    /** The url which the pillar should upload the file to. */
-    //final URL uploadUrl;
-    /** The ID of the file which should be uploaded to the supplied url */
-    //final FileIDs fileIDs;
-    /** Selects a pillar based on responses. */
-//    final PillarSelectorForGetChecksums selector;
-    /** The conversation state (State pattern) */
-//    GetChecksumsState conversationState;
-    /** The specifications for which checksums to retrieve.*/
-//    final ChecksumSpecTYPE checksumSpecifications;
-    /** The text audittrail information for requesting the operation.*/
-//    final String auditTrailInformation;
-    /** The client ID */
-//    final String clientID;
-    
-//    Map<String, ResultingChecksums> mapOfResults = null;
 
     /**
      * Constructor.
@@ -75,23 +53,6 @@ public class SimpleGetChecksumsConversation extends AbstractConversation {
         this.context = context;
         context.setState(new IdentifyPillarsForGetChecksums(context));
     }
-    
-    
-    /*public SimpleGetChecksumsConversation(MessageSender messageSender, Settings settings, URL url,
-            FileIDs fileIds, ChecksumSpecTYPE checksumsSpecs, Collection<String> pillars, String clientID, 
-            EventHandler eventHandler, FlowController flowController, String auditTrailInformation) {
-        super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
-        
-        this.messageSender = messageSender;
-        this.settings = settings;
-        this.uploadUrl = url;
-        this.fileIDs = fileIds;
-        this.selector = new PillarSelectorForGetChecksums(pillars);
-        this.checksumSpecifications = checksumsSpecs;
-        this.conversationState = new IdentifyPillarsForGetChecksums(this);
-        this.auditTrailInformation = auditTrailInformation;
-        this.clientID = clientID;
-    }*/
     
     @Override
     public void onMessage(Message message) {
@@ -127,47 +88,5 @@ public class SimpleGetChecksumsConversation extends AbstractConversation {
     public boolean hasEnded() {
         return context.getState() instanceof FinishedState;
     }
-    
 
-    /*@Override
-    public boolean hasEnded() {
-        return conversationState.hasEnded();
-    }
-    */
-    /*public Map<String,ResultingChecksums> getResult() {
-        return mapOfResults;
-    }*/
-    
-    /**
-     * Method for reporting the results of a conversation.
-     * @param results The results.
-     */
-    /*void setResults(Map<String, ResultingChecksums> results) {
-        this.mapOfResults = results;
-    }*/
-/*
-    @Override
-    public synchronized void onMessage(GetChecksumsFinalResponse message) {
-        conversationState.onMessage(message);
-    }
-
-    @Override
-    public synchronized void onMessage(GetChecksumsProgressResponse message) {
-        conversationState.onMessage(message);
-    }
-
-    @Override
-    public synchronized void onMessage(IdentifyPillarsForGetChecksumsResponse message) {
-        conversationState.onMessage(message);
-    }
-
-    @Override
-    public void endConversation() {
-        conversationState.endConversation();
-    }
-
-    @Override
-    public ConversationState getConversationState() {
-        return conversationState;
-    }*/
 }

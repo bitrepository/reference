@@ -4,7 +4,6 @@ import java.util.Collection;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
 
 public class FastestPillarSelectorForGetFile2 extends GetFileSelector {
