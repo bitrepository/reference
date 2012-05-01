@@ -29,11 +29,13 @@ import java.util.Collection;
 
 import javax.jms.JMSException;
 
+import org.bitrepository.access.getchecksums.conversation.GetChecksumsConversationContext;
 import org.bitrepository.access.getchecksums.conversation.SimpleGetChecksumsConversation;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.FlowController;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
@@ -48,20 +50,9 @@ import org.slf4j.LoggerFactory;
  * This class is just a thin wrapper which creates a conversion each time a operation is started. The conversations 
  * takes over the rest of the operation handling.
  */
-public class CollectionBasedGetChecksumsClient implements GetChecksumsClient {
+public class CollectionBasedGetChecksumsClient extends AbstractClient implements GetChecksumsClient {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
-
-    /** The settings for this instance.*/
-    private final Settings settings;
-    /** The messagebus for communication.*/
-    private final MessageBus bus;
-    
-    /** The mediator which should manage the conversations. */
-    private final ConversationMediator conversationMediator;
-    
-    /** The client ID */
-    private final String clientID;
 
     /**
      * The constructor.
@@ -71,10 +62,7 @@ public class CollectionBasedGetChecksumsClient implements GetChecksumsClient {
      */
     public CollectionBasedGetChecksumsClient(MessageBus messageBus, ConversationMediator conversationMediator, 
             Settings settings, String clientID) {
-        this.bus = messageBus;
-        this.settings = settings;
-        this.conversationMediator = conversationMediator;
-        this.clientID = clientID;
+        super(settings, conversationMediator, messageBus, clientID);
     }
 
     @Override
@@ -88,20 +76,17 @@ public class CollectionBasedGetChecksumsClient implements GetChecksumsClient {
         log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"
                 + pillarIDs + "' with the specifications '" + checksumSpec + "'. "
                 + "The result should be uploaded to '" + addressForResult + "'.");
-        SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(
+        GetChecksumsConversationContext context = new GetChecksumsConversationContext(fileIDs, 
+                checksumSpec, addressForResult, settings, messageBus, clientID, 
+                eventHandler, auditTrailInformation);
+        SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(context);
+        startConversation(conversation);
+        
+        /*SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(
                 bus, settings, addressForResult, fileIDs, checksumSpec, pillarIDs, clientID, eventHandler,  
                 new FlowController(settings), auditTrailInformation);
         conversationMediator.addConversation(conversation);
-        conversation.startConversation();
+        conversation.startConversation();*/
     }
     
-    @Override
-    public void shutdown() {
-        try {
-            bus.close();
-            // TODO Kill any lingering timer threads
-        } catch (JMSException e) {
-            log.info("Error during shutdown of messagebus ", e);
-        }
-    }
 }

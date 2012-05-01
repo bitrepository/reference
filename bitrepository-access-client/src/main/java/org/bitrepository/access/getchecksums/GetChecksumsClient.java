@@ -29,13 +29,14 @@ import java.util.Collection;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.client.BitrepositoryClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
 
 /**
  * The <code>GetChecksumsClient</code> is used as a handle for the Bit Repository getChecksums operation.
  */
-public interface GetChecksumsClient {
+public interface GetChecksumsClient extends BitrepositoryClient {
     /**
      * Method for retrieving a checksums for a set of files from a specific pillar. The method will not block until 
      * the conversation has finished. It will only initiate the conversation.
@@ -61,8 +62,4 @@ public interface GetChecksumsClient {
             URL addressForResult, EventHandler eventHandler, String auditTrailInformation)
             throws OperationFailedException;
     
-    /**
-     * Method to perform a graceful shutdown of the client.
-     */
-    void shutdown();
 }

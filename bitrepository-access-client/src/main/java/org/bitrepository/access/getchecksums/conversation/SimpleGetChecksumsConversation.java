@@ -24,24 +24,11 @@
  */
 package org.bitrepository.access.getchecksums.conversation;
 
-import java.net.URL;
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
-
-import org.bitrepository.access.getchecksums.selector.PillarSelectorForGetChecksums;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
-import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
-import org.bitrepository.common.settings.Settings;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.conversation.AbstractConversation;
+import org.bitrepository.client.conversation.ConversationEventMonitor;
 import org.bitrepository.client.conversation.ConversationState;
-import org.bitrepository.client.conversation.FlowController;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.client.conversation.FinishedState;
 
 /**
  * A conversation for GetChecksums.
@@ -49,27 +36,29 @@ import org.bitrepository.protocol.messagebus.MessageSender;
  * Logic for behaving sanely in GetChecksums conversations.
  */
 public class SimpleGetChecksumsConversation extends AbstractConversation {
+    private final GetChecksumsConversationContext context;
+    
     /** The sender to use for dispatching messages */
-    final MessageSender messageSender; 
+    //final MessageSender messageSender; 
     /** The configuration specific to the BitRepositoryCollection related to this conversion. */
-    final Settings settings;
+    //final Settings settings;
 
     /** The url which the pillar should upload the file to. */
-    final URL uploadUrl;
+    //final URL uploadUrl;
     /** The ID of the file which should be uploaded to the supplied url */
-    final FileIDs fileIDs;
+    //final FileIDs fileIDs;
     /** Selects a pillar based on responses. */
-    final PillarSelectorForGetChecksums selector;
+//    final PillarSelectorForGetChecksums selector;
     /** The conversation state (State pattern) */
-    GetChecksumsState conversationState;
+//    GetChecksumsState conversationState;
     /** The specifications for which checksums to retrieve.*/
-    final ChecksumSpecTYPE checksumSpecifications;
+//    final ChecksumSpecTYPE checksumSpecifications;
     /** The text audittrail information for requesting the operation.*/
-    final String auditTrailInformation;
+//    final String auditTrailInformation;
     /** The client ID */
-    final String clientID;
+//    final String clientID;
     
-    Map<String, ResultingChecksums> mapOfResults = null;
+//    Map<String, ResultingChecksums> mapOfResults = null;
 
     /**
      * Constructor.
@@ -81,7 +70,14 @@ public class SimpleGetChecksumsConversation extends AbstractConversation {
      * @param pillars The pillars to retrieve the checksums from.
      * @param eventHandler The handler of events.
      */
-    public SimpleGetChecksumsConversation(MessageSender messageSender, Settings settings, URL url,
+    public SimpleGetChecksumsConversation(GetChecksumsConversationContext context) {
+        super(context.getMessageSender(), context.getConversationID(), null, null);
+        this.context = context;
+        context.setState(new IdentifyPillarsForGetChecksums(context));
+    }
+    
+    
+    /*public SimpleGetChecksumsConversation(MessageSender messageSender, Settings settings, URL url,
             FileIDs fileIds, ChecksumSpecTYPE checksumsSpecs, Collection<String> pillars, String clientID, 
             EventHandler eventHandler, FlowController flowController, String auditTrailInformation) {
         super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
@@ -95,25 +91,61 @@ public class SimpleGetChecksumsConversation extends AbstractConversation {
         this.conversationState = new IdentifyPillarsForGetChecksums(this);
         this.auditTrailInformation = auditTrailInformation;
         this.clientID = clientID;
+    }*/
+    
+    @Override
+    public void onMessage(Message message) {
+        context.getState().handleMessage(message);
+    }
+
+    @Override
+    public ConversationState getConversationState() {
+        // Only used to start conversation, which has been oveloaded. This is because the current parent state isn't of
+        // type ConversationState in the AuditTrailCLient.
+        return null;
+    }
+
+    @Override
+    public void startConversation() {
+        context.getState().start();
+    }
+
+    @Override
+    public void endConversation() {
+        context.setState(new FinishedState(context));
+    }
+
+    /**
+     * Override to use the new context provided monitor.
+     * @return The monitor for distributing update information
+     */
+    public ConversationEventMonitor getMonitor() {
+        return context.getMonitor();
     }
 
     @Override
     public boolean hasEnded() {
-        return conversationState.hasEnded();
+        return context.getState() instanceof FinishedState;
     }
     
-    public Map<String,ResultingChecksums> getResult() {
-        return mapOfResults;
+
+    /*@Override
+    public boolean hasEnded() {
+        return conversationState.hasEnded();
     }
+    */
+    /*public Map<String,ResultingChecksums> getResult() {
+        return mapOfResults;
+    }*/
     
     /**
      * Method for reporting the results of a conversation.
      * @param results The results.
      */
-    void setResults(Map<String, ResultingChecksums> results) {
+    /*void setResults(Map<String, ResultingChecksums> results) {
         this.mapOfResults = results;
-    }
-
+    }*/
+/*
     @Override
     public synchronized void onMessage(GetChecksumsFinalResponse message) {
         conversationState.onMessage(message);
@@ -137,5 +169,5 @@ public class SimpleGetChecksumsConversation extends AbstractConversation {
     @Override
     public ConversationState getConversationState() {
         return conversationState;
-    }
+    }*/
 }

@@ -24,17 +24,13 @@
  */
 package org.bitrepository.access.getchecksums.conversation;
 
-import java.math.BigInteger;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
+import org.bitrepository.access.getchecksums.selector.PillarSelectorForGetChecksums;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
-import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.client.exceptions.NegativeResponseException;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.conversation.ConversationContext;
+import org.bitrepository.client.conversation.GeneralConversationState;
+import org.bitrepository.client.conversation.IdentifyingState;
+import org.bitrepository.client.conversation.selector.ComponentSelector;
+import org.bitrepository.client.conversation.selector.MultipleComponentSelector;
 
 /**
  * Models the behavior of a GetChecksums conversation during the identification phase. That is, it begins with the 
@@ -45,133 +41,49 @@ import org.bitrepository.client.exceptions.UnexpectedResponseException;
  * protected.
  * This is the initial state for the whole GetChecksums communication.
  */
-public class IdentifyPillarsForGetChecksums extends GetChecksumsState {
-    /** Defines that the timer is a daemon thread. */
-    private static final Boolean TIMER_IS_DAEMON = true;
-    /** The timer used for timeout checks. */
-    final Timer timer = new Timer(TIMER_IS_DAEMON);
-    /** The timer task for timeout of identify in this conversation. */
-    final TimerTask identifyTimeoutTask = new IdentifyTimerTask();
-
+public class IdentifyPillarsForGetChecksums  extends IdentifyingState {
+    private final GetChecksumsConversationContext context;
+    private final MultipleComponentSelector selector;
+    
     /**
      * Constructor.
      * @param conversation The conversation for this state.
      */
-    public IdentifyPillarsForGetChecksums(SimpleGetChecksumsConversation conversation) {
-        super(conversation);
-    }
-    
-    /**
-     * Starts the identifying process by sending a <code>IdentifyPillarsForGetFileRequest</code> message.
-     * 
-     * Also sets up a timer task to avoid waiting to long for all the expected responses.
-     */
-    public void start() {
-        IdentifyPillarsForGetChecksumsRequest identifyRequest = new IdentifyPillarsForGetChecksumsRequest();
-        identifyRequest.setCorrelationID(conversation.getConversationID());
-        identifyRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        identifyRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        identifyRequest.setCollectionID(
-                conversation.settings.getCollectionID());
-        identifyRequest.setFileIDs(conversation.fileIDs);
-        identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
-        identifyRequest.setTo(conversation.settings.getCollectionDestination());
-        identifyRequest.setAuditTrailInformation(conversation.auditTrailInformation);
-        identifyRequest.setChecksumRequestForExistingFile(conversation.checksumSpecifications);
-        identifyRequest.setFrom(conversation.clientID);
-
-        monitor.identifyPillarsRequestSent("Identifying pillars for getting file " + conversation.fileIDs);
-        conversation.messageSender.sendMessage(identifyRequest);
-        timer.schedule(identifyTimeoutTask,
-                        conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());
+    public IdentifyPillarsForGetChecksums(GetChecksumsConversationContext context) {
+        this.context = context;
+        selector = new PillarSelectorForGetChecksums(
+                context.getSettings().getCollectionSettings().getClientSettings().getPillarIDs());
     }
 
-    /**
-     * Handles a reply for identifying the fastest pillar to deliver a given file.
-     *
-     * @param response The IdentifyPillarsForGetChecksumsResponse to handle.
-     */
     @Override
-    public void onMessage(IdentifyPillarsForGetChecksumsResponse response) {
-        try {
-            conversation.selector.processResponse(response);
-            monitor.pillarIdentified("Received IdentifyPillarsForGetChecksumsResponse " + response, response.getPillarID());
-        } catch (UnexpectedResponseException e) {
-            monitor.debug("Unable to handle IdentifyPillarsForGetChecksumsResponse", e);
-        } catch (NegativeResponseException e) {
-            monitor.contributorFailed("Negativ IdentifyPillarsForGetChecksumsResponse from pillar", 
-                    response.getPillarID(), e);
-        }
-        
-        if (conversation.selector.isFinished()) {
-            identifyTimeoutTask.cancel();
-            
-            if (conversation.selector.getSelectedPillars().isEmpty()) {
-                conversation.failConversation("Unable to getChecksums, no pillars were identified");
-            }
-            monitor.pillarSelected("Identified pillars for getChecksums", 
-                    conversation.selector.getSelectedPillars().toString());
-            getChecksumsFromSelectedPillar();
-        }
-    }
-    
-    @Override
-    public void onMessage(GetChecksumsProgressResponse response) {
-        monitor.outOfSequenceMessage("Received GetChecksumsProgressResponse "
-                + "from " + response.getPillarID() + " before sending GetChecksumsRequest.");
-    }
-    
-    @Override
-    public void onMessage(GetChecksumsFinalResponse response) {
-        monitor.outOfSequenceMessage("Received GetChecksumsFinalResponse "
-                + "from " + response.getPillarID() + " before sending GetChecksumsRequest.");
-    }
-    
-    /**
-     * Method for moving to the next stage: GettingChecksum.
-     */
-    protected void getChecksumsFromSelectedPillar() {
-        identifyTimeoutTask.cancel();
-        GettingChecksums nextConversationState = new GettingChecksums(conversation);
-        conversation.conversationState = nextConversationState;
-        nextConversationState.start();
-    }
-    
-    /**
-     * Method for handling the timeout of the identification.
-     */
-    private void handleIdentificationTimeout() {
-        synchronized (conversation) {
-            if (conversation.conversationState == this) {
-                if (!conversation.selector.getSelectedPillars().isEmpty()) {
-                    monitor.identifyPillarTimeout("Time has run out for selecting a pillar. The following pillars " +
-                    		"didn't respond: " + conversation.selector.getOutstandingPillars() + 
-                    ". Using pillars based on uncomplete set of responses.");
-                    getChecksumsFromSelectedPillar();
-                } else {
-                    conversation.failConversation("Unable to select a pillar, time has run out. " +
-                            "The following pillars did't respond: " + conversation.selector.getOutstandingPillars());
-                }
-            } else {
-                monitor.warning("Identification timeout, but " +
-                        "the conversation state has already changed to " + conversation.conversationState);
-            }
-        }
+    public ComponentSelector getSelector() {
+        return selector;
     }
 
-    /**
-     * The timer task class for the outstanding identify requests. When the time is reached the selected pillar should
-     * be called requested for the delivery of the file.
-     */
-    private class IdentifyTimerTask extends TimerTask {
-        @Override
-        public void run() {
-            handleIdentificationTimeout();
-        }
-    }
-    
     @Override
-    public boolean hasEnded() {
-        return false;
+    public GeneralConversationState getOperationState() {
+        return new GettingChecksums(context, selector.getSelectedComponents());
     }
+
+    @Override
+    protected void sendRequest() {
+        IdentifyPillarsForGetChecksumsRequest msg = new IdentifyPillarsForGetChecksumsRequest();
+        initializeMessage(msg);
+        msg.setTo(context.getSettings().getCollectionDestination());
+        msg.setFileIDs(context.getFileIDs());
+        msg.setChecksumRequestForExistingFile(context.getChecksumSpec());
+        context.getMessageSender().sendMessage(msg);
+        context.getMonitor().identifyPillarsRequestSent("Identifying pillars for GetChecksums");
+    }
+
+    @Override
+    protected ConversationContext getContext() {
+        return context;
+    }
+
+    @Override
+    protected String getName() {
+        return "Identify pillars for GetChecksums";
+    }
+
 }

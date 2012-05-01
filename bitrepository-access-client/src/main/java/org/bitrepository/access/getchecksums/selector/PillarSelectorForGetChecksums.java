@@ -24,97 +24,33 @@
  */
 package org.bitrepository.access.getchecksums.selector;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
-import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.client.exceptions.NegativeResponseException;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.client.conversation.selector.MultipleComponentSelector;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
-import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
-import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
 
 /**
  * Class for selecting pillars for the GetChecksums operation.
  */
-public class PillarSelectorForGetChecksums {
-    /** Used for tracking who has answered. */
-    private final ContributorResponseStatus responseStatus;
-    /** The pillars which have been selected for a checksums request. */
-    private final List<SelectedPillarInfo> selectedPillars = new LinkedList<SelectedPillarInfo>(); 
-    
+public class PillarSelectorForGetChecksums extends MultipleComponentSelector {
+
     /**
      * Constructor.
      * @param pillars The IDs of the pillars to be selected.
      */
     public PillarSelectorForGetChecksums(Collection<String> pillarsWhichShouldRespond) {
-        ArgumentValidator.checkNotNullOrEmpty(pillarsWhichShouldRespond, "pillarsWhichShouldRespond");
-        responseStatus = new ContributorResponseStatus(pillarsWhichShouldRespond);
+        super(pillarsWhichShouldRespond);
     }
-    
-    /**
-     * Method for processing a IdentifyPillarsForGetChecksumsResponse. Checks whether the response is from the wanted
-     * expected pillar.
-     * @param response The response identifying a pillar for the GetChecksums operation.
-     */
-    public void processResponse(IdentifyPillarsForGetChecksumsResponse response) 
-            throws UnexpectedResponseException, NegativeResponseException {
-        responseStatus.responseReceived(response.getPillarID());
-        validateResponse(response.getResponseInfo());
-        if (!ResponseCode.IDENTIFICATION_POSITIVE.value().equals(
-                response.getResponseInfo().getResponseCode().value())) {
-            throw new NegativeResponseException(response.getPillarID() + " sent negative response " + 
-                    response.getResponseInfo().getResponseText(), 
-                    response.getResponseInfo().getResponseCode());
-        }
-        selectedPillars.add(new SelectedPillarInfo(response.getPillarID(), response.getReplyTo()));
-    }
-    
-    /**
-     * Method for validating the response.
-     * @param irInfo The IdentifyResponseInfo to validate.
-     */
-    private void validateResponse(ResponseInfo irInfo) throws UnexpectedResponseException {
-        if(irInfo == null) {
-            throw new UnexpectedResponseException("Response info was null");
-        }
-        
-        ResponseCode responseCode = irInfo.getResponseCode();
-        if(responseCode == null) {
-            throw new UnexpectedResponseException("Response code was null, with text: " + irInfo.getResponseText());
-        }
-        
-        if (responseCode != ResponseCode.IDENTIFICATION_POSITIVE) {
-            throw new UnexpectedResponseException("Invalid IdentifyResponse. Expected '" 
-                    + ResponseCode.IDENTIFICATION_POSITIVE + "' but received: '" + responseCode 
-                    + "', with text '" + irInfo.getResponseText() + "'");
+
+    @Override
+    public void processResponse(MessageResponse response) throws UnexpectedResponseException {
+        if (response instanceof IdentifyPillarsForGetChecksumsResponse) {
+            super.processResponse(response);
+        } else {
+            throw new UnexpectedResponseException("Are currently only expecting IdentifyPillarsForGetChecksums's");
         }
     }
-    
-    /**
-     * Tells whether the selection is finished.
-     * @return Whether any pillars are outstanding.
-     */
-    public boolean isFinished() {
-        return responseStatus.haveAllPillarResponded();
-    }
-    
-    /**
-     * Method for identifying the pillars, which needs to be identified for this operation to be finished.
-     * @return An array of the IDs of the pillars which have not yet responded.
-     */
-    public List<String> getOutstandingPillars() {
-        return Arrays.asList(responseStatus.getOutstandPillars());
-    }
-    
-    /**
-     * @return The selected pillars.
-     */
-    public List<SelectedPillarInfo> getSelectedPillars() {
-        return selectedPillars;
-    }
+
 }
