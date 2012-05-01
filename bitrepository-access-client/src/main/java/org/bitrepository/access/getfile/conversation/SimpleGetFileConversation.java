@@ -25,18 +25,11 @@
 package org.bitrepository.access.getfile.conversation;
 
 import java.net.URL;
-import java.util.UUID;
 
-import org.bitrepository.access.getfile.selectors.PillarSelectorForGetFile;
-import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.common.settings.Settings;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.conversation.AbstractConversation;
 import org.bitrepository.client.conversation.ConversationState;
-import org.bitrepository.client.conversation.FlowController;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.client.conversation.FinishedState;
 
 /**
  * A conversation for GetFile.
@@ -44,78 +37,48 @@ import org.bitrepository.protocol.messagebus.MessageSender;
  * Logic for behaving sanely in GetFile conversations.
  */
 public class SimpleGetFileConversation extends AbstractConversation {
-    /** The sender to use for dispatching messages */
-    final MessageSender messageSender; 
-    /** The configuration specific to the SLA related to this conversion. */
-    final Settings settings;
+    private final GetFileConversationContext context;
 
-    /** The url which the pillar should upload the file to. */
-    final URL uploadUrl;
-    /** The ID of the file which should be uploaded to the supplied url */
-    final String fileID;
-    /** The client ID */
-    final String clientID;
-    /** Selects a pillar based on responses. */
-    final PillarSelectorForGetFile selector;
-    /** The conversation state (State pattern) */
-    GetFileState conversationState;
     /**
      * Initializes the file directory, and the message bus used for sending messages.
      * The fileDir is retrieved from the configuration.
      *
      * @param messageSender The message bus used for sending messages.
      */
-    public SimpleGetFileConversation(
-            MessageSender messageSender, 
-            Settings settings,
-            PillarSelectorForGetFile selector,
-            String fileID,
-            URL uploadUrl,
-            String clientID,
-            EventHandler eventHandler,
-            FlowController flowController) {
-        super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
-
-        this.messageSender = messageSender;
-        this.settings = settings;
-        this.selector = selector;
-        this.uploadUrl = uploadUrl;
-        this.fileID = fileID;
-        this.clientID = clientID;
-        conversationState = new IdentifyingPillarsForGetFile(this);
+    public SimpleGetFileConversation(GetFileConversationContext context) {
+        super(context.getMessageSender(), context.getConversationID(), null, null);
+        this.context = context;
+        context.setState(new IdentifyingPillarsForGetFile(context));
     }
-
+    
     @Override
     public boolean hasEnded() {
-        return conversationState instanceof GetFileFinished;
+        return context.getState() instanceof FinishedState;
     }
 
     public URL getResult() {
-        return uploadUrl;
+        return context.getUrlForResult();
     }
 
     @Override
-    public synchronized void onMessage(GetFileFinalResponse message) {
-        conversationState.onMessage(message);
+    public void onMessage(Message message) {
+        context.getState().handleMessage(message);
     }
-
+    
     @Override
-    public synchronized void onMessage(GetFileProgressResponse message) {
-        conversationState.onMessage(message);
+    public void startConversation() {
+        context.getState().start();
     }
-
-    @Override
-    public synchronized void onMessage(IdentifyPillarsForGetFileResponse message) {
-        conversationState.onMessage(message);
-    }
-
+    
     @Override
     public void endConversation() {
-        conversationState.endConversation();
+        context.setState(new FinishedState(context));
     }
     
     @Override
     public ConversationState getConversationState() {
-        return conversationState;
+        // Only used to start conversation, which has been oveloaded. This is because the current parent state isn't of
+        // type ConversationState in the AuditTrailCLient.
+        return null;
     }
 }

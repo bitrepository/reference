@@ -26,20 +26,15 @@ package org.bitrepository.access.getfile;
 
 import java.net.URL;
 
-import javax.jms.JMSException;
-
+import org.bitrepository.access.getfile.conversation.GetFileConversationContext;
 import org.bitrepository.access.getfile.conversation.SimpleGetFileConversation;
-import org.bitrepository.access.getfile.selectors.FastestPillarSelectorForGetFile;
-import org.bitrepository.access.getfile.selectors.PillarSelectorForGetFile;
-import org.bitrepository.access.getfile.selectors.SpecificPillarSelectorForGetFile;
+import org.bitrepository.access.getfile.selectors.FastestPillarSelectorForGetFile2;
+import org.bitrepository.access.getfile.selectors.GetFileSelector;
+import org.bitrepository.access.getfile.selectors.SpecificPillarSelectorForGetFile2;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.client.conversation.AbstractConversation;
-import org.bitrepository.client.conversation.FlowController;
+import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.NoPillarFoundException;
-import org.bitrepository.client.exceptions.OperationFailedException;
-import org.bitrepository.client.exceptions.OperationTimeOutException;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
@@ -51,20 +46,10 @@ import org.slf4j.LoggerFactory;
  * This class is just a thin wrapper which creates a conversion each time a operation is started. The conversations 
  * takes over the rest of the operation handling.
  */
-public class CollectionBasedGetFileClient implements GetFileClient {
+public class CollectionBasedGetFileClient extends AbstractClient implements GetFileClient {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    /** The injected settings for the instance */
-    private final Settings settings;
-
-    /** The injected messagebus to use */
-    private final MessageBus messageBus;
-    /** The mediator which should manage the conversations. */
-    private final ConversationMediator conversationMediator;
-    /** The Client ID */
-    private final String clientID;
-    
     /** The constructor
      * 
      * @param messageBus The message bus to use.
@@ -72,12 +57,9 @@ public class CollectionBasedGetFileClient implements GetFileClient {
      */
     public CollectionBasedGetFileClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings,
             String clientID) {
+        super(settings, conversationMediator, messageBus, clientID);
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
-        this.settings = settings;
-        this.messageBus = messageBus;
-        this.conversationMediator = conversationMediator;
-        this.clientID = clientID;
     }
 
     @Override
@@ -87,7 +69,8 @@ public class CollectionBasedGetFileClient implements GetFileClient {
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
 
         log.info("Requesting fastest retrieval of the file '" + fileID);
-        getFile(messageBus, settings, new FastestPillarSelectorForGetFile(settings.getCollectionSettings().getClientSettings().getPillarIDs()), 
+        getFile(messageBus, settings, new FastestPillarSelectorForGetFile2(
+                settings.getCollectionSettings().getClientSettings().getPillarIDs()), 
                 fileID, uploadUrl, eventHandler);		
     }
 
@@ -99,18 +82,9 @@ public class CollectionBasedGetFileClient implements GetFileClient {
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
 
         log.info("Requesting the file '" + fileID + "' from pillar '" + pillarID + "'.");
-        getFile(messageBus, settings, new SpecificPillarSelectorForGetFile(pillarID), 
+        getFile(messageBus, settings, new SpecificPillarSelectorForGetFile2(
+                settings.getCollectionSettings().getClientSettings().getPillarIDs(), pillarID), 
                 fileID, uploadUrl, eventHandler);				
-    }
-
-    @Override
-    public void shutdown() {
-        try {
-            messageBus.close();
-            // TODO Kill any lingering timer threads
-        } catch (JMSException e) {
-            log.info("Error during shutdown of messagebus ", e);
-        }
     }
 
     /** 
@@ -120,26 +94,12 @@ public class CollectionBasedGetFileClient implements GetFileClient {
      * @param selector Defines the algorithm for choosing the pillar to deliver the file.
      * @see GetFileClient
      */
-    private void getFile(MessageBus messageBus, Settings settings, PillarSelectorForGetFile selector, 
+    private void getFile(MessageBus messageBus, Settings settings, GetFileSelector selector, 
             String fileID, URL uploadUrl, EventHandler eventHandler) {
-        AbstractConversation  conversation =  new SimpleGetFileConversation(
-                messageBus, settings, selector, fileID, uploadUrl, clientID,eventHandler, new FlowController(settings));
-        conversationMediator.addConversation(conversation);  
-        conversation.startConversation();
+        GetFileConversationContext context = new GetFileConversationContext(fileID, uploadUrl, selector, 
+                settings, messageBus, clientID, eventHandler, null);
+        SimpleGetFileConversation conversation = new SimpleGetFileConversation(context);
+        startConversation(conversation);
     }
 
-    /** 
-     * Synchronous(blocking) method for starting the getFile process get by using a new conversation.
-     * 
-     * @param selector Defines the algorithm for choosing the pillar to deliver the file.
-     * @see GetFileClient
-     */
-    private void getFile(MessageBus messageBus, Settings settings, PillarSelectorForGetFile selector, 
-            String fileID, URL uploadUrl) 
-    throws NoPillarFoundException, OperationTimeOutException, OperationFailedException {
-        SimpleGetFileConversation conversation = new SimpleGetFileConversation(
-                    messageBus, settings, selector, fileID, uploadUrl, clientID, null, new FlowController(settings));
-        conversationMediator.addConversation(conversation);  
-        conversation.startConversation();
-    }
 }

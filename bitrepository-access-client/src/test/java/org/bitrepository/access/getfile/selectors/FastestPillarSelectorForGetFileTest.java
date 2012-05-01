@@ -48,11 +48,11 @@ public class FastestPillarSelectorForGetFileTest {
                 TimeMeasureUnit.MILLISECONDS);
     private static final String[] PILLAR_IDS = 
         new String[] { slowPillar.pillarID, fastPillar.pillarID, mediumPillar.pillarID};
-    private FastestPillarSelectorForGetFile selector;
+    private FastestPillarSelectorForGetFile2 selector;
     
     @BeforeMethod (alwaysRun=true)
     public void setup() {
-        selector = new FastestPillarSelectorForGetFile(Arrays.asList(PILLAR_IDS));
+        selector = new FastestPillarSelectorForGetFile2(Arrays.asList(PILLAR_IDS));
     }
 
     @Test (groups = { "regressiontest" })
@@ -86,6 +86,7 @@ public class FastestPillarSelectorForGetFileTest {
 
         IdentifyPillarsForGetFileResponse response2 = fastPillar.createResponse();
         response2.setPillarID("Invalid pillar");
+        response2.setFrom("Invalid pillar");
         try { 
             selector.processResponse(response2);
             Assert.fail("Should have throw exception after receiving response from invalid pillar");

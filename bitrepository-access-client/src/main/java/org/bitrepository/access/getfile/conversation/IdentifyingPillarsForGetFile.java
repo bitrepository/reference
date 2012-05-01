@@ -24,149 +24,56 @@
  */
 package org.bitrepository.access.getfile.conversation;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.common.exceptions.UnableToFinishException;
-import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.conversation.ConversationContext;
+import org.bitrepository.client.conversation.GeneralConversationState;
+import org.bitrepository.client.conversation.IdentifyingState;
+import org.bitrepository.client.conversation.selector.ComponentSelector;
+
 
 /**
  * Models the functionality for identifying pillars prior to a get file request.
  */
-public class IdentifyingPillarsForGetFile extends GetFileState {
-    /** The timer used for timeout checks. */
-    final Timer timer = new Timer();
-    /** The timer task for timeout of identify in this conversation. */
-    final TimerTask identifyTimeoutTask = new IdentifyTimerTask();
+public class IdentifyingPillarsForGetFile extends IdentifyingState {
+    private final GetFileConversationContext context;
 
     /** 
      * The constructor for the indicated conversation.
-     * @param conversation The related conversation containing context information.
+     * @param context The related context related to the conversation containing information.
      */
-    public IdentifyingPillarsForGetFile(
-            SimpleGetFileConversation conversation) {
-        super(conversation);
+    public IdentifyingPillarsForGetFile(GetFileConversationContext context) {
+        this.context = context;
     }
 
-    /**
-     * Starts the identifying process by sending a <code>IdentifyPillarsForGetFileRequest</code> message.
-     * 
-     * Also sets up a timer task to avoid waiting to long for all the expected responses.
-     */
-    public void start() {
-        IdentifyPillarsForGetFileRequest identifyRequest = new IdentifyPillarsForGetFileRequest();
-        identifyRequest.setCorrelationID(conversation.getConversationID());
-        identifyRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        identifyRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        identifyRequest.setCollectionID(conversation.settings.getCollectionID());
-        identifyRequest.setFileID(conversation.fileID);
-        identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
-        identifyRequest.setTo(conversation.settings.getCollectionDestination());
-        identifyRequest.setFrom(conversation.clientID);
-
-        monitor.identifyPillarsRequestSent("Identifying pillars for getting file ");
-        messageSender.sendMessage(identifyRequest);
-
-        timer.schedule(identifyTimeoutTask,
-                conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());
-    }
-
-    /**
-     * Handles a reply for identifying the fastest pillar to deliver a given file.
-     * Removes the pillar responsible for the response from the outstanding list for the file in the reply. If no more
-     * pillars are outstanding, then the file is requested from fastest pillar.
-     *
-     * @param response The IdentifyPillarsForGetFileResponse to handle.
-     */
     @Override
-    public void onMessage(IdentifyPillarsForGetFileResponse response) {
-        try {
-            conversation.selector.processResponse(response);
-            monitor.pillarIdentified("Received IdentifyPillarsForGetFileResponse for file " + conversation.fileID + 
-                    " from " + response.getPillarID(), response.getPillarID());
-        } catch (UnexpectedResponseException e) {
-            monitor.invalidMessage("Unable to handle IdentifyPillarsForGetFileResponse, " + e.getMessage());
-        }
-
-        try {
-            if (conversation.selector.isFinished()) {
-                identifyTimeoutTask.cancel();
-                getFileFromSelectedPillar();
-            }
-        } catch (UnableToFinishException e) {
-            conversation.failConversation("Could not find a pillar able to get the requested file from.", e);
-        }
-    }
-    
-    @Override
-    public void onMessage(GetFileProgressResponse response) {
-        monitor.outOfSequenceMessage(
-                "Received GetFileProgressResponse from " + response.getPillarID() + " before sending GetFileRequest.");
-    }
-    
-    @Override
-    public void onMessage(GetFileFinalResponse response) {
-        monitor.outOfSequenceMessage(
-                "Received GetFileFinalResponse from " + response.getPillarID() + "  before sending GetFileRequest.");
+    public ComponentSelector getSelector() {
+        return context.getSelector();
     }
 
-    /**
-     * The timer task class for the outstanding identify requests. When the time is reached the selected pillar should
-     * be called requested for the delivery of the file.
-     */
-    private class IdentifyTimerTask extends TimerTask {
-        @Override
-        public void run() {
-            handleIdentificationTimeout();
-        }
-    }
-    
-    /**
-     * Encapsulates the functionality for handling a identification request timeout. An attempt will be made to continue 
-     * based on the partial result. If this isn't possible the conversation will fail. 
-     */
-    private void handleIdentificationTimeout() {
-        synchronized (conversation) {
-            if (conversation.conversationState == this) {
-                if (conversation.selector.getSelectedPillar() != null) {
-                    monitor.identifyPillarTimeout("Time has run out for selecting a pillar. " +
-                    		"The following pillars did't respond: " + 
-                            Arrays.toString(conversation.selector.getOutstandingPillars()) + 
-                            ". Using pillar based on uncomplete set of responses.");
-                    getFileFromSelectedPillar();
-                } else {
-                    conversation.failConversation(
-                            "Unable to select a pillar, time has run out. The following pillars did't respond: " + 
-                            Arrays.toString(conversation.selector.getOutstandingPillars()));
-                }
-            } else {
-                monitor.warning("Conversation(" + conversation.getConversationID() + ") identification timeout, but " +
-                		"the conversation state has already changed to " + conversation.conversationState);
-            }
-        }
+    @Override
+    public GeneralConversationState getOperationState() {
+        return new GettingFile(context, context.getSelector().getSelectedComponent());
     }
 
-    /**
-     * Used when a suitable pillar has been found to move on to the Getting file state.
-     */
-    private void getFileFromSelectedPillar() {
-        monitor.pillarSelected("Selected pillar " + conversation.selector.getSelectedPillar().getID() + 
-                " to get file from", conversation.selector.getSelectedPillar().getID());
-        identifyTimeoutTask.cancel();
-        GettingFile nextConversationState = new GettingFile(conversation);
-        conversation.conversationState = nextConversationState;
-        nextConversationState.start();
-    }
-    
     @Override
-    public boolean hasEnded() {
-        return false;
+    protected void sendRequest() {
+        IdentifyPillarsForGetFileRequest msg = new IdentifyPillarsForGetFileRequest();
+        initializeMessage(msg);
+        msg.setTo(context.getSettings().getCollectionDestination());
+        msg.setFileID(context.getFileID());
+        context.getMessageSender().sendMessage(msg);
+        context.getMonitor().identifyPillarsRequestSent("Identifying contributers for audit trails");
+        
     }
+
+    @Override
+    protected ConversationContext getContext() {
+        return context;
+    }
+
+    @Override
+    protected String getName() {
+        return "Identify pillars for GetFile";
+    }
+
 }
