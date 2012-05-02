@@ -24,36 +24,26 @@
  */
 package org.bitrepository.modify.deletefile;
 
-import java.util.Arrays;
-
-import javax.jms.JMSException;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.modify.deletefile.conversation.SimpleDeleteFileConversation;
-import org.bitrepository.client.conversation.FlowController;
+import org.bitrepository.client.AbstractClient;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
-import org.bitrepository.client.conversation.mediator.ConversationMediator;
+import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.modify.deletefile.conversation.DeleteFileConversationContext;
+import org.bitrepository.modify.deletefile.conversation.SimpleDeleteFileConversation;
+import org.bitrepository.modify.deletefile.selector.AllPillarsSelectorForDeleteFile;
+import org.bitrepository.modify.deletefile.selector.SpecificPillarSelectorForDeleteFile;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ConversationBasedDeleteFileClient implements DeleteFileClient {
+public class ConversationBasedDeleteFileClient extends AbstractClient implements DeleteFileClient {   
     /** The log for this class.*/
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    /** The mediator for the conversations for the PutFileClient.*/
-    private final ConversationMediator conversationMediator;
-    /** The message bus for communication.*/
-    private final MessageBus bus;
-    /** The settings. */
-    private Settings settings;
-    /** The client ID */
-    private final String clientID;
-    
     /**
      * Constructor.
      * @param messageBus The messagebus for communication.
@@ -61,12 +51,7 @@ public class ConversationBasedDeleteFileClient implements DeleteFileClient {
      */
     public ConversationBasedDeleteFileClient(MessageBus messageBus, ConversationMediator conversationMediator, 
             Settings settings, String clientID) {
-        ArgumentValidator.checkNotNull(messageBus, "messageBus");
-        ArgumentValidator.checkNotNull(settings, "settings");
-        this.conversationMediator = conversationMediator;;
-        this.bus = messageBus;
-        this.settings = settings;
-        this.clientID = clientID;
+        super(settings, conversationMediator, messageBus, clientID);
     }
     
     @Override
@@ -79,11 +64,13 @@ public class ConversationBasedDeleteFileClient implements DeleteFileClient {
         log.info("Requesting the deletion of the file '" + fileId + "' from the pillar '" + pillarId 
                 + "' with checksum '" + checksumForPillar + "', while requested checksum '" + checksumRequested 
                 + "'. And the audit trail information '" + auditTrailInformation + "'.");
-        SimpleDeleteFileConversation conversation = new SimpleDeleteFileConversation(bus, settings, fileId, 
-                Arrays.asList(new String[]{pillarId}), checksumForPillar, checksumRequested, eventHandler, 
-                new FlowController(settings), auditTrailInformation, clientID);
-        conversationMediator.addConversation(conversation);
-        conversation.startConversation();
+        
+        DeleteFileConversationContext context = new DeleteFileConversationContext(fileId, 
+                new SpecificPillarSelectorForDeleteFile(settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
+                        pillarId), 
+                checksumForPillar, checksumRequested, settings, messageBus, clientID, eventHandler, auditTrailInformation);
+        SimpleDeleteFileConversation conversation = new SimpleDeleteFileConversation(context);
+        startConversation(conversation);
     }
     
     @Override
@@ -95,21 +82,12 @@ public class ConversationBasedDeleteFileClient implements DeleteFileClient {
         log.info("Requesting the deletion of the file '" + fileId + "' from all pillars with checksum '" 
         + checksumForPillar + "', while requested checksum '" + checksumRequested 
         + "'. And the audit trail information '" + auditTrailInformation + "'.");
-        SimpleDeleteFileConversation conversation = new SimpleDeleteFileConversation(bus, settings, fileId, 
-                settings.getCollectionSettings().getClientSettings().getPillarIDs(), checksumForPillar, 
-                checksumRequested, eventHandler, new FlowController(settings), auditTrailInformation, clientID);
-        conversationMediator.addConversation(conversation);
-        conversation.startConversation();
-    }
-    
-    @Override
-    public void shutdown() {
-        try {
-            bus.close();
-            // TODO Kill any lingering timer threads
-        } catch (JMSException e) {
-            log.info("Error during shutdown of messagebus ", e);
-        }
+        
+        DeleteFileConversationContext context = new DeleteFileConversationContext(fileId, 
+                new AllPillarsSelectorForDeleteFile(settings.getCollectionSettings().getClientSettings().getPillarIDs()), 
+                checksumForPillar, checksumRequested, settings, messageBus, clientID, eventHandler, auditTrailInformation);
+        SimpleDeleteFileConversation conversation = new SimpleDeleteFileConversation(context);
+        startConversation(conversation);
     }
     
 }
