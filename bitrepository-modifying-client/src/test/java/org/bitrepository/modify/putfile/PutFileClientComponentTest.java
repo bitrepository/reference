@@ -205,7 +205,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Do not respond. Just await the timeout.", 
                 "Should make send a Failure event to the eventhandler.");
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);        
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_TIMEOUT);        
     }
 
     @Test(groups={"regressiontest"})
@@ -409,9 +409,10 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 + OperationEventType.COMPONENT_FAILED + "', '" + OperationEventType.IDENTIFICATION_COMPLETE + "', '"
                 + OperationEventType.WARNING + "', '" + OperationEventType.COMPLETE + "'");
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
+        /*Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.WARNING);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);*/
     }
 
     /**

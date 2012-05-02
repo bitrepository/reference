@@ -31,11 +31,14 @@ import java.util.UUID;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.client.conversation.AbstractConversation;
+import org.bitrepository.client.conversation.ConversationEventMonitor;
 import org.bitrepository.client.conversation.ConversationState;
+import org.bitrepository.client.conversation.FinishedState;
 import org.bitrepository.client.conversation.FlowController;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.protocol.messagebus.MessageSender;
@@ -48,101 +51,53 @@ import org.bitrepository.protocol.messagebus.MessageSender;
  * has talked about.
  */
 public class SimplePutFileConversation extends AbstractConversation {
-    /** The sender to use for dispatching messages */
-    final MessageSender messageSender;
-    /** The configuration specific to the SLA related to this conversion. */
-    final Settings settings;
-    
-    /** The URL which the pillar should download the file from. */
-    final URL downloadUrl;
-    /** The ID of the file which should be downloaded from the supplied URL. */
-    final String fileID;
-    /** The size of the file to be put.*/
-    final BigInteger fileSize;
-    /** The state of the PutFile transaction.*/
-    PutFileState conversationState;
-    /** The checksum of the file, which the pillars should download. Used for validation at pillar-side.*/
-    final ChecksumDataForFileTYPE validationChecksums;
-    /** The checksums to request from the pillar.*/
-    final ChecksumSpecTYPE requestChecksums;
-    /** The audit trail information for this conversation.*/
-    final String auditTrailInformation;
-    /** The client ID */
-    final String clientID;
+    private final PutFileConversationContext context;
     
     /**
      * Constructor.
-     * Initializes all the variables for the conversation.
-     *
-     * @param messageSender The instance to send the messages with.
-     * @param settings The settings of the client.
-     * @param urlToDownload The URL where the file to be 'put' is located.
-     * @param fileId The id of the file.
-     * @param sizeOfFile The size of the file.
-     * @param checksumForValidationAtPillar The checksum of the file to upload. Used at pillar-side for validation.
-     * Can be null, if no pillar-side validation is wanted.
-     * @param checksumRequestsForValidation The checksum requested for client-side validation of correct put.
-     * Can be null, if no client-side validation is wanted.
-     * @param eventHandler The event handler.
-     * @param auditTrailInformation The audit trail information for the conversation.
+     * Initializes the conversation.
+     * @param context The conversation's context.
      */
-    public SimplePutFileConversation(MessageSender messageSender,
-            Settings settings,
-            URL urlToDownload,
-            String fileId,
-            BigInteger sizeOfFile,
-            ChecksumDataForFileTYPE checksumForValidationAtPillar,
-            ChecksumSpecTYPE checksumRequestsForValidation,
-            EventHandler eventHandler,
-            FlowController flowController,
-            String auditTrailInformation, 
-            String clientID) {
-        super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
-        
-        this.messageSender = messageSender;
-        this.settings = settings;
-        this.downloadUrl = urlToDownload;
-        this.fileID = fileId;
-        this.fileSize = sizeOfFile;
-        this.validationChecksums = checksumForValidationAtPillar;
-        this.requestChecksums = checksumRequestsForValidation;
-        conversationState = new IdentifyPillarsForPutFile(this);
-        this.auditTrailInformation = auditTrailInformation;
-        this.clientID = clientID;
-    }
-    
-    @Override
-    public boolean hasEnded() {
-        return conversationState instanceof PutFileFinished;
-    }
-    
-    public URL getResult() {
-        return downloadUrl;
-    }
-  
-    @Override
-    public synchronized void onMessage(PutFileFinalResponse message) {
-        conversationState.onMessage(message);
-    }
-    
-    @Override
-    public synchronized void onMessage(PutFileProgressResponse message) {
-        conversationState.onMessage(message);
-    }
-    
-    @Override
-    public synchronized void onMessage(IdentifyPillarsForPutFileResponse message) {
-        conversationState.onMessage(message);
+    public SimplePutFileConversation(PutFileConversationContext context) {
+        super(context.getMessageSender(), context.getConversationID(), null, null);
+        this.context = context;
+        context.setState(new IdentifyPillarsForPutFile(context));
     }
 
+
     @Override
-    public void endConversation() {
-        conversationState.endConversation();
+    public void onMessage(Message message) {
+        context.getState().handleMessage(message);
     }
 
     @Override
     public ConversationState getConversationState() {
-        return conversationState;
+        // Only used to start conversation, which has been oveloaded. This is because the current parent state isn't of
+        // type ConversationState in the AuditTrailCLient.
+        return null;
+    }
+
+    @Override
+    public void startConversation() {
+        context.getState().start();
+    }
+
+    @Override
+    public void endConversation() {
+        context.setState(new FinishedState(context));
+    }
+
+    /**
+     * Override to use the new context provided monitor.
+     * @return The monitor for distributing update information
+     */
+    public ConversationEventMonitor getMonitor() {
+        return context.getMonitor();
+    }
+
+    @Override
+    public boolean hasEnded() {
+        return context.getState() instanceof FinishedState;
     }
     
 }

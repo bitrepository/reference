@@ -36,8 +36,8 @@ import java.util.List;
  */
 public class MultipleComponentSelector implements ComponentSelector {
     /** Used for tracking who has answered. */
-    private final ContributorResponseStatus responseStatus;
-    private final List<SelectedPillarInfo> selectedComponents = new LinkedList<SelectedPillarInfo>();
+    protected final ContributorResponseStatus responseStatus;
+    protected final List<SelectedPillarInfo> selectedComponents = new LinkedList<SelectedPillarInfo>();
 
     /**
      * @param pillarsWhichShouldRespond The IDs of the pillars to be selected.

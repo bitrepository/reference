@@ -28,6 +28,7 @@ import java.net.URL;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.client.BitrepositoryClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
 
@@ -35,7 +36,7 @@ import org.bitrepository.client.exceptions.OperationFailedException;
  * Interface for the put client.
  * TODO handle the cases with validation checksums (pillar-side, client-side and both?).
  */
-public interface PutFileClient {
+public interface PutFileClient extends BitrepositoryClient {
     /**
      * Method for performing the put operation.
      * 
@@ -52,8 +53,4 @@ public interface PutFileClient {
             ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation)
                     throws OperationFailedException;
     
-    /**
-     * Method to perform a graceful shutdown of the client.
-     */
-    void shutdown();
 }

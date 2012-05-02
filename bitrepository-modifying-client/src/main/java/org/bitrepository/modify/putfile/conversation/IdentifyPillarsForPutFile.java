@@ -24,153 +24,66 @@
  */
 package org.bitrepository.modify.putfile.conversation;
 
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
-import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.client.eventhandler.OperationFailedEvent;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
-import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
+import org.bitrepository.client.conversation.ConversationContext;
+import org.bitrepository.client.conversation.FinishedState;
+import org.bitrepository.client.conversation.GeneralConversationState;
+import org.bitrepository.client.conversation.IdentifyingState;
+import org.bitrepository.client.conversation.selector.ComponentSelector;
+import org.bitrepository.client.conversation.selector.MultipleComponentSelector;
 
 /**
  * The first state of the PutFile communication. The identification of the pillars involved.
  */
-public class IdentifyPillarsForPutFile extends PutFileState {
-    /** Defines that the timer is a daemon thread. */
-    private static final Boolean TIMER_IS_DAEMON = true;
-    /** The timer. Schedules conversation timeouts for this conversation. */
-    final Timer timer = new Timer(TIMER_IS_DAEMON);
-
-    /**
-     * The task to handle the timeouts for the identification.
-     */
-    private TimerTask timerTask = new IdentifyTimerTask();
-    
-    /** Response status for the pillars.*/
-    final ContributorResponseStatus identifyResponseStatus;
-
-    /**
-     * Mapping between the identified pillars and their destinations.
-     */
-    Map<String, String> pillarDestinations = new HashMap<String, String>();
+public class IdentifyPillarsForPutFile extends IdentifyingState {
+    private final PutFileConversationContext context;
+    private final MultipleComponentSelector selector;
 
     /**
      * Constructor.
      * @param conversation The conversation in this given state.
      */
-    public IdentifyPillarsForPutFile(SimplePutFileConversation conversation) {
-        super(conversation);
-        this.identifyResponseStatus = new ContributorResponseStatus(
-                conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs());
-    }
-
-    /**
-     * Starts the conversation by sending the request for identification of the pillars to perform the put operation.
-     */
-    public void start() {
-        IdentifyPillarsForPutFileRequest identifyRequest = new IdentifyPillarsForPutFileRequest();
-        identifyRequest.setCorrelationID(conversation.getConversationID());
-        identifyRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        identifyRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        identifyRequest.setCollectionID(conversation.settings.getCollectionID());
-        identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
-        identifyRequest.setTo(conversation.settings.getCollectionDestination());
-        identifyRequest.setFileID(conversation.fileID);
-        identifyRequest.setAuditTrailInformation(conversation.auditTrailInformation);
-        identifyRequest.setFileSize(conversation.fileSize);
-        identifyRequest.setFrom(conversation.clientID);
-        conversation.messageSender.sendMessage(identifyRequest);
-
-        monitor.identifyPillarsRequestSent("Identifying pillars for put file " + conversation.fileID);
-        timer.schedule(timerTask, 
-                conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());
+    public IdentifyPillarsForPutFile(PutFileConversationContext context) {
+        this.context = context;
+        selector = new PutFilePillarSelector(context.getSettings().getCollectionSettings().getClientSettings().getPillarIDs());
+    
     }
 
     @Override
-    public synchronized void onMessage(IdentifyPillarsForPutFileResponse response) {
-        try {
-            identifyResponseStatus.responseReceived(response.getPillarID());
-            validateIdentificationResponse(response);
-        } catch (UnexpectedResponseException e) {
-            monitor.invalidMessage("Unexcepted response from " + response.getPillarID() + " : " + e.getMessage());
-        }
-
-        // Check if ready to go to next state.
-        if(identifyResponseStatus.haveAllPillarResponded()) {
-            monitor.pillarSelected("Identified all pillars for put. Starting to put.", 
-                    conversation.settings.getCollectionSettings().getClientSettings().getPillarIDs().toString());
-            
-            // go to next state.
-            PuttingFile newState = new PuttingFile(conversation, pillarDestinations);
-            conversation.conversationState = newState;
-            newState.start();
-        }
+    public ComponentSelector getSelector() {
+        return selector;
     }
-    
-    /**
-     * Method for validating the ResponseInfo from a pillar.
-     * If the response is positive, then the pillar is selected for the PutFile operation. 
-     * @param response The identification response to validate.
-     */
-    private void validateIdentificationResponse(IdentifyPillarsForPutFileResponse response) {
-        ResponseInfo rInfo = response.getResponseInfo();
-        
-        if(rInfo.getResponseCode() == ResponseCode.IDENTIFICATION_POSITIVE) {
-            monitor.debug("Positive identification from pillar '" + response.getPillarID() + "' received: " + rInfo);
-            
-            pillarDestinations.put(response.getPillarID(), response.getReplyTo());
-            monitor.pillarIdentified("Identified the pillar '" + response.getPillarID() + "' for Put.", 
-                    response.getPillarID());
+
+    @Override
+    public GeneralConversationState getOperationState() {
+        if(selector.getOutstandingComponents().isEmpty()) {
+            return new PuttingFile(context, selector.getSelectedComponents());
         } else {
-            monitor.contributorFailed("Negative identification from pillar '" + response.getPillarID() + "' received: "
-                                      + rInfo);
+            context.getMonitor().operationFailed("Failed to put file, the following pillars didn't respond: " + 
+                    selector.getOutstandingComponents());
+            return new FinishedState(context);
         }
     }
 
-    /**
-     * Method for handling the PutFileProgressResponse message.
-     * No such message should be received!
-     * @param response The PutFileProgressResponse message to handle.
-     */
     @Override
-    public synchronized void onMessage(PutFileProgressResponse response) {
-        monitor.outOfSequenceMessage("Received PutFileProgressResponse from " + response.getPillarID() + 
-                " before sending PutFileRequest.");
+    protected void sendRequest() {
+        IdentifyPillarsForPutFileRequest msg = new IdentifyPillarsForPutFileRequest();
+        initializeMessage(msg);
+        msg.setFileID(context.getFileID());
+        msg.setFileSize(context.getFileSize());
+        msg.setTo(context.getSettings().getCollectionDestination());
+        context.getMessageSender().sendMessage(msg);
+        context.getMonitor().identifyPillarsRequestSent("Identifying pillars for put file");
     }
 
-    /**
-     * Method for handling the PutFileFinalResponse message.
-     * No such message should be received!
-     * @param response The PutFileFinalResponse message to handle.
-     */
     @Override
-    public synchronized void onMessage(PutFileFinalResponse response) {
-        monitor.outOfSequenceMessage("Received PutFileFinalResponse from " + response.getPillarID() + 
-                " before sending PutFileRequest.");
+    protected ConversationContext getContext() {
+        return context;
     }
 
-    /**
-     * Class for handling the cases, when the identification time runs out.
-     */
-    private class IdentifyTimerTask extends TimerTask {
-        @Override
-        public void run() {
-        	conversation.failConversation(
-        	        new OperationFailedEvent("Timeout for the identification of the pillars for the PutFile operation."));
-        }
-    }
-    
     @Override
-    public boolean hasEnded() {
-        return false;
+    protected String getName() {
+        return "Identifying pillars for put file";
     }
+
 }

@@ -33,7 +33,9 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.modify.putfile.conversation.PutFileConversationContext;
 import org.bitrepository.modify.putfile.conversation.SimplePutFileConversation;
+import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.FlowController;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
@@ -45,19 +47,10 @@ import org.slf4j.LoggerFactory;
 /**
  * A simple implementation of the PutClient.
  */
-public class ConversationBasedPutFileClient implements PutFileClient {
+public class ConversationBasedPutFileClient extends AbstractClient implements PutFileClient {
     /** The log for this class.*/
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    
-    /** The mediator for the conversations for the PutFileClient.*/
-    private final ConversationMediator conversationMediator;
-    /** The message bus for communication.*/
-    private final MessageBus bus;
-    /** The settings. */
-    private Settings settings;
-    /** The client ID */
-    private final String clientID;
-    
+       
     /**
      * Constructor.
      * @param messageBus The messagebus for communication.
@@ -65,12 +58,7 @@ public class ConversationBasedPutFileClient implements PutFileClient {
      */
     public ConversationBasedPutFileClient(MessageBus messageBus, ConversationMediator conversationMediator, 
             Settings settings, String clientID) {
-        ArgumentValidator.checkNotNull(messageBus, "messageBus");
-        ArgumentValidator.checkNotNull(settings, "settings");
-        this.conversationMediator = conversationMediator;;
-        this.bus = messageBus;
-        this.settings = settings;
-        this.clientID = clientID;
+        super(settings, conversationMediator, messageBus, clientID);
     }
     
     @Override
@@ -82,20 +70,12 @@ public class ConversationBasedPutFileClient implements PutFileClient {
         ArgumentValidator.checkNotNegative(sizeOfFile, "long sizeOfFile");
         // TODO add potential regex from collection settings.
         
-        SimplePutFileConversation conversation = new SimplePutFileConversation(bus, settings, url, fileId, 
-                    BigInteger.valueOf(sizeOfFile), checksumForValidationAtPillar, checksumRequestsForValidation, 
-                    eventHandler, new FlowController(settings), auditTrailInformation, clientID);
-        conversationMediator.addConversation(conversation);
-        conversation.startConversation();
+        PutFileConversationContext context = new PutFileConversationContext(fileId, url, sizeOfFile, 
+                checksumForValidationAtPillar, checksumRequestsForValidation, settings, messageBus, 
+                clientID, eventHandler, auditTrailInformation);
+        
+        SimplePutFileConversation conversation = new SimplePutFileConversation(context);
+        startConversation(conversation);
     }
-    
-    @Override
-    public void shutdown() {
-        try {
-            bus.close();
-            //TODO Consider if we can kill possible timer object too, they might be lingering somewhere in the background
-        } catch (JMSException e) {
-            log.info("Error during shutdown of messagebus ", e);
-        }
-    }
+
 }
