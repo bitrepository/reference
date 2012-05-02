@@ -24,9 +24,6 @@
  */
 package org.bitrepository.alarm.alarmservice;
 
-import java.util.Iterator;
-import java.util.concurrent.ArrayBlockingQueue;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -76,6 +73,6 @@ public class RestAlarmService {
     @Path("/getFullAlarmList/")
     @Produces("text/html")
     public String getFullAlarmList() {
-        return alarmService.extractAlarms(null, null, null, null, null).toString();     
+        return alarmService.extractAlarms(null, null, null, null, null, null).toString();     
     }
 }

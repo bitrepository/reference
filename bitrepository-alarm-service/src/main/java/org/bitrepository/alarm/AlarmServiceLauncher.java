@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.bitrepository.alarm.handling.handlers.AlarmStorer;
+import org.bitrepository.alarm.store.AlarmServiceDAO;
 import org.bitrepository.alarm.store.AlarmStore;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
@@ -108,11 +109,10 @@ public class AlarmServiceLauncher {
                 ContributorMediator contributorMediator = new SimpleContributorMediator(messageBus, settings, 
                         settings.getComponentID(), settings.getReceiverDestination());
                 
-                // TODO
-                AlarmStore store = null;
-                
+                AlarmStore store = new AlarmServiceDAO(settings);
                 alarmService = new BasicAlarmService(messageBus, settings, store, contributorMediator);
                 
+                // Add the default handler for putting the alarms into the database.
                 alarmService.addHandler(new AlarmStorer(store));
             } catch (IOException e) {
                 throw new RuntimeException(e);

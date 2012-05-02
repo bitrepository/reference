@@ -271,6 +271,13 @@
         <xs:sequence>
           <xs:element name="ID" type="xs:string" />
           <xs:element ref="MailingConfiguration" minOccurs="0"/>
+          <xs:element name="AlarmServiceDatabaseUrl" type="xs:string">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The url to the database, which contains the alarms for the service.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
         </xs:sequence>
       </xs:complexType>
     </xs:element>
@@ -299,7 +306,7 @@
               </xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element name="AuditContributerDatabaseUrl" type="xs:string">
+          <xs:element name="AuditTrailServiceDatabaseUrl" type="xs:string">
             <xs:annotation>
               <xs:documentation xml:lang="en">
                 The url to the database, which contains the audit data for the service.

@@ -62,7 +62,7 @@ public class AuditDatabaseTester extends ExtendedTestCase {
         Date restrictionDate = new Date(123456789); // Sometime between epoch and now!
         
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
-        settings.getReferenceSettings().getIntegrityServiceSettings().setDatabaseUrl(DATABASE_URL);
+        settings.getReferenceSettings().getAuditTrailServiceSettings().setAuditTrailServiceDatabaseUrl(DATABASE_URL);
         AuditTrailServiceDAO database = new AuditTrailServiceDAO(settings);
         clearDatabase(DATABASE_URL);
 

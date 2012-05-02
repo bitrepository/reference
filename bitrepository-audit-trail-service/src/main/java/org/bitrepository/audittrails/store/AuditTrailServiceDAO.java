@@ -62,7 +62,6 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
      */
     public AuditTrailServiceDAO(Settings settings) {
         ArgumentValidator.checkNotNull(settings, "settings");
-        
         this.settings = settings;
         
         // TODO make a better instantiation, which is not depending on Derby.
@@ -99,11 +98,11 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     protected Connection getConnection() {
         try { 
             Connection dbConnection = dbConnector.getEmbeddedDBConnection(
-                    settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditContributerDatabaseUrl());
+                    settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabaseUrl());
             return dbConnection;
         } catch (Exception e) {
             throw new IllegalStateException("Could not instantiate the database with the url '"
-                    + settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditContributerDatabaseUrl() + "'", e);
+                    + settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabaseUrl() + "'", e);
         }
     }
     

@@ -44,10 +44,11 @@ public interface AlarmStore {
      * @param minDate [OPTIONAL] The earliest date for the alarms.
      * @param maxDate [OPTIONAL] The latest date for the alarms.
      * @param fileID [OPTIONAL] The id of the file, which the alarms are connected.
+     * @param count [OPTIONAL] The maximum number of alarms to retrieve from the store.
      * @return The requested collection of alarms from the store.
      */
     Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate, 
-            String fileID);
+            String fileID, Integer count);
 //    private Logger log = LoggerFactory.getLogger(this.getClass());
 //    private AlarmService alarmService;
 //    private String alarmStoreFile;

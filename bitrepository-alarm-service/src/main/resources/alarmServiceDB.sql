@@ -20,7 +20,7 @@
 -- #L%
 ---
 
-connect 'jdbc:derby:auditcontributerdb;create=true';
+connect 'jdbc:derby:alarmservicedb;create=true';
 
 --**************************************************************************--
 -- Name:        tableversions
