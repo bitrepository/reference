@@ -24,137 +24,55 @@
  */
 package org.bitrepository.modify.replacefile.conversation;
 
-import java.net.URL;
-import java.util.Collection;
-import java.util.UUID;
-
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
-import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
-import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.modify.replacefile.pillarselector.PillarSelectorForReplaceFile;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.conversation.AbstractConversation;
 import org.bitrepository.client.conversation.ConversationState;
-import org.bitrepository.client.conversation.FlowController;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.client.conversation.FinishedState;
 
 /**
  * A conversation for the ReplaceFile operation.
  * Logic for behaving sanely in ReplaceFile conversations.
  */
 public class SimpleReplaceFileConversation extends AbstractConversation {
-    /** The sender to use for dispatching messages */
-    final MessageSender messageSender;
-    /** The configuration specific to the SLA related to this conversion. */
-    final Settings settings;
-    
-    /** The ID of the file which should be replaced. */
-    final String fileID;
-    /** The ID of the pillars to replace the file from. */
-    final Collection<String> pillarId;
-    /** The checksums specification for the pillar.*/
-    final ChecksumDataForFileTYPE checksumForFileToDelete;
-    /** The checksum specification requested from the pillar.*/
-    final ChecksumSpecTYPE checksumRequestedForFileToDelete;
-    /** The url of the new file to replace the old one.*/
-    final URL urlOfNewFile;
-    /** The size of the new file.*/
-    final long sizeOfNewFile;
-    /** The checksum for validating the new file at pillar-side.*/
-    final ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar;
-    /** The request for a checksum of the new file for client-size validation.*/
-    final ChecksumSpecTYPE checksumRequestForNewFile;
-    /** The state of the PutFile transaction.*/
-    ReplaceFileState conversationState;
-    /** The audit trail information for the conversation.*/
-    final String auditTrailInformation;
-    /** The pillar selector*/
-    final PillarSelectorForReplaceFile pillarSelector;
-    /** The client ID */
-    final String clientID;
+    private final ReplaceFileConversationContext context;
 
     /**
      * Constructor.
      * Initializes all the variables for the conversation.
      * 
-     * @param messageSender The instance to send the messages with.
-     * @param settings The settings of the client.
-     * @param fileId The id of the file.
-     * @param pillarIds The id of the pillars perform the operation upon.
-     * @param checksumOfFileToDelete The checksum of the file to delete.
-     * @param checksumSpecForPillar The checksum specifications for the file to delete.
-     * @param eventHandler The event handler.
-     * @param flowController The flow controller for the conversation.
-     * @param auditTrailInformation The audit trail information for the conversation.
+     * @param context The conversation's context.
      */
-    public SimpleReplaceFileConversation(MessageSender messageSender,
-            Settings settings,
-            String fileId,
-            Collection<String> pillarIds,
-            ChecksumDataForFileTYPE checksumSpecForPillar,
-            ChecksumSpecTYPE checksumRequestedForFileToDelete,
-            URL url,
-            long sizeOfNewFile,
-            ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar,
-            ChecksumSpecTYPE checksumRequestForNewFile,
-            String clientID,
-            EventHandler eventHandler,
-            FlowController flowController,
-            String auditTrailInformation) {
-        super(messageSender, UUID.randomUUID().toString(), eventHandler, flowController);
-        ArgumentValidator.checkNotNull(checksumForNewFileValidationAtPillar, 
-                "ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar");
-        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
-        ArgumentValidator.checkNotNullOrEmpty(pillarIds, "Collection<String> pillarIds");
-        ArgumentValidator.checkNotNull(url, "url");
-        
-        this.messageSender = messageSender;
-        this.settings = settings;
-        this.fileID = fileId;
-        this.pillarId = pillarIds;
-        this.checksumForFileToDelete = checksumSpecForPillar;
-        this.checksumRequestedForFileToDelete = checksumRequestedForFileToDelete;
-        this.urlOfNewFile = url;
-        this.sizeOfNewFile = sizeOfNewFile;
-        this.checksumForNewFileValidationAtPillar = checksumForNewFileValidationAtPillar;
-        this.checksumRequestForNewFile = checksumRequestForNewFile;
-        this.auditTrailInformation = auditTrailInformation;
-        this.clientID = clientID;
-        conversationState = new IdentifyPillarsForReplaceFile(this);
-        pillarSelector = new PillarSelectorForReplaceFile(pillarIds);
-    }
-    
-    @Override
-    public synchronized void onMessage(IdentifyPillarsForReplaceFileResponse message) {
-        conversationState.onMessage(message);
-    }
-    
-    @Override
-    public synchronized void onMessage(ReplaceFileProgressResponse message) {
-        conversationState.onMessage(message);
-    }
-    
-    @Override
-    public synchronized void onMessage(ReplaceFileFinalResponse message) {
-        conversationState.onMessage(message);
-    }
-
-    @Override
-    public boolean hasEnded() {
-        return conversationState instanceof ReplaceFileFinished;
-    }
-    
-    @Override
-    public ConversationState getConversationState() {
-        return conversationState;
+    public SimpleReplaceFileConversation(ReplaceFileConversationContext context) {
+        super(context.getMessageSender(), context.getConversationID(), null, null);
+        this.context = context;
+        context.setState(new IdentifyPillarsForReplaceFile(context));
     }
     
     @Override
     public void endConversation() {
-        conversationState.endConversation();
+        context.setState(new FinishedState(context));       
     }
+
+    @Override
+    public void onMessage(Message message) {
+        context.getState().handleMessage(message);
+    }
+    
+    @Override
+    public boolean hasEnded() {
+        return context.getState() instanceof FinishedState;
+    }
+
+    @Override
+    public ConversationState getConversationState() {
+        // Only used to start conversation, which has been oveloaded. This is because the current parent state isn't of
+        // type ConversationState in the AuditTrailCLient.
+        return null;
+    }
+    
+    @Override
+    public void startConversation() {
+        context.getState().start();
+    }
+
 }

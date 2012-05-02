@@ -24,131 +24,54 @@
  */
 package org.bitrepository.modify.replacefile.conversation;
 
-import java.math.BigInteger;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
-import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
-import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.client.eventhandler.OperationFailedEvent;
-import org.bitrepository.client.exceptions.NegativeResponseException;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.conversation.ConversationContext;
+import org.bitrepository.client.conversation.GeneralConversationState;
+import org.bitrepository.client.conversation.IdentifyingState;
+import org.bitrepository.client.conversation.selector.ComponentSelector;
 
 /**
  * The first state of the ReplaceFile communication. The identification of the pillars involved.
  */
-public class IdentifyPillarsForReplaceFile extends ReplaceFileState {
-    /** Defines that the timer is a daemon thread. */
-    private static final Boolean TIMER_IS_DAEMON = true;
-    /** The timer. Schedules conversation timeouts for this conversation. */
-    final Timer timer = new Timer(TIMER_IS_DAEMON);
-    /** The task to handle the timeouts for the identification. */
-    private TimerTask identifyTimeoutTask = new IdentifyTimerTask();
-    
+public class IdentifyPillarsForReplaceFile extends IdentifyingState {
+    private final ReplaceFileConversationContext context;
+
     /**
      * Constructor.
-     * @param conversation The conversation in this given state.
+     * @param context The conversation's context.
      */
-    public IdentifyPillarsForReplaceFile(SimpleReplaceFileConversation conversation) {
-        super(conversation);
+    public IdentifyPillarsForReplaceFile(ReplaceFileConversationContext context) {
+        this.context = context;
     }
-    
-    /**
-     * Starts the conversation by sending the request for identification of the pillars to perform the ReplaceFile
-     * operation.
-     */
-    public void start() {
-        IdentifyPillarsForReplaceFileRequest identifyRequest = new IdentifyPillarsForReplaceFileRequest();
-        identifyRequest.setCorrelationID(conversation.getConversationID());
-        identifyRequest.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        identifyRequest.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        identifyRequest.setCollectionID(conversation.settings.getCollectionID());
-        identifyRequest.setFileID(conversation.fileID);
-        identifyRequest.setAuditTrailInformation(conversation.auditTrailInformation);
-        identifyRequest.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
-        identifyRequest.setTo(conversation.settings.getCollectionDestination());
-        identifyRequest.setFrom(conversation.clientID);
-        
-        monitor.identifyPillarsRequestSent("Identifying pillars for ReplaceFile '" + conversation.fileID + "'");
-        conversation.messageSender.sendMessage(identifyRequest);
-        timer.schedule(identifyTimeoutTask, 
-                conversation.settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue());
-    }
-    
+
     @Override
-    public synchronized void onMessage(IdentifyPillarsForReplaceFileResponse response) {
-        try {
-            conversation.pillarSelector.processResponse(response);
-            monitor.pillarIdentified("Received IdentifyPillarsForReplaceFileResponse for '" + response.getFileID() + 
-                    "' from '" + response.getPillarID() + "' with response '" + 
-                    response.getResponseInfo().getResponseText() + "'", response.getPillarID());
-        } catch (UnexpectedResponseException e) {
-            monitor.debug("Unexpected IdentifyPillarsForReplaceFileResponse", e);
-        } catch (NegativeResponseException e) {
-            monitor.contributorFailed("Negativ IdentifyPillarsForReplaceFileResponse from pillar", 
-                    response.getPillarID(), e);
-        }
-        
-        if (conversation.pillarSelector.isFinished()) {
-            identifyTimeoutTask.cancel();
-            
-            if (conversation.pillarSelector.getSelectedPillars().isEmpty()) {
-                conversation.failConversation("Unable to replace file, no pillars were identified");
-            }
-            monitor.pillarSelected("Identified pillars for replace file", 
-                    conversation.pillarSelector.getSelectedPillars().toString());
-            replaceFileAtSelectedPillar();
-        }
+    public ComponentSelector getSelector() {
+        return context.getSelector();
     }
-    
-    /**
-     * Method for handling the ReplaceFileProgressResponse message.
-     * No such message should be received!
-     * @param response The ReplaceFileProgressResponse message to handle.
-     */
+
     @Override
-    public synchronized void onMessage(ReplaceFileProgressResponse response) {
-        monitor.outOfSequenceMessage("Received ReplaceFileProgressResponse from " + response.getPillarID() + 
-                " before sending ReplaceFileRequest.");
+    public GeneralConversationState getOperationState() {
+        return new ReplacingFile(context, context.getSelector().getSelectedComponents());
     }
-    
-    /**
-     * Method for handling the ReplaceFileFinalResponse message.
-     * No such message should be received!
-     * @param response The ReplaceFileFinalResponse message to handle.
-     */
+
     @Override
-    public synchronized void onMessage(ReplaceFileFinalResponse response) {
-        monitor.outOfSequenceMessage("Received ReplaceFileFinalResponse from " + response.getPillarID() + 
-                " before sending ReplaceFileRequest.");
+    protected void sendRequest() {
+        IdentifyPillarsForReplaceFileRequest msg = new IdentifyPillarsForReplaceFileRequest();
+        initializeMessage(msg);
+        msg.setFileID(context.getFileID());
+        msg.setTo(context.getSettings().getCollectionDestination());
+        context.getMessageSender().sendMessage(msg);
+        context.getMonitor().identifyPillarsRequestSent("Identifying contributers for replace file");
     }
-    
-    /**
-     * Method for moving to the next stage: ReplaceFile.
-     */
-    protected void replaceFileAtSelectedPillar() {
-        identifyTimeoutTask.cancel();
-        ReplacingFile nextConversationState = new ReplacingFile(conversation);
-        conversation.conversationState = nextConversationState;
-        nextConversationState.start();
-    }
-    
-    /**
-     * Class for handling the cases, when the identification time runs out.
-     */
-    private class IdentifyTimerTask extends TimerTask {
-        @Override
-        public void run() {
-            conversation.failConversation(new OperationFailedEvent(
-                    "Timeout for the identification of the pillars for the ReplaceFile operation."));
-        }
-    }
-    
+
     @Override
-    public boolean hasEnded() {
-        return false;
+    protected ConversationContext getContext() {
+        return context;
     }
+
+    @Override
+    protected String getName() {
+        return "Identifying pillars for replace file";
+    }
+    
 }

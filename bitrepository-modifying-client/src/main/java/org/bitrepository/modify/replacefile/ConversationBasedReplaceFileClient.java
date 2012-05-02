@@ -33,7 +33,11 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.modify.replacefile.conversation.ReplaceFileConversationContext;
 import org.bitrepository.modify.replacefile.conversation.SimpleReplaceFileConversation;
+import org.bitrepository.modify.replacefile.pillarselector.AllPillarsSelectorForReplaceFile;
+import org.bitrepository.modify.replacefile.pillarselector.SpecificPillarSelectorForReplaceFile;
+import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.FlowController;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
@@ -45,18 +49,9 @@ import org.slf4j.LoggerFactory;
 /**
  * A conversation based implementation of the ReplaceFileClient.
  */
-public class ConversationBasedReplaceFileClient implements ReplaceFileClient {
+public class ConversationBasedReplaceFileClient extends AbstractClient implements ReplaceFileClient {
     /** The log for this class.*/
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-    /** The mediator for the conversations for the PutFileClient.*/
-    private final ConversationMediator conversationMediator;
-    /** The message bus for communication.*/
-    private final MessageBus bus;
-    /** The settings. */
-    private Settings settings;
-    /** The client ID */
-    private final String clientID;
 
     /**
      * Constructor.
@@ -65,13 +60,7 @@ public class ConversationBasedReplaceFileClient implements ReplaceFileClient {
      */
     public ConversationBasedReplaceFileClient(MessageBus messageBus, ConversationMediator conversationMediator, 
             Settings settings, String clientID) {
-        ArgumentValidator.checkNotNull(messageBus, "messageBus");
-        ArgumentValidator.checkNotNull(settings, "settings");
-        ArgumentValidator.checkNotNull(conversationMediator, "conversationMediator");
-        this.conversationMediator = conversationMediator;;
-        this.bus = messageBus;
-        this.settings = settings;
-        this.clientID = clientID;
+        super(settings, conversationMediator, messageBus, clientID);
     }
     
     @Override
@@ -89,12 +78,14 @@ public class ConversationBasedReplaceFileClient implements ReplaceFileClient {
                 + "', and the new file has the checksum '" + checksumForNewFileValidationAtPillar + "' and requesting "
                 + "the checksum '" + checksumRequestsForNewFile + "'. With the audittrail '" + auditTrailInformation 
                 + "'");
-        SimpleReplaceFileConversation conversation = new SimpleReplaceFileConversation(bus, settings, fileId, 
-                Arrays.asList(pillarId), checksumForDeleteAtPillar, checksumRequestedForDeletedFile, url, 
-                sizeOfNewFile, checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, clientID, 
-                eventHandler, new FlowController(settings), auditTrailInformation);
-        conversationMediator.addConversation(conversation);
-        conversation.startConversation();
+        ReplaceFileConversationContext context = new ReplaceFileConversationContext(fileId, 
+                new SpecificPillarSelectorForReplaceFile(
+                        settings.getCollectionSettings().getClientSettings().getPillarIDs(), pillarId), 
+                sizeOfNewFile, url, checksumForDeleteAtPillar, checksumRequestedForDeletedFile, 
+                checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, settings, messageBus, 
+                clientID, eventHandler, auditTrailInformation);
+        SimpleReplaceFileConversation conversation = new SimpleReplaceFileConversation(context);
+        startConversation(conversation);
     }
     
     @Override
@@ -111,22 +102,14 @@ public class ConversationBasedReplaceFileClient implements ReplaceFileClient {
                 + "', and the new file has the checksum '" + checksumForNewFileValidationAtPillar + "' and requesting "
                 + "the checksum '" + checksumRequestsForNewFile + "'. With the audittrail '" + auditTrailInformation 
                 + "'");
-        SimpleReplaceFileConversation conversation = new SimpleReplaceFileConversation(bus, settings, fileId, 
-                settings.getCollectionSettings().getClientSettings().getPillarIDs(), checksumForDeleteAtPillar, 
-                checksumRequestedForDeletedFile, url, sizeOfNewFile, checksumForNewFileValidationAtPillar, 
-                checksumRequestsForNewFile, clientID, eventHandler, new FlowController(settings), auditTrailInformation);
-        conversationMediator.addConversation(conversation);
-        conversation.startConversation();
-    }
-    
-    @Override
-    public void shutdown() {
-        try {
-            bus.close();
-            // TODO Kill any lingering timer threads
-        } catch (JMSException e) {
-            log.info("Error during shutdown of messagebus ", e);
-        }
+        ReplaceFileConversationContext context = new ReplaceFileConversationContext(fileId, 
+                new AllPillarsSelectorForReplaceFile(
+                        settings.getCollectionSettings().getClientSettings().getPillarIDs()), 
+                sizeOfNewFile, url, checksumForDeleteAtPillar, checksumRequestedForDeletedFile, 
+                checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, settings, messageBus, 
+                clientID, eventHandler, auditTrailInformation);
+        SimpleReplaceFileConversation conversation = new SimpleReplaceFileConversation(context);
+        startConversation(conversation);
     }
     
 }
