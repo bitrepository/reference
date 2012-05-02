@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.pillar.common.FileIDValidator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.utils.Base16Utils;
@@ -49,6 +50,8 @@ import org.slf4j.LoggerFactory;
 public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<DeleteFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
+    /** The file id validator for validating the file id.*/
+    private final FileIDValidator fileIdValidator;
     
     /**
      * Constructor.
@@ -57,6 +60,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
      */
     public DeleteFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
         super(context, referenceArchive);
+        this.fileIdValidator = new FileIDValidator(context);
     }
 
     @Override
@@ -89,6 +93,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
         if(message.getChecksumDataForExistingFile() != null) {
             validateChecksumSpecification(message.getChecksumDataForExistingFile().getChecksumSpec());
         }
+        fileIdValidator.validateFileID(message.getFileID());
 
         // Validate, that we have the requested file.
         if(!getArchive().hasFile(message.getFileID())) {

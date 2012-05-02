@@ -37,6 +37,7 @@ import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.pillar.common.FileIDValidator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
@@ -53,6 +54,8 @@ import org.slf4j.LoggerFactory;
 public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
+    /** The file id validator for validating the file id.*/
+    private final FileIDValidator fileIdValidator;
     
     /**
      * Constructor.
@@ -61,6 +64,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      */
     public GetFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
         super(context, referenceArchive);
+        this.fileIdValidator = new FileIDValidator(context);
     }
     
     @Override
@@ -89,7 +93,8 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
     protected void validateMessage(GetFileRequest message) throws RequestHandlerException {
         // Validate the message.
         validatePillarId(message.getPillarID());
-
+        fileIdValidator.validateFileID(message.getFileID());
+        
         // Validate, that we have the requested file.
         if(!getArchive().hasFile(message.getFileID())) {
             log.warn("The file '" + message.getFileID() + "' has been requested, but we do not have that file!");

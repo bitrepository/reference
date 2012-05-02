@@ -52,6 +52,7 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.pillar.common.FileIDValidator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
@@ -68,7 +69,9 @@ import org.xml.sax.SAXException;
 public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetFileIDsRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    
+    /** The file id validator for validating the file id.*/
+    private final FileIDValidator fileIdValidator;
+
     /**
      * Constructor.
      * @param context The context of the message handler.
@@ -76,6 +79,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      */
     public GetFileIDsRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
         super(context, referenceArchive);
+        this.fileIdValidator = new FileIDValidator(context);
     }
     
     @Override
@@ -105,7 +109,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      */
     private void validateMessage(GetFileIDsRequest message) throws RequestHandlerException {
         validatePillarId(message.getPillarID());
-
+        fileIdValidator.validateFileID(message.getFileIDs().getFileID());
         checkThatAllRequestedFilesAreAvailable(message);
 
         log.debug("Message '" + message.getCorrelationID() + "' validated and accepted.");

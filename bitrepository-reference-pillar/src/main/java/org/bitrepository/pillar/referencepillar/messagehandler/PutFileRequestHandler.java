@@ -38,6 +38,7 @@ import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.pillar.common.FileIDValidator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
@@ -57,6 +58,8 @@ import org.slf4j.LoggerFactory;
 public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
+    /** The file id validator for validating the file id.*/
+    private final FileIDValidator fileIdValidator;
     
     /**
      * Constructor.
@@ -65,6 +68,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
      */
     public PutFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
         super(context, referenceArchive);
+        this.fileIdValidator = new FileIDValidator(context);
     }
     
     @Override
@@ -95,6 +99,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
             validateChecksumSpecification(message.getChecksumDataForNewFile().getChecksumSpec());
         }
         validateChecksumSpecification(message.getChecksumRequestForNewFile());
+        fileIdValidator.validateFileID(message.getFileID());
         
         checkThatTheFileDoesNotAlreadyExist(message);
         checkSpaceForStoringNewFile(message);

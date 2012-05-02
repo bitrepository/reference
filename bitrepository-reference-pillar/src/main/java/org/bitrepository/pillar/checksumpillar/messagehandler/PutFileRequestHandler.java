@@ -1,6 +1,6 @@
 /*
  * #%L
- * bitrepository-access-client
+ * Bitrepository Reference Pillar
  * *
  * $Id: PutFileRequestHandler.java 687 2012-01-09 12:56:47Z ktc $
  * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/main/java/org/bitrepository/pillar/messagehandler/PutFileRequestHandler.java $
@@ -37,6 +37,7 @@ import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
+import org.bitrepository.pillar.common.FileIDValidator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
@@ -55,6 +56,8 @@ import org.slf4j.LoggerFactory;
 public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
+    /** The file id validator for validating the file id.*/
+    private final FileIDValidator fileIdValidator;
     
     /**
      * Constructor.
@@ -63,6 +66,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
      */
     public PutFileRequestHandler(PillarContext context, ChecksumStore refCache) {
         super(context, refCache);
+        this.fileIdValidator = new FileIDValidator(context);
     }
     
     @Override
@@ -93,6 +97,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
             validateChecksumSpec(message.getChecksumDataForNewFile().getChecksumSpec());
         }
         validateChecksumSpec(message.getChecksumRequestForNewFile());
+        fileIdValidator.validateFileID(message.getFileID());
         
         // verify, that we already have the file
         if(getCache().hasFile(message.getFileID())) {

@@ -38,6 +38,7 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
+import org.bitrepository.pillar.common.FileIDValidator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
@@ -65,6 +66,8 @@ import org.slf4j.LoggerFactory;
 public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<ReplaceFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
+    /** The file id validator for validating the file id.*/
+    private final FileIDValidator fileIdValidator;
     
     /**
      * Constructor.
@@ -73,6 +76,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
      */
     public ReplaceFileRequestHandler(PillarContext context, ChecksumStore refCache) {
         super(context, refCache);
+        this.fileIdValidator = new FileIDValidator(context);
     }
 
     @Override
@@ -112,6 +116,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         if(message.getChecksumDataForNewFile() != null) {
             validateChecksumSpec(message.getChecksumDataForNewFile().getChecksumSpec());
         }
+        fileIdValidator.validateFileID(message.getFileID());
         
         // Validate, that we have the requested file.
         if(!getCache().hasFile(message.getFileID())) {

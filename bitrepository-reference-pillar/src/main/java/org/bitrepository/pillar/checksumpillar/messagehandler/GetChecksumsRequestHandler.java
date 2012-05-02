@@ -51,6 +51,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
+import org.bitrepository.pillar.common.FileIDValidator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -67,7 +68,9 @@ import org.xml.sax.SAXException;
 public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<GetChecksumsRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    
+    /** The file id validator for validating the file id.*/
+    private final FileIDValidator fileIdValidator;
+
     /**
      * Constructor.
      * @param context The context of the message handler.
@@ -75,6 +78,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      */
     public GetChecksumsRequestHandler(PillarContext context, ChecksumStore refCache) {
         super(context,  refCache);
+        this.fileIdValidator = new FileIDValidator(context);
     }
 
     @Override
@@ -126,6 +130,8 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         if(fileID == null || fileID.isEmpty()) {
             return;
         }
+        
+        fileIdValidator.validateFileID(fileID);
         
         // if not missing, then all files have been found!
         if(!getCache().hasFile(fileID)) {

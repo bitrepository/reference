@@ -164,7 +164,7 @@ public class GetStatusOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("The pillar should send an alarm.", "Validate the AlarmDispatcher");
         synchronized(this) {
             try {
-                wait(250);
+                wait(5000);
             } catch (Exception e) { 
                 // ignore
             }
