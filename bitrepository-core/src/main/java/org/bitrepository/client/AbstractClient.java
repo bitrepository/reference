@@ -24,6 +24,7 @@
  */
 package org.bitrepository.client;
 
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.client.conversation.Conversation;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
@@ -50,6 +51,7 @@ public class AbstractClient implements BitrepositoryClient {
 
     
     public AbstractClient(Settings settings, ConversationMediator conversationMediator, MessageBus messageBus, String clientID) {
+        ArgumentValidator.checkNotNull(clientID, "clientID");
         this.settings = settings;
         this.messageBus = messageBus;
         this.conversationMediator = conversationMediator;
