@@ -24,24 +24,11 @@
  */
 package org.bitrepository.modify.putfile.conversation;
 
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.UUID;
-
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.Message;
-import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.client.conversation.AbstractConversation;
 import org.bitrepository.client.conversation.ConversationEventMonitor;
 import org.bitrepository.client.conversation.ConversationState;
 import org.bitrepository.client.conversation.FinishedState;
-import org.bitrepository.client.conversation.FlowController;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.protocol.messagebus.MessageSender;
 
 /**
  * A conversation for PutFile.
