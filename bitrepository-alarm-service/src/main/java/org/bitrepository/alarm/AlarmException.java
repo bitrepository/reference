@@ -27,6 +27,7 @@ package org.bitrepository.alarm;
 /**
  * Exception for the alarm module. Is thrown whenever a alarm cannot be handled.
  */
+@SuppressWarnings("serial")
 public class AlarmException extends RuntimeException {
     /**
      * Constructor for this exception with both text message and a cause.

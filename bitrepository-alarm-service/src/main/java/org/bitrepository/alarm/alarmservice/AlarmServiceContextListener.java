@@ -24,16 +24,14 @@
  */
 package org.bitrepository.alarm.alarmservice;
 
-import org.bitrepository.alarm.AlarmStoreFactory;
+import org.bitrepository.alarm.AlarmServiceLauncher;
 import org.bitrepository.service.AbstractBitrepositoryContextListener;
 import org.bitrepository.service.LifeCycledService;
-
 
 /**
  * The Context listener for the AlarmService
  */
 public class AlarmServiceContextListener extends AbstractBitrepositoryContextListener {
-
     @Override
     public String getSettingsParameter() {
         return "alarmServiceConfDir";
@@ -41,11 +39,11 @@ public class AlarmServiceContextListener extends AbstractBitrepositoryContextLis
 
     @Override
     public LifeCycledService getService() {
-        return AlarmStoreFactory.getAlarmStore();
+        return AlarmServiceLauncher.getAlarmService();
     }
 
     @Override
     public void initialize(String configutrationDir) {
-        AlarmStoreFactory.init(configutrationDir);        
+        AlarmServiceLauncher.init(configutrationDir);        
     }
 }

@@ -108,6 +108,7 @@ public abstract class AbstractContributorMediator implements ContributorMediator
     /**
     * Closes the mediator by removing all the message handler.
     */
+    @Override
     public void close() {
         handlerMap.clear();
         // removes to both the general topic and the local queue.

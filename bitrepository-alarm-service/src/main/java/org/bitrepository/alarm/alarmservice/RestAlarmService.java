@@ -31,17 +31,15 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import org.bitrepository.alarm.AlarmStore;
-import org.bitrepository.alarm.AlarmStoreDataItem;
-import org.bitrepository.alarm.AlarmStoreFactory;
-
+import org.bitrepository.alarm.AlarmService;
+import org.bitrepository.alarm.AlarmServiceLauncher;
 
 @Path("/AlarmService")
 public class RestAlarmService {
-    private AlarmStore alarmStore;
+    private AlarmService alarmService;
     
     public RestAlarmService() {
-        alarmStore = AlarmStoreFactory.getAlarmStore();
+        alarmService = AlarmServiceLauncher.getAlarmService();
     }
     
     /**
@@ -54,22 +52,21 @@ public class RestAlarmService {
     public String getShortAlarmList() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        ArrayBlockingQueue<AlarmStoreDataItem> alarmList = alarmStore.getShortList();
-        Iterator<AlarmStoreDataItem> it = alarmList.iterator();
-        while(it.hasNext()) {
-            AlarmStoreDataItem item = it.next();
-            sb.append("{\"date\": \"" + item.getDate() + "\"," +
-                    "\"raiser\": \"" + item.getRaiserID() + "\"," +
-                    "\"alarmCode\": \"" + item.getAlarmCode() + "\"," +
-                    "\"description\": \"" + item.getAlarmText() + "\"}");
-            if(it.hasNext()) {
-                sb.append(",");
-            }
-        }
+//        ArrayBlockingQueue<AlarmStoreDataItem> alarmList = alarmStore.getShortList();
+//        Iterator<AlarmStoreDataItem> it = alarmList.iterator();
+//        while(it.hasNext()) {
+//            AlarmStoreDataItem item = it.next();
+//            sb.append("{\"date\": \"" + item.getDate() + "\"," +
+//                    "\"raiser\": \"" + item.getRaiserID() + "\"," +
+//                    "\"alarmCode\": \"" + item.getAlarmCode() + "\"," +
+//                    "\"description\": \"" + item.getAlarmText() + "\"}");
+//            if(it.hasNext()) {
+//                sb.append(",");
+//            }
+//        }
         sb.append("]");
         return sb.toString();
     }
-    
     
     /**
      * getFullAlarmList exposes the possibility of getting the list of all alarms received   
@@ -79,6 +76,6 @@ public class RestAlarmService {
     @Path("/getFullAlarmList/")
     @Produces("text/html")
     public String getFullAlarmList() {
-        return alarmStore.getFullList();     
+        return alarmService.extractAlarms(null, null, null, null, null).toString();     
     }
 }

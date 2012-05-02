@@ -22,7 +22,10 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.alarm;
+package org.bitrepository.alarm.handling;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
@@ -31,31 +34,61 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 /**
  * Receives and distributes the messages to the handler.
  */
-public class AlarmMessageReceiver extends AbstractMessageListener {
+public class AlarmMediator extends AbstractMessageListener {
 
     /** The handler. Where the received messages should be handled.*/
-    private final AlarmHandler handler;
+    private List<AlarmHandler> handlers;
+    /** The messagebus for this mediator.*/
+    private final MessageBus messageBus;
+    /** The destination to listen to.*/ 
+    private final String destination;
 
     /**
      * Constructor.
      * Sets the parameters of this mediator, and adds itself as a listener to the given destination.
      * @param messagebus The messagebus for communication.
      * @param listenerDestination The destination where the handler should be listening for alarms.
-     * @param handler The method for handling alarms.
      */
-    public AlarmMessageReceiver(MessageBus messagebus, String listenerDestination, AlarmHandler handler) {
-        this.handler = handler;
-
-        messagebus.addListener(listenerDestination, this);        
+    public AlarmMediator(MessageBus messageBus, String listenerDestination) {
+        this.messageBus = messageBus;
+        this.destination = listenerDestination;
+        
+        messageBus.addListener(listenerDestination, this);
+        handlers = new ArrayList<AlarmHandler>();
+    }
+    
+    /**
+     * Adds a given alarm handler to handle the .
+     * @param handler
+     */
+    public void addHandler(AlarmHandler handler) {
+        handlers.add(handler);
     }
 
     @Override
     public void onMessage(AlarmMessage msg) {
-        handler.handleAlarm(msg);
+        for(AlarmHandler handler : handlers) {
+            handler.handleAlarm(msg);
+        }
     }
     
     @Override
     protected void reportUnsupported(Object msg) {
-        handler.handleOther(msg);
+        for(AlarmHandler handler : handlers) {
+            handler.handleOther(msg);
+        }
+    }
+    
+    /**
+     * Close the handlers respectively and remove this mediator from the destination.
+     */
+    public void close() {
+        if(handlers != null) {
+            for(AlarmHandler handler : handlers) {
+                handler.close();
+            }
+            handlers.clear();
+        }
+        messageBus.removeListener(destination, this);
     }
 }

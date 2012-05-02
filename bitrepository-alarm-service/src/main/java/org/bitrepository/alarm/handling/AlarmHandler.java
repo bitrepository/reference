@@ -22,31 +22,29 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.alarm.handler;
+package org.bitrepository.alarm.handling;
 
-import org.bitrepository.alarm.AlarmHandler;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Very simple AlarmHandler, which just logs the alarms received.
+ * Interface for alarm handling.
  */
-public class AlarmLogger implements AlarmHandler {
+public interface AlarmHandler {
     
-    /** The logger to log the Alarms.*/
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+    /**
+     * Handle the actual alarm messages.
+     * @param msg The message to handle.
+     */
+    void handleAlarm(AlarmMessage msg);
     
-    /** Constructor. Nothing to initialize. */
-    public AlarmLogger() { }
+    /**
+     * Handler for anything else than a AlarmMessage.
+     * @param msg Anything else than a AlarmMessage.
+     */
+    void handleOther(Object msg);
     
-    @Override
-    public void handleAlarm(AlarmMessage msg) {
-        log.info("ALARM: " + msg.toString());
-    }
-    
-    @Override
-    public void handleOther(Object msg) {
-        log.warn("Received unexpected object: " + msg.toString());
-    }
+    /**
+     * Close the specific Alarm handler.
+     */
+    void close();
 }

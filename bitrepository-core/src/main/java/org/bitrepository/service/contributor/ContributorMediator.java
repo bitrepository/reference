@@ -22,9 +22,17 @@
 package org.bitrepository.service.contributor;
 
 /**
- * 
+ * The interface for the contributor mediator.
  */
 public interface ContributorMediator {
 
+    /**
+     * Start the mediator before use.
+     */
     void start();
+    
+    /**
+     * Close the mediator after use.
+     */
+    void close();
 }

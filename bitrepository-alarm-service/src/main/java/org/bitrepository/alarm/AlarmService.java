@@ -24,17 +24,36 @@
  */
 package org.bitrepository.alarm;
 
+import java.util.Collection;
+import java.util.Date;
+
+import org.bitrepository.alarm.handling.AlarmHandler;
+import org.bitrepository.bitrepositoryelements.Alarm;
+import org.bitrepository.bitrepositoryelements.AlarmCode;
+import org.bitrepository.service.LifeCycledService;
+
 /**
  * The interface for an alarm service
  */
-public interface AlarmService {
+public interface AlarmService extends LifeCycledService {
     /**
      * Adds a handler for a specific queue. 
      * 
      * @param handler The handler for the Alarm messages.
-     * @param queue The queue to listen to the Alarm messages to handle.
      */
-    void addHandler(AlarmHandler handler, String queue);
+    void addHandler(AlarmHandler handler);
+    
+    /**
+     * Extracts the alarms based on the given optional restictions.
+     * @param componentID [OPTIONAL] The id of the component.
+     * @param alarmCode [OPTIONAL] The alarm code.
+     * @param minDate [OPTIONAL] The earliest date for the alarms.
+     * @param maxDate [OPTIONAL] The latest date for the alarms.
+     * @param fileID [OPTIONAL] The id of the file, which the alarms are connected.
+     * @return The requested collection of alarms from the store.
+     */
+    Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate, 
+            String fileID);
     
     /**
      * Method to perform a graceful shutdown of the client.

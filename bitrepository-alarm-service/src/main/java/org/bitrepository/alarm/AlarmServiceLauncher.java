@@ -24,52 +24,113 @@
  */
 package org.bitrepository.alarm;
 
-import org.bitrepository.alarm.handler.AlarmLogger;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.bitrepository.alarm.handling.handlers.AlarmStorer;
+import org.bitrepository.alarm.store.AlarmStore;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.security.BasicMessageAuthenticator;
+import org.bitrepository.protocol.security.BasicMessageSigner;
+import org.bitrepository.protocol.security.BasicOperationAuthorizor;
+import org.bitrepository.protocol.security.BasicSecurityManager;
+import org.bitrepository.protocol.security.MessageAuthenticator;
+import org.bitrepository.protocol.security.MessageSigner;
+import org.bitrepository.protocol.security.OperationAuthorizor;
+import org.bitrepository.protocol.security.PermissionStore;
+import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.service.contributor.ContributorMediator;
+import org.bitrepository.service.contributor.SimpleContributorMediator;
 
 /**
  * Class for launching an alarm service.
  */
 public class AlarmServiceLauncher {
-    /** The default bitrepository collection id. Used if no arguments.*/
-    private static final String DEFAULT_COLLECTION_ID = "bitrepository-devel";
-    /** The default the settings directory. Used if no arguments.*/
-    private static final String DEFAULT_PATH_TO_SETTINGS = "settings/xml";
-
+    /** The alarm service. 
+     * @see getAlarmService().*/
+    private static AlarmService alarmService;
+    /** The path to the directory containing the configuration files.*/
+    private static String configurationDir;
+    /** The path to the private key file.*/
+    private static String privateKeyFile;
+    
+    /** The properties file holding implementation specifics for the alarm service. */
+    private static final String CONFIGFILE = "audittrails.properties";
+    /** Property key to tell where to locate the path and filename to the private key file. */
+    private static final String PRIVATE_KEY_FILE = "org.bitrepository.audit-trail-service.privateKeyFile";
+        
     /**
-     * Private constructor. To prevent instantiation of this utility class.
+     * Private constructor as the class is meant to be used in a static way.
      */
     private AlarmServiceLauncher() { }
     
     /**
-     * @param args 
+     * Initialize the factory with configuration. 
+     * @param confDir String containing the path to the AlarmService's configuration directory
      */
-    public static void main(String[] args) {
-  /*      String collectionId;
-        String pathToSettings;
-        if(args.length >= 2) {
-            collectionId = args[0];
-            pathToSettings = args[1];
-        } else {
-            collectionId = DEFAULT_COLLECTION_ID;
-            pathToSettings = DEFAULT_PATH_TO_SETTINGS;
+    public static synchronized void init(String confDir) {
+        configurationDir = confDir;
+    }
+    
+    /**
+     * Factory method to retrieve AlarmService  
+     * @return The AlarmService.
+     */
+    public static synchronized AlarmService getAlarmService() {
+        if(alarmService == null) {
+            MessageAuthenticator authenticator;
+            MessageSigner signer;
+            OperationAuthorizor authorizer;
+            PermissionStore permissionStore;
+            SecurityManager securityManager;
+            SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(configurationDir));
+            Settings settings = settingsLoader.getSettings();
+            settings.setComponentID(settings.getReferenceSettings().getAlarmServiceSettings().getID());
+            try {
+                loadProperties();
+                permissionStore = new PermissionStore();
+                authenticator = new BasicMessageAuthenticator(permissionStore);
+                signer = new BasicMessageSigner();
+                authorizer = new BasicOperationAuthorizor(permissionStore);
+                securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
+                        authenticator, signer, authorizer, permissionStore, 
+                        settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
+                
+                MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, 
+                        securityManager);
+                ContributorMediator contributorMediator = new SimpleContributorMediator(messageBus, settings, 
+                        settings.getComponentID(), settings.getReceiverDestination());
+                
+                // TODO
+                AlarmStore store = null;
+                
+                alarmService = new BasicAlarmService(messageBus, settings, store, contributorMediator);
+                
+                alarmService.addHandler(new AlarmStorer(store));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         
-        SettingsProvider settingsLoader = new SettingsProvider(
-                new XMLFileSettingsLoader(pathToSettings));
-        try {
-            Settings settings = settingsLoader.getSettings(collectionId);
-            // Instantiate the AlarmService.
-            AlarmService alarm = AlarmComponentFactory.getInstance().getAlarmService(settings);
-            alarm.addHandler(new AlarmLogger(), settings.getAlarmDestination());
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println();
-            System.out.println("Use with two arguments: AlarmServiceLauncher 'pathToSettings' "
-                    + "'bitrepository collection id'");
-            System.exit(0);
-        }*/
+        return alarmService;
+    }
+    
+    /**
+     * Loads the properties.
+     * @throws IOException If any input/output issues occurs.
+     */
+    private static void loadProperties() throws IOException {
+        Properties properties = new Properties();
+        File propertiesFile = new File(configurationDir, CONFIGFILE);
+        BufferedReader propertiesReader = new BufferedReader(new FileReader(propertiesFile));
+        properties.load(propertiesReader);
+        privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
     }
 }

@@ -129,7 +129,7 @@ public final class IntegrityServiceFactory {
      * @see #getSettings()
      * @see {@link SimpleIntegrityService} 
      */
-    public static synchronized SimpleIntegrityService getIntegrityService() {
+    public static synchronized IntegrityService getIntegrityService() {
         if(simpleIntegrityService == null) {
             getSettings();
             getSecurityManager();

@@ -33,6 +33,7 @@ import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.service.LifeCycledService;
+import org.bitrepository.service.contributor.ContributorMediator;
 
 /**
  * Class to expose the functionality of the AuditTrailService. 
@@ -43,18 +44,24 @@ public class AuditTrailService implements LifeCycledService {
     private final AuditTrailStore store;
     /** The collector of new audit trails.*/
     private final AuditTrailCollector collector;
+    /** The mediator for handling the messages.*/
+    private final ContributorMediator mediator;
     
     /**
      * Constructor.
      * @param store The store for the audit trail data.
      * @param collector The collector of new audit trail data.
      */
-    public AuditTrailService(AuditTrailStore store, AuditTrailCollector collector) {
+    public AuditTrailService(AuditTrailStore store, AuditTrailCollector collector, ContributorMediator mediator) {
         ArgumentValidator.checkNotNull(collector, "AuditTrailCollector collector");
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
+        ArgumentValidator.checkNotNull(mediator, "ContributorMediator mediator");
         
         this.store = store;
         this.collector = collector;
+        this.mediator = mediator;
+        
+        mediator.start();
     }
     
     /**
@@ -88,11 +95,14 @@ public class AuditTrailService implements LifeCycledService {
 
 
     @Override
-    public void start() {}
+    public void start() {
+        mediator.start();
+    }
 
     @Override
     public void shutdown() {
         collector.close();
         store.close();
+        mediator.close();
     }
 }

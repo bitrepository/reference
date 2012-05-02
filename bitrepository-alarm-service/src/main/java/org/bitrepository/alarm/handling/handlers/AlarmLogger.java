@@ -1,7 +1,7 @@
 /*
  * #%L
- * Bitrepository Alarm Client
- * 
+ * bitrepository-access-client
+ * *
  * $Id$
  * $HeadURL$
  * %%
@@ -22,53 +22,38 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.alarm;
+package org.bitrepository.alarm.handling.handlers;
 
 import org.bitrepository.alarm.handling.AlarmHandler;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Simple AlarmHandler for testing what the latest alarm was. 
+ * Very simple AlarmHandler, which just logs the alarms received.
  */
-public class TestAlarmHandler implements AlarmHandler {
-    /** The String representation of the latest object received on notify.*/
-    private String latestAlarmMessage;
+public class AlarmLogger implements AlarmHandler {
     
-    /** The latest alarm.*/
-    private AlarmMessage latestAlarm;
+    /** The logger to log the Alarms.*/
+    private Logger log = LoggerFactory.getLogger(this.getClass());
     
-    /**
-     * Constructor.
-     */
-    public TestAlarmHandler() {}
+    /** Constructor. Nothing to initialize. */
+    public AlarmLogger() { 
+        log.debug("Instantiating the alarmhandler '" + this.getClass().getCanonicalName() + "'");
+    }
     
     @Override
     public void handleAlarm(AlarmMessage msg) {
-        latestAlarm = msg;
-        latestAlarmMessage = msg.toString();
-    }
-
-    @Override
-    public void handleOther(Object msg) {
-        latestAlarmMessage = msg.toString();
+        log.info("ALARM: " + msg.toString());
     }
     
-    /**
-     * Method for retrieving the latest Alarm message received.
-     * @return The latest Alarm received.
-     */
-    public AlarmMessage getLatestAlarm() {
-        return latestAlarm;
-    }
-
-    /**
-     * Method for retrieving the 'toString()' of the latest received object to notify.
-     * @return The String representation of the latest object received.
-     */
-    public String getLatestAlarmMessage() {
-        return latestAlarmMessage;
+    @Override
+    public void handleOther(Object msg) {
+        log.warn("Received unexpected object: " + msg.toString());
     }
 
     @Override
-    public void close() {}
+    public void close() {
+        log.debug("Closing the alarmhandler '" + this.getClass().getCanonicalName() + "'");
+    }
 }

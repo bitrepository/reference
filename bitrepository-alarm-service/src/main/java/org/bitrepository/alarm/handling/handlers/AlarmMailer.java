@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.alarm.handler;
+package org.bitrepository.alarm.handling.handlers;
 
 import java.net.InetAddress;
 import java.util.Date;
@@ -36,12 +36,11 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.bitrepository.alarm.AlarmException;
-import org.bitrepository.alarm.AlarmHandler;
+import org.bitrepository.alarm.handling.AlarmHandler;
 //import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration;
 //import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration.MailingConfiguration;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.settings.referencesettings.*;
-import org.bitrepository.settings.referencesettings.MailingConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +52,7 @@ public class AlarmMailer implements AlarmHandler {
     
     /** The logger to log the Alarms.*/
     private Logger log = LoggerFactory.getLogger(this.getClass());
-        
+    
     /** The message receiver.*/
     private final String messageReceiver;
     /** The message sender.*/
@@ -72,10 +71,11 @@ public class AlarmMailer implements AlarmHandler {
      * Constructor.
      */
     public AlarmMailer(AlarmServiceSettings settings) {
-    	MailingConfiguration config = settings.getMailingConfiguration();
-    	this.messageReceiver = config.getMailReceiver();
+        MailingConfiguration config = settings.getMailingConfiguration();
+        this.messageReceiver = config.getMailReceiver();
         this.messageSender = config.getMailSender();
         this.mailServer = config.getMailServer();
+        log.debug("Instantiating the alarmhandler '" + this.getClass().getCanonicalName() + "'");
     }
     
     @Override
@@ -109,7 +109,7 @@ public class AlarmMailer implements AlarmHandler {
         addMailHeader(subject, msg);
         sendMessage(msg);
     }
-
+    
     /**
      * Method for generating the properties of the mail.
      * @return The properties for the mail.
@@ -182,7 +182,7 @@ public class AlarmMailer implements AlarmHandler {
             throw new AlarmException("Cannot handle recipients of the message '" + msg + "'", e);
         }
     }
-
+    
     /**
      * Method for sending the message.
      * @param msg The message to send.
@@ -193,5 +193,10 @@ public class AlarmMailer implements AlarmHandler {
         } catch (MessagingException e) {
             throw new AlarmException("Could not send email: " + msg, e);
         }
+    }
+    
+    @Override
+    public void close() {
+        log.debug("Closing the alarmhandler '" + this.getClass().getCanonicalName() + "'");
     }
 }

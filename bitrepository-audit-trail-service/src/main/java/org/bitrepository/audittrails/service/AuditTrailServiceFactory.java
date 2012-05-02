@@ -38,6 +38,7 @@ import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
 import org.bitrepository.protocol.security.BasicOperationAuthorizor;
@@ -47,6 +48,8 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.service.contributor.ContributorMediator;
+import org.bitrepository.service.contributor.SimpleContributorMediator;
 
 /**
  * Factory class for accessing the AuditTrailService 
@@ -91,6 +94,7 @@ public final class AuditTrailServiceFactory {
             SecurityManager securityManager;
             SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(configurationDir));
             Settings settings = settingsLoader.getSettings();
+            settings.setComponentID(settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
             try {
                 loadProperties();
                 permissionStore = new PermissionStore();
@@ -101,11 +105,15 @@ public final class AuditTrailServiceFactory {
                         authenticator, signer, authorizer, permissionStore, 
                         settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
                 
+                ContributorMediator mediator = new SimpleContributorMediator(
+                        ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
+                        settings, settings.getComponentID(), settings.getReceiverDestination());
+                
                 AuditTrailStore store = new AuditTrailServiceDAO(settings);
                 AuditTrailClient client = AccessComponentFactory.getInstance().createAuditTrailClient(settings, 
                         securityManager, settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
                 AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
-                auditTrailService = new AuditTrailService(store, collector);
+                auditTrailService = new AuditTrailService(store, collector, mediator);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

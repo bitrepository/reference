@@ -245,5 +245,8 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
                 log.warn("Encountered issues when closing down the messagebus.", e);
             }
         }
+        if(contributor != null) {
+            contributor.close();
+        }
     }
 }

@@ -135,8 +135,7 @@ public final class AccessComponentFactory {
      */
     public AuditTrailClient createAuditTrailClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new ConversationBasedAuditTrailClient(
-                settings,
-                        ConversationMediatorManager.getConversationMediator(settings, securityManager),
+                settings, ConversationMediatorManager.getConversationMediator(settings, securityManager),
                 ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager),
                 clientID);
     }
