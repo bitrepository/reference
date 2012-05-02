@@ -62,9 +62,9 @@ public class AlarmServiceLauncher {
     private static String privateKeyFile;
     
     /** The properties file holding implementation specifics for the alarm service. */
-    private static final String CONFIGFILE = "audittrails.properties";
+    private static final String CONFIGFILE = "alarmservice.properties";
     /** Property key to tell where to locate the path and filename to the private key file. */
-    private static final String PRIVATE_KEY_FILE = "org.bitrepository.audit-trail-service.privateKeyFile";
+    private static final String PRIVATE_KEY_FILE = "org.bitrepository.alarm-service.privateKeyFile";
         
     /**
      * Private constructor as the class is meant to be used in a static way.
