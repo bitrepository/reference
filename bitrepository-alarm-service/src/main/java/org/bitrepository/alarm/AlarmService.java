@@ -56,8 +56,4 @@ public interface AlarmService extends LifeCycledService {
     Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate, 
             String fileID, Integer count);
     
-    /**
-     * Method to perform a graceful shutdown of the client.
-     */
-    void shutdown();
 }

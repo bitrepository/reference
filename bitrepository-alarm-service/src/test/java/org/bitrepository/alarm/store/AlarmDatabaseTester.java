@@ -53,7 +53,7 @@ public class AlarmDatabaseTester extends ExtendedTestCase {
     
     @Test(groups = {"databasetest"})
     public void AlarmDatabaseExtractionTest() throws Exception {
-        addDescription("Testing the connection to the audit trail service database especially with regards to "
+        addDescription("Testing the connection to the alarm service database especially with regards to "
                 + "extracting the data from it.");
         addStep("Setup the variables and constants.", "Should be ok.");
         Date restrictionDate = new Date(123456789); // Sometime between epoch and now!

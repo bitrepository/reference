@@ -24,12 +24,16 @@
  */
 package org.bitrepository.alarm.alarmservice;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.bitrepository.alarm.AlarmService;
 import org.bitrepository.alarm.AlarmServiceLauncher;
+import org.bitrepository.bitrepositoryelements.Alarm;
 
 @Path("/AlarmService")
 public class RestAlarmService {
@@ -46,23 +50,8 @@ public class RestAlarmService {
     @GET
     @Path("/getShortAlarmList/")
     @Produces("application/json")
-    public String getShortAlarmList() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-//        ArrayBlockingQueue<AlarmStoreDataItem> alarmList = alarmStore.getShortList();
-//        Iterator<AlarmStoreDataItem> it = alarmList.iterator();
-//        while(it.hasNext()) {
-//            AlarmStoreDataItem item = it.next();
-//            sb.append("{\"date\": \"" + item.getDate() + "\"," +
-//                    "\"raiser\": \"" + item.getRaiserID() + "\"," +
-//                    "\"alarmCode\": \"" + item.getAlarmCode() + "\"," +
-//                    "\"description\": \"" + item.getAlarmText() + "\"}");
-//            if(it.hasNext()) {
-//                sb.append(",");
-//            }
-//        }
-        sb.append("]");
-        return sb.toString();
+    public List<Alarm> getShortAlarmList() {
+        return new ArrayList<Alarm>(alarmService.extractAlarms(null, null, null, null, null, 10));
     }
     
     /**
@@ -71,8 +60,8 @@ public class RestAlarmService {
      */
     @GET
     @Path("/getFullAlarmList/")
-    @Produces("text/html")
-    public String getFullAlarmList() {
-        return alarmService.extractAlarms(null, null, null, null, null, null).toString();     
+    @Produces("application/json")
+    public List<Alarm> getFullAlarmList() {
+        return new ArrayList<Alarm>(alarmService.extractAlarms(null, null, null, null, null, null));     
     }
 }

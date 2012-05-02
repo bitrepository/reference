@@ -21,7 +21,6 @@
  */
 package org.bitrepository.monitoringservice.webservice;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
