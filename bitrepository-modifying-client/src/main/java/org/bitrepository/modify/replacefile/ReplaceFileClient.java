@@ -28,13 +28,14 @@ import java.net.URL;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.client.BitrepositoryClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
 
 /**
  * Interface for the delete client.
  */
-public interface ReplaceFileClient {
+public interface ReplaceFileClient extends BitrepositoryClient {
     /**
      * Starts the conversation for replacing a file on a given pillar.
      * It is similar to performing the DeleteFile followed by the PutFile operations.
@@ -92,8 +93,4 @@ public interface ReplaceFileClient {
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile, 
             EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException;
 
-    /**
-     * Method to perform a graceful shutdown of the client.
-     */
-    void shutdown();
 }

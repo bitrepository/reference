@@ -24,24 +24,18 @@
  */
 package org.bitrepository.modify.replacefile.conversation;
 
-import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Map;
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
-import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.client.eventhandler.ContributorEvent;
-import org.bitrepository.client.eventhandler.DefaultEvent;
-import org.bitrepository.client.eventhandler.OperationEvent;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.client.conversation.ConversationContext;
+import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 /**
  * Models the behavior of a ReplaceFile conversation during the operation phase. That is, it begins with the sending of
@@ -51,155 +45,74 @@ import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
  * Note that this is only used by the ReplaceFileConversation in the same package, therefore the visibility is package 
  * protected.
  */
-public class ReplacingFile extends ReplaceFileState {
-    /** Defines that the timer is a daemon thread. */
-    private static final Boolean TIMER_IS_DAEMON = true;
-    /** The timer. Schedules conversation timeouts for this conversation. */
-    final Timer timer = new Timer(TIMER_IS_DAEMON);
-    /** The task to handle the timeouts for the identification. */
-    private TimerTask timerTask = new ReplaceTimerTask();
-
-    /** The pillars, which has not yet answered.*/
-    private List<SelectedPillarInfo> pillarsSelectedForRequest; 
-    /** The responses for the pillars.*/
-    private final ContributorResponseStatus replaceResponseStatus;
+public class ReplacingFile extends PerformingOperationState {
+    private final ReplaceFileConversationContext context;
+    private Map<String,String> activeContributors;
+    /** Tracks who have responded */
+    private final ContributorResponseStatus responseStatus;
 
     /**
      * Constructor.
      * @param conversation The conversation in this state.
      */
-    public ReplacingFile(SimpleReplaceFileConversation conversation) {
-        super(conversation);
-        pillarsSelectedForRequest = conversation.pillarSelector.getSelectedPillars();
-        replaceResponseStatus = new ContributorResponseStatus(conversation.pillarId);
-    }
-
-    /**
-     * Method for starting to replace a file on the pillar.
-     * The ReplaceFileRequestMessage is created and sent to each of the pillars.
-     */
-    public void start() {
-        // create the message
-        ReplaceFileRequest request = new ReplaceFileRequest();
-        request.setAuditTrailInformation(conversation.auditTrailInformation);
-        request.setChecksumDataForExistingFile(conversation.checksumForFileToDelete);
-        request.setChecksumDataForNewFile(conversation.checksumForNewFileValidationAtPillar);
-        request.setChecksumRequestForExistingFile(conversation.checksumRequestedForFileToDelete);
-        request.setChecksumRequestForNewFile(conversation.checksumRequestForNewFile);
-        request.setCollectionID(conversation.settings.getCollectionID());
-        request.setCorrelationID(conversation.getConversationID());
-        request.setFileAddress(conversation.urlOfNewFile.toExternalForm());
-        request.setFileID(conversation.fileID);
-        request.setFileSize(BigInteger.valueOf(conversation.sizeOfNewFile));
-        request.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        request.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
-        request.setFrom(conversation.clientID);
-        request.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        
-        for(SelectedPillarInfo pillarInfo : pillarsSelectedForRequest) {
-            request.setPillarID(pillarInfo.getID());
-            request.setTo(pillarInfo.getDestination());
-            
-            monitor.requestSent("Request to replace file " + conversation.fileID + " has been sent to the pillar + " +
-                    conversation.pillarId, pillarInfo.getID());
-            conversation.messageSender.sendMessage(request);
+    public ReplacingFile(ReplaceFileConversationContext context, List<SelectedPillarInfo> contributors) {
+        this.context = context;
+        this.activeContributors = new HashMap<String,String>();
+        for (SelectedPillarInfo contributorInfo : contributors) {
+            activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
         }
-
-        timer.schedule(timerTask, 
-                conversation.settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue());
+        this.responseStatus = new ContributorResponseStatus(activeContributors.keySet());
     }
 
-    /**
-     * Method for handling the IdentifyPillarsForReplaceFileResponse message.
-     * No such message should be received.
-     * @param response The IdentifyPillarsForReplaceFileResponse message to handle.
-     */
     @Override
-    public void onMessage(IdentifyPillarsForReplaceFileResponse response) {
-        monitor.debug("Received IdentifyPillarsForReplaceFileResponse from '" + response.getPillarID() 
-                + "' after the ReplaceFileRequests has been sent.");
-    }
-
-    /**
-     * Handles the ReplaceFileProgressResponse message.
-     * 
-     * @param response The ReplaceFileProgressResponse to be handled by this method.
-     */
-    @Override
-    public void onMessage(ReplaceFileProgressResponse response) {
-        monitor.progress(new ContributorEvent(OperationEvent.OperationEventType.PROGRESS,
-                "Received ReplaceFileProgressResponse from pillar " + response.getPillarID() + ": " + 
-                        response.getResponseInfo().toString(), response.getPillarID(),
-                        conversation.getConversationID()));
-    }
-
-    /**
-     * Handles the ReplaceFileFinalResponse message.
-     * Is validated and removed from the list of pillars who should perform the ReplaceFile operation.
-     * If it is the response from the last responding pillar, then the conversation is complete.
-     * 
-     * @param response The ReplaceFileFinalResponse message to be handled.
-     */
-    @Override
-    public void onMessage(ReplaceFileFinalResponse response) {
-        try {
-            replaceResponseStatus.responseReceived(response.getPillarID());
-        } catch (UnexpectedResponseException ure) {
-            monitor.warning("Received unexpected final response from " + response.getPillarID() , ure);
-        }
-
-        if(isResponseSuccess(response.getResponseInfo())) {
-            monitor.pillarComplete(new ReplaceFileCompletePillarEvent(
+    protected void generateCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
+        if (msg instanceof ReplaceFileFinalResponse) {
+            ReplaceFileFinalResponse response = (ReplaceFileFinalResponse) msg;
+            getContext().getMonitor().complete(new ReplaceFileCompletePillarEvent(
                     response.getChecksumDataForExistingFile(),
                     response.getChecksumDataForNewFile(),
                     response.getPillarID(),
                     "Received replace file result from " + response.getPillarID(),
-                    conversation.getConversationID()));
+                    response.getCorrelationID()));
         } else {
-            monitor.contributorFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
-        }
+            throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
+                    " while waiting for GetChecksums response.");
+        }      
+    }
+
+    @Override
+    protected ContributorResponseStatus getResponseStatus() {
+        return responseStatus;
+    }
+
+    @Override
+    protected void sendRequest() {
+        ReplaceFileRequest msg = new ReplaceFileRequest();
+        initializeMessage(msg);
+        msg.setChecksumDataForExistingFile(context.getChecksumForDeleteAtPillar());
+        msg.setChecksumDataForNewFile(context.getChecksumForNewFileValidationAtPillar());
+        msg.setChecksumRequestForExistingFile(context.getChecksumRequestedForDeletedFile());
+        msg.setChecksumRequestForNewFile(context.getChecksumRequestsForNewFile());
+        msg.setFileAddress(context.getUrlForFile().toExternalForm());
+        msg.setFileID(context.getFileID());
+        msg.setFileSize(context.getSizeOfNewFile());
         
-        // Check if the conversation has finished.
-        if(replaceResponseStatus.haveAllPillarResponded()) {
-            timerTask.cancel();
-            monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE,
-                    "Finished the ReplaceFile operation on all the pillars.",
-                    conversation.getConversationID()));
-
-            ReplaceFileFinished finishState = new ReplaceFileFinished(conversation);
-            conversation.conversationState = finishState;
-        }
-    }
-    
-    /**
-     * Method for validating the FinalResponseInfo.
-     * @param responseInfo The FinalResponseInfo to be validated.
-     * @return Whether the FinalRepsonseInfo tells that the operation has been a success or a failure.
-     */
-    private boolean isResponseSuccess(ResponseInfo responseInfo) {
-        return ResponseCode.OPERATION_COMPLETED.equals(responseInfo.getResponseCode());
-    }
-
-    /**
-     * What should we do if something fails during a replace operation.
-     * @param info The information about why is was incomplete.
-     */
-    private void handleIncompleteReplace(String info) {
-        conversation.failConversation(info);
-    }
-
-    /**
-     * Class for handling a timeout for the conversation.
-     */
-    private class ReplaceTimerTask extends TimerTask {
-        @Override
-        public void run() {
-            handleIncompleteReplace("Timeout occurred for the ReplaceFile operation.");
+        context.getMonitor().requestSent("Sending request for deleting checksums", activeContributors.keySet().toString());
+        for(String pillar : activeContributors.keySet()) {
+            msg.setPillarID(pillar);
+            msg.setTo(activeContributors.get(pillar));
+            context.getMessageSender().sendMessage(msg);
         }
     }
 
     @Override
-    public boolean hasEnded() {
-        return false;
+    protected ConversationContext getContext() {
+        return context;
     }
+
+    @Override
+    protected String getName() {
+        return "Replacing file";
+    }
+
 }
