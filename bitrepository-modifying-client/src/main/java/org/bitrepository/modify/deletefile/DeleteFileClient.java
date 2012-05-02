@@ -26,13 +26,14 @@ package org.bitrepository.modify.deletefile;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.client.BitrepositoryClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
 
 /**
  * Interface for the delete client.
  */
-public interface DeleteFileClient {
+public interface DeleteFileClient extends BitrepositoryClient {
     /**
      * Starts the conversation for deleting a file on a given pillar.
      * Takes checksum and checksum specification as argument to validate the file to delete.
@@ -71,8 +72,4 @@ public interface DeleteFileClient {
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) 
                     throws OperationFailedException;
     
-    /**
-     * Method to perform a graceful shutdown of the client.
-     */
-    void shutdown();
 }

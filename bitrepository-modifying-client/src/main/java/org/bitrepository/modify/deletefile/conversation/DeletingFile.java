@@ -24,24 +24,18 @@
  */
 package org.bitrepository.modify.deletefile.conversation;
 
-import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Map;
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
-import org.bitrepository.protocol.ProtocolConstants;
-import org.bitrepository.client.eventhandler.ContributorEvent;
-import org.bitrepository.client.eventhandler.DefaultEvent;
-import org.bitrepository.client.eventhandler.OperationEvent;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.client.conversation.ConversationContext;
+import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 /**
  * Models the behavior of a DeleteFile conversation during the operation phase. That is, it begins with the sending of
@@ -51,151 +45,70 @@ import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
  * Note that this is only used by the DeleteFileConversation in the same package, therefore the visibility is package 
  * protected.
  */
-public class DeletingFile extends DeleteFileState {
-    /** Defines that the timer is a daemon thread. */
-    private static final Boolean TIMER_IS_DAEMON = true;
-    /** The timer. Schedules conversation timeouts for this conversation. */
-    final Timer timer = new Timer(TIMER_IS_DAEMON);
-    /** The task to handle the timeouts for the identification. */
-    private TimerTask timerTask = new DeleteTimerTask();
+public class DeletingFile extends PerformingOperationState {
+    private final DeleteFileConversationContext context;
 
-    /** The pillars, which has not yet answered.*/
-    private List<SelectedPillarInfo> pillarsSelectedForRequest; 
-    /** The responses for the pillars.*/
-    private final ContributorResponseStatus deleteResponseStatus;
+    private Map<String,String> activeContributors;
+    /** Tracks who have responded */
+    private final ContributorResponseStatus responseStatus;
 
     /**
      * Constructor.
-     * @param conversation The conversation in this state.
+     * @param context The context of the conversation.
      */
-    public DeletingFile(SimpleDeleteFileConversation conversation) {
-        super(conversation);
-        pillarsSelectedForRequest = conversation.pillarSelector.getSelectedPillars();
-        deleteResponseStatus = new ContributorResponseStatus(conversation.pillarId);
-    }
-
-    /**
-     * Method for starting to delete a file on the pillar.
-     * The DeleteFileRequestMessage is created and sent to each of the pillars.
-     */
-    public void start() {
-        DeleteFileRequest request = new DeleteFileRequest();
-        request.setCorrelationID(conversation.getConversationID());
-        request.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        request.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        request.setCollectionID(conversation.settings.getCollectionID());
-        request.setReplyTo(conversation.settings.getReferenceSettings().getClientSettings().getReceiverDestination());
-        request.setAuditTrailInformation(conversation.auditTrailInformation);
-        request.setFileID(conversation.fileID);
-        request.setChecksumRequestForExistingFile(conversation.checksumSpecRequested);
-        request.setChecksumDataForExistingFile(conversation.checksumForFileToDelete);
-        request.setFrom(conversation.clientID);
-        
-        for(SelectedPillarInfo pillarInfo : pillarsSelectedForRequest) {
-            request.setPillarID(pillarInfo.getID());
-            request.setTo(pillarInfo.getDestination());
-            
-            monitor.requestSent("Request to delete file " + conversation.fileID + " has been sent to the pillar + " +
-                    conversation.pillarId, pillarInfo.getID());
-            conversation.messageSender.sendMessage(request);
+    public DeletingFile(DeleteFileConversationContext context, List<SelectedPillarInfo> contributors) {
+        this.context = context;
+        this.activeContributors = new HashMap<String,String>();
+        for (SelectedPillarInfo contributorInfo : contributors) {
+            activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
         }
-
-        timer.schedule(timerTask, 
-                conversation.settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue());
-    }
-
-    /**
-     * Method for handling the IdentifyPillarsForDeleteFileResponse message.
-     * No such message should be received.
-     * @param response The IdentifyPillarsForDeleteFileResponse message to handle.
-     */
-    @Override
-    public void onMessage(IdentifyPillarsForDeleteFileResponse response) {
-        monitor.debug("Received IdentifyPillarsForDeleteFileResponse from '" + response.getPillarID() 
-                + "' after the DeleteFileRequests has been sent.");
-    }
-
-    /**
-     * Handles the DeleteFileProgressResponse message.
-     * Just logged to it.
-     * 
-     * @param response The DeleteFileProgressResponse to be handled by this method.
-     */
-    @Override
-    public void onMessage(DeleteFileProgressResponse response) {
-        monitor.progress(new ContributorEvent(OperationEvent.OperationEventType.PROGRESS,
-                "Received DeleteFileProgressResponse from pillar " + response.getPillarID() + ": " + 
-                        response.getResponseInfo().getResponseText(), response.getPillarID(), 
-                        conversation.getConversationID()));
+        this.responseStatus = new ContributorResponseStatus(activeContributors.keySet());
     }
 
     @Override
-    public void onMessage(DeleteFileFinalResponse response) {
-        try {
-            deleteResponseStatus.responseReceived(response.getPillarID());
-        } catch (UnexpectedResponseException ure) {
-            monitor.warning("Received unexpected final response from " + response.getPillarID() , ure);
-        }
-
-        if(isResponseSuccess(response.getResponseInfo())) {
-            monitor.pillarComplete(new DeleteFileCompletePillarEvent(
+    protected void generateCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
+        if (msg instanceof DeleteFileFinalResponse) {
+            DeleteFileFinalResponse response = (DeleteFileFinalResponse) msg;
+            getContext().getMonitor().complete(new DeleteFileCompletePillarEvent(
                     response.getChecksumDataForExistingFile(),
                     response.getPillarID(),
                     "Received delete file result from " + response.getPillarID(),
-                    conversation.getConversationID()));
+                    response.getCorrelationID()));
         } else {
-            monitor.contributorFailed("Received negativ FinalResponse from pillar: " + response.getResponseInfo());
-        }
-        
-        // Check if the conversation has finished.
-        if(deleteResponseStatus.haveAllPillarResponded()) {
-            timerTask.cancel();
-            monitor.complete(new DefaultEvent(OperationEvent.OperationEventType.COMPLETE,
-                    "Finished Delete on all the pillars.",
-                    conversation.getConversationID()));
-
-            DeleteFileFinished finishState = new DeleteFileFinished(conversation);
-            conversation.conversationState = finishState;
-        }
-    }
-    
-    /**
-     * Method for validating the FinalResponseInfo.
-     * @param frInfo The FinalResponseInfo to be validated.
-     * @return Whether the FinalRepsonseInfo tells that the operation has been a success or a failure.
-     */
-    private boolean isResponseSuccess(ResponseInfo frInfo) {
-        // validate the response info.
-        if(frInfo == null || frInfo.getResponseCode() == null) {
-            return false;
-        } else {
-            if(ResponseCode.OPERATION_COMPLETED.equals(frInfo.getResponseCode())) {
-                return true;
-            } 
-        }
-        return false;
-    }
-
-    /**
-     * What should we do if something fails during a delete operation.
-     * @param info The information about why is was incomplete.
-     */
-    private void handleIncompleteDelete(String info) {
-        conversation.failConversation(info);
-    }
-
-    /**
-     * Class for handling a timeout for the conversation.
-     */
-    private class DeleteTimerTask extends TimerTask {
-        @Override
-        public void run() {
-            handleIncompleteDelete("Timeout occurred for the Deleting of the file.");
-        }
+            throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
+                    " while waiting for GetChecksums response.");
+        }         
     }
 
     @Override
-    public boolean hasEnded() {
-        return false;
+    protected ContributorResponseStatus getResponseStatus() {
+        return responseStatus;
     }
+
+    @Override
+    protected void sendRequest() {
+        DeleteFileRequest msg = new DeleteFileRequest();
+        initializeMessage(msg);
+        msg.setFileID(context.getFileID());
+        msg.setChecksumRequestForExistingFile(context.getChecksumRequestForValidation());
+        msg.setChecksumDataForExistingFile(context.getChecksumForValidationAtPillar());
+
+        context.getMonitor().requestSent("Sending request for deleting checksums", activeContributors.keySet().toString());
+        for(String pillar : activeContributors.keySet()) {
+            msg.setPillarID(pillar);
+            msg.setTo(activeContributors.get(pillar));
+            context.getMessageSender().sendMessage(msg);
+        }        
+    }
+
+    @Override
+    protected ConversationContext getContext() {
+        return context;
+    }
+
+    @Override
+    protected String getName() {
+        return "Deleting file";
+    }
+
 }
