@@ -50,7 +50,7 @@ public class PutFilePillarSelector extends MultipleComponentSelector {
                 selectedComponents.add(new SelectedPillarInfo(response.getFrom(), response.getReplyTo()));                
             }
         } else {
-            throw new UnexpectedResponseException("Are currently only expecting IdentifyContributorsForGetAuditTrailsResponse's");
+            throw new UnexpectedResponseException("Are currently only expecting IdentifyPillarsForPutFileResponse's");
         }
     }
 }

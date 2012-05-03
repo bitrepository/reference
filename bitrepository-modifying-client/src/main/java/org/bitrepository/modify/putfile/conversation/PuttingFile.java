@@ -66,7 +66,7 @@ public class PuttingFile extends PerformingOperationState {
             getContext().getMonitor().complete(
                     new PutFileCompletePillarEvent(response.getChecksumDataForNewFile(),
                             response.getPillarID(),
-                            "Received checksum result from " + response.getPillarID(),
+                            "Received put file result from " + response.getPillarID(),
                             response.getCorrelationID()));
         } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +

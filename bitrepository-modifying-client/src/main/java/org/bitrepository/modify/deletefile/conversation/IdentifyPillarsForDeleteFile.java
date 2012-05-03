@@ -61,7 +61,7 @@ public class IdentifyPillarsForDeleteFile extends IdentifyingState {
         msg.setFileID(context.getFileID());
         msg.setTo(context.getSettings().getCollectionDestination());
         context.getMessageSender().sendMessage(msg);
-        context.getMonitor().identifyPillarsRequestSent("Identifying contributers for audit trails");
+        context.getMonitor().identifyPillarsRequestSent("Identifying pillars for delete file");
     }
 
     @Override

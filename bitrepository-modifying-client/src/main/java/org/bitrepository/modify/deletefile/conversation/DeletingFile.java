@@ -76,7 +76,7 @@ public class DeletingFile extends PerformingOperationState {
                     response.getCorrelationID()));
         } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
-                    " while waiting for GetChecksums response.");
+                    " while waiting for DeleteFile response.");
         }         
     }
 
@@ -93,7 +93,7 @@ public class DeletingFile extends PerformingOperationState {
         msg.setChecksumRequestForExistingFile(context.getChecksumRequestForValidation());
         msg.setChecksumDataForExistingFile(context.getChecksumForValidationAtPillar());
 
-        context.getMonitor().requestSent("Sending request for deleting checksums", activeContributors.keySet().toString());
+        context.getMonitor().requestSent("Sending request for deleting file", activeContributors.keySet().toString());
         for(String pillar : activeContributors.keySet()) {
             msg.setPillarID(pillar);
             msg.setTo(activeContributors.get(pillar));
