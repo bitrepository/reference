@@ -206,7 +206,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         Assert.assertFalse(checker.checkChecksum(fileidsToCheck).hasIntegrityIssues(), "The checksums should be validated");
     }
     
-    @Test(groups = {"regressiontest"})
+    //@Test(groups = {"regressiontest"})
     public void testChecksumsMissingFromOnePillar() {
         addDescription("Tests that the checksum validation is able to give good result, even though not all pillars have the requested files.");
         addStep("Setup the environment for this test.", "Should define the pillars and fileids, and the clear the cache.");
