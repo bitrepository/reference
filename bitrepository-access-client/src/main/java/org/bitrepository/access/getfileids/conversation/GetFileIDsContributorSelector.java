@@ -44,7 +44,7 @@ public class GetFileIDsContributorSelector extends MultipleComponentSelector {
         if (response instanceof IdentifyPillarsForGetFileIDsResponse) {
             super.processResponse(response);
         } else {
-            throw new UnexpectedResponseException("Are currently only expecting IdentifyContributorsForGetAuditTrailsResponse's");
+            throw new UnexpectedResponseException("Are currently only expecting IdentifyPillarsForGetFileIDsResponse's");
         }
     }
 }

@@ -70,7 +70,7 @@ class GettingFile extends PerformingOperationState {
                             "Finished getting file " + response.getFileID() + " from " + response.getPillarID()));
         } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
-                    " while waiting for Audit Trail response.");
+                    " while waiting for GetFile response.");
         }        
     }
     

@@ -48,11 +48,11 @@ public class FastestPillarSelectorForGetFileTest {
                 TimeMeasureUnit.MILLISECONDS);
     private static final String[] PILLAR_IDS = 
         new String[] { slowPillar.pillarID, fastPillar.pillarID, mediumPillar.pillarID};
-    private FastestPillarSelectorForGetFile2 selector;
+    private FastestPillarSelectorForGetFile selector;
     
     @BeforeMethod (alwaysRun=true)
     public void setup() {
-        selector = new FastestPillarSelectorForGetFile2(Arrays.asList(PILLAR_IDS));
+        selector = new FastestPillarSelectorForGetFile(Arrays.asList(PILLAR_IDS));
     }
 
     @Test (groups = { "regressiontest" })

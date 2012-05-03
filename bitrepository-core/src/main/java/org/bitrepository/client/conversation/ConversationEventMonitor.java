@@ -146,10 +146,11 @@ public class ConversationEventMonitor {
      * New information regarding the progress of the operation has been received
      * @param progressInfo Contains information regarding the progress
      */
-    public void progress(String progressInfo) {
+    public void progress(String progressInfo, String contributorID) {
         log.debug(progressInfo);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(PROGRESS, progressInfo, conversationID));
+            eventHandler.handleEvent(
+                    new ContributorEvent(PROGRESS, progressInfo, contributorID, conversationID));
         }
     }
     

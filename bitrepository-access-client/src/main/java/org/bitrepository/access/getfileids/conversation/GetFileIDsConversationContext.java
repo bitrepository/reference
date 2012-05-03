@@ -32,7 +32,6 @@ import org.bitrepository.protocol.messagebus.MessageSender;
 public class GetFileIDsConversationContext extends ConversationContext {
     private final FileIDs fileIDs;
     private final URL urlForResult;
-    private final String clientID;
 
     public GetFileIDsConversationContext(FileIDs fileIDs, URL urlForResult,
             Settings settings, MessageSender messageSender, String clientID, EventHandler eventHandler,
@@ -40,7 +39,6 @@ public class GetFileIDsConversationContext extends ConversationContext {
         super(settings, messageSender, clientID, eventHandler, auditTrailInformation);
         this.fileIDs = fileIDs;
         this.urlForResult = urlForResult;
-        this.clientID = clientID;      
     }
 
     public FileIDs getFileIDs() {
@@ -50,8 +48,5 @@ public class GetFileIDsConversationContext extends ConversationContext {
     public URL getUrlForResult() {
         return urlForResult;
     }
-    
-    public String getClientID() {
-        return clientID;
-    }
+
 }

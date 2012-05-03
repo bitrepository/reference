@@ -27,11 +27,11 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 
-public class SpecificPillarSelectorForGetFile2 extends GetFileSelector {
+public class SpecificPillarSelectorForGetFile extends GetFileSelector {
 
     private final String choosenPillar;
     
-    public SpecificPillarSelectorForGetFile2(Collection<String> pillarsWhichShouldRespond, String choosenPillar) {
+    public SpecificPillarSelectorForGetFile(Collection<String> pillarsWhichShouldRespond, String choosenPillar) {
         responseStatus = new ContributorResponseStatus(pillarsWhichShouldRespond);
         this.choosenPillar = choosenPillar;
     }
