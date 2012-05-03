@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
+import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.DefaultEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
@@ -65,9 +66,10 @@ class GettingFile extends PerformingOperationState {
     protected void generateCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         if (msg instanceof GetFileFinalResponse) {
             GetFileFinalResponse response = (GetFileFinalResponse) msg;
-            getContext().getMonitor().complete(
-                    new DefaultEvent(OperationEventType.COMPLETE, 
-                            "Finished getting file " + response.getFileID() + " from " + response.getPillarID()));
+            getContext().getMonitor().pillarComplete(
+                    new ContributorEvent(OperationEventType.COMPONENT_COMPLETE, 
+                            "Finished getting file " + response.getFileID() + " from " + response.getPillarID(),
+                            response.getFrom(), response.getCorrelationID()));
         } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
                     " while waiting for GetFile response.");
