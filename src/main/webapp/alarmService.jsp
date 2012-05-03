@@ -32,8 +32,9 @@
                 htmlTable += "<th width=\"80\">Alarm code</th>";
                 htmlTable += "<th>Description</th>";
                 htmlTable += "</tr></thead><tbody>";
-                for (var i = 0; i < j.length; i++) {
-                    htmlTable += "<tr><td>" + j[i].date + "</td><td>" + j[i].raiser + "</td> <td>" + j[i].alarmCode + "</td> <td>" + j[i].description + "</td></tr>";
+                for (var i = 0; i < j.Alarm.length; i++) {
+                    htmlTable += "<tr><td>" + j.Alarm[i].OrigDateTime + "</td><td>" + j.Alarm[i].AlarmRaiser +
+                        "</td> <td>" + j.Alarm[i].AlarmCode + "</td> <td>" + j.Alarm[i].AlarmText + "</td></tr>";
                }
                 htmlTable += "</tbody></table>"; 
                 $("#alarmsContent").html(htmlTable);
