@@ -145,6 +145,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
             messageBus.sendMessage(completeMsg);
         }
 
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
         if(useMockupPillar()) {
             File expectedUploadFile = pillar1FileStore.getFile(DEFAULT_FILE_ID);
