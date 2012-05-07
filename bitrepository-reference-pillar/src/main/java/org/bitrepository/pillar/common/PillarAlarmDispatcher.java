@@ -26,10 +26,12 @@ package org.bitrepository.pillar.common;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +88,29 @@ public class PillarAlarmDispatcher extends AlarmDispatcher {
         alarm.setOrigDateTime(CalendarUtils.getNow());
         
         error(alarm);
+    }
+    
+    /**
+     * Handles the case when the request causes a RequestHandlerException.
+     * @param e The exception causing this alarm case.
+     */
+    public void handleRequestException(RequestHandlerException e) {
+        Alarm alarm = new Alarm();
+        
+        if(e.getResponseInfo().getResponseCode() == ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE) {
+            alarm.setAlarmCode(AlarmCode.INVALID_MESSAGE);
+        } else if(e.getResponseInfo().getResponseCode() == ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE
+                || e.getResponseInfo().getResponseCode() == ResponseCode.NEW_FILE_CHECKSUM_FAILURE) {
+            alarm.setAlarmCode(AlarmCode.CHECKSUM_ALARM);
+        } else {
+            alarm.setAlarmCode(AlarmCode.FAILED_OPERATION);
+        }
+        
+        alarm.setAlarmRaiser(context.getComponentID());
+        alarm.setAlarmText(e.getResponseInfo().getResponseText());
+        alarm.setOrigDateTime(CalendarUtils.getNow());
+        
+        warning(alarm);
     }
     
     /**

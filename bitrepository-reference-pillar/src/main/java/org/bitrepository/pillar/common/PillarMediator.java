@@ -72,12 +72,15 @@ public abstract class PillarMediator extends AbstractContributorMediator {
         } catch (IllegalArgumentException e) {
             context.getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RequestHandlerException e) {
-            log.info("Cannot perform operation. Sending failed response. Cause: \n" + e.getResponseInfo().getResponseText());
-            log.trace("Stack trace for request handler exception.", e);                
+            log.info("Cannot perform operation. Sending failed response. Cause: \n" 
+                    + e.getResponseInfo().getResponseText());
             MessageResponse response = handler.generateFailedResponse(request);
             response.setResponseInfo(e.getResponseInfo());
-            context.getMediatorContext().getDispatcher().sendMessage(response);            
-        } catch (Exception e) {
+            context.getMediatorContext().getDispatcher().sendMessage(response);
+            
+            log.trace("Stack trace for request handler exception.", e);                
+            context.getAlarmDispatcher().handleRequestException(e);
+        } catch (RuntimeException e) {
             log.warn("Unexpected exception caught.", e);
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);
@@ -86,6 +89,8 @@ public abstract class PillarMediator extends AbstractContributorMediator {
             MessageResponse response = handler.generateFailedResponse(request);
             response.setResponseInfo(responseInfo);
             context.getMediatorContext().getDispatcher().sendMessage(response);
+            
+            context.getAlarmDispatcher().handleRuntimeExceptions(e);
         }
     }
     
