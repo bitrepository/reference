@@ -76,7 +76,7 @@ public class ReplacingFile extends PerformingOperationState {
                     response.getCorrelationID()));
         } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
-                    " while waiting for GetChecksums response.");
+                    " while waiting for ReplaceFile response.");
         }      
     }
 
@@ -97,7 +97,7 @@ public class ReplacingFile extends PerformingOperationState {
         msg.setFileID(context.getFileID());
         msg.setFileSize(context.getSizeOfNewFile());
         
-        context.getMonitor().requestSent("Sending request for deleting checksums", activeContributors.keySet().toString());
+        context.getMonitor().requestSent("Sending request for replace file", activeContributors.keySet().toString());
         for(String pillar : activeContributors.keySet()) {
             msg.setPillarID(pillar);
             msg.setTo(activeContributors.get(pillar));

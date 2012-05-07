@@ -66,7 +66,7 @@ public class GettingFileIDs extends PerformingOperationState {
     
     @Override
     protected void sendRequest() {
-        context.getMonitor().requestSent("Sending request for audit trails", activeContributors.keySet().toString());
+        context.getMonitor().requestSent("Sending request for get fileIDs", activeContributors.keySet().toString());
         for(String pillar : activeContributors.keySet()) {
             GetFileIDsRequest msg = new GetFileIDsRequest();
             initializeMessage(msg);
@@ -86,10 +86,10 @@ public class GettingFileIDs extends PerformingOperationState {
             GetFileIDsFinalResponse response = (GetFileIDsFinalResponse)msg;
             getContext().getMonitor().complete(
                     new FileIDsCompletePillarEvent(response.getResultingFileIDs(), response.getFrom(),
-                            "Audit trails received from " + response.getFrom(), response.getCorrelationID()));
+                            "FileIDs received from " + response.getFrom(), response.getCorrelationID()));
         } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
-                    " while waiting for Audit Trail response.");
+                    " while waiting for FileIDs response.");
         }
     }
     
@@ -100,7 +100,7 @@ public class GettingFileIDs extends PerformingOperationState {
 
     @Override
     protected String getName() {
-        return "Fetch audit trails";
+        return "Get fileIDs";
     }
 
     @Override

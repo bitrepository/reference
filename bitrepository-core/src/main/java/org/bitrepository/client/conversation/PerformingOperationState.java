@@ -21,6 +21,8 @@
  */
 package org.bitrepository.client.conversation;
 
+import java.util.Arrays;
+
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.exceptions.UnableToFinishException;
@@ -38,7 +40,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     protected void processMessage(MessageResponse msg) {
         if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) ||
                 msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_PROGRESS)) {
-            getContext().getMonitor().progress(msg.getResponseInfo().getResponseText());
+            getContext().getMonitor().progress(msg.getResponseInfo().getResponseText(), msg.getFrom());
         } else {
             try {
                 if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_COMPLETED)) {
@@ -70,7 +72,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     @Override
     protected GeneralConversationState handleStateTimeout() {
         getContext().getMonitor().operationFailed(getName() + " operation timed out, " +
-                "the following contributors didn't respond: " + getResponseStatus().getOutstandPillars());
+                "the following contributors didn't respond: " + Arrays.toString(getResponseStatus().getOutstandPillars()));
         return new FinishedState(getContext());
     }
 

@@ -51,7 +51,9 @@ public class RestAlarmService {
     @Path("/getShortAlarmList/")
     @Produces("application/json")
     public List<Alarm> getShortAlarmList() {
-        return new ArrayList<Alarm>(alarmService.extractAlarms(null, null, null, null, null, 10));
+        List<Alarm> alarmList = new ArrayList<Alarm>();
+        alarmList.addAll(alarmService.extractAlarms(null, null, null, null, null, 10));
+        return alarmList;
     }
     
     /**
@@ -62,6 +64,8 @@ public class RestAlarmService {
     @Path("/getFullAlarmList/")
     @Produces("application/json")
     public List<Alarm> getFullAlarmList() {
-        return new ArrayList<Alarm>(alarmService.extractAlarms(null, null, null, null, null, null));     
+        List<Alarm> alarmList = new ArrayList<Alarm>();
+        alarmList.addAll(alarmService.extractAlarms(null, null, null, null, null, null));
+        return alarmList;
     }
 }
