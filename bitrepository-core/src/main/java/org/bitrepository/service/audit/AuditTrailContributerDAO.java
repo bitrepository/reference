@@ -122,8 +122,19 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     public void addAuditEvent(String fileId, String actor, String info, String auditTrail, FileAction operation) {
         log.info("Inserting an audit event  for file '" + fileId + "', from actor '" + actor 
                 + "' performing operation '" + operation + "', with the audit trail information '" + auditTrail + "'");
-        long fileGuid = retrieveFileGuid(fileId);
-        long actorGuid = retrieveActorGuid(actor);
+        
+        long fileGuid;
+        if(fileId == null) {
+            fileGuid = retrieveFileGuid("null");
+        } else {
+            fileGuid = retrieveFileGuid(fileId);
+        }
+        long actorGuid;
+        if(actor == null) {
+            actorGuid = retrieveActorGuid("null");
+        } else {
+            actorGuid = retrieveActorGuid(actor);
+        }
         
         String insertSql = "INSERT INTO " + AUDITTRAIL_TABLE + " ( " + AUDITTRAIL_FILE_GUID + " , " 
                 + AUDITTRAIL_ACTOR_GUID + " , " + AUDITTRAIL_OPERATION + " , " + AUDITTRAIL_OPERATION_DATE + " , "
