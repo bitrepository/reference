@@ -37,7 +37,4 @@ public class AllPillarsSelectorForDeleteFile extends DeleteFileSelector {
         return response.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE);
     }
 
-
-    
-
 }

@@ -34,6 +34,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.modify.putfile.conversation.PutFileConversationContext;
 import org.bitrepository.modify.putfile.conversation.SimplePutFileConversation;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -64,7 +65,7 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
         ArgumentValidator.checkNotNull(url, "URL url");
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNegative(sizeOfFile, "long sizeOfFile");
-        // TODO add potential regex from collection settings.
+        FileIDValidator.validateFileID(settings, fileId);
         
         PutFileConversationContext context = new PutFileConversationContext(fileId, url, sizeOfFile, 
                 checksumForValidationAtPillar, checksumRequestsForValidation, settings, messageBus, 

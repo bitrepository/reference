@@ -33,6 +33,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
@@ -69,6 +70,9 @@ public class CollectionBasedGetChecksumsClient extends AbstractClient implements
         ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "Collection<String> pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
         ArgumentValidator.checkNotNull(checksumSpec, "ChecksumSpecTYPE checksumSpec");
+        if(!fileIDs.isSetAllFileIDs()) {
+            FileIDValidator.validateFileID(settings, fileIDs.getFileID());
+        }
         
         log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"
                 + pillarIDs + "' with the specifications '" + checksumSpec + "'. "

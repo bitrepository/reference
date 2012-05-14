@@ -32,6 +32,7 @@ import org.bitrepository.access.getfileids.conversation.SimpleGetFileIDsConversa
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
@@ -66,6 +67,9 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
             EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "Collection<String> pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
+        if(!fileIDs.isSetAllFileIDs()) {
+            FileIDValidator.validateFileID(settings, fileIDs.getFileID());
+        }
         
         log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"
                 + pillarIDs + "'. The result should be uploaded to '" + addressForResult + "'.");

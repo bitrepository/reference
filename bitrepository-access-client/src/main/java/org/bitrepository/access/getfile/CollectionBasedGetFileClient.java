@@ -33,6 +33,7 @@ import org.bitrepository.access.getfile.selectors.GetFileSelector;
 import org.bitrepository.access.getfile.selectors.SpecificPillarSelectorForGetFile;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
@@ -67,6 +68,7 @@ public class CollectionBasedGetFileClient extends AbstractClient implements GetF
         ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
+        FileIDValidator.validateFileID(settings, fileID);
 
         log.info("Requesting fastest retrieval of the file '" + fileID);
         getFile(messageBus, settings, new FastestPillarSelectorForGetFile(
@@ -80,6 +82,7 @@ public class CollectionBasedGetFileClient extends AbstractClient implements GetF
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "pillarID");
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
+        FileIDValidator.validateFileID(settings, fileID);
 
         log.info("Requesting the file '" + fileID + "' from pillar '" + pillarID + "'.");
         getFile(messageBus, settings, new SpecificPillarSelectorForGetFile(
