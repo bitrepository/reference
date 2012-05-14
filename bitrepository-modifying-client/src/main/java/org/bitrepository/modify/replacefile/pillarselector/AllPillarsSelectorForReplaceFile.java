@@ -37,7 +37,4 @@ public class AllPillarsSelectorForReplaceFile extends ReplaceFileSelector {
         return response.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE);
     }
 
-
-    
-
 }
