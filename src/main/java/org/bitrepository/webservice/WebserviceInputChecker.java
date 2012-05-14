@@ -11,6 +11,17 @@ public class WebserviceInputChecker {
         }
     }
     
+    public static void checkFileSizeParameter(String fileSize) throws WebserviceInputCheckException {
+        if(fileSize == null || fileSize.isEmpty()) {
+            throw new WebserviceInputCheckException("Failure: missing filesize");
+        }
+        try {
+            Long.parseLong(fileSize);
+        } catch (Exception e) {
+            throw new WebserviceInputCheckException("Failure: " + fileSize + " is not a valid number value");
+        }
+    }
+    
     public static void checkURLParameter(String URL) throws WebserviceInputCheckException {
         if(URL == null || URL.isEmpty()) {
             throw new  WebserviceInputCheckException("Failure: missing url parameter.");

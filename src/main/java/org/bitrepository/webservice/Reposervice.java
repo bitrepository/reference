@@ -387,6 +387,7 @@ public class Reposervice {
             @QueryParam("newFileRequestChecksumSalt") String newFileRequestChecksumSalt) {
         try {
             WebserviceInputChecker.checkFileIDParameter(fileID);
+            WebserviceInputChecker.checkFileSizeParameter(fileSize);
             WebserviceInputChecker.checkPillarIDParameter(pillarID);
             WebserviceInputChecker.checkURLParameter(url);
             WebserviceInputChecker.checkChecksumTypeParameter(oldFileChecksumType);
