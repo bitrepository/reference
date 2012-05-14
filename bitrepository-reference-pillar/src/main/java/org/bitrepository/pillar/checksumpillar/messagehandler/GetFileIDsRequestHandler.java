@@ -80,7 +80,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      */
     public GetFileIDsRequestHandler(PillarContext context, ChecksumStore refCache) {
         super(context,  refCache);
-        this.fileIdValidator = new FileIDValidator(context);
+        this.fileIdValidator = new FileIDValidator(context.getSettings());
     }
     
     @Override

@@ -61,7 +61,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
      */
     public DeleteFileRequestHandler(PillarContext context, ChecksumStore refCache) {
         super(context, refCache);
-        this.fileIdValidator = new FileIDValidator(context);
+        this.fileIdValidator = new FileIDValidator(context.getSettings());
     }
     
     @Override

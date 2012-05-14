@@ -78,7 +78,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
      */
     public ReplaceFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
         super(context, referenceArchive);
-        this.fileIdValidator = new FileIDValidator(context);
+        this.fileIdValidator = new FileIDValidator(context.getSettings());
     }
 
     @Override

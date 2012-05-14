@@ -76,7 +76,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
      */
     public ReplaceFileRequestHandler(PillarContext context, ChecksumStore refCache) {
         super(context, refCache);
-        this.fileIdValidator = new FileIDValidator(context);
+        this.fileIdValidator = new FileIDValidator(context.getSettings());
     }
 
     @Override
