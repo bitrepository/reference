@@ -43,7 +43,7 @@ public class FileIDValidator {
      */
     public FileIDValidator(PillarContext context) {
         regex = context.getSettings().getCollectionSettings().getProtocolSettings().getAllowedFileIDPattern();
-        if(regex.isEmpty()) {
+        if(regex != null && regex.isEmpty()) {
             regex = null;
         }
     }

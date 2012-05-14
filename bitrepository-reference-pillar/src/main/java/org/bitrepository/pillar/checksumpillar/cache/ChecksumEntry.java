@@ -25,6 +25,9 @@ package org.bitrepository.pillar.checksumpillar.cache;
  * Container for the entries in the checksum archive.
  */
 public class ChecksumEntry {
+    /** The character sequence for separating the filename from the checksum. */
+    public static final String CHECKSUM_SEPARATOR = "##";
+    
     /** @see getFileId() */
     private final String fileId;
     /** @see getChecksum() */
@@ -56,6 +59,6 @@ public class ChecksumEntry {
     
     @Override
     public String toString() {
-        return fileId + "##" + checksum;
+        return fileId + CHECKSUM_SEPARATOR + checksum;
     }
 }

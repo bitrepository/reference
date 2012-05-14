@@ -40,7 +40,7 @@
             <outputDirectory>conf</outputDirectory>
             <fileMode>0740</fileMode>
             <directoryMode>0740</directoryMode>
-            <directory>../bitrepository-common/target/test-classes/settings/xml/bitrepository-devel/</directory>
+            <directory>../bitrepository-core/target/test-classes/settings/xml/bitrepository-devel/</directory>
             <excludes>
             	<exclude>xjb-bindings/</exclude>           
             </excludes>
@@ -55,7 +55,7 @@
             <outputDirectory>conf</outputDirectory>
             <fileMode>0740</fileMode>
             <directoryMode>0740</directoryMode>
-            <directory>src/main/resources</directory>
+            <directory>../bitrepository-core/src/main/resources/audittrailContributorDb</directory>
         </fileSet>
         <fileSet>
             <outputDirectory>bin</outputDirectory>

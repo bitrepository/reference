@@ -37,6 +37,7 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileUtils;
+import static org.bitrepository.pillar.checksumpillar.cache.ChecksumEntry.CHECKSUM_SEPARATOR;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,15 +55,10 @@ import org.slf4j.LoggerFactory;
  * archive file.
  */
 public class FilebasedChecksumStore implements ChecksumStore {
-    /**
-     * The character sequence for separating the filename from the checksum.
-     */
-    private static final String CHECKSUM_SEPARATOR = "##";
-    
     /** The prefix to the filename. */
     private static final String FILENAME_PREFIX = "checksum_";
     /** The suffix to the filename. */
-    private static final String FILENAME_SUFFIX = ".md5";
+    private static final String FILENAME_SUFFIX = ".checksum";
     /** The suffix of the filename of the recreation file.*/
     private static final String RECREATE_PREFIX = "recreate_";
     /** The suffix of the filename of the recreation file.*/
