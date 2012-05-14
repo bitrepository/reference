@@ -24,29 +24,12 @@
  */
 package org.bitrepository.alarm;
 
-import java.io.PrintStream;
-import java.util.Date;
-
-import org.apache.kahadb.util.ByteArrayOutputStream;
-import org.bitrepository.alarm.handling.AlarmHandler;
-import org.bitrepository.alarm.handling.handlers.AlarmLogger;
-import org.bitrepository.alarm.handling.handlers.AlarmMailer;
-import org.bitrepository.settings.referencesettings.MailingConfiguration;
-import org.bitrepository.settings.referencesettings.AlarmServiceSettings;
-import org.bitrepository.bitrepositoryelements.Alarm;
-import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.client.DefaultFixtureClientTest;
-import org.bitrepository.protocol.message.ExampleMessageFactory;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
 /**
  * Tests for the AlarmClient and the AlarmHandlers.
  */
 public class AlarmClientTester extends DefaultFixtureClientTest {
-    private static final Long DEFAULT_WAIT_TIME = 500L;
 
 //    @Test(groups = {"regressiontest"})
 //    @Test(groups = {"other-test"})

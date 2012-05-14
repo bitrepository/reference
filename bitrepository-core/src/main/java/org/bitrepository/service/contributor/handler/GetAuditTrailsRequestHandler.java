@@ -100,7 +100,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
         // set missing variables in the message: ResponseInfo
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-        prInfo.setResponseText("Starting to check the status.");
+        prInfo.setResponseText("Starting to extract the requested audit trails.");
         response.setResponseInfo(prInfo);
         
         // Send the ProgressResponse

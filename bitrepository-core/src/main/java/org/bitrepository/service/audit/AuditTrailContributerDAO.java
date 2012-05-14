@@ -58,6 +58,8 @@ import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
 
 /**
  * Access interface for communication with the audit trail database.
+ * 
+ * In the case of 'All-FileIDs', then the 'fileId' is given the string-value 'null'. 
  */
 public class AuditTrailContributerDAO implements AuditTrailManager {
     /** The log.*/
@@ -124,13 +126,13 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                 + "' performing operation '" + operation + "', with the audit trail information '" + auditTrail + "'");
         
         long fileGuid;
-        if(fileId == null) {
+        if(fileId == null || fileId.isEmpty()) {
             fileGuid = retrieveFileGuid("null");
         } else {
             fileGuid = retrieveFileGuid(fileId);
         }
         long actorGuid;
-        if(actor == null) {
+        if(actor == null || actor.isEmpty()) {
             actorGuid = retrieveActorGuid("null");
         } else {
             actorGuid = retrieveActorGuid(actor);

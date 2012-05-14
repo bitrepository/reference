@@ -35,7 +35,7 @@ import javax.servlet.ServletContextListener;
  * 2) In time shut the service down in a proper manner, so no threads will be orphaned.   
  */
 public abstract class AbstractBitrepositoryContextListener implements ServletContextListener {
-
+    /** The log.*/
     private final Logger log = LoggerFactory.getLogger(getClass());
         
     /**

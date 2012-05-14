@@ -30,7 +30,10 @@ import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.service.audit.AuditTrailManager;
+import org.bitrepository.service.contributor.handler.GetAuditTrailsRequestHandler;
 import org.bitrepository.service.contributor.handler.GetStatusRequestHandler;
+import org.bitrepository.service.contributor.handler.IdentifyContributorsForGetAuditTrailsRequestHandler;
 import org.bitrepository.service.contributor.handler.IdentifyContributorsForGetStatusRequestHandler;
 import org.bitrepository.service.contributor.handler.RequestHandler;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -39,13 +42,18 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Simple implementation of a contributor mediator.
- * It only supports the handling of the 'GetStatus' identification and operation.
+ * It supports the handling of the 'GetStatus' identification and operation.
+ * 
+ * If the optional AuditTrailManager is given as argument, then this mediator will also be able to handle the 
+ * GetAuditTrails identification and operation. 
  */
 public class SimpleContributorMediator extends AbstractContributorMediator {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The context for this simple contributor mediator.*/
     private final ContributorContext context;
+    /** The audit trail manager. */
+    private AuditTrailManager auditManager;
     
     /**
      * Constructor.
@@ -53,10 +61,13 @@ public class SimpleContributorMediator extends AbstractContributorMediator {
      * @param settings the settings for the mediator.
      * @param componentID The id of this component.
      * @param replyTo The destination for this component.
+     * @param auditManager [OPTIONAL] The manager of audit trails. Only if the contributor has audit trails.
      */
-    public SimpleContributorMediator(MessageBus messageBus, Settings settings, String componentID, String replyTo) {
+    public SimpleContributorMediator(MessageBus messageBus, Settings settings, String componentID, String replyTo,
+            AuditTrailManager auditManager) {
         super(messageBus);
         context = new ContributorContext(messageBus, settings, componentID, replyTo);
+        this.auditManager = auditManager;
     }
 
     @SuppressWarnings("rawtypes")
@@ -66,6 +77,11 @@ public class SimpleContributorMediator extends AbstractContributorMediator {
         
         handlers.add(new IdentifyContributorsForGetStatusRequestHandler(getContext()));
         handlers.add(new GetStatusRequestHandler(getContext()));
+        
+        if(auditManager != null) {
+            handlers.add(new IdentifyContributorsForGetAuditTrailsRequestHandler(getContext()));
+            handlers.add(new GetAuditTrailsRequestHandler(getContext(), auditManager));
+        }
         
         return handlers.toArray(new RequestHandler[handlers.size()]);
     }
@@ -89,7 +105,7 @@ public class SimpleContributorMediator extends AbstractContributorMediator {
             log.warn("Unexpected exception caught.", e);
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);
-            responseInfo.setResponseText(e.getMessage());
+            responseInfo.setResponseText(e.toString());
             
             MessageResponse response = handler.generateFailedResponse(request);
             response.setResponseInfo(responseInfo);

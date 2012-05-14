@@ -107,7 +107,7 @@ public class AlarmServiceLauncher {
                 MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, 
                         securityManager);
                 ContributorMediator contributorMediator = new SimpleContributorMediator(messageBus, settings, 
-                        settings.getComponentID(), settings.getReceiverDestination());
+                        settings.getComponentID(), settings.getReceiverDestination(), null);
                 
                 AlarmStore store = new AlarmServiceDAO(settings);
                 alarmService = new BasicAlarmService(messageBus, settings, store, contributorMediator);

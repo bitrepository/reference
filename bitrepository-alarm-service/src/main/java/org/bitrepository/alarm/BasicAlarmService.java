@@ -101,7 +101,7 @@ public class BasicAlarmService implements AlarmService {
 
     @Override
     public Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
-            String fileID, Integer count) {
-        return store.extractAlarms(componentID, alarmCode, minDate, maxDate, fileID, count);
+            String fileID, Integer maxResults, boolean ascending) {
+        return store.extractAlarms(componentID, alarmCode, minDate, maxDate, fileID, maxResults, ascending);
     }
 }

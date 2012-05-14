@@ -44,16 +44,16 @@ public abstract class AbstractContributorMediator implements ContributorMediator
     private final Map<String, RequestHandler> handlerMap = new HashMap<String, RequestHandler>();
     /** The message bus.*/
     private final MessageBus messageBus;
-    /**  */
-    private final GeneralMessageHandler messageHandler;
+    /** The intermediate message handler for retrieving the messages from the messagebus. */
+    private final GeneralRequestHandler messageHandler;
 
     /**
-     * 
-     * @param messageBus
+     * Constructor.
+     * @param messageBus The messagebus for this mediator.
      */
     public AbstractContributorMediator(MessageBus messageBus) {
         this.messageBus = messageBus;
-        messageHandler = new GeneralMessageHandler();
+        messageHandler = new GeneralRequestHandler();
     }
 
     /**
@@ -87,9 +87,9 @@ public abstract class AbstractContributorMediator implements ContributorMediator
     protected abstract void handleRequest(MessageRequest request, RequestHandler handler);
 
     /**
-     * 
+     * The message listener, which delegates the request-messages to the request handlers.
      */
-    private class GeneralMessageHandler implements MessageListener {
+    private class GeneralRequestHandler implements MessageListener {
         @Override
         public void onMessage(Message message) {
             if (message instanceof MessageRequest) {
@@ -111,7 +111,6 @@ public abstract class AbstractContributorMediator implements ContributorMediator
     @Override
     public void close() {
         handlerMap.clear();
-        // removes to both the general topic and the local queue.
         messageBus.removeListener(getContext().getSettings().getCollectionDestination(), messageHandler);
         messageBus.removeListener(getContext().getReplyTo(), messageHandler);
     }

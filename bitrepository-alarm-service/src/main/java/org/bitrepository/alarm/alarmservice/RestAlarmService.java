@@ -52,7 +52,7 @@ public class RestAlarmService {
     @Produces("application/json")
     public List<Alarm> getShortAlarmList() {
         List<Alarm> alarmList = new ArrayList<Alarm>();
-        alarmList.addAll(alarmService.extractAlarms(null, null, null, null, null, 10));
+        alarmList.addAll(alarmService.extractAlarms(null, null, null, null, null, 10, false));
         return alarmList;
     }
     
@@ -65,7 +65,7 @@ public class RestAlarmService {
     @Produces("application/json")
     public List<Alarm> getFullAlarmList() {
         List<Alarm> alarmList = new ArrayList<Alarm>();
-        alarmList.addAll(alarmService.extractAlarms(null, null, null, null, null, null));
+        alarmList.addAll(alarmService.extractAlarms(null, null, null, null, null, null, true));
         return alarmList;
     }
 }

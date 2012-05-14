@@ -107,7 +107,7 @@ public final class AuditTrailServiceFactory {
                 
                 ContributorMediator mediator = new SimpleContributorMediator(
                         ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
-                        settings, settings.getComponentID(), settings.getReceiverDestination());
+                        settings, settings.getComponentID(), settings.getReceiverDestination(), null);
                 
                 AuditTrailStore store = new AuditTrailServiceDAO(settings);
                 AuditTrailClient client = AccessComponentFactory.getInstance().createAuditTrailClient(settings, 

@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The class for dispatching alarms.
- * If no 'pillar-settings' exists, then 
  */
 public class AlarmDispatcher {
     /** The log.*/
@@ -79,7 +78,7 @@ public class AlarmDispatcher {
     public void warning(Alarm alarm) {
         ArgumentValidator.checkNotNull(alarm, "alarm");
         if(alarmLevel != AlarmLevel.WARNING) {
-            log.warn("Cannot send a '" + AlarmLevel.WARNING + "' alarm, when the alarm level is '"
+            log.debug("Cannot send a '" + AlarmLevel.WARNING + "' alarm, when the alarm level is '"
                     + alarmLevel + "'{}", alarm);
         } else {
             sendAlarm(alarm);
@@ -94,7 +93,7 @@ public class AlarmDispatcher {
     public void error(Alarm alarm) {
         ArgumentValidator.checkNotNull(alarm, "alarm");
         if(alarmLevel == AlarmLevel.EMERGENCY) {
-            log.warn("Cannot send a '" + AlarmLevel.ERROR + "' alarm, when the alarm level is '"
+            log.debug("Cannot send a '" + AlarmLevel.ERROR + "' alarm, when the alarm level is '"
                     + alarmLevel + "'{}", alarm);
         } else {
             sendAlarm(alarm);
@@ -102,8 +101,7 @@ public class AlarmDispatcher {
     }
         
     /**
-     * Send an alarm at error-level. 
-     * If the settings does not have alarm level at 'error', then a log is made instead.
+     * Send an alarm at emergency-level. At this level all alarms will be sent.
      * @param alarm The alarm to send.
      */
     public void emergency(Alarm alarm) {

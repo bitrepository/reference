@@ -99,7 +99,7 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
         this.alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus);
         this.contributor = new SimpleContributorMediator(messageBus, settings,
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID(),
-                        settings.getReceiverDestination());
+                        settings.getReceiverDestination(), null);
         this.collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
                 cache, checker, 
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 

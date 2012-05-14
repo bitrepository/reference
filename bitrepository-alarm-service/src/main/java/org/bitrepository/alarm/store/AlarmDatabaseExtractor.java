@@ -93,8 +93,8 @@ public class AlarmDatabaseExtractor {
      * Extracts the requested alarms.
      * @return The alarms requested through the ExtractModel.
      */
-    public List<Alarm> extractAuditEvents() {
-        String sql = createSelectString() + " FROM " + ALARM_TABLE + createRestriction();
+    public List<Alarm> extractAlarms() {
+        String sql = createSelectString() + " FROM " + ALARM_TABLE + createRestriction() + createOrder();
         
         try {
             ResultSet result = null;
@@ -146,7 +146,7 @@ public class AlarmDatabaseExtractor {
     
     /**
      * NOTE: This is where the position of the constants come into play. 
-     * E.g. POSITION_FILE_GUID = 1 refers to the first extracted element being the ALARM_COMPONENT_GUID.
+     * E.g. POSITION_COMPONENT_GUID = 1 refers to the first extracted element being the ALARM_COMPONENT_GUID.
      * @return Creates the SELECT string for the retrieval of the audit events.
      */
     private String createSelectString() {
@@ -211,6 +211,7 @@ public class AlarmDatabaseExtractor {
     }
     
     /**
+     * Extracts the elements from the model ordered by the respective position (see class definition).
      * @return The list of elements in the model which are not null.
      */
     private Object[] extractArgumentsFromModel() {
@@ -237,6 +238,22 @@ public class AlarmDatabaseExtractor {
         }
         
         return res.toArray();
+    }
+    
+    /**
+     * Extracts the delivery order for the results, ascending or descending. 
+     * @return The part of the SQL for telling which order of date the results should be delivered.
+     */
+    private String createOrder() {
+        StringBuilder res = new StringBuilder();
+        res.append(" ORDER BY " + ALARM_DATE + " ");
+        if(model.getAscending()) {
+            res.append("ASC");
+        } else {
+            res.append("DESC");
+        }
+        
+        return res.toString();
     }
     
     /**

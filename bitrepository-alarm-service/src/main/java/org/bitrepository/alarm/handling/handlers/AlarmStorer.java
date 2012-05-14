@@ -27,6 +27,9 @@ import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The alarm handler, which just stores all the alarms in the AlarmStore.
+ */
 public class AlarmStorer implements AlarmHandler {
     /** The logger.*/
     private Logger log = LoggerFactory.getLogger(this.getClass());

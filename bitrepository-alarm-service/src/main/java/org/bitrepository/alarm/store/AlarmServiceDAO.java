@@ -102,12 +102,12 @@ public class AlarmServiceDAO implements AlarmStore {
     
     @Override
     public List<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
-            String fileID, Integer count) {
+            String fileID, Integer count, boolean ascending) {
         AlarmDatabaseExtractionModel extractModel = new AlarmDatabaseExtractionModel(componentID, alarmCode, minDate, 
-                maxDate, fileID, count);
+                maxDate, fileID, count, ascending);
         
         AlarmDatabaseExtractor extractor = new AlarmDatabaseExtractor(extractModel, getConnection());
-        return extractor.extractAuditEvents();
+        return extractor.extractAlarms();
     }
     
 }

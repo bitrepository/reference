@@ -28,21 +28,21 @@ import org.bitrepository.protocol.messagebus.MessageSender;
  * The context for the contributor mediator.
  */
 public class ContributorContext {
-    /** Message sender for this context.*/
+    /** @see getDispatcher.*/
     private final MessageSender dispatcher;
-    /** The settings for thi context.*/
+    /** @see getSettings.*/
     private final Settings settings;
-    /** The ID of the contributor component for this context.*/
+    /** @see getComponentID.*/
     private final String componentID;
-    /** The destination for this context.*/
+    /** @see getReplyTo.*/
     private final String replyTo;
 
     /**
-     * 
-     * @param dispatcher
-     * @param settings
-     * @param componentID
-     * @param replyTo
+     * Constructor.
+     * @param dispatcher The dispatcher of messages.
+     * @param settings The settings.
+     * @param componentID The id of the component.
+     * @param replyTo The destination where replies are wanted.
      */
     public ContributorContext(
             MessageSender dispatcher,
@@ -55,18 +55,30 @@ public class ContributorContext {
         this.replyTo = replyTo;
     }
 
+    /**
+     * @return Message sender for this context.
+     */
     public MessageSender getDispatcher() {
         return dispatcher;
     }
 
+    /**
+     * @return The settings for this context.
+     */
     public Settings getSettings() {
         return settings;
     }
 
+    /**
+     * @return The ID of the contributor component for this context.
+     */
     public String getComponentID() {
         return componentID;
     }
 
+    /**
+     * @return The destination for this context.
+     */
     public String getReplyTo() {
         return replyTo;
     }

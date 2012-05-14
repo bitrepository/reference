@@ -50,10 +50,11 @@ public interface AlarmService extends LifeCycledService {
      * @param minDate [OPTIONAL] The earliest date for the alarms.
      * @param maxDate [OPTIONAL] The latest date for the alarms.
      * @param fileID [OPTIONAL] The id of the file, which the alarms are connected.
-     * @param count [OPTIONAL] The maximum number of alarms to retrieve from the store.
+     * @param maxResults [OPTIONAL] The maximum number of alarms to retrieve from the store.
+     * @param ascending Whether the alarms should be delivered ascending.
      * @return The requested collection of alarms from the store.
      */
     Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate, 
-            String fileID, Integer count);
+            String fileID, Integer maxResults, boolean ascending);
     
 }

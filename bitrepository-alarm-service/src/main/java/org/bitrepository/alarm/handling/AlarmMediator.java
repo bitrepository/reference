@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
 
@@ -66,16 +67,15 @@ public class AlarmMediator extends AbstractMessageListener {
     }
 
     @Override
-    public void onMessage(AlarmMessage msg) {
-        for(AlarmHandler handler : handlers) {
-            handler.handleAlarm(msg);
-        }
-    }
-    
-    @Override
-    protected void reportUnsupported(Object msg) {
-        for(AlarmHandler handler : handlers) {
-            handler.handleOther(msg);
+    public void onMessage(Message msg) {
+        if(msg instanceof AlarmMessage) {
+            for(AlarmHandler handler : handlers) {
+                handler.handleAlarm((AlarmMessage) msg);
+            }
+        } else {
+            for(AlarmHandler handler : handlers) {
+                handler.handleOther(msg);
+            }
         }
     }
     

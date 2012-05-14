@@ -41,6 +41,8 @@ public class AlarmDatabaseExtractionModel {
     private String fileID;
     /** @see getOperation(). */
     private int maxCount;
+    /** @see getAscending().*/
+    private boolean ascending;
     
     /**
      * Constructor.
@@ -52,12 +54,13 @@ public class AlarmDatabaseExtractionModel {
      * @param maxCount The maximum count of alarms to extract. If null, then set to maximum value for Integer.
      */
     public AlarmDatabaseExtractionModel(String componentId, AlarmCode alarmCode, Date startDate, Date endDate, 
-            String fileID, Integer maxCount) {
+            String fileID, Integer maxCount, boolean ascending) {
         this.componentId = componentId;
         this.alarmCode = alarmCode;
         this.startDate = startDate;
         this.endDate = endDate;
         this.fileID = fileID;
+        this.ascending = ascending;
         
         if(maxCount != null) {
             this.maxCount = maxCount;
@@ -154,5 +157,20 @@ public class AlarmDatabaseExtractionModel {
      */
     public void setMaxCount(Integer maxCount) {
         this.maxCount = maxCount;
-    }    
+    }
+    
+    /**
+     * @return Whether the results are delivered ascending (alternatively descending).
+     */
+    public boolean getAscending() {
+        return ascending;
+    }
+    
+    /**
+     * @See getAscending();
+     * @param ascending Whether the results should be ascending (or alternatively descending).
+     */
+    public void setAscending(boolean ascending) {
+        this.ascending = ascending;
+    }   
 }

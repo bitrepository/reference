@@ -30,6 +30,9 @@ import java.util.Date;
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 
+/**
+ * The AlarmStore is where the alarms are persisted.
+ */
 public interface AlarmStore {
     /**
      * Add an alarm to the store.
@@ -45,58 +48,9 @@ public interface AlarmStore {
      * @param maxDate [OPTIONAL] The latest date for the alarms.
      * @param fileID [OPTIONAL] The id of the file, which the alarms are connected.
      * @param count [OPTIONAL] The maximum number of alarms to retrieve from the store.
+     * @param ascending Whether the alarms should be delivered ascending.
      * @return The requested collection of alarms from the store.
      */
     Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate, 
-            String fileID, Integer count);
-//    private Logger log = LoggerFactory.getLogger(this.getClass());
-//    private AlarmService alarmService;
-//    private String alarmStoreFile;
-//    private AlarmCollector collector;
-//    private AlarmMailer mailer;
-//    private ArrayBlockingQueue<AlarmStoreDataItem> shortAlarmList;
-//    private MessageAuthenticator authenticator;
-//    private MessageSigner signer;
-//    private OperationAuthorizor authorizer;
-//    private PermissionStore permissionStore;
-//    private SecurityManager securityManager;
-//    
-//    AlarmStore(Settings settings, String alarmStoreFile, String privateKeyFile) {
-//        this.alarmStoreFile = alarmStoreFile;
-//        shortAlarmList = new ArrayBlockingQueue<AlarmStoreDataItem>(20);
-//        permissionStore = new PermissionStore();
-//        authenticator = new BasicMessageAuthenticator(permissionStore);
-//        signer = new BasicMessageSigner();
-//        authorizer = new BasicOperationAuthorizor(permissionStore);
-//        securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
-//                authenticator, signer, authorizer, permissionStore, 
-//                settings.getReferenceSettings().getAlarmServiceSettings().getID());
-//        alarmService = AlarmComponentFactory.getInstance().getAlarmService(settings, securityManager);
-//        collector = new AlarmCollector(this.alarmStoreFile, shortAlarmList);
-//        alarmService.addHandler(collector, settings.getAlarmDestination()); 
-//        if(settings.getReferenceSettings().getAlarmServiceSettings().getMailingConfiguration() != null) {
-//            mailer = new AlarmMailer(settings.getReferenceSettings().getAlarmServiceSettings());
-//            alarmService.addHandler(mailer, settings.getAlarmDestination());
-//            log.info("ReferenceSettings contained mailer configuration, alarm mailer added.");
-//        } else {
-//            log.info("ReferenceSettings contained no mailer configuration, no alarm mailer added.");
-//        }
-//        
-//    }
-//    public void start() {
-//        //Nothing to do
-//    }
-//    
-//    public void shutdown() {
-//        alarmService.shutdown();
-//    }
-//    
-//    public ArrayBlockingQueue<AlarmStoreDataItem> getShortList() {
-//        return shortAlarmList;
-//    }
-//    
-//    public String getFullList() {
-//        // TODO BITMAG-425
-//        return "<p>Delivery of full list is not yet implemented..</p>";
-//    }
+            String fileID, Integer count, boolean ascending);
 }
