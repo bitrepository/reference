@@ -39,6 +39,7 @@ import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
+import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -112,7 +113,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);
             responseInfo.setResponseText("A checksum for deletion is required!");
-            throw new InvalidMessageException(responseInfo);
+            throw new IllegalOperationException(responseInfo);
         }
         
         getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation checksum "
@@ -128,12 +129,11 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
                     + calculatedChecksum + "'. Sending alarm and respond failure.");
             String errMsg = "Requested to delete file '" + message.getFileID() + "' with checksum '"
                     + requestedChecksum + "', but our file had a different checksum.";
-            getAlarmDispatcher().sendInvalidChecksumAlarm(message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
             responseInfo.setResponseText(errMsg);
-            throw new InvalidMessageException(responseInfo);
+            throw new IllegalOperationException(responseInfo);
         }
     }
 

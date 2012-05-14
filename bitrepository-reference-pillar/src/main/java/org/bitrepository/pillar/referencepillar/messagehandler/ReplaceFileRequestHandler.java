@@ -46,6 +46,7 @@ import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
+import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -149,7 +150,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);
             responseInfo.setResponseText("A checksum for replacing a file is required!");
-            throw new InvalidMessageException(responseInfo);
+            throw new IllegalOperationException(responseInfo);
         }
         
         // Make audit about calculating the checksum.
@@ -168,12 +169,11 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
                     + calculatedChecksum + "'. Sending alarm and respond failure.");
             String errMsg = "Requested to replace the file '" + message.getFileID() + "' with checksum '"
                     + requestedChecksum + "', but our file had a different checksum.";
-            getAlarmDispatcher().sendInvalidChecksumAlarm(message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
             responseInfo.setResponseText(errMsg);
-            throw new InvalidMessageException(responseInfo);
+            throw new IllegalOperationException(responseInfo);
         }
     }
     
@@ -209,8 +209,12 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
             fileForValidation = getArchive().downloadFileForValidation(message.getFileID(), 
                     fe.downloadFromServer(new URL(message.getFileAddress())));
         } catch (IOException e) {
-            throw new CoordinationLayerException("Could not download the file '" + message.getFileID() 
-                    + "' from the url '" + message.getFileAddress() + "'.", e);
+            String errMsg = "Could not retrieve the file from '" + message.getFileAddress() + "'";
+            log.error(errMsg, e);
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
+            ri.setResponseText(errMsg);
+            throw new InvalidMessageException(ri);
         }
         
         ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
@@ -221,13 +225,11 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
             String checksum = ChecksumUtils.generateChecksum(fileForValidation, csType.getChecksumSpec());
             String requestedChecksum = Base16Utils.decodeBase16(csType.getChecksumValue());
             if(!checksum.equals(requestedChecksum)) {
-                log.error("Expected checksums '" + requestedChecksum + "' but the checksum was '" 
-                        + checksum + "' for the file '" + fileForValidation.getAbsolutePath() + "'");
-                ResponseInfo ri = new ResponseInfo();
-                ri.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-                ri.setResponseText("Wrong checksum! Expected: [" + requestedChecksum 
+                ResponseInfo responseInfo = new ResponseInfo();
+                responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
+                responseInfo.setResponseText("Wrong checksum! Expected: [" + requestedChecksum 
                         + "], but calculated: [" + checksum + "]");
-                throw new InvalidMessageException(ri);
+                throw new IllegalOperationException(responseInfo);
             }
         } else {
             // TODO is such a checksum required?

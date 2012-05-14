@@ -209,7 +209,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
                 uploadFile(fileToUpload, url);
             } catch (Exception e) {
                 ResponseInfo ir = new ResponseInfo();
-                ir.setResponseCode(ResponseCode.FAILURE);
+                ir.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
                 ir.setResponseText("Could not handle the creation and upload of the results due to: " + e.getMessage());
                 throw new InvalidMessageException(ir, e);
             }

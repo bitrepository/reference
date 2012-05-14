@@ -39,6 +39,7 @@ import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.FileIDValidator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.protocol.utils.Base16Utils;
+import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -110,7 +111,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);
             responseInfo.setResponseText("A checksum for deletion is required!");
-            throw new InvalidMessageException(responseInfo);
+            throw new IllegalOperationException(responseInfo);
         }
         
         String calculatedChecksum = getCache().getChecksum(message.getFileID());
@@ -120,14 +121,12 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
             log.info("Failed to handle delete operation on file '" + message.getFileID() + "' since the request had "
                     + "the checksum '" + requestChecksum + "' where our local file has the value '" 
                     + calculatedChecksum + "'. Sending alarm and respond failure.");
-            String errMsg = "Requested to delete file '" + message.getFileID() + "' with checksum '"
-                    + requestChecksum + "', but our file had a different checksum.";
-            getAlarmDispatcher().sendInvalidChecksumAlarm(message.getFileID(), errMsg);
             
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-            responseInfo.setResponseText(errMsg);
-            throw new InvalidMessageException(responseInfo);
+            responseInfo.setResponseText("Requested to delete file '" + message.getFileID() + "' with checksum '"
+                    + requestChecksum + "', but our file had a different checksum.");
+            throw new IllegalOperationException(responseInfo);
         }
     }
 

@@ -185,7 +185,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
                 res.setResultAddress(resultingAddress);
             } catch (Exception e) {
                 ResponseInfo ir = new ResponseInfo();
-                ir.setResponseCode(ResponseCode.FAILURE);
+                ir.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
                 ir.setResponseText(e.getMessage());
                 throw new InvalidMessageException(ir, e);
             }

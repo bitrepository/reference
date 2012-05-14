@@ -40,7 +40,6 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.common.FileIDValidator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
-import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.service.exception.InvalidMessageException;
@@ -133,9 +132,10 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
     /**
      * Method for uploading the file to the requested location.
      * @param message The message requesting the GetFile operation.
+     * @throws InvalidMessageException If the upload of the file fails.
      */
     @SuppressWarnings("deprecation")
-    protected void uploadToClient(GetFileRequest message) {
+    protected void uploadToClient(GetFileRequest message) throws InvalidMessageException {
         File requestedFile = getArchive().getFile(message.getFileID());
 
         try {
@@ -146,8 +146,11 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
             FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
             fe.uploadToServer(new FileInputStream(requestedFile), new URL(message.getFileAddress()));
         } catch (IOException e) {
-            throw new CoordinationLayerException("Could not retrieve the file '" + message.getFileID() + "' from "
-                    + message.getFileAddress() + "'", e);
+            ResponseInfo fri = new ResponseInfo();
+            fri.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
+            fri.setResponseText("The file '" + message.getFileID() + "' could not be uploaded at '" 
+                    + message.getFileAddress() + "'");
+            throw new InvalidMessageException(fri, e);
         }
     }
     

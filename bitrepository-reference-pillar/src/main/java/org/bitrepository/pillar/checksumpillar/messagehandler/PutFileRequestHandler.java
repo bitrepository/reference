@@ -39,11 +39,11 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.FileIDValidator;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
+import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -133,32 +133,40 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
     /**
      * Retrieves the actual data, validates it and stores it.
      * @param message The request to for the file to put.
+     * @throws RequestHandlerException If the operation fails.
      */
     @SuppressWarnings("deprecation")
-    private void retrieveFile(PutFileRequest message) {
+    private void retrieveFile(PutFileRequest message) throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
         
+        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation "
+                + "checksum for the file before putting it into the cache.", message.getAuditTrailInformation(), 
+                FileAction.CHECKSUM_CALCULATED);
         String calculatedChecksum = null;
         try {
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation "
-                    + "checksum for the file before putting it into the cache.", message.getAuditTrailInformation(), 
-                    FileAction.CHECKSUM_CALCULATED);
             calculatedChecksum = ChecksumUtils.generateChecksum(fe.downloadFromServer(new URL(message.getFileAddress())),
                     getChecksumType());
         } catch (IOException e) {
-            throw new CoordinationLayerException("Could not download the file '" + message.getFileID() 
-                    + "' from the url '" + message.getFileAddress() + "'.", e);
+            String errMsg = "Could not retrieve the file from '" + message.getFileAddress() + "'";
+            log.error(errMsg, e);
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
+            ri.setResponseText(errMsg);
+            throw new InvalidMessageException(ri);
         }
         
         if(message.getChecksumDataForNewFile() != null) {
             ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
             String givenChecksum = Base16Utils.decodeBase16(csType.getChecksumValue());
             if(!calculatedChecksum.equals(givenChecksum)) {
-                log.error("Expected checksums '" + givenChecksum + "' but the checksum was '" 
+                log.error("Wrong checksum! Expected: [" + givenChecksum 
+                        + "], but calculated: [" + calculatedChecksum + "]");
+                ResponseInfo ri = new ResponseInfo();
+                ri.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
+                ri.setResponseText("Expected checksums '" + givenChecksum + "' but the checksum was '" 
                         + calculatedChecksum + "'.");
-                throw new IllegalStateException("Wrong checksum! Expected: [" + givenChecksum 
-                + "], but calculated: [" + calculatedChecksum + "]");
+                throw new IllegalOperationException(ri);
             }
         } else {
             // TODO is such a checksum required?

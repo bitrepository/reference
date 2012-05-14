@@ -32,7 +32,7 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.RequestHandlerException;
 
 /**
@@ -61,7 +61,7 @@ public class GetFileRequestHandler extends ChecksumPillarMessageHandler<GetFileR
         ResponseInfo ri = new ResponseInfo();
         ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
         ri.setResponseText("The Checksum pillar is unable to deliver actual files.");
-        throw new InvalidMessageException(ri);
+        throw new IllegalOperationException(ri);
     }
 
     @Override

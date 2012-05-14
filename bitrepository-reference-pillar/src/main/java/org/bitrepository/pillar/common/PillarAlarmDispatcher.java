@@ -31,17 +31,13 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.RequestHandlerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The class for dispatching alarms.
  */
 public class PillarAlarmDispatcher extends AlarmDispatcher {
-    /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
-
     /** The settings for this AlarmDispatcher.*/
     private final ContributorContext context;
     
@@ -110,21 +106,10 @@ public class PillarAlarmDispatcher extends AlarmDispatcher {
         alarm.setAlarmText(e.getResponseInfo().getResponseText());
         alarm.setOrigDateTime(CalendarUtils.getNow());
         
-        warning(alarm);
-    }
-    
-    /**
-     * Method for creating and sending an Alarm about the checksum being invalid.
-     * @param fileId The id of the file, which has an invalid checksum.
-     * @param alarmText The test for the alarm message.
-     */
-    public void sendInvalidChecksumAlarm(String fileId, String alarmText) {
-        log.warn("Sending invalid checksum for the file '" + fileId + "' with the message: " + alarmText);
-        Alarm alarm = new Alarm();
-        alarm.setAlarmText(alarmText);
-        alarm.setAlarmCode(AlarmCode.CHECKSUM_ALARM);
-        alarm.setFileID(fileId);
-        alarm.setOrigDateTime(CalendarUtils.getNow());
-        error(alarm);
+        if(e instanceof IllegalOperationException) {
+            error(alarm);
+        } else {
+            warning(alarm);
+        }
     }
 }

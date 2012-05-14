@@ -418,7 +418,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Validate that the response contains the correct information.", 
                 "Should deliver a OPERATION_FAILED with both the correct and the wrong checksum.");
         ResponseInfo ir = finalResponse.getResponseInfo();
-        Assert.assertEquals(ir.getResponseCode(), ResponseCode.FAILURE);
+        Assert.assertEquals(ir.getResponseCode(), ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
         
         Assert.assertTrue(ir.getResponseText().contains(CORRECT_FILE_CHECKSUM_MD5), 
                 "The response should contain the actual checksum '" + CORRECT_FILE_CHECKSUM_MD5 + "', but was: '"
