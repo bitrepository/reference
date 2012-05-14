@@ -32,6 +32,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.modify.deletefile.conversation.DeleteFileConversationContext;
 import org.bitrepository.modify.deletefile.conversation.SimpleDeleteFileConversation;
 import org.bitrepository.modify.deletefile.selector.AllPillarsSelectorForDeleteFile;
@@ -60,6 +61,7 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
                     throws OperationFailedException {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
+        FileIDValidator.validateFileID(settings, fileId);
         
         log.info("Requesting the deletion of the file '" + fileId + "' from the pillar '" + pillarId 
                 + "' with checksum '" + checksumForPillar + "', while requested checksum '" + checksumRequested 
@@ -78,6 +80,7 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) 
                     throws OperationFailedException {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+        FileIDValidator.validateFileID(settings, fileId);
         
         log.info("Requesting the deletion of the file '" + fileId + "' from all pillars with checksum '" 
         + checksumForPillar + "', while requested checksum '" + checksumRequested 
