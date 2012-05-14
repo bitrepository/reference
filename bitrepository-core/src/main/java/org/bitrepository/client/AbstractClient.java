@@ -56,6 +56,7 @@ public class AbstractClient implements BitrepositoryClient {
         this.messageBus = messageBus;
         this.conversationMediator = conversationMediator;
         this.clientID = clientID;
+        settings.setComponentID(clientID);
     }
     
     protected void startConversation(Conversation conversation) {
