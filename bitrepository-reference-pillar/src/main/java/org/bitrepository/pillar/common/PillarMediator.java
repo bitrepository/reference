@@ -84,7 +84,7 @@ public abstract class PillarMediator extends AbstractContributorMediator {
             log.warn("Unexpected exception caught.", e);
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);
-            responseInfo.setResponseText("Exception: " + e.getMessage());
+            responseInfo.setResponseText(e.toString());
             
             MessageResponse response = handler.generateFailedResponse(request);
             response.setResponseInfo(responseInfo);

@@ -43,4 +43,4 @@ export KEYFILE=`ls conf/client*.pem | head -1`
 
 # Launch the application
 echo java -cp $CLASSPATH $LOGBACK org.bitrepository.pillar.checksumpillar.ChecksumPillarLauncher $PWD/conf $KEYFILE 
-java -cp $CLASSPATH $LOGBACK org.bitrepository.pillar.checksumpillar.ChecksumPillarLauncher $PWD/conf $KEYFILE > ReferencePillar.start 2>&1 &
+java -cp $CLASSPATH $LOGBACK org.bitrepository.pillar.checksumpillar.ChecksumPillarLauncher $PWD/conf $KEYFILE > ChecksumPillar.start 2>&1 &

@@ -83,7 +83,7 @@ public class PillarAlarmDispatcher extends AlarmDispatcher {
         // create a descriptor.
         Alarm alarm = new Alarm();
         alarm.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
-        alarm.setAlarmText(exception.getMessage());
+        alarm.setAlarmText(exception.toString());
         alarm.setAlarmRaiser(context.getComponentID());
         alarm.setOrigDateTime(CalendarUtils.getNow());
         

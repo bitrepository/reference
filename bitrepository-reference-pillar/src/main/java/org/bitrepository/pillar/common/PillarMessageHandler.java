@@ -25,20 +25,13 @@
 package org.bitrepository.pillar.common;
 
 import java.math.BigInteger;
-import java.security.NoSuchAlgorithmException;
 
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.handler.AbstractRequestHandler;
-import org.bitrepository.service.exception.InvalidMessageException;
-import org.bitrepository.service.exception.RequestHandlerException;
 
 /**
  * Abstract level for message handling for both types of pillar.
@@ -111,27 +104,6 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
             throw new IllegalArgumentException("The message had a wrong PillarId: "
                     + "Expected '" + getSettings().getReferenceSettings().getPillarSettings().getPillarID() 
                     + "' but was '" + pillarId + "'.");
-        }
-    }
-    
-    /**
-     * Validates a given checksum calculation.
-     * Ignores if the checksum type is null.
-     * @param checksumSpec The checksum specification to validate.
-     * @throws RequestHandlerException If the algorithm is invalid.
-     */
-    protected void validateChecksumSpecification(ChecksumSpecTYPE checksumSpec) throws RequestHandlerException {
-        if(checksumSpec == null) {
-            return;
-        }
-        
-        try {
-            ChecksumUtils.verifyAlgorithm(checksumSpec);
-        } catch (NoSuchAlgorithmException e) {
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText(e.getMessage());
-            throw new InvalidMessageException(fri, e);
         }
     }
 }
