@@ -35,7 +35,6 @@ import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.eventhandler.ContributorEvent;
-import org.bitrepository.client.eventhandler.DefaultEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 /**

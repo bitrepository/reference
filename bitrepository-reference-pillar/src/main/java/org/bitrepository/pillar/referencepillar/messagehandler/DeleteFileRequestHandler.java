@@ -34,7 +34,7 @@ import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.pillar.common.FileIDValidator;
+import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.utils.Base16Utils;

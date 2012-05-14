@@ -26,6 +26,7 @@ package org.bitrepository.client;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.client.conversation.Conversation;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -48,16 +49,41 @@ public class AbstractClient implements BitrepositoryClient {
     protected final String clientID;
     /** The mediator which should manage the conversations. */
     private final ConversationMediator conversationMediator;
-
+    /** The FileIDValidator.*/
+    private final FileIDValidator validator;
     
+    /**
+     * Constructor.
+     * @param settings The settings.
+     * @param conversationMediator The mediator.
+     * @param messageBus The messagebus.
+     * @param clientID The id of the client.
+     */
     public AbstractClient(Settings settings, ConversationMediator conversationMediator, MessageBus messageBus, String clientID) {
         ArgumentValidator.checkNotNull(clientID, "clientID");
         this.settings = settings;
         this.messageBus = messageBus;
         this.conversationMediator = conversationMediator;
         this.clientID = clientID;
+        validator = new FileIDValidator(settings);
     }
     
+    /**
+     * Validates the id of a file.
+     * @param fileID The file id to validate.
+     */
+    protected void validateFileID(String fileID) {
+        try {
+            validator.validateFileID(fileID);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid file id '" + fileID + "'.", e);
+        }
+    }
+    
+    /**
+     * Starts the conversation.
+     * @param conversation The conversation to start.
+     */
     protected void startConversation(Conversation conversation) {
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
@@ -72,5 +98,4 @@ public class AbstractClient implements BitrepositoryClient {
             log.info("Error during shutdown of messagebus ", e);
         }
     }
-
 }

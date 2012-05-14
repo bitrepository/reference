@@ -29,6 +29,7 @@ package org.bitrepository.access;
  * occurs.
  * Needs to be caught at the fault-barriers.
  */
+@SuppressWarnings("serial")
 public class AccessException extends RuntimeException {
     /**
      * Constructor for this exception with both text message and a cause.
