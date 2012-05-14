@@ -61,7 +61,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
      */
     public DeleteFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
         super(context, referenceArchive);
-        this.fileIdValidator = new FileIDValidator(context);
+        this.fileIdValidator = new FileIDValidator(context.getSettings());
     }
 
     @Override

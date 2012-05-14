@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.service.exception.InvalidMessageException;
 
 /**
@@ -36,32 +37,44 @@ import org.bitrepository.service.exception.InvalidMessageException;
 public class FileIDValidator {
     /** The regex pattern for the file ids.*/
     private String regex;
+    /** The system limitation for a file id (length 1-254, and no control letters).*/
+    private static final String SYSTEM_LIMIT = "[^\\p{Cntrl}]{1,254}";
     
     /**
      * Constructor.
      * @param context The context for the pillar.
      */
-    public FileIDValidator(PillarContext context) {
-        regex = context.getSettings().getCollectionSettings().getProtocolSettings().getAllowedFileIDPattern();
+    public FileIDValidator(Settings settings) {
+        regex = settings.getCollectionSettings().getProtocolSettings().getAllowedFileIDPattern();
         if(regex != null && regex.isEmpty()) {
             regex = null;
         }
     }
     
     /**
-     * Validates the given fileID.
+     * Validates the given fileID. Both against the setting and against the system limit.
      * @param fileID The file id to validate.
      * @throws InvalidMessageException If the id is invalid.
      */
     public void validateFileID(String fileID) throws InvalidMessageException {
-        if(regex != null && fileID != null) {
-            if(!Pattern.matches(regex, fileID)) {
+        if(fileID != null) {
+            if(regex != null) {
+                if(!Pattern.matches(regex, fileID)) {
+                    ResponseInfo ri = new ResponseInfo();
+                    ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+                    ri.setResponseText("The fileID '" + fileID + "' is invalid against the fileID regex '"
+                            + regex + "'.");
+                    throw new InvalidMessageException(ri);
+                }
+            }
+            
+            if(!Pattern.matches(SYSTEM_LIMIT, fileID)) {
                 ResponseInfo ri = new ResponseInfo();
                 ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
-                ri.setResponseText("The fileID '" + fileID + "' is invalid against the fileID regex '"
-                        + regex + "'.");
+                ri.setResponseText("The fileID '" + fileID + "' is invalid against the system limit regex '"
+                        + SYSTEM_LIMIT + "'.");
                 throw new InvalidMessageException(ri);
             }
-        }
+        }        
     }
 }

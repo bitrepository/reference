@@ -66,7 +66,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
      */
     public PutFileRequestHandler(PillarContext context, ChecksumStore refCache) {
         super(context, refCache);
-        this.fileIdValidator = new FileIDValidator(context);
+        this.fileIdValidator = new FileIDValidator(context.getSettings());
     }
     
     @Override

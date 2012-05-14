@@ -80,7 +80,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
      */
     public GetChecksumsRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
         super(context, referenceArchive);
-        this.fileIdValidator = new FileIDValidator(context);
+        this.fileIdValidator = new FileIDValidator(context.getSettings());
     }
     
     @Override
