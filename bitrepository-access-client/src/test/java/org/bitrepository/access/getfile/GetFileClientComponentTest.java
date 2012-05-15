@@ -55,7 +55,7 @@ import org.testng.annotations.Test;
  */
 public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
-    private final String TEST_CLIENT_ID = "test-client"; 
+    //private final String TEST_CLIENT_ID = "test-client"; 
     
     @BeforeMethod (alwaysRun=true)
     @Override

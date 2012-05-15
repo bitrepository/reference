@@ -49,7 +49,7 @@ public class TestGetStatusMessageFactory extends ClientTestMessageFactory {
         IdentifyContributorsForGetStatusResponse response = new IdentifyContributorsForGetStatusResponse();
         setResponseDetails(response, request, componentID,  replyTo);
         response.setResponseInfo(IDENTIFY_INFO_DEFAULT);
-        response.setContributor(clientID);
+        response.setContributor(componentID);
         return response;
     }
     
@@ -58,7 +58,7 @@ public class TestGetStatusMessageFactory extends ClientTestMessageFactory {
         GetStatusFinalResponse response = new GetStatusFinalResponse();
         setResponseDetails(response, request, componentID, replyTo);
         response.setResponseInfo(FINAL_INFO_DEFAULT);
-        response.setContributor(clientID);
+        response.setContributor(componentID);
         response.setResultingStatus(status);
         return response;        
     }

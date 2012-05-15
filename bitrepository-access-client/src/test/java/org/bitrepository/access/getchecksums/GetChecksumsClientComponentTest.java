@@ -72,7 +72,7 @@ import org.testng.annotations.Test;
 public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
     private TestGetChecksumsMessageFactory testMessageFactory;
     
-    private final String TEST_CLIENT_ID = "test-client";
+    //private final String TEST_CLIENT_ID = "test-client";
     
     private ChecksumSpecTYPE DEFAULT_CHECKSUM_SPECS;
     

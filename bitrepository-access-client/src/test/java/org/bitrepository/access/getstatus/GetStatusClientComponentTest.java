@@ -54,7 +54,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest{
 
         @BeforeMethod(alwaysRun=true)
         public void beforeMethodSetup() throws Exception {
-            testMessageFactory = new TestGetStatusMessageFactory(settings.getCollectionID(), TEST_CLIENT_ID);
+            testMessageFactory = new TestGetStatusMessageFactory(settings.getCollectionID(), null);//TEST_CLIENT_ID);
 
             if (settings.getCollectionSettings().getGetStatusSettings() == null) {
                 settings.getCollectionSettings().setGetStatusSettings(new GetStatusSettings());
@@ -114,7 +114,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest{
         }
         
         @Test(groups = {"regressiontest"})
-        public void getAllAuditTrails() throws InterruptedException {
+        public void getAllStatuses() throws InterruptedException {
             addDescription("Tests the simplest case of getting status for all contributers.");
 
             addStep("Create a GetStatusClient.", "");
