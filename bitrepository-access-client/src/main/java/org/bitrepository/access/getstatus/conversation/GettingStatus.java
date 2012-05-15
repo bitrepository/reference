@@ -75,12 +75,7 @@ public class GettingStatus extends PerformingOperationState {
     @Override
     protected void sendRequest() {
         GetStatusRequest request = new GetStatusRequest();
-        request.setCollectionID(context.getSettings().getCollectionID());
-        request.setCorrelationID(context.getConversationID());
-        request.setReplyTo(context.getSettings().getReferenceSettings().getClientSettings().getReceiverDestination());
-        request.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        request.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        request.setFrom(context.getClientID());
+        initializeMessage(request);
 
         context.getMonitor().requestSent("Sending GetStatusRequest", activeContributers.keySet().toString());
         for(String ID : activeContributers.keySet()) {

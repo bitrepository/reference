@@ -48,7 +48,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class GetStatusClientComponentTest extends DefaultFixtureClientTest{
+public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
 
         private TestGetStatusMessageFactory testMessageFactory;
 
@@ -154,10 +154,10 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest{
                     OperationEventType.REQUEST_SENT);
             GetStatusRequest requestPillar1 = pillar1Destination.waitForMessage(GetStatusRequest.class);
             Assert.assertEquals(requestPillar1, testMessageFactory.createGetStatusRequest(
-                    requestPillar1, PILLAR1_ID, pillar1DestinationId));
+                    requestPillar1, PILLAR1_ID, pillar1DestinationId, TEST_CLIENT_ID));
             GetStatusRequest requestPillar2 = pillar2Destination.waitForMessage(GetStatusRequest.class);
             Assert.assertEquals(requestPillar2, testMessageFactory.createGetStatusRequest(
-                    requestPillar2, PILLAR2_ID, pillar2DestinationId));
+                    requestPillar2, PILLAR2_ID, pillar2DestinationId, TEST_CLIENT_ID));
 
             addStep("Send a final response from pillar 1",
                     "A COMPONENT_COMPLETE event should be generated with the audit trail results.");

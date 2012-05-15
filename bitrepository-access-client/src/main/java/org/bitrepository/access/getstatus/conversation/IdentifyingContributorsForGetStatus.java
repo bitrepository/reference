@@ -21,11 +21,9 @@
  */
 package org.bitrepository.access.getstatus.conversation;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
-import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.GeneralConversationState;
 import org.bitrepository.client.conversation.IdentifyingState;
@@ -50,13 +48,8 @@ public class IdentifyingContributorsForGetStatus extends IdentifyingState {
     @Override
     protected void sendRequest() {
         IdentifyContributorsForGetStatusRequest request = new IdentifyContributorsForGetStatusRequest();
-        request.setCorrelationID(context.getConversationID());
-        request.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        request.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        request.setCollectionID(context.getSettings().getCollectionID());
-        request.setReplyTo(context.getSettings().getReferenceSettings().getClientSettings().getReceiverDestination());
+        initializeMessage(request);
         request.setTo(context.getSettings().getCollectionDestination());
-        request.setFrom(context.getClientID());
         
         context.getMonitor().identifyPillarsRequestSent("Identifying contributors for getting status");
         context.getMessageSender().sendMessage(request);

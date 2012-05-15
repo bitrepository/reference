@@ -64,14 +64,15 @@ public class TestGetStatusMessageFactory extends ClientTestMessageFactory {
     }
     
     public GetStatusRequest createGetStatusRequest(GetStatusRequest request, String componentID, 
-            String toDestination) {
+            String toDestination, String from) {
         GetStatusRequest message = new GetStatusRequest();
         initializeMessageDetails(message);
         message.setCorrelationID(request.getCorrelationID());
         message.setReplyTo(request.getReplyTo());
         message.setTo(toDestination);
         message.setContributor(componentID);
-        message.setFrom(clientID);
+        message.setFrom(from);
+        message.setAuditTrailInformation("");
         return message;
     }
     
