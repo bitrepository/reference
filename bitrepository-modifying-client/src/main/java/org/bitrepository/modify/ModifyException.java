@@ -27,6 +27,7 @@ package org.bitrepository.modify;
 /**
  * The default exception for the Modify module.
  */
+@SuppressWarnings("serial")
 public class ModifyException extends RuntimeException {
     /**
      * Constructor for this exception with both text message and a cause.

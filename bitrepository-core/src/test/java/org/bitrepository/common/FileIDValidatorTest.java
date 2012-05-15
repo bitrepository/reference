@@ -1,7 +1,8 @@
-package org.bitrepository.pillar.common;
+package org.bitrepository.common;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;

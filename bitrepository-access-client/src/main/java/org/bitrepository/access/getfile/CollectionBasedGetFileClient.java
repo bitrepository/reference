@@ -31,12 +31,11 @@ import org.bitrepository.access.getfile.conversation.SimpleGetFileConversation;
 import org.bitrepository.access.getfile.selectors.FastestPillarSelectorForGetFile;
 import org.bitrepository.access.getfile.selectors.GetFileSelector;
 import org.bitrepository.access.getfile.selectors.SpecificPillarSelectorForGetFile;
+import org.bitrepository.client.AbstractClient;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
+import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.FileIDValidator;
-import org.bitrepository.client.AbstractClient;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,8 +67,8 @@ public class CollectionBasedGetFileClient extends AbstractClient implements GetF
         ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
-        FileIDValidator.validateFileID(settings, fileID);
-
+        validateFileID(fileID);
+        
         log.info("Requesting fastest retrieval of the file '" + fileID);
         getFile(messageBus, settings, new FastestPillarSelectorForGetFile(
                 settings.getCollectionSettings().getClientSettings().getPillarIDs()), 
@@ -82,8 +81,8 @@ public class CollectionBasedGetFileClient extends AbstractClient implements GetF
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "pillarID");
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
-        FileIDValidator.validateFileID(settings, fileID);
-
+        validateFileID(fileID);
+        
         log.info("Requesting the file '" + fileID + "' from pillar '" + pillarID + "'.");
         getFile(messageBus, settings, new SpecificPillarSelectorForGetFile(
                 settings.getCollectionSettings().getClientSettings().getPillarIDs(), pillarID), 
