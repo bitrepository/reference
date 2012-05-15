@@ -55,9 +55,7 @@ import org.testng.annotations.Test;
  */
 public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     private TestDeleteFileMessageFactory messageFactory;
-
-    private final String TEST_CLIENT_ID = "test-client";
-    
+   
     @BeforeMethod(alwaysRun=true)
     public void initialise() throws Exception {
         if(useMockupPillar()) {

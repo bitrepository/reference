@@ -57,8 +57,6 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     private TestPutFileMessageFactory messageFactory;
     private File testFile;
     private long fileSize;
-
-    private final String TEST_CLIENT_ID = "test-client";
     
     @BeforeMethod(alwaysRun=true)
     public void initialise() throws Exception {
