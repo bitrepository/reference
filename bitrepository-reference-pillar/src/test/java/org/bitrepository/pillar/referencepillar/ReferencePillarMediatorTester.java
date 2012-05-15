@@ -21,8 +21,6 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
-import java.io.File;
-
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.MockAlarmDispatcher;
@@ -30,9 +28,11 @@ import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.service.contributor.ContributorContext;
-import org.bitrepository.settings.collectionsettings.AlarmLevel;
+import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+
+import java.io.File;
 
 public class ReferencePillarMediatorTester extends DefaultFixturePillarTest {
     
@@ -44,7 +44,7 @@ public class ReferencePillarMediatorTester extends DefaultFixturePillarTest {
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetChecksumsTests() throws Exception {
         File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        settings.getCollectionSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
+        settings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         if(dir.exists()) {
             FileUtils.delete(dir);
         }
