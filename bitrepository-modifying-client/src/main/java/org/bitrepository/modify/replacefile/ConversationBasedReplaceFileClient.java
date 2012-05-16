@@ -25,24 +25,19 @@
 package org.bitrepository.modify.replacefile;
 
 import java.net.URL;
-import java.util.Arrays;
-
-import javax.jms.JMSException;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.client.AbstractClient;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.exceptions.OperationFailedException;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.modify.replacefile.conversation.ReplaceFileConversationContext;
 import org.bitrepository.modify.replacefile.conversation.SimpleReplaceFileConversation;
 import org.bitrepository.modify.replacefile.pillarselector.AllPillarsSelectorForReplaceFile;
 import org.bitrepository.modify.replacefile.pillarselector.SpecificPillarSelectorForReplaceFile;
-import org.bitrepository.client.AbstractClient;
-import org.bitrepository.client.conversation.FlowController;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
-import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +67,7 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
-        FileIDValidator.validateFileID(settings, fileId);
+        validateFileID(fileId);
         
         log.info("Requesting the replacement of the file '" + fileId + "' at the pillar '" + pillarId + "' from the "
                 + "URL '" + url + "' and with the size '" + sizeOfNewFile + "', where the old file has the checksum '" 
@@ -97,7 +92,7 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
             EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
-        FileIDValidator.validateFileID(settings, fileId);
+        validateFileID(fileId);
         
         log.info("Requesting the replacement of the file '" + fileId + "' at every pillar from the URL '" + url 
                 + "' and with the size '" + sizeOfNewFile + "', where the old file has the checksum '" 

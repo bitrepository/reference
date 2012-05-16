@@ -49,7 +49,7 @@ public class TestGetStatusMessageFactory extends ClientTestMessageFactory {
         IdentifyContributorsForGetStatusResponse response = new IdentifyContributorsForGetStatusResponse();
         setResponseDetails(response, request, componentID,  replyTo);
         response.setResponseInfo(IDENTIFY_INFO_DEFAULT);
-        response.setContributor(clientID);
+        response.setContributor(componentID);
         return response;
     }
     
@@ -58,20 +58,21 @@ public class TestGetStatusMessageFactory extends ClientTestMessageFactory {
         GetStatusFinalResponse response = new GetStatusFinalResponse();
         setResponseDetails(response, request, componentID, replyTo);
         response.setResponseInfo(FINAL_INFO_DEFAULT);
-        response.setContributor(clientID);
+        response.setContributor(componentID);
         response.setResultingStatus(status);
         return response;        
     }
     
     public GetStatusRequest createGetStatusRequest(GetStatusRequest request, String componentID, 
-            String toDestination) {
+            String toDestination, String from) {
         GetStatusRequest message = new GetStatusRequest();
         initializeMessageDetails(message);
         message.setCorrelationID(request.getCorrelationID());
         message.setReplyTo(request.getReplyTo());
         message.setTo(toDestination);
         message.setContributor(componentID);
-        message.setFrom(clientID);
+        message.setFrom(from);
+        message.setAuditTrailInformation("");
         return message;
     }
     

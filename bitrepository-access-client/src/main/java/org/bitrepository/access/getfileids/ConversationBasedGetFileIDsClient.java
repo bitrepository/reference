@@ -30,12 +30,11 @@ import java.util.Collection;
 import org.bitrepository.access.getfileids.conversation.GetFileIDsConversationContext;
 import org.bitrepository.access.getfileids.conversation.SimpleGetFileIDsConversation;
 import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.client.AbstractClient;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
+import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.FileIDValidator;
-import org.bitrepository.client.AbstractClient;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +49,7 @@ import org.slf4j.LoggerFactory;
 public class ConversationBasedGetFileIDsClient extends AbstractClient implements GetFileIDsClient {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
-    
+
     /**
      * The constructor.
      * @param messageBus The messagebus for communication.
@@ -67,9 +66,7 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
             EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "Collection<String> pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
-        if(!fileIDs.isSetAllFileIDs()) {
-            FileIDValidator.validateFileID(settings, fileIDs.getFileID());
-        }
+        validateFileID(fileIDs.getFileID());
         
         log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"
                 + pillarIDs + "'. The result should be uploaded to '" + addressForResult + "'.");

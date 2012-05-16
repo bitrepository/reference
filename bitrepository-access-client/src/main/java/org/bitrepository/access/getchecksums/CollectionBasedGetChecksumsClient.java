@@ -39,6 +39,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.service.exception.InvalidMessageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +52,8 @@ import org.slf4j.LoggerFactory;
 public class CollectionBasedGetChecksumsClient extends AbstractClient implements GetChecksumsClient {
     /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
+    /** The FileIDValidator.*/
+    private final FileIDValidator validator;
 
     /**
      * The constructor.
@@ -61,6 +64,7 @@ public class CollectionBasedGetChecksumsClient extends AbstractClient implements
     public CollectionBasedGetChecksumsClient(MessageBus messageBus, ConversationMediator conversationMediator, 
             Settings settings, String clientID) {
         super(settings, conversationMediator, messageBus, clientID);
+        validator = new FileIDValidator(settings);
     }
 
     @Override
@@ -71,7 +75,11 @@ public class CollectionBasedGetChecksumsClient extends AbstractClient implements
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
         ArgumentValidator.checkNotNull(checksumSpec, "ChecksumSpecTYPE checksumSpec");
         if(!fileIDs.isSetAllFileIDs()) {
-            FileIDValidator.validateFileID(settings, fileIDs.getFileID());
+            try {
+                validator.validateFileID(fileIDs.getFileID());
+            } catch (InvalidMessageException e) {
+                throw new IllegalArgumentException("Invalid file id.", e);
+            }
         }
         
         log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"

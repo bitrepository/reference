@@ -34,20 +34,14 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.modify.putfile.conversation.PutFileConversationContext;
 import org.bitrepository.modify.putfile.conversation.SimplePutFileConversation;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A simple implementation of the PutClient.
  */
 public class ConversationBasedPutFileClient extends AbstractClient implements PutFileClient {
-    /** The log for this class.*/
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-       
     /**
      * Constructor.
      * @param messageBus The messagebus for communication.
@@ -65,7 +59,7 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
         ArgumentValidator.checkNotNull(url, "URL url");
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNegative(sizeOfFile, "long sizeOfFile");
-        FileIDValidator.validateFileID(settings, fileId);
+        validateFileID(fileId);
         
         PutFileConversationContext context = new PutFileConversationContext(fileId, url, sizeOfFile, 
                 checksumForValidationAtPillar, checksumRequestsForValidation, settings, messageBus, 

@@ -77,9 +77,9 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     @Override
     protected void initializeMessageBusListeners() {
         super.initializeMessageBusListeners();
-        //settings.setComponentID(TEST_CLIENT_ID);
+        settings.setComponentID(TEST_CLIENT_ID);
         clientDestinationId = settings.getReceiverDestination();
-        settings.getReferenceSettings().getClientSettings().setReceiverDestination(clientDestinationId);
+        //settings.getReferenceSettings().getClientSettings().setReceiverDestination(clientDestinationId);
         pillar1DestinationId = "Pillar1_topic" + getTopicPostfix();
         pillar2DestinationId = "Pillar2_topic" + getTopicPostfix();
         

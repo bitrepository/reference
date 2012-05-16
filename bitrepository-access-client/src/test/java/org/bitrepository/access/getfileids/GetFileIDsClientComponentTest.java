@@ -66,8 +66,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
     private TestFileStore pillar1FileStore;
 
     private static final String TEST_PILLAR_ID = "Pillar1";
-    private static final String TEST_CLIENT_ID = "test-client";
-    
+        
     /**
      * Set up the test scenario before running the tests in this class.
      * @throws javax.xml.bind.JAXBException

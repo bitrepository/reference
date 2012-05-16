@@ -58,7 +58,6 @@ import org.testng.annotations.Test;
 public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
     private TestReplaceFileMessageFactory messageFactory;
     private File testFile;
-    private final String TEST_CLIENT_ID = "test-client";
     
     @BeforeMethod(alwaysRun=true)
     public void initialise() throws Exception {
