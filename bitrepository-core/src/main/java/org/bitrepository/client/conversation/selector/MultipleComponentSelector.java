@@ -37,19 +37,19 @@ import java.util.List;
 public class MultipleComponentSelector implements ComponentSelector {
     /** Used for tracking who has answered. */
     protected final ContributorResponseStatus responseStatus;
-    protected final List<SelectedPillarInfo> selectedComponents = new LinkedList<SelectedPillarInfo>();
+    protected final List<SelectedComponentInfo> selectedComponents = new LinkedList<SelectedComponentInfo>();
 
     /**
-     * @param pillarsWhichShouldRespond The IDs of the pillars to be selected.
+     * @param componentsWhichShouldRespond The IDs of the components to be selected.
      */
-    public MultipleComponentSelector(Collection<String> pillarsWhichShouldRespond) {
-        ArgumentValidator.checkNotNullOrEmpty(pillarsWhichShouldRespond, "pillarsWhichShouldRespond");
-        responseStatus = new ContributorResponseStatus(pillarsWhichShouldRespond);
+    public MultipleComponentSelector(Collection<String> componentsWhichShouldRespond) {
+        ArgumentValidator.checkNotNullOrEmpty(componentsWhichShouldRespond, "componentsWhichShouldRespond");
+        responseStatus = new ContributorResponseStatus(componentsWhichShouldRespond);
     }
 
     /**
      * Method for processing a IdentifyPillarsForDeleteFileResponse. Checks whether the response is from the
-     * expected pillar.
+     * expected component.
      *
      * Consider overriding this in subclasses to perform type cheking og the message before delegating back to this
      * method (calling <code>super.processResponse(response)</code>).
@@ -58,12 +58,12 @@ public class MultipleComponentSelector implements ComponentSelector {
      */
     public void processResponse(MessageResponse response) throws UnexpectedResponseException {
         responseStatus.responseReceived(response.getFrom());
-        selectedComponents.add(new SelectedPillarInfo(response.getFrom(), response.getReplyTo()));
+        selectedComponents.add(new SelectedComponentInfo(response.getFrom(), response.getReplyTo()));
     }
 
     @Override
     public boolean isFinished() throws UnableToFinishException {
-        if (responseStatus.haveAllPillarResponded()) {
+        if (responseStatus.haveAllComponentsResponded()) {
             if (!selectedComponents.isEmpty()) {
                 return true;
             } else {
@@ -86,13 +86,13 @@ public class MultipleComponentSelector implements ComponentSelector {
      */
     @Override
     public List<String> getOutstandingComponents() {
-        return Arrays.asList(responseStatus.getOutstandPillars());
+        return Arrays.asList(responseStatus.getOutstandComponents());
     }
 
     /**
      * @return The selected pillars.
      */
-    public List<SelectedPillarInfo> getSelectedComponents() {
+    public List<SelectedComponentInfo> getSelectedComponents() {
         return selectedComponents;
     }
 

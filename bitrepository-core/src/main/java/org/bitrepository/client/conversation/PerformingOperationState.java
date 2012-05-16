@@ -61,7 +61,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
 
     @Override
     protected GeneralConversationState getNextState() throws UnableToFinishException {
-        if (getResponseStatus().haveAllPillarResponded()) {
+        if (getResponseStatus().haveAllComponentsResponded()) {
             getContext().getMonitor().complete("Finished operation");
             return new FinishedState(getContext());
         } else {
@@ -72,7 +72,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     @Override
     protected GeneralConversationState handleStateTimeout() {
         getContext().getMonitor().operationFailed(getName() + " operation timed out, " +
-                "the following contributors didn't respond: " + Arrays.toString(getResponseStatus().getOutstandPillars()));
+                "the following contributors didn't respond: " + Arrays.toString(getResponseStatus().getOutstandComponents()));
         return new FinishedState(getContext());
     }
 

@@ -34,7 +34,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
-import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
+import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 /**
@@ -56,10 +56,10 @@ public class DeletingFile extends PerformingOperationState {
      * Constructor.
      * @param context The context of the conversation.
      */
-    public DeletingFile(DeleteFileConversationContext context, List<SelectedPillarInfo> contributors) {
+    public DeletingFile(DeleteFileConversationContext context, List<SelectedComponentInfo> contributors) {
         this.context = context;
         this.activeContributors = new HashMap<String,String>();
-        for (SelectedPillarInfo contributorInfo : contributors) {
+        for (SelectedComponentInfo contributorInfo : contributors) {
             activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
         }
         this.responseStatus = new ContributorResponseStatus(activeContributors.keySet());
