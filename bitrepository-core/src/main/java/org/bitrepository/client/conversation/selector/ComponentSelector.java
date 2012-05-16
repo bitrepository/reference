@@ -30,8 +30,8 @@ import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 import java.util.List;
 
-/** Can be used to select a single pillar to run an operation on by handling the identify responses. <p>
- * The algorithm for selecting the pillar is implemented in the concrete classes.
+/** Can be used to select a single component to run an operation on by handling the identify responses. <p>
+ * The algorithm for selecting the component is implemented in the concrete classes.
  */
 public interface ComponentSelector {
 
@@ -50,9 +50,9 @@ public interface ComponentSelector {
     /**
      * Returns true if all the need information to select a pillar has been processed. <p>
      * 
-     * Note that a pillar might have been selected before finished, but the selection might change until the selector 
+     * Note that a component might have been selected before finished, but the selection might change until the selector 
      * has finished.
-     * @throws UnableToFinishException Indicates that the selector was unable to find a pillar. 
+     * @throws UnableToFinishException Indicates that the selector was unable to find a component. 
      */
     boolean isFinished() throws UnableToFinishException;
 

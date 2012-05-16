@@ -54,8 +54,6 @@
   </AlarmServiceSettings>
   <AuditTrailServiceSettings>
     <ID>audit-trail-service</ID>
-    <Contributors>test-pillar</Contributors>
-    <Contributors>integrity-service</Contributors>
     <AuditTrailServiceDatabaseUrl>jdbc:derby:auditservicedb</AuditTrailServiceDatabaseUrl>
     <CollectAuditInterval>3600000</CollectAuditInterval>
     <TimerTaskCheckInterval>60000</TimerTaskCheckInterval>

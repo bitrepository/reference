@@ -22,13 +22,13 @@
 package org.bitrepository.access.getfile.selectors;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
+import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 
 /**
  * Container for information about a pillar which as been identified and are marked as 
  * selected for a GetFile request.
  */
-public class SelectedPillarForGetFileInfo extends SelectedPillarInfo {
+public class SelectedPillarForGetFileInfo extends SelectedComponentInfo {
     /** @see #getTimeToDeliver() */
     private final TimeMeasureTYPE timeToDeliver;       
     

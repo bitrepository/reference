@@ -27,7 +27,7 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.selector.MultipleComponentSelector;
-import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
+import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 /**
@@ -47,7 +47,7 @@ public class PutFilePillarSelector extends MultipleComponentSelector {
         if (response instanceof IdentifyPillarsForPutFileResponse) {
             responseStatus.responseReceived(response.getFrom());
             if(response.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
-                selectedComponents.add(new SelectedPillarInfo(response.getFrom(), response.getReplyTo()));                
+                selectedComponents.add(new SelectedComponentInfo(response.getFrom(), response.getReplyTo()));                
             }
         } else {
             throw new UnexpectedResponseException("Are currently only expecting IdentifyPillarsForPutFileResponse's");
