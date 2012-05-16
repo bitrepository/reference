@@ -150,8 +150,51 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element ref="AlarmLevel" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The level for raising Alarms.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
+  </xs:element>
+
+  <xs:element name="AlarmLevel">
+    <xs:simpleType>
+      <xs:annotation>
+        <xs:documentation xml:lang="en">
+          Define the severeness of an incident before raising an Alarm.
+        </xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="EMERGENCY">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Only the most critical incidents can cause an Alarm to be raised.
+              E.g. all the files at a Pillar is missing.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="ERROR">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Raise an Alarm when an operation goes bad.
+              E.g. a file is only put on two out of three pillars.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="WARNING">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Raise an Alarm in every possible event.
+              E.g. not all expected pillars reply to an Identify request.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+      </xs:restriction>
+    </xs:simpleType>
   </xs:element>
 
   <xs:element name="DeleteFileSettings">

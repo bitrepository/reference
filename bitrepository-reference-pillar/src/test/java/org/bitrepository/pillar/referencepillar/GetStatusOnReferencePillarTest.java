@@ -21,8 +21,6 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
-import java.io.File;
-
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.StatusCode;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
@@ -38,11 +36,13 @@ import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.service.contributor.ContributorContext;
-import org.bitrepository.settings.collectionsettings.AlarmLevel;
+import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.io.File;
 
 public class GetStatusOnReferencePillarTest extends DefaultFixturePillarTest {
     GetStatusMessageFactory msgFactory;
@@ -61,7 +61,7 @@ public class GetStatusOnReferencePillarTest extends DefaultFixturePillarTest {
         }
         
         addStep("Initialize the pillar.", "Should not be a problem.");
-        settings.getCollectionSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
+        settings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
         audits = new MockAuditManager();
         ContributorContext contributorContext = new ContributorContext(messageBus, settings, 

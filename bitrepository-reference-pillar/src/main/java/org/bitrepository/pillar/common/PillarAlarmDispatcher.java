@@ -46,7 +46,7 @@ public class PillarAlarmDispatcher extends AlarmDispatcher {
      * @param context The context for the contributor for this alarm dispatcher.
      */
     public PillarAlarmDispatcher(ContributorContext context) {
-        super(context, context.getSettings().getCollectionSettings().getPillarSettings().getAlarmLevel());
+        super(context, context.getSettings().getReferenceSettings().getPillarSettings().getAlarmLevel());
         this.context = context;
     }
     

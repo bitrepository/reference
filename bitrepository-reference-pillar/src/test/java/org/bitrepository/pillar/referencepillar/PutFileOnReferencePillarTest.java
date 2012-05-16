@@ -24,13 +24,6 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URL;
-import java.util.Date;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -53,11 +46,18 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.bitrepository.service.contributor.ContributorContext;
-import org.bitrepository.settings.collectionsettings.AlarmLevel;
+import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
+import java.util.Date;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
@@ -74,7 +74,7 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
     public void initialiseGetChecksumsTests() throws Exception {
         msgFactory = new PutFileMessageFactory(settings);
         File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        settings.getCollectionSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
+        settings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         if(dir.exists()) {
             FileUtils.delete(dir);
         }

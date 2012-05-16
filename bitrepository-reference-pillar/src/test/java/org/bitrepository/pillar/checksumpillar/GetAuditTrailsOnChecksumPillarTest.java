@@ -21,12 +21,6 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
-import java.io.File;
-import java.math.BigInteger;
-import java.util.Date;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -44,11 +38,16 @@ import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMedi
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetAuditTrailsMessageFactory;
 import org.bitrepository.service.contributor.ContributorContext;
-import org.bitrepository.settings.collectionsettings.AlarmLevel;
+import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.File;
+import java.math.BigInteger;
+import java.util.Date;
 
 public class GetAuditTrailsOnChecksumPillarTest extends DefaultFixturePillarTest {
     GetAuditTrailsMessageFactory msgFactory;
@@ -67,7 +66,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends DefaultFixturePillarTest
         }
         
         addStep("Initialize the pillar.", "Should not be a problem.");
-        settings.getCollectionSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
+        settings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         cache = new MemoryCache();
         audits = new MockAuditManager();
         ContributorContext contributorContext = new ContributorContext(messageBus, settings, 

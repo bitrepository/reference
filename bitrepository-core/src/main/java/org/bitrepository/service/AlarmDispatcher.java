@@ -24,18 +24,18 @@
  */
 package org.bitrepository.service;
 
-import java.math.BigInteger;
-import java.util.UUID;
-
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.service.contributor.ContributorContext;
-import org.bitrepository.settings.collectionsettings.AlarmLevel;
+import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
+import java.util.UUID;
 
 /**
  * The class for dispatching alarms.
