@@ -291,13 +291,6 @@
         </xs:annotation>
         <xs:sequence>
           <xs:element name="ID" type="xs:string" />
-          <xs:element name="Contributors" type="xs:string" maxOccurs="unbounded">
-            <xs:annotation>
-              <xs:documentation>
-                The list of expected audit trail contributers.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
           <xs:element name="SendAlarmOnMissingContributer" type="xs:boolean" minOccurs="0">
             <xs:annotation>
               <xs:documentation>

@@ -60,7 +60,7 @@ public class AuditCollectorTest extends ExtendedTestCase {
         
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 2);
         Assert.assertEquals(store.getCallsToLargestSequenceNumber(), client.getCallsToGetAuditTrails() 
-                * settings.getReferenceSettings().getAuditTrailServiceSettings().getContributors().size(),
+                * settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().size(),
                 "There should be one call for largest sequence number for each contributor for each call to the client.");
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
         Assert.assertEquals(store.getCallsToGetAuditTrails(), 0);
@@ -82,7 +82,7 @@ public class AuditCollectorTest extends ExtendedTestCase {
         
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 1);
         Assert.assertEquals(store.getCallsToLargestSequenceNumber(), client.getCallsToGetAuditTrails() 
-                * settings.getReferenceSettings().getAuditTrailServiceSettings().getContributors().size(),
+                * settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().size(),
                 "There should be one call for largest sequence number for each contributor for each call to the client.");
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
         Assert.assertEquals(store.getCallsToGetAuditTrails(), 0);
