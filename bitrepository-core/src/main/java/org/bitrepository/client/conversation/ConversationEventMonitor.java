@@ -24,10 +24,12 @@
  */
 package org.bitrepository.client.conversation;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.eventhandler.AbstractOperationEvent;
 import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.DefaultEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
@@ -269,29 +271,14 @@ public class ConversationEventMonitor {
      * A pillar has failed to handle a request successfully.
      * @param info Cause information
      */
-    public void contributorFailed(String info) {
+    public void contributorFailed(String info, String contributor, ResponseCode responseCode) {
         log.warn(info);
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(COMPONENT_FAILED, info,
+            eventHandler.handleEvent(new ContributorFailedEvent(info, contributor, responseCode,
                     conversationID));
         }    
     }
-    
-    /**
-     * A pillar has failed to handle a request successfully.
-     * @param info Cause information
-     * @param e The cause
-     */
-    public void contributorFailed(String info, String componentId, Exception e) {
-        if (e == null) {
-            contributorFailed(info);
-        }
-        log.warn(info, e);
-        if (eventHandler != null) {
-            eventHandler.handleEvent(new ContributorEvent(COMPONENT_FAILED, info + ", " + e.getMessage(),
-                    componentId, conversationID));
-        }
-    }
+
     /**
      * General failure to complete the operation.
      * @param info Encapsulates the cause.
