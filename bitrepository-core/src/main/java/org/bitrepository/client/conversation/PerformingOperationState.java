@@ -21,14 +21,14 @@
  */
 package org.bitrepository.client.conversation;
 
-import java.util.Arrays;
-
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.common.exceptions.UnableToFinishException;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.utils.MessageUtils;
+
+import java.util.Arrays;
 
 /**
  * Handles the booking of performing the request phase messaging. Only the specialized workflow steps are required to
@@ -51,7 +51,9 @@ public abstract class PerformingOperationState extends GeneralConversationState 
                             msg.getFrom() + " after identification was finished");
                 } else {
                     getResponseStatus().responseReceived(msg.getFrom());
-                    getContext().getMonitor().contributorFailed("Received negative response from component " + msg.getFrom() + ":  " + msg.getResponseInfo());
+                    getContext().getMonitor().contributorFailed(
+                            "Received negative response from component " + msg.getFrom() + ":  " +
+                                    msg.getResponseInfo(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
                 }
             } catch(UnexpectedResponseException ure ) {
                 getContext().getMonitor().warning(ure.getMessage());
