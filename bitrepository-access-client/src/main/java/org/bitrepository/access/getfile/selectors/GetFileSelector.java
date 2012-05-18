@@ -56,7 +56,7 @@ public abstract class GetFileSelector implements ComponentSelector {
     
     @Override
     public List<String> getOutstandingComponents() {
-        return Arrays.asList(responseStatus.getOutstandPillars());
+        return Arrays.asList(responseStatus.getOutstandComponents());
     }
     
     public SelectedPillarForGetFileInfo getSelectedComponent() {
@@ -75,7 +75,7 @@ public abstract class GetFileSelector implements ComponentSelector {
     
     @Override
     public boolean isFinished() throws UnableToFinishException {
-        if (responseStatus.haveAllPillarResponded()) {
+        if (responseStatus.haveAllComponentsResponded()) {
             if (selectedPillar != null) {
                 return true;
             } else {

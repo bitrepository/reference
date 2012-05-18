@@ -34,7 +34,7 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
-import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
+import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 /**
@@ -55,10 +55,10 @@ public class ReplacingFile extends PerformingOperationState {
      * Constructor.
      * @param conversation The conversation in this state.
      */
-    public ReplacingFile(ReplaceFileConversationContext context, List<SelectedPillarInfo> contributors) {
+    public ReplacingFile(ReplaceFileConversationContext context, List<SelectedComponentInfo> contributors) {
         this.context = context;
         this.activeContributors = new HashMap<String,String>();
-        for (SelectedPillarInfo contributorInfo : contributors) {
+        for (SelectedComponentInfo contributorInfo : contributors) {
             activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
         }
         this.responseStatus = new ContributorResponseStatus(activeContributors.keySet());

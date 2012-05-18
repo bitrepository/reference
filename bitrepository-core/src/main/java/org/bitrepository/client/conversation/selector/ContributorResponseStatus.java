@@ -29,64 +29,64 @@ import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-/** Models the response state for a given set of pillars */
+/** Models the response state for a given set of components */
 public class ContributorResponseStatus {
-    private final Set<String> pillarsWhichShouldRespond;
-    private final Set<String> pillarsWithOutstandingResponse;
+    private final Set<String> componentsWhichShouldRespond;
+    private final Set<String> componentsWithOutstandingResponse;
 
     /**
      * Use for identify response bookkeeping.
-     * @param pillarsWhichShouldRespond An array of pillar IDs specifying which pillars are expected to respond 
+     * @param componentsWhichShouldRespond An array of componentIDs specifying which components are expected to respond 
      */
-    public ContributorResponseStatus(Collection<String> pillarsWhichShouldRespond) {
-        this.pillarsWhichShouldRespond = new HashSet<String>(pillarsWhichShouldRespond);
-        this.pillarsWithOutstandingResponse = new HashSet<String>(pillarsWhichShouldRespond);
+    public ContributorResponseStatus(Collection<String> componentsWhichShouldRespond) {
+        this.componentsWhichShouldRespond = new HashSet<String>(componentsWhichShouldRespond);
+        this.componentsWithOutstandingResponse = new HashSet<String>(componentsWhichShouldRespond);
     }
     
     /**
      * Use for operation response bookkeeping.
-     * @param pillarsWhichShouldRespond An array of selected pillar specifying which pillars are expected to respond. 
+     * @param componentssWhichShouldRespond An array of selected component specifying which components are expected to respond. 
      */
-    public ContributorResponseStatus(SelectedPillarInfo[] pillarsWhichShouldRespond) {
-        this.pillarsWhichShouldRespond = new HashSet<String>();
-        this.pillarsWithOutstandingResponse = new HashSet<String>();
-        for (SelectedPillarInfo pillar: pillarsWhichShouldRespond) {
-            this.pillarsWhichShouldRespond.add(pillar.getID());
-            this.pillarsWithOutstandingResponse.add(pillar.getID());
+    public ContributorResponseStatus(SelectedComponentInfo[] componentssWhichShouldRespond) {
+        this.componentsWhichShouldRespond = new HashSet<String>();
+        this.componentsWithOutstandingResponse = new HashSet<String>();
+        for (SelectedComponentInfo pillar: componentssWhichShouldRespond) {
+            this.componentsWhichShouldRespond.add(pillar.getID());
+            this.componentsWithOutstandingResponse.add(pillar.getID());
         }
     }
 
     /**
-     * Maintains the bookkeeping regarding which pillars have responded. 
+     * Maintains the bookkeeping regarding which components have responded. 
      * 
      * @throws UnexpectedResponseException This can mean: <ol>
-     * <li>A null pillarID</li>
-     * <li>A response has already been received from this pillar</li>
-     * <li>No response was expected from this pillar</li>
+     * <li>A null componentID</li>
+     * <li>A response has already been received from this component</li>
+     * <li>No response was expected from this component</li>
      * </ol>
      *  
      */
     public final void responseReceived(String componentId) throws UnexpectedResponseException {
         if (componentId == null) {
             throw new UnexpectedResponseException("Received response with null componentID");
-        } else if (pillarsWithOutstandingResponse.contains(componentId)) {
-            pillarsWithOutstandingResponse.remove(componentId);
-        } else if (pillarsWhichShouldRespond.contains(componentId)) {
+        } else if (componentsWithOutstandingResponse.contains(componentId)) {
+            componentsWithOutstandingResponse.remove(componentId);
+        } else if (componentsWhichShouldRespond.contains(componentId)) {
             throw new UnexpectedResponseException("Received more than one response from component " + componentId);
         } else {
             throw new UnexpectedResponseException("Received unexpected response from component " + componentId);
         }
     }
 
-    /** Returns a list of pillars where a identify response hasen't been received. */ 
-    public String[] getOutstandPillars() {
-        return pillarsWithOutstandingResponse.toArray(new String[pillarsWithOutstandingResponse.size()]);
+    /** Returns a list of components where a identify response hasen't been received. */ 
+    public String[] getOutstandComponents() {
+        return componentsWithOutstandingResponse.toArray(new String[componentsWithOutstandingResponse.size()]);
     }
 
     /**
-     * Return true all pillars have responded.
+     * Return true all components have responded.
      */
-    public final boolean haveAllPillarResponded() {
-        return pillarsWithOutstandingResponse.isEmpty();
+    public final boolean haveAllComponentsResponded() {
+        return componentsWithOutstandingResponse.isEmpty();
     }
 }

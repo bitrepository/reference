@@ -29,7 +29,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRespo
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.selector.ComponentSelector;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
-import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
+import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 
@@ -37,7 +37,7 @@ public abstract class DeleteFileSelector implements ComponentSelector {
     
     /** Used for tracking who has answered. */
     protected ContributorResponseStatus responseStatus;
-    protected final List<SelectedPillarInfo> selectedComponents = new LinkedList<SelectedPillarInfo>();
+    protected final List<SelectedComponentInfo> selectedComponents = new LinkedList<SelectedComponentInfo>();
 
     /**
      * Method to determine if a pillar should be chosen for deleting the file. 
@@ -61,7 +61,7 @@ public abstract class DeleteFileSelector implements ComponentSelector {
             IdentifyPillarsForDeleteFileResponse resp = (IdentifyPillarsForDeleteFileResponse) response;
             responseStatus.responseReceived(resp.getFrom());
             if (checkPillarResponseForSelection(resp)) {
-                selectedComponents.add(new SelectedPillarInfo(resp.getPillarID(), response.getReplyTo()));
+                selectedComponents.add(new SelectedComponentInfo(resp.getPillarID(), response.getReplyTo()));
             }
         } else {
             throw new UnexpectedResponseException("Are currently only expecting IdentifyPillarsForGetFileResponse's");
@@ -70,7 +70,7 @@ public abstract class DeleteFileSelector implements ComponentSelector {
 
     @Override
     public boolean isFinished() throws UnableToFinishException {
-        if (responseStatus.haveAllPillarResponded()) {
+        if (responseStatus.haveAllComponentsResponded()) {
             if (!selectedComponents.isEmpty()) {
                 return true;
             } else {
@@ -93,13 +93,13 @@ public abstract class DeleteFileSelector implements ComponentSelector {
      */
     @Override
     public List<String> getOutstandingComponents() {
-        return Arrays.asList(responseStatus.getOutstandPillars());
+        return Arrays.asList(responseStatus.getOutstandComponents());
     }
 
     /**
      * @return The selected pillars.
      */
-    public List<SelectedPillarInfo> getSelectedComponents() {
+    public List<SelectedComponentInfo> getSelectedComponents() {
         return selectedComponents;
     }
 

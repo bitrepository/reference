@@ -33,7 +33,7 @@ import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
-import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
+import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 
 public class GettingStatus extends PerformingOperationState {
     private final GetStatusConversationContext context;
@@ -41,11 +41,11 @@ public class GettingStatus extends PerformingOperationState {
     /** Tracks who have responded */
     private final ContributorResponseStatus responseStatus;  
     
-    public GettingStatus(GetStatusConversationContext context, List<SelectedPillarInfo> contributors) {
+    public GettingStatus(GetStatusConversationContext context, List<SelectedComponentInfo> contributors) {
         super();
         this.context = context;
         this.activeContributers = new HashMap<String,String>();
-        for (SelectedPillarInfo contributorInfo : contributors) {
+        for (SelectedComponentInfo contributorInfo : contributors) {
             activeContributers.put(contributorInfo.getID(), contributorInfo.getDestination());
         }
 

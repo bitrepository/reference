@@ -42,7 +42,7 @@ public abstract class IdentifyingState extends GeneralConversationState {
         if (!msg.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)    ) {
             getContext().getMonitor().contributorFailed(
                     "Received negative response from component " + msg.getFrom() +
-                    ":  " + msg.getResponseInfo());
+                    ":  " + msg.getResponseInfo(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
         } else {
             getContext().getMonitor().pillarIdentified(msg);
         }

@@ -36,7 +36,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
-import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
+import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 
 /**
  * Class for selecting pillars for the GetFileIDs operation.
@@ -45,7 +45,7 @@ public class PillarSelectorForGetFileIDs {
     /** The status for the responses from the pillars. */
     private final ContributorResponseStatus responseStatus;
     /** The list of information about the pillars selected for the GetFileIDs operation.*/
-    private final List<SelectedPillarInfo> selectedPillars = new LinkedList<SelectedPillarInfo>(); 
+    private final List<SelectedComponentInfo> selectedPillars = new LinkedList<SelectedComponentInfo>(); 
 
     /**
      * Constructor.
@@ -71,7 +71,7 @@ public class PillarSelectorForGetFileIDs {
                     response.getResponseInfo().getResponseText(), 
                     response.getResponseInfo().getResponseCode());
         }
-        selectedPillars.add(new SelectedPillarInfo(response.getPillarID(), response.getReplyTo()));
+        selectedPillars.add(new SelectedComponentInfo(response.getPillarID(), response.getReplyTo()));
     }
 
     /**
@@ -101,7 +101,7 @@ public class PillarSelectorForGetFileIDs {
      * @return Whether any pillars are outstanding.
      */
     public boolean isFinished() {
-        return responseStatus.haveAllPillarResponded();
+        return responseStatus.haveAllComponentsResponded();
     }
 
     /**
@@ -109,13 +109,13 @@ public class PillarSelectorForGetFileIDs {
      * @return An array of the IDs of the pillars which have not yet responded.
      */
     public List<String> getOutstandingPillars() {
-        return Arrays.asList(responseStatus.getOutstandPillars());
+        return Arrays.asList(responseStatus.getOutstandComponents());
     }
 
     /**
      * @return The selected pillars.
      */
-    public List<SelectedPillarInfo> getSelectedPillars() {
+    public List<SelectedComponentInfo> getSelectedPillars() {
         return selectedPillars;
     }
 }

@@ -29,7 +29,7 @@ import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
-import org.bitrepository.client.conversation.selector.SelectedPillarInfo;
+import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -41,11 +41,11 @@ public class GettingAuditTrails extends PerformingOperationState {
     private Map<String,String> activeContributors;
     private ContributorResponseStatus responseStatus;
 
-    public GettingAuditTrails(AuditTrailConversationContext context, List<SelectedPillarInfo> contributors) {
+    public GettingAuditTrails(AuditTrailConversationContext context, List<SelectedComponentInfo> contributors) {
         super();
         this.context = context;
         this.activeContributors = new HashMap<String,String>();
-        for (SelectedPillarInfo contributorInfo : contributors) {
+        for (SelectedComponentInfo contributorInfo : contributors) {
             activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
         }
         this.responseStatus = new ContributorResponseStatus(activeContributors.keySet());

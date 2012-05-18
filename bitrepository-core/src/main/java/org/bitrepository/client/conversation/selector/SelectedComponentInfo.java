@@ -27,25 +27,25 @@ package org.bitrepository.client.conversation.selector;
 /**
  * Container for information about a pillar which as been identified and are marked as selected for a request.
  */
-public class SelectedPillarInfo {
+public class SelectedComponentInfo {
     /** The ID of the selected pillar */
-    protected final String pillarID;
+    protected final String componentID;
     /** The topic for communication with the selected pillar */
-    protected final String pillarTopic;   
+    protected final String componentTopic;   
 
     /**
-     * @param pillarID The ID of the pillar
-     * @param pillarTopic
+     * @param componentID The ID of the pillar
+     * @param componentTopic
      */
-    public SelectedPillarInfo(String pillarID, String pillarTopic) {
+    public SelectedComponentInfo(String componentID, String componentTopic) {
         super();
-        this.pillarID = pillarID;
-        this.pillarTopic = pillarTopic;
+        this.componentID = componentID;
+        this.componentTopic = componentTopic;
     }
 
     /** @return The ID of the pillar chosen by this selector if finished. If unfinished null is returned */
     public String getID() {
-        return pillarID;
+        return componentID;
     }
 
     /** 
@@ -53,12 +53,12 @@ public class SelectedPillarInfo {
      * If unfinished null is returned 
      */
     public String getDestination() {
-        return pillarTopic;
+        return componentTopic;
     }  
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ": pillarID=" + pillarID
-                + ", pillarTopic=" + pillarTopic;
+        return getClass().getSimpleName() + ": componentID=" + componentID
+                + ", componentTopic=" + componentTopic;
     }
 }
