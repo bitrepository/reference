@@ -530,7 +530,7 @@ public class FilebasedChecksumStore implements ChecksumStore {
         }
         
         ChecksumEntry ce = checksumArchive.get(fileId);
-        if(ce.getChecksum() != oldChecksum) {
+        if(!ce.getChecksum().equals(oldChecksum)) {
             throw new IllegalStateException("Cannot replace the entry '" + fileId + "', since it does not have the "
                     + "checksum '" + oldChecksum + "'.");
         }
