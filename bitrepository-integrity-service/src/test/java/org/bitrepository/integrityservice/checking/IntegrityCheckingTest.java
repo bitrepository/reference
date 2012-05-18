@@ -70,6 +70,8 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         
         IntegrityModel cache = getIntegrityModel();
         String[] fileids = new String[]{"test-file-1", "test-file-2"};
+        FileIDs allFileIDs = new FileIDs();
+        allFileIDs.setAllFileIDs("true");
         
         addStep("Initialise the file ids data.", "Should be created and put into the cache.");
         FileIDsData fileidsData1 = new FileIDsData();
@@ -84,8 +86,8 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         fileidsData1.setFileIDsDataItems(items1);
         
         // add the files for two pillars.
-        cache.addFileIDs(fileidsData1, TEST_PILLAR_1);
-        cache.addFileIDs(fileidsData1, TEST_PILLAR_2);
+        cache.addFileIDs(fileidsData1, allFileIDs, TEST_PILLAR_1);
+        cache.addFileIDs(fileidsData1, allFileIDs, TEST_PILLAR_2);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
         IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
@@ -105,7 +107,9 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
 
         IntegrityModel cache = getIntegrityModel();
         String[] fileids = new String[]{"test-file-1", "test-file-2"};
-        
+        FileIDs allFileIDs = new FileIDs();
+        allFileIDs.setAllFileIDs("true");
+
         addStep("Initialise the file ids data.", "Should be created and put into the cache.");
         FileIDsData fileidsData1 = new FileIDsData();
         FileIDsDataItems items1 = new FileIDsDataItems();
@@ -119,7 +123,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         fileidsData1.setFileIDsDataItems(items1);
         
         // add the files for two pillars.
-        cache.addFileIDs(fileidsData1, TEST_PILLAR_1);
+        cache.addFileIDs(fileidsData1, allFileIDs, TEST_PILLAR_1);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
         IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
@@ -140,7 +144,9 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         
         IntegrityModel cache = getIntegrityModel();
         String[] fileids = new String[]{"test-file-1", "test-file-2"};
-        
+        FileIDs allFileIDs = new FileIDs();
+        allFileIDs.setAllFileIDs("true");
+
         addStep("Initialise the file ids data.", "Should be created and put into the cache.");
         FileIDsData fileidsData1 = new FileIDsData();
         FileIDsDataItems items1 = new FileIDsDataItems();
@@ -154,7 +160,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         fileidsData1.setFileIDsDataItems(items1);
         
         // add the files for two pillars.
-        cache.addFileIDs(fileidsData1, TEST_PILLAR_1);
+        cache.addFileIDs(fileidsData1, allFileIDs, TEST_PILLAR_1);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
         IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);

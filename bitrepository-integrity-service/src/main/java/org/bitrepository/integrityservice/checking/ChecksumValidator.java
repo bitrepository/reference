@@ -106,7 +106,7 @@ public class ChecksumValidator {
                 continue;
             }
             
-            if(csType != fileInfo.getChecksumType()) {
+            if(!csType.equals(fileInfo.getChecksumType())) {
                 log.warn("Expected to see the ChecksumSpec: '" + csType + "', but it was '" 
                         + fileInfo.getChecksumType() + "'. Integrity issue found for the file infos: {}", fileInfos);
                 return false;

@@ -24,8 +24,10 @@
  */
 package org.bitrepository.integrityservice.checking;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
@@ -65,8 +67,15 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
         
         if(report.hasIntegrityIssues()) {
             log.warn("Found errors in the integrity check: " + report.generateReport());
+            validateWhetherDeletingFileID(report);
         }
         
+        System.out.println(report.generateReport());
+        System.out.println("getChecksumErrors: " + report.getChecksumErrors());
+        System.out.println("getFilesWithChecksumSpecIssues: " + report.getFilesWithChecksumSpecIssues());
+        System.out.println("getFilesWithoutIssues: " + report.getFilesWithoutIssues());
+        System.out.println("getMissingFiles: " + report.getMissingFiles());
+        System.out.println("getNewUncheckedFiles: " + report.getNewUncheckedFiles());
         return report;
     }
     
@@ -99,5 +108,26 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
             return cache.getAllFileIDs();
         } 
         return Arrays.asList(fileIDs.getFileID());
+    }
+    
+    /**
+     * Validates the integrity report for whether any file ids are missing on all pillars, and therefore should be
+     * removed from the database.
+     * @param report The report to analyse.
+     */
+    private void validateWhetherDeletingFileID(IntegrityReport report) {
+        log.info("Checking for files missing at all pillars.");
+        for(MissingFileData missingFile : report.getMissingFiles()) {
+            List<String> pillars = new ArrayList<String>();
+            pillars.addAll(settings.getCollectionSettings().getClientSettings().getPillarIDs());
+            
+            for(String pillarId : missingFile.getPillarIds()) {
+                pillars.remove(pillarId);
+            }
+            
+            if(pillars.isEmpty()) {
+                cache.deleteFileIdEntry(missingFile.getFileId());
+            }
+        }
     }
 }

@@ -139,12 +139,14 @@ public class IntegrityDAO {
         final int indexChecksumGuid = 3;
         final int indexLastChecksumCheck = 4;
         final int indexPillarGuid = 5;
+        final int indexFileState = 6;
+        final int indexChecksumState = 7;
         
         long fileGuid = retrieveFileGuid(fileId);
         List<FileInfo> res = new ArrayList<FileInfo>();
         String sql = "SELECT " + FI_LAST_FILE_UPDATE + ", " + FI_CHECKSUM + ", " + FI_CHECKSUM_GUID + ", "
-                + FI_LAST_CHECKSUM_UPDATE + ", " + FI_PILLAR_GUID + " FROM " + FILE_INFO_TABLE + " WHERE " 
-                + FI_FILE_GUID + " = ?";
+                + FI_LAST_CHECKSUM_UPDATE + ", " + FI_PILLAR_GUID + ", " + FI_FILE_STATE + ", " + FI_CHECKSUM_STATE 
+                + " FROM " + FILE_INFO_TABLE + " WHERE " + FI_FILE_GUID + " = ?";
         
         try {
             ResultSet dbResult = null;
@@ -162,8 +164,12 @@ public class IntegrityDAO {
                     String pillarId = retrievePillarFromGuid(pillarGuid);
                     ChecksumSpecTYPE checksumType = retrieveChecksumSpecFromGuid(checksumGuid);
                     
+                    FileState fileState = FileState.fromOrdinal(dbResult.getInt(indexFileState));
+                    ChecksumState checksumState = ChecksumState.fromOrdinal(dbResult.getInt(indexChecksumState));
+                    
                     FileInfo f = new FileInfo(fileId, CalendarUtils.getXmlGregorianCalendar(lastFileCheck), checksum, 
-                            checksumType, CalendarUtils.getXmlGregorianCalendar(lastChecksumCheck), pillarId);
+                            checksumType, CalendarUtils.getXmlGregorianCalendar(lastChecksumCheck), pillarId,
+                            fileState, checksumState);
                     res.add(f);
                 }
             } finally {
@@ -308,6 +314,23 @@ public class IntegrityDAO {
                     + PILLAR_ID + " = ? ) AND " + FI_FILE_GUID + " = ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE 
                     + " WHERE " + FILES_ID + " = ? )";
         DatabaseUtils.executeStatement(dbConnection, sql, ChecksumState.VALID.ordinal(), pillarId, fileId);
+    }
+    
+    /**
+     * Remove the given file id from the file table, and all the entries for this file in the file info table. 
+     * @param fileId The id of the file to be removed.
+     */
+    public void removeFileId(String fileId) {
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+        Long guid = retrieveFileGuid(fileId);
+        
+        log.info("Removing the file id '" + fileId + "' from the files table.");
+        String removeFileIDSql = "DELETE FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ?";
+        DatabaseUtils.executeStatement(dbConnection, removeFileIDSql, fileId);
+        
+        log.info("Removing the entries for the file with id '" + fileId + "' from the file info table.");
+        String removeFileInfoEntrySql = "DELETE FROM " + FILE_INFO_TABLE + " WHERE " + FI_FILE_GUID + " = ?";
+        DatabaseUtils.executeStatement(dbConnection, removeFileInfoEntrySql, guid);
     }
 
     /**
@@ -470,7 +493,7 @@ public class IntegrityDAO {
             try {
                 dbResult = DatabaseUtils.selectObject(dbConnection, sql, checksumGuid);
                 if(!dbResult.next()) {
-                    log.warn("No checksum specification for the guid '" + checksumGuid 
+                    log.debug("No checksum specification for the guid '" + checksumGuid 
                             + "' found with the SQL '" + sql + "'. A null is returned.");
                     return null;
                 }

@@ -28,6 +28,7 @@ import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -130,29 +131,34 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         IntegrityDatabase cache = new IntegrityDatabase(settings);
         SimpleIntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
         clearDatabase(DATABASE_URL);
+        FileIDs allFileIDs = new FileIDs();
+        allFileIDs.setAllFileIDs("true");
+        FileIDs fileIDOne = new FileIDs();
+        fileIDOne.setFileID(fileId1);
+        FileIDs fileIDTwo = new FileIDs();
+        fileIDTwo.setFileID(fileId2);
         
         addStep("Create file id data to populate the cache.", "Data should be different for the different pillars.");
         FileIDsData fileIdsAll = getFileIDsData(fileId1, fileId2);
-        cache.addFileIDs(fileIdsAll, pillarId1);
+        cache.addFileIDs(fileIdsAll, allFileIDs, pillarId1);
         
         FileIDsData fileIdsOne = getFileIDsData(fileId1);
-        cache.addFileIDs(fileIdsOne, pillarId2);
+        cache.addFileIDs(fileIdsOne, fileIDOne, pillarId2);
         
         addStep("Validate that a new file is missing from one pillar", "Should be pillar 3");
         long miss1 = cache.getNumberOfMissingFiles(pillarId1);
         long miss2 = cache.getNumberOfMissingFiles(pillarId2);
         
-        FileIDs fileIDs = new FileIDs();
-        fileIDs.setAllFileIDs("true");
-        checker.checkFileIDs(fileIDs);
+        checker.checkFileIDs(allFileIDs);
         
         Assert.assertEquals(cache.getNumberOfMissingFiles(pillarId1), miss1, "No new missing files at pillar 1");
-        Assert.assertFalse(miss2 == cache.getNumberOfMissingFiles(pillarId2), "Should be one missing file at pillar 2");
+        Assert.assertFalse(miss2 == cache.getNumberOfMissingFiles(pillarId2), "Should be one missing file at pillar 2, "
+                + "but was: " + cache.getNumberOfMissingFiles(pillarId2));
         
         addStep("Adding the file to the pillar, where it is missing", "Should no longer be missing.");
         
         FileIDsData fileIdsTwo = getFileIDsData(fileId2);
-        cache.addFileIDs(fileIdsTwo, pillarId2);
+        cache.addFileIDs(fileIdsTwo, fileIDTwo, pillarId2);
         Assert.assertEquals(cache.getNumberOfMissingFiles(pillarId2), 0, "No more missing files at pillar 2");
         
         addStep("Create checksum data and populate the cache.", "Data should differ for achieving checksum errors.");
@@ -166,7 +172,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
 
         addStep("Performing the checksum check", "Should find an checksum error.");
         printDatabase(DATABASE_URL);
-        checker.checkChecksum(fileIDs);
+        checker.checkChecksum(allFileIDs);
         printDatabase(DATABASE_URL);
         
         Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId1), 1, "They should disagree upon one.");
@@ -210,7 +216,8 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         IntegrityReport report1 = checker.checkChecksum(fileIds);
         printDatabase(DATABASE_URL);
         
-        Assert.assertFalse(report1.hasIntegrityIssues(), "There should have been found no checksum errors.");
+        Assert.assertFalse(report1.hasIntegrityIssues(), "There should have been found no integrity issues, but was: " 
+                + report1.generateReport());
         Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId1), 0, "They should disagree upon one.");
         Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId2), 0, "They should disagree upon one.");
         Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId3), 0, "They should disagree upon one.");
@@ -254,7 +261,57 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId2), 1, "They should disagree upon one.");
         Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId3), 2, 
                 "Pillar 3 should have another checksum error.");
+    }
+    
+    @Test(groups = {"databasetest", "integrationtest"})
+    public void integrityCheckForUnknownFileTest() throws Exception {
+        addDescription("Test whether a file id, which is missing at every will be deleted from cache.");
+        addStep("Setup variables and constants.", "Should not be a problem.");
+        String fileId1 = "TEST-FILE-ID"; // + new Date().getTime();
+        String fileId2 = "ANOTHER-TEST-FILE-ID"; //-" + new Date().getTime();
+        String pillarId1 = "integrityCheckTest-1";
+        String pillarId2 = "integrityCheckTest-2";
+        
+        addStep("Setup database cache and integrity checker", "Should not be a problem");
+        settings.getReferenceSettings().getIntegrityServiceSettings().setDatabaseUrl(DATABASE_URL);
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId1);
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId2);
+        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0);
+        IntegrityDatabase cache = new IntegrityDatabase(settings);
+        SimpleIntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
+        clearDatabase(DATABASE_URL);
+        FileIDs fileIDs = new FileIDs();
+        fileIDs.setAllFileIDs("true");
+        
+        addStep("Create file id data to populate the cache.", "Data should be different for the different pillars.");
+        FileIDsData fileIdsBoth = getFileIDsData(fileId1, fileId2);
+        cache.addFileIDs(fileIdsBoth, fileIDs,  pillarId1);
+        cache.addFileIDs(fileIdsBoth, fileIDs, pillarId2);
+        
+        addStep("Check whether the pillars are missing any files.", "Neither should have any missing files.");
+        checker.checkFileIDs(fileIDs);
+        Assert.assertEquals(cache.getNumberOfMissingFiles(pillarId1), 0, "Pillar 1 should not be missing any files.");
+        Assert.assertEquals(cache.getNumberOfMissingFiles(pillarId2), 0, "Pillar 2 should not be missing any files.");
 
+        addStep("Update the cache where pillar 1 is missing one file.", "Should be ok.");
+        FileIDsData fileIdsOne = getFileIDsData(fileId1);
+        cache.addFileIDs(fileIdsOne, fileIDs, pillarId1);
+        
+        addStep("Check whether the pillars are missing any files.", "Pillar 1 should be missing 1 file.");
+        checker.checkFileIDs(fileIDs);
+        Assert.assertEquals(cache.getNumberOfMissingFiles(pillarId1), 1, "Pillar 1 should be missing one file.");
+        Assert.assertEquals(cache.getNumberOfMissingFiles(pillarId2), 0, "Pillar 2 should not be missing any files.");
+        
+        addStep("Update the cache where pillar 2 is missing one file.", "Should be OK.");
+        cache.addFileIDs(fileIdsOne, fileIDs, pillarId2);
+        
+        addStep("Check whether the pillars are missing any files.", "1 file should be missing from both pillars, "
+                + "and therefore the id should be removed from the cache.");
+        checker.checkFileIDs(fileIDs);
+        Assert.assertEquals(cache.getNumberOfMissingFiles(pillarId1), 0, "Pillar 1 should not be missing any files.");
+        Assert.assertEquals(cache.getNumberOfMissingFiles(pillarId2), 0, "Pillar 2 should not be missing any files.");
+        Assert.assertEquals(cache.getAllFileIDs(), Arrays.asList(fileId1));
     }
     
     private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileId, String checksum) {

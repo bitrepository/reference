@@ -27,6 +27,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.integrityservice.cache.database.ChecksumState;
+import org.bitrepository.integrityservice.cache.database.FileState;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -46,7 +48,8 @@ public class FileInfoTest extends ExtendedTestCase {
     public void testFileInfo() {
         addDescription("Tests the FileInfo element. Adds all data and extracts it again.");
         addStep("Setup the file info.", "Should be possible to extract all the data again.");
-        FileInfo fi = new FileInfo(FILE_ID, LAST_FILE_CHECK, CHECKSUM, CHECKSUM_TYPE, LAST_CHECKSUM_CHECK, PILLAR_ID);
+        FileInfo fi = new FileInfo(FILE_ID, LAST_FILE_CHECK, CHECKSUM, CHECKSUM_TYPE, LAST_CHECKSUM_CHECK, PILLAR_ID,
+                FileState.UNKNOWN, ChecksumState.UNKNOWN);
         
         Assert.assertEquals(fi.getFileId(), FILE_ID);
         Assert.assertEquals(fi.getDateForLastFileIDCheck().toGregorianCalendar().getTimeInMillis(), LAST_FILE_CHECK_MILLIS);

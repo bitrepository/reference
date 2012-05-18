@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
@@ -46,9 +47,9 @@ public class MockIntegrityModel implements IntegrityModel {
 
     private int callsForAddfileIDs = 0;
     @Override
-    public void addFileIDs(FileIDsData data, String pillarId) {
+    public void addFileIDs(FileIDsData data, FileIDs expectedFileIDs, String pillarId) {
         callsForAddfileIDs++;
-        integrityModel.addFileIDs(data, pillarId);
+        integrityModel.addFileIDs(data, expectedFileIDs, pillarId);
     }
     public int getCallsForAddFileIDs() {
         return callsForAddfileIDs;        
@@ -142,5 +143,15 @@ public class MockIntegrityModel implements IntegrityModel {
     }
     public int getCallsForSetChecksumAgreement() {
         return callsForSetChecksumAgreement;
+    }
+    
+    private int callsForDeleteFileIdEntry = 0;
+    @Override
+    public void deleteFileIdEntry(String fileId) {
+        callsForDeleteFileIdEntry++;
+        integrityModel.deleteFileIdEntry(fileId);
+    }
+    public int getCallsForDeleteFileIdEntry() {
+        return callsForDeleteFileIdEntry;
     }
 }

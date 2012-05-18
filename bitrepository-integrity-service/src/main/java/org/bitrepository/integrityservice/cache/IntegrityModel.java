@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 
 /**
@@ -38,9 +39,10 @@ public interface IntegrityModel {
     /**
      * Add file ID data to cache.
      * @param data The received data.
+     * @param expectedFileIDs The expected FileIDs. Those missing will be set to 'missing'.
      * @param pillarId The id of the pillar the received data comes from.
      */
-    void addFileIDs(FileIDsData data, String pillarId);
+    void addFileIDs(FileIDsData data, FileIDs expectedFileIDs, String pillarId);
 
     /**
      * Add checksum data to cache.
@@ -100,4 +102,10 @@ public interface IntegrityModel {
      * @param pillarIds The ids of the pillars, where the file has a valid checksum.
      */
     void setChecksumAgreement(String fileId, Collection<String> pillarIds);
+    
+    /**
+     * Removes a given file id from the cache.
+     * @param fileId The id of the file to be removed from cache.
+     */
+    void deleteFileIdEntry(String fileId);
 }

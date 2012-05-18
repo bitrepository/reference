@@ -30,6 +30,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.database.FileState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,6 +100,9 @@ public class FileExistenceValidator {
         unfoundPillars.addAll(pillarIds);
         
         for(FileInfo fileinfo : fileInfos) {
+            if(fileinfo.getFileState() == FileState.MISSING) {
+                continue;
+            }
             if(!unfoundPillars.remove(fileinfo.getPillarId())) {
                 log.warn("Not expected pillar '" + fileinfo.getPillarId() + "' for file '" + fileinfo.getFileId() 
                         + "'");
