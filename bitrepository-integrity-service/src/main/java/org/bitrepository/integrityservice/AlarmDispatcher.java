@@ -36,7 +36,6 @@ public interface AlarmDispatcher {
     
     /**
      * Method for sending an Alarm when something bad happens.
-     * @param alarmConcerning What the alarm is concerning.
      * @param alarm The description of the alarm, e.g. What caused the alarm.
      */
     void sendAlarm(Alarm alarm);
