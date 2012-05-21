@@ -125,7 +125,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
 
         // go through all the files and find any missing
         String fileID = fileids.getFileID();
-        if(fileID == null || fileID.isEmpty()) {
+        if(fileID == null) {
             return;
         }
         validateFileID(fileID);

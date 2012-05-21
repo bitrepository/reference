@@ -22,6 +22,7 @@
 package org.bitrepository.pillar.checksumpillar;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -42,11 +43,12 @@ public class FileBasedCacheTest extends ExtendedTestCase {
     Settings settings;
     
     private final String CHECKSUM_DIR = "test-output/checksumDir";
-    private File csDir = new File(CHECKSUM_DIR);
+    private File csDir;
     
     @BeforeClass (alwaysRun = true)
     public void setup() {
         settings = TestSettingsProvider.reloadSettings();
+        csDir = FileUtils.retrieveDirectory(CHECKSUM_DIR);
         
         settings.getReferenceSettings().getPillarSettings().setFileDir(csDir.getAbsolutePath());
     }
@@ -70,7 +72,6 @@ public class FileBasedCacheTest extends ExtendedTestCase {
         
         FilebasedChecksumStore cache = new FilebasedChecksumStore(settings);
         Assert.assertTrue(csDir.isDirectory());
-        
         
         addStep("Perform the put of a file. Several times with same and different checksums", 
                 "Should be no exception when putting the file with same checksum, but an exception when different checksum");
@@ -179,5 +180,35 @@ public class FileBasedCacheTest extends ExtendedTestCase {
         } catch (IllegalStateException e) {
             // expected.            
         }
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void testFileBasedCacheLoading() throws Exception {
+        addDescription("Testing the file based cache loading of an existing cache.");
+        addStep("Setup variables and cache", "No errors.");
+        String FILE_ID1 = "file1";
+        String FILE_ID2 = "file2";
+        String CHECKSUM = "1234cccc4321";
+        
+        File csFile = new File(csDir,
+                "checksum_" + settings.getReferenceSettings().getPillarSettings().getPillarID() + ".checksum");
+        FileOutputStream out = new FileOutputStream(csFile, false);
+        out.write(new String(FILE_ID1 + "##" + CHECKSUM + "\n").getBytes());
+        out.write(new String(FILE_ID2 + "##" + CHECKSUM + "\n").getBytes());
+        out.write(new String("WRONG-ENTY-WITHOUT-HASHS" + "\n").getBytes());
+        out.flush();
+        out.close();
+        
+        System.out.println("PATH:" + csFile.getAbsolutePath());
+        FilebasedChecksumStore cache = new FilebasedChecksumStore(settings);
+        Assert.assertTrue(cache.hasFile(FILE_ID1));
+        Assert.assertTrue(cache.hasFile(FILE_ID2));
+        
+        Assert.assertTrue(cache.hasEnoughSpace());
+        settings.getReferenceSettings().getPillarSettings().setMinimumSizeLeft(Long.MAX_VALUE);
+        Assert.assertFalse(cache.hasEnoughSpace());
+        
+        Assert.assertEquals(cache.getChecksumFilePath(), csFile.getCanonicalPath());
+        Assert.assertTrue(cache.getWrongEntryFilePath().startsWith(csDir.getCanonicalPath()));
     }
 }

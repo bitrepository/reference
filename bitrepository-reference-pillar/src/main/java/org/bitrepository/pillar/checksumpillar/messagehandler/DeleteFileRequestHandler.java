@@ -101,14 +101,6 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         
         // calculate and validate the checksum of the file.
         ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
-        ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
-        // TODO this should only be validated, if it is required by the CollectionSettings.
-        if(checksumType == null) {
-            ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.FAILURE);
-            responseInfo.setResponseText("A checksum for deletion is required!");
-            throw new IllegalOperationException(responseInfo);
-        }
         
         String calculatedChecksum = getCache().getChecksum(message.getFileID());
         String requestChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
@@ -146,10 +138,6 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         ChecksumSpecTYPE checksumType = message.getChecksumRequestForExistingFile();
         
-        if(checksumType == null) {
-            log.warn("No checksum requested for the file about to be deleted.");
-            return null;
-        }
         String checksum = getCache().getChecksum(message.getFileID());
         
         res.setChecksumSpec(checksumType);
@@ -163,17 +151,10 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
      * Performs the operation of deleting the file from the archive.
      * @param message The message requesting the file to be deleted.
      */
-    protected void deleteTheFile(DeleteFileRequest message) throws RequestHandlerException {
-        try {
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Deleting the file.", 
-                    message.getAuditTrailInformation(), FileAction.DELETE_FILE);
-            getCache().deleteEntry(message.getFileID());
-        } catch (Exception e) {
-            ResponseInfo ir = new ResponseInfo();
-            ir.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            ir.setResponseText("Could not delete the file from the checksum cache: " + e.getMessage());
-            throw new InvalidMessageException(ir, e);
-        }
+    protected void deleteTheFile(DeleteFileRequest message) {
+        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Deleting the file.", 
+                message.getAuditTrailInformation(), FileAction.DELETE_FILE);
+        getCache().deleteEntry(message.getFileID());
     }
 
     /**

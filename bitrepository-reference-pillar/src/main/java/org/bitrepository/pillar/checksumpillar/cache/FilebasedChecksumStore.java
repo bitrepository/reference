@@ -110,11 +110,6 @@ public class FilebasedChecksumStore implements ChecksumStore {
     private final Settings settings;
     
     /**
-     * The minimum space left.
-     */
-    private long minSpaceLeft;
-    
-    /**
      * Constructor.
      * Retrieves the minimum space left variable, and ensures the existence of
      * the archive file. If the file does not exist, then it is created.
@@ -123,10 +118,9 @@ public class FilebasedChecksumStore implements ChecksumStore {
         super();
         this.settings = settings;
         
-        // Get the minimum space left setting.
-        minSpaceLeft = settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
         // make sure, that minSpaceLeft is non-negative.
-        ArgumentValidator.checkPositive(minSpaceLeft, "Minimum space left may not be negative.");
+        ArgumentValidator.checkPositive(settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft(), 
+                "Minimum space left may not be negative.");
 
         // Initialize the archive and bad-entry files.
         initializeFiles();
@@ -137,7 +131,7 @@ public class FilebasedChecksumStore implements ChecksumStore {
      * 
      * @return The checksum file name.
      */
-    public String getFileName() {
+    public String getChecksumFilePath() {
         return checksumFile.getPath();
     }
     
@@ -146,7 +140,7 @@ public class FilebasedChecksumStore implements ChecksumStore {
      * 
      * @return The wrong entry file name.
      */
-    public String getWrongEntryFilename() {
+    public String getWrongEntryFilePath() {
         return wrongEntryFile.getPath();
     }
 
@@ -158,7 +152,7 @@ public class FilebasedChecksumStore implements ChecksumStore {
     public boolean hasEnoughSpace() {
         // The file must be valid and have enough space.
         if (checkArchiveFile(checksumFile)
-                && (getBytesFree() > minSpaceLeft)) {
+                && (getBytesFree() > settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft())) {
             return true;
         }
         return false;
@@ -173,7 +167,7 @@ public class FilebasedChecksumStore implements ChecksumStore {
     private boolean hasEnoughSpaceForRecreate() {
         // check if the checksum file is larger than space left and the minimum
         // space left.
-        if(checksumFile.length() + minSpaceLeft 
+        if(checksumFile.length() + settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft() 
                 > getBytesFree()) {
             return false;
         }
@@ -211,6 +205,7 @@ public class FilebasedChecksumStore implements ChecksumStore {
         
         // Create file is checksumFile does not exist.
         if(!checksumFile.exists()) {
+            log.info("Instantiating a new file for the checksum data.");
             try {
                 checksumFile.createNewFile();
                 lastModifiedChecksumFile = checksumFile.lastModified();
@@ -220,8 +215,7 @@ public class FilebasedChecksumStore implements ChecksumStore {
                 throw new IllegalStateException(msg, e);
             }
         } else {
-            // If the archive file already exists, then it must consist of the archive for this replica. It must 
-            // therefore be loaded into the memory.
+            log.info("Loading the existing file for the checksum data.");
             loadFile();
         }
     }

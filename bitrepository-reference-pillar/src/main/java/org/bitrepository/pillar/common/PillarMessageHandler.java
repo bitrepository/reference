@@ -71,13 +71,6 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
         this.context = context;
         this.fileIdValidator = new FileIDValidator(context.getSettings());
     }
-    
-    /**
-     * @return The alarmDispatcher for this message handler.
-     */
-    protected PillarAlarmDispatcher getAlarmDispatcher() {
-        return context.getAlarmDispatcher();
-    }
 
     /**
      * @return The messagebus for this message handler.

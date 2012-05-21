@@ -214,6 +214,44 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
+    public void pillarGetFileTestFailedNoSuchFileInOperation() throws Exception {
+        addDescription("Tests that the ReferencePillar is able to reject a GetFile requests for a file, which it does not have.");
+        addStep("Set up constants and variables.", "Should not fail here!");
+        String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
+        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        String auditTrail = null;
+        FilePart filePart = null;
+        
+        addStep("Move the test file into the file directory.", "Should be all-right");
+        File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
+        Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        
+        addStep("Create and send the actual GetFile message to the pillar.", 
+                "Should be received and handled by the pillar.");
+        GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, 
+                msgFactory.getNewCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, FROM, pillarId, 
+                clientDestinationId, pillarDestinationId);
+        messageBus.sendMessage(getRequest);
+        
+        addStep("Retrieve the FinalResponse for the GetFile request", 
+                "The GetFile response should be sent by the pillar.");
+        GetFileFinalResponse finalResponse = clientTopic.waitForMessage(GetFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
+        
+        Assert.assertEquals(finalResponse,
+                msgFactory.createGetFileFinalResponse(
+                        getRequest.getCorrelationID(),
+                        finalResponse.getFileAddress(), 
+                        finalResponse.getFileID(), 
+                        filePart,
+                        pillarId, 
+                        finalResponse.getReplyTo(), 
+                        finalResponse.getResponseInfo(), 
+                        finalResponse.getTo()));     
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
     public void pillarGeneralTestWrongCollectionID() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetFile requests with a wrong CollectionID.");
         addStep("Set up constants and variables.", "Should not fail here!");

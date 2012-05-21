@@ -119,18 +119,13 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      */
     public void checkThatAllRequestedFilesAreAvailable(GetFileIDsRequest message) throws RequestHandlerException {
         FileIDs fileids = message.getFileIDs();
-        if(fileids == null) {
-            log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
-            return;
-        }
         
         List<String> missingFiles = new ArrayList<String>();
         String fileID = fileids.getFileID();
-        if(fileID != null && !fileID.isEmpty() && !getArchive().hasFile(fileID)) {
+        if(fileID != null && !getArchive().hasFile(fileID)) {
             missingFiles.add(fileID);
         }
         
-        // Throw exception if any files are missing.
         if(!missingFiles.isEmpty()) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);

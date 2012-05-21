@@ -64,13 +64,15 @@ public class PutFileMessageFactory extends ClientTestMessageFactory {
     }
     
     public IdentifyPillarsForPutFileRequest createIdentifyPillarsForPutFileRequest(String auditTrail, 
-            String fileId, long fileSize, String from, String replyTo) {
+            String fileId, Long fileSize, String from, String replyTo) {
         IdentifyPillarsForPutFileRequest res = new IdentifyPillarsForPutFileRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFileID(fileId);
-        res.setFileSize(BigInteger.valueOf(fileSize));
+        if(fileSize != null) {
+            res.setFileSize(BigInteger.valueOf(fileSize));
+        }
         res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
@@ -110,7 +112,9 @@ public class PutFileMessageFactory extends ClientTestMessageFactory {
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);
-        res.setFileSize(BigInteger.valueOf(fileSize));
+        if(fileSize != null) {
+            res.setFileSize(BigInteger.valueOf(fileSize));
+        }
         res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);

@@ -80,14 +80,6 @@ public interface FileStore {
      * @see #downloadFileForValidation(String, InputStream)
      */
     public void moveToArchive(String fileID) throws Exception;
-    
-    /**
-     * Replaces a file with another.
-     * @param fileID The id of the file to replace.
-     * @param inputStream The InputStream with the new content of the file.
-     * @throws Exception If anything unexpected occurs (e.g. no such file, not enough space, etc.)
-     */
-    public void replaceFile(String fileID, InputStream inputStream) throws Exception;
  
     /**
      * Removes a file from the storage area.

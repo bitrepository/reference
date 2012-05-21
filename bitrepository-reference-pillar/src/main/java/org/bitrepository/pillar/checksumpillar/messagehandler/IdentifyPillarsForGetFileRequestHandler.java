@@ -30,7 +30,6 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.service.exception.InvalidMessageException;
@@ -72,19 +71,6 @@ public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessa
     @Override
     public MessageResponse generateFailedResponse(IdentifyPillarsForGetFileRequest message) {
         return createFinalResponse(message);
-    }
-    
-    /**
-     * Handles the identification messages for the GetFile operation.
-     * @param message The IdentifyPillarsForGetFileRequest message to handle.
-     */
-    public void handleMessage(IdentifyPillarsForGetFileRequest message) {
-        ArgumentValidator.checkNotNull(message, "IdentifyPillarsForGetFileRequest message");
-
-        try {
-        } catch (RuntimeException e) {
-            getAlarmDispatcher().handleRuntimeExceptions(e);
-        }
     }
     
     /**

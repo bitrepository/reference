@@ -24,14 +24,23 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.MockAlarmDispatcher;
 import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
+import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMessageHandler;
+import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.service.exception.RequestHandlerException;
+import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import java.io.File;
 
@@ -40,9 +49,10 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
     protected ReferencePillarMediator mediator;
     protected MockAlarmDispatcher alarmDispatcher;
     protected MockAuditManager audits;
+    protected PillarContext context;
 
     @BeforeMethod (alwaysRun=true)
-    public void initialiseDeleteFileTests() throws Exception {
+    public void initialiseTests() throws Exception {
         File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
         if(dir.exists()) {
             FileUtils.delete(dir);
@@ -55,8 +65,68 @@ public class ReferencePillarTest extends DefaultFixturePillarTest {
                 settings.getReferenceSettings().getPillarSettings().getPillarID(),
                 settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
         alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
-        mediator = new ReferencePillarMediator(context, archive);
-        mediator.start();
+        context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void testReferencePillarMessageHandler() throws Exception {
+        addDescription("Test the handling of the ReferencePillarMessageHandler super-class.");
+        addStep("Setup", "Should be OK.");
+        MockRequestHandler mockRequestHandler = new MockRequestHandler(context, archive);
+        
+        addStep("Test the MD5 checksum type without any salt.", "Should be valid.");
+        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
+        csType.setChecksumSalt(null);
+        csType.setChecksumType(ChecksumType.MD5);
+        mockRequestHandler.validateChecksum(csType);
+        
+        addStep("Test another csType with salt.", "Should be valid.");
+        csType = new ChecksumSpecTYPE();
+        csType.setChecksumSalt(Base16Utils.encodeBase16("checksum"));
+        csType.setChecksumType(ChecksumType.OTHER);
+        
+        try {
+            mockRequestHandler.validateChecksum(csType);
+            Assert.fail("Should throw an RequestHandlerException here!");
+        } catch (RequestHandlerException e) {
+            // expected.
+        }
+        
+        addStep("Test the pillar ID", "Should be Ok, with the id from settings, but not with another pillar id");
+        mockRequestHandler.validatePillarID(settings.getReferenceSettings().getPillarSettings().getPillarID());
+        try {
+            mockRequestHandler.validatePillarID("asdfghjklæwetyguvpbmopijå.døtphstiøyizhdfvgnayegtxtæhjmdtuilsfm,s");
+            Assert.fail("Should throw an IllegalArgumentException here!");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
+    
+    private class MockRequestHandler extends ReferencePillarMessageHandler<MessageRequest> {
+
+        protected MockRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
+            super(context, referenceArchive);
+        }
+
+        @Override
+        public Class<MessageRequest> getRequestClass() {
+            return MessageRequest.class;
+        }
+
+        @Override
+        public void processRequest(MessageRequest request) throws RequestHandlerException {}
+        
+        @Override
+        public MessageResponse generateFailedResponse(MessageRequest request) {
+            return null;
+        }
+        
+        public void validateChecksum(ChecksumSpecTYPE csType) throws RequestHandlerException {
+            validateChecksumSpecification(csType);
+        }
+        
+        public void validatePillarID(String pillarId) throws RequestHandlerException {
+            super.validatePillarId(pillarId);
+        }
     }
 }

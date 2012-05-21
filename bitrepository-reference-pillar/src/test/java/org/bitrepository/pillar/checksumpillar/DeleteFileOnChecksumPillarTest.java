@@ -160,7 +160,7 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarDeleteFileTestFailedNoSuchFile() throws Exception {
+    public void checksumPillarDeleteFileTestFailedNoSuchFileDuringIdentify() throws Exception {
         addDescription("Tests the DeleteFile functionality of the reference pillar for the scenario when the file does not exist.");
         addStep("Setting up the variables for the test.", "Should be instantiated.");
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
@@ -204,6 +204,50 @@ public class DeleteFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 ResponseCode.FILE_NOT_FOUND_FAILURE);  
         
         addStep("Validate the content of the cache", "Should not contain the checksum of the file");
+        Assert.assertNull(cache.getChecksum(FILE_ID));
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void checksumPillarDeleteFileTestFailedNoSuchFileDuringOperation() throws Exception {
+        addDescription("Tests the DeleteFile functionality of the reference pillar for the scenario when the file does not exist.");
+        addStep("Setting up the variables for the test.", "Should be instantiated.");
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        String auditTrail = "DELETE-FILE-TEST";
+        String CHECKSUM = "1234cccccccc4321";
+        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+                ChecksumType.MD5.toString());
+
+        ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
+        csSpec.setChecksumSalt(null);
+        csSpec.setChecksumType(ChecksumType.MD5);
+        
+        addStep("Cleanup the memory cache so it does not contain any files.", "Should be possible.");
+        cache.cleanUp();
+        
+        ChecksumDataForFileTYPE csData = new ChecksumDataForFileTYPE();
+        csData.setCalculationTimestamp(CalendarUtils.getEpoch());
+        csData.setChecksumSpec(csSpec);
+        csData.setChecksumValue(Base16Utils.encodeBase16(CHECKSUM));
+        
+        addStep("Create and send the actual DeleteFile message to the checksum pillar.", 
+                "Should be received and handled by the checksum pillar.");
+        DeleteFileRequest deleteFileRequest = msgFactory.createDeleteFileRequest(auditTrail, 
+                csData, csSpec, settings.getCollectionID(), FILE_ID, FROM, pillarId, 
+                clientDestinationId, pillarDestinationId);
+        messageBus.sendMessage(deleteFileRequest);
+        
+        addStep("Retrieve the FinalResponse for the DeleteFile request", 
+                "The DeleteFile response should be sent by the checksum pillar.");
+        DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
+        
+        Assert.assertEquals(finalResponse,
+                msgFactory.createDeleteFileFinalResponse(finalResponse.getChecksumDataForExistingFile(), 
+                        finalResponse.getCorrelationID(), FILE_ID, pillarId, finalResponse.getReplyTo(), 
+                        finalResponse.getResponseInfo(), finalResponse.getTo()));
+
+        addStep("Validate the content of the cache", "Should no longer contain the checksum of the file");
         Assert.assertNull(cache.getChecksum(FILE_ID));
     }
     

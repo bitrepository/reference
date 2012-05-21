@@ -213,6 +213,28 @@ public class GetFileIDsOnChecksumPillarTest extends DefaultFixturePillarTest {
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
         
+        addStep("Create and send the identify request message.", 
+                "Should be received and handled by the checksum pillar.");
+        IdentifyPillarsForGetFileIDsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileIDsRequest(
+                auditTrail, null, FROM, clientDestinationId);
+        messageBus.sendMessage(identifyRequest);
+        
+        addStep("Retrieve and validate the response from the checksum pillar.", 
+                "The checksum pillar should make a response.");
+        IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+                IdentifyPillarsForGetFileIDsResponse.class);
+        Assert.assertEquals(receivedIdentifyResponse, 
+                msgFactory.createIdentifyPillarsForGetFileIDsResponse(
+                        identifyRequest.getCorrelationID(),
+                        null, 
+                        pillarId,
+                        receivedIdentifyResponse.getReplyTo(),
+                        receivedIdentifyResponse.getResponseInfo(),
+                        receivedIdentifyResponse.getTimeToDeliver(),
+                        receivedIdentifyResponse.getTo()));
+        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.IDENTIFICATION_POSITIVE);
+
         addStep("Create and send the GetFileIDs request message.", 
                 "Should be caught and handled by the checksum pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(

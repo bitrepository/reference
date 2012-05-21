@@ -826,4 +826,107 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Check the content of the cache", "Should still have the original checksum for the file.");
         Assert.assertEquals(cache.getChecksum(FILE_ID), CHECKSUM);
     }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void pillarReplaceTestSuccessCaseWithFewChecksums() throws Exception {
+        addDescription("Tests the replace functionality of the reference pillar for the successful scenario, where as "
+                + "few checksums are requested as possible.");
+        addStep("Setting up the variables for the test.", "Should be instantiated.");
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        String auditTrail = "DELETE-FILE-TEST";
+        String CHECKSUM = "1234cccccccc4321";
+        String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
+        long FILE_SIZE = 1L;
+        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+                ChecksumType.MD5.toString());
+
+        ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
+        csSpec.setChecksumSalt(null);
+        csSpec.setChecksumType(ChecksumType.MD5);
+        
+        File replaceFile = new File("src/test/resources/" + DEFAULT_FILE_ID);
+        Assert.assertTrue(replaceFile.isFile(), "The test file does not exist at '" + replaceFile.getAbsolutePath() + "'.");
+        
+        ChecksumDataForFileTYPE csDataExistingFile = new ChecksumDataForFileTYPE();
+        csDataExistingFile.setCalculationTimestamp(CalendarUtils.getEpoch());
+        csDataExistingFile.setChecksumSpec(csSpec);
+        csDataExistingFile.setChecksumValue(Base16Utils.encodeBase16(CHECKSUM));
+
+        addStep("Populate the memory cache with the file to delete.", "Should be possible.");
+        cache.putEntry(FILE_ID, CHECKSUM);
+        
+        addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
+        IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(
+                auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
+        messageBus.sendMessage(identifyRequest);
+        
+        addStep("Retrieve and validate the response from the pillar.", "The pillar should make a response.");
+        IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+                IdentifyPillarsForReplaceFileResponse.class);
+        Assert.assertEquals(receivedIdentifyResponse, 
+                msgFactory.createIdentifyPillarsForReplaceFileResponse(
+                        identifyRequest.getCorrelationID(),
+                        FILE_ID,
+                        csSpec,
+                        pillarId,
+                        receivedIdentifyResponse.getReplyTo(),
+                        receivedIdentifyResponse.getResponseInfo(),
+                        receivedIdentifyResponse.getTimeToDeliver(),
+                        receivedIdentifyResponse.getTo()));
+        
+        addStep("Create and send the actual Replace message to the pillar.", 
+                "Should be received and handled by the pillar.");
+        ReplaceFileRequest replaceRequest = msgFactory.createReplaceFileRequest(
+                auditTrail, 
+                csDataExistingFile, 
+                null, 
+                null, 
+                null, 
+                receivedIdentifyResponse.getCorrelationID(), 
+                FILE_ADDRESS, 
+                FILE_ID, 
+                FILE_SIZE, 
+                FROM, 
+                pillarId, 
+                clientDestinationId, 
+                receivedIdentifyResponse.getReplyTo());
+        messageBus.sendMessage(replaceRequest);
+        
+        addStep("Retrieve the ProgressResponse for the replace request", "The replace response should be sent by the pillar.");
+        ReplaceFileProgressResponse progressResponse = clientTopic.waitForMessage(ReplaceFileProgressResponse.class);
+        Assert.assertEquals(progressResponse,
+                msgFactory.createReplaceFileProgressResponse(
+                        identifyRequest.getCorrelationID(), 
+                        progressResponse.getFileAddress(), 
+                        progressResponse.getFileID(),
+                        csSpec,
+                        pillarId, 
+                        progressResponse.getReplyTo(), 
+                        progressResponse.getResponseInfo(), 
+                        progressResponse.getTo()));
+        
+        addStep("Retrieve the FinalResponse for the replace request", "The replace response should be sent by the pillar.");
+        ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.
+                OPERATION_COMPLETED);
+        
+        Assert.assertEquals(finalResponse,
+                msgFactory.createReplaceFileFinalResponse(
+                        finalResponse.getChecksumDataForExistingFile(),
+                        finalResponse.getChecksumDataForNewFile(),
+                        replaceRequest.getCorrelationID(), 
+                        FILE_ADDRESS, 
+                        FILE_ID, 
+                        csSpec, 
+                        pillarId, 
+                        finalResponse.getReplyTo(), 
+                        finalResponse.getResponseInfo(), 
+                        finalResponse.getTo()));
+        
+        // validating the checksum
+        Assert.assertEquals(finalResponse.getFileID(), FILE_ID, "The FileID of this test.");
+        Assert.assertNull(finalResponse.getChecksumDataForExistingFile());
+        Assert.assertNull(finalResponse.getChecksumDataForNewFile());
+    }
 }

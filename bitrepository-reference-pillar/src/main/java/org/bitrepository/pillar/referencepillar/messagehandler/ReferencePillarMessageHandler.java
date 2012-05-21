@@ -80,7 +80,7 @@ public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHand
         } catch (NoSuchAlgorithmException e) {
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FAILURE);
-            fri.setResponseText(e.getMessage());
+            fri.setResponseText(e.toString());
             throw new InvalidMessageException(fri, e);
         }
     }

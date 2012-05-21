@@ -64,13 +64,15 @@ public class ReplaceFileMessageFactory extends ClientTestMessageFactory {
     }
     
     public IdentifyPillarsForReplaceFileRequest createIdentifyPillarsForReplaceFileRequest( 
-            String auditTrail, String fileId, long fileSize, String from, String replyTo) {
+            String auditTrail, String fileId, Long fileSize, String from, String replyTo) {
         IdentifyPillarsForReplaceFileRequest res = new IdentifyPillarsForReplaceFileRequest();
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFileID(fileId);
-        res.setFileSize(BigInteger.valueOf(fileSize));
+        if(fileSize != null) {
+            res.setFileSize(BigInteger.valueOf(fileSize));
+        }
         res.setFrom(from);
         res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);

@@ -161,19 +161,6 @@ public class ReferenceArchive implements FileStore {
     }
 
     @Override
-    public void replaceFile(String fileID, InputStream inputStream) throws IOException {
-        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
-        ArgumentValidator.checkNotNull(inputStream, "inputStream");
-        
-        // delete the old file.
-        deleteFile(fileID);
-
-        // Store the new file.
-        downloadFileForValidation(fileID, inputStream);
-        moveToArchive(fileID);
-    }
-
-    @Override
     public void deleteFile(String fileID) throws FileNotFoundException {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 

@@ -88,11 +88,4 @@ public class ReferencePillar {
             log.warn("Could not close the messagebus.", e);
         }
     }
-    
-    /**
-     * @return The mediator connected to this reference pillar.
-     */
-    public ReferencePillarMediator getMediator() {
-        return mediator;
-    }
 }

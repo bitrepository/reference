@@ -244,13 +244,14 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarPutTestFailedFileSizeOperation() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a put operation for too large files "
-                + "in the operation process.");
+                + "in the operation process. Also tests that neither file id or file size is required by the identify.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String auditTrail = null;
         String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         Long FILE_SIZE = Long.MAX_VALUE;
+        ChecksumSpecTYPE csSpecPillar = null;
         
         File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
@@ -263,6 +264,28 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         checksumDataForFile.setCalculationTimestamp(CalendarUtils.getEpoch());
         checksumDataForFile.setChecksumSpec(csMD5);
         checksumDataForFile.setChecksumValue(Base16Utils.encodeBase16(FILE_CHECKSUM_MD5));
+        
+        addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
+        IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
+                auditTrail, null, null, FROM, clientDestinationId);
+        messageBus.sendMessage(identifyRequest);
+        
+        addStep("Retrieve and validate the response from the pillar.", 
+                "The pillar should make a response.");
+        IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+                IdentifyPillarsForPutFileResponse.class);
+        Assert.assertEquals(receivedIdentifyResponse, 
+                msgFactory.createIdentifyPillarsForPutFileResponse(
+                        identifyRequest.getCorrelationID(),
+                        csSpecPillar,
+                        pillarId,
+                        receivedIdentifyResponse.getReplyTo(),
+                        receivedIdentifyResponse.getResponseInfo(),
+                        receivedIdentifyResponse.getTimeToDeliver(),
+                        receivedIdentifyResponse.getTo()));
+        
+        addStep("Validate that the identification has succeded.","The response info should be positive.");
+        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), ResponseCode.IDENTIFICATION_POSITIVE);
         
         addStep("Create and send the operation message to the pillar.", "Should be received and handled by the pillar.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, checksumDataForFile, 
@@ -286,7 +309,6 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
                         finalResponse.getResponseInfo(), 
                         finalResponse.getTo()));
     }
-    
 
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarPutTestFileAlreadyExistsCase() throws Exception {
@@ -426,5 +448,71 @@ public class PutFileOnReferencePillarTest extends DefaultFixturePillarTest {
         Assert.assertTrue(ir.getResponseText().contains(Base16Utils.decodeBase16(WRONG_FILE_CHECKSUM_MD5)), 
                 "The response should contain the wrong checksum '" + Base16Utils.decodeBase16(WRONG_FILE_CHECKSUM_MD5) 
                 + "', but was: '" + ir.getResponseText());
+    }
+    
+
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void pillarPutTestFileAlreadyExistsCaseDuringOperation() throws Exception {
+        addDescription("Tests that the ReferencePillar is able to reject put requests on a file, which it already have.");
+        addStep("Set up constants and variables.", "Should not fail here!");
+        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        ChecksumSpecTYPE csSpecPillar = null;
+        String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
+        String auditTrail = null;
+        
+        addStep("Upload the test-file and calculate the checksum.", "Should be all-right");
+        File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
+        Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
+        Long FILE_SIZE = null;
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        
+        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
+                + dir.getAbsolutePath() + "'");
+        FileUtils.copyFile(testfile, new File(dir, FILE_ID));
+        
+        addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
+        IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
+                auditTrail, null, FILE_SIZE, FROM, clientDestinationId);
+        messageBus.sendMessage(identifyRequest);
+        
+        addStep("Retrieve and validate the response from the pillar.", 
+                "The pillar should make a response.");
+        IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+                IdentifyPillarsForPutFileResponse.class);
+        Assert.assertEquals(receivedIdentifyResponse, 
+                msgFactory.createIdentifyPillarsForPutFileResponse(
+                        identifyRequest.getCorrelationID(),
+                        csSpecPillar,
+                        pillarId,
+                        receivedIdentifyResponse.getReplyTo(),
+                        receivedIdentifyResponse.getResponseInfo(),
+                        receivedIdentifyResponse.getTimeToDeliver(),
+                        receivedIdentifyResponse.getTo()));
+        
+        addStep("Validate that the identification has succeded.","The response info should be positive.");
+        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), ResponseCode.IDENTIFICATION_POSITIVE);
+        
+        addStep("Create and send the operation message to the pillar.", "Should be received and handled by the pillar.");
+        PutFileRequest putRequest = msgFactory.createPutFileRequest(auditTrail, null, 
+                null, UUID.randomUUID().toString(), FILE_ADDRESS, FILE_ID, FILE_SIZE, FROM, 
+                pillarId, clientDestinationId, pillarDestinationId);
+        messageBus.sendMessage(putRequest);
+        
+        addStep("Retrieve the FinalResponse for the put request", "The put response should be sent by the pillar.");
+        PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.DUPLICATE_FILE_FAILURE);
+        
+        Assert.assertEquals(finalResponse,
+                msgFactory.createPutFileFinalResponse(
+                        finalResponse.getChecksumDataForNewFile(),
+                        finalResponse.getCorrelationID(), 
+                        finalResponse.getFileAddress(), 
+                        finalResponse.getFileID(), 
+                        finalResponse.getPillarChecksumSpec(), 
+                        pillarId, 
+                        finalResponse.getReplyTo(), 
+                        finalResponse.getResponseInfo(), 
+                        finalResponse.getTo()));
     }
 }

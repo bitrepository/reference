@@ -122,12 +122,6 @@ public class TestFileStore implements FileStore {
     }
 
     @Override
-    public void replaceFile(String fileID, InputStream inputStream)  throws IOException  {
-        deleteFile(fileID);
-        storeFile(fileID, inputStream);
-    }
-
-    @Override
     public void deleteFile(String fileID) {
         getFile(fileID).delete();
     }

@@ -120,14 +120,10 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      */
     public void checkThatAllRequestedFilesAreAvailable(GetFileIDsRequest message) throws RequestHandlerException {
         FileIDs fileids = message.getFileIDs();
-        if(fileids == null) {
-            log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
-            return;
-        }
         
         List<String> missingFiles = new ArrayList<String>();
         String fileID = fileids.getFileID();
-        if(fileID != null && !fileID.isEmpty() && !getCache().hasFile(fileID)) {
+        if(fileID != null && !getCache().hasFile(fileID)) {
             missingFiles.add(fileID);
         }
         

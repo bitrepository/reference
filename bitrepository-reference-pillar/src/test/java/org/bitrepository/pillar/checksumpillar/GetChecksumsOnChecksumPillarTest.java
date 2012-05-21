@@ -98,7 +98,6 @@ public class GetChecksumsOnChecksumPillarTest extends DefaultFixturePillarTest {
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String auditTrail = "GET-CHECKSUMS-TEST";
         String CHECKSUM = "1234cccccccc4321";
-//        String CS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
         String CS_DELIVERY_ADDRESS = null;
         String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
         settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
@@ -304,5 +303,91 @@ public class GetChecksumsOnChecksumPillarTest extends DefaultFixturePillarTest {
                         finalResponse.getResponseInfo(), 
                         finalResponse.getResultingChecksums(),
                         finalResponse.getTo()));
+    }
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void pillarGetChecksumsTestSuccessCaseWithAddress() throws Exception {
+        addDescription("Tests the GetChecksums functionality of the checksum pillar for the successful scenario, "
+                + "where the all the files are requested and the result should be delivered to and URL.");
+        addStep("Setting up the variables for the test.", "Should be instantiated.");
+        String FILE_ID = DEFAULT_FILE_ID + System.currentTimeMillis();
+        String auditTrail = "GET-CHECKSUMS-TEST";
+        String CHECKSUM = "1234cccccccc4321";
+        String CS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" 
+                + System.currentTimeMillis() + getTopicPostfix();
+        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+                ChecksumType.MD5.toString());
+        FileIDs fileids = new FileIDs();
+        fileids.setAllFileIDs("true");
+
+        ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
+        csSpec.setChecksumSalt(null);
+        csSpec.setChecksumType(ChecksumType.MD5);
+        
+        addStep("Move the test file into the file directory.", "Should be all-right");
+        cache.putEntry(FILE_ID, CHECKSUM);
+        
+        addStep("Create and send the identify request message.", 
+                "Should be received and handled by the checksum pillar.");
+        IdentifyPillarsForGetChecksumsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetChecksumsRequest(
+                auditTrail, csSpec, fileids, FROM, clientDestinationId);
+        messageBus.sendMessage(identifyRequest);
+        
+        addStep("Retrieve and validate the response from the checksum pillar.", 
+                "The checksum pillar should make a response.");
+        IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+                IdentifyPillarsForGetChecksumsResponse.class);
+        Assert.assertEquals(receivedIdentifyResponse, 
+                msgFactory.createIdentifyPillarsForGetChecksumsResponse(
+                      csSpec,
+                      identifyRequest.getCorrelationID(),
+                      fileids, 
+                      receivedIdentifyResponse.getPillarChecksumSpec(),
+                      pillarId, 
+                      receivedIdentifyResponse.getReplyTo(),
+                      receivedIdentifyResponse.getResponseInfo(), 
+                      receivedIdentifyResponse.getTimeToDeliver(),
+                      receivedIdentifyResponse.getTo()));
+        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.IDENTIFICATION_POSITIVE);
+        
+        addStep("Create and send the actual GetChecksums message to the checksum pillar.", 
+                "Should be received and handled by the checksum pillar.");
+        GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(auditTrail,
+                csSpec, receivedIdentifyResponse.getCorrelationID(), fileids, FROM, pillarId, 
+                clientDestinationId, CS_DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
+        messageBus.sendMessage(getChecksumsRequest);
+        
+        addStep("Retrieve the ProgressResponse for the GetChecksums request", 
+                "The GetChecksums progress response should be sent by the pillar.");
+        GetChecksumsProgressResponse progressResponse = clientTopic.waitForMessage(GetChecksumsProgressResponse.class);
+        Assert.assertEquals(progressResponse,
+                msgFactory.createGetChecksumsProgressResponse(
+                        csSpec, 
+                        identifyRequest.getCorrelationID(), 
+                        fileids, 
+                        pillarId, 
+                        progressResponse.getReplyTo(), 
+                        progressResponse.getResponseInfo(), 
+                        CS_DELIVERY_ADDRESS,
+                        progressResponse.getTo()));
+        
+        addStep("Retrieve the FinalResponse for the GetChecksums request", 
+                "The GetChecksums response should be sent by the checksum pillar.");
+        GetChecksumsFinalResponse finalResponse = clientTopic.waitForMessage(GetChecksumsFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        
+        Assert.assertEquals(finalResponse,
+                msgFactory.createGetChecksumsFinalResponse(
+                        csSpec,
+                        identifyRequest.getCorrelationID(), 
+                        pillarId, 
+                        finalResponse.getReplyTo(), 
+                        finalResponse.getResponseInfo(), 
+                        finalResponse.getResultingChecksums(),
+                        finalResponse.getTo()));
+        Assert.assertEquals(finalResponse.getResultingChecksums().getResultAddress(), CS_DELIVERY_ADDRESS);
+        Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 0, 
+                "Should contain no checksum data");
     }
 }

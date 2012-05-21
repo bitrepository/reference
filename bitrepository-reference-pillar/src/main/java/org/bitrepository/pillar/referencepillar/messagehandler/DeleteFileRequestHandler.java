@@ -104,13 +104,6 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
         // calculate and validate the checksum of the file.
         ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
         ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
-        if(checksumType == null) {
-            // TODO this is only invalid, if it is set in settings! Make settings for this!
-            ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.FAILURE);
-            responseInfo.setResponseText("A checksum for deletion is required!");
-            throw new IllegalOperationException(responseInfo);
-        }
         
         getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation checksum "
                 + "on the file, which should be deleted.", message.getAuditTrailInformation(), 

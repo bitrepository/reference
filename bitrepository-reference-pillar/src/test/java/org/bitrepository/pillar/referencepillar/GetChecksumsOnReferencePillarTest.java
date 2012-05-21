@@ -96,7 +96,7 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
     public void pillarGetChecksumsTestSuccessCase() throws Exception {
         addDescription("Tests the GetChecksums functionality of the reference pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String CS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
+        String CS_DELIVERY_ADDRESS = null;
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
         FileIDs fileids = new FileIDs();
@@ -176,6 +176,98 @@ public class GetChecksumsOnReferencePillarTest extends DefaultFixturePillarTest 
                         finalResponse.getResultingChecksums(),
                         finalResponse.getTo()));
         
+        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 2, "Should deliver 2 audits. One for handling the "
+                + "GetChecksums operation and one for calculating the requested checksum.");
+    }
+
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void pillarGetChecksumsTestSuccessCaseWithAllFilesAndURL() throws Exception {
+        addDescription("Tests the GetChecksums functionality of the reference pillar for the successful scenario, "
+                + "when calculating all files and expecting the results to be delivered at a URL.");
+        addStep("Set up constants and variables.", "Should not fail here!");
+        String CS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        FileIDs fileids = new FileIDs();
+        fileids.setAllFileIDs("true");
+        String auditTrail = null;
+        
+        ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
+        csSpec.setChecksumSalt(null);
+        csSpec.setChecksumType(ChecksumType.MD5);
+        
+        addStep("Move the test file into the file directory.", "Should be all-right");
+        File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
+        Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
+        
+        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
+                + dir.getAbsolutePath() + "'");
+        FileUtils.copyFile(testfile, new File(dir, FILE_ID));
+        
+        addStep("Create and send the identify request message.", 
+                "Should be received and handled by the pillar.");
+        IdentifyPillarsForGetChecksumsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetChecksumsRequest(
+                auditTrail, csSpec, fileids, FROM, clientDestinationId);
+        messageBus.sendMessage(identifyRequest);
+        
+        addStep("Retrieve and validate the response from the pillar.", 
+                "The pillar should make a response.");
+        IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+                IdentifyPillarsForGetChecksumsResponse.class);
+        Assert.assertEquals(receivedIdentifyResponse, 
+                msgFactory.createIdentifyPillarsForGetChecksumsResponse(
+                      csSpec,
+                      identifyRequest.getCorrelationID(),
+                      fileids, 
+                      receivedIdentifyResponse.getPillarChecksumSpec(),
+                      pillarId, 
+                      receivedIdentifyResponse.getReplyTo(),
+                      receivedIdentifyResponse.getResponseInfo(), 
+                      receivedIdentifyResponse.getTimeToDeliver(),
+                      receivedIdentifyResponse.getTo()));
+        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.IDENTIFICATION_POSITIVE);
+        
+        addStep("Create and send the actual GetChecksums message to the pillar.", 
+                "Should be received and handled by the pillar.");
+        GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(auditTrail,
+                csSpec, receivedIdentifyResponse.getCorrelationID(), fileids, FROM, pillarId, 
+                clientDestinationId, CS_DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
+        messageBus.sendMessage(getChecksumsRequest);
+        
+        addStep("Retrieve the ProgressResponse for the GetChecksums request", 
+                "The GetChecksums progress response should be sent by the pillar.");
+        GetChecksumsProgressResponse progressResponse = clientTopic.waitForMessage(GetChecksumsProgressResponse.class);
+        Assert.assertEquals(progressResponse,
+                msgFactory.createGetChecksumsProgressResponse(
+                        csSpec, 
+                        identifyRequest.getCorrelationID(), 
+                        fileids, 
+                        pillarId, 
+                        progressResponse.getReplyTo(), 
+                        progressResponse.getResponseInfo(), 
+                        CS_DELIVERY_ADDRESS,
+                        progressResponse.getTo()));
+        
+        addStep("Retrieve the FinalResponse for the GetChecksums request", 
+                "The GetChecksums response should be sent by the pillar.");
+        GetChecksumsFinalResponse finalResponse = clientTopic.waitForMessage(GetChecksumsFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        
+        Assert.assertEquals(finalResponse,
+                msgFactory.createGetChecksumsFinalResponse(
+                        csSpec,
+                        identifyRequest.getCorrelationID(), 
+                        pillarId, 
+                        finalResponse.getReplyTo(), 
+                        finalResponse.getResponseInfo(), 
+                        finalResponse.getResultingChecksums(),
+                        finalResponse.getTo()));
+        
+        Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 0, "Should deliver checksum at URL");
+        Assert.assertEquals(finalResponse.getResultingChecksums().getResultAddress(), CS_DELIVERY_ADDRESS);        
         Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
         Assert.assertEquals(audits.getCallsForAuditEvent(), 2, "Should deliver 2 audits. One for handling the "
                 + "GetChecksums operation and one for calculating the requested checksum.");

@@ -27,7 +27,6 @@ package org.bitrepository.pillar.checksumpillar.messagehandler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -39,16 +38,12 @@ import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class for handling the identification of this pillar for the purpose of performing the GetChecksums operation.
  */
 public class IdentifyPillarsForGetChecksumsRequestHandler 
         extends ChecksumPillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> {
-    /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
     
     /**
      * Constructor.
@@ -68,7 +63,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     public void processRequest(IdentifyPillarsForGetChecksumsRequest message) throws RequestHandlerException {
         validateMessage(message);
         checkThatAllRequestedFilesAreAvailable(message);
-        checkThatTheChecksumFunctionIsAvailable(message);
+        validateChecksumSpec(message.getChecksumRequestForExistingFile());
         respondSuccesfullIdentification(message);
     }
 
@@ -94,10 +89,6 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     public void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetChecksumsRequest message) 
             throws RequestHandlerException {
         FileIDs fileids = message.getFileIDs();
-        if(fileids == null) {
-            log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
-            return;
-        }
         validateFileID(message.getFileIDs().getFileID());
         
         List<String> missingFiles = new ArrayList<String>();
@@ -113,21 +104,6 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
             irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
             
             throw new IdentifyContributorException(irInfo);
-        }
-    }
-    
-    /**
-     * Validates that it is possible to instantiate the requested checksum algorithm.
-     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
-     * @param message The message with the checksum algorithm to validate.
-     */
-    public void checkThatTheChecksumFunctionIsAvailable(IdentifyPillarsForGetChecksumsRequest message) {
-        ChecksumSpecTYPE checksumSpec = message.getChecksumRequestForExistingFile();
-        
-        // validate that this non-mandatory field has been filled out.
-        if(checksumSpec == null || checksumSpec.getChecksumType() == null) {
-            log.debug("No checksumSpec in the identification. Thus no reason to expect, that we cannot handle it.");
-            return;
         }
     }
     

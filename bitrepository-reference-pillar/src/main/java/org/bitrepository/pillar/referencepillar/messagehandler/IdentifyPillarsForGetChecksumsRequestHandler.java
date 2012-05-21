@@ -38,17 +38,12 @@ import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class for handling the identification of this pillar for the purpose of performing the GetChecksums operation.
  */
 public class IdentifyPillarsForGetChecksumsRequestHandler 
         extends ReferencePillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> {
-    /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
-    
     /**
      * Constructor.
      * @param context The context of the message handler.
@@ -84,15 +79,11 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     public void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetChecksumsRequest message) 
             throws RequestHandlerException {
         FileIDs fileids = message.getFileIDs();
-        if(fileids == null) {
-            log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
-            return;
-        }
-        validateFileID(message.getFileIDs().getFileID());
+        validateFileID(fileids.getFileID());
         
         List<String> missingFiles = new ArrayList<String>();
         String fileID = fileids.getFileID();
-        if(fileID != null && !fileID.isEmpty() && !getArchive().hasFile(fileID)) {
+        if(fileID != null && !getArchive().hasFile(fileID)) {
             missingFiles.add(fileID);
         }
         
