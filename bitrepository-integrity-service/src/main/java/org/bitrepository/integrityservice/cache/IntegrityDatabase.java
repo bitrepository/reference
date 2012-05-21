@@ -26,12 +26,16 @@ package org.bitrepository.integrityservice.cache;
 
 import java.io.File;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
+import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.database.DBConnector;
 import org.bitrepository.common.database.DerbyDBConnector;
 import org.bitrepository.common.settings.Settings;
@@ -110,8 +114,13 @@ public class IntegrityDatabase implements IntegrityModel {
     }
     
     @Override
-    public void addFileIDs(FileIDsData data, String pillarId) {
+    public void addFileIDs(FileIDsData data, FileIDs expectedFileIDs, String pillarId) {
         store.updateFileIDs(data, pillarId);
+        
+        List<String> missingFiles = retrieveMissingFileIDs(data, expectedFileIDs);
+        for(String fileId : missingFiles) {
+            setFileMissing(fileId, Arrays.asList(pillarId));
+        }
     }
 
     @Override
@@ -167,5 +176,35 @@ public class IntegrityDatabase implements IntegrityModel {
         for(String pillarId : pillarIds) {
             store.setChecksumValid(fileId, pillarId);
         }
+    }
+
+    @Override
+    public void deleteFileIdEntry(String fileId) {
+        log.warn("Removing all entries for the file with id '" + fileId + "'.");
+        store.removeFileId(fileId);
+    }
+    
+    /**
+     * Find the difference between the expected file ids and the delivered ones.
+     * 
+     * @param data The delivered file ids data.
+     * @param expectedFileIDs The expected file ids.
+     * @return The list containing the difference between expected and received data items.
+     */
+    private List<String> retrieveMissingFileIDs(FileIDsData data, FileIDs expectedFileIDs) {
+        List<String> unfoundFiles;
+        
+        if(expectedFileIDs.isSetAllFileIDs()) {
+            unfoundFiles = store.getAllFileIDs();
+        } else {
+            unfoundFiles = new ArrayList<String>();
+            unfoundFiles.add(expectedFileIDs.getFileID());
+        }
+        
+        for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
+            unfoundFiles.remove(dataItem.getFileID());
+        }
+        
+        return unfoundFiles;
     }
 }

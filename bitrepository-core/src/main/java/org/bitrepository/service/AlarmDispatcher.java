@@ -56,10 +56,12 @@ public class AlarmDispatcher {
      */
     public AlarmDispatcher(ContributorContext context, AlarmLevel alarmLevel) {
         ArgumentValidator.checkNotNull(context, "MediatorContext Context");
-        ArgumentValidator.checkNotNull(context, "AlarmLevel alarmLevel");
-        
         this.context = context;
-        this.alarmLevel = alarmLevel;
+        if (alarmLevel == null) {
+            this.alarmLevel = AlarmLevel.ERROR;
+        }  else {
+            this.alarmLevel = alarmLevel;
+        }
     }
     
     /**

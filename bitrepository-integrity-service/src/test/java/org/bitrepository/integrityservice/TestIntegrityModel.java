@@ -31,10 +31,13 @@ import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.database.ChecksumState;
+import org.bitrepository.integrityservice.cache.database.FileState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +65,7 @@ public class TestIntegrityModel implements IntegrityModel {
     public TestIntegrityModel() {}
     
     @Override
-    public void addFileIDs(FileIDsData data, String pillarId) {
+    public void addFileIDs(FileIDsData data, FileIDs expectedFileIDs, String pillarId) {
         for(FileIDsDataItem fileId : data.getFileIDsDataItems().getFileIDsDataItem()) {
             log.debug("Adding/updating fileId '" + fileId.getFileID() + "' for the pillar '" + pillarId + "'");
             if(!cache.containsKey(fileId.getFileID())) {
@@ -211,7 +214,7 @@ public class TestIntegrityModel implements IntegrityModel {
                 // create a new file info
                 currentInfo = new FileInfo(checksumData.getFileID(), checksumData.getCalculationTimestamp(), 
                         new String(checksumData.getChecksumValue()), checksumType, 
-                        checksumData.getCalculationTimestamp(), pillarId);
+                        checksumData.getCalculationTimestamp(), pillarId, FileState.UNKNOWN, ChecksumState.UNKNOWN);
             } else {
                 // Update the existing file info
                 currentInfo.setDateForLastFileIDCheck(checksumData.getCalculationTimestamp());
@@ -264,6 +267,12 @@ public class TestIntegrityModel implements IntegrityModel {
 
     @Override
     public void setChecksumAgreement(String fileId, Collection<String> pillarIds) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void deleteFileIdEntry(String fileId) {
         // TODO Auto-generated method stub
         
     }
