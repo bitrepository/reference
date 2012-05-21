@@ -21,7 +21,6 @@
  */
 package org.bitrepository.protocol.security;
 
-import java.lang.*;
 
 /**
  * Class containing empty / safe implementation of the SecurityManager interface.

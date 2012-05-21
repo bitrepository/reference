@@ -21,19 +21,18 @@
  */
 package org.bitrepository.access.getstatus.conversation;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 public class GettingStatus extends PerformingOperationState {
     private final GetStatusConversationContext context;
