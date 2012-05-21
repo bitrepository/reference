@@ -72,6 +72,7 @@ public class IdentifyPillarsForGetFileRequestHandler
      */
     private void checkThatFileIsAvailable(IdentifyPillarsForGetFileRequest message) 
             throws RequestHandlerException {
+        validateFileID(message.getFileID());
         if(!getArchive().hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);

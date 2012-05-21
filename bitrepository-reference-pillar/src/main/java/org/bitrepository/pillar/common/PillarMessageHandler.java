@@ -28,10 +28,12 @@ import java.math.BigInteger;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.handler.AbstractRequestHandler;
+import org.bitrepository.service.exception.RequestHandlerException;
 
 /**
  * Abstract level for message handling for both types of pillar.
@@ -53,6 +55,8 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
     
     /** The context for the message handler.*/
     private final PillarContext context;
+    /** The file id validator for validating the file id.*/
+    private final FileIDValidator fileIdValidator;
     
     /**
      * Constructor. 
@@ -65,6 +69,7 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
         super(context.getMediatorContext());
         ArgumentValidator.checkNotNull(context, "PillarContext context");
         this.context = context;
+        this.fileIdValidator = new FileIDValidator(context.getSettings());
     }
     
     /**
@@ -105,5 +110,14 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
                     + "Expected '" + getSettings().getReferenceSettings().getPillarSettings().getPillarID() 
                     + "' but was '" + pillarId + "'.");
         }
+    }
+    
+    /**
+     * Uses the FileIDValidator to validate a given file id.
+     * @param fileId The id to validate.
+     * @throws RequestHandlerException If the id of the file was invalid.
+     */
+    protected void validateFileID(String fileId) throws RequestHandlerException {
+        fileIdValidator.validateFileID(fileId);
     }
 }

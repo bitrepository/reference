@@ -81,6 +81,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
             log.debug("No fileid given in the identification request.");
             return;
         }
+        validateFileID(message.getFileID());
         
         if(getCache().hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();

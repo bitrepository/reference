@@ -98,6 +98,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
             log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
             return;
         }
+        validateFileID(message.getFileIDs().getFileID());
         
         List<String> missingFiles = new ArrayList<String>();
         String fileID = fileids.getFileID();

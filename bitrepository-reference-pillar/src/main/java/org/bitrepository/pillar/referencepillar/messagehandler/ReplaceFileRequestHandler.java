@@ -38,7 +38,6 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
@@ -68,8 +67,6 @@ import org.slf4j.LoggerFactory;
 public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<ReplaceFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    /** The file id validator for validating the file id.*/
-    private final FileIDValidator fileIdValidator;
     
     /**
      * Constructor.
@@ -78,7 +75,6 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
      */
     public ReplaceFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
         super(context, referenceArchive);
-        this.fileIdValidator = new FileIDValidator(context.getSettings());
     }
 
     @Override
@@ -118,7 +114,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
             validateChecksumSpecification(message.getChecksumDataForExistingFile().getChecksumSpec());
         }
         validateChecksumSpecification(message.getChecksumRequestForExistingFile());
-        fileIdValidator.validateFileID(message.getFileID());
+        validateFileID(message.getFileID());
         
         // Validate, that we have the requested file.
         if(!getArchive().hasFile(message.getFileID())) {
