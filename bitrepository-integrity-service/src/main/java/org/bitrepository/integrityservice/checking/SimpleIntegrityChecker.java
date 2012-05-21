@@ -70,12 +70,6 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
             validateWhetherDeletingFileID(report);
         }
         
-        System.out.println(report.generateReport());
-        System.out.println("getChecksumErrors: " + report.getChecksumErrors());
-        System.out.println("getFilesWithChecksumSpecIssues: " + report.getFilesWithChecksumSpecIssues());
-        System.out.println("getFilesWithoutIssues: " + report.getFilesWithoutIssues());
-        System.out.println("getMissingFiles: " + report.getMissingFiles());
-        System.out.println("getNewUncheckedFiles: " + report.getNewUncheckedFiles());
         return report;
     }
     

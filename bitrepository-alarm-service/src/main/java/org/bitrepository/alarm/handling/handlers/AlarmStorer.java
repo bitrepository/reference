@@ -51,11 +51,6 @@ public class AlarmStorer implements AlarmHandler {
     }
     
     @Override
-    public void handleOther(Object message) {
-        log.debug("Recieved other message, which cannot be stored as an alarm: {}", message);
-    }
-    
-    @Override
     public void close() { 
         log.debug("Closing the alarmhandler '" + this.getClass().getCanonicalName() + "'");
     }

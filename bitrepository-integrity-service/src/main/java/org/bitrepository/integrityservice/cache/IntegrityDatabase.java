@@ -192,19 +192,19 @@ public class IntegrityDatabase implements IntegrityModel {
      * @return The list containing the difference between expected and received data items.
      */
     private List<String> retrieveMissingFileIDs(FileIDsData data, FileIDs expectedFileIDs) {
-        List<String> unfoundFiles;
+        List<String> missingFiles;
         
         if(expectedFileIDs.isSetAllFileIDs()) {
-            unfoundFiles = store.getAllFileIDs();
+            missingFiles = store.getAllFileIDs();
         } else {
-            unfoundFiles = new ArrayList<String>();
-            unfoundFiles.add(expectedFileIDs.getFileID());
+            missingFiles = new ArrayList<String>();
+            missingFiles.add(expectedFileIDs.getFileID());
         }
         
         for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
-            unfoundFiles.remove(dataItem.getFileID());
+            missingFiles.remove(dataItem.getFileID());
         }
         
-        return unfoundFiles;
+        return missingFiles;
     }
 }

@@ -48,11 +48,6 @@ public class TestAlarmHandler implements AlarmHandler {
         latestAlarmMessage = msg.toString();
     }
 
-    @Override
-    public void handleOther(Object msg) {
-        latestAlarmMessage = msg.toString();
-    }
-    
     /**
      * Method for retrieving the latest Alarm message received.
      * @return The latest Alarm received.

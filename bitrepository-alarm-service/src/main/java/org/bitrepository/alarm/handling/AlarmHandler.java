@@ -38,12 +38,6 @@ public interface AlarmHandler {
     void handleAlarm(AlarmMessage msg);
     
     /**
-     * Handler for anything else than a AlarmMessage.
-     * @param msg Anything else than a AlarmMessage.
-     */
-    void handleOther(Object msg);
-    
-    /**
      * Close the specific Alarm handler.
      */
     void close();

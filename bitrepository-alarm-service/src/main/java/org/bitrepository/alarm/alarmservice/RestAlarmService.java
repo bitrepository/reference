@@ -32,7 +32,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.bitrepository.alarm.AlarmService;
-import org.bitrepository.alarm.AlarmServiceLauncher;
+import org.bitrepository.alarm.AlarmServiceFactory;
 import org.bitrepository.bitrepositoryelements.Alarm;
 
 @Path("/AlarmService")
@@ -40,7 +40,7 @@ public class RestAlarmService {
     private AlarmService alarmService;
     
     public RestAlarmService() {
-        alarmService = AlarmServiceLauncher.getAlarmService();
+        alarmService = AlarmServiceFactory.getAlarmService();
     }
     
     /**

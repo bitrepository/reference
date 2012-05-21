@@ -31,12 +31,15 @@ import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Receives and distributes the messages to the handler.
  */
 public class AlarmMediator extends AbstractMessageListener {
-
+    /** The logger.*/
+    private Logger log = LoggerFactory.getLogger(this.getClass());
     /** The handler. Where the received messages should be handled.*/
     private List<AlarmHandler> handlers;
     /** The messagebus for this mediator.*/
@@ -73,9 +76,7 @@ public class AlarmMediator extends AbstractMessageListener {
                 handler.handleAlarm((AlarmMessage) msg);
             }
         } else {
-            for(AlarmHandler handler : handlers) {
-                handler.handleOther(msg);
-            }
+            log.warn("Recieved unexpected message: '{}'", msg);
         }
     }
     

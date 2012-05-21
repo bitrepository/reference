@@ -85,13 +85,6 @@ public class AlarmMailer implements AlarmHandler {
         sendMail(subject, msg.toString());
     }
     
-    @Override
-    public void handleOther(Object msg) {
-        String subject = "Received unexpected object of type '" + msg.getClass() + "'";
-        log.info(subject + ":\n{}", msg.toString());
-        sendMail(subject, msg.toString());
-    }
-    
     /**
      * Method for sending a mail.
      * 

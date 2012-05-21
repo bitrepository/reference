@@ -48,11 +48,6 @@ public class AlarmLogger implements AlarmHandler {
     }
     
     @Override
-    public void handleOther(Object msg) {
-        log.warn("Received unexpected object: " + msg.toString());
-    }
-
-    @Override
     public void close() {
         log.debug("Closing the alarmhandler '" + this.getClass().getCanonicalName() + "'");
     }
