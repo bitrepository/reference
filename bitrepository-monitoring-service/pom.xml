@@ -3,9 +3,10 @@
   <parent>
     <groupId>org.bitrepository.reference</groupId>
     <artifactId>bitrepository-parent</artifactId>
-    <version>0.14.1</version>
+    <version>0.14.2-SNAPSHOT</version>
   </parent>
   <artifactId>bitrepository-monitoring-service</artifactId>
+  <version>0.14</version>
   <packaging>war</packaging>
   <name>Bitrepository Monitoring Service</name>
   <description>Contains functionality for monitoring the Bitrepository system. The monitoring comonent is part of the system infrastructure.</description>

@@ -4,10 +4,11 @@
   <parent>
     <artifactId>bitrepository-parent</artifactId>
     <groupId>org.bitrepository.reference</groupId>
-    <version>0.14.1</version>
+    <version>0.14.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>bitrepository-audit-trail-service</artifactId>
+  <version>0.14</version>
   <packaging>war</packaging>
   <name>Bitrepository Audit Trail Service</name>
   <description>Service for accessing the Audit Trail information for a Bit Repository Collection.</description>
