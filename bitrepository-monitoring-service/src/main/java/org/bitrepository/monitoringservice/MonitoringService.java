@@ -45,6 +45,7 @@ public class MonitoringService implements LifeCycledService {
     
 	public MonitoringService(Settings settings, SecurityManager securityManager) {
 		this.settings = settings;
+		settings.setComponentID(settings.getReferenceSettings().getMonitoringServiceSettings().getID());
 		statusStore = new ComponentStatusStore(settings.getCollectionSettings().getGetStatusSettings().getContributorIDs());
 		alerter = new MonitoringServiceAlerter(settings, 
 		        ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), statusStore);
