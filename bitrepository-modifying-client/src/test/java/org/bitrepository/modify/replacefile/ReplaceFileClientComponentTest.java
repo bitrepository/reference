@@ -109,9 +109,9 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         URL address = httpServer.getURL(DEFAULT_FILE_ID);
         long size = new Long(testFile.length());
         
-        addStep("Request a file to be replaced on the default pillar.", 
+        addStep("Request a file to be replaced on all pillars (which means only the default pillar).", 
                 "A IdentifyPillarsForReplaceFileRequest should be sent to the pillar.");
-        replaceClient.replaceFile(DEFAULT_FILE_ID, PILLAR1_ID, checksumDataOldFile, checksumRequest, 
+        replaceClient.replaceFileAtAllPillars(DEFAULT_FILE_ID, checksumDataOldFile, checksumRequest, 
                 address, size, checksumDataNewFile, checksumRequest, testEventHandler, null);
         
         IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = null;

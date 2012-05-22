@@ -95,9 +95,9 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
         checksumRequest.setChecksumType(ChecksumType.SHA1);
 
-        addStep("Request a file to be deleted on the default pillar.", 
+        addStep("Request a file to be deleted on all pillars (which means only the default pillar).", 
                 "A IdentifyPillarsForDeleteFileRequest should be sent to the pillar.");
-        deleteClient.deleteFile(DEFAULT_FILE_ID, PILLAR1_ID, checksumData, checksumRequest, testEventHandler, null);
+        deleteClient.deleteFileAtAllPillars(DEFAULT_FILE_ID, checksumData, checksumRequest, testEventHandler, null);
 
         IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {

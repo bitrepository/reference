@@ -25,7 +25,7 @@
 
 package org.bitrepository.modify;
 
-import org.bitrepository.common.ModuleCharacteristics;
+import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.deletefile.ConversationBasedDeleteFileClient;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
@@ -34,7 +34,6 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.modify.replacefile.ConversationBasedReplaceFileClient;
 import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
 import org.bitrepository.protocol.security.SecurityManager;
 
 /**
@@ -58,23 +57,10 @@ public final class ModifyComponentFactory {
         return instance;
     }
 
-    /** The characteristics for this module.*/
-    private ModuleCharacteristics moduleCharacter;
-
     /**
      * Private constructor for initialisation of the singleton.
      */
-    private ModifyComponentFactory() { 
-        moduleCharacter = new ModuleCharacteristics("modify-client");
-    }
-
-    /**
-     * Method for retrieving the characteristics for this module.
-     * @return The characteristics for this module.
-     */
-    public ModuleCharacteristics getModuleCharacteristics() {
-        return moduleCharacter;
-    }
+    private ModifyComponentFactory() {}
 
     /**
      * Method for initialising the PutClient.
