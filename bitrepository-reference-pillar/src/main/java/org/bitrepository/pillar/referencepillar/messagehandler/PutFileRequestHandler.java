@@ -39,7 +39,7 @@ import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.referencepillar.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.utils.Base16Utils;
@@ -124,11 +124,6 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
      */
     private void checkSpaceForStoringNewFile(PutFileRequest message) throws RequestHandlerException {
         BigInteger fileSize = message.getFileSize();
-        if(fileSize == null) {
-            log.debug("No file size given in the identification request. "
-                    + "Validating that the archive has any space left.");
-            fileSize = BigInteger.ZERO;
-        }
         
         long useableSizeLeft = getArchive().sizeLeftInArchive() 
                 - getSettings().getReferenceSettings().getPillarSettings().getMinimumSizeLeft();

@@ -32,7 +32,7 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.common.PillarMessageHandler;
-import org.bitrepository.pillar.referencepillar.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;

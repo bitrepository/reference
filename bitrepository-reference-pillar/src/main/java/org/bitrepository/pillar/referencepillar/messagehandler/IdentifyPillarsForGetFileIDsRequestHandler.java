@@ -34,7 +34,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReque
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.referencepillar.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.protocol.utils.TimeMeasurementUtils;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -91,7 +91,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         
         List<String> missingFiles = new ArrayList<String>();
         String fileID = fileids.getFileID();
-        if(fileID != null && !fileID.isEmpty() && !getArchive().hasFile(fileID)) {
+        if(fileID != null && !getArchive().hasFile(fileID)) {
             missingFiles.add(fileID);
         }
         

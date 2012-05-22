@@ -39,7 +39,7 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.referencepillar.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -110,9 +110,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
             validateChecksumSpecification(message.getChecksumDataForNewFile().getChecksumSpec());
         }
         validateChecksumSpecification(message.getChecksumRequestForNewFile());
-        if(message.getChecksumDataForExistingFile() != null) {
-            validateChecksumSpecification(message.getChecksumDataForExistingFile().getChecksumSpec());
-        }
+        validateChecksumSpecification(message.getChecksumDataForExistingFile().getChecksumSpec());
         validateChecksumSpecification(message.getChecksumRequestForExistingFile());
         validateFileID(message.getFileID());
         

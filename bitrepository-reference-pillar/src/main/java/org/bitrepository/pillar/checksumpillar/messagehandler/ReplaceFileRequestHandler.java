@@ -106,9 +106,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         validatePillarId(message.getPillarID());
         validateChecksumSpec(message.getChecksumRequestForExistingFile());
         validateChecksumSpec(message.getChecksumRequestForNewFile());
-        if(message.getChecksumDataForExistingFile() != null) {
-            validateChecksumSpec(message.getChecksumDataForExistingFile().getChecksumSpec());
-        }
+        validateChecksumSpec(message.getChecksumDataForExistingFile().getChecksumSpec());
         if(message.getChecksumDataForNewFile() != null) {
             validateChecksumSpec(message.getChecksumDataForNewFile().getChecksumSpec());
         }
@@ -123,18 +121,8 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
             throw new InvalidMessageException(responseInfo);
         }
         
-        // validate that a checksum for the old file has been given.
-        ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
-        ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
-        // TODO add a check for a given setting is set to true.
-        if(checksumType == null) {
-            ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.FAILURE);
-            responseInfo.setResponseText("A checksum for replacing a file is required!");
-            throw new IllegalOperationException(responseInfo);
-        }
-        
         // calculate and validate the checksum of the file.
+        ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
         String checksum = getCache().getChecksum(message.getFileID());
         String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
         if(!checksum.equals(requestedChecksum)) {

@@ -24,6 +24,8 @@
  */
 package org.bitrepository.pillar.checksumpillar.messagehandler;
 
+import java.security.NoSuchAlgorithmException;
+
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -33,6 +35,7 @@ import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.common.PillarMessageHandler;
 import org.bitrepository.protocol.utils.Base16Utils;
+import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.bitrepository.service.exception.InvalidMessageException;
 
 /**
@@ -60,6 +63,11 @@ public abstract class ChecksumPillarMessageHandler<T> extends PillarMessageHandl
         String salt = getSettings().getReferenceSettings().getPillarSettings().getChecksumPillarChecksumSpecificationSalt();
         if(salt != null) {
             checksumType.setChecksumSalt(Base16Utils.encodeBase16(salt));
+        }
+        try {
+            ChecksumUtils.verifyAlgorithm(checksumType);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalArgumentException("Invalid checksum for the ChecksumPillar.", e);
         }
     }
     /**

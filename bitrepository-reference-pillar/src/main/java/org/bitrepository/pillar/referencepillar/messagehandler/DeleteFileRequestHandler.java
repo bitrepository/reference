@@ -35,7 +35,7 @@ import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.referencepillar.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.protocol.utils.Base16Utils;
 import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.bitrepository.service.exception.IllegalOperationException;
@@ -87,9 +87,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
     protected void validateMessage(DeleteFileRequest message) throws RequestHandlerException {
         validatePillarId(message.getPillarID());
         validateChecksumSpecification(message.getChecksumRequestForExistingFile());
-        if(message.getChecksumDataForExistingFile() != null) {
-            validateChecksumSpecification(message.getChecksumDataForExistingFile().getChecksumSpec());
-        }
+        validateChecksumSpecification(message.getChecksumDataForExistingFile().getChecksumSpec());
         validateFileID(message.getFileID());
 
         // Validate, that we have the requested file.
@@ -154,10 +152,6 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         ChecksumSpecTYPE checksumType = message.getChecksumRequestForExistingFile();
         
-        if(checksumType == null) {
-            log.warn("No checksum requested for the file about to be deleted.");
-            return null;
-        }
         getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the requested checksum "
                 + "on the file, which should be deleted.", message.getAuditTrailInformation(), 
                 FileAction.CHECKSUM_CALCULATED);
