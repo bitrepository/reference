@@ -385,7 +385,6 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Send a progress accepted response from pillar 1",
                 "A PROGRESS event should be generated.");
-        ResultingAuditTrails result1 = createTestResultingAuditTrails(PILLAR1_ID);
         GetAuditTrailsProgressResponse progressResponse1 =
                 testMessageFactory.createGetAuditTrailsProgressResponse(requestPillar1,
                         PILLAR1_ID, pillar1DestinationId);
@@ -576,7 +575,6 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
-
 
        addStep("Wait for 5 seconds", "An failed event should be received");
        Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getType(),

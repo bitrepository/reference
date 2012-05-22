@@ -279,8 +279,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
             fastReply.setTimeToDeliver(fastTime);
             messageBus.sendMessage(fastReply);
 
-            GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(
-                    GetFileRequest.class, 5, TimeUnit.SECONDS );
+            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_TIMEOUT);
+            GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
             Assert.assertEquals(receivedGetFileRequest, 
                     testMessageFactory.createGetFileRequest(receivedGetFileRequest, fastPillarID, 
                             pillar1DestinationId, TEST_CLIENT_ID));
@@ -322,8 +322,6 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addDescription("Tests the the GetFileClient handles lack of IdentifyPillarResponses gracefully  ");
         addStep("Set the number of pillars to 1 and a 3 second timeout for the conversation.", "");
 
-        //We need to use a different collection ID to avoid using a existing conversation mediator.
-        String newCollectionID = "conversationTimeoutTest";
         settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         settings.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(1000));

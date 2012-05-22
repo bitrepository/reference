@@ -46,12 +46,11 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReque
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
-import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
+import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -63,9 +62,6 @@ import org.testng.annotations.Test;
 public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
 
     private TestGetFileIDsMessageFactory testMessageFactory;
-    private TestFileStore pillar1FileStore;
-
-    private static final String TEST_PILLAR_ID = "Pillar1";
         
     /**
      * Set up the test scenario before running the tests in this class.
@@ -76,7 +72,6 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         // TODO getFileIDsFromFastestPillar settings
         if (useMockupPillar()) {
             testMessageFactory = new TestGetFileIDsMessageFactory(settings.getCollectionID());
-            pillar1FileStore = new TestFileStore(TEST_PILLAR_ID);
         }
         httpServer.clearFiles();
     }
@@ -172,7 +167,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Receive and validate event results for the pillar.", 
                 "Should be a FileIDsCompletePillarEvent with the ResultingFileIDs containing only the URL.");
-        for(String pillar : settings.getCollectionSettings().getClientSettings().getPillarIDs()) {
+        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             FileIDsCompletePillarEvent event = (FileIDsCompletePillarEvent) testEventHandler.waitForEvent();
             Assert.assertEquals(event.getType(), OperationEventType.COMPONENT_COMPLETE);
             ResultingFileIDs resFileIDs = event.getFileIDs();
@@ -277,7 +272,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Receive and validate event results for the pillar.", 
                 "Should be a FileIDsCompletePillarEvent with the ResultingFileIDs containing the list of fileids.");
-        for(String pillar : settings.getCollectionSettings().getClientSettings().getPillarIDs()) {
+        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             FileIDsCompletePillarEvent event = (FileIDsCompletePillarEvent) testEventHandler.waitForEvent();
             Assert.assertEquals(event.getType(), OperationEventType.COMPONENT_COMPLETE);
             ResultingFileIDs resFileIDs = event.getFileIDs();

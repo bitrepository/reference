@@ -24,7 +24,6 @@
  */
 package org.bitrepository.protocol;
 
-import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.http.HTTPFileExchange;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -55,18 +54,8 @@ public final class ProtocolComponentFactory {
      */
     protected ProtocolComponentFactory() { }
 
-    /** @see #getModuleCharacteristics() */
-    private static final ModuleCharacteristics MODULE_CHARACTERISTICS = new ModuleCharacteristics("org/bitrepository/protocol/org.bitrepository.protocol");
     /** @see #getFileExchange() */
     protected FileExchange fileExchange;
-
-    /**
-     * Gets you a <code>ModuleCharacteristics</code> object defining the generic characteristics of this module
-     * @return A <code>ModuleCharacteristics</code> object defining the generic characteristics of this module 
-     */
-    public ModuleCharacteristics getModuleCharacteristics() {
-        return MODULE_CHARACTERISTICS;
-    }
 
     /**
      * Gets you an <code>MessageBus</code> instance for accessing the Bitrepositorys message bus. If a messagebus 

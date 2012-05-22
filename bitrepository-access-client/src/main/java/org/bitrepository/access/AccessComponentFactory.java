@@ -34,7 +34,6 @@ import org.bitrepository.access.getfileids.ConversationBasedGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.access.getstatus.CollectionBasedGetStatusClient;
 import org.bitrepository.access.getstatus.GetStatusClient;
-import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
@@ -61,22 +60,10 @@ public final class AccessComponentFactory {
         return instance;
     }
 
-    /** The characteristics for this module.*/
-    private ModuleCharacteristics moduleCharacter;
-
     /**
      * Private constructor for initialization of the singleton.
      */
     private AccessComponentFactory() {
-        moduleCharacter = new ModuleCharacteristics("access-client");
-    }
-
-    /**
-     * Method for retrieving the characteristics for this module.
-     * @return The characteristics for this module.
-     */
-    public ModuleCharacteristics getModuleCharacteristics() {
-        return moduleCharacter;
     }
 
     /**
