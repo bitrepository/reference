@@ -65,12 +65,6 @@ public class PillarSelectorForGetFileIDs {
             throws UnexpectedResponseException, NegativeResponseException {
         responseStatus.responseReceived(response.getPillarID());
         validateResponse(response.getResponseInfo());
-        if (!ResponseCode.IDENTIFICATION_POSITIVE.value().equals(
-                response.getResponseInfo().getResponseCode().value())) {
-            throw new NegativeResponseException(response.getPillarID() + " sent negative response " + 
-                    response.getResponseInfo().getResponseText(), 
-                    response.getResponseInfo().getResponseCode());
-        }
         selectedPillars.add(new SelectedComponentInfo(response.getPillarID(), response.getReplyTo()));
     }
 
@@ -80,14 +74,7 @@ public class PillarSelectorForGetFileIDs {
      * @throws UnexpectedResponseException If it was not an expected response, e.g. if it was not positive.
      */
     private void validateResponse(ResponseInfo irInfo) throws UnexpectedResponseException {
-        if(irInfo == null) {
-            throw new UnexpectedResponseException("Response info was null");
-        }
-
         ResponseCode responseCode = irInfo.getResponseCode();
-        if(responseCode == null) {
-            throw new UnexpectedResponseException("Response code was null, with text: " + irInfo.getResponseText());
-        }
         
         if(responseCode != ResponseCode.IDENTIFICATION_POSITIVE) {
             throw new UnexpectedResponseException("Invalid IdentifyResponse. Expected '"

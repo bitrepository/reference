@@ -25,7 +25,6 @@
 package org.bitrepository.pillar;
 
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.ModuleCharacteristics;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.checksumpillar.ChecksumPillar;
 import org.bitrepository.pillar.checksumpillar.cache.FilebasedChecksumStore;
@@ -52,22 +51,10 @@ public final class PillarComponentFactory {
         return instance;
     }
 
-    /** The characteristics for this module.*/
-    private ModuleCharacteristics moduleCharacter;
-
     /**
      * Private constructor for initialization of the singleton.
      */
     private PillarComponentFactory() {
-        moduleCharacter = new ModuleCharacteristics("reference-pillar");
-    }
-
-    /**
-     * Method for retrieving the characteristics for this module.
-     * @return The characteristics for this module.
-     */
-    public ModuleCharacteristics getModuleCharacteristics() {
-        return moduleCharacter;
     }
 
     /**

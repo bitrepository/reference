@@ -151,7 +151,6 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         } else {
             httpServer.assertFileEquals(TestFileStore.DEFAULT_TEST_FILE, url.toExternalForm());
         }
-
     }
 
     @Test(groups = {"regressiontest"})
@@ -279,7 +278,6 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
             fastReply.setTimeToDeliver(fastTime);
             messageBus.sendMessage(fastReply);
 
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_TIMEOUT);
             GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
             Assert.assertEquals(receivedGetFileRequest, 
                     testMessageFactory.createGetFileRequest(receivedGetFileRequest, fastPillarID, 
