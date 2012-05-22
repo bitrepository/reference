@@ -21,6 +21,7 @@
  */
 package org.bitrepository.alarm.store;
 
+import java.io.File;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,25 +34,50 @@ import org.bitrepository.common.database.DerbyDBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.DatabaseTestUtils;
+import org.bitrepository.common.utils.FileUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class AlarmDatabaseTester extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
-    String DATABASE_URL = "jdbc:derby:alarmservicedb";
     String fileId = "TEST-FILE-ID-" + new Date().getTime();
     String component1 = "ACTOR-1";
     String component2 = "ACTOR-2";
-    
+    String DATABASE_NAME = "alarmservicedb";
+    String DATABASE_DIRECTORY = "test-data";
+    String DATABASE_URL = "jdbc:derby:" + DATABASE_DIRECTORY + "/" + DATABASE_NAME;
+    File dbDir = null;
+
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings();
+        settings.getReferenceSettings().getAlarmServiceSettings().setAlarmServiceDatabaseUrl(DATABASE_URL);
+        
+        addStep("Initialise the database", "Should be unpacked from a jar-file.");
+        File dbFile = new File("src/test/resources/alarmservicedb.jar");
+        Assert.assertTrue(dbFile.isFile(), "The database file should exist");
+        
+        dbDir = FileUtils.retrieveDirectory(DATABASE_DIRECTORY);
+        FileUtils.retrieveSubDirectory(dbDir, DATABASE_NAME);
+        
+        Connection dbCon = DatabaseTestUtils.takeDatabase(dbFile, DATABASE_NAME, dbDir);
+        dbCon.close();
     }
-    
-    @Test(groups = {"databasetest"})
+
+    @AfterClass (alwaysRun = true)
+    public void shutdown() throws Exception {
+        addStep("Cleanup after test.", "Should remove directory with test material.");
+        if(dbDir != null) {
+            FileUtils.delete(dbDir);
+        }
+    }
+
+    @Test(groups = {"regressiontest", "databasetest"})
     public void AlarmDatabaseExtractionTest() throws Exception {
         addDescription("Testing the connection to the alarm service database especially with regards to "
                 + "extracting the data from it.");
@@ -59,7 +85,6 @@ public class AlarmDatabaseTester extends ExtendedTestCase {
         Date restrictionDate = new Date(123456789); // Sometime between epoch and now!
         
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
-        settings.getReferenceSettings().getAlarmServiceSettings().setAlarmServiceDatabaseUrl(DATABASE_URL);
         AlarmServiceDAO database = new AlarmServiceDAO(settings);
         clearDatabase(DATABASE_URL);
         
