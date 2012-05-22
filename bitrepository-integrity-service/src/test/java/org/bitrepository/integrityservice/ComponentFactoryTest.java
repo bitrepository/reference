@@ -24,9 +24,14 @@
  */
 package org.bitrepository.integrityservice;
 
+import java.io.File;
+import java.sql.Connection;
+
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.common.utils.DatabaseTestUtils;
+import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
@@ -39,6 +44,7 @@ import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -50,12 +56,33 @@ public class ComponentFactoryTest extends ExtendedTestCase {
     Settings settings;
     MessageBus messageBus;
     SecurityManager securityManager;
-    
+    String DATABASE_NAME = "integritydb";
+    String DATABASE_DIRECTORY = "test-data";
+    String DATABASE_URL = "jdbc:derby:" + DATABASE_DIRECTORY + "/" + DATABASE_NAME;
+    File dbDir = null;
+
     @BeforeClass (alwaysRun = true)
-    public void setup() {
+    public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings();
         securityManager = new DummySecurityManager();
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
+        settings.getReferenceSettings().getIntegrityServiceSettings().setDatabaseUrl(DATABASE_URL);
+        
+        File dbFile = new File("src/test/resources/integritydb.jar");
+        Assert.assertTrue(dbFile.isFile(), "The database file should exist");
+        
+        dbDir = FileUtils.retrieveDirectory(DATABASE_DIRECTORY);
+        FileUtils.retrieveSubDirectory(dbDir, DATABASE_NAME);
+        
+        Connection dbCon = DatabaseTestUtils.takeDatabase(dbFile, DATABASE_NAME, dbDir);
+        dbCon.close();
+    }
+    
+    @AfterClass (alwaysRun = true)
+    public void shutdown() throws Exception {
+        if(dbDir != null) {
+            FileUtils.delete(dbDir);
+        }
     }
     
     @Test(groups = {"regressiontest"})

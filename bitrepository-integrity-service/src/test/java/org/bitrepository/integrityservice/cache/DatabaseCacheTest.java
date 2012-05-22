@@ -24,6 +24,7 @@
  */
 package org.bitrepository.integrityservice.cache;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -44,6 +45,8 @@ import org.bitrepository.common.database.DerbyDBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.DatabaseTestUtils;
+import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
@@ -51,21 +54,40 @@ import org.bitrepository.integrityservice.checking.IntegrityReport;
 import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class DatabaseCacheTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
-    String DATABASE_URL = "jdbc:derby:integritydb";
+    String DATABASE_NAME = "integritydb";
+    String DATABASE_DIRECTORY = "test-data";
+    String DATABASE_URL = "jdbc:derby:" + DATABASE_DIRECTORY + "/" + DATABASE_NAME;
+    File dbDir = null;
     
     @BeforeClass (alwaysRun = true)
-    public void setup() {
+    public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings();
+        
+        File dbFile = new File("src/test/resources/integritydb.jar");
+        Assert.assertTrue(dbFile.isFile(), "The database file should exist");
+        
+        dbDir = FileUtils.retrieveDirectory(DATABASE_DIRECTORY);
+        FileUtils.retrieveSubDirectory(dbDir, DATABASE_NAME);
+        
+        Connection dbCon = DatabaseTestUtils.takeDatabase(dbFile, DATABASE_NAME, dbDir);
+        dbCon.close();
     }
-    
-//    @Test(groups = {"regressiontest"})
-    @Test(groups = {"databasetest"})
+
+    @AfterClass (alwaysRun = true)
+    public void shutdown() throws Exception {
+        if(dbDir != null) {
+            FileUtils.delete(dbDir);
+        }
+    }
+
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void connectionTest() throws Exception {
         addDescription("Testing the connection to the integrity database.");
         addStep("Setup the variables and constants.", "Should be ok.");
@@ -114,7 +136,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         System.out.println("numberOfMissingFiles: " + numberOfMissingFiles);
     }
     
-    @Test(groups = {"databasetest", "integrationtest"})
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void integrityCheckTest() throws Exception {
         addDescription("Testing whether the integrity check can interact with the database cache.");
         addStep("Setup variables and constants.", "Should not be a problem.");
@@ -131,6 +153,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         IntegrityDatabase cache = new IntegrityDatabase(settings);
         SimpleIntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
         clearDatabase(DATABASE_URL);
+        
         FileIDs allFileIDs = new FileIDs();
         allFileIDs.setAllFileIDs("true");
         FileIDs fileIDOne = new FileIDs();
@@ -179,7 +202,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId2), 1, "They should disagree upon one.");
     }
     
-    @Test(groups = {"databasetest", "integrationtest"})
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void integrityCheckForChecksumTest() throws Exception {
         addDescription("Testing whether the integrity check can perform different checksum votes, "
                 + "select a winner and find a draw.");
@@ -263,7 +286,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
                 "Pillar 3 should have another checksum error.");
     }
     
-    @Test(groups = {"databasetest", "integrationtest"})
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void integrityCheckForUnknownFileTest() throws Exception {
         addDescription("Test whether a file id, which is missing at every will be deleted from cache.");
         addStep("Setup variables and constants.", "Should not be a problem.");
@@ -359,7 +382,6 @@ public class DatabaseCacheTest extends ExtendedTestCase {
             System.out.println(res.getLong(1) + " : " + res.getLong(2) + " : " + res.getLong(3) + " : " 
                     + res.getString(4) + " : " + res.getInt(5) + " : " + res.getInt(6));
         }
-        
     }
     
     /**

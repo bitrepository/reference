@@ -24,21 +24,20 @@
  */
 package org.bitrepository.integrityservice.web;
 
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.integrityservice.IntegrityService;
-import org.bitrepository.integrityservice.SimpleIntegrityService;
-import org.bitrepository.integrityservice.workflow.Workflow;
-import org.bitrepository.service.LifeCycledService;
-
 import java.util.Collection;
 import java.util.List;
+
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.integrityservice.IntegrityService;
+import org.bitrepository.integrityservice.workflow.Workflow;
+import org.bitrepository.service.LifeCycledService;
 
 /**
  * The IntegrityService wrapped into the interface for a web server.
  */
 public class IntegrityServiceWebInterface implements IntegrityService, LifeCycledService {
     /** The wrapped IntegrityService.*/
-    private final SimpleIntegrityService service;
+    private final IntegrityService service;
     /** The settings for the wrapped integrity service.*/
     private final Settings settings;
     
@@ -47,7 +46,7 @@ public class IntegrityServiceWebInterface implements IntegrityService, LifeCycle
      * @param simpleIntegrityService The service to wrap.
      * @param settings The settings for the wrapped service.
      */
-    public IntegrityServiceWebInterface(SimpleIntegrityService simpleIntegrityService, Settings settings) {
+    public IntegrityServiceWebInterface(IntegrityService simpleIntegrityService, Settings settings) {
         this.service = simpleIntegrityService;
         this.settings = settings;
     }
@@ -94,5 +93,20 @@ public class IntegrityServiceWebInterface implements IntegrityService, LifeCycle
     @Override
     public void shutdown() {
         service.shutdown();
+    }
+
+    @Override
+    public void startChecksumIntegrityCheck(long millisSinceLastUpdate, long intervalBetweenChecks) {
+        service.startChecksumIntegrityCheck(millisSinceLastUpdate, intervalBetweenChecks);
+    }
+
+    @Override
+    public void startAllFileIDsIntegrityCheck(long intervalBetweenCollecting) {
+        service.startAllFileIDsIntegrityCheck(intervalBetweenCollecting);
+    }
+
+    @Override
+    public void startAllChecksumsIntegrityCheck(long intervalBetweenCollecting) {
+        service.startAllChecksumsIntegrityCheck(intervalBetweenCollecting);
     }
 }

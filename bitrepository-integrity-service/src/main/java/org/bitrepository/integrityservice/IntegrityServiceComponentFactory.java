@@ -24,6 +24,7 @@
  */
 package org.bitrepository.integrityservice;
 
+import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.common.settings.Settings;
@@ -35,7 +36,9 @@ import org.bitrepository.integrityservice.collector.DelegatingIntegrityInformati
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowScheduler;
 import org.bitrepository.integrityservice.workflow.TimerWorkflowScheduler;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.security.SecurityManager;
 
 /**
  * Provides access to the different component in the integrity module (Spring/IOC wannabe)
@@ -126,5 +129,29 @@ public final class IntegrityServiceComponentFactory {
             cachedIntegrityInformationStorage = new IntegrityDatabase(settings);
         }
         return cachedIntegrityInformationStorage;
+    }
+    
+    /**
+     * Creates an instance og the SimpleIntegrityService.
+     * @param settings The settings for the service. The component ID will be set to the integrity service ID.
+     * @param securityManager The security manager.
+     * @return The integrity service.
+     */
+    public IntegrityService createIntegrityService(Settings settings, SecurityManager securityManager) {
+        settings.setComponentID(settings.getReferenceSettings().getIntegrityServiceSettings().getID());
+        
+        MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
+        IntegrityModel model = getCachedIntegrityInformationStorage(settings);
+        IntegrityWorkflowScheduler scheduler = getIntegrityInformationScheduler(settings);
+        IntegrityChecker checker = getIntegrityChecker(settings, model);
+        AlarmDispatcher alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus);
+        IntegrityInformationCollector collector = getIntegrityInformationCollector(model, checker, 
+                AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
+                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
+                AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
+                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
+                settings, messageBus);
+        
+        return new SimpleIntegrityService(model, scheduler, checker, alarmDispatcher, collector, settings, messageBus);
     }
 }

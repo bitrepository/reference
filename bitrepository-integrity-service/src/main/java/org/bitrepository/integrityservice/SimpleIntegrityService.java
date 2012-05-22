@@ -26,7 +26,6 @@ package org.bitrepository.integrityservice;
 
 import java.util.Collection;
 
-import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -43,9 +42,7 @@ import org.bitrepository.integrityservice.workflow.scheduler.CollectAllChecksums
 import org.bitrepository.integrityservice.workflow.scheduler.CollectAllFileIDsWorkflow;
 import org.bitrepository.integrityservice.workflow.scheduler.CollectObsoleteChecksumsWorkflow;
 import org.bitrepository.integrityservice.workflow.scheduler.IntegrityValidatorWorkflow;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
@@ -79,7 +76,7 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
     /** The settings. */
     private final Settings settings;
     /** The dispatcher of alarms.*/
-    private final IntegrityAlarmDispatcher alarmDispatcher;
+    private final AlarmDispatcher alarmDispatcher;
     /** Provides GetStatus and GetAuditTrails functionality. */
     private final ContributorMediator contributor;
     /** The messagebus for communication.*/
@@ -89,33 +86,24 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
      * Constructor.
      * @param settings The settings for the service.
      */
-    public SimpleIntegrityService(Settings settings, SecurityManager securityManager) {
+    public SimpleIntegrityService(IntegrityModel model, IntegrityWorkflowScheduler scheduler, IntegrityChecker checker, 
+            AlarmDispatcher alarmDispatcher, IntegrityInformationCollector collector, Settings settings, MessageBus messageBus) {
         this.settings = settings;
         settings.setComponentID(settings.getReferenceSettings().getIntegrityServiceSettings().getID());
-        this.messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager); 
-        this.cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings);
-        this.scheduler = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settings);
-        this.checker = IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache);
-        this.alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus);
+        this.messageBus = messageBus;
+        this.cache = model;
+        this.scheduler = scheduler;
+        this.checker = checker;
+        this.alarmDispatcher = alarmDispatcher;
+        this.collector = collector;
+        
         this.contributor = new SimpleContributorMediator(messageBus, settings,
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID(),
                         settings.getReceiverDestination(), null);
-        this.collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
-                cache, checker, 
-                AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                settings, messageBus);
-        
         contributor.start();
     }
     
-    /**
-     * Initiates the scheduling of checksum collecting and integrity checking.
-     * @param millisSinceLastUpdate The time since last update for a checksum to be calculated.
-     * @param intervalBetweenChecks The time between checking for outdated checksums.
-     */
+    @Override
     public void startChecksumIntegrityCheck(long millisSinceLastUpdate, long intervalBetweenChecks) {
         EventHandler eventHandler = new ChecksumsUpdaterAndValidatorEventHandler(cache, checker, alarmDispatcher, 
                 getFileIDsWithAllFileIDs());
@@ -132,10 +120,7 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
         scheduler.putWorkflow(workflow);
     }
     
-    /**
-     * Initiates the scheduling of collecting and checking of all the file ids from all the pillars.
-     * @param intervalBetweenCollecting The time between collecting all the file ids.
-     */
+    @Override
     public void startAllFileIDsIntegrityCheck(long intervalBetweenCollecting) {
         EventHandler eventHandler = new FileIDsUpdaterAndValidatorEventHandler(cache, checker, alarmDispatcher, 
                 getFileIDsWithAllFileIDs());
@@ -145,10 +130,7 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
         scheduler.putWorkflow(workflow);
     }
 
-    /**
-     * Initiates the scheduling of collecting and checking of all the checksums from all the pillars.
-     * @param intervalBetweenCollecting The time between collecting all the file ids.
-     */
+    @Override
     public void startAllChecksumsIntegrityCheck(long intervalBetweenCollecting) {
         EventHandler eventHandler = new ChecksumsUpdaterAndValidatorEventHandler(cache, checker, alarmDispatcher, 
                 getFileIDsWithAllFileIDs());

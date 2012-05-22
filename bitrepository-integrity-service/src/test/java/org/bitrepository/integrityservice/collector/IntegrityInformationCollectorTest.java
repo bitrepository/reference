@@ -120,28 +120,103 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         }
 
         @Override
-        public void shutdown() {
-            // TODO Auto-generated method stub
-            
-        }
+        public void shutdown() { }
+    }
+    
+    @Test(groups = "regressiontest")
+    public void testCollectorHandleChecksumClientFailures() throws Exception {
+        addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
+        addStep("Setup variables for the test", "Should be OK");
+        String pillarId = "TEST-PILLAR";
+        FileIDs fileIDs = new FileIDs();
+        fileIDs.setAllFileIDs("true");
+        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
+        csType.setChecksumType(ChecksumType.MD5);
+        String auditTrailInformation = "audit trail for this test";
+
+        addStep("Setup a FailingGetChecksumClient for test purpose.", "Should be OK.");
+        FailingGetChecksumClient getFailingChecksumsClient = new FailingGetChecksumClient();
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(null, getFailingChecksumsClient);
         
+        addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
+                "Should not throw the exception in the definition of the GetChecksumClient call.");
+        collector.getChecksums(Arrays.asList(pillarId), fileIDs, csType, auditTrailInformation, null);
+        
+        addStep("Setup a FailingGetChecksumClient for test purpose.", "Should be OK.");
+        DyingGetChecksumClient getDyingChecksumsClient = new DyingGetChecksumClient();
+        collector = new DelegatingIntegrityInformationCollector(null, getDyingChecksumsClient);
+        
+        addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
+                "Should not throw an unexpected exception");
+        collector.getChecksums(Arrays.asList(pillarId), fileIDs, csType, auditTrailInformation, null);
     }
 
-    @Test(groups = "specificationonly")
-    void testListFileIDsCollection() throws Exception {
-        addDescription("Test that requesting a file list, has the effect that the database is updated with the desired "
-                               + "information");
-        // TODO old stuff from Kåre. Might be a usecase.
-        addStep("Set up the system", "No errors");
-        addStep("Request a list of files", "Database is updated with list of files");
+    private class FailingGetChecksumClient implements GetChecksumsClient {
+        @Override
+        public void shutdown() { }
+        @Override
+        public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec,
+                URL addressForResult, EventHandler eventHandler, String auditTrailInformation)
+                throws OperationFailedException {
+            throw new OperationFailedException("My purpose is to fail!");
+        }
     }
 
-    @Test(groups = "specificationonly")
-    void testGetChecksumsCollection() throws Exception {
-        addDescription("Test that requesting a set if checksums, has the effect that the database is updated with the"
-                               + " desired information");
-        // TODO old stuff from Kåre. Might be a usecase.
-        addStep("Set up the system", "No errors");
-        addStep("Request a list of checksums", "Database is updated with list of files");
+    private class DyingGetChecksumClient implements GetChecksumsClient {
+        @Override
+        public void shutdown() { }
+        @Override
+        public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec,
+                URL addressForResult, EventHandler eventHandler, String auditTrailInformation)
+                throws OperationFailedException {
+            throw new RuntimeException("My purpose is to die!");
+        }
+    }
+    
+    @Test(groups = "regressiontest")
+    public void testCollectorHandleGetFileIDsClientFailures() throws Exception {
+        addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
+        addStep("Setup variables for the test", "Should be OK");
+        String pillarId = "TEST-PILLAR";
+        FileIDs fileIDs = new FileIDs();
+        fileIDs.setAllFileIDs("true");
+        String auditTrailInformation = "audit trail for this test";
+
+        addStep("Setup a FailingGetFileIDsClient for test purpose.", "Should be OK.");
+        FailingGetFileIDsClient getFailingFileIDsClient = new FailingGetFileIDsClient();
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(getFailingFileIDsClient, null);
+        
+        addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
+                "Should not throw the exception in the definition of the GetChecksumClient call.");
+        collector.getFileIDs(Arrays.asList(pillarId), fileIDs, auditTrailInformation, null);
+        
+        addStep("Setup a FailingGetChecksumClient for test purpose.", "Should be OK.");
+        DyingGetFileIDsClient getDyingFileIDsClient = new DyingGetFileIDsClient();
+        collector = new DelegatingIntegrityInformationCollector(getDyingFileIDsClient, null);
+        
+        addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
+                "Should not throw an unexpected exception");
+        collector.getFileIDs(Arrays.asList(pillarId), fileIDs, auditTrailInformation, null);
+    }
+
+    private class FailingGetFileIDsClient implements GetFileIDsClient {
+        @Override
+        public void shutdown() { }
+
+        @Override
+        public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
+                EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+            throw new OperationFailedException("My purpose is to fail!");
+        }
+    }
+
+    private class DyingGetFileIDsClient implements GetFileIDsClient {
+        @Override
+        public void shutdown() { }
+        @Override
+        public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
+                EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+            throw new RuntimeException("My purpose is to die!");
+        }
     }
 }
