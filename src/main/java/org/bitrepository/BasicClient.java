@@ -64,6 +64,7 @@ public class BasicClient {
         this.settings = settings;
         this.securityManager = securityManager;
         this.clientID = clientID;
+        settings.setComponentID(clientID);
         putClient = ModifyComponentFactory.getInstance().retrievePutClient(settings, this.securityManager, clientID);
         getClient = AccessComponentFactory.getInstance().createGetFileClient(settings, this.securityManager, clientID);
         getChecksumClient = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, 
