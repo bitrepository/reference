@@ -24,13 +24,16 @@
  */
 package org.bitrepository.pillar.referencepillar.messagehandler;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.URL;
 
 import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
@@ -134,12 +137,19 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
         File requestedFile = getArchive().getFile(message.getFileID());
 
         try {
+            InputStream is;
+            if(message.getFilePart() == null) {
+                is = new FileInputStream(requestedFile);
+            } else {
+                is = extractFilePart(requestedFile, message.getFilePart());
+            }
+            
             // Upload the file.
             log.info("Uploading file: " + requestedFile.getName() + " to " + message.getFileAddress());
             getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed identifying pillar.", 
                     message.getAuditTrailInformation(), FileAction.GET_FILE);
             FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
-            fe.uploadToServer(new FileInputStream(requestedFile), new URL(message.getFileAddress()));
+            fe.uploadToServer(is, new URL(message.getFileAddress()));
         } catch (IOException e) {
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
@@ -147,6 +157,32 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
                     + message.getFileAddress() + "'");
             throw new InvalidMessageException(fri, e);
         }
+    }
+    
+    /**
+     * Extracts a given file part 
+     * @param requestedFile The requested file to extract the file part from.
+     * @param filePart The defined interval for the file part.
+     * @return A InputStream with the requested file part.
+     * @throws IOException If anything goes wrong.
+     */
+    private InputStream extractFilePart(File requestedFile, FilePart filePart) throws IOException {
+        int offset = filePart.getPartOffSet().intValue();
+        int size = filePart.getPartLength().intValue();
+        byte[] partOfFile = new byte[size];
+        FileInputStream fis  = null;
+        try {
+            log.info("Extracting " + size + " bytes with offset " + offset + " from " + requestedFile.getName());
+            fis= new FileInputStream(requestedFile);
+            
+            fis.read(new byte[offset]);
+            fis.read(partOfFile);
+        } finally {
+            if(fis != null) {
+                fis.close();
+            }
+        }
+        return new ByteArrayInputStream(partOfFile);
     }
     
     /**
