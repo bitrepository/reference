@@ -26,6 +26,7 @@ package org.bitrepository.access.getfile;
 
 import java.net.URL;
 
+import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.BitrepositoryClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 
@@ -41,21 +42,24 @@ public interface GetFileClient extends BitrepositoryClient {
      * The method will return as soon as the communication has been setup.
      *
      * @param fileId The id of the file to retrieve.
+     * @param filePart The part of the file, which is wanted. If null, then the whole file is retrieved.
      * @param uploadUrl The url the pillar should upload the file to.
      * @param eventHandler The handler which should receive notifications of the progress events. 
      */
-    void getFileFromFastestPillar(String fileId, URL uploadUrl, EventHandler eventHandler);
+    void getFileFromFastestPillar(String fileId, FilePart filePart, URL uploadUrl, EventHandler eventHandler);
 
     /**
      * Method for retrieving a file from a specific pillar. 
      * 
      * The method will return as soon as the communication has been setup.
-     * @param pillarId The id of pillar, where the file should be retrieved from.
-     *
+     * 
      * @param fileId The id of the file to retrieve.
+     * @param filePart The part of the file, which is wanted. If null, then the whole file is retrieved.
      * @param uploadUrl The url the pillar should upload the file to.
+     * @param pillarId The id of pillar, where the file should be retrieved from.
      * @param eventHandler The handler which should receive notifications of the events occurring in connection with 
      * the pillar communication. 
      */
-    void getFileFromSpecificPillar(String fileId, URL uploadUrl, String pillarId, EventHandler eventHandler);
+    void getFileFromSpecificPillar(String fileId, FilePart filePart, URL uploadUrl, String pillarId, 
+            EventHandler eventHandler);
 }

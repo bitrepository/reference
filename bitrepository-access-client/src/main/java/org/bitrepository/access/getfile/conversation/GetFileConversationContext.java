@@ -24,35 +24,72 @@ package org.bitrepository.access.getfile.conversation;
 import java.net.URL;
 
 import org.bitrepository.access.getfile.selectors.GetFileSelector;
+import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
+/**
+ * The context for the conversation for the GetFile operation.
+ */
 public class GetFileConversationContext extends ConversationContext {
+    /** @see getFileID() */
     private final String fileID;
+    /** @see getFilePart() */
+    private FilePart filePart;
+    /** @see getUrlForResult() */
     private final URL urlForResult;
+    /** @see getSelector() */
     private final GetFileSelector selector;
 
-    public GetFileConversationContext(String fileID, URL urlForResult, GetFileSelector selector,
+    /**
+     * Constructor.
+     * @param fileID The id of the file to retrieve.
+     * @param urlForResult The address for the delivery of the results.
+     * @param filePart The part of the file. Null if whole file is wanted.
+     * @param selector The selector for choosing the pillar to retrieve from.
+     * @param settings The settings.
+     * @param messageSender The message sender.
+     * @param clientID The id of the client.
+     * @param eventHandler The eventhandler. 
+     * @param auditTrailInformation The audit trail information for the conversation.
+     */
+    public GetFileConversationContext(String fileID, URL urlForResult, FilePart filePart, GetFileSelector selector,
             Settings settings, MessageSender messageSender, String clientID, EventHandler eventHandler,
             String auditTrailInformation) {
         super(settings, messageSender, clientID, eventHandler, auditTrailInformation);
         this.fileID = fileID;
+        this.filePart = filePart;
         this.urlForResult = urlForResult;
         this.selector = selector;
     }
 
+    /**
+     * @return The id of the file to retrieve.
+     */
     public String getFileID() {
         return fileID;
     }
 
+    /**
+     * @return The part of the file to retrieve (null if whole file).
+     */
+    public FilePart getFilePart() {
+        return filePart;
+    }
+    
+    /**
+     * @return The URL for the results to be delivered.
+     */
     public URL getUrlForResult() {
         return urlForResult;
     }
     
+    /**
+     * @return The selector for selecting the pillar, where the file is to be retrieved.
+     */
     public GetFileSelector getSelector() {
         return selector;
     }
-
 }

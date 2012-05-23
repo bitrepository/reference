@@ -39,6 +39,7 @@
  */
 package org.bitrepository.access.getfile;
 
+import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
@@ -124,11 +125,12 @@ public class TestGetFileMessageFactory extends ClientTestMessageFactory {
         return getFileRequest;
     }
     public GetFileRequest createGetFileRequest(GetFileRequest receivedGetFileRequest,
-            String pillarId, String toTopic, String from) {
+            FilePart filePart, String pillarId, String toTopic, String from) {
         GetFileRequest getFileRequest = createGetFileRequest(pillarId, toTopic, from);
         getFileRequest.setCorrelationID(receivedGetFileRequest.getCorrelationID());
         getFileRequest.setFileAddress(receivedGetFileRequest.getFileAddress());
         getFileRequest.setReplyTo(receivedGetFileRequest.getReplyTo());
+        getFileRequest.setFilePart(filePart);
         return getFileRequest;
     }
 

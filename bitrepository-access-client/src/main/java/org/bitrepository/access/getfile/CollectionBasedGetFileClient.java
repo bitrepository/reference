@@ -31,6 +31,7 @@ import org.bitrepository.access.getfile.conversation.SimpleGetFileConversation;
 import org.bitrepository.access.getfile.selectors.FastestPillarSelectorForGetFile;
 import org.bitrepository.access.getfile.selectors.GetFileSelector;
 import org.bitrepository.access.getfile.selectors.SpecificPillarSelectorForGetFile;
+import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -63,7 +64,7 @@ public class CollectionBasedGetFileClient extends AbstractClient implements GetF
     }
 
     @Override
-    public void getFileFromFastestPillar(String fileID, URL uploadUrl, EventHandler eventHandler) {
+    public void getFileFromFastestPillar(String fileID, FilePart filePart, URL uploadUrl, EventHandler eventHandler) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
@@ -72,11 +73,11 @@ public class CollectionBasedGetFileClient extends AbstractClient implements GetF
         log.info("Requesting fastest retrieval of the file '" + fileID);
         getFile(messageBus, settings, new FastestPillarSelectorForGetFile(
                 settings.getCollectionSettings().getClientSettings().getPillarIDs()), 
-                fileID, uploadUrl, eventHandler);		
+                fileID, filePart, uploadUrl, eventHandler);
     }
 
     @Override
-    public void getFileFromSpecificPillar(String fileID, URL uploadUrl, String pillarID, EventHandler eventHandler) {
+    public void getFileFromSpecificPillar(String fileID, FilePart filePart, URL uploadUrl, String pillarID, EventHandler eventHandler) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "pillarID");
@@ -86,22 +87,26 @@ public class CollectionBasedGetFileClient extends AbstractClient implements GetF
         log.info("Requesting the file '" + fileID + "' from pillar '" + pillarID + "'.");
         getFile(messageBus, settings, new SpecificPillarSelectorForGetFile(
                 settings.getCollectionSettings().getClientSettings().getPillarIDs(), pillarID), 
-                fileID, uploadUrl, eventHandler);				
+                fileID, filePart, uploadUrl, eventHandler);
     }
 
-    /** 
-     * 
+    /**
      * Asynchronous(Non-blocking) method for starting the getFile process get by using a new conversation.
      * 
+     * @param messageBus The message bus.
+     * @param settings The settings.
      * @param selector Defines the algorithm for choosing the pillar to deliver the file.
+     * @param fileID The id of the file.
+     * @param filePart The part of the file (if null, then the whole file is retrieved).
+     * @param uploadUrl The delivery URL for the results. 
+     * @param eventHandler The eventhandler.
      * @see GetFileClient
      */
     private void getFile(MessageBus messageBus, Settings settings, GetFileSelector selector, 
-            String fileID, URL uploadUrl, EventHandler eventHandler) {
-        GetFileConversationContext context = new GetFileConversationContext(fileID, uploadUrl, selector, 
+            String fileID, FilePart filePart, URL uploadUrl, EventHandler eventHandler) {
+        GetFileConversationContext context = new GetFileConversationContext(fileID, uploadUrl, filePart, selector, 
                 settings, messageBus, clientID, eventHandler, null);
         SimpleGetFileConversation conversation = new SimpleGetFileConversation(context);
         startConversation(conversation);
     }
-
 }

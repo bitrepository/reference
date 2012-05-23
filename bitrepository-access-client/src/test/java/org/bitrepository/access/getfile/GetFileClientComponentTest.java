@@ -30,6 +30,7 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
@@ -55,6 +56,8 @@ import org.testng.annotations.Test;
  */
 public class GetFileClientComponentTest extends AbstractGetFileClientTest {
    
+    private static FilePart NO_FILE_PART = null;
+    
     @BeforeMethod (alwaysRun=true)
     @Override
     public void beforeMethodSetup() throws Exception {
@@ -70,14 +73,18 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     }
 
     @Test(groups = {"regressiontest"})
-    public void getFileFromSpecificPillar() throws Exception {
+    public void getFileFromSpecificPillarWithFilePart() throws Exception {
         addDescription("Tests whether a specific message is sent by the GetClient, when only a single pillar " +
-                "participates");
+                "participates. Also validate, that the 'FilePart' can be used.");
         addStep("Set the number of pillars to 1", "");
 
         settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
-
+        
+        FilePart filePart = new FilePart();
+        filePart.setPartLength(BigInteger.TEN);
+        filePart.setPartOffSet(BigInteger.ONE);
+        
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetFileClient client = createGetFileClient();
 
@@ -89,8 +96,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.", 
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
-        client.getFileFromSpecificPillar(
-                DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), chosenPillar, testEventHandler);
+        client.getFileFromSpecificPillar(DEFAULT_FILE_ID, filePart, httpServer.getURL(DEFAULT_FILE_ID), 
+                chosenPillar, testEventHandler);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage = collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
@@ -111,7 +118,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
             messageBus.sendMessage(identifyResponse);
             receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
             Assert.assertEquals(receivedGetFileRequest, 
-                    testMessageFactory.createGetFileRequest(receivedGetFileRequest, chosenPillar, 
+                    testMessageFactory.createGetFileRequest(receivedGetFileRequest, filePart, chosenPillar, 
                             pillar1DestinationId, TEST_CLIENT_ID));
         }
 
@@ -176,7 +183,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
         addStep("Make the GetClient ask for fastest pillar.", 
                 "It should send message to identify which pillars and a IdentifyPillarsRequestSent notification should be generated.");
-        client.getFileFromFastestPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), testEventHandler);
+        client.getFileFromFastestPillar(DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID), 
+                testEventHandler);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage = 
@@ -216,7 +224,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
             GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
             Assert.assertEquals(receivedGetFileRequest, 
-                    testMessageFactory.createGetFileRequest(receivedGetFileRequest, fastPillarID, 
+                    testMessageFactory.createGetFileRequest(receivedGetFileRequest, NO_FILE_PART, fastPillarID, 
                             pillar1DestinationId, TEST_CLIENT_ID));
         }
 
@@ -248,7 +256,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addStep("Make the GetClient ask for fastest pillar.",  
                 "It should send message to identify which pillar can respond fastest.");
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        client.getFileFromFastestPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), testEventHandler);
+        client.getFileFromFastestPillar(DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID), 
+                testEventHandler);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage = 
@@ -280,7 +289,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
             GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
             Assert.assertEquals(receivedGetFileRequest, 
-                    testMessageFactory.createGetFileRequest(receivedGetFileRequest, fastPillarID, 
+                    testMessageFactory.createGetFileRequest(receivedGetFileRequest, NO_FILE_PART, fastPillarID, 
                             pillar1DestinationId, TEST_CLIENT_ID));
         }
 
@@ -304,7 +313,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addStep("Make the GetClient ask for fastest pillar.",  
                 "It should send message to identify which pillar can respond fastest.");
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        client.getFileFromFastestPillar(DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), testEventHandler);
+        client.getFileFromFastestPillar(DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID), 
+                testEventHandler);
         if (useMockupPillar()) {
             collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         }
@@ -328,8 +338,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.", 
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        client.getFileFromSpecificPillar( DEFAULT_FILE_ID, httpServer.getURL(DEFAULT_FILE_ID), PILLAR1_ID, 
-                testEventHandler);
+        client.getFileFromSpecificPillar( DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID), 
+                PILLAR1_ID, testEventHandler);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage = 
@@ -375,7 +385,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 "An identify request should be sent and an IdentifyPillarsRequestSent event should be generate");
         GetFileClient client = createGetFileClient();
 
-        client.getFileFromSpecificPillar(fileName, url, PILLAR1_ID, testEventHandler);
+        client.getFileFromSpecificPillar(fileName, NO_FILE_PART, url, PILLAR1_ID, testEventHandler);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = 
                 collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -406,7 +416,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
         addStep("Call getFileFromFastestPillar.", 
                 "An identify request should be sent and a IdentifyPillarsRequestSent event should be generate");
-        client.getFileFromFastestPillar(fileName, url, testEventHandler);
+        client.getFileFromFastestPillar(fileName, NO_FILE_PART, url, testEventHandler);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = 
                 collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
