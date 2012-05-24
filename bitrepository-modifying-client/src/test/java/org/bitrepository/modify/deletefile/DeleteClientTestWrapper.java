@@ -27,7 +27,6 @@ package org.bitrepository.modify.deletefile;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 import org.jaccept.TestEventManager;
 
 /**
@@ -51,7 +50,7 @@ public class DeleteClientTestWrapper implements DeleteFileClient {
 
     @Override
     public void deleteFile(String fileId, String pillarId, ChecksumDataForFileTYPE checksumForPillar,
-            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
         testEventManager.addStimuli("Calling deleteFile(" + fileId + ", " + pillarId + ", " + checksumForPillar + ", " 
             + checksumRequested + ", eventHandler, " + auditTrailInformation + ")");
         wrappedDeleteClient.deleteFile(fileId, pillarId, checksumForPillar, checksumRequested, eventHandler, 
@@ -60,7 +59,7 @@ public class DeleteClientTestWrapper implements DeleteFileClient {
     
     @Override
     public void deleteFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForPillar,
-            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
         testEventManager.addStimuli("Calling deleteFileAtAllPillars(" + fileId + ", " + checksumForPillar + ", " 
             + checksumRequested + ", eventHandler, " + auditTrailInformation + ")");
         wrappedDeleteClient.deleteFileAtAllPillars(fileId, checksumForPillar, checksumRequested, eventHandler, 

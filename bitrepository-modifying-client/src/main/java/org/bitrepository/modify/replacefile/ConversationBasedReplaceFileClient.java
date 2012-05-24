@@ -31,7 +31,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.replacefile.conversation.ReplaceFileConversationContext;
@@ -63,7 +62,7 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
     public void replaceFile(String fileId, String pillarId, ChecksumDataForFileTYPE checksumForDeleteAtPillar, 
             ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile, 
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile, 
-            EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+            EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
@@ -89,7 +88,7 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
     public void replaceFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForDeleteAtPillar, 
             ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile, 
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile, 
-            EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+            EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
         validateFileID(fileId);

@@ -29,7 +29,6 @@ import java.util.Collection;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 
 /**
  * Interface for GetFileIDs client exposing the bit repository org.bitrepository.org.bitrepository.protocol GetFileIDs functionality.
@@ -55,7 +54,7 @@ public interface GetFileIDsClient {
      * @param auditTrailInformation The auditTrailInformation for the requests.
      */
     public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult, EventHandler eventHandler, 
-            String auditTrailInformation) throws OperationFailedException;
+            String auditTrailInformation);
     
     /**
      * Method to perform a graceful shutdown of the client.

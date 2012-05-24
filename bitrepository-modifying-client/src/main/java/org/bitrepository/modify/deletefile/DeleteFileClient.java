@@ -28,7 +28,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.BitrepositoryClient;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 
 /**
  * Interface for the delete client.
@@ -46,12 +45,9 @@ public interface DeleteFileClient extends BitrepositoryClient {
      * IdentifyPillarsRequestSent, PillarIdentified, PillarSelected, RequestSent, Progress, PillarComplete, Complete
      * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation 
      * call.
-     * 
-     * @throws OperationFailedException If the operation cannot be instantiated.
      */
     void deleteFile(String fileId, String pillarId, ChecksumDataForFileTYPE checksumForPillar, 
-            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) 
-                    throws OperationFailedException;
+            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation);
     
     /**
      * Starts the conversation for deleting a file on a all pillars.
@@ -65,11 +61,8 @@ public interface DeleteFileClient extends BitrepositoryClient {
      * Progress (for each pillar), PillarComplete (for each pillar), Complete
      * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation 
      * call.
-     * 
-     * @throws OperationFailedException If the operation cannot be instantiated.
      */
     void deleteFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForPillar, 
-            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) 
-                    throws OperationFailedException;
+            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation);
     
 }

@@ -31,7 +31,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 import org.bitrepository.integrityservice.mocks.MockAuditManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -110,7 +109,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         public void shutdown() {}
         @Override
         public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
-                EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+                EventHandler eventHandler, String auditTrailInformation) {
             callsForGetFileIDs++;
         }
     }
@@ -122,8 +121,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         }
         @Override
         public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec,
-                URL addressForResult, EventHandler eventHandler, String auditTrailInformation)
-                throws OperationFailedException {
+                URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
             callsForGetChecksums++;
         }
 
@@ -143,31 +141,12 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         String auditTrailInformation = "audit trail for this test";
 
         addStep("Setup a FailingGetChecksumClient for test purpose.", "Should be OK.");
-        FailingGetChecksumClient getFailingChecksumsClient = new FailingGetChecksumClient();
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(null, getFailingChecksumsClient, auditManager);
-        
-        addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
-                "Should not throw the exception in the definition of the GetChecksumClient call.");
-        collector.getChecksums(Arrays.asList(pillarId), fileIDs, csType, auditTrailInformation, null);
-        
-        addStep("Setup a FailingGetChecksumClient for test purpose.", "Should be OK.");
         DyingGetChecksumClient getDyingChecksumsClient = new DyingGetChecksumClient();
-        collector = new DelegatingIntegrityInformationCollector(null, getDyingChecksumsClient, auditManager);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(null, getDyingChecksumsClient, auditManager);
         
         addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
                 "Should not throw an unexpected exception");
         collector.getChecksums(Arrays.asList(pillarId), fileIDs, csType, auditTrailInformation, null);
-    }
-
-    private class FailingGetChecksumClient implements GetChecksumsClient {
-        @Override
-        public void shutdown() { }
-        @Override
-        public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec,
-                URL addressForResult, EventHandler eventHandler, String auditTrailInformation)
-                throws OperationFailedException {
-            throw new OperationFailedException("My purpose is to fail!");
-        }
     }
 
     private class DyingGetChecksumClient implements GetChecksumsClient {
@@ -175,8 +154,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         public void shutdown() { }
         @Override
         public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec,
-                URL addressForResult, EventHandler eventHandler, String auditTrailInformation)
-                throws OperationFailedException {
+                URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
             throw new RuntimeException("My purpose is to die!");
         }
     }
@@ -190,32 +168,13 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         fileIDs.setAllFileIDs("true");
         String auditTrailInformation = "audit trail for this test";
 
-        addStep("Setup a FailingGetFileIDsClient for test purpose.", "Should be OK.");
-        FailingGetFileIDsClient getFailingFileIDsClient = new FailingGetFileIDsClient();
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(getFailingFileIDsClient, null, auditManager);
-        
-        addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
-                "Should not throw the exception in the definition of the GetChecksumClient call.");
-        collector.getFileIDs(Arrays.asList(pillarId), fileIDs, auditTrailInformation, null);
-        
         addStep("Setup a FailingGetChecksumClient for test purpose.", "Should be OK.");
         DyingGetFileIDsClient getDyingFileIDsClient = new DyingGetFileIDsClient();
-        collector = new DelegatingIntegrityInformationCollector(getDyingFileIDsClient, null, auditManager);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(getDyingFileIDsClient, null, auditManager);
         
         addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
                 "Should not throw an unexpected exception");
         collector.getFileIDs(Arrays.asList(pillarId), fileIDs, auditTrailInformation, null);
-    }
-
-    private class FailingGetFileIDsClient implements GetFileIDsClient {
-        @Override
-        public void shutdown() { }
-
-        @Override
-        public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
-                EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
-            throw new OperationFailedException("My purpose is to fail!");
-        }
     }
 
     private class DyingGetFileIDsClient implements GetFileIDsClient {
@@ -223,7 +182,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         public void shutdown() { }
         @Override
         public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
-                EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+                EventHandler eventHandler, String auditTrailInformation) {
             throw new RuntimeException("My purpose is to die!");
         }
     }

@@ -31,7 +31,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.putfile.conversation.PutFileConversationContext;
@@ -54,8 +53,7 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
     
     @Override
     public void putFile(URL url, String fileId, long sizeOfFile, ChecksumDataForFileTYPE checksumForValidationAtPillar,
-            ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation) 
-                    throws OperationFailedException {
+            ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNull(url, "URL url");
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNegative(sizeOfFile, "long sizeOfFile");

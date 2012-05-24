@@ -34,7 +34,6 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -64,8 +63,7 @@ public class CollectionBasedGetChecksumsClient extends AbstractClient implements
 
     @Override
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
-            URL addressForResult, EventHandler eventHandler, String auditTrailInformation)
-            throws OperationFailedException {
+            URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "Collection<String> pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
         ArgumentValidator.checkNotNull(checksumSpec, "ChecksumSpecTYPE checksumSpec");

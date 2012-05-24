@@ -30,7 +30,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.BitrepositoryClient;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 
 /**
  * Interface for the put client.
@@ -47,10 +46,8 @@ public interface PutFileClient extends BitrepositoryClient {
      * @param checksumRequestsForValidation The checksum for validating at client side.
      * @param eventHandler The EventHandler for the operation.
      * @param auditTrailInformation The audit trail information.
-     * @throws OperationFailedException If the operation failed.
      */
     void putFile(URL url, String fileId, long sizeOfFile, ChecksumDataForFileTYPE checksumForValidationAtPillar, 
-            ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation)
-                    throws OperationFailedException;
+            ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation);
     
 }

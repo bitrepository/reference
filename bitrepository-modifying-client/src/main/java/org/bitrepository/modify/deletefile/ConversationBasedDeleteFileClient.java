@@ -29,7 +29,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.deletefile.conversation.DeleteFileConversationContext;
@@ -56,8 +55,7 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
     
     @Override
     public void deleteFile(String fileId, String pillarId, ChecksumDataForFileTYPE checksumForPillar,
-            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) 
-                    throws OperationFailedException {
+            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         validateFileID(fileId);
@@ -76,8 +74,7 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
     
     @Override
     public void deleteFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForPillar,
-            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) 
-                    throws OperationFailedException {
+            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         validateFileID(fileId);
         

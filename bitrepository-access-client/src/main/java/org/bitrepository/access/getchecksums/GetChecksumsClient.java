@@ -31,7 +31,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.BitrepositoryClient;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 
 /**
  * The <code>GetChecksumsClient</code> is used as a handle for the Bit Repository getChecksums operation.
@@ -56,10 +55,8 @@ public interface GetChecksumsClient extends BitrepositoryClient {
      * connection with the pillar communication. This is allowed to be null.
      * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation call. 
      * 
-     * @throws OperationFailedException If the conversation cannot be initiated.
      */
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
-            URL addressForResult, EventHandler eventHandler, String auditTrailInformation)
-            throws OperationFailedException;
+            URL addressForResult, EventHandler eventHandler, String auditTrailInformation);
     
 }

@@ -29,7 +29,6 @@ import java.net.URL;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 import org.jaccept.TestEventManager;
 
 /**
@@ -60,7 +59,7 @@ public class ReplaceClientTestWrapper implements ReplaceFileClient {
     public void replaceFile(String fileId, String pillarId, ChecksumDataForFileTYPE checksumForDeleteAtPillar,
             ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile,
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile,
-            EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+            EventHandler eventHandler, String auditTrailInformation) {
         testEventManager.addStimuli("replaceFile(" + fileId + ", " + pillarId + ", " + checksumForDeleteAtPillar + ", "
                 + checksumRequestedForDeletedFile + ", " + url + ", " + sizeOfNewFile + ", " 
                 + checksumForNewFileValidationAtPillar + ", " + checksumRequestsForNewFile + ", " + eventHandler + ", "
@@ -74,7 +73,7 @@ public class ReplaceClientTestWrapper implements ReplaceFileClient {
     public void replaceFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForDeleteAtPillar,
             ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile,
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile,
-            EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+            EventHandler eventHandler, String auditTrailInformation) {
         testEventManager.addStimuli("replaceFileAtAllPillars(" + fileId + ", " + checksumForDeleteAtPillar + ", "
                 + checksumRequestedForDeletedFile + ", " + url + ", " + sizeOfNewFile + ", " 
                 + checksumForNewFileValidationAtPillar + ", " + checksumRequestsForNewFile + ", " + eventHandler + ", "
