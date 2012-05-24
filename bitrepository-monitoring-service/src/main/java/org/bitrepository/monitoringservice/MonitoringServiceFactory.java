@@ -38,6 +38,9 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 
+/**
+ * The factory for the monitoring service.
+ */
 public class MonitoringServiceFactory {
     /** The configuration directory containing the settings, et.al.*/
     private static String confDir;
@@ -54,13 +57,10 @@ public class MonitoringServiceFactory {
     /** The implementation of the integrity service.*/
     private static MonitoringService monitoringService;
 
-	
     /**
      * Private constructor, use static getInstance method to get instance.
      */
-    private MonitoringServiceFactory() {
-        //Empty constructor 
-    }
+    private MonitoringServiceFactory() { }
     
     /**
      * Set the configuration directory. 

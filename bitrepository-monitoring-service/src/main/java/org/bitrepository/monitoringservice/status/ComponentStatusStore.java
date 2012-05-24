@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.monitoringservice;
+package org.bitrepository.monitoringservice.status;
 
 import java.util.List;
 import java.util.Map;

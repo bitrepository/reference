@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.monitoringservice;
+package org.bitrepository.monitoringservice.collector;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,11 +27,17 @@ import java.util.TimerTask;
 import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.monitoringservice.MonitoringServiceAlerter;
+import org.bitrepository.monitoringservice.status.ComponentStatusStore;
 
+/**
+ * The collector of status messages.
+ */
 public class StatusCollector {
 
     /** The getStatusClient */
     private GetStatusClient getStatusClient;
+    /** The store for the status results.*/
     private final ComponentStatusStore statusStore;
     /** The EventHandler */
     private EventHandler eventHandler;
@@ -42,6 +48,13 @@ public class StatusCollector {
     /** Time between getStatus collections */
     private long collectionInterval = 300000;
     
+    /**
+     * Constructor.
+     * @param getStatusClient The status client.
+     * @param settings The settings.
+     * @param statusStore The storage for the status results.
+     * @param alerter The alerter.
+     */
     public StatusCollector(GetStatusClient getStatusClient, Settings settings, ComponentStatusStore statusStore, 
             MonitoringServiceAlerter alerter) {
         this.getStatusClient = getStatusClient;

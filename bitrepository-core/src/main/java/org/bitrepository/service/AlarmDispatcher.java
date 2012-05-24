@@ -45,7 +45,7 @@ public class AlarmDispatcher {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /** The context for this AlarmDispatcher.*/
-    private final ContributorContext context;
+    protected final ContributorContext context;
     /** The alarm level. */
     private final AlarmLevel alarmLevel;
     
