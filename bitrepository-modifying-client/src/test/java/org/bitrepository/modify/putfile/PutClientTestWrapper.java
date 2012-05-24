@@ -29,7 +29,6 @@ import java.net.URL;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 import org.jaccept.TestEventManager;
 
 /**
@@ -53,8 +52,7 @@ public class PutClientTestWrapper implements PutFileClient {
 
     @Override
     public void putFile(URL url, String fileId, long sizeOfFile, ChecksumDataForFileTYPE checksumForValidationAtPillar,
-            ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation)
-            throws OperationFailedException {
+            ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation) {
         testEventManager.addStimuli("Calling PutFileWithId(" + url + ", " + fileId + ", " + sizeOfFile + ", " 
             + checksumForValidationAtPillar + ", " + checksumRequestsForValidation + ", " + eventHandler + ", "
             + auditTrailInformation + ")");

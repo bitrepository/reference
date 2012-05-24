@@ -29,7 +29,6 @@ import java.util.Collection;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 import org.jaccept.TestEventManager;
 
 /**
@@ -53,7 +52,7 @@ public class GetFileIDsClientTestWrapper implements GetFileIDsClient {
     
     @Override
     public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
-            EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+            EventHandler eventHandler, String auditTrailInformation) {
         eventManager.addStimuli("Calling getFileIDs(" + pillarIDs + ", " + fileIDs + ", " + addressForResult + ", "
                 + eventHandler + ", " + auditTrailInformation + ")");
         client.getFileIDs(pillarIDs, fileIDs, addressForResult, eventHandler, auditTrailInformation);

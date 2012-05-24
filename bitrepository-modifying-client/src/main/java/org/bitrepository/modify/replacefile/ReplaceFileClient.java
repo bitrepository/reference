@@ -30,7 +30,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.BitrepositoryClient;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 
 /**
  * Interface for the delete client.
@@ -58,12 +57,11 @@ public interface ReplaceFileClient extends BitrepositoryClient {
      * IdentifyPillarsRequestSent, PillarIdentified, PillarSelected, RequestSent, Progress, PillarComplete, Complete
      * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation 
      * call.
-     * @throws OperationFailedException If the operation cannot be instantiated.
      */
     void replaceFile(String fileId, String pillarId, ChecksumDataForFileTYPE checksumForDeleteAtPillar, 
             ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile, 
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile, 
-            EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException;
+            EventHandler eventHandler, String auditTrailInformation);
 
     /**
      * Starts the conversation for replacing a file on a given pillar.
@@ -86,11 +84,10 @@ public interface ReplaceFileClient extends BitrepositoryClient {
      * IdentifyPillarsRequestSent, PillarIdentified, PillarSelected, RequestSent, Progress, PillarComplete, Complete
      * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation 
      * call.
-     * @throws OperationFailedException If the operation cannot be instantiated.
      */
     void replaceFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForDeleteAtPillar, 
             ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile, 
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile, 
-            EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException;
+            EventHandler eventHandler, String auditTrailInformation);
 
 }

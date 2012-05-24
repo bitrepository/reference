@@ -30,7 +30,6 @@ import java.util.Collection;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 import org.jaccept.TestEventManager;
 
 /**
@@ -48,8 +47,7 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
 
     @Override
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
-            URL addressForResult, EventHandler eventHandler, String auditTrailInformation)
-            throws OperationFailedException {
+            URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
         testEventManager.addStimuli("Calling getChecksums(" + pillarIDs + ", " + fileIDs.getFileID() 
                 + ", " + checksumSpec + ", " + addressForResult + ", " + eventHandler + ", " 
                 + auditTrailInformation + ")");

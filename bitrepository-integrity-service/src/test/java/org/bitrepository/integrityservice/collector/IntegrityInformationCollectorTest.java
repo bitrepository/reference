@@ -31,7 +31,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -102,7 +101,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         public void shutdown() {}
         @Override
         public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
-                EventHandler eventHandler, String auditTrailInformation) throws OperationFailedException {
+                EventHandler eventHandler, String auditTrailInformation) {
             callsForGetFileIDs++;
         }
     }
@@ -114,8 +113,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         }
         @Override
         public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec,
-                URL addressForResult, EventHandler eventHandler, String auditTrailInformation)
-                throws OperationFailedException {
+                URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
             callsForGetChecksums++;
         }
 
