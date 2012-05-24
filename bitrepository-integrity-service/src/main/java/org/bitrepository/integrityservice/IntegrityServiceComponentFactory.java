@@ -28,6 +28,8 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.integrityservice.alerter.IntegrityAlarmDispatcher;
+import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
@@ -39,6 +41,9 @@ import org.bitrepository.integrityservice.workflow.TimerWorkflowScheduler;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.service.audit.AuditTrailContributerDAO;
+import org.bitrepository.service.audit.AuditTrailManager;
+import org.bitrepository.service.contributor.ContributorContext;
 
 /**
  * Provides access to the different component in the integrity module (Spring/IOC wannabe)
@@ -88,20 +93,16 @@ public final class IntegrityServiceComponentFactory {
 
     /**
      * Gets you an <code>IntegrityInformationCollector</code> that collects integrity information.
-     * @param cache The cache for storing the collected results.
-     * @param checker For checking the results of the collected data.
      * @param getFileIDsClient The client for performing the collecting of the file ids.
      * @param getChecksumsClient The client for performing the collecting of the checksums.
-     * @param settings The settings for the integrity information collector. 
-     * @param messageBus The messagebus for the communication.
+     * @param auditManager The manager of audit trails.
      * @return an <code>IntegrityInformationCollector</code> that collects integrity information.
      */
-    public IntegrityInformationCollector getIntegrityInformationCollector(IntegrityModel cache, 
-            IntegrityChecker checker, GetFileIDsClient getFileIDsClient, GetChecksumsClient getChecksumsClient, 
-            Settings settings, MessageBus messageBus) {
+    public IntegrityInformationCollector getIntegrityInformationCollector(GetFileIDsClient getFileIDsClient, 
+            GetChecksumsClient getChecksumsClient, AuditTrailManager auditManager) {
         if (integrityInformationCollector == null) {
             integrityInformationCollector = new DelegatingIntegrityInformationCollector(getFileIDsClient, 
-                    getChecksumsClient);
+                    getChecksumsClient, auditManager);
         }
         return integrityInformationCollector;
     }
@@ -110,11 +111,13 @@ public final class IntegrityServiceComponentFactory {
      * Gets you an <code>IntegrityChecker</code> the can perform the integrity checks.
      * @param settings The settings for this instance. 
      * @param cache The cache for the integrity system.
+     * @param auditManager The manager of audit trails.
      * @return An <code>IntegrityChecker</code> the can perform the integrity checks.
      */
-    public IntegrityChecker getIntegrityChecker(Settings settings, IntegrityModel cache) {
+    public IntegrityChecker getIntegrityChecker(Settings settings, IntegrityModel cache, 
+            AuditTrailManager auditManager) {
         if(integrityChecker == null) {
-            integrityChecker = new SimpleIntegrityChecker(settings, cache);
+            integrityChecker = new SimpleIntegrityChecker(settings, cache, auditManager);
         }
         return integrityChecker;
     }
@@ -141,17 +144,22 @@ public final class IntegrityServiceComponentFactory {
         settings.setComponentID(settings.getReferenceSettings().getIntegrityServiceSettings().getID());
         
         MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
+        ContributorContext context = new ContributorContext(messageBus, settings);
+        AuditTrailManager auditManager = new AuditTrailContributerDAO(settings);
+        
         IntegrityModel model = getCachedIntegrityInformationStorage(settings);
         IntegrityWorkflowScheduler scheduler = getIntegrityInformationScheduler(settings);
-        IntegrityChecker checker = getIntegrityChecker(settings, model);
-        AlarmDispatcher alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus);
-        IntegrityInformationCollector collector = getIntegrityInformationCollector(model, checker, 
+        IntegrityChecker checker = getIntegrityChecker(settings, model, auditManager);
+        IntegrityAlerter alarmDispatcher = new IntegrityAlarmDispatcher(context);
+        
+        IntegrityInformationCollector collector = getIntegrityInformationCollector( 
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                settings, messageBus);
+                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()), 
+                        auditManager);
         
-        return new SimpleIntegrityService(model, scheduler, checker, alarmDispatcher, collector, settings, messageBus);
+        return new SimpleIntegrityService(model, scheduler, checker, alarmDispatcher, collector, auditManager, 
+                settings, messageBus);
     }
 }

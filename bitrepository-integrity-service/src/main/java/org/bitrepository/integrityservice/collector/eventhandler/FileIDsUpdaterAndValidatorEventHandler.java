@@ -26,13 +26,13 @@ package org.bitrepository.integrityservice.collector.eventhandler;
 
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.integrityservice.AlarmDispatcher;
-import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.checking.IntegrityChecker;
-import org.bitrepository.integrityservice.checking.IntegrityReport;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
+import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.checking.IntegrityChecker;
+import org.bitrepository.integrityservice.checking.IntegrityReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,7 @@ public class FileIDsUpdaterAndValidatorEventHandler implements EventHandler {
     /** The checker used for checking the integrity of the results.*/
     private final IntegrityChecker integrityChecker;
     /** The entity used for sending alarms.*/
-    private final AlarmDispatcher alarmDispatcher;
+    private final IntegrityAlerter alerter;
     
     /**
      * Constructor.
@@ -60,10 +60,10 @@ public class FileIDsUpdaterAndValidatorEventHandler implements EventHandler {
      * @param fileIDs The given data to perform the integrity checks upon.
      */
     public FileIDsUpdaterAndValidatorEventHandler(IntegrityModel informationCache, 
-            IntegrityChecker integrityChecker, AlarmDispatcher alarmDispatcher, FileIDs fileIDs) {
+            IntegrityChecker integrityChecker, IntegrityAlerter alerter, FileIDs fileIDs) {
         this.informationCache = informationCache;
         this.integrityChecker = integrityChecker;
-        this.alarmDispatcher = alarmDispatcher;
+        this.alerter = alerter;
         this.fileIDs = fileIDs;
     }
     
@@ -120,7 +120,7 @@ public class FileIDsUpdaterAndValidatorEventHandler implements EventHandler {
         IntegrityReport report = integrityChecker.checkFileIDs(fileIDs);
         if(report.hasIntegrityIssues()) {
             log.warn(report.generateReport());
-            alarmDispatcher.integrityFailed(report);
+            alerter.integrityFailed(report);
         } else {
             log.debug("No integrity issues found for files '" + fileIDs + "'");
         }

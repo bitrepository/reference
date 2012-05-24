@@ -31,6 +31,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
@@ -44,6 +45,7 @@ import org.bitrepository.integrityservice.workflow.scheduler.CollectObsoleteChec
 import org.bitrepository.integrityservice.workflow.scheduler.IntegrityValidatorWorkflow;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.LifeCycledService;
+import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
 import org.slf4j.Logger;
@@ -76,7 +78,7 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
     /** The settings. */
     private final Settings settings;
     /** The dispatcher of alarms.*/
-    private final AlarmDispatcher alarmDispatcher;
+    private final IntegrityAlerter alerter;
     /** Provides GetStatus and GetAuditTrails functionality. */
     private final ContributorMediator contributor;
     /** The messagebus for communication.*/
@@ -87,25 +89,25 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
      * @param settings The settings for the service.
      */
     public SimpleIntegrityService(IntegrityModel model, IntegrityWorkflowScheduler scheduler, IntegrityChecker checker, 
-            AlarmDispatcher alarmDispatcher, IntegrityInformationCollector collector, Settings settings, MessageBus messageBus) {
+            IntegrityAlerter alerter, IntegrityInformationCollector collector, AuditTrailManager auditManager, 
+            Settings settings, MessageBus messageBus) {
         this.settings = settings;
-        settings.setComponentID(settings.getReferenceSettings().getIntegrityServiceSettings().getID());
         this.messageBus = messageBus;
         this.cache = model;
         this.scheduler = scheduler;
         this.checker = checker;
-        this.alarmDispatcher = alarmDispatcher;
+        this.alerter = alerter;
         this.collector = collector;
         
         this.contributor = new SimpleContributorMediator(messageBus, settings,
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID(),
-                        settings.getReceiverDestination(), null);
+                        settings.getReceiverDestination(), auditManager);
         contributor.start();
     }
     
     @Override
     public void startChecksumIntegrityCheck(long millisSinceLastUpdate, long intervalBetweenChecks) {
-        EventHandler eventHandler = new ChecksumsUpdaterAndValidatorEventHandler(cache, checker, alarmDispatcher, 
+        EventHandler eventHandler = new ChecksumsUpdaterAndValidatorEventHandler(cache, checker, alerter, 
                 getFileIDsWithAllFileIDs());
         
         // Default checksum used.
@@ -122,17 +124,16 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
     
     @Override
     public void startAllFileIDsIntegrityCheck(long intervalBetweenCollecting) {
-        EventHandler eventHandler = new FileIDsUpdaterAndValidatorEventHandler(cache, checker, alarmDispatcher, 
+        EventHandler eventHandler = new FileIDsUpdaterAndValidatorEventHandler(cache, checker, alerter, 
                 getFileIDsWithAllFileIDs());
         Workflow workflow = new CollectAllFileIDsWorkflow(intervalBetweenCollecting, 
                 DEFAULT_NAME_OF_ALL_FILEIDS_WORKFLOW, settings, collector, eventHandler);
-        
         scheduler.putWorkflow(workflow);
     }
 
     @Override
     public void startAllChecksumsIntegrityCheck(long intervalBetweenCollecting) {
-        EventHandler eventHandler = new ChecksumsUpdaterAndValidatorEventHandler(cache, checker, alarmDispatcher, 
+        EventHandler eventHandler = new ChecksumsUpdaterAndValidatorEventHandler(cache, checker, alerter, 
                 getFileIDsWithAllFileIDs());
         ChecksumSpecTYPE checksumType = new ChecksumSpecTYPE();
         checksumType.setChecksumType(ChecksumType.fromValue(
@@ -177,7 +178,7 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
         }
         checksumType.setChecksumSalt(salt.getBytes());
         
-        EventHandler eventHandler = new ChecksumsUpdaterAndValidatorEventHandler(cache, checker, alarmDispatcher, 
+        EventHandler eventHandler = new ChecksumsUpdaterAndValidatorEventHandler(cache, checker, alerter, 
                 getFileIDsWithAllFileIDs());
         collector.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
                 fileIDs, checksumType, auditTrailInformation, eventHandler);

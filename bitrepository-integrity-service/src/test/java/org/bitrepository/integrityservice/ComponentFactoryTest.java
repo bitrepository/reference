@@ -37,6 +37,7 @@ import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityservice.collector.DelegatingIntegrityInformationCollector;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
+import org.bitrepository.integrityservice.mocks.MockAuditManager;
 import org.bitrepository.integrityservice.workflow.TimerWorkflowScheduler;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -95,15 +96,12 @@ public class ComponentFactoryTest extends ExtendedTestCase {
 
     @Test(groups = {"regressiontest"})
     public void verifyCollectorFromFactory() throws Exception {
-        IntegrityModel cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings);
         IntegrityInformationCollector collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
-                cache, 
-                IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache), 
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                settings, messageBus);
+                new MockAuditManager());
         Assert.assertTrue(collector instanceof DelegatingIntegrityInformationCollector, 
                 "The default Collector should be the '" + DelegatingIntegrityInformationCollector.class.getName() + "'");
     }
@@ -111,7 +109,7 @@ public class ComponentFactoryTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})
     public void verifyIntegrityCheckerFromFactory() throws Exception {
         IntegrityModel cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings);
-        Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache)
+        Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache, new MockAuditManager())
                 instanceof SimpleIntegrityChecker, 
                 "The default IntegrityChecker should be the '" + SimpleIntegrityChecker.class.getName() + "'");
     }

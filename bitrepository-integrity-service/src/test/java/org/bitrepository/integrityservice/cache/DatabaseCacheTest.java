@@ -52,6 +52,7 @@ import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.checking.IntegrityReport;
 import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
+import org.bitrepository.integrityservice.mocks.MockAuditManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -65,6 +66,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
     String DATABASE_DIRECTORY = "test-data";
     String DATABASE_URL = "jdbc:derby:" + DATABASE_DIRECTORY + "/" + DATABASE_NAME;
     File dbDir = null;
+    MockAuditManager auditManager;
     
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
@@ -78,6 +80,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         
         Connection dbCon = DatabaseTestUtils.takeDatabase(dbFile, DATABASE_NAME, dbDir);
         dbCon.close();
+        auditManager = new MockAuditManager();
     }
 
     @AfterClass (alwaysRun = true)
@@ -151,7 +154,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId1);
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId2);
         IntegrityDatabase cache = new IntegrityDatabase(settings);
-        SimpleIntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
+        SimpleIntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);
         clearDatabase(DATABASE_URL);
         
         FileIDs allFileIDs = new FileIDs();
@@ -221,7 +224,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId2);
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId3);
         IntegrityDatabase cache = new IntegrityDatabase(settings);
-        SimpleIntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
+        SimpleIntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);
         clearDatabase(DATABASE_URL);
         
         FileIDs fileIds = new FileIDs();
@@ -302,7 +305,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId2);
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0);
         IntegrityDatabase cache = new IntegrityDatabase(settings);
-        SimpleIntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
+        SimpleIntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);
         clearDatabase(DATABASE_URL);
         FileIDs fileIDs = new FileIDs();
         fileIDs.setAllFileIDs("true");

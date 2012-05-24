@@ -44,15 +44,20 @@ public class ContributorContext {
      * @param componentID The id of the component.
      * @param replyTo The destination where replies are wanted.
      */
-    public ContributorContext(
-            MessageSender dispatcher,
-            Settings settings,
-            String componentID,
-            String replyTo) {
+    public ContributorContext(MessageSender dispatcher, Settings settings, String componentID, String replyTo) {
         this.dispatcher = dispatcher;
         this.settings = settings;
         this.componentID = componentID;
         this.replyTo = replyTo;
+    }
+    
+    /**
+     * Constructor, where the component id and the reciever destination is extracted from settings.
+     * @param dispatcher The dispatcher of messages.
+     * @param settings The settings.
+     */
+    public ContributorContext(MessageSender dispatcher, Settings settings) {
+        this(dispatcher, settings, settings.getComponentID(), settings.getReceiverDestination());
     }
 
     /**

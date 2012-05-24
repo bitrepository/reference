@@ -21,11 +21,10 @@
  */
 package org.bitrepository.integrityservice.mocks;
 
-import org.bitrepository.bitrepositoryelements.Alarm;
-import org.bitrepository.integrityservice.AlarmDispatcher;
+import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.checking.IntegrityReport;
 
-public class MockAlarmDispatcher implements AlarmDispatcher {
+public class MockIntegrityAlerter implements IntegrityAlerter {
     
     private int callsForIntegrityFailed = 0;
     @Override
@@ -35,14 +34,4 @@ public class MockAlarmDispatcher implements AlarmDispatcher {
     public int getCallsForIntegrityFailed() {
         return callsForIntegrityFailed;
     }
-    
-    private int callsForSendAlarm = 0;
-    @Override
-    public void sendAlarm(Alarm alarm) {
-        callsForSendAlarm++;
-    }
-    public int getCallsForSendAlarm() {
-        return callsForSendAlarm;
-    }
-    
 }

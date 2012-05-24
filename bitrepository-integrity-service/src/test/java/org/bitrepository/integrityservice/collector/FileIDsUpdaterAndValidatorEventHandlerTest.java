@@ -29,7 +29,7 @@ import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityReport;
 import org.bitrepository.integrityservice.collector.eventhandler.FileIDsUpdaterAndValidatorEventHandler;
-import org.bitrepository.integrityservice.mocks.MockAlarmDispatcher;
+import org.bitrepository.integrityservice.mocks.MockIntegrityAlerter;
 import org.bitrepository.integrityservice.mocks.MockChecker;
 import org.bitrepository.integrityservice.mocks.MockIntegrityModel;
 import org.bitrepository.client.eventhandler.ContributorEvent;
@@ -47,7 +47,7 @@ public class FileIDsUpdaterAndValidatorEventHandlerTest extends ExtendedTestCase
         addStep("Setup variables", "No errors");
         MockIntegrityModel mockCache = new MockIntegrityModel(new TestIntegrityModel());
         MockChecker checker = new MockChecker();
-        MockAlarmDispatcher alarmDispatcher = new MockAlarmDispatcher();
+        MockIntegrityAlerter alarmDispatcher = new MockIntegrityAlerter();
         FileIDs fileIDs = new FileIDs();
         fileIDs.setAllFileIDs("true");
         String pillarId = "TEST-PILLAR";
@@ -118,7 +118,7 @@ public class FileIDsUpdaterAndValidatorEventHandlerTest extends ExtendedTestCase
         addDescription("Tests the functionality of this event handler.");
         addStep("Setup variables", "No errors");
         MockIntegrityModel mockCache = new MockIntegrityModel(new TestIntegrityModel());
-        MockAlarmDispatcher alarmDispatcher = new MockAlarmDispatcher();
+        MockIntegrityAlerter alarmDispatcher = new MockIntegrityAlerter();
         FileIDs fileIDs = new FileIDs();
         fileIDs.setAllFileIDs("true");
         String pillarId = "TEST-PILLAR";

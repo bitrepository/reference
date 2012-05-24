@@ -41,6 +41,7 @@ import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
+import org.bitrepository.integrityservice.mocks.MockAuditManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -49,6 +50,7 @@ import org.testng.annotations.Test;
 public class IntegrityCheckingTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
+    MockAuditManager auditManager;
     
     public static final String TEST_PILLAR_1 = "test-pillar-1";
     public static final String TEST_PILLAR_2 = "test-pillar-2";
@@ -60,6 +62,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_1);
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0L);
+        auditManager = new MockAuditManager();
     }
     
     @Test(groups = {"regressiontest"})
@@ -90,7 +93,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addFileIDs(fileidsData1, allFileIDs, TEST_PILLAR_2);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
-        IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
+        IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);
         
         FileIDs fileidsToCheck = new FileIDs();
         fileidsToCheck.setAllFileIDs("true");
@@ -126,7 +129,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addFileIDs(fileidsData1, allFileIDs, TEST_PILLAR_1);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
-        IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
+        IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);
         
         FileIDs fileidsToCheck = new FileIDs();
         fileidsToCheck.setAllFileIDs("true");
@@ -163,7 +166,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addFileIDs(fileidsData1, allFileIDs, TEST_PILLAR_1);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
-        IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
+        IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);
         
         FileIDs fileidsToCheck = new FileIDs();
         fileidsToCheck.setAllFileIDs("true");
@@ -200,7 +203,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addChecksums(checksumData, checksumtype, TEST_PILLAR_2);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
-        IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
+        IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);
         
         FileIDs fileidsToCheck = new FileIDs();
         fileidsToCheck.setAllFileIDs("true");
@@ -238,7 +241,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addChecksums(checksumData, checksumtype, TEST_PILLAR_1);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
-        IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
+        IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);
         
         FileIDs fileidsToCheck = new FileIDs();
         fileidsToCheck.setAllFileIDs("true");
@@ -286,7 +289,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addChecksums(checksumData2, checksumtype, TEST_PILLAR_2);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
-        IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache);
+        IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);
         
         FileIDs fileidsToCheck = new FileIDs();
         fileidsToCheck.setAllFileIDs("true");

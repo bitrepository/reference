@@ -29,9 +29,11 @@ import java.util.Collection;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.exceptions.OperationFailedException;
+import org.bitrepository.service.audit.AuditTrailManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +48,8 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     private final GetFileIDsClient getFileIDsClient;
     /** The client for retrieving checksums. */
     private final GetChecksumsClient getChecksumsClient;
+    /** The audit trail manager.*/
+    private final AuditTrailManager auditManager;
     
     /**
      * Constructor.
@@ -53,15 +57,18 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
      * @param getChecksumsClient The client for retrieving checksums
      */
     public DelegatingIntegrityInformationCollector(GetFileIDsClient getFileIDsClient, 
-            GetChecksumsClient getChecksumsClient) {
+            GetChecksumsClient getChecksumsClient, AuditTrailManager auditManager) {
         this.getFileIDsClient = getFileIDsClient;
         this.getChecksumsClient = getChecksumsClient;
+        this.auditManager = auditManager;
     }
 
     @Override
     public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation, 
             EventHandler eventHandler) {
         try {
+            auditManager.addAuditEvent("" + fileIDs.getFileID(), "IntegrityService", 
+                    "Collecting file ids from '" + pillarIDs + "'", auditTrailInformation, FileAction.INTEGRITY_CHECK);
             getFileIDsClient.getFileIDs(pillarIDs, fileIDs, null, eventHandler, auditTrailInformation);
         } catch (OperationFailedException e) {
             log.warn("Could not retrieve the file ids '" + fileIDs + "' from '" + pillarIDs + "'", e);
@@ -75,6 +82,8 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType, 
             String auditTrailInformation, EventHandler eventHandler) {
         try {
+            auditManager.addAuditEvent("" + fileIDs.getFileID(), "IntegrityService", 
+                    "Collecting checksums from '" + pillarIDs + "'", auditTrailInformation, FileAction.INTEGRITY_CHECK);
             getChecksumsClient.getChecksums(pillarIDs, fileIDs, checksumType, null, eventHandler, 
                     auditTrailInformation);
         } catch (OperationFailedException e) {

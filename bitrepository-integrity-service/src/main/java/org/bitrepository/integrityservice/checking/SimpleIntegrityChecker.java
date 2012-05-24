@@ -29,9 +29,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.service.audit.AuditTrailManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,13 +47,16 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
     private final IntegrityModel cache;
     /** The settings.*/
     private final Settings settings;
+    /** The audit trail manager.*/
+    private final AuditTrailManager auditManager;
 
     /**
      * Constructor.
      */
-    public SimpleIntegrityChecker(Settings settings, IntegrityModel cache) {
+    public SimpleIntegrityChecker(Settings settings, IntegrityModel cache, AuditTrailManager auditManager) {
         this.cache = cache;
         this.settings = settings;
+        this.auditManager = auditManager;
     }
     
     @Override
@@ -62,7 +67,13 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
         IntegrityReport report = new IntegrityReport();
         FileExistenceValidator fValidator = new FileExistenceValidator(cache, settings);
         for(String fileId : requestedFileIDs) {
-            report.combineWithReport(fValidator.validateFile(fileId));
+            IntegrityReport singleReport = fValidator.validateFile(fileId);
+            report.combineWithReport(singleReport);
+            
+            if(singleReport.hasIntegrityIssues()) {
+                auditManager.addAuditEvent(fileId, "IntegrityService", singleReport.generateReport(), 
+                        "IntegrityService checking files.", FileAction.INCONSISTENCY);
+            }
         }
         
         if(report.hasIntegrityIssues()) {
@@ -82,7 +93,13 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
         
         for(String fileId : requestedFileIDs) {
             ChecksumValidator checksumValidator = new ChecksumValidator(cache, fileId);
-            report.combineWithReport(checksumValidator.validateChecksum());
+            IntegrityReport singleReport = checksumValidator.validateChecksum();
+            report.combineWithReport(singleReport);
+            
+            if(singleReport.hasIntegrityIssues()) {
+                auditManager.addAuditEvent(fileId, "IntegrityService", singleReport.generateReport(), 
+                        "IntegrityService checking files.", FileAction.INCONSISTENCY);
+            }
         }
         
         if(report.hasIntegrityIssues()) {
