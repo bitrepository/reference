@@ -63,7 +63,7 @@ public final class IntegrityServiceFactory {
     /** The security manager.*/
     private static BasicSecurityManager securityManager;
     /** The implementation of the integrity service.*/
-    private static SimpleIntegrityService simpleIntegrityService;
+    private static IntegrityService simpleIntegrityService;
     /** The integrity service wrapped into the web interface.*/
     private static IntegrityServiceWebInterface integrityServiceWebInterface;
 
@@ -133,7 +133,8 @@ public final class IntegrityServiceFactory {
         if(simpleIntegrityService == null) {
             getSettings();
             getSecurityManager();
-            simpleIntegrityService = new SimpleIntegrityService(settings, securityManager);
+            simpleIntegrityService = IntegrityServiceComponentFactory.getInstance().createIntegrityService(settings, 
+                    securityManager);
         }
         
         return simpleIntegrityService;

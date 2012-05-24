@@ -26,6 +26,7 @@ package org.bitrepository.access.getfile;
 
 import java.net.URL;
 
+import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;
 
@@ -43,16 +44,16 @@ public class GetFileClientTestWrapper implements GetFileClient {
     }
 
     @Override
-    public void getFileFromFastestPillar(String fileId, URL uploadUrl, EventHandler eventHandler) {
+    public void getFileFromFastestPillar(String fileId, FilePart filePart, URL uploadUrl, EventHandler eventHandler) {
         testEventManager.addStimuli("Calling getFileFromFastestPillar(" + fileId + ", " + uploadUrl + ")");
-        createGetFileClient.getFileFromFastestPillar(fileId, uploadUrl, eventHandler);
+        createGetFileClient.getFileFromFastestPillar(fileId, filePart, uploadUrl, eventHandler);
     }
 
     @Override
-    public void getFileFromSpecificPillar(String fileId, URL uploadUrl, String pillarId, EventHandler eventHandler) {
+    public void getFileFromSpecificPillar(String fileId, FilePart filePart, URL uploadUrl, String pillarId, EventHandler eventHandler) {
         testEventManager.addStimuli("Calling getFileFromSpecificPillar(" + 
                 fileId + ", " + uploadUrl + ", " + pillarId + ")");
-        createGetFileClient.getFileFromSpecificPillar(fileId, uploadUrl, pillarId, eventHandler);
+        createGetFileClient.getFileFromSpecificPillar(fileId, filePart, uploadUrl, pillarId, eventHandler);
     }
 
     @Override

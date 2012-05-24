@@ -31,9 +31,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.ConfigurationException;
@@ -47,8 +51,8 @@ public final class FileUtils {
     /** The log.*/
     private static Logger log = LoggerFactory.getLogger(FileUtils.class);
     /** The maximal size of the byte array for digest.*/
-    private static final int BYTE_ARRAY_SIZE_FOR_DIGEST = 4096;
-
+    private static final int BYTE_ARRAY_SIZE = 4096;
+    
     /**
      * Private constructor. To prevent instantiation of this utility class.
      */
@@ -81,7 +85,7 @@ public final class FileUtils {
     public static File retrieveSubDirectory(File parentDir, String dirName) {
         ArgumentValidator.checkNotNullOrEmpty(dirName, "String dirName");
         ArgumentValidator.checkNotNull(parentDir, "File parentDir");
-
+        
         // validate the argument
         if(!parentDir.isDirectory()) {
             throw new ConfigurationException("The parent directory, " + parentDir + ", is invalid");
@@ -197,7 +201,7 @@ public final class FileUtils {
         try {
             fis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
             
-            byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
+            byte[] bytes = new byte[BYTE_ARRAY_SIZE];
             while (fis.read(bytes) > 0) {
                 res.append(new String(bytes));
             }
@@ -256,7 +260,7 @@ public final class FileUtils {
             is = new FileInputStream(source);
             os = new FileOutputStream(target);
             
-            byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
+            byte[] bytes = new byte[BYTE_ARRAY_SIZE];
             
             int size;
             while((size = is.read(bytes)) > 0) {
@@ -278,6 +282,75 @@ public final class FileUtils {
                 }
             } catch (IOException e) {
                 // TODO
+            }
+        }
+    }
+    
+    /** Write the contents of a stream into a file.
+     *
+     * @param in A stream to read from.  This stream is not closed by this
+     * method.
+     * @param f The file to write the stream contents into.
+     * @throws IOException If any error occurs while writing the stream to a file
+     */
+    public static void writeStreamToFile(InputStream in, File f) throws IOException {
+        ArgumentValidator.checkNotNull(f, "File f");
+        ArgumentValidator.checkNotNull(in, "InputStream in");
+        
+        byte[] buffer = new byte[BYTE_ARRAY_SIZE];
+        FileOutputStream out = new FileOutputStream(f);
+        try {
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) > 0) {
+                out.write(buffer, 0, bytesRead);
+            }
+        } finally {
+            out.close();
+        }
+    }
+    
+    
+    /** Unzip a zipFile into a directory.  This will create subdirectories
+     * as needed.
+     *
+     * @param zipFile The file to unzip
+     * @param toDir The directory to create the files under.  This directory
+     * will be created if necessary.  Files in it will be overwritten if the
+     * filenames match.
+     * @throws IOException If any error occurs while writing the stream to a file
+     */
+    public static void unzip(File zipFile, File toDir) throws IOException {
+        ArgumentValidator.checkNotNull(zipFile, "File zipFile");
+        ArgumentValidator.checkNotNull(toDir, "File toDir");
+        ArgumentValidator.checkTrue(
+                toDir.getAbsoluteFile().getParentFile().canWrite(),
+                "can't write to '" + toDir + "'");
+        ArgumentValidator.checkTrue(zipFile.canRead(),
+                "can't read '" + zipFile + "'");
+        InputStream inputStream = null;
+        ZipFile unzipper = null;
+        try {
+            unzipper = new ZipFile(zipFile);
+            Enumeration<? extends ZipEntry> entries = unzipper.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry ze = entries.nextElement();
+                File target = new File(toDir, ze.getName());
+                // Ensure that its dir exists
+                retrieveDirectory(target.getCanonicalFile().getParent());
+                if (ze.isDirectory()) {
+                    target.mkdir();
+                } else {
+                    inputStream = unzipper.getInputStream(ze);
+                    FileUtils.writeStreamToFile(inputStream, target);
+                    inputStream.close();
+                }
+            }
+        } finally {
+            if (unzipper != null) {
+                unzipper.close();
+            }
+            if (inputStream != null) {
+                inputStream.close();
             }
         }
     }

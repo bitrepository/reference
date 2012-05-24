@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.monitoringservice;
+package org.bitrepository.monitoringservice.status;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -30,74 +30,74 @@ import org.bitrepository.common.utils.CalendarUtils;
  * Class to encapsulate the status of a component.  
  */
 public class ComponentStatus {
-
-    /**
-     * Enumeration of possible status states for a component.  
-     */
-    public enum ComponentStatusCode {
-        UNKNOWN,
-        OK,
-        WARNING,
-        ERROR,
-        UNRESPONSIVE;
-
-        public String value() {
-            return name();
-        }
-
-        public static ComponentStatusCode fromValue(String v) {
-            return valueOf(v);
-        }
-    }
-    
-    private int numberOfMissingReplys;
+    /** The number of missing replies.*/
+    private int numberOfMissingReplies;
+    /** The current status code.*/
     private ComponentStatusCode status;
+    /** The date for the latest reply.*/
     private XMLGregorianCalendar lastReply;
+    /** The status information of the latest reply.*/
     private String info;
     
     /**
      * Constructor 
      */
     public ComponentStatus() {
-        numberOfMissingReplys = 0;
+        numberOfMissingReplies = 0;
         status = ComponentStatusCode.UNKNOWN;
         lastReply = CalendarUtils.getEpoch();
         info = "No status requested yet.";
     }
     
     /**
-     * Update the status of a component 
+     * Update the status of a component with the given results.
      */
     public void updateStatus(ResultingStatus resultingStatus) {
-        numberOfMissingReplys = 0;
-        status = ComponentStatusCode.fromValue(resultingStatus.getStatusInfo().getStatusCode().toString());
+        numberOfMissingReplies = 0;
+        status = ComponentStatusCode.valueOf(resultingStatus.getStatusInfo().getStatusCode().toString());
         lastReply = resultingStatus.getStatusTimestamp();
         info = resultingStatus.getStatusInfo().getStatusText();
     }
 
+    /**
+     * Add another missing reply.
+     */
     public void updateReplys() {
-        numberOfMissingReplys++;
+        numberOfMissingReplies++;
     }
     
+    /**
+     * Marks the component as unresponsive.
+     */
     public void markAsUnresponsive() {
         status = ComponentStatusCode.UNRESPONSIVE;
     }
     
-    public int getNumberOfMissingReplys() {
-        return numberOfMissingReplys;
+    /**
+     * @return The number of missing replies in a row.
+     */
+    public int getNumberOfMissingReplies() {
+        return numberOfMissingReplies;
     }
 
+    /**
+     * @return The code for the latest reply.
+     */
     public ComponentStatusCode getStatus() {
         return status;
     }
 
+    /**
+     * @return The date for the latest reply.
+     */
     public XMLGregorianCalendar getLastReply() {
         return lastReply;
     }
 
+    /**
+     * @return The latest status message.
+     */
     public String getInfo() {
         return info;
-    }
-    
-    
+    }    
 }

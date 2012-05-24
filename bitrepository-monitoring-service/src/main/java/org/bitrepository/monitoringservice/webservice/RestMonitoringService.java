@@ -22,55 +22,53 @@
 package org.bitrepository.monitoringservice.webservice;
 
 import java.util.Map;
-import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import org.bitrepository.monitoringservice.ComponentStatus;
 import org.bitrepository.monitoringservice.MonitoringService;
 import org.bitrepository.monitoringservice.MonitoringServiceFactory;
+import org.bitrepository.monitoringservice.status.ComponentStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 @Path("/MonitoringService")
 public class RestMonitoringService {
-
-	private MonitoringService service;
-	
-	public RestMonitoringService() {
-		service = MonitoringServiceFactory.getMonitoringService();
-	}
-
-	@GET
-	@Path("/getMonitoringConfiguration/")
-	@Produces("application/json")
-	public String getMonitoringServiceConfiguration() {
-	    JSONArray array = new JSONArray();
-	    
-	    array.put(makeConfigurationEntry("Check interval", Long.toString(service.getCollectionInterval())));
-	    array.put(makeConfigurationEntry("Max retries", Long.toString(service.getMaxRetries())));
-	    
-	    return array.toString();
-	}
-	
-	@GET
+    
+    private MonitoringService service;
+    
+    public RestMonitoringService() {
+        service = MonitoringServiceFactory.getMonitoringService();
+    }
+    
+    @GET
+    @Path("/getMonitoringConfiguration/")
+    @Produces("application/json")
+    public String getMonitoringServiceConfiguration() {
+        JSONArray array = new JSONArray();
+        
+        array.put(makeConfigurationEntry("Check interval", Long.toString(service.getCollectionInterval())));
+        array.put(makeConfigurationEntry("Max retries", Long.toString(service.getMaxRetries())));
+        
+        return array.toString();
+    }
+    
+    @GET
     @Path("/getComponentStatus/")
     @Produces("application/json")
-	public String getComponentStatus() {
-	    Map<String, ComponentStatus> statusMap = service.getStatus();
-	    Set<String> components = statusMap.keySet();
-	    JSONArray array = new JSONArray();
-	    
-	    for(String component : statusMap.keySet()) {
-	        array.put(makeJSONStatusObject(component, statusMap.get(component)));
-	    }
-	    return array.toString();
-	}
-	
-	private JSONObject makeJSONStatusObject(String componentID, ComponentStatus status) {
+    public String getComponentStatus() {
+        Map<String, ComponentStatus> statusMap = service.getStatus();
+        JSONArray array = new JSONArray();
+        
+        for(String component : statusMap.keySet()) {
+            array.put(makeJSONStatusObject(component, statusMap.get(component)));
+        }
+        return array.toString();
+    }
+    
+    private JSONObject makeJSONStatusObject(String componentID, ComponentStatus status) {
         JSONObject obj = new JSONObject();
         try {
             obj.put("componentID", componentID);
@@ -81,9 +79,9 @@ public class RestMonitoringService {
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;
         }
-	}
-	
-	private JSONObject makeConfigurationEntry(String option, String value) {
+    }
+    
+    private JSONObject makeConfigurationEntry(String option, String value) {
         JSONObject obj = new JSONObject();
         try {
             obj.put("confOption", option);            
@@ -92,5 +90,5 @@ public class RestMonitoringService {
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;
         }
-	}
+    }
 }

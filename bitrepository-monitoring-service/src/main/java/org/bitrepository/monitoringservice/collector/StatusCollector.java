@@ -19,20 +19,26 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.monitoringservice;
+package org.bitrepository.monitoringservice.collector;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.bitrepository.access.getstatus.GetStatusClient;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.monitoringservice.alarm.MonitorAlerter;
+import org.bitrepository.monitoringservice.status.StatusStore;
 
+/**
+ * The collector of status messages.
+ */
 public class StatusCollector {
 
     /** The getStatusClient */
     private GetStatusClient getStatusClient;
-    private final ComponentStatusStore statusStore;
+    /** The store for the status results.*/
+    private final StatusStore statusStore;
     /** The EventHandler */
     private EventHandler eventHandler;
     /** Defines that the timer is a daemon thread. */
@@ -42,8 +48,15 @@ public class StatusCollector {
     /** Time between getStatus collections */
     private long collectionInterval = 300000;
     
-    public StatusCollector(GetStatusClient getStatusClient, Settings settings, ComponentStatusStore statusStore, 
-            MonitoringServiceAlerter alerter) {
+    /**
+     * Constructor.
+     * @param getStatusClient The status client.
+     * @param settings The settings.
+     * @param statusStore The storage for the status results.
+     * @param alerter The alerter.
+     */
+    public StatusCollector(GetStatusClient getStatusClient, Settings settings, StatusStore statusStore, 
+            MonitorAlerter alerter) {
         this.getStatusClient = getStatusClient;
         eventHandler = new GetStatusEventHandler(statusStore, alerter);
         this.statusStore = statusStore;
@@ -68,5 +81,4 @@ public class StatusCollector {
             getStatusClient.getStatus(eventHandler);
         }
     }
-    
 }

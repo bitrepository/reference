@@ -64,5 +64,13 @@
       <version>2.5</version>
       <scope>provided</scope>
     </dependency>
+    <!--  Test dependencies -->
+    <dependency>
+      <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-core</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

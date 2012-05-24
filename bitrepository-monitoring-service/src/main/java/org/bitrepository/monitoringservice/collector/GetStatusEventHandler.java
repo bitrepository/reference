@@ -19,24 +19,35 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.monitoringservice;
+package org.bitrepository.monitoringservice.collector;
 
 import org.bitrepository.access.getstatus.conversation.StatusCompleteContributorEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.monitoringservice.alarm.MonitorAlerter;
+import org.bitrepository.monitoringservice.status.StatusStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The eventhandler for handling the events by the GetStatusClient.
+ */
 public class GetStatusEventHandler implements EventHandler {
-
-    private final ComponentStatusStore statusStore;
-    private final MonitoringServiceAlerter alerter;
+    /** The log.*/
     private final Logger log = LoggerFactory.getLogger(GetStatusEventHandler.class);
+    /** The store for the status results. */
+    private final StatusStore statusStore;
+    /** The alarm dispatcher*/
+    private final MonitorAlerter alerter;
 
-    public GetStatusEventHandler(ComponentStatusStore statusStore, MonitoringServiceAlerter alerter) {
+    /**
+     * Constructor.
+     * @param statusStore The store for the status results.
+     * @param alarmDispatcher The alarm dispatcher.
+     */
+    public GetStatusEventHandler(StatusStore statusStore, MonitorAlerter alarmDispatcher) {
         this.statusStore = statusStore;
-        this.alerter = alerter;
-        
+        this.alerter = alarmDispatcher;
     }
     
     @Override
@@ -44,36 +55,16 @@ public class GetStatusEventHandler implements EventHandler {
         log.debug("Got event: " + event);
         
         switch(event.getType()) {
-        case IDENTIFY_REQUEST_SENT:
-            break;
-        case COMPONENT_IDENTIFIED:
-            break;
-        case IDENTIFICATION_COMPLETE:
-            break;
-        case REQUEST_SENT:
-            break;
-        case PROGRESS:
-            break;
-        case COMPONENT_COMPLETE:
-            StatusCompleteContributorEvent statusEvent = (StatusCompleteContributorEvent) event; 
-            statusStore.updateStatus(statusEvent.getContributorID(), statusEvent.getStatus());
-            break;
-        case COMPLETE:
-            alerter.checkStatuses();
-            break;
-        case COMPONENT_FAILED:
-            break;
-        case FAILED:
-            alerter.checkStatuses();
-            break;
-        case NO_COMPONENT_FOUND:
-            break;
-        case IDENTIFY_TIMEOUT: 
-            break;
-        case WARNING:
-            break;
+            case COMPONENT_COMPLETE:
+                StatusCompleteContributorEvent statusEvent = (StatusCompleteContributorEvent) event; 
+                statusStore.updateStatus(statusEvent.getContributorID(), statusEvent.getStatus());
+                break;
+            case COMPLETE:
+            case FAILED:
+                alerter.checkStatuses();
+                break;
+            default:
+                break;
         }  
-        
     }
-
 }

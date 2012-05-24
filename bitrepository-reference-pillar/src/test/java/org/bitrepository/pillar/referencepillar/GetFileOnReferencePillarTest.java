@@ -24,6 +24,12 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
+import java.io.File;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.Date;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -40,15 +46,14 @@ import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.io.File;
-import java.util.Date;
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
@@ -179,6 +184,80 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
         Assert.assertEquals(audits.getCallsForAuditEvent(), 1, "Should deliver 1 audit. Handling of the GetFile "
                 + "operation");
+    }
+    
+    @SuppressWarnings("deprecation")
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void pillarGetFilePartTest() throws Exception {
+        addDescription("Tests the get functionality of the reference pillar for a file part. Successful scenario.");
+        addStep("Set up constants and variables.", "Should not fail here!");
+        String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test2.txt";
+        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        String auditTrail = null;
+        FilePart filePart = new FilePart();
+        filePart.setPartLength(BigInteger.ONE);
+        filePart.setPartOffSet(BigInteger.ONE);
+        ChecksumDataForFileTYPE csData = null;
+        
+        addStep("Move the test file into the file directory.", "Should be all-right");
+        File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
+        Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
+        Long FILE_SIZE = testfile.length();
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        
+        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
+                + dir.getAbsolutePath() + "'");
+        FileUtils.copyFile(testfile, new File(dir, FILE_ID));
+        
+        addStep("Create and send the actual GetFile message to the pillar.", 
+                "Should be received and handled by the pillar.");
+        GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, 
+                msgFactory.getNewCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, FROM, pillarId, 
+                clientDestinationId, pillarDestinationId);
+        messageBus.sendMessage(getRequest);
+        
+        addStep("Retrieve the ProgressResponse for the GetFile request", 
+                "The GetFile progress response should be sent by the pillar.");
+        GetFileProgressResponse progressResponse = clientTopic.waitForMessage(GetFileProgressResponse.class);
+        Assert.assertEquals(progressResponse,
+                msgFactory.createGetFileProgressResponse(
+                        csData, 
+                        getRequest.getCorrelationID(), 
+                        FILE_ADDRESS, 
+                        progressResponse.getFileID(), 
+                        filePart,
+                        pillarId, 
+                        FILE_SIZE,
+                        progressResponse.getResponseInfo(), 
+                        progressResponse.getReplyTo(), 
+                        progressResponse.getTo()));
+        
+        addStep("Retrieve the FinalResponse for the GetFile request", 
+                "The GetFile response should be sent by the pillar.");
+        GetFileFinalResponse finalResponse = clientTopic.waitForMessage(GetFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        
+        Assert.assertEquals(finalResponse,
+                msgFactory.createGetFileFinalResponse(
+                        getRequest.getCorrelationID(), 
+                        FILE_ADDRESS, 
+                        finalResponse.getFileID(), 
+                        filePart,
+                        pillarId, 
+                        finalResponse.getReplyTo(), 
+                        finalResponse.getResponseInfo(), 
+                        finalResponse.getTo()));
+        
+        addStep("Validate the uploaded result-file.", "Should only contain the second letter of the file, which is a "
+                + "'A'. Any following extracted bytes should have the value '-1'.");
+        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
+        InputStream is = fe.downloadFromServer(new URL(FILE_ADDRESS));
+        
+        int digit1 = is.read();
+        Assert.assertEquals(digit1, (int) 'A');
+        int digit2 = is.read();
+        Assert.assertEquals(digit2, -1);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

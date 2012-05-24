@@ -50,4 +50,27 @@ public interface IntegrityService {
      */
     long getNumberOfChecksumErrors(String pillarId);
 
+    /**
+     * Initiates the scheduling of checksum collecting and integrity checking.
+     * @param millisSinceLastUpdate The time since last update for a checksum to be calculated.
+     * @param intervalBetweenChecks The time between checking for outdated checksums.
+     */
+    void startChecksumIntegrityCheck(long millisSinceLastUpdate, long intervalBetweenChecks);
+
+    /**
+     * Initiates the scheduling of collecting and checking of all the file ids from all the pillars.
+     * @param intervalBetweenCollecting The time between collecting all the file ids.
+     */
+    void startAllFileIDsIntegrityCheck(long intervalBetweenCollecting);
+
+    /**
+     * Initiates the scheduling of collecting and checking of all the checksums from all the pillars.
+     * @param intervalBetweenCollecting The time between collecting all the file ids.
+     */
+    public void startAllChecksumsIntegrityCheck(long intervalBetweenCollecting);
+    
+    /**
+     * Shut down the integrity service.
+     */
+    void shutdown();
 }

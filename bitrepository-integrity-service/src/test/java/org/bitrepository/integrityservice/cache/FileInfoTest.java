@@ -84,5 +84,15 @@ public class FileInfoTest extends ExtendedTestCase {
         fi.setDateForLastChecksumCheck(newLastChecksumCheck);
         Assert.assertFalse(LAST_CHECKSUM_CHECK.compare(newLastChecksumCheck) == DatatypeConstants.EQUAL);
         Assert.assertEquals(fi.getDateForLastChecksumCheck().toGregorianCalendar().getTimeInMillis(), newLastChecksumMillis);
+        
+        addStep("Change the FileState", "Should be possible to extract it again");
+        FileState fs = FileState.EXISTING;
+        fi.setFileState(fs);
+        Assert.assertEquals(fs, fi.getFileState());
+        
+        addStep("Change the ChecksumState", "Should be possible to extract it again");
+        ChecksumState cs = ChecksumState.VALID;
+        fi.setChecksumState(cs);
+        Assert.assertEquals(cs, fi.getChecksumState());
     }
 }

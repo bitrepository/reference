@@ -48,5 +48,4 @@ public class MonitoringServiceContextListener extends AbstractBitrepositoryConte
     public void initialize(String configutrationDir) {
         MonitoringServiceFactory.init(configutrationDir);        
     }
-    
 }

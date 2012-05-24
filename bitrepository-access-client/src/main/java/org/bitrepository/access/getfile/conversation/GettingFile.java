@@ -86,6 +86,7 @@ class GettingFile extends PerformingOperationState {
         initializeMessage(msg);
         msg.setFileAddress(context.getUrlForResult().toExternalForm());
         msg.setFileID(context.getFileID());
+        msg.setFilePart(context.getFilePart());
         msg.setPillarID(selectedPillar.getID());
         msg.setTo(selectedPillar.getDestination());
         context.getMonitor().requestSent("Sending request for get file", selectedPillar.toString());
