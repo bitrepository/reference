@@ -35,8 +35,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
-import org.bitrepository.integrityservice.utils.TimeUtils;
 import org.bitrepository.integrityservice.workflow.Workflow;
 
 @Path("/IntegrityService")
