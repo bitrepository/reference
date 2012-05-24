@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.monitoringservice;
+package org.bitrepository.monitoringservice.alarm;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -30,16 +30,16 @@ import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.monitoringservice.status.ComponentStatus;
-import org.bitrepository.monitoringservice.status.ComponentStatusStore;
+import org.bitrepository.monitoringservice.status.StatusStore;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.contributor.ContributorContext;
 
 /**
  * Class for the monitoring service keep a watch on non responding components, and send alarms if needed.
  */
-public class MonitoringServiceAlerter extends AlarmDispatcher {
+public class BasicMonitoringServiceAlerter extends AlarmDispatcher implements MonitorAlerter {
     /** The store for the status results from the components.*/
-    private final ComponentStatusStore statusStore;
+    private final StatusStore statusStore;
     /** The maximum number of missing replies before an alarm is dispatched.*/
     private final BigInteger maxRetries;
     
@@ -48,16 +48,13 @@ public class MonitoringServiceAlerter extends AlarmDispatcher {
      * @param context The context for the dispatcher.
      * @param statusStore The store for the status results from the components.
      */
-    public MonitoringServiceAlerter(ContributorContext context, ComponentStatusStore statusStore) {
+    public BasicMonitoringServiceAlerter(ContributorContext context, StatusStore statusStore) {
         super(context);
         this.statusStore = statusStore;
         maxRetries = context.getSettings().getReferenceSettings().getMonitoringServiceSettings().getMaxRetries();
     }
     
-    /**
-     * Check for components that have not responded withing the given constraints, and send alarm
-     * message if there is any. 
-     */
+    @Override
     public void checkStatuses() {
         Map<String, ComponentStatus> statusMap = statusStore.getStatusMap();
         List<String> nonRespondingComponents = new ArrayList<String>();
@@ -66,7 +63,7 @@ public class MonitoringServiceAlerter extends AlarmDispatcher {
             if(componentStatus.getNumberOfMissingReplies() == maxRetries.intValue()) {
                 nonRespondingComponents.add(ID);
                 componentStatus.markAsUnresponsive();
-            }	        
+            }
         }
         
         if(!nonRespondingComponents.isEmpty()) {

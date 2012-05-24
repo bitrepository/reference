@@ -1,9 +1,6 @@
 /*
  * #%L
- * Bitrepository Audit Trail Service
- * 
- * $Id$
- * $HeadURL$
+ * Bitrepository Monitoring Service
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -22,30 +19,27 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.monitoringservice.webservice;
+package org.bitrepository.monitoringservice;
 
-import org.bitrepository.monitoringservice.MonitoringServiceFactory;
-import org.bitrepository.service.AbstractBitrepositoryContextListener;
-import org.bitrepository.service.LifeCycledService;
+import org.bitrepository.access.getstatus.GetStatusClient;
+import org.bitrepository.client.eventhandler.EventHandler;
 
-
-/**
- * The context listener for the monitoring service
- */
-public class MonitoringServiceContextListener extends AbstractBitrepositoryContextListener {
-
+public class MockGetStatusClient implements GetStatusClient {
+    private int callsToShutdown = 0;
     @Override
-    public String getSettingsParameter() {
-        return "monitoringServiceConfDir";
+    public void shutdown() {
+        callsToShutdown++;
+    }
+    public int getCallsToShutdown() {
+        return callsToShutdown;
     }
 
+    private int callsToGetStatus = 0;
     @Override
-    public LifeCycledService getService() {
-        return MonitoringServiceFactory.getMonitoringService();
+    public void getStatus(EventHandler eventHandler) {
+        callsToGetStatus++;
     }
-
-    @Override
-    public void initialize(String configutrationDir) {
-        MonitoringServiceFactory.init(configutrationDir);        
+    public int getCallsToGetStatus() {
+        return callsToGetStatus;
     }
 }

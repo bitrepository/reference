@@ -26,9 +26,12 @@ import java.util.Map;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.monitoringservice.alarm.BasicMonitoringServiceAlerter;
+import org.bitrepository.monitoringservice.alarm.MonitorAlerter;
 import org.bitrepository.monitoringservice.collector.StatusCollector;
 import org.bitrepository.monitoringservice.status.ComponentStatus;
 import org.bitrepository.monitoringservice.status.ComponentStatusStore;
+import org.bitrepository.monitoringservice.status.StatusStore;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.LifeCycledService;
@@ -42,11 +45,11 @@ public class MonitoringService implements LifeCycledService {
     /** The settings. */
     private final Settings settings;
     /** The store of collected statuses */
-    private final ComponentStatusStore statusStore;
+    private final StatusStore statusStore;
     /** The client for getting statuses. */
     private final GetStatusClient getStatusClient;
     /** The alerter for sending alarms */
-    private final MonitoringServiceAlerter alerter;
+    private final MonitorAlerter alerter;
     /** The status collector */
     private final StatusCollector collector;
     
@@ -61,7 +64,7 @@ public class MonitoringService implements LifeCycledService {
         ContributorContext context = new ContributorContext(ProtocolComponentFactory.getInstance().getMessageBus(settings, 
                 securityManager), settings, settings.getComponentID(), settings.getReceiverDestination());
         statusStore = new ComponentStatusStore(settings.getCollectionSettings().getGetStatusSettings().getContributorIDs());
-        alerter = new MonitoringServiceAlerter(context, statusStore);
+        alerter = new BasicMonitoringServiceAlerter(context, statusStore);
         getStatusClient = AccessComponentFactory.getInstance().createGetStatusClient(settings, securityManager,
                 settings.getReferenceSettings().getMonitoringServiceSettings().getID());
         collector = new StatusCollector(getStatusClient, settings, statusStore, alerter);

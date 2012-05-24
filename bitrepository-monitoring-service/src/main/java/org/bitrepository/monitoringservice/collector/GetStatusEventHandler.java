@@ -24,8 +24,8 @@ package org.bitrepository.monitoringservice.collector;
 import org.bitrepository.access.getstatus.conversation.StatusCompleteContributorEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
-import org.bitrepository.monitoringservice.MonitoringServiceAlerter;
-import org.bitrepository.monitoringservice.status.ComponentStatusStore;
+import org.bitrepository.monitoringservice.alarm.MonitorAlerter;
+import org.bitrepository.monitoringservice.status.StatusStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,19 +36,18 @@ public class GetStatusEventHandler implements EventHandler {
     /** The log.*/
     private final Logger log = LoggerFactory.getLogger(GetStatusEventHandler.class);
     /** The store for the status results. */
-    private final ComponentStatusStore statusStore;
+    private final StatusStore statusStore;
     /** The alarm dispatcher*/
-    private final MonitoringServiceAlerter alerter;
+    private final MonitorAlerter alerter;
 
     /**
      * Constructor.
      * @param statusStore The store for the status results.
      * @param alarmDispatcher The alarm dispatcher.
      */
-    public GetStatusEventHandler(ComponentStatusStore statusStore, MonitoringServiceAlerter alarmDispatcher) {
+    public GetStatusEventHandler(StatusStore statusStore, MonitorAlerter alarmDispatcher) {
         this.statusStore = statusStore;
         this.alerter = alarmDispatcher;
-        
     }
     
     @Override

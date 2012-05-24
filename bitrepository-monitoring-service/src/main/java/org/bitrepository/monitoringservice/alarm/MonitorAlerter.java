@@ -1,9 +1,6 @@
 /*
  * #%L
- * Bitrepository Audit Trail Service
- * 
- * $Id$
- * $HeadURL$
+ * Bitrepository Monitoring Service
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -22,30 +19,16 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.monitoringservice.webservice;
-
-import org.bitrepository.monitoringservice.MonitoringServiceFactory;
-import org.bitrepository.service.AbstractBitrepositoryContextListener;
-import org.bitrepository.service.LifeCycledService;
-
+package org.bitrepository.monitoringservice.alarm;
 
 /**
- * The context listener for the monitoring service
+ * Interface for the monitor alerter.
  */
-public class MonitoringServiceContextListener extends AbstractBitrepositoryContextListener {
-
-    @Override
-    public String getSettingsParameter() {
-        return "monitoringServiceConfDir";
-    }
-
-    @Override
-    public LifeCycledService getService() {
-        return MonitoringServiceFactory.getMonitoringService();
-    }
-
-    @Override
-    public void initialize(String configutrationDir) {
-        MonitoringServiceFactory.init(configutrationDir);        
-    }
+public interface MonitorAlerter {
+    
+    /**
+     * Check for components that have not responded withing the given constraints, and send alarm
+     * message if there is any. 
+     */
+    void checkStatuses();
 }

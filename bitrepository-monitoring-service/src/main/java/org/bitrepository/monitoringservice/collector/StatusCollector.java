@@ -25,10 +25,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.bitrepository.access.getstatus.GetStatusClient;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.monitoringservice.MonitoringServiceAlerter;
-import org.bitrepository.monitoringservice.status.ComponentStatusStore;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.monitoringservice.alarm.MonitorAlerter;
+import org.bitrepository.monitoringservice.status.StatusStore;
 
 /**
  * The collector of status messages.
@@ -38,7 +38,7 @@ public class StatusCollector {
     /** The getStatusClient */
     private GetStatusClient getStatusClient;
     /** The store for the status results.*/
-    private final ComponentStatusStore statusStore;
+    private final StatusStore statusStore;
     /** The EventHandler */
     private EventHandler eventHandler;
     /** Defines that the timer is a daemon thread. */
@@ -55,8 +55,8 @@ public class StatusCollector {
      * @param statusStore The storage for the status results.
      * @param alerter The alerter.
      */
-    public StatusCollector(GetStatusClient getStatusClient, Settings settings, ComponentStatusStore statusStore, 
-            MonitoringServiceAlerter alerter) {
+    public StatusCollector(GetStatusClient getStatusClient, Settings settings, StatusStore statusStore, 
+            MonitorAlerter alerter) {
         this.getStatusClient = getStatusClient;
         eventHandler = new GetStatusEventHandler(statusStore, alerter);
         this.statusStore = statusStore;
@@ -81,5 +81,4 @@ public class StatusCollector {
             getStatusClient.getStatus(eventHandler);
         }
     }
-    
 }

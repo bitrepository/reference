@@ -30,7 +30,7 @@ import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ComponentStatusStore {
+public class ComponentStatusStore implements StatusStore {
     private Logger log = LoggerFactory.getLogger(getClass());
     private final ConcurrentMap<String, ComponentStatus> statusMap;
     
@@ -41,6 +41,7 @@ public class ComponentStatusStore {
         }
     }
     
+    @Override
     public synchronized void updateStatus(String componentID, ResultingStatus status) {
         if(statusMap.containsKey(componentID)) {
             statusMap.get(componentID).updateStatus(status);
@@ -49,12 +50,14 @@ public class ComponentStatusStore {
         }
     }
     
+    @Override
     public synchronized void updateReplyCounts() {
         for(String ID : statusMap.keySet()) {
             statusMap.get(ID).updateReplys();
         }
     }
     
+    @Override
     public synchronized Map<String, ComponentStatus> getStatusMap() {
         return statusMap;
     }

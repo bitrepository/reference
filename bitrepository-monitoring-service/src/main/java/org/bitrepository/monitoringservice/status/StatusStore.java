@@ -1,9 +1,6 @@
 /*
  * #%L
- * Bitrepository Audit Trail Service
- * 
- * $Id$
- * $HeadURL$
+ * Bitrepository Monitoring Service
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -22,30 +19,24 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.monitoringservice.webservice;
+package org.bitrepository.monitoringservice.status;
 
-import org.bitrepository.monitoringservice.MonitoringServiceFactory;
-import org.bitrepository.service.AbstractBitrepositoryContextListener;
-import org.bitrepository.service.LifeCycledService;
+import java.util.Map;
 
+import org.bitrepository.bitrepositoryelements.ResultingStatus;
 
-/**
- * The context listener for the monitoring service
- */
-public class MonitoringServiceContextListener extends AbstractBitrepositoryContextListener {
-
-    @Override
-    public String getSettingsParameter() {
-        return "monitoringServiceConfDir";
-    }
-
-    @Override
-    public LifeCycledService getService() {
-        return MonitoringServiceFactory.getMonitoringService();
-    }
-
-    @Override
-    public void initialize(String configutrationDir) {
-        MonitoringServiceFactory.init(configutrationDir);        
-    }
+public interface StatusStore {
+    /**
+     * Updates the status of a given component.
+     * @param componentID The id of the component to update.
+     * @param status The resulting status for the given component.
+     */
+    void updateStatus(String componentID, ResultingStatus status);
+    
+    void updateReplyCounts();
+    
+    /**
+     * @return The mapping between components and their status.
+     */
+    Map<String, ComponentStatus> getStatusMap();
 }

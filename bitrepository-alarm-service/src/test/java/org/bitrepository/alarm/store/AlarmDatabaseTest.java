@@ -42,7 +42,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class AlarmDatabaseTester extends ExtendedTestCase {
+public class AlarmDatabaseTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
     String fileId = "TEST-FILE-ID-" + new Date().getTime();
