@@ -102,7 +102,8 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
             return dbConnection;
         } catch (Exception e) {
             throw new IllegalStateException("Could not instantiate the database with the url '"
-                    + settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabaseUrl() + "'", e);
+                    + settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabaseUrl() 
+                    + "'", e);
         }
     }
     

@@ -150,8 +150,9 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         res = database.getAuditTrails(null, null, null, null, null, null, null, restrictionDate);
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getFileID(), fileId);
+        
+        database.close();
     }
-    
     
     private AuditTrailEvents createEvents() {
         AuditTrailEvents events = new AuditTrailEvents();
