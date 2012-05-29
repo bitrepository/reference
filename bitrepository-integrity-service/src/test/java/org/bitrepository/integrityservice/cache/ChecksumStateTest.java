@@ -28,7 +28,7 @@ import org.testng.annotations.Test;
 
 public class ChecksumStateTest extends ExtendedTestCase {
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testChecksumState() {
         addDescription("Test the checksum states.");
         addStep("Extract the checksum states.", "Should work.");

@@ -48,7 +48,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         auditManager = new MockAuditManager();
     }
     
-    @Test(groups = "regressiontest")
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testCollectorGetFileIDs() throws Exception {
         addDescription("Tests that the collector calls the GetFileClient");
         addStep("Define variables", "No errors");
@@ -73,7 +73,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         Assert.assertEquals(getFileIDs.getCallsForGetFileIDs(), 5);
     }
 
-    @Test(groups = "regressiontest")
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testCollectorGetChecksums() throws Exception {
         addDescription("Tests that the collector calls the GetChecksumsClient");
         addStep("Define variables", "No errors");
@@ -129,7 +129,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         public void shutdown() { }
     }
     
-    @Test(groups = "regressiontest")
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testCollectorHandleChecksumClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
         addStep("Setup variables for the test", "Should be OK");
@@ -159,7 +159,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         }
     }
     
-    @Test(groups = "regressiontest")
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testCollectorHandleGetFileIDsClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
         addStep("Setup variables for the test", "Should be OK");

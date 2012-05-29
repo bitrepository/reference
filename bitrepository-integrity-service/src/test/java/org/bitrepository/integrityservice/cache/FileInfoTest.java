@@ -44,7 +44,7 @@ public class FileInfoTest extends ExtendedTestCase {
     private static final XMLGregorianCalendar LAST_CHECKSUM_CHECK = CalendarUtils.getFromMillis(LAST_CHECKSUM_CHECK_MILLIS);
     private static final String PILLAR_ID = "test-pillar";
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testFileInfo() {
         addDescription("Tests the FileInfo element. Adds all data and extracts it again.");
         addStep("Setup the file info.", "Should be possible to extract all the data again.");

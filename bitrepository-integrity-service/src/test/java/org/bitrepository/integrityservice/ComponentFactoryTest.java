@@ -86,7 +86,7 @@ public class ComponentFactoryTest extends ExtendedTestCase {
         }
     }
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void verifyCacheFromFactory() throws Exception {
         Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings)
                 instanceof IntegrityDatabase,
@@ -94,7 +94,7 @@ public class ComponentFactoryTest extends ExtendedTestCase {
                 + IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings).getClass().getName() + "'");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void verifyCollectorFromFactory() throws Exception {
         IntegrityInformationCollector collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
@@ -106,7 +106,7 @@ public class ComponentFactoryTest extends ExtendedTestCase {
                 "The default Collector should be the '" + DelegatingIntegrityInformationCollector.class.getName() + "'");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void verifyIntegrityCheckerFromFactory() throws Exception {
         IntegrityModel cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings);
         Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache, new MockAuditManager())
@@ -114,7 +114,7 @@ public class ComponentFactoryTest extends ExtendedTestCase {
                 "The default IntegrityChecker should be the '" + SimpleIntegrityChecker.class.getName() + "'");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void verifySchedulerFromFactory() throws Exception {
         Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settings)
                 instanceof TimerWorkflowScheduler, 

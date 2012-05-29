@@ -41,7 +41,7 @@ import org.testng.annotations.Test;
 public class FileIDsUpdaterAndValidatorEventHandlerTest extends ExtendedTestCase {
     private static final String CONVERSATION_ID = "conversationId";
 
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testFileIDsUpdaterAndValidatorEvent() {
         addDescription("Tests the functionality of this event handler.");
         addStep("Setup variables", "No errors");
@@ -113,7 +113,7 @@ public class FileIDsUpdaterAndValidatorEventHandlerTest extends ExtendedTestCase
         Assert.assertEquals(alarmDispatcher.getCallsForIntegrityFailed(), 0, "Should not have integrity failures.");
     }
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testFileIDsUpdaterAndValidatorEventFailure() {
         addDescription("Tests the functionality of this event handler.");
         addStep("Setup variables", "No errors");

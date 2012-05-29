@@ -40,7 +40,7 @@ import org.testng.annotations.Test;
 public class ChecksumUpdaterAndValidatorEventHandlerTest extends ExtendedTestCase {
     private static final String CONVERSATION_ID = "conversationId";
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testChecksumUpdaterAndValidatorEvent() {
         addDescription("Tests the functionality of this event handler.");
         addStep("Setup variables", "No errors");
@@ -110,7 +110,7 @@ public class ChecksumUpdaterAndValidatorEventHandlerTest extends ExtendedTestCas
         Assert.assertEquals(alarmDispatcher.getCallsForIntegrityFailed(), 0, "Should not have integrity failures.");
     }
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testChecksumUpdaterAndValidatorEventFailure() {
         addDescription("Tests the functionality of this event handler.");
         addStep("Setup variables", "No errors");

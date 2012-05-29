@@ -32,7 +32,7 @@ public class ChecksumErrorDataTest extends ExtendedTestCase {
     private static final String MISSING_FILE = "missing-file";
     private static final String PILLAR_ID = "pillar-id";
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testChecksumErrorData() {
         addDescription("Testing the functionality of the ChecksumErrorData.");
         addStep("Create and populate the checksum error data", "Not errors");
