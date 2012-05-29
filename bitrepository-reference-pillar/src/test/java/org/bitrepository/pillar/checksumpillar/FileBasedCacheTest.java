@@ -21,8 +21,12 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
+import static org.bitrepository.pillar.checksumpillar.cache.ChecksumEntry.CHECKSUM_SEPARATOR;
+
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -35,7 +39,7 @@ import org.bitrepository.pillar.checksumpillar.cache.FilebasedChecksumStore;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class FileBasedCacheTest extends ExtendedTestCase {
@@ -45,7 +49,7 @@ public class FileBasedCacheTest extends ExtendedTestCase {
     private final String CHECKSUM_DIR = "test-output/checksumDir";
     private File csDir;
     
-    @BeforeClass (alwaysRun = true)
+    @BeforeMethod (alwaysRun = true)
     public void setup() {
         settings = TestSettingsProvider.reloadSettings();
         csDir = FileUtils.retrieveDirectory(CHECKSUM_DIR);
@@ -192,6 +196,10 @@ public class FileBasedCacheTest extends ExtendedTestCase {
         
         File csFile = new File(csDir,
                 "checksum_" + settings.getReferenceSettings().getPillarSettings().getPillarID() + ".checksum");
+        Assert.assertTrue(csFile.createNewFile());
+        File wrongFile = new File(csDir,
+                "removed_" + settings.getReferenceSettings().getPillarSettings().getPillarID() + ".checksum");
+        Assert.assertTrue(wrongFile.createNewFile());
         FileOutputStream out = new FileOutputStream(csFile, false);
         out.write(new String(FILE_ID1 + "##" + CHECKSUM + "\n").getBytes());
         out.write(new String(FILE_ID2 + "##" + CHECKSUM + "\n").getBytes());
@@ -211,4 +219,168 @@ public class FileBasedCacheTest extends ExtendedTestCase {
         Assert.assertEquals(cache.getChecksumFilePath(), csFile.getCanonicalPath());
         Assert.assertTrue(cache.getWrongEntryFilePath().startsWith(csDir.getCanonicalPath()));
     }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void testInvalidFile() throws Exception {
+        addDescription("Test an invalid checksum file");
+        addStep("Create the file as a directory.", "Should be createable.");
+        File csFile = new File(csDir,
+                "checksum_" + settings.getReferenceSettings().getPillarSettings().getPillarID() + ".checksum");
+        Assert.assertTrue(csFile.mkdir());
+        
+        addStep("Start the store", "Should throw exception, since the file is a directory");
+        try {
+            new FilebasedChecksumStore(settings);
+            Assert.fail("Should throw an '" + IllegalStateException.class + "' exception here.");
+        } catch (IllegalStateException e) {
+            // expected
+        }
+        FileUtils.delete(csFile);
+    }
+        
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void testReadonlyCSdir() throws Exception {
+        addDescription("Test the case, when the checksum dir is readonly.");
+        addStep("Setup variables", "");
+
+        addStep("Try make the directory unwritable.", "Should also fail.");
+        csDir.setReadOnly();
+        try {
+            new FilebasedChecksumStore(settings);
+            Assert.fail("Should throw an '" + IllegalStateException.class + "' exception here.");
+        } catch (IllegalStateException e) {
+            // expected
+        } finally {
+            csDir.setExecutable(true);
+            csDir.setWritable(true);
+        }
+
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void testDeletingFile() throws Exception {
+        addDescription("Test the case, when the checksum file is deleted.");
+        addStep("Setup", "");
+        String FILE_NAME = "filename";
+        String FILE_NAME2 = "filename2";
+        String CHECKSUM = "checksum";
+        File csFile = new File(csDir,
+                "checksum_" + settings.getReferenceSettings().getPillarSettings().getPillarID() + ".checksum");
+        Assert.assertFalse(csFile.exists());
+
+        addStep("Instantiate the store and populate it", "Should create the file with content.");
+        FilebasedChecksumStore cache = new FilebasedChecksumStore(settings);
+        Assert.assertTrue(csFile.exists());
+        cache.putEntry(FILE_NAME, CHECKSUM);
+        Assert.assertTrue(csFile.exists());
+        Assert.assertTrue(csFile.length() > 0, "The file should have content");
+        
+        addStep("Delete the file", "The file should not exist.");
+        FileUtils.delete(csFile);
+        Assert.assertFalse(csFile.exists());
+        Assert.assertFalse(cache.hasEnoughSpace());
+        
+        addStep("Try to add another file.", "");
+        cache.putEntry(FILE_NAME2, CHECKSUM);
+        Assert.assertTrue(csFile.exists());
+    }
+
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void testModifiedFile() throws Exception {
+        addDescription("Test the case, when the checksum file is modified.");
+        addStep("Setup", "");
+        String FILE_NAME = "filename";
+        String FILE_NAME2 = "filename2";
+        String CHECKSUM = "checksum";
+        File csFile = new File(csDir,
+                "checksum_" + settings.getReferenceSettings().getPillarSettings().getPillarID() + ".checksum");
+        Assert.assertFalse(csFile.exists());
+
+        addStep("Instantiate the store and populate it", "Should create the file with content.");
+        FilebasedChecksumStore cache = new FilebasedChecksumStore(settings);
+        Assert.assertTrue(csFile.exists());
+        cache.putEntry(FILE_NAME, CHECKSUM);
+        Assert.assertTrue(csFile.exists());
+        Assert.assertTrue(csFile.length() > 0, "The file should have content");
+        
+        Assert.assertFalse(cache.hasFile(FILE_NAME2));
+        
+        synchronized(this) {
+            // has to wait 1 sec for 'last modified' to be able to change (it is tight to 'seconds')
+            wait(1000);
+        }
+        
+        addStep("Modify the file", "Should be reloaded by the cache");
+        appendEntryToFile(csFile, FILE_NAME2, CHECKSUM);
+        Assert.assertTrue(cache.hasFile(FILE_NAME2));
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void testReadonlyWrongFileFile() throws Exception {
+        addDescription("Test the case, when the 'wrong file is read-only.");
+        addStep("Setup", "");
+        String FILE_NAME = "filename";
+        String CHECKSUM = "checksum";
+        File wrongFile = new File(csDir,
+                "removed_" + settings.getReferenceSettings().getPillarSettings().getPillarID() + ".checksum");
+        
+        addStep("Instantiate the store and populate it", "Should create the file with content.");
+        FilebasedChecksumStore cache = new FilebasedChecksumStore(settings);
+        cache.putEntry(FILE_NAME, CHECKSUM);
+        
+        addStep("Make the wrongFile readonly", "Should not be able to ");
+        wrongFile.setReadOnly();
+        try {
+            cache.deleteEntry(FILE_NAME);
+            Assert.fail("Should throw an " + IllegalStateException.class);
+        } catch (IllegalStateException e) {
+            // expected
+        } finally {
+            wrongFile.setWritable(true);
+            wrongFile.setExecutable(true);
+        }
+    }
+
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void testReadonlyCSFile() throws Exception {
+        addDescription("Test the case, when the 'wrong file is read-only.");
+        addStep("Setup", "");
+        String FILE_NAME = "filename";
+        String CHECKSUM = "checksum";
+        File csFile = new File(csDir,
+                "checksum_" + settings.getReferenceSettings().getPillarSettings().getPillarID() + ".checksum");
+        
+        addStep("Try making it readonly after instantiation", "Should throw an exception, when a file is put");
+        FilebasedChecksumStore cache = new FilebasedChecksumStore(settings);
+        csFile.setReadOnly();
+        try {
+            cache.putEntry(FILE_NAME, CHECKSUM);
+            Assert.fail("Should throw an '" + IllegalStateException.class + "' exception here.");
+        } catch (IllegalStateException e) {
+            // expected
+        } finally {
+            csFile.setExecutable(true);
+            csFile.setWritable(true);
+        }
+    }
+    
+    private synchronized void appendEntryToFile(File file, String filename, String checksum) {
+        String record = filename + CHECKSUM_SEPARATOR + checksum + "\n";
+        boolean appendToFile = true;
+        synchronized(file) {
+            try {
+                FileWriter fwrite = new FileWriter(file, appendToFile);
+                try {
+                    fwrite.append(record);
+                } finally {
+                    // close fileWriter.
+                    fwrite.flush();
+                    fwrite.close();
+                }
+            } catch(IOException e) {
+                throw new IllegalStateException("An error occurred while appending an entry to the archive file.", e);
+            }
+        }
+    }
+
 }
