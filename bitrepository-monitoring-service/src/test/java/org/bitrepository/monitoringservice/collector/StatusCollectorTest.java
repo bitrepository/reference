@@ -35,6 +35,9 @@ import org.testng.annotations.Test;
 public class StatusCollectorTest extends ExtendedTestCase {
     Settings settings;
     
+    private int INTERVAL = 500;
+    private int INTERVAL_DELAY = 250;
+    
     @BeforeClass (alwaysRun = true)
     public void setup() {
         settings = TestSettingsProvider.reloadSettings();
@@ -48,17 +51,43 @@ public class StatusCollectorTest extends ExtendedTestCase {
         MockAlerter alerter = new MockAlerter();
         MockStatusStore store = new MockStatusStore();
         MockGetStatusClient client = new MockGetStatusClient();
-        settings.getReferenceSettings().getMonitoringServiceSettings().setCollectionInterval(100);
+        settings.getReferenceSettings().getMonitoringServiceSettings().setCollectionInterval(INTERVAL);
 
         addStep("Create the collector", "");
+        Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
+        Assert.assertEquals(store.getCallsForUpdateReplayCounts(), 0);
+        Assert.assertEquals(store.getCallsForUpdateStatus(), 0);
+        Assert.assertEquals(client.getCallsToGetStatus(), 0);
+        Assert.assertEquals(client.getCallsToShutdown(), 0);
         StatusCollector collector = new StatusCollector(client, settings, store, alerter);
         
-        addStep("Run the collector for 250 millis", "It should call the store and the client 3 times");
+        addStep("Start the collector", "It should immediately call the client and store.");
         collector.start();
         synchronized(this) {
-            wait(250);
+            wait(INTERVAL_DELAY);
+        }
+        Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
+        Assert.assertEquals(store.getCallsForUpdateReplayCounts(), 1);
+        Assert.assertEquals(store.getCallsForUpdateStatus(), 0);
+        Assert.assertEquals(client.getCallsToGetStatus(), 1);
+        Assert.assertEquals(client.getCallsToShutdown(), 0);
+
+        addStep("wait 2 * the interval", "It should call the client and store two times more.");        
+        synchronized(this) {
+            wait(2 * INTERVAL);
         }
         collector.stop();
+        
+        Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
+        Assert.assertEquals(store.getCallsForUpdateReplayCounts(), 3);
+        Assert.assertEquals(store.getCallsForUpdateStatus(), 0);
+        Assert.assertEquals(client.getCallsToGetStatus(), 3);
+        Assert.assertEquals(client.getCallsToShutdown(), 0);
+        
+        addStep("wait the interval + delay again", "It should not have made any more calls");        
+        synchronized(this) {
+            wait(INTERVAL + INTERVAL_DELAY);
+        }
         
         Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
         Assert.assertEquals(store.getCallsForUpdateReplayCounts(), 3);
