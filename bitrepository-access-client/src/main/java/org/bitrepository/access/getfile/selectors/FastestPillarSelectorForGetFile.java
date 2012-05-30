@@ -25,7 +25,7 @@ import java.util.Collection;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
-import org.bitrepository.protocol.utils.TimeMeasurementUtils;
+import org.bitrepository.common.utils.TimeMeasurementUtils;
 
 public class FastestPillarSelectorForGetFile extends GetFileSelector {
     

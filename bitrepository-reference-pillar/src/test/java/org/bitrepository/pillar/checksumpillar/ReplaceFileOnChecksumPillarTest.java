@@ -38,7 +38,9 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResp
 import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
+import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.MockAlarmDispatcher;
@@ -47,8 +49,6 @@ import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMedi
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.utils.Base16Utils;
-import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.bitrepository.service.contributor.ContributorContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;

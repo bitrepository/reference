@@ -19,9 +19,9 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.utils;
+package org.bitrepository.common.utils;
 
-import org.bitrepository.protocol.utils.Base16Utils;
+import org.bitrepository.common.utils.Base16Utils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -54,5 +54,26 @@ public class Base16UtilsTest extends ExtendedTestCase {
         addStep("Decode the checksum and validate.", "It should match the precalculated constant.");
         String decodedChecksum = Base16Utils.decodeBase16(ENCODED_CHECKSUM);
         Assert.assertEquals(decodedChecksum, DECODED_CHECKSUM);
+    }
+    
+    @Test(groups = { "regressiontest" })
+    public void badArgumentTest() throws Exception {
+        addDescription("Test bad arguments");
+        Assert.assertNull(Base16Utils.decodeBase16(null));
+        
+        try {
+            Base16Utils.encodeBase16(null);
+            Assert.fail("Should throw an exception");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+        
+        addStep("Test with a odd number of characters.", "Should throw an exception");
+        try {
+            Base16Utils.encodeBase16("123");
+            Assert.fail("Should throw an exception");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
     }
 }

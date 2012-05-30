@@ -30,10 +30,10 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.common.PillarMessageHandler;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
-import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 

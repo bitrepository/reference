@@ -22,22 +22,24 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.utils;
+package org.bitrepository.common.utils;
 
 import java.math.BigInteger;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
-import org.bitrepository.protocol.utils.TimeMeasurementUtils;
+import org.bitrepository.common.utils.TimeMeasurementUtils;
+import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
  * Tests the <code>TimeMeasureComparator</code> class.
  */
-public class TimeMeasureComparatorTest {
+public class TimeMeasureComparatorTest extends ExtendedTestCase {
     @Test (groups = { "regressiontest" })
     public void testCompareMilliSeconds() {
+        addDescription("Test the comparison between TimeMeasure units.");
         TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
         referenceTime.setTimeMeasureValue(new BigInteger("2"));
         referenceTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
@@ -60,8 +62,10 @@ public class TimeMeasureComparatorTest {
 
     @Test (groups = { "regressiontest" })
     public void testCompareMilliSecondsToHours() {
+        addDescription("Test the comparison between milliseconds and hours.");
+        long millis = 7200000L;
         TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
-        referenceTime.setTimeMeasureValue(new BigInteger("7200000"));
+        referenceTime.setTimeMeasureValue(BigInteger.valueOf(millis));
         referenceTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
         
         TimeMeasureTYPE compareTime = new TimeMeasureTYPE();
@@ -78,5 +82,21 @@ public class TimeMeasureComparatorTest {
         compareTime.setTimeMeasureValue(new BigInteger("2"));
         Assert.assertTrue(TimeMeasurementUtils.compare(referenceTime, compareTime) == 0, referenceTime + 
                 " should be same as " + compareTime);
+        
+        Assert.assertEquals(TimeMeasurementUtils.getTimeMeasureInLong(referenceTime), millis);
     }
+
+    @Test (groups = { "regressiontest" })
+    public void testMaxValue() {
+        addDescription("Test the Maximum value");
+        TimeMeasureTYPE time = TimeMeasurementUtils.getMaximumTime();
+        Assert.assertEquals(time.getTimeMeasureValue().longValue(), Long.MAX_VALUE);
+        Assert.assertEquals(time.getTimeMeasureUnit(), TimeMeasureUnit.HOURS);
+        
+        TimeMeasureTYPE time2 = TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+                BigInteger.valueOf(Long.MAX_VALUE));
+        time2.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
+        Assert.assertEquals(TimeMeasurementUtils.compare(time, time2), 0);
+    }
+
 }
