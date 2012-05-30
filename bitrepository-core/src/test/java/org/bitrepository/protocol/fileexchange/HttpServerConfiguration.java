@@ -28,8 +28,6 @@ package org.bitrepository.protocol.fileexchange;
  * Configuration for {@link HttpServerConnector} objects.
  */
 public class HttpServerConfiguration {
-    /** The implementing class */
-    private String serverClass = "HTTPServer";
     /** Protocol for URLs. */
     private String protocol = "http";
     /** The default port for the HTTP communication.*/

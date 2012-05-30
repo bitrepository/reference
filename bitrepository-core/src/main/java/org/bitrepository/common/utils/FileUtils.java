@@ -24,18 +24,12 @@
  */
 package org.bitrepository.common.utils;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -185,104 +179,41 @@ public final class FileUtils {
     }
     
     /**
-     * Reads a file into a byte array.
-     * TODO handle the case, when the file is longer than can be expressed with an Integer.
-     * 
-     * @param file 
-     * @return
-     * @throws IOException
-     */
-    public static String readFile(File file) throws IOException {
-        ArgumentValidator.checkNotNull(file, "file");
-        
-        DataInputStream fis = null;
-        StringBuffer res = new StringBuffer();
-        
-        try {
-            fis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
-            
-            byte[] bytes = new byte[BYTE_ARRAY_SIZE];
-            while (fis.read(bytes) > 0) {
-                res.append(new String(bytes));
-            }
-        } finally {
-            if (fis != null) {
-                fis.close();
-            }
-        }
-        
-        return res.toString();
-    }
-    
-    /**
-     * Reads a file and puts the lines into a list.
-     * 
-     * @param file The file to read from.
-     * @return The list of lines from the file.
-     * @throws IOException If some input/output error occurs.
-     */
-    public static List<String> readLinesFromFile(File file) throws IOException {
-        ArgumentValidator.checkNotNull(file, "file");
-        
-        FileInputStream fis = null;
-        BufferedReader reader = null;
-        List<String> res = new ArrayList<String>();
-        
-        try {
-            fis = new FileInputStream(file);
-            reader = new BufferedReader(new InputStreamReader(fis));
-            
-            String line;
-            while ((line = reader.readLine()) != null) {
-                res.add(line);
-            }
-        } finally {
-            if(reader != null) {
-                reader.close();
-            }
-            if (fis != null) {
-                fis.close();
-            }
-        }
-        
-        return res;
-    }
-    
-    /**
      * Copies a file from one place to another place.
      * @param source The source file to copy from.
      * @param target The target file to copy to.
      */
     public static void copyFile(File source, File target) {
+        ArgumentValidator.checkNotNull(source, "File source");
+        ArgumentValidator.checkTrue(source.isFile(), "File source should exist");
+        ArgumentValidator.checkNotNull(target, "File target");
+        
         FileInputStream is = null;
         FileOutputStream os = null;
         try {
-            is = new FileInputStream(source);
-            os = new FileOutputStream(target);
-            
-            byte[] bytes = new byte[BYTE_ARRAY_SIZE];
-            
-            int size;
-            while((size = is.read(bytes)) > 0) {
-                os.write(bytes, 0, size);
-            }
-            
-            os.flush();
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not copy the file '" + source + "' to the destination '"
-                    + target + "'.", e);
-        } finally {
-            // Remember to close the streams.
             try {
+                is = new FileInputStream(source);
+                os = new FileOutputStream(target);
+                
+                byte[] bytes = new byte[BYTE_ARRAY_SIZE];
+                
+                int size;
+                while((size = is.read(bytes)) > 0) {
+                    os.write(bytes, 0, size);
+                }
+                
+                os.flush();
+            } finally {
                 if(is != null) {
                     is.close();
                 } 
                 if(os != null) {
                     os.close();
                 }
-            } catch (IOException e) {
-                // TODO
             }
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not copy the file '" + source + "' to the destination '"
+                    + target + "'.", e);
         }
     }
     

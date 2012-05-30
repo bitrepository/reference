@@ -61,6 +61,7 @@ public abstract class ConversationMediatorTest {
 
     abstract ConversationMediator createMediator(Settings settings);
 
+    @SuppressWarnings("unused")
     private class ConversationStub extends AbstractConversation {
         private boolean hasStarted = false;
         private boolean hasFailed = false;
@@ -92,6 +93,7 @@ public abstract class ConversationMediatorTest {
         }
     }
 
+    @SuppressWarnings("unused")
     private class MessageBusMock implements MessageBus {        
         private MessageSender messageSender = mock(MessageSender.class);
         private MessageListener listener;
