@@ -81,7 +81,7 @@ public class IntegrityWorkflowSchedulerTest extends ExtendedTestCase {
         addStep("Create a workflow", "Should not have been called yet been called.");
         MockWorkflow workflow = new MockWorkflow(INTERVAL + INTERVAL_DELAY, taskName);
         Assert.assertEquals(workflow.getCallsForNextRun(), 0);
-        Assert.assertEquals(workflow.getcallsForRunWorkflow(), 0);
+        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 0);
         
         addStep("Add the workflow", "Validate that it initially calls the ");
         scheduler.putWorkflow(workflow);
@@ -89,7 +89,7 @@ public class IntegrityWorkflowSchedulerTest extends ExtendedTestCase {
             wait(INTERVAL_DELAY);
         }
         Assert.assertEquals(workflow.getCallsForNextRun(), 1);
-        Assert.assertEquals(workflow.getcallsForRunWorkflow(), 1);
+        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 1);
         
         addStep("Wait 4 * the interval (plus delay for instantiation), stop the trigger and validate the results.", 
                 "Should have checked the date 5 times, but only run the workflow 3 times.");
@@ -98,7 +98,7 @@ public class IntegrityWorkflowSchedulerTest extends ExtendedTestCase {
         }
         scheduler.removeWorkflow(taskName);
         Assert.assertEquals(workflow.getCallsForNextRun(), 5);
-        Assert.assertEquals(workflow.getcallsForRunWorkflow(), 3);
+        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 3);
         
         addStep("Wait another 2 seconds and validate that the trigger has been cancled.", 
                 "Should have made no more calls to the workflow.");
@@ -107,6 +107,6 @@ public class IntegrityWorkflowSchedulerTest extends ExtendedTestCase {
         }
         scheduler.removeWorkflow(taskName);
         Assert.assertEquals(workflow.getCallsForNextRun(), 5);
-        Assert.assertEquals(workflow.getcallsForRunWorkflow(), 3);
+        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 3);
     }
 }

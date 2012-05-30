@@ -66,7 +66,7 @@ public class WorkflowTest extends ExtendedTestCase {
         
         addStep("Validate the interface to the workflow.", "Should contain the given variables and none of the functions should have been called.");
         Assert.assertEquals(workflow.getCallsForNextRun(), 0, "Did not expect any calls for NextRun yet.");
-        Assert.assertEquals(workflow.getcallsForRunWorkflow(), 0, "Did not expect any calls for trigger yet.");
+        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 0, "Did not expect any calls for trigger yet.");
         Assert.assertEquals(workflow.getTimeBetweenRuns(), interval);
         Assert.assertEquals(workflow.getName(), name);
         
@@ -75,7 +75,7 @@ public class WorkflowTest extends ExtendedTestCase {
         Date nextRun = workflow.getNextRun();
         workflow.trigger();
         Assert.assertEquals(workflow.getCallsForNextRun(), 1, "Should have called for NextRun once");
-        Assert.assertEquals(workflow.getcallsForRunWorkflow(), 1, "Should have triggered the workflow once");
+        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 1, "Should have triggered the workflow once");
         
         Assert.assertTrue( nextRun != workflow.getNextRun(), "The dates should differ");
         Assert.assertTrue(nextRun.getTime() < workflow.getNextRun().getTime(), 
