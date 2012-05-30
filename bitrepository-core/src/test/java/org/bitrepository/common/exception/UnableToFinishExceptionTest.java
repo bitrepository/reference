@@ -1,4 +1,4 @@
-package org.bitrepository.common;
+package org.bitrepository.common.exception;
 
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.jaccept.structure.ExtendedTestCase;

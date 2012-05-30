@@ -61,5 +61,4 @@ public abstract class RequestHandlerException extends Exception {
     public String toString() {
         return super.toString() + ", " + responseInfo.toString();
     }
-
 }

@@ -100,7 +100,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         // TODO handle this!
         //        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
         //                "src/main/resources/integrityDB.sql");
-        File sqlDatabaseFile = new File("src/main/resources/auditContributerDB.sql");
+        File sqlDatabaseFile = new File("src/main/resources/audittrailContributorDb/auditContributerDB.sql");
         dbConnector.createDatabase(sqlDatabaseFile);
     }
     

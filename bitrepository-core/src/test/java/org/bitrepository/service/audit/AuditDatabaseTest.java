@@ -19,35 +19,61 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.audit;
+package org.bitrepository.service.audit;
 
+import java.io.File;
 import java.sql.Connection;
 import java.util.Collection;
+import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.common.database.DatabaseUtils;
-import org.bitrepository.common.database.DerbyDBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.service.audit.AuditDatabaseConstants;
-import org.bitrepository.service.audit.AuditTrailContributerDAO;
+import org.bitrepository.common.utils.DatabaseTestUtils;
+import org.bitrepository.common.utils.FileUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class AuditDatabaseTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
-    
+    String fileId = "TEST-FILE-ID-" + new Date().getTime();
+    String component1 = "ACTOR-1";
+    String component2 = "ACTOR-2";
+    String DATABASE_NAME = "auditcontributerdb";
+    String DATABASE_DIRECTORY = "test-data";
+    String DATABASE_URL = "jdbc:derby:" + DATABASE_DIRECTORY + "/" + DATABASE_NAME;
+    File dbDir = null;
+
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings();
-        clearDatabase(settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl());
+        settings.getReferenceSettings().getPillarSettings().setAuditContributerDatabaseUrl(DATABASE_URL);
+        
+        addStep("Initialise the database", "Should be unpacked from a jar-file.");
+        File dbFile = new File("src/test/resources/auditcontributerdb.jar");
+        Assert.assertTrue(dbFile.isFile(), "The database file should exist");
+        
+        dbDir = FileUtils.retrieveDirectory(DATABASE_DIRECTORY);
+        FileUtils.retrieveSubDirectory(dbDir, DATABASE_NAME);
+        
+        Connection dbCon = DatabaseTestUtils.takeDatabase(dbFile, DATABASE_NAME, dbDir);
+        dbCon.close();
     }
 
-    @Test( groups = {"databasetest"})
+    @AfterClass (alwaysRun = true)
+    public void shutdown() throws Exception {
+        addStep("Cleanup after test.", "Should remove directory with test material.");
+        if(dbDir != null) {
+            FileUtils.delete(dbDir);
+        }
+    }
+
+    @Test(groups = {"regressiontest", "databasetest"})
     public void testFileBasedCacheFunctions() throws Exception {
         addDescription("Testing the basic functions of the audit trail database interface.");
         addStep("Setup varibles and the database connection.", "No errors.");
@@ -82,21 +108,5 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         
         events = daba.getAudits(fileId1, seq-3, null, null, null);
         Assert.assertEquals(events.size(), 1);
-    }
-    
-    /**
-     * Cleans up the database after use.
-     * @param url The URL to the database.
-     * @throws Exception If anything goes bad.
-     */
-    private void clearDatabase(String url) throws Exception {
-        Connection con = new DerbyDBConnector().getEmbeddedDBConnection(url);
-        
-        String sqlActor = "DELETE FROM " + AuditDatabaseConstants.ACTOR_TABLE;
-        DatabaseUtils.executeStatement(con, sqlActor, new Object[0]);
-        String sqlAudit = "DELETE FROM " + AuditDatabaseConstants.AUDITTRAIL_TABLE;
-        DatabaseUtils.executeStatement(con, sqlAudit, new Object[0]);
-        String sqlFile = "DELETE FROM " + AuditDatabaseConstants.FILE_TABLE;
-        DatabaseUtils.executeStatement(con, sqlFile, new Object[0]);
     }
 }

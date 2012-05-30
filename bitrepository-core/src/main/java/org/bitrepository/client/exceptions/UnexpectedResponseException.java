@@ -27,9 +27,8 @@ package org.bitrepository.client.exceptions;
 /**
  * Used to indicate that an negative reponse has been received.
  */
+@SuppressWarnings("serial")
 public class UnexpectedResponseException extends Exception {
-    
-
     /**
      * Constructor with both message and cause exception
      * @param message of this exception

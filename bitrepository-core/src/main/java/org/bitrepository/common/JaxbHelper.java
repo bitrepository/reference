@@ -120,7 +120,6 @@ public final class JaxbHelper {
 
     private static class ResourceResolver implements LSResourceResolver {
         private final String prefix;
-        private final Logger log = LoggerFactory.getLogger(getClass());
 
         public ResourceResolver(String prefix) {
             this.prefix = prefix;
