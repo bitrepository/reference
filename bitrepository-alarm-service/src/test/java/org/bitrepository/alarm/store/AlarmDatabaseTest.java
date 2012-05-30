@@ -29,8 +29,6 @@ import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.bitrepository.common.database.DatabaseUtils;
-import org.bitrepository.common.database.DerbyDBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -86,7 +84,6 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
         AlarmServiceDAO database = new AlarmServiceDAO(settings);
-        clearDatabase(DATABASE_URL);
         
         addStep("Populate the database with two alarms.", "Should be inserted.");
         for(Alarm alarm : makeAlarms()) {
@@ -181,14 +178,5 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         res.add(alarm2);
 
         return res;
-    }
-    
-    private void clearDatabase(String url) throws Exception {
-        Connection con = new DerbyDBConnector().getEmbeddedDBConnection(url);
-        
-        String sqlFI = "DELETE FROM " + AlarmDatabaseConstants.ALARM_TABLE;
-        DatabaseUtils.executeStatement(con, sqlFI, new Object[0]);
-        String sqlFiles = "DELETE FROM " + AlarmDatabaseConstants.COMPONENT_TABLE;
-        DatabaseUtils.executeStatement(con, sqlFiles, new Object[0]);
     }
 }

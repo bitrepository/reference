@@ -28,8 +28,6 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIB
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_ID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_TABLE;
 
-import java.io.File;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -39,8 +37,9 @@ import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.database.DBConnector;
+import org.bitrepository.common.database.DBSpecifics;
+import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.database.DatabaseUtils;
-import org.bitrepository.common.database.DerbyDBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +52,6 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The connection to the database.*/
     private DBConnector dbConnector;
-    /** The settings.*/
-    private final Settings settings;
     
     /** 
      * Constructor.
@@ -62,49 +59,13 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
      */
     public AuditTrailServiceDAO(Settings settings) {
         ArgumentValidator.checkNotNull(settings, "settings");
-        this.settings = settings;
         
-        // TODO make a better instantiation, which is not depending on Derby.
-        dbConnector = new DerbyDBConnector();
+        DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditServiceDatabaseSpecifics());
+        dbConnector = new DBConnector(dbSpecifics, 
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabaseUrl());
         
-        try {
-            getConnection();
-        } catch (IllegalStateException e) {
-            log.warn("No existing database.", e);
-            initDatabaseConnection();
-            getConnection();
-        }
-    }
-    
-    /**
-     * Retrieve the access to the database. If it cannot be done, then it is automatically attempted to instantiate 
-     * the database based on the SQL script.
-     * @return The connection to the database.
-     */
-    private void initDatabaseConnection() {
-        log.info("Trying to instantiate the database.");
-        // TODO handle this!
-        //        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-        //                "src/main/resources/integrityDB.sql");
-        File sqlDatabaseFile = new File("src/main/resources/auditServiceDB.sql");
-        dbConnector.createDatabase(sqlDatabaseFile);
-    }
-    
-    /**
-     * Retrieve the connection to the database.
-     * TODO improve performance (only reconnect every-so-often)... 
-     * @return The connection to the database.
-     */
-    protected Connection getConnection() {
-        try { 
-            Connection dbConnection = dbConnector.getEmbeddedDBConnection(
-                    settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabaseUrl());
-            return dbConnection;
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not instantiate the database with the url '"
-                    + settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabaseUrl() 
-                    + "'", e);
-        }
+        dbConnector.getConnection();
     }
     
     @Override
@@ -120,7 +81,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         model.setStartDate(startDate);
         model.setEndDate(endDate);
 
-        AuditDatabaseExtractor extractor = new AuditDatabaseExtractor(model, getConnection());
+        AuditDatabaseExtractor extractor = new AuditDatabaseExtractor(model, dbConnector.getConnection());
         return extractor.extractAuditEvents();
     }
     
@@ -128,7 +89,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     public void addAuditTrails(AuditTrailEvents newAuditTrails) {
         ArgumentValidator.checkNotNull(newAuditTrails, "AuditTrailEvents newAuditTrails");
         
-        AuditDatabaseIngestor ingestor = new AuditDatabaseIngestor(getConnection());
+        AuditDatabaseIngestor ingestor = new AuditDatabaseIngestor(dbConnector.getConnection());
         for(AuditTrailEvent event : newAuditTrails.getAuditTrailEvent()) {
             ingestor.ingestAuditEvents(event);
         }
@@ -141,7 +102,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
                 + AUDITTRAIL_CONTRIBUTOR_GUID + " = ( SELECT " + CONTRIBUTOR_GUID + " FROM " + CONTRIBUTOR_TABLE 
                 + " WHERE " + CONTRIBUTOR_ID + " = ? ) ORDER BY " + AUDITTRAIL_SEQUENCE_NUMBER + " DESC";
         
-        Long seq = DatabaseUtils.selectFirstLongValue(getConnection(), sql, contributorId);
+        Long seq = DatabaseUtils.selectFirstLongValue(dbConnector.getConnection(), sql, contributorId);
         if(seq != null) {
             return seq.intValue();
         }
@@ -151,7 +112,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     @Override
     public void close() {
         try {
-            getConnection().close();
+            dbConnector.getConnection().close();
         } catch (SQLException e) {
             log.warn("Cannot close the database properly.", e);
         }

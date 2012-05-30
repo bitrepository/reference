@@ -24,8 +24,6 @@
  */
 package org.bitrepository.integrityservice.cache;
 
-import java.io.File;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,7 +35,8 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.database.DBConnector;
-import org.bitrepository.common.database.DerbyDBConnector;
+import org.bitrepository.common.database.DBSpecifics;
+import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.slf4j.Logger;
@@ -47,12 +46,9 @@ import org.slf4j.LoggerFactory;
  * A storage of configuration information that is backed by a database.
  */
 public class IntegrityDatabase implements IntegrityModel {
-    /** The settings for the database cache. */
-    private final Settings settings;
-    
     /** The database store. The interface to the functions of the database. */
     private final IntegrityDAO store;
-    
+
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(this.getClass());
     
@@ -62,47 +58,10 @@ public class IntegrityDatabase implements IntegrityModel {
      * @param storageConfiguration Contains configuration for storage. Currently URL, user and pass for database.
      */
     public IntegrityDatabase(Settings settings) {
-        this.settings = settings;
-        this.settings.getReferenceSettings().getIntegrityServiceSettings();
-        
-        Connection dbConnection = initDatabaseConnection();
-        this.store = new IntegrityDAO(dbConnection);
-    }
-    
-    /**
-     * Retrieve the access to the database. If it cannot be done, then it is automatically attempted to instantiate 
-     * the database based on the SQL script.
-     * @return The connection to the database.
-     */
-    private Connection initDatabaseConnection() {
-        // TODO make a better instantiation, which is not depending on Derby.
-        DBConnector dbConnector = new DerbyDBConnector();
-        
-        try {
-            Connection dbConnection = dbConnector.getEmbeddedDBConnection(
-                    settings.getReferenceSettings().getIntegrityServiceSettings().getDatabaseUrl());
-            return dbConnection;
-        } catch (Exception e) {
-            log.warn("Could not instantiate the database with the url '"
-                    + settings.getReferenceSettings().getIntegrityServiceSettings().getDatabaseUrl() + "'", e);
-        }
-        
-        log.info("Trying to instantiate the database.");
-        // TODO handle this!
-//        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-//                "src/main/resources/integrityDB.sql");
-        File sqlDatabaseFile = new File("src/main/resources/integrityDB.sql");
-        dbConnector.createDatabase(sqlDatabaseFile);
-        
-        // Connect to the new instantiated database.
-        try { 
-            Connection dbConnection = dbConnector.getEmbeddedDBConnection(
-                    settings.getReferenceSettings().getIntegrityServiceSettings().getDatabaseUrl());
-            return dbConnection;
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not instantiate the database with the url '"
-                    + settings.getReferenceSettings().getIntegrityServiceSettings().getDatabaseUrl() + "'", e);
-        }
+        DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseSpecifics());
+        this.store = new IntegrityDAO(new DBConnector(dbSpecifics, 
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseUrl()));
     }
     
     /**

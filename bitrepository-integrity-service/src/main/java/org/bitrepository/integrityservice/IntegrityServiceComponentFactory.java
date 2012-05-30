@@ -27,6 +27,9 @@ package org.bitrepository.integrityservice;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
+import org.bitrepository.common.database.DBConnector;
+import org.bitrepository.common.database.DBSpecifics;
+import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.alerter.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
@@ -145,7 +148,10 @@ public final class IntegrityServiceComponentFactory {
         
         MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
         ContributorContext context = new ContributorContext(messageBus, settings);
-        AuditTrailManager auditManager = new AuditTrailContributerDAO(settings);
+        DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getAuditContributerDatabaseUrl());
+        AuditTrailManager auditManager = new AuditTrailContributerDAO(settings, new DBConnector(dbSpecifics, 
+                settings.getReferenceSettings().getIntegrityServiceSettings().getAuditContributerDatabaseUrl()));
         
         IntegrityModel model = getCachedIntegrityInformationStorage(settings);
         IntegrityWorkflowScheduler scheduler = getIntegrityInformationScheduler(settings);

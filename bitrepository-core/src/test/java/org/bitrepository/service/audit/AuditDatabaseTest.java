@@ -28,6 +28,9 @@ import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.common.database.DBConnector;
+import org.bitrepository.common.database.DBSpecifics;
+import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.DatabaseTestUtils;
@@ -82,7 +85,10 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         String actor = "ACTOR";
         String info = "Adding a info";
         String auditTrail = "AuditTrail";
-        AuditTrailContributerDAO daba = new AuditTrailContributerDAO(settings);
+        DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
+                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseSpecifics());
+        AuditTrailContributerDAO daba = new AuditTrailContributerDAO(settings, new DBConnector(dbSpecifics, 
+                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl()));
         
         addStep("Populate the database.", "Should be inserted into database.");
         daba.addAuditEvent(fileId1, actor, info, auditTrail, FileAction.PUT_FILE);

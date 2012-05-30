@@ -150,6 +150,13 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="AuditContributerDatabaseSpecifics" type="xs:string">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The name of the class for the database specifics for the audit contributor database.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element ref="AlarmLevel" minOccurs="0">
           <xs:annotation>
             <xs:documentation xml:lang="en">
@@ -321,6 +328,13 @@
               </xs:documentation>
             </xs:annotation>
           </xs:element>
+          <xs:element name="AlarmDatabaseSpecifics" type="xs:string">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The name of the class for the database specifics for the alarm database.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
         </xs:sequence>
       </xs:complexType>
     </xs:element>
@@ -346,6 +360,13 @@
             <xs:annotation>
               <xs:documentation xml:lang="en">
                 The url to the database, which contains the audit data for the service.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="AuditServiceDatabaseSpecifics" type="xs:string">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The name of the class for the database specifics for the audit service database.
               </xs:documentation>
             </xs:annotation>
           </xs:element>
@@ -383,10 +404,17 @@
               </xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element name="DatabaseUrl" type="xs:string">
+          <xs:element name="IntegrityDatabaseUrl" type="xs:string">
             <xs:annotation>
               <xs:documentation xml:lang="en">
                 The url to the database, which contains the integrity data.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="IntegrityDatabaseSpecifics" type="xs:string">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The name of the class for the database specifics for the integrity database.
               </xs:documentation>
             </xs:annotation>
           </xs:element>
@@ -394,6 +422,20 @@
             <xs:annotation>
               <xs:documentation xml:lang="en">
                 The url to the database, which contains the integrity data.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="AuditContributerDatabaseUrl" type="xs:string">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The url to the database, which contains the audit data for the contributer.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="AuditContributerDatabaseSpecifics" type="xs:string">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The name of the class for the database specifics for the audit contributor database.
               </xs:documentation>
             </xs:annotation>
           </xs:element>

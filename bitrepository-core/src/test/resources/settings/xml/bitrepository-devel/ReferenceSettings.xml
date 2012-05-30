@@ -39,6 +39,7 @@
     <ReceiverDestination>TEST-TOPIC-PILLAR</ReceiverDestination>
     <ChecksumPillarChecksumSpecificationType>MD5</ChecksumPillarChecksumSpecificationType>
     <AuditContributerDatabaseUrl>jdbc:derby:auditcontributerdb</AuditContributerDatabaseUrl>
+    <AuditContributerDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditContributerDatabaseSpecifics>
   </PillarSettings>
   <DeleteFileSettings></DeleteFileSettings>
   <GetAuditTrailSettings></GetAuditTrailSettings>
@@ -51,18 +52,23 @@
   <AlarmServiceSettings>
     <ID>alarm-service</ID>
     <AlarmServiceDatabaseUrl>jdbc:derby:alarmservicedb</AlarmServiceDatabaseUrl>
+    <AlarmDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AlarmDatabaseSpecifics>
   </AlarmServiceSettings>
   <AuditTrailServiceSettings>
     <ID>audit-trail-service</ID>
     <AuditTrailServiceDatabaseUrl>jdbc:derby:auditservicedb</AuditTrailServiceDatabaseUrl>
+    <AuditServiceDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditServiceDatabaseSpecifics>
     <CollectAuditInterval>3600000</CollectAuditInterval>
     <TimerTaskCheckInterval>60000</TimerTaskCheckInterval>
   </AuditTrailServiceSettings>
   <IntegrityServiceSettings>
     <ID>integrity-service</ID>
     <SchedulerInterval>600000</SchedulerInterval>
-    <DatabaseUrl>jdbc:derby:integritydb</DatabaseUrl>
+    <IntegrityDatabaseUrl>jdbc:derby:integritydb</IntegrityDatabaseUrl>
+    <IntegrityDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</IntegrityDatabaseSpecifics>
     <TimeBeforeMissingFileCheck>60000</TimeBeforeMissingFileCheck>
+    <AuditContributerDatabaseUrl>jdbc:derby:auditcontributerdb</AuditContributerDatabaseUrl>
+    <AuditContributerDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditContributerDatabaseSpecifics>
   </IntegrityServiceSettings>
   <MonitoringServiceSettings>
     <ID>monitoring-service</ID>

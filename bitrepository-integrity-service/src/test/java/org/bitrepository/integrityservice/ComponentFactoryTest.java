@@ -67,7 +67,7 @@ public class ComponentFactoryTest extends ExtendedTestCase {
         settings = TestSettingsProvider.reloadSettings();
         securityManager = new DummySecurityManager();
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
-        settings.getReferenceSettings().getIntegrityServiceSettings().setDatabaseUrl(DATABASE_URL);
+        settings.getReferenceSettings().getIntegrityServiceSettings().setIntegrityDatabaseUrl(DATABASE_URL);
         
         File dbFile = new File("src/test/resources/integritydb.jar");
         Assert.assertTrue(dbFile.isFile(), "The database file should exist");

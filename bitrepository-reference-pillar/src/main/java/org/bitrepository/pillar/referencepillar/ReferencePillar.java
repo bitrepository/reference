@@ -27,6 +27,9 @@ package org.bitrepository.pillar.referencepillar;
 import javax.jms.JMSException;
 
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.database.DBConnector;
+import org.bitrepository.common.database.DBSpecifics;
+import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.PillarContext;
@@ -66,7 +69,10 @@ public class ReferencePillar {
         log.info("Starting the reference pillar!");
         
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        AuditTrailManager audits = new AuditTrailContributerDAO(settings);
+        DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
+                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl());
+        AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector(dbSpecifics, 
+                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl()));
         ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
                 settings.getReferenceSettings().getPillarSettings().getPillarID(), 
                 settings.getReferenceSettings().getPillarSettings().getReceiverDestination());

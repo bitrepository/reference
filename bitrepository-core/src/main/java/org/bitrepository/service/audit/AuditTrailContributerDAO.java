@@ -21,26 +21,6 @@
  */
 package org.bitrepository.service.audit;
 
-import java.io.File;
-import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
-import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.database.DBConnector;
-import org.bitrepository.common.database.DatabaseUtils;
-import org.bitrepository.common.database.DerbyDBConnector;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.CalendarUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_GUID;
 import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_NAME;
 import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_TABLE;
@@ -55,6 +35,24 @@ import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_
 import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILEID;
 import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_GUID;
 import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
+
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.database.DBConnector;
+import org.bitrepository.common.database.DatabaseUtils;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.CalendarUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Access interface for communication with the audit trail database.
@@ -73,35 +71,13 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
      * Constructor.
      * @param settings The settings.
      */
-    public AuditTrailContributerDAO(Settings settings) {
+    public AuditTrailContributerDAO(Settings settings, DBConnector dbConnector) {
         ArgumentValidator.checkNotNull(settings, "settings");
         
         this.settings = settings;
+        this.dbConnector = dbConnector;
         
-        // TODO make a better instantiation, which is not depending on Derby.
-        dbConnector = new DerbyDBConnector();
-        
-        try {
-            getConnection();
-        } catch (IllegalStateException e) {
-            log.warn("No existing database.", e);
-            initDatabaseConnection();
-            getConnection();
-        }
-    }
-    
-    /**
-     * Retrieve the access to the database. If it cannot be done, then it is automatically attempted to instantiate 
-     * the database based on the SQL script.
-     * @return The connection to the database.
-     */
-    private void initDatabaseConnection() {
-        log.info("Trying to instantiate the database.");
-        // TODO handle this!
-        //        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-        //                "src/main/resources/integrityDB.sql");
-        File sqlDatabaseFile = new File("src/main/resources/audittrailContributorDb/auditContributerDB.sql");
-        dbConnector.createDatabase(sqlDatabaseFile);
+        getConnection();
     }
     
     /**
@@ -111,8 +87,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
      */
     protected Connection getConnection() {
         try { 
-            Connection dbConnection = dbConnector.getEmbeddedDBConnection(
-                    settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl());
+            Connection dbConnection = dbConnector.getConnection();
             return dbConnection;
         } catch (Exception e) {
             throw new IllegalStateException("Could not instantiate the database with the url '"
