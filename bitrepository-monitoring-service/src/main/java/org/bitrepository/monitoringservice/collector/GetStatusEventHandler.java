@@ -60,6 +60,8 @@ public class GetStatusEventHandler implements EventHandler {
                 statusStore.updateStatus(statusEvent.getContributorID(), statusEvent.getStatus());
                 break;
             case COMPLETE:
+                alerter.checkStatuses();
+                break;
             case FAILED:
                 alerter.checkStatuses();
                 break;
