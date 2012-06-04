@@ -39,6 +39,7 @@ import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
@@ -47,7 +48,6 @@ import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.PillarComponentFactory;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.utils.Base16Utils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

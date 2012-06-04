@@ -27,7 +27,6 @@ package org.bitrepository.integrityservice.cache;
 import java.io.File;
 import java.math.BigInteger;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -40,15 +39,11 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
-import org.bitrepository.common.database.DatabaseUtils;
-import org.bitrepository.common.database.DerbyDBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.DatabaseTestUtils;
 import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.integrityservice.cache.FileInfo;
-import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.checking.IntegrityReport;
 import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
@@ -100,10 +95,9 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         String pillarId = "MY-TEST-PILLAR";
         
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
-        settings.getReferenceSettings().getIntegrityServiceSettings().setDatabaseUrl(DATABASE_URL);
+        settings.getReferenceSettings().getIntegrityServiceSettings().setIntegrityDatabaseUrl(DATABASE_URL);
         IntegrityDatabase integrityCache = new IntegrityDatabase(settings);
         IntegrityDAO cache = integrityCache.getStore();
-        clearDatabase(DATABASE_URL);
         
         addStep("Using the interface to put data into the database", "The database should be populated.");
         cache.updateFileIDs(getFileIDsData(fileId, fileId2), pillarId);
@@ -149,13 +143,12 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         String pillarId2 = "integrityCheckTest-2";
         
         addStep("Setup database cache and integrity checker", "Should not be a problem");
-        settings.getReferenceSettings().getIntegrityServiceSettings().setDatabaseUrl(DATABASE_URL);
+        settings.getReferenceSettings().getIntegrityServiceSettings().setIntegrityDatabaseUrl(DATABASE_URL);
         settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId1);
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId2);
         IntegrityDatabase cache = new IntegrityDatabase(settings);
         SimpleIntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);
-        clearDatabase(DATABASE_URL);
         
         FileIDs allFileIDs = new FileIDs();
         allFileIDs.setAllFileIDs("true");
@@ -197,9 +190,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         cache.addChecksums(cs2Pillar2, getChecksumSpec(), pillarId2);
 
         addStep("Performing the checksum check", "Should find an checksum error.");
-        printDatabase(DATABASE_URL);
         checker.checkChecksum(allFileIDs);
-        printDatabase(DATABASE_URL);
         
         Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId1), 1, "They should disagree upon one.");
         Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId2), 1, "They should disagree upon one.");
@@ -218,14 +209,13 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         String pillarId3 = "pillar-3";
         
         addStep("Setup database cache and integrity checker", "Should not be a problem");
-        settings.getReferenceSettings().getIntegrityServiceSettings().setDatabaseUrl(DATABASE_URL);
+        settings.getReferenceSettings().getIntegrityServiceSettings().setIntegrityDatabaseUrl(DATABASE_URL);
         settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId1);
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId2);
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId3);
         IntegrityDatabase cache = new IntegrityDatabase(settings);
         SimpleIntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);
-        clearDatabase(DATABASE_URL);
         
         FileIDs fileIds = new FileIDs();
         
@@ -237,10 +227,8 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         cache.addChecksums(csGood, getChecksumSpec(), pillarId3);
 
         addStep("Performing the checksum check on the good case.", "Should not find any checksum errors.");
-        printDatabase(DATABASE_URL);
         fileIds.setFileID(fileId1);
         IntegrityReport report1 = checker.checkChecksum(fileIds);
-        printDatabase(DATABASE_URL);
         
         Assert.assertFalse(report1.hasIntegrityIssues(), "There should have been found no integrity issues, but was: " 
                 + report1.generateReport());
@@ -258,10 +246,8 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         cache.addChecksums(csBad3, getChecksumSpec(), pillarId3);
 
         addStep("Performing the checksum check on the bad case.", "All pillars should have checksum errors.");
-        printDatabase(DATABASE_URL);
         fileIds.setFileID(fileId2);
         IntegrityReport report2 = checker.checkChecksum(fileIds);
-        printDatabase(DATABASE_URL);
         
         Assert.assertTrue(report2.hasIntegrityIssues(), "There should have been found checksum errors in every pillar.");
         Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId1), 1, "They should disagree upon one.");
@@ -277,10 +263,8 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         cache.addChecksums(csVoteLoss, getChecksumSpec(), pillarId3);
 
         addStep("Performing the checksum check on the vote case.", "Should only be a checksum error at pillar3.");
-        printDatabase(DATABASE_URL);
         fileIds.setFileID(fileId3);
         IntegrityReport report3 = checker.checkChecksum(fileIds);
-        printDatabase(DATABASE_URL);
         
         Assert.assertTrue(report3.hasIntegrityIssues(), "There should have been found one checksum error, at pillar3.");
         Assert.assertEquals(cache.getNumberOfChecksumErrors(pillarId1), 1, "They should disagree upon one.");
@@ -299,14 +283,13 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         String pillarId2 = "integrityCheckTest-2";
         
         addStep("Setup database cache and integrity checker", "Should not be a problem");
-        settings.getReferenceSettings().getIntegrityServiceSettings().setDatabaseUrl(DATABASE_URL);
+        settings.getReferenceSettings().getIntegrityServiceSettings().setIntegrityDatabaseUrl(DATABASE_URL);
         settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId1);
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId2);
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0);
         IntegrityDatabase cache = new IntegrityDatabase(settings);
         SimpleIntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);
-        clearDatabase(DATABASE_URL);
         FileIDs fileIDs = new FileIDs();
         fileIDs.setAllFileIDs("true");
         
@@ -372,36 +355,5 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         
         res.setFileIDsDataItems(items);
         return res;
-    }
-    
-    private void printDatabase(String url) throws Exception {
-        Connection con = new DerbyDBConnector().getEmbeddedDBConnection(url);
-        
-        // Print out file info
-        String fileInfoSql = "SELECT guid, file_guid, pillar_guid, checksum, checksum_state, file_state FROM fileinfo";
-        ResultSet res = DatabaseUtils.selectObject(con, fileInfoSql, new Object[0]);
-        
-        while(res.next()) {
-            System.out.println(res.getLong(1) + " : " + res.getLong(2) + " : " + res.getLong(3) + " : " 
-                    + res.getString(4) + " : " + res.getInt(5) + " : " + res.getInt(6));
-        }
-    }
-    
-    /**
-     * Cleans up the database after use.
-     * @param url The URL to the database.
-     * @throws Exception If anything goes bad.
-     */
-    private void clearDatabase(String url) throws Exception {
-        Connection con = new DerbyDBConnector().getEmbeddedDBConnection(url);
-        
-        String sqlFI = "DELETE FROM fileinfo";
-        DatabaseUtils.executeStatement(con, sqlFI, new Object[0]);
-        String sqlFiles = "DELETE FROM files";
-        DatabaseUtils.executeStatement(con, sqlFiles, new Object[0]);
-        String sqlPillar = "DELETE FROM pillar";
-        DatabaseUtils.executeStatement(con, sqlPillar, new Object[0]);
-        String sqlCs = "DELETE FROM checksumspec";
-        DatabaseUtils.executeStatement(con, sqlCs, new Object[0]);
     }
 }

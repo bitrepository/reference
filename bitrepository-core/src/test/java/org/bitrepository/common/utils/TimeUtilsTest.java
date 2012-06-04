@@ -26,7 +26,7 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class TimeUtilsTester extends ExtendedTestCase {
+public class TimeUtilsTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})
     public void timeTester() throws Exception {
         addDescription("Tests the TimeUtils. Pi days = 271433605 milliseconds");

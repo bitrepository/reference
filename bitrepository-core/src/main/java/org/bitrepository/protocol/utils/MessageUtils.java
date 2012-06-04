@@ -24,20 +24,40 @@ package org.bitrepository.protocol.utils;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 
+/**
+ * Utility class for validating message responses.
+ */
 public class MessageUtils {
+    /** Private constructor to prevent instantation of this utility class.*/
     private MessageUtils() {}
 
+    /**
+     * Validates whether a response message has a positive identification.
+     * @param response The response message to validate.
+     * @return Whether it is positive identified.
+     */
     public static boolean isPositiveIdentifyResponse (MessageResponse response) {
         ResponseCode responseCode = response.getResponseInfo().getResponseCode();
         return responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE);
     }
 
+    /**
+     * Validates whether a response message has a positive progress response.
+     * @param response The response message to validate.
+     * @return Whether it is positive progress response.
+     */
     public static boolean isPositiveProgressResponse (MessageResponse response) {
         ResponseCode responseCode = response.getResponseInfo().getResponseCode();
         return responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE) ||
                responseCode.equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) ||
-               responseCode.equals(ResponseCode.OPERATION_COMPLETED);
+               responseCode.equals(ResponseCode.OPERATION_PROGRESS);
     }
+    
+    /**
+     * Validates whether a response message has a identification response.
+     * @param response The response message to validate.
+     * @return Whether it is a identification response.
+     */
     public static boolean isIdentifyResponse (MessageResponse response) {
         ResponseCode responseCode = response.getResponseInfo().getResponseCode();
         return responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE) ||

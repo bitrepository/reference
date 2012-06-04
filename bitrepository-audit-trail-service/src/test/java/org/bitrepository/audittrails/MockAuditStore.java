@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.audittrails.collector;
+package org.bitrepository.audittrails;
 
 import java.util.ArrayList;
 import java.util.Collection;

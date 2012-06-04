@@ -117,7 +117,7 @@ public class TimerWorkflowScheduler implements IntegrityWorkflowScheduler {
 
         @Override
         public void run() {
-            if(workflow.getNextRun().getTime() < System.currentTimeMillis()) {
+            if(workflow.getNextRun().getTime() <= System.currentTimeMillis()) {
                 workflow.trigger();
             }
         }

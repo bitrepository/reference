@@ -52,29 +52,6 @@ class ExtractModel {
     public ExtractModel() {}
     
     /**
-     * Constructor.
-     * @param fileId The id for the file to restrict the extraction.
-     * @param contributorId The id for the contributor to restrict the extraction.
-     * @param minSeqNumber The minimum sequence number to restrict the extraction.
-     * @param maxSeqNumber The maximum sequence number to restrict the extraction.
-     * @param actorName The name of the actor to restrict the extraction.
-     * @param operation The operation to restrict the extraction.
-     * @param startDate The earliest date to restrict the extraction.
-     * @param endDate The latest date to restrict the extraction.
-     */
-    public ExtractModel(String fileId, String contributorId, Long minSeqNumber, Long maxSeqNumber,
-        String actorName, FileAction operation, Date startDate, Date endDate) {
-        this.fileId = fileId;
-        this.contributorId = contributorId;
-        this.minSeqNumber = minSeqNumber;
-        this.maxSeqNumber = maxSeqNumber;
-        this.actorName = actorName;
-        this.operation = operation;
-        this.startDate = startDate;
-        this.endDate = endDate;
-    }
-    
-    /**
      * @return The fileId;
      */
     public String getFileId() {

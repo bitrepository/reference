@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.common;
+package org.bitrepository.common.utils;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -82,7 +82,6 @@ public class FileIDValidatorTest extends ExtendedTestCase {
         }
     }
     
-    
     @Test( groups = {"regressiontest"})
     public void validatorDefaultTest() throws Exception {
         addDescription("Tests the FileIDValidator class default restrictions. Only the length should fail.");
@@ -118,6 +117,31 @@ public class FileIDValidatorTest extends ExtendedTestCase {
             Assert.fail("Should fail with invalid length here -> too short");
         } catch (InvalidMessageException e) {
             // expected
+        }
+    }
+    
+    @Test( groups = {"regressiontest"})
+    public void badRegexTest() throws Exception {
+        addDescription("Tests the FileIDValidator handling of bad file id pattern.");
+        addStep("Give the validator a 'null' as allowed file id pattern", "Should be a null stored as regex." );
+        settings.getCollectionSettings().getProtocolSettings().setAllowedFileIDPattern(null);
+        TestFileIDValidator validator = new TestFileIDValidator(settings);
+        Assert.assertNull(validator.getRegex());
+        
+        addStep("Give the validator an empty string as allowed file id pattern", "Should be a null stored as regex." );
+        settings.getCollectionSettings().getProtocolSettings().setAllowedFileIDPattern("");
+        validator = new TestFileIDValidator(settings);
+        Assert.assertNull(validator.getRegex());
+    }
+    
+    private class TestFileIDValidator extends FileIDValidator {
+        
+        public TestFileIDValidator(Settings settings) {
+            super(settings);
+        }
+        
+        public String getRegex() {
+            return regex;
         }
     }
 }

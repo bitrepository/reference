@@ -186,37 +186,31 @@ public class FilebasedChecksumStore implements ChecksumStore {
         File checksumDir = FileUtils.retrieveDirectory(
                 settings.getReferenceSettings().getPillarSettings().getFileDir());
         
-        // Get the name and initialise the wrong entry file.
-        wrongEntryFile = new File(checksumDir, makeWrongEntryFileName());
-        
-        // ensure that the file exists.
-        if(!wrongEntryFile.exists()) {
-            try {
+        try {
+            // Get the name and initialise the wrong entry file.
+            wrongEntryFile = new File(checksumDir, makeWrongEntryFileName());
+            
+            // ensure that the file exists.
+            if(!wrongEntryFile.exists()) {
                 wrongEntryFile.createNewFile();
-            } catch (IOException e) {
-                String msg = "Cannot create 'wrongEntryFile'!";
-                log.error(msg);
-                throw new IllegalStateException(msg, e);
             }
-        }
-
-        // get the name of the file and initialise it.
-        checksumFile = new File(checksumDir, makeChecksumFileName());
-        
-        // Create file is checksumFile does not exist.
-        if(!checksumFile.exists()) {
-            log.info("Instantiating a new file for the checksum data.");
-            try {
+            
+            // get the name of the file and initialise it.
+            checksumFile = new File(checksumDir, makeChecksumFileName());
+            
+            // Create file is checksumFile does not exist.
+            if(!checksumFile.exists()) {
+                log.info("Instantiating a new file for the checksum data.");
                 checksumFile.createNewFile();
                 lastModifiedChecksumFile = checksumFile.lastModified();
-            } catch (IOException e) {
-                String msg = "Cannot create checksum archive file!";
-                log.error(msg);
-                throw new IllegalStateException(msg, e);
+            } else {
+                log.info("Loading the existing file for the checksum data.");
+                loadFile();
             }
-        } else {
-            log.info("Loading the existing file for the checksum data.");
-            loadFile();
+        } catch (IOException e) {
+            String msg = "Cannot initialise the archive files!";
+            log.error(msg, e);
+            throw new IllegalStateException(msg, e);
         }
     }
     
@@ -232,32 +226,29 @@ public class FilebasedChecksumStore implements ChecksumStore {
         // Checks whether a bad entry was found, to decide whether the archive file should be recreated.
         boolean recreate = false;
         
-        
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new FileReader(checksumFile));
-            
-            String line;
-            while((line = reader.readLine()) != null) {
-                ChecksumEntry cs = parseLine(line);
+            try {
+                reader = new BufferedReader(new FileReader(checksumFile));
                 
-                if(cs == null) {
-                    appendWrongRecordToWrongEntryFile(line);
-                    recreate = true;
-                } else {
-                    checksumArchive.put(cs.getFileId(), cs);
+                String line;
+                while((line = reader.readLine()) != null) {
+                    ChecksumEntry cs = parseLine(line);
+                    
+                    if(cs == null) {
+                        appendWrongRecordToWrongEntryFile(line);
+                        recreate = true;
+                    } else {
+                        checksumArchive.put(cs.getFileId(), cs);
+                    }
+                }
+            } finally {
+                if(reader != null) {
+                    reader.close();
                 }
             }
         } catch (IOException e) {
             throw new IllegalStateException("Cannot load the current checksum file.", e);
-        } finally {
-            if(reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    throw new IllegalStateException("Cannot close the reading of the checksum archive file.", e);
-                }
-            }
         }
 
         // If a bad entry is found, then the archive file should be recreated.

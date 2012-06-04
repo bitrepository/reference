@@ -33,7 +33,7 @@ public class MockWorkflow extends IntervalWorkflow {
      * Get the number of times isTriggered() is called.
      * @return The number of times triggered() is called.
      */
-    public int getNextRunCount() {
+    public int getCallsForNextRun() {
         return getNextRunCount;
     }
 
@@ -41,7 +41,7 @@ public class MockWorkflow extends IntervalWorkflow {
      * Get the number of times trigger() is called.
      * @return The number of times trigger() is called.
      */
-    public int getWorkflowCalled() {
+    public int getCallsForRunWorkflow() {
         return runWorkflowCount;
     }
 

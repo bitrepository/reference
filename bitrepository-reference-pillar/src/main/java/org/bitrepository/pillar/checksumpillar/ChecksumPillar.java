@@ -24,6 +24,9 @@ package org.bitrepository.pillar.checksumpillar;
 import javax.jms.JMSException;
 
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.database.DBConnector;
+import org.bitrepository.common.database.DBSpecifics;
+import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
@@ -65,7 +68,10 @@ public class ChecksumPillar {
         this.cache = refCache;
         
         log.info("Starting the checksum pillar!");
-        AuditTrailManager audits = new AuditTrailContributerDAO(settings);
+        DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
+                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl());
+        AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector(dbSpecifics, 
+                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl()));
         ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
                 settings.getReferenceSettings().getPillarSettings().getPillarID(), 
                 settings.getReferenceSettings().getPillarSettings().getReceiverDestination());

@@ -50,6 +50,7 @@ public class ProtocolComponentFactoryTest {
         settings = settingsLoader.getSettings();
     }
     
+    @SuppressWarnings("unused")
     @Test(groups = { "regressiontest" })    
     /**
      * Validates that only one message bus instance is created for each collection ID.

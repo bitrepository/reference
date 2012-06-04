@@ -36,7 +36,7 @@ import org.bitrepository.service.exception.InvalidMessageException;
  */
 public class FileIDValidator {
     /** The regex pattern for the file ids.*/
-    private String regex;
+    protected String regex;
     /** The system limitation for a file id (length 1-254, and no control letters).*/
     private static final String SYSTEM_LIMIT = "[^\\p{Cntrl}]{1,254}";
     

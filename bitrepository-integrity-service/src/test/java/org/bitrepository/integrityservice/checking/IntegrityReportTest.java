@@ -35,7 +35,7 @@ public class IntegrityReportTest extends ExtendedTestCase {
     private static final String checksumErrorFile = "CHECKSUM-ERROR-FILE"; 
     private static final String checksumSpecIssueFile = "CHECKSUM-SPEC-ERROR-FILE";
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testIntegrityReportFilesWithoutIssues() {
         addDescription("Test the functionality of the integrity report.");
         addStep("Setup variables", "No errors");
@@ -49,7 +49,7 @@ public class IntegrityReportTest extends ExtendedTestCase {
         Assert.assertFalse(report.generateReport().contains("Integrity issues found:"));
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testIntegrityReportMissingFiles() {
         addDescription("Test the handling of missing files for the integrity report.");
         addStep("Test the handling of missing files.", "Should give the report integrity issues.");
@@ -61,7 +61,7 @@ public class IntegrityReportTest extends ExtendedTestCase {
         Assert.assertTrue(report.generateReport().contains("Integrity issues found:"));
     }
             
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testIntegrityReportChecksumErrors() {
         addDescription("Test the handling of files with checksum errors for the integrity report.");
         addStep("Test the handling of incorrect checksums", "Should give the report integrity issues.");
@@ -72,7 +72,7 @@ public class IntegrityReportTest extends ExtendedTestCase {
         Assert.assertTrue(report.hasIntegrityIssues(), "Should have integrity issues when a file has checksum errors.");
     }
         
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testIntegrityReportChecksumSpecIssues() {
         addDescription("Test the handling of files with checksum spec issues for the integrity report.");
         addStep("The the handling of checksum spec issues.", "Should give the report integrity issues.");
@@ -83,7 +83,7 @@ public class IntegrityReportTest extends ExtendedTestCase {
         Assert.assertTrue(report.hasIntegrityIssues(), "Should have integrity issues when a file has checksum errors.");
     }
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testIntegrityReportCombineReports() {
         addDescription("Test the combination of a good and a bad integrity report.");
         addStep("Check the combination between a report without issues and another with issues", "Should have issues.");

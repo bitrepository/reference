@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.utils;
+package org.bitrepository.common.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -95,7 +95,7 @@ public final class ChecksumUtils {
                 throw new IllegalArgumentException("Cannot perform a message-digest checksum calculation with salt "
                         + "as requested:" + csSpec);
             }
-            digest = CalculateChecksumWithMessageDigest(content, algorithm);
+            digest = calculateChecksumWithMessageDigest(content, algorithm);
         } else if((algorithm == ChecksumType.HMAC_MD5) 
                 || (algorithm == ChecksumType.HMAC_SHA1)
                 || (algorithm == ChecksumType.HMAC_SHA256)
@@ -105,7 +105,7 @@ public final class ChecksumUtils {
                 throw new IllegalArgumentException("Cannot perform a HMAC checksum calculation without salt as requested:" 
                         + csSpec);
             }
-            digest = CalculateChecksumWithHMAC(content, algorithm, csSpec.getChecksumSalt());
+            digest = calculateChecksumWithHMAC(content, algorithm, csSpec.getChecksumSalt());
         } else {
             throw new IllegalStateException("The checksum algorithm '" + csSpec.getChecksumType().name() 
                     + "' is not supported.");
@@ -125,7 +125,7 @@ public final class ChecksumUtils {
      * @param csType The type of checksum to calculate, e.g. the algorithm.
      * @return The calculated checksum.
      */
-    private static byte[] CalculateChecksumWithMessageDigest(InputStream content, ChecksumType csType) {
+    private static byte[] calculateChecksumWithMessageDigest(InputStream content, ChecksumType csType) {
         byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
         int bytesRead;
         
@@ -157,7 +157,7 @@ public final class ChecksumUtils {
      * @param salt The salt for key encrypting the HMAC calculation.
      * @return The calculated checksum.
      */
-    private static byte[] CalculateChecksumWithHMAC(InputStream content, ChecksumType csType, byte[] salt) {
+    private static byte[] calculateChecksumWithHMAC(InputStream content, ChecksumType csType, byte[] salt) {
         byte[] bytes = new byte[BYTE_ARRAY_SIZE_FOR_DIGEST];
         int bytesRead;
         String algorithmName = csType.name().replace("_", "");
@@ -207,10 +207,6 @@ public final class ChecksumUtils {
      */
     public static void verifyAlgorithm(ChecksumSpecTYPE checksumSpec) throws NoSuchAlgorithmException {
         ChecksumType algorithm = checksumSpec.getChecksumType();
-        if(algorithm == ChecksumType.OTHER) {
-            throw new NoSuchAlgorithmException("Cannot handle non-predefined checksum algorithms: '"
-                    + checksumSpec + "'.");
-        }
         
         if((algorithm == ChecksumType.MD5) 
                 || (algorithm == ChecksumType.SHA1)

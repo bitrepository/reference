@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.utils;
+package org.bitrepository.common.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -30,7 +30,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.protocol.utils.ChecksumUtils;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -104,7 +104,7 @@ public class ChecksumTest extends ExtendedTestCase {
         ChecksumSpecTYPE csSHA256 = new ChecksumSpecTYPE();
         csSHA256.setChecksumType(ChecksumType.SHA256);
         
-        addStep("Test with no text and no key for HMAC_MD5, HMAC_SHA1, and HMAC_SHA256", 
+        addStep("Test with no text and no key for MD5, SHA1, and SHA256", 
                 "Should give expected results.");
         InputStream data1 = new ByteArrayInputStream(new byte[0]);
         Assert.assertEquals(ChecksumUtils.generateChecksum(data1, csMD5), 
@@ -114,10 +114,21 @@ public class ChecksumTest extends ExtendedTestCase {
         Assert.assertEquals(ChecksumUtils.generateChecksum(data1, csSHA256), 
                 "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
         
-        addStep("Test when a salt is added", "Should throw an exception");
-        String key = "key";
-        csMD5.setChecksumSalt(key.getBytes());
-        
+        addStep("Test with text ", "Should giver different checksums");
+        String message = "The quick brown fox jumps over the lazy dog";
+        InputStream data2 = new ByteArrayInputStream(message.getBytes());
+        Assert.assertEquals(ChecksumUtils.generateChecksum(data2, csMD5),
+                "9e107d9d372bb6826bd81d3542a419d6");
+        data2.reset();
+        Assert.assertEquals(ChecksumUtils.generateChecksum(data2, csSHA1),
+                "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12");
+        data2.reset();
+        Assert.assertEquals(ChecksumUtils.generateChecksum(data2, csSHA256),
+                "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592");
+        data2.reset();
+
+        addStep("add a salt to the checksum", "Should throw an exception");
+        csMD5.setChecksumSalt("key".getBytes());
         try {
             ChecksumUtils.generateChecksum(data1, csMD5);
             Assert.fail("Should throw an IllegalArgumentException here!");

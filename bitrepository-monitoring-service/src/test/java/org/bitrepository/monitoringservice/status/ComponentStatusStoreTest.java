@@ -90,7 +90,7 @@ public class ComponentStatusStoreTest extends ExtendedTestCase {
         Assert.assertEquals(statuses.get(componentId).getInfo(), resStatus.getStatusInfo().getStatusText());
         Assert.assertEquals(statuses.get(componentId).getNumberOfMissingReplies(), 0);
         Assert.assertEquals(statuses.get(componentId).getLastReply(), resStatus.getStatusTimestamp());
-        Assert.assertEquals(statuses.get(componentId).getStatus().name(), resStatus.getStatusInfo().getStatusCode().name());
+        Assert.assertEquals(statuses.get(componentId).getStatus().value(), resStatus.getStatusInfo().getStatusCode().name());
     }
     
     private ResultingStatus createPositiveStatus() {

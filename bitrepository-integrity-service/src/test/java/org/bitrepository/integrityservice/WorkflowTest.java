@@ -56,7 +56,7 @@ public class WorkflowTest extends ExtendedTestCase {
         settings = TestSettingsProvider.reloadSettings();
     }
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testIntervalWorkflow() {
         addDescription("Test the basic functionallity of the workflows.");
         addStep("Setup variables and workflow.", "No errors");
@@ -65,8 +65,8 @@ public class WorkflowTest extends ExtendedTestCase {
         MockWorkflow workflow = new MockWorkflow(interval, name);
         
         addStep("Validate the interface to the workflow.", "Should contain the given variables and none of the functions should have been called.");
-        Assert.assertEquals(workflow.getNextRunCount(), 0, "Did not expect any calls for NextRun yet.");
-        Assert.assertEquals(workflow.getWorkflowCalled(), 0, "Did not expect any calls for trigger yet.");
+        Assert.assertEquals(workflow.getCallsForNextRun(), 0, "Did not expect any calls for NextRun yet.");
+        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 0, "Did not expect any calls for trigger yet.");
         Assert.assertEquals(workflow.getTimeBetweenRuns(), interval);
         Assert.assertEquals(workflow.getName(), name);
         
@@ -74,15 +74,15 @@ public class WorkflowTest extends ExtendedTestCase {
                 "Should be counted and the workflow should get a new date for the next run.");
         Date nextRun = workflow.getNextRun();
         workflow.trigger();
-        Assert.assertEquals(workflow.getNextRunCount(), 1, "Should have called for NextRun once");
-        Assert.assertEquals(workflow.getWorkflowCalled(), 1, "Should have triggered the workflow once");
+        Assert.assertEquals(workflow.getCallsForNextRun(), 1, "Should have called for NextRun once");
+        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 1, "Should have triggered the workflow once");
         
         Assert.assertTrue( nextRun != workflow.getNextRun(), "The dates should differ");
         Assert.assertTrue(nextRun.getTime() < workflow.getNextRun().getTime(), 
                 "The initial date for 'NextRun' should be prior to the current.");
     }
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testCollectAllChecksumWorkflow() {
         addDescription("Testing that the CollecAllChecksumWorkflow calls the 'getChecksums' function on the collector.");
         addStep("Setup variables", "No errors.");
@@ -111,7 +111,7 @@ public class WorkflowTest extends ExtendedTestCase {
         Assert.assertEquals(collector.getNumberOfCallsForGetFileIDs(), 0, "No calls for GetFileIDs shuld have been made");
     }
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testCollectAllFileIDsWorkflow() {
         addDescription("Testing that the CollecAllFileIDsWorkflow calls the 'getFileIDs' function on the collector.");
         addStep("Setup variables", "No errors.");
@@ -138,7 +138,7 @@ public class WorkflowTest extends ExtendedTestCase {
         Assert.assertEquals(collector.getNumberOfCallsForGetFileIDs(), 5, "5 calls for GetFileIDs expected");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testIntegrityValidatorWorkflow() {
         addDescription("Tests the IntegrityValidatorWorkflow");
         addStep("Setup the variables.", "No errors.");
@@ -165,7 +165,7 @@ public class WorkflowTest extends ExtendedTestCase {
         Assert.assertEquals(checker.getCallsForCheckFileIDs(), 5, "Five calls for CheckFileIDs expected");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testCollectObsoleteChecksumsWorkflow() {
         addDescription("Tests the CollectObsoleteChecksumWorkflow");
         addStep("Setup the varibles.", "No errors");

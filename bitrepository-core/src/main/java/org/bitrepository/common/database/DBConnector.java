@@ -21,25 +21,67 @@
  */
 package org.bitrepository.common.database;
 
-import java.io.File;
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import org.bitrepository.common.ArgumentValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The interface for connecting to a database.
+ * The connector to a database.
  */
-public interface DBConnector {
-    /**
-     * Creates an embedded connection to a Derby database through the given URL.
-     * @param dbUrl The URL to connect to the database with.
-     * @return The connection to the database.
-     * @throws Exception If problems with the instantiation of the connection database occurs.
-     * E.g. The connection cannot be instantiated, or the driver is not available.
-     */
-    Connection getEmbeddedDBConnection(String dbUrl);
+public class DBConnector {
+    /** The pool of connections.*/
+    private Map<Thread, Connection> connectionPool = new WeakHashMap<Thread, Connection>();
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
+    
+    /** A default value for the check timeout.*/
+    private static final int validityCheckTimeout = 10000;
+    
+    /** The URL to the database.*/
+    private final String dbUrl;
+    /** The specifics for the driver to the database.*/
+    private final DBSpecifics specifics;
     
     /**
-     * Instantiates the database from a SQL file.
-     * @param sqlDatabaseFile The SQL file to instantiate the database from.
+     * Constructor.
+     * @param specifics The specifics for the database.
+     * @param url The URL for the database.
      */
-    void createDatabase(File sqlDatabaseFile);
+    public DBConnector(DBSpecifics specifics, String url) {
+        this.dbUrl = url;
+        this.specifics = specifics;
+    }
+    
+    /**
+     * Creates and connects to the database.
+     * @return The connection to the database.
+     */
+    public Connection getConnection() {
+        ArgumentValidator.checkNotNullOrEmpty(dbUrl, "String dbUrl");
+        
+        try {
+            Connection connection = connectionPool.get(Thread.currentThread());
+            boolean renew = ((connection == null) 
+                    || (!connection.isValid(validityCheckTimeout)));
+            if (renew) {  
+                Class.forName(specifics.getDriverClassName());
+                connection = DriverManager.getConnection(dbUrl);
+                connection.setAutoCommit(false);
+                connectionPool.put(Thread.currentThread(), connection);
+                log.info("Connected to database using DBurl '"
+                        + dbUrl + "'  using driver '" + specifics.getDriverClassName() + "'");
+            }
+            return connection;
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Can't find driver '" + specifics.getDriverClassName() + "'", e);
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot instantiate the connection to the database.", e);
+        }
+    }
 }

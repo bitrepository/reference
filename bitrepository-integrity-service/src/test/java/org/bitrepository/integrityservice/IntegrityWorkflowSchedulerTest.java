@@ -36,58 +36,15 @@ import org.testng.annotations.Test;
  */
 public class IntegrityWorkflowSchedulerTest extends ExtendedTestCase {
     Settings settings;
+    private final Long INTERVAL = 500L;
+    private final Long INTERVAL_DELAY = 250L;
     
     @BeforeClass (alwaysRun = true)
     public void setup() {
         settings = TestSettingsProvider.reloadSettings();
     }
 
-    //@Test(groups = {"regressiontest"})
-    public void testSchedulerCalls() throws Exception {
-        addDescription("Test that schedulers call all workflow at the given intervals.");
-        addStep("Set a scheduler that should run every second", "No errors");
-        settings.getReferenceSettings().getIntegrityServiceSettings().setSchedulerInterval(1000L);
-        TimerWorkflowScheduler scheduler = new TimerWorkflowScheduler(settings);
-        
-        addStep("Add three workflows that record methods calls. All with an interval of 2 seconds.", "No errors");
-        MockWorkflow workflow1 = new MockWorkflow(2000L, "mock-1");
-        MockWorkflow workflow2 = new MockWorkflow(2000L, "mock-2");
-        MockWorkflow workflow3 = new MockWorkflow(2000L, "mock-3");
-        scheduler.putWorkflow(workflow1);
-        scheduler.putWorkflow(workflow2);
-        scheduler.putWorkflow(workflow3);
-        addStep("Wait four seconds the interval (plus extra for instantiation). Then remove the workflows.",
-                "All workflows should be queried at least thrice, and called at least once at most twice");
-        try {
-            synchronized(this) {
-                wait(4050L);
-            }
-        } catch (Exception e) {
-            // unexpected, 
-        }
-        scheduler.removeWorkflow(workflow1.getName());
-        scheduler.removeWorkflow(workflow1.getName());
-        scheduler.removeWorkflow(workflow1.getName());
-        
-        Assert.assertEquals(workflow1.getNextRunCount(), 5, "Should call getNextRunCount at least thrice, was " 
-                + workflow1.getNextRunCount());
-        Assert.assertEquals(workflow2.getNextRunCount(), 5, "Should call getNextRunCount at least thrice, was " 
-                + workflow2.getNextRunCount());
-        Assert.assertEquals(workflow3.getNextRunCount(), 5, "Should call getNextRunCount at least thrice, was " 
-                + workflow3.getNextRunCount());
-        
-        Assert.assertTrue(workflow1.getWorkflowCalled() >= 1, "Should call getWorkflowCalled at least once");
-        Assert.assertTrue(workflow2.getWorkflowCalled() >= 1, "Should call getWorkflowCalled at least once");
-        Assert.assertTrue(workflow3.getWorkflowCalled() >= 1, "Should call getWorkflowCalled at least once");
-        Assert.assertTrue(workflow1.getWorkflowCalled() <= 2, "Should call getWorkflowCalled at most twice, was "
-                + workflow1.getWorkflowCalled());
-        Assert.assertTrue(workflow2.getWorkflowCalled() <= 2, "Should call getWorkflowCalled at most twice, was "
-                + workflow2.getWorkflowCalled());
-        Assert.assertTrue(workflow3.getWorkflowCalled() <= 2, "Should call getWorkflowCalled at most twice, was "
-                + workflow3.getWorkflowCalled());
-    }
-    
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testSchedulerContainingWorkflows() {
         addDescription("Test that schedulers call all workflow at the given intervals.");
         addStep("Setup a scheduler and validate initial state", "No errors and no workflows");
@@ -111,5 +68,45 @@ public class IntegrityWorkflowSchedulerTest extends ExtendedTestCase {
         Assert.assertTrue(scheduler.removeWorkflow(testWorkflow.getName()));
         Assert.assertEquals(scheduler.getWorkflows().size(), 0, "Should not be any workflows in the scheduler.");
         Assert.assertFalse(scheduler.removeWorkflow(testWorkflow.getName()));
+    }
+    
+    @Test(groups = {"regressiontest", "integrationtest"})
+    public void schedulerTester() throws Exception {
+        addDescription("Tests that the scheduler is able make calls to the collector at given intervals.");
+        addStep("Setup the variables and such.", "Should not be able to fail here.");
+        String taskName = "MockWorkFlow";
+        settings.getReferenceSettings().getIntegrityServiceSettings().setSchedulerInterval(INTERVAL);
+        TimerWorkflowScheduler scheduler = new TimerWorkflowScheduler(settings);
+        
+        addStep("Create a workflow", "Should not have been called yet been called.");
+        MockWorkflow workflow = new MockWorkflow(INTERVAL + INTERVAL_DELAY, taskName);
+        Assert.assertEquals(workflow.getCallsForNextRun(), 0);
+        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 0);
+        
+        addStep("Add the workflow", "Validate that it initially calls the ");
+        scheduler.putWorkflow(workflow);
+        synchronized(this) {
+            wait(INTERVAL_DELAY);
+        }
+        Assert.assertEquals(workflow.getCallsForNextRun(), 1);
+        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 1);
+        
+        addStep("Wait 4 * the interval (plus delay for instantiation), stop the trigger and validate the results.", 
+                "Should have checked the date 5 times, but only run the workflow 3 times.");
+        synchronized(this) {
+            wait(4*INTERVAL);
+        }
+        scheduler.removeWorkflow(taskName);
+        Assert.assertEquals(workflow.getCallsForNextRun(), 5);
+        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 3);
+        
+        addStep("Wait another 2 seconds and validate that the trigger has been cancled.", 
+                "Should have made no more calls to the workflow.");
+        synchronized(this) {
+            wait(2*INTERVAL + INTERVAL_DELAY);
+        }
+        scheduler.removeWorkflow(taskName);
+        Assert.assertEquals(workflow.getCallsForNextRun(), 5);
+        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 3);
     }
 }

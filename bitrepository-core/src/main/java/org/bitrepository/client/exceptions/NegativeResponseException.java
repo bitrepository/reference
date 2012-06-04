@@ -30,6 +30,7 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 /**
  * Used to indicate that an unexpected response has been received.
  */
+@SuppressWarnings("serial")
 public class NegativeResponseException extends Exception {
     private final ResponseCode errorcode;
 

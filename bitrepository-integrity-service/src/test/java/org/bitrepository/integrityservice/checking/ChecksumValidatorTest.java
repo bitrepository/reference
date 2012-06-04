@@ -45,7 +45,7 @@ public class ChecksumValidatorTest extends ExtendedTestCase {
     private static final String BAD_CHECKSUM = "ERROR-CHECKSUM";
     
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testChecksumValidatorGoodCase() {
         addDescription("Test the checksum validator is able to validate a good case scenario.");
         addStep("Setup the variables, caches, and checksum data", "No errors");
@@ -78,7 +78,7 @@ public class ChecksumValidatorTest extends ExtendedTestCase {
         Assert.assertEquals(mockCache.getCallsForSetChecksumAgreement(), 1, "Should be one call for agreement for the given file");
     }
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testChecksumValidatorChecksumErrorWithoutWinner() {
         addDescription("Test the checksum validator is able to validate a bad case scenario with 3 pillars all disagreeing.");
         addStep("Setup the variables, caches, and checksum data", "The different checksums should be the different pillar ids.");
@@ -127,7 +127,7 @@ public class ChecksumValidatorTest extends ExtendedTestCase {
         Assert.assertEquals(mockCache.getCallsForSetChecksumAgreement(), 0, "Should not have any checksum aggrements");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testChecksumValidatorChecksumErrorWithAWinner() {
         addDescription("Test the checksum validator is able to validate a bad case scenario with 1 pillar disagreeing with 2 pillars.");
         addStep("Setup the variables, caches, and checksum data. The bad", "No errors");
@@ -169,7 +169,7 @@ public class ChecksumValidatorTest extends ExtendedTestCase {
         Assert.assertEquals(mockCache.getCallsForSetChecksumAgreement(), 1, "Should have a call for checksum agrement");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testChecksumValidatorChecksumSpecIssue() {
         addDescription("Test the checksum validator is able to find a checksum spec issues.");
         addStep("Setup the variables, caches, and checksum data", "No errors");
@@ -202,5 +202,4 @@ public class ChecksumValidatorTest extends ExtendedTestCase {
         addStep("Validate the calls for the cache", "Should be valid");
         Assert.assertEquals(mockCache.getCallsForGetFileInfos(), 1, "Should only be one call for GetFileInfos");
     }
-    
 }

@@ -30,8 +30,6 @@ import java.util.List;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.common.database.DatabaseUtils;
-import org.bitrepository.common.database.DerbyDBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -89,14 +87,13 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
         AuditTrailServiceDAO database = new AuditTrailServiceDAO(settings);
-        clearDatabase(DATABASE_URL);
 
         addStep("Validate that the database is empty and then populate it.", "Should be possible.");
         Assert.assertEquals(database.largestSequenceNumber(pillarId), 0);
         database.addAuditTrails(createEvents());
-        
-        addStep("", "");
         Assert.assertEquals(database.largestSequenceNumber(pillarId), 10);
+        
+        addStep("Extract the audit trails", "");
         List<AuditTrailEvent> res = database.getAuditTrails(null, null, null, null, null, null, null, null);
         Assert.assertEquals(res.size(), 2, res.toString());
         
@@ -150,8 +147,9 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         res = database.getAuditTrails(null, null, null, null, null, null, null, restrictionDate);
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getFileID(), fileId);
+        
+        database.close();
     }
-    
     
     private AuditTrailEvents createEvents() {
         AuditTrailEvents events = new AuditTrailEvents();
@@ -179,18 +177,5 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         events.getAuditTrailEvent().add(event2);
 
         return events;
-    }
-
-    private void clearDatabase(String url) throws Exception {
-        Connection con = new DerbyDBConnector().getEmbeddedDBConnection(url);
-        
-        String sqlFI = "DELETE FROM " + AuditDatabaseConstants.FILE_TABLE;
-        DatabaseUtils.executeStatement(con, sqlFI, new Object[0]);
-        String sqlFiles = "DELETE FROM " + AuditDatabaseConstants.CONTRIBUTOR_TABLE;
-        DatabaseUtils.executeStatement(con, sqlFiles, new Object[0]);
-        String sqlPillar = "DELETE FROM " + AuditDatabaseConstants.AUDITTRAIL_TABLE;
-        DatabaseUtils.executeStatement(con, sqlPillar, new Object[0]);
-        String sqlCs = "DELETE FROM " + AuditDatabaseConstants.ACTOR_TABLE;
-        DatabaseUtils.executeStatement(con, sqlCs, new Object[0]);
     }
 }

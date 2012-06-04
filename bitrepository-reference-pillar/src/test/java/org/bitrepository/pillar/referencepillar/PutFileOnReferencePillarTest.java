@@ -34,7 +34,9 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.MockAlarmDispatcher;
@@ -44,8 +46,6 @@ import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.utils.Base16Utils;
-import org.bitrepository.protocol.utils.ChecksumUtils;
 import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;

@@ -22,6 +22,8 @@
 package org.bitrepository.audittrails.collector;
 
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
+import org.bitrepository.audittrails.MockAuditClient;
+import org.bitrepository.audittrails.MockAuditStore;
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
 import org.bitrepository.client.eventhandler.DefaultEvent;
 import org.bitrepository.client.eventhandler.EventHandler;

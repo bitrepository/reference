@@ -28,7 +28,7 @@ import org.testng.annotations.Test;
 
 public class FileStateTest extends ExtendedTestCase {
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testFileState() {
         addDescription("Test the file states.");
         addStep("Extract the file states.", "Should work.");
