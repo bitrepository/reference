@@ -204,7 +204,7 @@ public class BasicSecurityManager implements SecurityManager {
             try {
                 authorizer.authorizeOperation(operationType, signer.getSID());    
             } catch (UnregisteredPermissionException e) {
-                log.info(e.getMessage(), e);
+                log.info(e.getMessage());
             }
             
             
