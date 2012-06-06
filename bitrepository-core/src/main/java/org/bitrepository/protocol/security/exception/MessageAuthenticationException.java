@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitrepository Core
+ * Bitrepository Protocol
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -19,27 +19,28 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.security;
+package org.bitrepository.protocol.security.exception;
 
 /**
- *  Exception class to indicate that a certificate has been used by someone who should not.  
+ * Exception class to indicate that authentication of a message has failed.  
  */
-public class CertificateUseException extends Exception {
+@SuppressWarnings("serial")
+public class MessageAuthenticationException extends Exception {
     
     /** 
      * Constructor for MessageAuthenticationException
      * @param message, the message describing the reason for the exception
      */
-    public CertificateUseException(String message) {
+    public MessageAuthenticationException(String message) {
         super(message);
     }
     
-    /** 
+    /**
      * Constructor for MessageAuthenticationException
      * @param message, the message describing the reason for the exception
-     * @param cause, the cause for throwing the exception
+     * @param e, the exception that caused the creation of MessageAuthenticationException
      */
-    public CertificateUseException(String message, Throwable cause) {
-        super(message, cause);
+    public MessageAuthenticationException(String message, Throwable e) {
+        super(message, e);
     }
 }

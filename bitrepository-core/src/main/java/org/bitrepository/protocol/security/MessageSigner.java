@@ -23,6 +23,8 @@ package org.bitrepository.protocol.security;
 
 import java.security.KeyStore.PrivateKeyEntry;
 
+import org.bitrepository.protocol.security.exception.MessageSigningException;
+
 /**
  * Interface for classes using CMS to sign messages. 
  */

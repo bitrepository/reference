@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitrepository Protocol
+ * Bitrepository Core
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -19,27 +19,28 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.security;
+package org.bitrepository.protocol.security.exception;
 
 /**
- * Exception class to indicate that no permissions has been registered for the given operation type.  
+ *  Exception class to indicate that a certificate has been used by someone who should not.  
  */
-public class UnregisteredPermissionException extends Exception {
-
-    /**
-     * Constructor for UnregisteredPermissionException
-     * @param message, description of why the exception was created 
+@SuppressWarnings("serial")
+public class CertificateUseException extends Exception {
+    
+    /** 
+     * Constructor for MessageAuthenticationException
+     * @param message, the message describing the reason for the exception
      */
-    public UnregisteredPermissionException(String message) {
+    public CertificateUseException(String message) {
         super(message);
     }
     
-    /**
-     * Constructor for UnregisteredPermissionException
-     * @param message, description of why the exception was created
-     * @param cause, the throwable that caused the exception to be created. 
-     */    
-    public UnregisteredPermissionException(String message, Throwable cause) {
+    /** 
+     * Constructor for MessageAuthenticationException
+     * @param message, the message describing the reason for the exception
+     * @param cause, the cause for throwing the exception
+     */
+    public CertificateUseException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -21,6 +21,9 @@
  */
 package org.bitrepository.protocol.security;
 
+import org.bitrepository.protocol.security.exception.CertificateUseException;
+import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
+import org.bitrepository.protocol.security.exception.UnregisteredPermissionException;
 import org.bouncycastle.cms.SignerId;
 
 /**

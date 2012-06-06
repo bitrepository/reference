@@ -24,6 +24,7 @@ package org.bitrepository.protocol.security;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.security.cert.X509Certificate;
 
+import org.bitrepository.protocol.security.exception.MessageSigningException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;

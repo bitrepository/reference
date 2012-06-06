@@ -21,6 +21,8 @@
  */
 package org.bitrepository.protocol.security;
 
+import org.bitrepository.protocol.security.exception.MessageAuthenticationException;
+
 /**
  * Interface for classes to authenticate messages based on a CMS signature. 
  */
