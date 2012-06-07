@@ -19,28 +19,29 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.security;
+package org.bitrepository.protocol.security.exception;
+
 
 /**
- * Exception to indicate a serious problem in the security package.  
+ * Execption class to indicate a problem with a call to permission store.  
  */
-public class SecurityModuleException extends RuntimeException {
+@SuppressWarnings("serial")
+public class PermissionStoreException extends Exception {
 
-    /**
-     * Constructor. 
-     * @param message, the textual description of the cause.
-     * @param cause, the reason for throwing the exception. 
+    /** 
+     * Constructor for PermissionStoreException
+     * @param message, the reason for creating the exception.
      */
-    public SecurityModuleException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    /**
-     * Constructor. 
-     * @param message, the textual description of the cause.
-     */
-    public SecurityModuleException(String message) {
+    public PermissionStoreException(String message) {
         super(message);
     }
-
+    
+    /**
+     * Constructor for PermissionStoreException
+     * @param message, the message describing the reason for the exception
+     * @param e, the exception that caused the creation of PermissionStoreException
+     */
+    public PermissionStoreException(String message, Throwable e) {
+        super(message, e);
+    }
 }

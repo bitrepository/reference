@@ -34,7 +34,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +81,7 @@ public final class FileUtils {
         
         // validate the argument
         if(!parentDir.isDirectory()) {
-            throw new ConfigurationException("The parent directory, " + parentDir + ", is invalid");
+            throw new IllegalArgumentException("The parent directory, " + parentDir + ", is invalid");
         }
         
         // instantiate the directory
@@ -101,14 +100,14 @@ public final class FileUtils {
     private static void instantiateAsDirectory(File directory) {
         // validate that it is not a file.
         if(directory.isFile()) {
-            throw new ConfigurationException("The file directory '" + directory.getAbsolutePath() 
+            throw new IllegalArgumentException("The file directory '" + directory.getAbsolutePath() 
                     + "' already exists as a file, and not as a directory, which is required.");
         }
         
         // Create the directory if it does not exist, and validate that it is a directory afterwards.
         if(!directory.exists() || !directory.isDirectory()) {
             if(!directory.mkdirs()) {
-                throw new ConfigurationException("The file directory '" + directory.getAbsolutePath() + "' cannot be "
+                throw new IllegalStateException("The file directory '" + directory.getAbsolutePath() + "' cannot be "
                         + "instantiated as a directory.");
             }
         }

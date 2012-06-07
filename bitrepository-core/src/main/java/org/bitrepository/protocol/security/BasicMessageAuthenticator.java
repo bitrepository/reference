@@ -23,10 +23,14 @@ package org.bitrepository.protocol.security;
 
 import java.security.cert.X509Certificate;
 
+import org.bitrepository.protocol.security.exception.MessageAuthenticationException;
+import org.bitrepository.protocol.security.exception.PermissionStoreException;
+import org.bitrepository.protocol.security.exception.SecurityException;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
 
@@ -60,19 +64,21 @@ public class BasicMessageAuthenticator implements MessageAuthenticator {
             CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(messageData), signatureData);
             SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
             X509Certificate signingCert = permissionStore.getCertificate(signer.getSID());
+            SignerInformationVerifier verifier = new JcaSimpleSignerInfoVerifierBuilder().setProvider(
+                    SecurityModuleConstants.BC).build(signingCert);
             
-            if(!signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityModuleConstants.BC).build(signingCert))) {
-                throw new MessageAuthenticationException("Signature does not match the message. Indicated certificate " +
-                        "did not sign message. Certificate issuer: " + signingCert.getIssuerX500Principal().getName() +
-                        ", serial: " + signingCert.getSerialNumber());  
+            if(!signer.verify(verifier)) {
+                throw new MessageAuthenticationException("Signature does not match the message. Indicated " +
+                    "certificate did not sign message. Certificate issuer: " 
+                        + signingCert.getIssuerX500Principal().getName() + ", serial: " 
+                    + signingCert.getSerialNumber());  
             }
         } catch (PermissionStoreException e) {
             throw new MessageAuthenticationException(e.getMessage(), e);
         } catch (CMSException e) {
-            throw new SecurityModuleException(e.getMessage(), e);
+            throw new SecurityException(e.getMessage(), e);
         } catch (OperatorCreationException e) {
-            throw new SecurityModuleException(e.getMessage(), e);
+            throw new SecurityException(e.getMessage(), e);
         }
     }
-
 }

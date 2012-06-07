@@ -19,13 +19,22 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.security;
+package org.bitrepository.protocol.security.exception;
 
 /**
  * Exception class to indicate that signing of a message has failed. 
  */
+@SuppressWarnings("serial")
 public class MessageSigningException extends Exception {
 
+    /** 
+     * Constructor for MessageSigningException
+     * @param message, the message describing the reason for the exception
+     */
+    public MessageSigningException(String message) {
+        super(message);
+    }
+    
     /**
      * Constructor for MessageSigningException
      * @param message the message describing what caused the exception

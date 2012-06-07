@@ -19,27 +19,28 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.security;
+package org.bitrepository.protocol.security.exception;
 
 /**
- * Exception class to indicate that authorization of an operation has failed.  
+ * Exception class to indicate that no permissions has been registered for the given operation type.  
  */
-public class OperationAuthorizationException extends Exception {
+@SuppressWarnings("serial")
+public class UnregisteredPermissionException extends Exception {
 
     /**
-     * Constructor for OperationAuthorizationException
+     * Constructor for UnregisteredPermissionException
      * @param message, description of why the exception was created 
      */
-    public OperationAuthorizationException(String message) {
+    public UnregisteredPermissionException(String message) {
         super(message);
     }
     
     /**
-     * Constructor for OperationAuthorizationException
+     * Constructor for UnregisteredPermissionException
      * @param message, description of why the exception was created
      * @param cause, the throwable that caused the exception to be created. 
      */    
-    public OperationAuthorizationException(String message, Throwable cause) {
+    public UnregisteredPermissionException(String message, Throwable cause) {
         super(message, cause);
     }
 }
