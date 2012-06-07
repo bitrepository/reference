@@ -79,6 +79,7 @@
         
     <script>
         $("#putFileForm").submit(function() {
+            //$('#putMessagediv').load("").show();
             var fileName = $("#putFilename").val();
             var fileAddr = $("#putFileaddr").val();
             var fileSize = $("#putFilesize").val();
@@ -111,7 +112,11 @@
             		"&putChecksum=" + verifyChecksumVal + "&putChecksumType=" + verifyChecksumType + "&putSalt=" + 
             		verifyChecksumSalt + "&approveChecksumType=" + approveChecksumType + "&approveSalt=" + 
             		approveChecksumSalt;
-            $('#putMessagediv').load(command).show();
+            $('#putMessagediv').load(command, function(response, status, xhr) {
+                if (status == "error") {
+                    $("#putMessagediv").html(response);
+                }
+            }).show();
             return true;
         });
     </script>   

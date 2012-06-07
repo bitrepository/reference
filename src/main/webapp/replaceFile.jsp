@@ -153,7 +153,12 @@
                     "&newFileChecksumSalt=" + newFileChecksumSalt + "&newFileRequestChecksumType=" + newFileRequestChecksumSalt + 
                     "&newFileRequestChecksumSalt=" + newFileRequestChecksumSalt;
             	
-            $('#status').load(command).show();
+            $('#status').load(command, function(response, status, xhr) {
+                if (status == "error") {
+                    $("#status").html(response);
+                }
+            }).show();	
+            
             return true;
         });
     </script> 

@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,7 +51,6 @@ public class BasicClient {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private ArrayBlockingQueue<String> shortLog;
     private List<URL> completedFiles;
-    private final String clientID;
     
     public BasicClient(Settings settings, SecurityManager securityManager, String logFile, String clientID) {
         log.debug("---- Basic client instanciating ----");
@@ -63,7 +61,6 @@ public class BasicClient {
         completedFiles = new CopyOnWriteArrayList<URL>();
         this.settings = settings;
         this.securityManager = securityManager;
-        this.clientID = clientID;
         settings.setComponentID(clientID);
         putClient = ModifyComponentFactory.getInstance().retrievePutClient(settings, this.securityManager, clientID);
         getClient = AccessComponentFactory.getInstance().createGetFileClient(settings, this.securityManager, clientID);
@@ -88,9 +85,8 @@ public class BasicClient {
         replaceFileClient.shutdown();
     }
     
-    public String putFile(String fileID, long fileSize, String URLStr, String putChecksum, String putChecksumType,
+    public String putFile(String fileID, long fileSize, URL url, String putChecksum, String putChecksumType,
     		String putSalt, String approveChecksumType, String approveSalt) {
-        URL url;
         ChecksumDataForFileTYPE checksumDataForNewFile = null;
         if(putChecksum != null) {
             checksumDataForNewFile = makeChecksumData(putChecksum, putChecksumType, putSalt);
@@ -101,27 +97,18 @@ public class BasicClient {
             checksumRequestForNewFile = makeChecksumSpec(approveChecksumType, approveSalt);
         }
         try {
-            url = new URL(URLStr);
             putClient.putFile(url, fileID, fileSize, checksumDataForNewFile, checksumRequestForNewFile, 
             		eventHandler, "Stuff this Christmas turkey!!");
             return "Placing '" + fileID + "' in Bitrepository :)";
-        } catch (MalformedURLException e) {
-            return "The string: '" + URLStr + "' is not a valid URL!";
         } catch (OperationFailedException e) {
         	return "";
-		}
+        }
     }
     
-    public String getFile(String fileID, String URLStr) {
-        URL url;
-        try {
-            url = new URL(URLStr);
-            GetFileEventHandler handler = new GetFileEventHandler(url, completedFiles, eventHandler);
-            getClient.getFileFromFastestPillar(fileID, url, handler);
-            return "Fetching '" + fileID + "' from Bitrepository :)";
-        } catch (MalformedURLException e) {
-            return "The string: '" + URLStr + "' is not a valid URL!";
-        }
+    public String getFile(String fileID, URL url) {
+       GetFileEventHandler handler = new GetFileEventHandler(url, completedFiles, eventHandler);
+       getClient.getFileFromFastestPillar(fileID, url, handler);
+       return "Fetching '" + fileID + "' from Bitrepository :)";
     }
     
     public String getLog() {
@@ -268,8 +255,7 @@ public class BasicClient {
         log.info("----- Got DeleteFileRequest with approveChecksumtype = " + approveChecksumType);
         if(approveChecksumType != null && !approveChecksumType.equals("disabled")) {
             requestedChecksumSpec = makeChecksumSpec(approveChecksumType, approveChecksumSalt);
-        }
-        
+        }      
         
         try {
 			deleteFileClient.deleteFile(fileID, pillarID, verifyingChecksum, requestedChecksumSpec, 
@@ -284,7 +270,7 @@ public class BasicClient {
     
     public String replaceFile(String fileID, String pillarID, String oldFileChecksum, String oldFileChecksumType,
     		String oldFileChecksumSalt, String oldFileRequestChecksumType, String oldFileRequestChecksumSalt,
-    		String urlStr, long newFileSize, String newFileChecksum, String newFileChecksumType,
+    		URL url, long newFileSize, String newFileChecksum, String newFileChecksumType,
     		String newFileChecksumSalt, String newFileRequestChecksumType, String newFileRequestChecksumSalt) {
     	if(fileID == null) {
             return "Missing fileID!";
@@ -304,10 +290,9 @@ public class BasicClient {
         if(newFileChecksumType == null || newFileChecksumType.equals("")) {
             return "Checksum type for pillar check of new file is invalid";
         }
-        if(urlStr == null || urlStr.equals("")) {
-        	return "A valid fileaddress is missing.";
+        if(url == null) {
+        	return "Url for the file is missing.";
         }
-        URL url;
         ChecksumDataForFileTYPE oldFileChecksumData = makeChecksumData(oldFileChecksum, oldFileChecksumType,
         		oldFileChecksumSalt);
         ChecksumDataForFileTYPE newFileChecksumData = makeChecksumData(newFileChecksum, newFileChecksumType,
@@ -324,11 +309,8 @@ public class BasicClient {
         }
         
         try {
-        	url = new URL(urlStr);
         	replaceFileClient.replaceFile(fileID, pillarID, oldFileChecksumData, oldFileChecksumRequest, url, 
         			newFileSize, newFileChecksumData, newFileChecksumRequest, eventHandler, "Swap away!");
-        } catch (MalformedURLException e) {
-            return "The string: '" + urlStr + "' is not a valid URL!";
         } catch (OperationFailedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

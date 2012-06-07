@@ -103,7 +103,11 @@
             		"&deleteChecksumSalt=" + verifyChecksumSalt + "&approveChecksumType=" + requestChecksumType + 
             		"&approveChecksumSalt=" + requestChecksumSalt;
             
-            $('#status').load(command).show();
+            $('#status').load(command, function(response, status, xhr) {
+                if (status == "error") {
+                    $("#status").html(response);
+                }
+            }).show();
             return true;
         });
     </script> 

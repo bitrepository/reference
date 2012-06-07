@@ -55,9 +55,15 @@
                 //$('#messagediv').html("<p2>Invalid address!</p2>").show().fadeOut(5000);
                 return false;
             }
-        var command = "repo/reposervice/getfile/?fileID=" + fileName + "&url=" + fileAddr;
-        $('#messagediv').load(command).show().fadeOut(5000);
-        return true;
+            var command = "repo/reposervice/getfile/?fileID=" + fileName + "&url=" + fileAddr;
+        
+            $('#messagediv').load(command, function(response, status, xhr) {
+                if (status == "error") {
+                    $("#messagediv").html(response);
+                }
+            }).show();
+            
+            return true;
         });
     </script>
     

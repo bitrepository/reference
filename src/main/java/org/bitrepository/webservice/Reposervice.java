@@ -1,5 +1,7 @@
 package org.bitrepository.webservice;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -48,21 +50,21 @@ public class Reposervice {
             @QueryParam("putChecksumType") String putChecksumType,
             @QueryParam("putSalt") String putSalt,
             @QueryParam("approveChecksumType") String approveChecksumType,
-            @QueryParam("approveSalt") String approveSalt) {
+            @QueryParam("approveSalt") String approveSalt) throws WebserviceIllegalArgumentException {
         try {
-        WebserviceInputChecker.checkFileIDParameter(fileID);
-        WebserviceInputChecker.checkURLParameter(URL);
-        WebserviceInputChecker.checkChecksumParameter(putChecksum);
-        WebserviceInputChecker.checkSaltParameter(putSalt);
-        WebserviceInputChecker.checkSaltParameter(approveSalt);
-        String approveChecksumTypeStr = null;
-        if(approveChecksumType != null && !approveChecksumType.equals("disabled")) {
-            approveChecksumTypeStr = approveChecksumType;
-        }
-        return client.putFile(fileID, fileSize, URL, putChecksum, putChecksumType, putSalt, 
-        		approveChecksumTypeStr, approveSalt);    
-        } catch (WebserviceInputCheckException e) {
-            return e.getMessage();
+            WebserviceInputChecker.checkFileIDParameter(fileID);
+            WebserviceInputChecker.checkURLParameter(URL);
+            WebserviceInputChecker.checkChecksumParameter(putChecksum);
+            WebserviceInputChecker.checkSaltParameter(putSalt);
+            WebserviceInputChecker.checkSaltParameter(approveSalt);
+            String approveChecksumTypeStr = null;
+            if(approveChecksumType != null && !approveChecksumType.equals("disabled")) {
+                approveChecksumTypeStr = approveChecksumType;
+            }
+            return client.putFile(fileID, fileSize, makeUrl(URL), putChecksum, putChecksumType, putSalt, 
+        		approveChecksumTypeStr, approveSalt);
+        } catch (IllegalArgumentException e) {
+            throw new WebserviceIllegalArgumentException(e.getMessage());
         }
     }
     
@@ -78,14 +80,14 @@ public class Reposervice {
     @Produces("text/plain")
     public String getFile(
             @QueryParam("fileID") String fileID,
-            @QueryParam("url") String URL) {
+            @QueryParam("url") String URL) throws WebserviceIllegalArgumentException {
+        WebserviceInputChecker.checkFileIDParameter(fileID);
+        WebserviceInputChecker.checkURLParameter(URL);
         try {
-            WebserviceInputChecker.checkFileIDParameter(fileID);
-            WebserviceInputChecker.checkURLParameter(URL);
-            return client.getFile(fileID, URL);
-        } catch (WebserviceInputCheckException e) {
-            return e.getMessage();
-        }            
+            return client.getFile(fileID, makeUrl(URL));
+        } catch (IllegalArgumentException e) {
+            throw new WebserviceIllegalArgumentException(e.getMessage());
+        }
     }
     
     /**
@@ -183,13 +185,10 @@ public class Reposervice {
     public String getChecksumsHtml(
     		@QueryParam("fileID") String fileID,
     		@QueryParam("checksumType") String checksumType,
-    		@QueryParam("salt") String salt) {
-        try {
-            WebserviceInputChecker.checkFileIDParameter(fileID);
-            WebserviceInputChecker.checkChecksumTypeParameter(checksumType);
-        } catch (WebserviceInputCheckException e) {
-            return "<html><body><b>" + e.getMessage() + "</b></body></html>";
-        }
+    		@QueryParam("salt") String salt) throws WebserviceIllegalArgumentException {
+
+        WebserviceInputChecker.checkFileIDParameter(fileID);
+        WebserviceInputChecker.checkChecksumTypeParameter(checksumType);
         
     	Map<String, Map<String, String>> result = client.getChecksums(fileID, checksumType, salt);
     	if(result == null) {
@@ -242,13 +241,10 @@ public class Reposervice {
     public String getChecksums(
     		@QueryParam("fileID") String fileID,
     		@QueryParam("checksumType") String checksumType,
-    		@QueryParam("salt") String salt) {
-        try {
-            WebserviceInputChecker.checkFileIDParameter(fileID);
-            WebserviceInputChecker.checkChecksumTypeParameter(checksumType);
-        } catch (WebserviceInputCheckException e) {
-            return e.getMessage();
-        }
+    		@QueryParam("salt") String salt) throws WebserviceIllegalArgumentException {
+
+        WebserviceInputChecker.checkFileIDParameter(fileID);
+        WebserviceInputChecker.checkChecksumTypeParameter(checksumType);
 
     	Map<String, Map<String, String>> result = client.getChecksums(fileID, checksumType, salt);
     	if(result == null) {
@@ -297,7 +293,7 @@ public class Reposervice {
     @Produces("text/html")
     public String getFileIDsHtml(
     		@QueryParam("fileIDs") String fileIDs,
-    		@QueryParam("allFileIDs") boolean allFileIDs) {
+    		@QueryParam("allFileIDs") boolean allFileIDs) throws WebserviceIllegalArgumentException {
     	GetFileIDsResults results = client.getFileIDs(fileIDs, allFileIDs);
     	if(results.getResults() == null) {
     		return "<p>Get file ID's provided no results.</p>";
@@ -357,16 +353,18 @@ public class Reposervice {
             @QueryParam("deleteChecksumType") String deleteChecksumType,
             @QueryParam("deleteChecksumSalt") String deleteChecksumSalt,
             @QueryParam("approveChecksumType") String approveChecksumType,
-            @QueryParam("approveChecksumSalt") String approveChecksumSalt) {
-        try {
-            WebserviceInputChecker.checkFileIDParameter(fileID);
-            WebserviceInputChecker.checkPillarIDParameter(pillarID);
-        } catch (WebserviceInputCheckException e) {
-            return e.getMessage();
-        }
+            @QueryParam("approveChecksumSalt") String approveChecksumSalt) throws WebserviceIllegalArgumentException {
 
-        return client.deleteFile(fileID, pillarID, deleteChecksum, deleteChecksumType, deleteChecksumSalt, 
-                approveChecksumType, approveChecksumSalt);
+        WebserviceInputChecker.checkFileIDParameter(fileID);
+        WebserviceInputChecker.checkPillarIDParameter(pillarID);
+        WebserviceInputChecker.checkChecksumParameter(deleteChecksum);
+        
+        try {
+            return client.deleteFile(fileID, pillarID, deleteChecksum, deleteChecksumType, deleteChecksumSalt, 
+                    approveChecksumType, approveChecksumSalt);
+        } catch (IllegalArgumentException e) {
+            throw new WebserviceIllegalArgumentException(e.getMessage());
+        }
     }
 
     @GET
@@ -384,28 +382,38 @@ public class Reposervice {
             @QueryParam("newFileChecksumType") String newFileChecksumType,
             @QueryParam("newFileChecksumSalt") String newFileChecksumSalt,
             @QueryParam("newFileRequestChecksumType") String newFileRequestChecksumType,
-            @QueryParam("newFileRequestChecksumSalt") String newFileRequestChecksumSalt) {
+            @QueryParam("newFileRequestChecksumSalt") String newFileRequestChecksumSalt) throws WebserviceIllegalArgumentException {
+        
+        WebserviceInputChecker.checkFileIDParameter(fileID);
+        WebserviceInputChecker.checkFileSizeParameter(fileSize);
+        WebserviceInputChecker.checkPillarIDParameter(pillarID);
+        WebserviceInputChecker.checkURLParameter(url);
+        WebserviceInputChecker.checkChecksumTypeParameter(oldFileChecksumType);
+        WebserviceInputChecker.checkChecksumParameter(oldFileChecksum);
+        WebserviceInputChecker.checkSaltParameter(oldFileChecksumSalt);
+        //WebserviceInputChecker.checkChecksumTypeParameter(oldFileRequestChecksumType);
+        WebserviceInputChecker.checkSaltParameter(oldFileRequestChecksumSalt);
+        WebserviceInputChecker.checkChecksumTypeParameter(newFileChecksumType);
+        WebserviceInputChecker.checkChecksumParameter(newFileChecksum);
+        WebserviceInputChecker.checkSaltParameter(newFileChecksumSalt);
+        WebserviceInputChecker.checkSaltParameter(newFileRequestChecksumSalt);
+        //WebserviceInputChecker.checkChecksumTypeParameter(newFileRequestChecksumType);
+        
         try {
-            WebserviceInputChecker.checkFileIDParameter(fileID);
-            WebserviceInputChecker.checkFileSizeParameter(fileSize);
-            WebserviceInputChecker.checkPillarIDParameter(pillarID);
-            WebserviceInputChecker.checkURLParameter(url);
-            WebserviceInputChecker.checkChecksumTypeParameter(oldFileChecksumType);
-            WebserviceInputChecker.checkChecksumParameter(oldFileChecksum);
-            WebserviceInputChecker.checkSaltParameter(oldFileChecksumSalt);
-            //WebserviceInputChecker.checkChecksumTypeParameter(oldFileRequestChecksumType);
-            WebserviceInputChecker.checkSaltParameter(oldFileRequestChecksumSalt);
-            WebserviceInputChecker.checkChecksumTypeParameter(newFileChecksumType);
-            WebserviceInputChecker.checkChecksumParameter(newFileChecksum);
-            WebserviceInputChecker.checkSaltParameter(newFileChecksumSalt);
-            WebserviceInputChecker.checkSaltParameter(newFileRequestChecksumSalt);
-            //WebserviceInputChecker.checkChecksumTypeParameter(newFileRequestChecksumType);
-        } catch (WebserviceInputCheckException e) {
-            return e.getMessage();
+            return client.replaceFile(fileID, pillarID, oldFileChecksum, oldFileChecksumType, oldFileChecksumSalt, 
+                    oldFileRequestChecksumType, oldFileRequestChecksumSalt, makeUrl(url), Long.parseLong(fileSize), newFileChecksum, 
+                    newFileChecksumType, newFileChecksumSalt, newFileRequestChecksumType, newFileRequestChecksumSalt);
+        } catch (IllegalArgumentException e) {
+            throw new WebserviceIllegalArgumentException(e.getMessage());
         }
-        return client.replaceFile(fileID, pillarID, oldFileChecksum, oldFileChecksumType, oldFileChecksumSalt, 
-        		oldFileRequestChecksumType, oldFileRequestChecksumSalt, url, Long.parseLong(fileSize), newFileChecksum, 
-        		newFileChecksumType, newFileChecksumSalt, newFileRequestChecksumType, newFileRequestChecksumSalt);
+    }
+    
+    private URL makeUrl(String urlStr) {     
+        try {
+            return new URL(urlStr);
+        } catch (MalformedURLException e) {
+            throw new WebserviceIllegalArgumentException(urlStr + " is not a valid url");
+        }
     }
 
 }
