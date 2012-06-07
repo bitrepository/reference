@@ -26,10 +26,12 @@ package org.bitrepository.modify.putfile;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
@@ -44,6 +46,8 @@ import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
+import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -82,9 +86,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     public void putClientTester() throws Exception {
         addDescription("Tests the PutClient. Makes a whole conversation for the put client for a 'good' scenario.");
         addStep("Initialise the number of pillars to one", "Should be OK.");
-
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        setupCollectionForSinglePillar();
+        
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 
@@ -172,9 +175,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the handling of a failed identification for the PutClient");
         addStep("Initialise the number of pillars and the PutClient. Sets the identification timeout to 1 sec.", 
                 "Should be OK.");
+        setupCollectionForSinglePillar();
 
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(1000L));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
@@ -211,9 +213,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the handling of a failed operation for the PutClient");
         addStep("Initialise the number of pillars and the PutClient. Sets the operation timeout to 1 sec.", 
                 "Should be OK.");
+        setupCollectionForSinglePillar();
 
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         settings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(1000L));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
@@ -278,9 +279,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     public void putClientPillarOperationFailed() throws Exception {
         addDescription("Tests the handling of a operation failure for the PutClient. ");
         addStep("Initialise the number of pillars to one", "Should be OK.");
+        setupCollectionForSinglePillar();
 
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 
@@ -357,9 +357,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     public void putClientPillarIdentificationFailed() throws Exception {
         addDescription("Tests the handling of a identification failure for the PutClient. ");
         addStep("Initialise the number of pillars to one", "Should be OK.");
+        setupCollectionForSinglePillar();
 
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 
@@ -408,9 +407,85 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 + OperationEventType.WARNING + "', '" + OperationEventType.COMPLETE + "'");
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
-        /*Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.WARNING);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);*/
+    }
+    
+    @Test(groups={"regressiontest"})
+    public void putFileRequiredChecksumWithChecksum() throws Exception {
+        addDescription("Good case put with a checksum. Puts a file when a checksum is required.");
+        addStep("Initialise the number of pillars to one", "Should be OK.");
+        setupCollectionForSinglePillar();
+        
+        addStep("Setup collection to require checksum for new files", "Should be ok");
+        settings.getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
+        
+        ChecksumDataForFileTYPE checksumData = createTestChecksumData();
+        
+        startPutFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, fileSize, checksumData, (ChecksumSpecTYPE) null);
+
+        PutFileRequest receivedPutFileRequest = pillar1Destination.waitForMessage(PutFileRequest.class, 10, TimeUnit.SECONDS);
+        
+        addStep("Assert that a checksum is present for the file, as it is required", "There exists a checksum.");
+        Assert.assertTrue(receivedPutFileRequest.isSetChecksumDataForNewFile(), "ChecksumDataForNewFile exists");
+        Assert.assertEquals(receivedPutFileRequest.getChecksumDataForNewFile(), checksumData);
+    }
+    
+    @Test(groups={"regressiontest"})
+    public void putFileRequiredChecksumWithoutChecksum() throws Exception {
+        addDescription("Bad case put requiring a checksum. Attempts to put a file without checksum when required.");
+        addStep("Initialise the number of pillars to one", "Should be OK.");
+        setupCollectionForSinglePillar();
+        
+        addStep("Setup collection to require checksum for new files", "Should be ok");
+        settings.getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
+        
+        ChecksumDataForFileTYPE checksumData = null;
+        
+        try {
+            startPutFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, fileSize, checksumData, (ChecksumSpecTYPE) null);
+            Assert.fail("Client should throw IllegalArgumentException when no checksum is supplied when settings require it.");
+        } catch (IllegalArgumentException e) {
+            //Yes, everything is fine ;)
+        }
+    }
+    
+    @Test(groups={"regressiontest"})
+    public void putFileNotRequireChecksumWithChecksum() throws Exception {
+        addDescription("Goodcase put with a checksum. Puts a file when a checksum is required.");
+        addStep("Initialise the number of pillars to one", "Should be OK.");
+        setupCollectionForSinglePillar();
+        
+        addStep("Setup collection to not require checksum for new files", "Should be ok");
+        settings.getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
+        
+        ChecksumDataForFileTYPE checksumData = createTestChecksumData();
+        
+        startPutFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, fileSize, checksumData, (ChecksumSpecTYPE) null);
+
+        PutFileRequest receivedPutFileRequest = pillar1Destination.waitForMessage(PutFileRequest.class, 10, TimeUnit.SECONDS);
+        
+        addStep("Assert that a checksum is present for the file, as it were given to the client", "There exists a checksum.");
+        Assert.assertTrue(receivedPutFileRequest.isSetChecksumDataForNewFile(), "ChecksumDataForNewFile exists");
+        Assert.assertEquals(receivedPutFileRequest.getChecksumDataForNewFile(), checksumData);
+    }
+    
+    @Test(groups={"regressiontest"})
+    public void putFileNotRequireChecksumWithoutChecksum() throws Exception {
+        addDescription("Goodcase put without a checksum. Puts a file when a checksum is not required.");
+        addStep("Initialise the number of pillars to one", "Should be OK.");
+        setupCollectionForSinglePillar();
+        
+        addStep("Setup collection to not require checksum for new files", "Should be ok");
+        settings.getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
+        
+        ChecksumDataForFileTYPE checksumData = null;
+        
+        startPutFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, fileSize, checksumData, (ChecksumSpecTYPE) null);
+
+        PutFileRequest receivedPutFileRequest = pillar1Destination.waitForMessage(PutFileRequest.class, 10, TimeUnit.SECONDS);
+        
+        addStep("Assert that no checksum is present for the file, as it were not given to the client", "No checksum" +
+        		"exitsts.");
+        Assert.assertFalse(receivedPutFileRequest.isSetChecksumDataForNewFile(), "ChecksumDataForNewFile does not exist");
     }
 
     /**
@@ -426,5 +501,43 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         return new PutClientTestWrapper(new ConversationBasedPutFileClient(
                 messageBus, conversationMediator, settings, TEST_CLIENT_ID)
         , testEventManager);
+    }
+    
+    /**
+     * Sets up the settings for a single pillar collection 
+     */
+    private void setupCollectionForSinglePillar() {
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+    }
+    
+    /**
+     * Wraps the task of starting a putFile client and gets the state to a putFileRequest should be sent. 
+     */
+    private void startPutFile(URL url, String fileID, long fileSize, ChecksumDataForFileTYPE checksumData, 
+            ChecksumSpecTYPE checksumSpec) throws Exception {
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        PutFileClient putClient = createPutFileClient();
+
+        putClient.putFile(url, fileID, fileSize, checksumData, checksumSpec, testEventHandler, "TEST-AUDIT-TRAIL");
+
+        IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = 
+                collectionDestination.waitForMessage(IdentifyPillarsForPutFileRequest.class);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+
+        addStep("Make response for the pillar.", "The client should then send the actual PutFileRequest.");
+        IdentifyPillarsForPutFileResponse identifyResponse = messageFactory
+                .createIdentifyPillarsForPutFileResponse(receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        messageBus.sendMessage(identifyResponse);
+    }
+    
+    private ChecksumDataForFileTYPE createTestChecksumData() {
+        ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
+        checksumData.setCalculationTimestamp(CalendarUtils.getNow());
+        checksumData.setChecksumValue(Base16Utils.encodeBase16("ababababab"));
+        ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
+        checksumSpec.setChecksumType(ChecksumType.MD5);
+        checksumData.setChecksumSpec(checksumSpec);
+        return checksumData;
     }
 }
