@@ -31,6 +31,8 @@
     <AllowedFileIDPattern>[a-zA-z0-9\-_.]{5,250}</AllowedFileIDPattern>
     <RequireMessageAuthentication>false</RequireMessageAuthentication>
     <RequireOperationAuthorization>false</RequireOperationAuthorization>
+    <RequireChecksumForDestructiveRequests>true</RequireChecksumForDestructiveRequests>
+    <RequireChecksumForNewFileRequests>false</RequireChecksumForNewFileRequests>
     <CollectionDestination>TEST-TOPIC</CollectionDestination>
     <AlarmDestination>TEST-ALARM-TOPIC</AlarmDestination>
     <MessageBusConfiguration>

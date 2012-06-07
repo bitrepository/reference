@@ -57,6 +57,9 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
         ArgumentValidator.checkNotNull(url, "URL url");
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNegative(sizeOfFile, "long sizeOfFile");
+        if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
+            ArgumentValidator.checkNotNull(checksumForValidationAtPillar, "ChecksumDataForFileTYPE checksumForValidationAtPillar");
+        }
         validateFileID(fileId);
         
         PutFileConversationContext context = new PutFileConversationContext(fileId, url, sizeOfFile, 
