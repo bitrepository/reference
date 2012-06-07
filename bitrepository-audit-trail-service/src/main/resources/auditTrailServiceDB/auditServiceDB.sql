@@ -97,7 +97,9 @@ create index fileindex on file ( fileid );
 create table contributor (
     contributor_guid bigint not null generated always as identity primary key,
                                     -- The guid for the contributor id.
-    contributor_id varchar(255)     -- The actual id of the contributor.
+    contributor_id varchar(255),    -- The actual id of the contributor.
+    preserved_seq_number bigint     -- The sequence number reached for the preservation
+                                    -- of the audit trails for the contributor.
 );
 
 create index contributorindex on contributor ( contributor_id );

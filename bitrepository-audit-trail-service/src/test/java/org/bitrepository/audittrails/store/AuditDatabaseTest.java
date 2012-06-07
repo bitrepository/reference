@@ -60,7 +60,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         settings.getReferenceSettings().getAuditTrailServiceSettings().setAuditTrailServiceDatabaseUrl(DATABASE_URL);
         
         addStep("Initialise the database", "Should be unpacked from a jar-file.");
-        File dbFile = new File("src/test/resources/auditdb.jar");
+        File dbFile = new File("src/test/resources/auditservicedb.jar");
         Assert.assertTrue(dbFile.isFile(), "The database file should exist");
         
         dbDir = FileUtils.retrieveDirectory(DATABASE_DIRECTORY);

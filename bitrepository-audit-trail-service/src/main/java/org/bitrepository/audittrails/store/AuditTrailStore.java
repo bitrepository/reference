@@ -65,6 +65,23 @@ public interface AuditTrailStore {
     public int largestSequenceNumber(String contributorId);
     
     /**
+     * Retrieves the preservation sequence number for the given contributor, which tells how far the preservation
+     * of the audit trails has gotten.
+     *  
+     * @param contributorId The id of the contributor.
+     * @return The preservation sequence number for the given contributor.
+     */
+    public long getPreservationSequenceNumber(String contributorId);
+    
+    /**
+     * Set the preservation sequence number for the given contributor.
+     * 
+     * @param contributorId The id of the contributor.
+     * @param seqNumber The new preservation sequence number for the given contributor.
+     */
+    public void setPreservationSequenceNumber(String contributorId, long seqNumber);
+
+    /**
      * Closes the store.
      */
     public void close();

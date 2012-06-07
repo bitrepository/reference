@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.audittrails.service;
+package org.bitrepository.audittrails;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,11 +33,15 @@ import java.util.Properties;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
+import org.bitrepository.audittrails.preserver.AuditTrailPreserver;
+import org.bitrepository.audittrails.preserver.LocalAuditTrailPreservation;
 import org.bitrepository.audittrails.store.AuditTrailServiceDAO;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.modify.ModifyComponentFactory;
+import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
@@ -109,11 +113,16 @@ public final class AuditTrailServiceFactory {
                         ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
                         settings, settings.getComponentID(), settings.getReceiverDestination(), null);
                 
+                PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(settings, 
+                        securityManager, "audit-trail-preserver");
+                
                 AuditTrailStore store = new AuditTrailServiceDAO(settings);
                 AuditTrailClient client = AccessComponentFactory.getInstance().createAuditTrailClient(settings, 
                         securityManager, settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
                 AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
-                auditTrailService = new AuditTrailService(store, collector, mediator);
+                AuditTrailPreserver preserver = new LocalAuditTrailPreservation(settings, store, putClient);
+                
+                auditTrailService = new AuditTrailService(store, collector, mediator, preserver);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

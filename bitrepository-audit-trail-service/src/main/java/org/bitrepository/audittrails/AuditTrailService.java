@@ -22,12 +22,13 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.audittrails.service;
+package org.bitrepository.audittrails;
 
 import java.util.Collection;
 import java.util.Date;
 
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
+import org.bitrepository.audittrails.preserver.AuditTrailPreserver;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -46,22 +47,30 @@ public class AuditTrailService implements LifeCycledService {
     private final AuditTrailCollector collector;
     /** The mediator for handling the messages.*/
     private final ContributorMediator mediator;
+    /** The preserver of audit trails.*/
+    private final AuditTrailPreserver preserver;
     
     /**
      * Constructor.
      * @param store The store for the audit trail data.
      * @param collector The collector of new audit trail data.
+     * @param mediator The mediator for the communication of this contributor.
+     * @param preserver Instance for handling the preservation of audit trails.
      */
-    public AuditTrailService(AuditTrailStore store, AuditTrailCollector collector, ContributorMediator mediator) {
+    public AuditTrailService(AuditTrailStore store, AuditTrailCollector collector, ContributorMediator mediator,
+            AuditTrailPreserver preserver) {
         ArgumentValidator.checkNotNull(collector, "AuditTrailCollector collector");
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
         ArgumentValidator.checkNotNull(mediator, "ContributorMediator mediator");
+        ArgumentValidator.checkNotNull(preserver, "AuditTrailPreserver preserver");
         
         this.store = store;
         this.collector = collector;
         this.mediator = mediator;
+        this.preserver = preserver;
         
         mediator.start();
+        preserver.start();
     }
     
     /**
@@ -93,6 +102,12 @@ public class AuditTrailService implements LifeCycledService {
         collector.collectNewestAudits();
     }
 
+    /**
+     * Performs the preservation of audit trails.
+     */
+    public void preserveAuditTrailsNow() {
+        preserver.preserveAuditTrailsNow();
+    }
 
     @Override
     public void start() {

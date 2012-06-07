@@ -34,8 +34,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import org.bitrepository.audittrails.service.AuditTrailService;
-import org.bitrepository.audittrails.service.AuditTrailServiceFactory;
+import org.bitrepository.audittrails.AuditTrailService;
+import org.bitrepository.audittrails.AuditTrailServiceFactory;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.json.JSONArray;
 import org.json.JSONException;

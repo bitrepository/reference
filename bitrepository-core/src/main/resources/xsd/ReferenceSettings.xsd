@@ -384,6 +384,13 @@
               </xs:documentation>
             </xs:annotation>
           </xs:element>
+          <xs:element name="AuditTrailPreservationInterval" type="xs:long">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                The amount of milliseconds between each preservation of audit trails.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
         </xs:sequence>
       </xs:complexType>
     </xs:element>

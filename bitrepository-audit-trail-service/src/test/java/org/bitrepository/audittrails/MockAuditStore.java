@@ -24,6 +24,7 @@ package org.bitrepository.audittrails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
@@ -31,13 +32,14 @@ import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
 
 public class MockAuditStore implements AuditTrailStore {
+    List<AuditTrailEvent> events = new ArrayList<AuditTrailEvent>();
     
     private int callsToGetAuditTrails = 0;
     @Override
     public Collection<AuditTrailEvent> getAuditTrails(String fileId, String contributorId, Long minSeqNumber,
             Long maxSeqNumber, String actorName, FileAction operation, Date startDate, Date endDate) {
         callsToGetAuditTrails++;
-        return new ArrayList<AuditTrailEvent>();
+        return events;
     }
     public int getCallsToGetAuditTrails() {
         return callsToGetAuditTrails;
@@ -47,6 +49,9 @@ public class MockAuditStore implements AuditTrailStore {
     @Override
     public void addAuditTrails(AuditTrailEvents newAuditTrails) {
         callsToAddAuditTrails++;
+        if(newAuditTrails != null) {
+            events.addAll(newAuditTrails.getAuditTrailEvent());
+        }
     }
     public int getCallsToAddAuditTrails() {
         return callsToAddAuditTrails;
@@ -72,5 +77,26 @@ public class MockAuditStore implements AuditTrailStore {
         callsToAddAuditTrails = 0;
         callsToLargestSequenceNumber = 0;
         largestSequenceNumber = 0;
+    }
+    
+    private long preservationSequenceNumber = 0;
+    private int callsToGetPreservationSequenceNumber = 0;
+    @Override
+    public long getPreservationSequenceNumber(String contributorId) {
+        callsToGetPreservationSequenceNumber++;
+        return preservationSequenceNumber;
+    }
+    public int getCallsToGetPreservationSequenceNumber() {
+        return callsToGetPreservationSequenceNumber;
+    }
+    
+    private int callsToSetPreservationSequenceNumber = 0;
+    @Override
+    public void setPreservationSequenceNumber(String contributorId, long seqNumber) {
+        callsToSetPreservationSequenceNumber++;
+        preservationSequenceNumber = seqNumber;
+    }
+    public int getCallsToSetPreservationSequenceNumber() {
+        return callsToSetPreservationSequenceNumber;
     }
 }

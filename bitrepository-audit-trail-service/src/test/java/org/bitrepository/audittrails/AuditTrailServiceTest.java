@@ -22,7 +22,6 @@
 package org.bitrepository.audittrails;
 
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
-import org.bitrepository.audittrails.service.AuditTrailService;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -48,11 +47,12 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         
         MockAuditStore store = new MockAuditStore();
         MockAuditClient client = new MockAuditClient();
+        MockAuditPreserver preserver = new MockAuditPreserver();
         AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
         ContributorMediator mediator = new MockContributorMediator();
         
         addStep("Instantiate the service.", "Should work.");
-        AuditTrailService service = new AuditTrailService(store, collector, mediator);
+        AuditTrailService service = new AuditTrailService(store, collector, mediator, preserver);
         service.start();
         
         addStep("Try to collect audit trails.", "Should make a call to the client.");
