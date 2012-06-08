@@ -30,7 +30,6 @@ import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.exceptions.OperationFailedException;
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.bitrepository.utils.HexUtils;
 import org.bitrepository.utils.XMLGregorianCalendarConverter;
@@ -96,18 +95,15 @@ public class BasicClient {
         if(approveChecksumType != null) {
             checksumRequestForNewFile = makeChecksumSpec(approveChecksumType, approveSalt);
         }
-        try {
-            putClient.putFile(url, fileID, fileSize, checksumDataForNewFile, checksumRequestForNewFile, 
+        
+        putClient.putFile(url, fileID, fileSize, checksumDataForNewFile, checksumRequestForNewFile, 
             		eventHandler, "Stuff this Christmas turkey!!");
-            return "Placing '" + fileID + "' in Bitrepository :)";
-        } catch (OperationFailedException e) {
-        	return "";
-        }
+        return "Placing '" + fileID + "' in Bitrepository :)";
     }
     
     public String getFile(String fileID, URL url) {
        GetFileEventHandler handler = new GetFileEventHandler(url, completedFiles, eventHandler);
-       getClient.getFileFromFastestPillar(fileID, url, handler);
+       getClient.getFileFromFastestPillar(fileID, null, url, handler);
        return "Fetching '" + fileID + "' from Bitrepository :)";
     }
     
@@ -188,13 +184,8 @@ public class BasicClient {
     	GetChecksumsResults results = new GetChecksumsResults();
     	GetChecksumsEventHandler handler = new GetChecksumsEventHandler(results, eventHandler);
     	
-    	try {
-			getChecksumClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
+    	getChecksumClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
 					fileIDs, checksumSpecItem, null, handler, "Arf arf, deliver those checksums");
-		} catch (OperationFailedException e1) {
-			return results.getResults();
-		}
-        
     	
         try {
             while(!results.isDone() && !results.hasFailed()) {
@@ -203,7 +194,6 @@ public class BasicClient {
         } catch (InterruptedException e) {
             // Uhm, we got aborted, should return error..
         }
-    	
     	return results.getResults();
     }
     
@@ -227,11 +217,7 @@ public class BasicClient {
     	    }
 		} catch (InterruptedException e) {
 			// Uhm, we got aborted, should return error..
-		} catch (OperationFailedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		}		
     	return results;
     }
     
@@ -257,13 +243,8 @@ public class BasicClient {
             requestedChecksumSpec = makeChecksumSpec(approveChecksumType, approveChecksumSalt);
         }      
         
-        try {
-			deleteFileClient.deleteFile(fileID, pillarID, verifyingChecksum, requestedChecksumSpec, 
-			        eventHandler, "Kick that file");
-		} catch (OperationFailedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        deleteFileClient.deleteFile(fileID, pillarID, verifyingChecksum, requestedChecksumSpec, 
+        		eventHandler, "Kick that file");
         
         return "Deleting file";
     }
@@ -308,13 +289,8 @@ public class BasicClient {
         	newFileChecksumRequest = makeChecksumSpec(newFileRequestChecksumType, newFileRequestChecksumSalt);
         }
         
-        try {
-        	replaceFileClient.replaceFile(fileID, pillarID, oldFileChecksumData, oldFileChecksumRequest, url, 
-        			newFileSize, newFileChecksumData, newFileChecksumRequest, eventHandler, "Swap away!");
-        } catch (OperationFailedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
+        replaceFileClient.replaceFile(fileID, pillarID, oldFileChecksumData, oldFileChecksumRequest, url, 
+        		newFileSize, newFileChecksumData, newFileChecksumRequest, eventHandler, "Swap away!");
         
     	return "Replacing file";
     }
