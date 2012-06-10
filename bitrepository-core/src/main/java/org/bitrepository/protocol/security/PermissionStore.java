@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.bitrepository.protocol.security.exception.PermissionStoreException;
 import org.bitrepository.settings.collectionsettings.InfrastructurePermission;
 import org.bitrepository.settings.collectionsettings.Operation;
 import org.bitrepository.settings.collectionsettings.OperationPermission;

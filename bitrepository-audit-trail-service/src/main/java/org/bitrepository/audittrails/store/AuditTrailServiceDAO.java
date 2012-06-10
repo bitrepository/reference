@@ -26,6 +26,7 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTR
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_TABLE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_GUID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_ID;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_PRESERVATION_SEQ;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_TABLE;
 
 import java.sql.SQLException;
@@ -108,7 +109,29 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         }
         return 0;
     }    
-    
+
+    @Override
+    public long getPreservationSequenceNumber(String contributorId) {
+        ArgumentValidator.checkNotNullOrEmpty(contributorId, "String contributorId");
+        String sql = "SELECT " + CONTRIBUTOR_PRESERVATION_SEQ + " FROM " + CONTRIBUTOR_TABLE + " WHERE " 
+                + CONTRIBUTOR_ID + " = ? ) ";
+        
+        Long seq = DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, contributorId);
+        if(seq != null) {
+            return seq.intValue();
+        }
+        return 0;
+    }
+
+    @Override
+    public void setPreservationSequenceNumber(String contributorId, long seqNumber) {
+        ArgumentValidator.checkNotNullOrEmpty(contributorId, "String contributorId");
+        ArgumentValidator.checkNotNegative(seqNumber, "int seqNumber");
+        String sqlUpdate = "UPDATE " + CONTRIBUTOR_TABLE + " SET " + CONTRIBUTOR_PRESERVATION_SEQ + " = ? WHERE " 
+                + CONTRIBUTOR_ID + " = ? ";
+        DatabaseUtils.executeStatement(dbConnector.getConnection(), sqlUpdate, seqNumber, contributorId);
+    }
+
     @Override
     public void close() {
         try {

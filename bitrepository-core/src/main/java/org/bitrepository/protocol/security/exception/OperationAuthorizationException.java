@@ -19,27 +19,28 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol.security;
+package org.bitrepository.protocol.security.exception;
 
 /**
- * Exception class to indicate that authentication of a message has failed.  
+ * Exception class to indicate that authorization of an operation has failed.  
  */
-public class MessageAuthenticationException extends Exception {
-    
-    /** 
-     * Constructor for MessageAuthenticationException
-     * @param message, the message describing the reason for the exception
+@SuppressWarnings("serial")
+public class OperationAuthorizationException extends Exception {
+
+    /**
+     * Constructor for OperationAuthorizationException
+     * @param message, description of why the exception was created 
      */
-    public MessageAuthenticationException(String message) {
+    public OperationAuthorizationException(String message) {
         super(message);
     }
     
     /**
-     * Constructor for MessageAuthenticationException
-     * @param message, the message describing the reason for the exception
-     * @param e, the exception that caused the creation of MessageAuthenticationException
-     */
-    public MessageAuthenticationException(String message, Throwable e) {
-        super(message, e);
+     * Constructor for OperationAuthorizationException
+     * @param message, description of why the exception was created
+     * @param cause, the throwable that caused the exception to be created. 
+     */    
+    public OperationAuthorizationException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

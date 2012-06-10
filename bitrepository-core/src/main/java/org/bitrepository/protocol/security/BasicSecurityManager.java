@@ -21,7 +21,6 @@
  */
 package org.bitrepository.protocol.security;
 
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -48,6 +47,12 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.protocol.security.exception.CertificateUseException;
+import org.bitrepository.protocol.security.exception.MessageAuthenticationException;
+import org.bitrepository.protocol.security.exception.MessageSigningException;
+import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
+import org.bitrepository.protocol.security.exception.SecurityException;
+import org.bitrepository.protocol.security.exception.UnregisteredPermissionException;
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.bitrepository.settings.collectionsettings.InfrastructurePermission;
 import org.bitrepository.settings.collectionsettings.Permission;
@@ -135,7 +140,7 @@ public class BasicSecurityManager implements SecurityManager {
                 byte[] decodeMessage = message.getBytes(SecurityModuleConstants.defaultEncodingType);
                 authenticator.authenticateMessage(decodeMessage, decodedSig);
             } catch (UnsupportedEncodingException e) {
-                throw new SecurityModuleException(SecurityModuleConstants.defaultEncodingType + " encoding not supported", e);
+                throw new SecurityException(SecurityModuleConstants.defaultEncodingType + " encoding not supported", e);
             }
         }
     }
@@ -152,7 +157,7 @@ public class BasicSecurityManager implements SecurityManager {
                 byte[] signature = signer.signMessage(message.getBytes(SecurityModuleConstants.defaultEncodingType));
                 return new String(Base64.encode(signature));   
             } catch (UnsupportedEncodingException e) {
-                throw new SecurityModuleException(SecurityModuleConstants.defaultEncodingType + " encoding not supported", e);
+                throw new SecurityException(SecurityModuleConstants.defaultEncodingType + " encoding not supported", e);
             }           
         } else { 
             return null;
@@ -174,7 +179,7 @@ public class BasicSecurityManager implements SecurityManager {
             try {
                 s = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes()), decodeSig);
             } catch (CMSException e) {
-                throw new SecurityModuleException(e.getMessage(), e);
+                throw new SecurityException(e.getMessage(), e);
             }
     
             SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
@@ -197,14 +202,14 @@ public class BasicSecurityManager implements SecurityManager {
             try {
                 s = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes()), decodeSig);
             } catch (CMSException e) {
-                throw new SecurityModuleException(e.getMessage(), e);
+                throw new SecurityException(e.getMessage(), e);
             }
     
             SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
             try {
                 authorizer.authorizeOperation(operationType, signer.getSID());    
             } catch (UnregisteredPermissionException e) {
-                log.info(e.getMessage(), e);
+                log.info(e.getMessage());
             }
             
             
@@ -229,7 +234,7 @@ public class BasicSecurityManager implements SecurityManager {
             signer.setPrivateKeyEntry(privateKeyEntry);
             setupDefaultSSLContext();
         } catch (Exception e) {
-            throw new SecurityModuleException(e.getMessage(), e);
+            throw new SecurityException(e.getMessage(), e);
         } 
     }
     

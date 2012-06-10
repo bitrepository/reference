@@ -64,6 +64,8 @@ public final class AuditDatabaseConstants {
     public final static String CONTRIBUTOR_GUID = "contributor_guid";
     /** The name of the contributor id field in the contributor table.*/
     public final static String CONTRIBUTOR_ID = "contributor_id";
+    /** The name of the preservation sequence number field in the contributor table.*/
+    public final static String CONTRIBUTOR_PRESERVATION_SEQ = "preserved_seq_number";
     
     /** The name of the actor table.*/
     public final static String ACTOR_TABLE = "actor";

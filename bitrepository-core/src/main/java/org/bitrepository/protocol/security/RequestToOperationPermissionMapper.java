@@ -42,6 +42,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
+import org.bitrepository.protocol.security.exception.UnregisteredPermissionException;
 import org.bitrepository.settings.collectionsettings.Operation;
 
 /**

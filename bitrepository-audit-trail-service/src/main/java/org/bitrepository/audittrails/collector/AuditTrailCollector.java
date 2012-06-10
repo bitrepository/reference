@@ -49,7 +49,7 @@ public class AuditTrailCollector {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The task for collecting the audits.*/
-    private final AuditTimerTask auditCollector;
+    private final AuditCollectionTimerTask auditCollector;
     /** The timer for keeping track of the collecting task.*/
     private Timer timer;
     
@@ -87,7 +87,7 @@ public class AuditTrailCollector {
         this.timebetweenCollectChecksum 
                 = settings.getReferenceSettings().getAuditTrailServiceSettings().getTimerTaskCheckInterval();
         
-        auditCollector = new AuditTimerTask(
+        auditCollector = new AuditCollectionTimerTask(
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval());
         timer.scheduleAtFixedRate(auditCollector, 0, timebetweenCollectChecksum);
     }
@@ -110,7 +110,7 @@ public class AuditTrailCollector {
     /**
      * Timer task for keeping track of the automated collecting of audit trails.
      */
-    private class AuditTimerTask extends TimerTask {
+    private class AuditCollectionTimerTask extends TimerTask {
         /** The interval between running this timer task.*/
         private final long interval;
         /** The date for the next run.*/
@@ -120,7 +120,7 @@ public class AuditTrailCollector {
          * Constructor.
          * @param interval The interval between running this timer task.
          */
-        private AuditTimerTask(long interval) {
+        private AuditCollectionTimerTask(long interval) {
             this.interval = interval;
             nextRun = new Date(System.currentTimeMillis() + interval);
         }
@@ -177,5 +177,5 @@ public class AuditTrailCollector {
                 log.debug("Event:" + event.toString());
             }
         }
-    }    
+    }
 }

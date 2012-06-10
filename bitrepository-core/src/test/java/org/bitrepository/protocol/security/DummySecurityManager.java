@@ -21,6 +21,11 @@
  */
 package org.bitrepository.protocol.security;
 
+import org.bitrepository.protocol.security.exception.CertificateUseException;
+import org.bitrepository.protocol.security.exception.MessageAuthenticationException;
+import org.bitrepository.protocol.security.exception.MessageSigningException;
+import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
+
 
 /**
  * Class containing empty / safe implementation of the SecurityManager interface.

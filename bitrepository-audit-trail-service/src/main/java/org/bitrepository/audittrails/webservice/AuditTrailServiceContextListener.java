@@ -24,7 +24,7 @@
  */
 package org.bitrepository.audittrails.webservice;
 
-import org.bitrepository.audittrails.service.AuditTrailServiceFactory;
+import org.bitrepository.audittrails.AuditTrailServiceFactory;
 import org.bitrepository.service.AbstractBitrepositoryContextListener;
 import org.bitrepository.service.LifeCycledService;
 

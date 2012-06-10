@@ -32,9 +32,9 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +82,7 @@ public final class FileUtils {
         
         // validate the argument
         if(!parentDir.isDirectory()) {
-            throw new ConfigurationException("The parent directory, " + parentDir + ", is invalid");
+            throw new IllegalArgumentException("The parent directory, " + parentDir + ", is invalid");
         }
         
         // instantiate the directory
@@ -101,14 +101,14 @@ public final class FileUtils {
     private static void instantiateAsDirectory(File directory) {
         // validate that it is not a file.
         if(directory.isFile()) {
-            throw new ConfigurationException("The file directory '" + directory.getAbsolutePath() 
+            throw new IllegalArgumentException("The file directory '" + directory.getAbsolutePath() 
                     + "' already exists as a file, and not as a directory, which is required.");
         }
         
         // Create the directory if it does not exist, and validate that it is a directory afterwards.
         if(!directory.exists() || !directory.isDirectory()) {
             if(!directory.mkdirs()) {
-                throw new ConfigurationException("The file directory '" + directory.getAbsolutePath() + "' cannot be "
+                throw new IllegalStateException("The file directory '" + directory.getAbsolutePath() + "' cannot be "
                         + "instantiated as a directory.");
             }
         }
@@ -240,7 +240,6 @@ public final class FileUtils {
         }
     }
     
-    
     /** Unzip a zipFile into a directory.  This will create subdirectories
      * as needed.
      *
@@ -282,6 +281,43 @@ public final class FileUtils {
             }
             if (inputStream != null) {
                 inputStream.close();
+            }
+        }
+    }
+    
+    /** 
+     * Zips a file.
+     *
+     * @param inputFile The file to zip.
+     * @param outputFile The file where the compressed content will be placed.
+     * @throws IOException If any error occurs while writing the stream to a file
+     */
+    public static void zipFile(File inputFile, File outputFile) throws IOException {
+        ArgumentValidator.checkNotNull(inputFile, "File zipFile");
+        ArgumentValidator.checkNotNull(outputFile, "File toDir");
+        ArgumentValidator.checkTrue(inputFile.canRead(), "can't read '" + inputFile + "'");
+        InputStream inputStream = null;
+        ZipOutputStream outStream = null;
+        
+        byte[] buffer = new byte[BYTE_ARRAY_SIZE];
+        int bytesRead;
+
+        try {
+            inputStream = new FileInputStream(inputFile);
+            outStream = new ZipOutputStream(new FileOutputStream(outputFile));
+            
+            ZipEntry entry = new ZipEntry(inputFile.getPath());
+            outStream.putNextEntry(entry);
+            
+            while((bytesRead = inputStream.read(buffer)) > 0) {
+                outStream.write(buffer, 0, bytesRead);
+            }
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (outStream != null) {
+                outStream.close();
             }
         }
     }

@@ -1,0 +1,175 @@
+package org.bitrepository.audittrails.preserver;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.bitrepository.audittrails.store.AuditTrailStore;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.modify.putfile.PutFileClient;
+import org.bitrepository.protocol.CoordinationLayerException;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Handles the preservation of audit trails to the local collection.
+ * 
+ * 
+ */
+public class LocalAuditTrailPreservation implements AuditTrailPreserver {
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
+    /** The settings for the audit trail.*/
+    private final Settings settings;
+    /** The audit trails store, where the audit trails can be extracted.*/
+    private final AuditTrailStore store;
+    /** The put file client for sending the resulting files. */
+    private final PutFileClient client;
+
+    /** The interval between checking whether it should perform the preservation of audit trails. */
+    private final Long checkInterval;
+    /** The maximum time between committing audit trails.*/
+    private final Long timeLimit;
+    
+    /** The timer for scheduling the preservation of audit trails.*/
+    private Timer timer;
+    /** The timertask for preserving the audit trails.*/
+    private AuditPreservationTimerTask auditTask = null;
+    
+    /**
+     * Constructor.
+     * @param settings The settings for the audit trail service.
+     * @param store The storage of the audit trails, which should be preserved.
+     * @param client The PutFileClient for putting the audit trail packages to the collection.
+     */
+    public LocalAuditTrailPreservation(Settings settings, AuditTrailStore store, PutFileClient client) {
+        ArgumentValidator.checkNotNull(settings, "Settings settings");
+        ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
+        ArgumentValidator.checkNotNull(client, "PutFileClient client");
+        
+        this.settings = settings;
+        this.store = store;
+        this.client = client;
+        this.checkInterval = settings.getReferenceSettings().getAuditTrailServiceSettings()
+                .getTimerTaskCheckInterval();
+        this.timeLimit = settings.getReferenceSettings().getAuditTrailServiceSettings()
+                .getAuditTrailPreservationInterval();
+    }
+    
+    @Override
+    public void start() {
+        if(timer != null) {
+            log.debug("Cancelling old timer.");
+            timer.cancel();
+        }
+        
+        log.info("Instantiating the preservation of workflows.");
+        timer = new Timer();
+        auditTask = new AuditPreservationTimerTask(timeLimit);
+        timer.scheduleAtFixedRate(auditTask, checkInterval, checkInterval);
+    }
+
+    @Override
+    public void close() {
+        if(timer != null) {
+            timer.cancel();
+        }
+    }
+
+    @Override
+    public void preserveAuditTrailsNow() {
+        if(auditTask == null) {
+            log.info("preserving the audit trails ");
+        } else {
+            auditTask.resetTime();
+        }
+        performAuditTrailPreservation();
+    }
+    
+    /**
+     * Performs the audit trails preservation.
+     * Uses the AuditPacker to pack the audit trails in a file, then uploads the file to the default file-server, and
+     * finally use the PutFileClient to ingest the package into the collection.
+     */
+    private void performAuditTrailPreservation() {
+        Map<String, Long> reachedSeqNumber = new HashMap<String, Long>();
+        
+        AuditPacker packer = new AuditPacker(store);
+        try {
+            for(String contributor : settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs()) {
+                Long seqNumber = packer.packContributor(contributor);
+                reachedSeqNumber.put(contributor, seqNumber);
+                log.debug("Packed contributor '" + contributor + "' untill sequence number '" + seqNumber + "'.");
+            }
+            
+            File auditPackage = packer.compressFile();
+            URL url = uploadFile(auditPackage);
+            log.info("Uploaded the file '" + auditPackage + "' to '" + url.toExternalForm() + "'");
+            
+            EventHandler eventHandler = new AuditPreservationEventHandler(reachedSeqNumber, store);
+            client.putFile(url, auditPackage.getName(), auditPackage.length(), null, null, eventHandler, 
+                    "Preservation of audit trails from the AuditTrail service.");
+        } catch (Exception e) {
+            throw new CoordinationLayerException("Cannot perform the preservation of audit trails.", e);
+        } finally {
+            packer.cleanUp();
+        }
+    }
+    
+    /**
+     * Uploads the file to a server.
+     * @param file The file to upload.
+     * @return The URL to the file.
+     * @throws IOException If any issues occur with uploading the file.
+     */
+    @SuppressWarnings("deprecation")
+    private URL uploadFile(File file) throws IOException {
+        FileExchange exchange = ProtocolComponentFactory.getInstance().getFileExchange();
+        return exchange.uploadToServer(new FileInputStream(file), file.getName());
+    }
+    
+    /**
+     * Timer task for keeping track of the automated collecting of audit trails.
+     */
+    private class AuditPreservationTimerTask extends TimerTask {
+        /** The interval between running this timer task.*/
+        private final long interval;
+        /** The date for the next run.*/
+        private Date nextRun;
+        
+        /**
+         * Constructor.
+         * @param interval The interval between running this timer task.
+         */
+        private AuditPreservationTimerTask(long interval) {
+            this.interval = interval;
+            resetTime();
+        }
+        
+        /**
+         * Resets the date for next run.
+         */
+        private void resetTime() {
+            nextRun = new Date(System.currentTimeMillis() + interval);
+        }
+        
+        @Override
+        public void run() {
+            if(nextRun.getTime() < System.currentTimeMillis()) {
+                log.debug("Time to preserve the audit trails.");
+                resetTime();
+                performAuditTrailPreservation();
+            }
+        }
+    }
+}
