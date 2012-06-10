@@ -1,25 +1,25 @@
 package org.bitrepository;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
 import org.bitrepository.protocol.security.BasicOperationAuthorizor;
+import org.bitrepository.protocol.security.BasicSecurityManager;
 import org.bitrepository.protocol.security.MessageAuthenticator;
 import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.protocol.security.BasicSecurityManager;
 import org.bitrepository.webservice.ServiceUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 
 public class BasicClientFactory {
     private static final Logger log = LoggerFactory.getLogger(BasicClientFactory.class);
@@ -53,7 +53,7 @@ public class BasicClientFactory {
         		throw new RuntimeException("No configuration dir has been set!");
         	}
         	SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
-            Settings settings = settingsLoader.getSettings();	 
+            Settings settings = settingsLoader.getSettings(clientID);
             loadProperties();
             PermissionStore permissionStore = new PermissionStore();
             MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);

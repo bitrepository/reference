@@ -1,21 +1,5 @@
 package org.bitrepository;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.text.SimpleDateFormat;
-
-import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.GetFileClient;
@@ -24,17 +8,33 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.modify.replacefile.ReplaceFileClient;
-import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.bitrepository.utils.HexUtils;
 import org.bitrepository.utils.XMLGregorianCalendarConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BasicClient {
     private PutFileClient putClient;
@@ -60,7 +60,6 @@ public class BasicClient {
         completedFiles = new CopyOnWriteArrayList<URL>();
         this.settings = settings;
         this.securityManager = securityManager;
-        settings.setComponentID(clientID);
         putClient = ModifyComponentFactory.getInstance().retrievePutClient(settings, this.securityManager, clientID);
         getClient = AccessComponentFactory.getInstance().createGetFileClient(settings, this.securityManager, clientID);
         getChecksumClient = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, 
