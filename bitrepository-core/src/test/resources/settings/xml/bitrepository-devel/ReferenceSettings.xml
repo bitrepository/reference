@@ -26,8 +26,10 @@
 
 
 <ReferenceSettings xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd">
+  <GeneralSettings>
+    <ReceiverDestinationIDFactoryClass>org.bitrepository.protocol.messagebus.destination.UserSpecificReceiverDestinationIDFactory</ReceiverDestinationIDFactoryClass>
+  </GeneralSettings>
   <ClientSettings>
-    <ReceiverDestination>TEST-TOPIC-CLIENT</ReceiverDestination>
     <MediatorCleanupInterval>1000</MediatorCleanupInterval>
     <ConversationTimeout>3600000</ConversationTimeout>
   </ClientSettings>
@@ -36,7 +38,6 @@
     <FileDir>test-archive</FileDir>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
-    <ReceiverDestination>TEST-TOPIC-PILLAR</ReceiverDestination>
     <ChecksumPillarChecksumSpecificationType>MD5</ChecksumPillarChecksumSpecificationType>
     <AuditContributerDatabaseUrl>jdbc:derby:auditcontributerdb</AuditContributerDatabaseUrl>
     <AuditContributerDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditContributerDatabaseSpecifics>

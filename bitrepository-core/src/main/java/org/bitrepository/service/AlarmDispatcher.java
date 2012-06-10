@@ -117,16 +117,16 @@ public class AlarmDispatcher {
      */
     private void sendAlarm(Alarm alarm) {
         AlarmMessage message = new AlarmMessage();
-        alarm.setAlarmRaiser(context.getComponentID());
+        alarm.setAlarmRaiser(context.getSettings().getComponentID());
         alarm.setOrigDateTime(CalendarUtils.getNow());
 
         message.setAlarm(alarm);
         message.setCollectionID(context.getSettings().getCollectionID());
         message.setCorrelationID(UUID.randomUUID().toString());
         message.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        message.setReplyTo(context.getReplyTo());
+        message.setReplyTo(context.getSettings().getReceiverDestinationID());
         message.setTo(context.getSettings().getAlarmDestination());
-        message.setFrom(context.getComponentID());
+        message.setFrom(context.getSettings().getComponentID());
         message.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         
         log.info("Sending alarm: \n{}", message);

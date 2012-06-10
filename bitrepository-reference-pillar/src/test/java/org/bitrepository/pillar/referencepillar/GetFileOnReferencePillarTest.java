@@ -24,12 +24,6 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
-import java.io.File;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -39,57 +33,26 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.MockAlarmDispatcher;
-import org.bitrepository.pillar.MockAuditManager;
-import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
-import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.service.contributor.ContributorContext;
-import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.Date;
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
-public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
-    GetFileMessageFactory msgFactory;
-    
-    ReferenceArchive archive;
-    ReferencePillarMediator mediator;
-    MockAlarmDispatcher alarmDispatcher;
-    MockAuditManager audits;
-    
-    @BeforeMethod (alwaysRun=true)
-    public void initialiseGetChecksumsTests() throws Exception {
-        msgFactory = new GetFileMessageFactory(settings);
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        settings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
-        if(dir.exists()) {
-            FileUtils.delete(dir);
-        }
-        
-        addStep("Initialize the pillar.", "Should not be a problem.");
-        archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        audits = new MockAuditManager();
-        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
-                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
-                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
-        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
-        mediator = new ReferencePillarMediator(context, archive);
-        mediator.start();
-    }
+public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     
     @AfterMethod (alwaysRun=true) 
     public void closeArchive() {
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
         if(dir.exists()) {
             FileUtils.delete(dir);
         }
@@ -104,7 +67,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addDescription("Tests the get functionality of the reference pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = null;
         ChecksumDataForFileTYPE csData = null;
@@ -115,7 +78,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         Long FILE_SIZE = testfile.length();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
@@ -123,10 +86,10 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
-                auditTrail, FILE_ID, FROM, clientDestinationId);
+                auditTrail, FILE_ID, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
         
-        addStep("Retrieve and validate the response from the pillar.", 
+        addStep("Retrieve and validate the response getPillarID() the pillar.", 
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
@@ -145,7 +108,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the actual GetFile message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, 
-                receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, FROM, pillarId, 
+                receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, getPillarID(), pillarId, 
                 clientDestinationId, receivedIdentifyResponse.getReplyTo());
         messageBus.sendMessage(getRequest);
         
@@ -192,7 +155,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addDescription("Tests the get functionality of the reference pillar for a file part. Successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test2.txt";
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = new FilePart();
         filePart.setPartLength(BigInteger.ONE);
@@ -205,7 +168,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         Long FILE_SIZE = testfile.length();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
@@ -213,7 +176,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the actual GetFile message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, 
-                msgFactory.getNewCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, FROM, pillarId, 
+                msgFactory.getNewCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, getPillarID(), pillarId, 
                 clientDestinationId, pillarDestinationId);
         messageBus.sendMessage(getRequest);
         
@@ -264,7 +227,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
     public void pillarGetFileTestFailedNoSuchFile() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetFile requests for a file, which it does not have.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         
         addStep("Move the test file into the file directory.", "Should be all-right");
@@ -273,10 +236,10 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
-                auditTrail, FILE_ID, FROM, clientDestinationId);
+                auditTrail, FILE_ID, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
         
-        addStep("Retrieve and validate the response from the pillar.", 
+        addStep("Retrieve and validate the response getPillarID() the pillar.", 
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
@@ -298,7 +261,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addDescription("Tests that the ReferencePillar is able to reject a GetFile requests for a file, which it does not have.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = null;
         
@@ -310,7 +273,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the actual GetFile message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, 
-                msgFactory.getNewCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, FROM, pillarId, 
+                msgFactory.getNewCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, getPillarID(), pillarId, 
                 clientDestinationId, pillarDestinationId);
         messageBus.sendMessage(getRequest);
         
@@ -343,8 +306,8 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the identify request message.", 
                 "Should be received by the pillar, which should issue an alarm.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
-                auditTrail, FILE_ID, FROM, clientDestinationId);
-        identifyRequest.setCollectionID(settings.getCollectionID() + "ERROR");
+                auditTrail, FILE_ID, getPillarID(), clientDestinationId);
+        identifyRequest.setCollectionID(componentSettings.getCollectionID() + "ERROR");
         messageBus.sendMessage(identifyRequest);
         
         // TODO fix this!
@@ -358,7 +321,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addDescription("Tests that the ReferencePillar is able to reject a GetFile requests with a wrong pillarID.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = null;
         
@@ -367,7 +330,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
@@ -375,10 +338,10 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
-                auditTrail, FILE_ID, FROM, clientDestinationId);
+                auditTrail, FILE_ID, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
         
-        addStep("Retrieve and validate the response from the pillar.", 
+        addStep("Retrieve and validate the response getPillarID() the pillar.", 
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
@@ -397,7 +360,7 @@ public class GetFileOnReferencePillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the actual GetFile message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, 
-                receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, FROM, pillarId, 
+                receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, getPillarID(), pillarId, 
                 clientDestinationId, receivedIdentifyResponse.getReplyTo());
         getRequest.setPillarID(pillarId + "-ERROR");
         messageBus.sendMessage(getRequest);

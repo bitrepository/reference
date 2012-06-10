@@ -114,7 +114,7 @@ public abstract class GeneralConversationState {
         msg.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         msg.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
         msg.setCollectionID(getContext().getSettings().getCollectionID());
-        msg.setReplyTo(getContext().getSettings().getReceiverDestination());
+        msg.setReplyTo(getContext().getSettings().getReceiverDestinationID());
         msg.setAuditTrailInformation(getContext().getAuditTrailInformation());
         msg.setFrom(getContext().getClientID());
     }

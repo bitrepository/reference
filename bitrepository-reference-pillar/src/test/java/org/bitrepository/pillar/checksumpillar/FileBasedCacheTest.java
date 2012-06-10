@@ -21,16 +21,6 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
-import static org.bitrepository.pillar.checksumpillar.cache.ChecksumEntry.CHECKSUM_SEPARATOR;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
-
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -42,6 +32,16 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
+
+import static org.bitrepository.pillar.checksumpillar.cache.ChecksumEntry.CHECKSUM_SEPARATOR;
+
 public class FileBasedCacheTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
@@ -51,7 +51,7 @@ public class FileBasedCacheTest extends ExtendedTestCase {
     
     @BeforeMethod (alwaysRun = true)
     public void setup() {
-        settings = TestSettingsProvider.reloadSettings();
+        settings = TestSettingsProvider.reloadSettings("FileBasedCacheUnderTest");
         csDir = FileUtils.retrieveDirectory(CHECKSUM_DIR);
         
         settings.getReferenceSettings().getPillarSettings().setFileDir(csDir.getAbsolutePath());

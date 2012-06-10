@@ -37,15 +37,15 @@ public class TestSettingsProvider {
      * Returns the settings for the collection defined by the COLLECTIONID_PROPERTY system variable if defined. If 
      * undefined the DEVELOPMENT_ENVIRONMENT settings will be loaded.
      */
-    public static Settings getSettings() {
-        return settingsprovider.getSettings();
+    public static Settings getSettings(String componentID) {
+        return settingsprovider.getSettings(componentID);
     }
     
     /** 
      * Reloads the settings from disk.
      */
-    public static Settings reloadSettings() {
-        settingsprovider.loadSettings();
-        return getSettings();
+    public static Settings reloadSettings(String componentID) {
+        settingsprovider.reloadSettings(componentID);
+        return getSettings(componentID);
     }
 }

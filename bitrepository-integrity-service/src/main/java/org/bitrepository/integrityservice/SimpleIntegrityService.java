@@ -24,8 +24,6 @@
  */
 package org.bitrepository.integrityservice;
 
-import java.util.Collection;
-
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -50,6 +48,8 @@ import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
 
 /**
  * Simple integrity service.
@@ -99,9 +99,7 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
         this.alerter = alerter;
         this.collector = collector;
         
-        this.contributor = new SimpleContributorMediator(messageBus, settings,
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID(),
-                        settings.getReceiverDestination(), auditManager);
+        this.contributor = new SimpleContributorMediator(messageBus, settings, auditManager);
         contributor.start();
     }
     

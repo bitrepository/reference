@@ -21,20 +21,17 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.pillar.PillarComponentFactory;
-import org.bitrepository.pillar.PillarLauncher;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.pillar.PillarRunner;
 
 /**
  * Method for launching the ChecksumPillar. 
  * It just loads the settings from the given path, initiates the messagebus (with security) and then starts the 
  * ChecksumPillar.
  */
-public final class ChecksumPillarLauncher extends PillarLauncher {
+public final class ChecksumPillarLauncher {
+    private static final String DEFAULT_PILLAR_ID = "ChecksumPillar";
     
     /**
      * Private constructor. To prevent instantiation of this utility class.
@@ -45,23 +42,15 @@ public final class ChecksumPillarLauncher extends PillarLauncher {
      * @param args <ol>
      * <li> The path to the directory containing the settings. See {@link XMLFileSettingsLoader} for details.</li>
      * <li> The path to the private key file with the certificates for communication.</li>
-     * <li> The collection ID to load the settings for.</li>
+     * <li> The pillar's componentID.</li>
      * </ol>
      */
     public static void main(String[] args) {
-        try {
-            Settings settings = loadSettings(args[0]);
-            SecurityManager securityManager = loadSecurityManager(args[1], settings);
-        
-            MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
-            ChecksumPillar pillar = PillarComponentFactory.getInstance().getChecksumPillar(messageBus, settings);
-            
-            synchronized(pillar) {
-                pillar.wait();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+        String pathToSettings = args[0];
+        String pathToKeyFile = args[1];
+        String pillarID =  args.length == 3 ? pillarID = args[2]: DEFAULT_PILLAR_ID ;
+        ChecksumPillar checksumPillar =
+                PillarComponentFactory.getInstance().createChecksumPillar(pathToSettings, pathToKeyFile, pillarID);
+        PillarRunner.launchPillar(checksumPillar);
     }
 }

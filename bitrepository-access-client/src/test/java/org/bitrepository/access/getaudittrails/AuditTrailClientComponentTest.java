@@ -53,12 +53,12 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
     @BeforeMethod(alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
-        testMessageFactory = new GetAuditTrailsMessageFactory(settings.getCollectionID(), TEST_CLIENT_ID);
+        testMessageFactory = new GetAuditTrailsMessageFactory(componentSettings.getCollectionID(), TEST_CLIENT_ID);
 
-        if (settings.getCollectionSettings().getGetAuditTrailSettings() == null) {
-            settings.getCollectionSettings().setGetAuditTrailSettings(new GetAuditTrailSettings());
+        if (componentSettings.getCollectionSettings().getGetAuditTrailSettings() == null) {
+            componentSettings.getCollectionSettings().setGetAuditTrailSettings(new GetAuditTrailSettings());
         }
-        List<String> contributers = settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs();
+        List<String> contributers = componentSettings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs();
         contributers.clear();
         contributers.add(PILLAR1_ID);
         contributers.add(PILLAR2_ID);
@@ -72,7 +72,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
     @Test(groups = {"regressiontest"})
     public void verifyAuditTrailClientFromFactory() throws Exception {
         Assert.assertTrue(AccessComponentFactory.getInstance().createAuditTrailClient(
-                settings, securityManager, TEST_CLIENT_ID)
+                componentSettings, securityManager, TEST_CLIENT_ID)
                 instanceof ConversationBasedAuditTrailClient,
                 "The default AuditTrailClient from the Access factory should be of the type '" +
                         ConversationBasedAuditTrailClient.class.getName() + "'.");
@@ -417,7 +417,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
        addStep("Configure 3 second timeout for identifying contributers. " +
                "The default 2 contributers collection is used", "");
 
-       settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
+       componentSettings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
        AuditTrailClient client = createAuditTrailClient();
 
@@ -455,7 +455,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         addStep("Configure 3 second timeout for the operation itself. " +
                 "The default 2 contributers collection is used", "");
 
-        settings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
+        componentSettings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         AuditTrailClient client = createAuditTrailClient();
 
@@ -495,7 +495,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
        addDescription("Tests the AuditTrailClient handles lack of IdentifyResponses gracefully  ");
        addStep("Set a 3 second timeout for identifying contributers.", "");
 
-       settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
+       componentSettings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
        AuditTrailClient client = createAuditTrailClient();
 
        addStep("Make the client ask for all audit trails.",
@@ -518,7 +518,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the the AuditTrailClient handles lack of Final Responses gracefully  ");
         addStep("Set a 3 second timeout for the operation.", "");
 
-        settings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
+        componentSettings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
         AuditTrailClient client = createAuditTrailClient();
 
         addStep("Make the client ask for all audit trails.",
@@ -563,8 +563,8 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
        addStep("Set a 3 second timeout for conversations.", "");
 
        //We need to use a different collection ID to avoid using a existing conversation mediator.
-       settings.getCollectionSettings().setCollectionID("conversationTimeoutTest");
-       settings.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(3000));
+       componentSettings.getCollectionSettings().setCollectionID("conversationTimeoutTest");
+       componentSettings.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(3000));
        AuditTrailClient client = createAuditTrailClient();
 
        addStep("Make the client ask for all audit trails.",
@@ -582,17 +582,17 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
    }
 
     /**
-     * Creates a new test AuditTrailClient based on the supplied settings.
+     * Creates a new test AuditTrailClient based on the supplied componentSettings.
      *
      * Note that the normal way of creating client through the module factory would reuse components with settings from
      * previous tests.
      * @return A new AuditTrailClient(Wrapper).
      */
     private AuditTrailClient createAuditTrailClient() {
-        MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
-        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
+        MessageBus messageBus = new ActiveMQMessageBus(componentSettings.getMessageBusConfiguration(), securityManager);
+        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(componentSettings, securityManager);
         return new AuditTrailClientTestWrapper(new ConversationBasedAuditTrailClient(
-                settings, conversationMediator, messageBus, TEST_CLIENT_ID) , testEventManager);
+                componentSettings, conversationMediator, messageBus, TEST_CLIENT_ID) , testEventManager);
     }
 
     private ResultingAuditTrails createTestResultingAuditTrails(String componentID) {

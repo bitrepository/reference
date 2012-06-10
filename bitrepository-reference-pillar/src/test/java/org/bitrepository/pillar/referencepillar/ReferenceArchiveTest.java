@@ -24,12 +24,7 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.util.Arrays;
-
 import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.MockAlarmDispatcher;
 import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.common.PillarContext;
@@ -39,7 +34,11 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
-public class ReferenceArchiveTest extends DefaultFixturePillarTest {
+import java.io.File;
+import java.io.FileWriter;
+import java.util.Arrays;
+
+public class ReferenceArchiveTest extends ReferencePillarTest {
     protected ReferenceArchive archive;
     protected ReferencePillarMediator mediator;
     protected MockAlarmDispatcher alarmDispatcher;

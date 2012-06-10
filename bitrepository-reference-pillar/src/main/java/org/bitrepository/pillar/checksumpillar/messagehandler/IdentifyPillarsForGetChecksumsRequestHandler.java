@@ -24,9 +24,6 @@
  */
 package org.bitrepository.pillar.checksumpillar.messagehandler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -38,6 +35,9 @@ import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class for handling the identification of this pillar for the purpose of performing the GetChecksums operation.
@@ -153,7 +153,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         res.setChecksumRequestForExistingFile(msg.getChecksumRequestForExistingFile());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setReplyTo(getSettings().getReceiverDestinationID());
         res.setPillarChecksumSpec(getChecksumType());
         
         return res;

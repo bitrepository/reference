@@ -24,12 +24,6 @@
  */
 package org.bitrepository.audittrails.service;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
-
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
@@ -51,12 +45,18 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
+
 /**
  * Factory class for accessing the AuditTrailService 
  */
 public final class AuditTrailServiceFactory {
     /** The audit trail service. 
-     * @see getAuditTrailService().*/
+     * @see #getAuditTrailService().*/
     private static AuditTrailService auditTrailService;
     /** The path to the directory containing the configuration files.*/
     private static String configurationDir;
@@ -93,8 +93,9 @@ public final class AuditTrailServiceFactory {
             PermissionStore permissionStore;
             SecurityManager securityManager;
             SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(configurationDir));
-            Settings settings = settingsLoader.getSettings();
-            settings.setComponentID(settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
+            String auditTrailComponentID =
+                    settingsLoader.loadReferenceSettings().getAuditTrailServiceSettings().getID();
+            Settings settings = settingsLoader.getSettings(auditTrailComponentID);
             try {
                 loadProperties();
                 permissionStore = new PermissionStore();
@@ -107,7 +108,7 @@ public final class AuditTrailServiceFactory {
                 
                 ContributorMediator mediator = new SimpleContributorMediator(
                         ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
-                        settings, settings.getComponentID(), settings.getReceiverDestination(), null);
+                        settings, null);
                 
                 AuditTrailStore store = new AuditTrailServiceDAO(settings);
                 AuditTrailClient client = AccessComponentFactory.getInstance().createAuditTrailClient(settings, 

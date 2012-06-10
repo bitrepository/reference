@@ -41,7 +41,7 @@ public class AuditCollectorTest extends ExtendedTestCase {
     
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
-        settings = TestSettingsProvider.reloadSettings();
+        settings = TestSettingsProvider.reloadSettings("AuditCollectorUnderTest");
     }
 
     @Test(groups = {"regressiontest"})

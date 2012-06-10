@@ -53,7 +53,7 @@ public abstract class AbstractGetFileClientTest extends DefaultFixtureClientTest
     public void beforeMethodSetup() throws Exception {
         if (useMockupPillar()) {
             testMessageFactory = new TestGetFileMessageFactory(
-                    settings.getCollectionID());
+                    componentSettings.getCollectionID());
             pillar1FileStore = new TestFileStore("Pillar1", new File("src/test/resources/test-files/", DEFAULT_FILE_ID));
             // The following line is also relevant for non-mockup senarios, where the pillars needs to be initialized 
             // with content.

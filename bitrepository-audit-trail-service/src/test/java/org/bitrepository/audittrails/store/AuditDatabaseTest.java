@@ -21,12 +21,6 @@
  */
 package org.bitrepository.audittrails.store;
 
-import java.io.File;
-import java.math.BigInteger;
-import java.sql.Connection;
-import java.util.Date;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -40,6 +34,12 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.util.Date;
+import java.util.List;
 
 public class AuditDatabaseTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
@@ -56,7 +56,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
 
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
-        settings = TestSettingsProvider.reloadSettings();
+        settings = TestSettingsProvider.reloadSettings("AuditDatabaseUnderTest");
         settings.getReferenceSettings().getAuditTrailServiceSettings().setAuditTrailServiceDatabaseUrl(DATABASE_URL);
         
         addStep("Initialise the database", "Should be unpacked from a jar-file.");

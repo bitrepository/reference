@@ -22,7 +22,6 @@
 package org.bitrepository.pillar.referencepillar;
 
 import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.MockAlarmDispatcher;
 import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.common.PillarContext;
@@ -35,7 +34,7 @@ import org.testng.annotations.BeforeMethod;
 
 import java.io.File;
 
-public class ReferencePillarMediatorTester extends DefaultFixturePillarTest {
+public class ReferencePillarMediatorTester extends ReferencePillarTest {
     
     ReferenceArchive archive;
     ReferencePillarMediator mediator;
@@ -44,27 +43,25 @@ public class ReferencePillarMediatorTester extends DefaultFixturePillarTest {
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetChecksumsTests() throws Exception {
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        settings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
+        componentSettings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         if(dir.exists()) {
             FileUtils.delete(dir);
         }
         
         addStep("Initialize the pillar.", "Should not be a problem.");
-        archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
+        archive = new ReferenceArchive(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
         audits = new MockAuditManager();
-        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
-                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
-                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
         alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
+        PillarContext context = new PillarContext(componentSettings, messageBus, alarmDispatcher, audits);
         mediator = new ReferencePillarMediator(context, archive);
         mediator.start();
     }
     
     @AfterMethod (alwaysRun=true) 
     public void closeArchive() {
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
         if(dir.exists()) {
             FileUtils.delete(dir);
         }
@@ -111,7 +108,7 @@ public class ReferencePillarMediatorTester extends DefaultFixturePillarTest {
 //    public void handleMessagesWithNoAlarms() throws Exception {
 //        addDescription("Tests that if the alarm level is too high, then the alarms are not send for the Message.");
 //        addStep("Setup variables, e.g. changing the alarm level.", "Should be ok.");
-//        settings.getCollectionSettings().getPillarSettings().setAlarmLevel(AlarmLevel.EMERGENCY);
+//        componentSettings.getCollectionSettings().getPillarSettings().setAlarmLevel(AlarmLevel.EMERGENCY);
 //        
 //        alarmDispatcher.resetCallsForSendAlarm();
 //        audits.resetCallsForAuditEvent();

@@ -21,10 +21,6 @@
  */
 package org.bitrepository.integrityservice;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -45,6 +41,10 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 /**
  * Test that triggering works.
  */
@@ -53,7 +53,7 @@ public class WorkflowTest extends ExtendedTestCase {
     
     @BeforeClass (alwaysRun = true)
     public void setup() {
-        settings = TestSettingsProvider.reloadSettings();
+        settings = TestSettingsProvider.reloadSettings("WorkflowUnderTest");
     }
     
     @Test(groups = {"regressiontest", "integritytest"})

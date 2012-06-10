@@ -54,9 +54,7 @@ public class PillarContext {
         ArgumentValidator.checkNotNull(alarmDispatcher, "AlarmDispatcher");
         ArgumentValidator.checkNotNull(auditTrailManager, "AuditTrailManager");
         
-        mediatorContext = new ContributorContext(messageBus, settings, 
-                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
-                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        mediatorContext = new ContributorContext(messageBus, settings);
         this.messageBus = messageBus;
         this.alarmDispatcher = alarmDispatcher;
         this.auditTrailManager = auditTrailManager;

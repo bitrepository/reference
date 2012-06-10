@@ -1,9 +1,25 @@
+/*
+ * #%L
+ * Bitrepository Reference Pillar
+ * %%
+ * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.pillar;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
@@ -19,6 +35,11 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 public class MediatorTest extends DefaultFixturePillarTest {
     ChecksumPillarMediator mediator;
     MockAlarmDispatcher alarmDispatcher;
@@ -28,11 +49,9 @@ public class MediatorTest extends DefaultFixturePillarTest {
     @BeforeMethod (alwaysRun=true)
     public void initialiseTest() throws Exception {
         audits = new MockAuditManager();
-        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
-                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
-                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
         alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
+        context = new PillarContext(componentSettings, messageBus, alarmDispatcher, audits);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -49,12 +68,12 @@ public class MediatorTest extends DefaultFixturePillarTest {
             addStep("Send a request to the mediator.", "Should be caught.");
             IdentifyContributorsForGetStatusRequest request = new IdentifyContributorsForGetStatusRequest();
             request.setAuditTrailInformation("audit");
-            request.setCollectionID(settings.getCollectionID());
+            request.setCollectionID(componentSettings.getCollectionID());
             request.setCorrelationID(UUID.randomUUID().toString());
-            request.setFrom(FROM);
+            request.setFrom(getPillarID());
             request.setMinVersion(BigInteger.valueOf(1L));
             request.setReplyTo(clientDestinationId);
-            request.setTo(settings.getCollectionDestination());
+            request.setTo(componentSettings.getCollectionDestination());
             request.setVersion(BigInteger.valueOf(1L));
             messageBus.sendMessage(request);
             
@@ -79,6 +98,11 @@ public class MediatorTest extends DefaultFixturePillarTest {
         } catch (IllegalArgumentException e) {
             // Expected
         }
+    }
+
+    @Override
+    protected String getComponentID() {
+        return "MediatorUnderTest";
     }
 
     private class TestMediator extends PillarMediator {

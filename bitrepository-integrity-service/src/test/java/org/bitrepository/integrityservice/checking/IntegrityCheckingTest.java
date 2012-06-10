@@ -24,9 +24,6 @@
  */
 package org.bitrepository.integrityservice.checking;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -39,13 +36,14 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.checking.IntegrityChecker;
-import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityservice.mocks.MockAuditManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class IntegrityCheckingTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
@@ -57,7 +55,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
     
     @BeforeClass (alwaysRun = true)
     public void setup() {
-        settings = TestSettingsProvider.reloadSettings();
+        settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
         settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_1);
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);

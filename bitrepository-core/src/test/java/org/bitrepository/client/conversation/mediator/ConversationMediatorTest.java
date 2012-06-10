@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
  */
 @Test
 public abstract class ConversationMediatorTest {
-    protected Settings settings = TestSettingsProvider.getSettings(); 
+    protected Settings settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     protected SecurityManager securityManager = new DummySecurityManager();
 
     /**

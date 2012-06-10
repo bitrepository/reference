@@ -24,11 +24,6 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URL;
-import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -41,61 +36,28 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.MockAlarmDispatcher;
-import org.bitrepository.pillar.MockAuditManager;
-import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
-import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.service.contributor.ContributorContext;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
+import java.util.Date;
 
 /**
  * Tests the ReplaceFile functionality on the ReferencePillar.
  */
-public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
-    ReplaceFileMessageFactory msgFactory;
-    
-    MemoryCache cache;
-    ChecksumPillarMediator mediator;
-    MockAlarmDispatcher alarmDispatcher;
-    MockAuditManager audits;
-    
+public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
+    private ReplaceFileMessageFactory msgFactory;
+
     @BeforeMethod (alwaysRun=true)
     public void initialiseDeleteFileTests() throws Exception {
-        msgFactory = new ReplaceFileMessageFactory(settings);
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        if(dir.exists()) {
-            FileUtils.delete(dir);
-        }
-        
-        addStep("Initialize the pillar.", "Should not be a problem.");
-        cache = new MemoryCache();
-        audits = new MockAuditManager();
-        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
-                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
-                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
-        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
-        mediator = new ChecksumPillarMediator(context, cache);
-        mediator.start();
+        msgFactory = new ReplaceFileMessageFactory(componentSettings);
     }
-    
-    @AfterMethod (alwaysRun=true) 
-    public void closeArchive() {
-        if(cache != null) {
-            cache.cleanUp();
-        }
-        if(mediator != null) {
-            mediator.close();
-        }
-    }
-    
+
     @SuppressWarnings("deprecation")
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarReplaceTestSuccessCase() throws Exception {
@@ -106,8 +68,8 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         String CHECKSUM = "1234cccccccc4321";
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         long FILE_SIZE = 1L;
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
                 ChecksumType.MD5.toString());
 
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
@@ -136,10 +98,10 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(
-                auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
+                auditTrail, FILE_ID, FILE_SIZE, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
         
-        addStep("Retrieve and validate the response from the pillar.", "The pillar should make a response.");
+        addStep("Retrieve and validate the response getPillarID() the pillar.", "The pillar should make a response.");
         IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
                 IdentifyPillarsForReplaceFileResponse.class);
         Assert.assertEquals(receivedIdentifyResponse, 
@@ -165,7 +127,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
-                FROM, 
+                getPillarID(), 
                 pillarId, 
                 clientDestinationId, 
                 receivedIdentifyResponse.getReplyTo());
@@ -231,8 +193,8 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         String auditTrail = "DELETE-FILE-TEST";
         String CHECKSUM = "1234cccccccc4321";
         long FILE_SIZE = 1L;
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
                 ChecksumType.MD5.toString());
 
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
@@ -256,10 +218,10 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(
-                auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
+                auditTrail, FILE_ID, FILE_SIZE, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
         
-        addStep("Retrieve and validate the response from the pillar.", "The pillar should make a response.");
+        addStep("Retrieve and validate the response getPillarID() the pillar.", "The pillar should make a response.");
         IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
                 IdentifyPillarsForReplaceFileResponse.class);
         Assert.assertEquals(receivedIdentifyResponse, 
@@ -288,8 +250,8 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         String CHECKSUM = "1234cccccccc4321";
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         long FILE_SIZE = 1L;
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
                 ChecksumType.MD5.toString());
 
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
@@ -323,7 +285,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
-                FROM, 
+                getPillarID(), 
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
@@ -362,8 +324,8 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         String BAD_CHECKSUM = "cccc43211234cccc";
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         long FILE_SIZE = 1L;
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
                 ChecksumType.MD5.toString());
 
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
@@ -401,7 +363,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
-                FROM, 
+                getPillarID(), 
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
@@ -440,8 +402,8 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         String BAD_CHECKSUM = "cccc43211234cccc";
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         long FILE_SIZE = 1L;
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
                 ChecksumType.MD5.toString());
 
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
@@ -481,7 +443,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
-                FROM, 
+                getPillarID(), 
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
@@ -518,8 +480,8 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         String CHECKSUM = "1234cccccccc4321";
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         long FILE_SIZE = 1L;
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
                 ChecksumType.MD5.toString());
         
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
@@ -561,7 +523,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
-                FROM, 
+                getPillarID(), 
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
@@ -597,8 +559,8 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         String CHECKSUM = "1234cccccccc4321";
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         long FILE_SIZE = 1L;
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
                 ChecksumType.MD5.toString());
         
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
@@ -640,7 +602,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
-                FROM, 
+                getPillarID(), 
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
@@ -677,8 +639,8 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         String CHECKSUM = "1234cccccccc4321";
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         long FILE_SIZE = 1L;
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
                 ChecksumType.MD5.toString());
         
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
@@ -720,7 +682,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
-                FROM, 
+                getPillarID(), 
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
@@ -757,8 +719,8 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         String CHECKSUM = "1234cccccccc4321";
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         long FILE_SIZE = 1L;
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
                 ChecksumType.MD5.toString());
         
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
@@ -800,7 +762,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
-                FROM, 
+                getPillarID(), 
                 pillarId, 
                 clientDestinationId, 
                 pillarDestinationId);
@@ -837,8 +799,8 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         String CHECKSUM = "1234cccccccc4321";
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         long FILE_SIZE = 1L;
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
                 ChecksumType.MD5.toString());
 
         ChecksumSpecTYPE csSpec = new ChecksumSpecTYPE();
@@ -858,10 +820,10 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         
         addStep("Create and send a identify message to the pillar.", "Should be received and handled by the pillar.");
         IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(
-                auditTrail, FILE_ID, FILE_SIZE, FROM, clientDestinationId);
+                auditTrail, FILE_ID, FILE_SIZE, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
         
-        addStep("Retrieve and validate the response from the pillar.", "The pillar should make a response.");
+        addStep("Retrieve and validate the response getPillarID() the pillar.", "The pillar should make a response.");
         IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
                 IdentifyPillarsForReplaceFileResponse.class);
         Assert.assertEquals(receivedIdentifyResponse, 
@@ -887,7 +849,7 @@ public class ReplaceFileOnChecksumPillarTest extends DefaultFixturePillarTest {
                 FILE_ADDRESS, 
                 FILE_ID, 
                 FILE_SIZE, 
-                FROM, 
+                getPillarID(), 
                 pillarId, 
                 clientDestinationId, 
                 receivedIdentifyResponse.getReplyTo());

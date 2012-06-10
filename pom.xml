@@ -98,9 +98,9 @@
     </site>
   </distributionManagement>
 
-  <description>The Bit Repository system enables long-term preservation of data in a distributed, highly redundant 
-  architecture. The data integrity is ensured by using multiple, independently developed data storage systems (﻿Pillars) 
-  across different organizations, together with functionality for maintaining the ﻿integrity of the data over time. 
+  <description>The Bit Repository system enables long-term preservation of data in a distributed, highly redundant
+    architecture. The data integrity is ensured by using multiple, independently developed data storage systems (﻿Pillars)
+    across different organizations, together with functionality for maintaining the ﻿integrity of the data over time.
   </description>
   <url>https://sbforge.org/display/BITMAG</url>
 
@@ -240,6 +240,18 @@ in preparation for the xsd -> java class file generation -->
         <configuration>
           <groups>regressiontest</groups>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>source-jars</id>
+            <goals>
+              <goal>jar</goal>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>

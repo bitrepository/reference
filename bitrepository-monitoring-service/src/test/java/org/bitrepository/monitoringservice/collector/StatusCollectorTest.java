@@ -26,7 +26,6 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.monitoringservice.MockAlerter;
 import org.bitrepository.monitoringservice.MockGetStatusClient;
 import org.bitrepository.monitoringservice.MockStatusStore;
-import org.bitrepository.monitoringservice.collector.StatusCollector;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -40,7 +39,7 @@ public class StatusCollectorTest extends ExtendedTestCase {
     
     @BeforeClass (alwaysRun = true)
     public void setup() {
-        settings = TestSettingsProvider.reloadSettings();
+        settings = TestSettingsProvider.reloadSettings("StatusCollectorUnderTest");
     }
 
     @Test(groups = {"regressiontest"})

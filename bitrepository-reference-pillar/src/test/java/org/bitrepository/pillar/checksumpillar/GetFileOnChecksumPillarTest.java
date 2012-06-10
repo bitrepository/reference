@@ -24,9 +24,6 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
-import java.io.File;
-import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FilePart;
@@ -35,58 +32,21 @@ import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.MockAlarmDispatcher;
-import org.bitrepository.pillar.MockAuditManager;
-import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
-import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
-import org.bitrepository.service.contributor.ContributorContext;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.util.Date;
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
-public class GetFileOnChecksumPillarTest extends DefaultFixturePillarTest {
+public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
     GetFileMessageFactory msgFactory;
-    
-    MemoryCache cache;
-    ChecksumPillarMediator mediator;
-    MockAlarmDispatcher alarmDispatcher;
-    MockAuditManager audits;
-    
     @BeforeMethod (alwaysRun=true)
     public void initialiseDeleteFileTests() throws Exception {
-        msgFactory = new GetFileMessageFactory(settings);
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        if(dir.exists()) {
-            FileUtils.delete(dir);
-        }
-        
-        addStep("Initialize the pillar.", "Should not be a problem.");
-        cache = new MemoryCache();
-        audits = new MockAuditManager();
-        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
-                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
-                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
-        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
-        mediator = new ChecksumPillarMediator(context, cache);
-        mediator.start();
-    }    
-    
-    @AfterMethod (alwaysRun=true) 
-    public void closeArchive() {
-        if(cache != null) {
-            cache.cleanUp();
-        }
-        if(mediator != null) {
-            mediator.close();
-        }
+        msgFactory = new GetFileMessageFactory(componentSettings);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -95,8 +55,8 @@ public class GetFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Setting up the variables for the test.", "Should be instantiated.");
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String auditTrail = "GET-FILE-TEST";
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
                 ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
@@ -104,7 +64,7 @@ public class GetFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the checksum pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
-                auditTrail, FILE_ID, FROM, clientDestinationId);
+                auditTrail, FILE_ID, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the checksum pillar.", 
@@ -132,8 +92,8 @@ public class GetFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         FilePart filePart = null;
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String auditTrail = "GET-FILE-TEST";
-        String pillarId = settings.getReferenceSettings().getPillarSettings().getPillarID();
-        settings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
                 ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
@@ -141,7 +101,7 @@ public class GetFileOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Create and send the GetFile request message.", 
                 "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, msgFactory.getNewCorrelationID(), 
-                FILE_ADDRESS, FILE_ID, filePart, FROM, pillarId, clientDestinationId, pillarDestinationId);
+                FILE_ADDRESS, FILE_ID, filePart, getPillarID(), pillarId, clientDestinationId, pillarDestinationId);
         messageBus.sendMessage(getRequest);
         
         addStep("Retrieve and validate the final response from the checksum pillar.", 

@@ -24,6 +24,7 @@
  */
 package org.bitrepository.common.settings;
 
+import org.bitrepository.protocol.messagebus.destination.DestinationHelper;
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
 
@@ -32,7 +33,7 @@ import org.bitrepository.settings.referencesettings.ReferenceSettings;
  * instantiation for loading stored settings.
  */
 public class SettingsProvider {
-    /** The loader to use for acessing stored settings*/
+    /** The loader to use for accessing stored settings*/
     private final SettingsLoader settingsReader;
     /** The loaded settings */
     private Settings settings;
@@ -50,9 +51,9 @@ public class SettingsProvider {
      * Gets the settings, if no settings has been loaded into memory, will load the settings from disk
      * @return The settings 
      */
-    public synchronized Settings getSettings() {
+    public synchronized Settings getSettings(String componentID) {
         if(settings == null) {
-            loadSettings();
+            reloadSettings(componentID);
         }
         return settings;
     }
@@ -60,9 +61,22 @@ public class SettingsProvider {
     /**
     * Will load the settings from disk. Will overwrite any settings already in the provider.
     */
-    public synchronized void loadSettings() {
+    public synchronized void reloadSettings(String componentID) {
     	CollectionSettings collectionSettings = settingsReader.loadSettings(CollectionSettings.class);
     	ReferenceSettings referenceSettings = settingsReader.loadSettings(ReferenceSettings.class);
-        settings = new Settings(collectionSettings, referenceSettings);
+        // Fix this before commit
+        DestinationHelper dh = new DestinationHelper(
+                componentID,
+                referenceSettings.getGeneralSettings().getReceiverDestinationIDFactoryClass(),
+                collectionSettings.getProtocolSettings().getCollectionDestination());
+        settings = new Settings(componentID, dh.getReceiverDestinationID(), collectionSettings, referenceSettings);
+    }
+
+    /**
+     * Will load the reference settings from disk.
+     * @return The loaded referenceSettings
+     */
+    public synchronized ReferenceSettings loadReferenceSettings() {
+        return settingsReader.loadSettings(ReferenceSettings.class);
     }
 }

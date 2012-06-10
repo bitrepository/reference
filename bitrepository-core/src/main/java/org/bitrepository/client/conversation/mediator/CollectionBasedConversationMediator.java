@@ -104,7 +104,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         log.debug("Initializing the CollectionBasedConversationMediator");
         this.conversations = Collections.synchronizedMap(new HashMap<String, Conversation>());
         MessageBusManager.getMessageBus(settings, securityManager).
-            addListener(settings.getReceiverDestination(), this);
+            addListener(settings.getReceiverDestinationID(), this);
         this.settings = settings;
         cleanTimer = new Timer(true);
         cleanTimer.scheduleAtFixedRate( new ConversationCleaner(), 0, 

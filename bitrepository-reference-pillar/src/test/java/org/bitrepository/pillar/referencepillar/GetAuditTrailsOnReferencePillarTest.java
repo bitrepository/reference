@@ -21,12 +21,6 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
-import java.io.File;
-import java.math.BigInteger;
-import java.util.Date;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -36,72 +30,35 @@ import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.MockAlarmDispatcher;
-import org.bitrepository.pillar.MockAuditManager;
-import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetAuditTrailsMessageFactory;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
-import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
-import org.bitrepository.service.contributor.ContributorContext;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class GetAuditTrailsOnReferencePillarTest extends DefaultFixturePillarTest {
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.math.BigInteger;
+import java.util.Date;
+
+public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
     GetAuditTrailsMessageFactory msgFactory;
     
-    ReferenceArchive archive;
-    ReferencePillarMediator mediator;
-    MockAlarmDispatcher alarmDispatcher;
-    MockAuditManager audits;
-    
     @BeforeMethod (alwaysRun=true)
-    public void initialiseDeleteFileTests() throws Exception {
-        msgFactory = new GetAuditTrailsMessageFactory(settings);
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        if(dir.exists()) {
-            FileUtils.delete(dir);
-        }
-        
-        addStep("Initialize the pillar.", "Should not be a problem.");
-        archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        audits = new MockAuditManager();
-        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
-                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
-                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
-        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
-        mediator = new ReferencePillarMediator(context, archive);
-        mediator.start();
+    public void initialiseGetAuditTrailsOnReferencePillarTest() throws Exception {
+        msgFactory = new GetAuditTrailsMessageFactory(componentSettings);
     }
-    
-    @AfterMethod (alwaysRun=true) 
-    public void closeArchive() {
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        if(dir.exists()) {
-            FileUtils.delete(dir);
-        }
-        
-        if(mediator != null) {
-            mediator.close();
-        }
-    }
-    
+
     @Test( groups = {"regressiontest", "pillartest"})
     public void referencePillarGetAuditTrailsSuccessful() {
         addDescription("Tests the GetAuditTrails functionality of the reference pillar for the successful scenario, "
                 + "where all audit trails are requested.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String contributorId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        String contributorId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = "";
         audits.addAuditEvent("fileid", "actor", "info", "auditTrail", FileAction.OTHER);
 
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest = msgFactory.createIdentifyContributorsForGetAuditTrailsRequest(
-                auditTrail, FROM, clientDestinationId);
+                auditTrail, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
@@ -116,7 +73,7 @@ public class GetAuditTrailsOnReferencePillarTest extends DefaultFixturePillarTes
         addStep("Make and send the request for the actual GetAuditTrails operation", 
                 "Should be caught and handled by the pillar.");
         GetAuditTrailsRequest request = msgFactory.createGetAuditTrailsRequest(auditTrail, contributorId, 
-                identifyRequest.getCorrelationID(), null, FROM, null, null, null, null, clientDestinationId, null, 
+                identifyRequest.getCorrelationID(), null, getPillarID(), null, null, null, null, clientDestinationId, null, 
                 pillarDestinationId);
         messageBus.sendMessage(request);
         
@@ -142,7 +99,7 @@ public class GetAuditTrailsOnReferencePillarTest extends DefaultFixturePillarTes
         addDescription("Tests the GetAuditTrails functionality of the reference pillar for the successful scenario, "
                 + "where a specific audit trail are requested.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String contributorId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        String contributorId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = "";
         String FILE_ID = "fileId" + new Date().getTime();
         String ACTOR = "ACTOR";
@@ -155,7 +112,7 @@ public class GetAuditTrailsOnReferencePillarTest extends DefaultFixturePillarTes
 
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest = msgFactory.createIdentifyContributorsForGetAuditTrailsRequest(
-                auditTrail, FROM, clientDestinationId);
+                auditTrail, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
@@ -170,7 +127,7 @@ public class GetAuditTrailsOnReferencePillarTest extends DefaultFixturePillarTes
         addStep("Make and send the request for the actual GetAuditTrails operation", 
                 "Should be caught and handled by the pillar.");
         GetAuditTrailsRequest request = msgFactory.createGetAuditTrailsRequest(auditTrail, contributorId, 
-                identifyRequest.getCorrelationID(), FILE_ID, FROM, BigInteger.ONE, maxDate, BigInteger.ONE, 
+                identifyRequest.getCorrelationID(), FILE_ID, getPillarID(), BigInteger.ONE, maxDate, BigInteger.ONE, 
                 minDate, clientDestinationId, null, pillarDestinationId);
         messageBus.sendMessage(request);
         
@@ -199,7 +156,7 @@ public class GetAuditTrailsOnReferencePillarTest extends DefaultFixturePillarTes
         addStep("Make another request, where both ingested audit trails is requested", 
                 "Should be handled by the pillar.");
         request = msgFactory.createGetAuditTrailsRequest(auditTrail, contributorId, 
-                identifyRequest.getCorrelationID(), null, FROM, null, null, null, null, clientDestinationId, null, pillarDestinationId);
+                identifyRequest.getCorrelationID(), null, getPillarID(), null, null, null, null, clientDestinationId, null, pillarDestinationId);
         messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");

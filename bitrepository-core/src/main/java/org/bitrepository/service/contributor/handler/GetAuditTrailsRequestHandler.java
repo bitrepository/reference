@@ -21,8 +21,6 @@
  */
 package org.bitrepository.service.contributor.handler;
 
-import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -39,6 +37,8 @@ import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
 
 /**
  * Class for handling the GetAuditTrails operation.
@@ -82,7 +82,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
      * @return Whether it was valid.
      */
     protected void validateMessage(GetAuditTrailsRequest message) throws RequestHandlerException {
-        if(!message.getContributor().equals(getContext().getComponentID())) {
+        if(!message.getContributor().equals(getContext().getSettings().getComponentID())) {
             ResponseInfo ri = new ResponseInfo();
             ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
             ri.setResponseText("Invalid contributor id.");
@@ -152,7 +152,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
     /**
      * Method for sending a positive final response.
      * @param message The message to respond to.
-     * @param status The result status for the operation.
+     * @param resultingAudits The retrieved audit trails.
      */
     protected void sendFinalResponse(GetAuditTrailsRequest message, ResultingAuditTrails resultingAudits) {
         GetAuditTrailsFinalResponse response = createFinalResponse(message);
@@ -177,7 +177,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
     private GetAuditTrailsProgressResponse createProgressResponse(GetAuditTrailsRequest message) {
         GetAuditTrailsProgressResponse res = new GetAuditTrailsProgressResponse();
         populateResponse(message, res);
-        res.setContributor(getContext().getComponentID());
+        res.setContributor(getContext().getSettings().getComponentID());
         res.setResultAddress(message.getResultAddress());
         
         return res;
@@ -194,7 +194,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
     protected GetAuditTrailsFinalResponse createFinalResponse(GetAuditTrailsRequest request) {
         GetAuditTrailsFinalResponse res = new GetAuditTrailsFinalResponse();
         populateResponse(request, res);
-        res.setContributor(getContext().getComponentID());
+        res.setContributor(getContext().getSettings().getComponentID());
         
         return res;
     }

@@ -23,7 +23,6 @@ package org.bitrepository.common.utils;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -36,7 +35,7 @@ public class FileIDValidatorTest extends ExtendedTestCase {
     
     @BeforeClass (alwaysRun = true)
     public void setup() {
-        settings = TestSettingsProvider.reloadSettings();
+        settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
     }
     
     @Test( groups = {"regressiontest"})

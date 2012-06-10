@@ -53,7 +53,7 @@ public class IdentifyContributorsForGetStatusRequestHandler
     public void processRequest(IdentifyContributorsForGetStatusRequest request) {
         IdentifyContributorsForGetStatusResponse response = new IdentifyContributorsForGetStatusResponse();
         populateResponse(request, response);
-        response.setContributor(getContext().getComponentID());
+        response.setContributor(getContext().getSettings().getComponentID());
         response.setResponseInfo(ResponseInfoUtils.getPositiveIdentification());
 
         getContext().getDispatcher().sendMessage(response);

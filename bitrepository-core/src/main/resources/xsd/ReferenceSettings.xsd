@@ -35,6 +35,7 @@
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
+        <xs:element ref="GeneralSettings" minOccurs="0" />
         <xs:element ref="ClientSettings" minOccurs="0" />
         <xs:element ref="PillarSettings" minOccurs="0" />
         <xs:element ref="DeleteFileSettings" minOccurs="0" />
@@ -53,19 +54,30 @@
     </xs:complexType>
   </xs:element>
 
+  <xs:element name="GeneralSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>General settings for a client</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="ReceiverDestinationIDFactoryClass" minOccurs="0" type="xs:string">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Defines the class to construct receiver destination IDs. The DefaultReceiverDestinationIDFactory
+              will be used if undefined.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
   <xs:element name="ClientSettings">
     <xs:complexType>
       <xs:annotation>
         <xs:documentation>General settings for a client</xs:documentation>
       </xs:annotation>
       <xs:sequence>
-        <xs:element name="ReceiverDestination" type="xs:string">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The destination for receiving messages for a component.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
         <xs:element name="MediatorCleanupInterval" type="xs:nonNegativeInteger">
           <xs:annotation>
             <xs:documentation xml:lang="en">
@@ -119,13 +131,6 @@
           <xs:annotation>
             <xs:documentation>
               The time to use as timeToStartDeliver in identification responses in milliseconds.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="ReceiverDestination" type="xs:string">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The destination for receiving messages for the pillar.
             </xs:documentation>
           </xs:annotation>
         </xs:element>

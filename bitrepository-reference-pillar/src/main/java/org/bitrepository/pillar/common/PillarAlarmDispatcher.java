@@ -62,7 +62,7 @@ public class PillarAlarmDispatcher extends AlarmDispatcher {
         Alarm ad = new Alarm();
         ad.setAlarmCode(AlarmCode.INCONSISTENT_REQUEST);
         ad.setAlarmText(exception.getMessage());
-        ad.setAlarmRaiser(context.getComponentID());
+        ad.setAlarmRaiser(context.getSettings().getComponentID());
         ad.setOrigDateTime(CalendarUtils.getNow());
         
         warning(ad);
@@ -80,7 +80,7 @@ public class PillarAlarmDispatcher extends AlarmDispatcher {
         Alarm alarm = new Alarm();
         alarm.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
         alarm.setAlarmText(exception.toString());
-        alarm.setAlarmRaiser(context.getComponentID());
+        alarm.setAlarmRaiser(context.getSettings().getComponentID());
         alarm.setOrigDateTime(CalendarUtils.getNow());
         
         error(alarm);
@@ -102,7 +102,7 @@ public class PillarAlarmDispatcher extends AlarmDispatcher {
             alarm.setAlarmCode(AlarmCode.FAILED_OPERATION);
         }
         
-        alarm.setAlarmRaiser(context.getComponentID());
+        alarm.setAlarmRaiser(context.getSettings().getComponentID());
         alarm.setAlarmText(e.getResponseInfo().getResponseText());
         alarm.setOrigDateTime(CalendarUtils.getNow());
         

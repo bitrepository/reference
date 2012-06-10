@@ -98,9 +98,9 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
      * @param pillarId The pillar id.
      */
     protected void validatePillarId(String pillarId) {
-        if(!pillarId.equals(getSettings().getReferenceSettings().getPillarSettings().getPillarID())) {
+        if(!pillarId.equals(getSettings().getComponentID())) {
             throw new IllegalArgumentException("The message had a wrong PillarId: "
-                    + "Expected '" + getSettings().getReferenceSettings().getPillarSettings().getPillarID() 
+                    + "Expected '" + getSettings().getComponentID()
                     + "' but was '" + pillarId + "'.");
         }
     }

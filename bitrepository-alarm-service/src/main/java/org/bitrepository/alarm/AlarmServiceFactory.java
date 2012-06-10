@@ -92,8 +92,10 @@ public class AlarmServiceFactory {
             PermissionStore permissionStore;
             SecurityManager securityManager;
             SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(configurationDir));
-            Settings settings = settingsLoader.getSettings();
-            settings.setComponentID(settings.getReferenceSettings().getAlarmServiceSettings().getID());
+
+            String alarmServiceComponentID =
+                    settingsLoader.loadReferenceSettings().getAuditTrailServiceSettings().getID();
+            Settings settings = settingsLoader.getSettings(alarmServiceComponentID);
             try {
                 loadProperties();
                 permissionStore = new PermissionStore();
@@ -106,8 +108,7 @@ public class AlarmServiceFactory {
                 
                 MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, 
                         securityManager);
-                ContributorMediator contributorMediator = new SimpleContributorMediator(messageBus, settings, 
-                        settings.getComponentID(), settings.getReceiverDestination(), null);
+                ContributorMediator contributorMediator = new SimpleContributorMediator(messageBus, settings, null);
                 
                 AlarmStore store = new AlarmServiceDAO(settings);
                 alarmService = new BasicAlarmService(messageBus, settings, store, contributorMediator);

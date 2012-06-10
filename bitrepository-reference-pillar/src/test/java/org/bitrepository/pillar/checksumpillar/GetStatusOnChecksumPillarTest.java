@@ -28,71 +28,29 @@ import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
-import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.MockAlarmDispatcher;
-import org.bitrepository.pillar.MockAuditManager;
-import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
-import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
-import org.bitrepository.service.contributor.ContributorContext;
-import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.File;
-
-public class GetStatusOnChecksumPillarTest extends DefaultFixturePillarTest {
+public class GetStatusOnChecksumPillarTest extends ChecksumPillarTest {
     GetStatusMessageFactory msgFactory;
-    
-    MemoryCache cache;
-    ChecksumPillarMediator mediator;
-    MockAlarmDispatcher alarmDispatcher;
-    MockAuditManager audits;
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseDeleteFileTests() throws Exception {
-        msgFactory = new GetStatusMessageFactory(settings);
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        if(dir.exists()) {
-            FileUtils.delete(dir);
-        }
-        
-        addStep("Initialize the pillar.", "Should not be a problem.");
-        settings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
-        cache = new MemoryCache();
-        audits = new MockAuditManager();
-        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
-                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
-                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
-        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
-        mediator = new ChecksumPillarMediator(context, cache);
-        mediator.start();
+        msgFactory = new GetStatusMessageFactory(componentSettings);
     }
-    
-    @AfterMethod (alwaysRun=true) 
-    public void closeArchive() {
-        if(cache != null) {
-            cache.cleanUp();
-        }
-        if(mediator != null) {
-            mediator.close();
-        }
-    }
-    
+
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarGetStatusSuccessful() {
         addDescription("Tests the GetStatus functionality of the checksum pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String contributorId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        String contributorId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
 
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
         IdentifyContributorsForGetStatusRequest identifyRequest = msgFactory.createIdentifyContributorsForGetStatusRequest(
-                auditTrail, FROM, clientDestinationId);
+                auditTrail, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
@@ -107,7 +65,7 @@ public class GetStatusOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Make and send the request for the actual GetStatus operation", 
                 "Should be caught and handled by the pillar.");
         GetStatusRequest request = msgFactory.createGetStatusRequest(auditTrail, contributorId, 
-                identifyRequest.getCorrelationID(), FROM, clientDestinationId, pillarDestinationId);
+                identifyRequest.getCorrelationID(), getPillarID(), clientDestinationId, pillarDestinationId);
         messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
@@ -132,13 +90,13 @@ public class GetStatusOnChecksumPillarTest extends DefaultFixturePillarTest {
         addDescription("Tests the GetStatus functionality of the checksum pillar for the bad scenario, where a wrong "
                 + "contributor id is given.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String contributorId = settings.getReferenceSettings().getPillarSettings().getPillarID();
+        String contributorId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         String wrongContributorId = "wrongContributor";
         String auditTrail = null;
 
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
         IdentifyContributorsForGetStatusRequest identifyRequest = msgFactory.createIdentifyContributorsForGetStatusRequest(
-                auditTrail, FROM, clientDestinationId);
+                auditTrail, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
@@ -153,7 +111,7 @@ public class GetStatusOnChecksumPillarTest extends DefaultFixturePillarTest {
         addStep("Make and send the request for the actual GetStatus operation", 
                 "Should be caught and handled by the pillar.");
         GetStatusRequest request = msgFactory.createGetStatusRequest(auditTrail, wrongContributorId, 
-                identifyRequest.getCorrelationID(), FROM, clientDestinationId, pillarDestinationId);
+                identifyRequest.getCorrelationID(), getPillarID(), clientDestinationId, pillarDestinationId);
         messageBus.sendMessage(request);
         
         addStep("The pillar should send an alarm.", "Validate the AlarmDispatcher");

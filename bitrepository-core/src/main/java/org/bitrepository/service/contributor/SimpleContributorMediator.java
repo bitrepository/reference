@@ -21,9 +21,6 @@
  */
 package org.bitrepository.service.contributor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
@@ -39,6 +36,9 @@ import org.bitrepository.service.contributor.handler.RequestHandler;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Simple implementation of a contributor mediator.
@@ -59,14 +59,11 @@ public class SimpleContributorMediator extends AbstractContributorMediator {
      * Constructor.
      * @param messageBus The messagebus for the mediator.
      * @param settings the settings for the mediator.
-     * @param componentID The id of this component.
-     * @param replyTo The destination for this component.
      * @param auditManager [OPTIONAL] The manager of audit trails. Only if the contributor has audit trails.
      */
-    public SimpleContributorMediator(MessageBus messageBus, Settings settings, String componentID, String replyTo,
-            AuditTrailManager auditManager) {
+    public SimpleContributorMediator(MessageBus messageBus, Settings settings, AuditTrailManager auditManager) {
         super(messageBus);
-        context = new ContributorContext(messageBus, settings, componentID, replyTo);
+        context = new ContributorContext(messageBus, settings);
         this.auditManager = auditManager;
     }
 

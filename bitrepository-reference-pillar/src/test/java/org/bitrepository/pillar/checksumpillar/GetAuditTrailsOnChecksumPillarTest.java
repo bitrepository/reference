@@ -30,97 +30,55 @@ import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.MockAlarmDispatcher;
-import org.bitrepository.pillar.MockAuditManager;
-import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
-import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetAuditTrailsMessageFactory;
-import org.bitrepository.service.contributor.ContributorContext;
-import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.io.File;
 import java.math.BigInteger;
 import java.util.Date;
 
-public class GetAuditTrailsOnChecksumPillarTest extends DefaultFixturePillarTest {
+public class GetAuditTrailsOnChecksumPillarTest extends ChecksumPillarTest {
     GetAuditTrailsMessageFactory msgFactory;
     
-    MemoryCache cache;
-    ChecksumPillarMediator mediator;
-    MockAlarmDispatcher alarmDispatcher;
-    MockAuditManager audits;
-    
     @BeforeMethod (alwaysRun=true)
-    public void initialiseDeleteFileTests() throws Exception {
-        msgFactory = new GetAuditTrailsMessageFactory(settings);
-        File dir = new File(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        if(dir.exists()) {
-            FileUtils.delete(dir);
-        }
-        
-        addStep("Initialize the pillar.", "Should not be a problem.");
-        settings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
-        cache = new MemoryCache();
-        audits = new MockAuditManager();
-        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
-                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
-                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
-        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        PillarContext context = new PillarContext(settings, messageBus, alarmDispatcher, audits);
-        mediator = new ChecksumPillarMediator(context, cache);
-        mediator.start();
+    public void initialiseGetAuditTrailsOnChecksumPillarTest() throws Exception {
+        msgFactory = new GetAuditTrailsMessageFactory(componentSettings);
     }
-    
-    @AfterMethod (alwaysRun=true) 
-    public void closeArchive() {
-        if(cache != null) {
-            cache.cleanUp();
-        }
-        if(mediator != null) {
-            mediator.close();
-        }
-    }
-    
+
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarGetAuditTrailsSuccessful() {
         addDescription("Tests the GetAuditTrails functionality of the checksum pillar for the successful scenario, "
                 + "where all audit trails are requested.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String contributorId = settings.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = "";
         audits.addAuditEvent("fileid", "actor", "info", "auditTrail", FileAction.OTHER);
 
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest = msgFactory.createIdentifyContributorsForGetAuditTrailsRequest(
-                auditTrail, FROM, clientDestinationId);
+                auditTrail, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
         IdentifyContributorsForGetAuditTrailsResponse identifyResponse = clientTopic.waitForMessage(
                 IdentifyContributorsForGetAuditTrailsResponse.class);
         Assert.assertEquals(identifyResponse, msgFactory.createIdentifyContributorsForGetAuditTrailsResponse(
-                identifyRequest.getCorrelationID(), contributorId, pillarDestinationId, 
+                identifyRequest.getCorrelationID(), getComponentID(), pillarDestinationId, 
                 identifyResponse.getResponseInfo(), clientDestinationId));
         Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
 
         addStep("Make and send the request for the actual GetAuditTrails operation", 
                 "Should be caught and handled by the pillar.");
-        GetAuditTrailsRequest request = msgFactory.createGetAuditTrailsRequest(auditTrail, contributorId, 
-                identifyRequest.getCorrelationID(), null, FROM, null, null, null, null, clientDestinationId, null, 
+        GetAuditTrailsRequest request = msgFactory.createGetAuditTrailsRequest(auditTrail, getComponentID(), 
+                identifyRequest.getCorrelationID(), null, getPillarID(), null, null, null, null, clientDestinationId, null, 
                 pillarDestinationId);
         messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
         GetAuditTrailsProgressResponse progressResponse = clientTopic.waitForMessage(GetAuditTrailsProgressResponse.class);
-        Assert.assertEquals(progressResponse, msgFactory.createGetAuditTrailsProgressResponse(contributorId, 
+        Assert.assertEquals(progressResponse, msgFactory.createGetAuditTrailsProgressResponse(getComponentID(), 
                 request.getCorrelationID(), pillarDestinationId, progressResponse.getResponseInfo(), 
                 null, clientDestinationId));
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(), 
@@ -128,7 +86,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends DefaultFixturePillarTest
         
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
         GetAuditTrailsFinalResponse finalResponse = clientTopic.waitForMessage(GetAuditTrailsFinalResponse.class);
-        Assert.assertEquals(finalResponse, msgFactory.createGetAuditTrailsFinalResponse(contributorId, 
+        Assert.assertEquals(finalResponse, msgFactory.createGetAuditTrailsFinalResponse(getComponentID(), 
                 request.getCorrelationID(), pillarDestinationId, finalResponse.getResponseInfo(), 
                 finalResponse.getResultingAuditTrails(), clientDestinationId));
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
@@ -140,7 +98,6 @@ public class GetAuditTrailsOnChecksumPillarTest extends DefaultFixturePillarTest
         addDescription("Tests the GetAuditTrails functionality of the checksum pillar for the successful scenario, "
                 + "where a specific audit trail are requested.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String contributorId = settings.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = "";
         String FILE_ID = "fileId" + new Date().getTime();
         String ACTOR = "ACTOR";
@@ -153,28 +110,28 @@ public class GetAuditTrailsOnChecksumPillarTest extends DefaultFixturePillarTest
 
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest = msgFactory.createIdentifyContributorsForGetAuditTrailsRequest(
-                auditTrail, FROM, clientDestinationId);
+                auditTrail, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
         IdentifyContributorsForGetAuditTrailsResponse identifyResponse = clientTopic.waitForMessage(
                 IdentifyContributorsForGetAuditTrailsResponse.class);
         Assert.assertEquals(identifyResponse, msgFactory.createIdentifyContributorsForGetAuditTrailsResponse(
-                identifyRequest.getCorrelationID(), contributorId, pillarDestinationId, 
+                identifyRequest.getCorrelationID(), getComponentID(), pillarDestinationId,
                 identifyResponse.getResponseInfo(), clientDestinationId));
         Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
 
         addStep("Make and send the request for the actual GetAuditTrails operation", 
                 "Should be caught and handled by the pillar.");
-        GetAuditTrailsRequest request = msgFactory.createGetAuditTrailsRequest(auditTrail, contributorId, 
-                identifyRequest.getCorrelationID(), FILE_ID, FROM, BigInteger.ONE, maxDate, BigInteger.ONE, 
+        GetAuditTrailsRequest request = msgFactory.createGetAuditTrailsRequest(auditTrail, getComponentID(), 
+                identifyRequest.getCorrelationID(), FILE_ID, getPillarID(), BigInteger.ONE, maxDate, BigInteger.ONE, 
                 minDate, clientDestinationId, null, pillarDestinationId);
         messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
         GetAuditTrailsProgressResponse progressResponse = clientTopic.waitForMessage(GetAuditTrailsProgressResponse.class);
-        Assert.assertEquals(progressResponse, msgFactory.createGetAuditTrailsProgressResponse(contributorId, 
+        Assert.assertEquals(progressResponse, msgFactory.createGetAuditTrailsProgressResponse(getComponentID(), 
                 request.getCorrelationID(), pillarDestinationId, progressResponse.getResponseInfo(), 
                 null, clientDestinationId));
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(), 
@@ -182,7 +139,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends DefaultFixturePillarTest
         
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
         GetAuditTrailsFinalResponse finalResponse = clientTopic.waitForMessage(GetAuditTrailsFinalResponse.class);
-        Assert.assertEquals(finalResponse, msgFactory.createGetAuditTrailsFinalResponse(contributorId, 
+        Assert.assertEquals(finalResponse, msgFactory.createGetAuditTrailsFinalResponse(getComponentID(), 
                 request.getCorrelationID(), pillarDestinationId, finalResponse.getResponseInfo(), 
                 finalResponse.getResultingAuditTrails(), clientDestinationId));
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
@@ -196,13 +153,13 @@ public class GetAuditTrailsOnChecksumPillarTest extends DefaultFixturePillarTest
         
         addStep("Make another request, where both ingested audit trails is requested", 
                 "Should be handled by the pillar.");
-        request = msgFactory.createGetAuditTrailsRequest(auditTrail, contributorId, 
-                identifyRequest.getCorrelationID(), null, FROM, null, null, null, null, clientDestinationId, null, pillarDestinationId);
+        request = msgFactory.createGetAuditTrailsRequest(auditTrail, getComponentID(), 
+                identifyRequest.getCorrelationID(), null, getPillarID(), null, null, null, null, clientDestinationId, null, pillarDestinationId);
         messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
         progressResponse = clientTopic.waitForMessage(GetAuditTrailsProgressResponse.class);
-        Assert.assertEquals(progressResponse, msgFactory.createGetAuditTrailsProgressResponse(contributorId, 
+        Assert.assertEquals(progressResponse, msgFactory.createGetAuditTrailsProgressResponse(getComponentID(), 
                 request.getCorrelationID(), pillarDestinationId, progressResponse.getResponseInfo(), 
                 null, clientDestinationId));
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(), 
@@ -210,7 +167,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends DefaultFixturePillarTest
         
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
         finalResponse = clientTopic.waitForMessage(GetAuditTrailsFinalResponse.class);
-        Assert.assertEquals(finalResponse, msgFactory.createGetAuditTrailsFinalResponse(contributorId, 
+        Assert.assertEquals(finalResponse, msgFactory.createGetAuditTrailsFinalResponse(getComponentID(), 
                 request.getCorrelationID(), pillarDestinationId, finalResponse.getResponseInfo(), 
                 finalResponse.getResultingAuditTrails(), clientDestinationId));
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);

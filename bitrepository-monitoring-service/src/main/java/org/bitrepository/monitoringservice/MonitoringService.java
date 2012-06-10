@@ -21,8 +21,6 @@
  */
 package org.bitrepository.monitoringservice;
 
-import java.util.Map;
-
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.common.settings.Settings;
@@ -36,6 +34,8 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.contributor.ContributorContext;
+
+import java.util.Map;
 
 /**
  * The monitoring service.
@@ -60,9 +60,8 @@ public class MonitoringService implements LifeCycledService {
      */
     public MonitoringService(Settings settings, SecurityManager securityManager) {
         this.settings = settings;
-        settings.setComponentID(settings.getReferenceSettings().getMonitoringServiceSettings().getID());
         ContributorContext context = new ContributorContext(ProtocolComponentFactory.getInstance().getMessageBus(settings, 
-                securityManager), settings, settings.getComponentID(), settings.getReceiverDestination());
+                securityManager), settings);
         statusStore = new ComponentStatusStore(settings.getCollectionSettings().getGetStatusSettings().getContributorIDs());
         alerter = new BasicMonitoringServiceAlerter(context, statusStore);
         getStatusClient = AccessComponentFactory.getInstance().createGetStatusClient(settings, securityManager,

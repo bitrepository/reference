@@ -50,6 +50,10 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
 
     protected final String TEST_CLIENT_ID = "test-client" + getTopicPostfix();
 
+    protected String getComponentID() {
+        return "ClientUnderTest";
+    }
+
     /**
      * Indicated whether the embedded mockup pillars are going to be used in the test (means the test is run as a client 
      * component test, or if external pillar are going to be used. If external pillar are going to be used they need 
@@ -77,8 +81,7 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     @Override
     protected void initializeMessageBusListeners() {
         super.initializeMessageBusListeners();
-        settings.setComponentID(TEST_CLIENT_ID);
-        clientDestinationId = settings.getReceiverDestination();
+        clientDestinationId = componentSettings.getReceiverDestinationID();
         pillar1DestinationId = "Pillar1_topic" + getTopicPostfix();
         pillar2DestinationId = "Pillar2_topic" + getTopicPostfix();
         

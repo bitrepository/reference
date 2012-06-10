@@ -24,19 +24,17 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.PillarComponentFactory;
-import org.bitrepository.pillar.PillarLauncher;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.pillar.PillarRunner;
 
 /**
  * Method for launching the ReferencePillar. 
  * It just loads the configurations and uses them to create the PillarSettings needed for starting the ReferencePillar.
  */
-public final class ReferencePillarLauncher extends PillarLauncher {
+public final class ReferencePillarLauncher {
+    private static final String DEFAULT_PILLAR_ID = "ReferencePillar";
 
     /**
      * Private constructor. To prevent instantiation of this utility class.
@@ -47,23 +45,15 @@ public final class ReferencePillarLauncher extends PillarLauncher {
      * @param args <ol>
      * <li> The path to the directory containing the settings. See {@link XMLFileSettingsLoader} for details.</li>
      * <li> The path to the private key file with the certificates for communication.</li>
-     * <li> The collection ID to load the settings for.</li>
+     * <li> The pillar's componentID.</li>
      * </ol>
      */
     public static void main(String[] args) {
-        try {
-            Settings settings = loadSettings(args[0]);
-            SecurityManager securityManager = loadSecurityManager(args[1], settings);
-
-            MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
-            ReferencePillar pillar = PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
-            
-            synchronized(pillar) {
-                pillar.wait();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(0);
-        }
+        String pathToSettings = args[0];
+        String pathToKeyFile = args[1];
+        String pillarID =  args.length == 3 ? pillarID = args[2]: DEFAULT_PILLAR_ID ;
+        Pillar fullPillar =
+                PillarComponentFactory.getInstance().createReferencePillar(pathToSettings, pathToKeyFile, pillarID);
+        PillarRunner.launchPillar(fullPillar);
     }
 }

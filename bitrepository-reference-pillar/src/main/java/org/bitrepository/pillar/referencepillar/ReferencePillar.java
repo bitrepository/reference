@@ -24,13 +24,12 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
-import javax.jms.JMSException;
-
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.database.DBConnector;
 import org.bitrepository.common.database.DBSpecifics;
 import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
@@ -42,10 +41,12 @@ import org.bitrepository.service.contributor.ContributorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jms.JMSException;
+
 /**
  * Reference pillar. This very simply starts the PillarMediator, which handles all the communications.
  */
-public class ReferencePillar {
+public class ReferencePillar implements Pillar {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The messagebus for the pillar.*/
@@ -73,9 +74,7 @@ public class ReferencePillar {
                 settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl());
         AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector(dbSpecifics, 
                 settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl()));
-        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
-                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
-                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        ContributorContext contributorContext = new ContributorContext(messageBus, settings);
         PillarAlarmDispatcher alarms = new PillarAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(settings, messageBus, alarms, audits);
         mediator = new ReferencePillarMediator(context, archive);

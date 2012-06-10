@@ -57,7 +57,7 @@ public class AlarmHandlerTest extends IntegrationTest {
         Assert.assertEquals(alarmHandler.getCallsForClose(), 1);
         Assert.assertEquals(alarmHandler.getCallsForHandleAlarm(), 1);
     }
-    
+
     protected class MockAlarmHandler implements AlarmHandler {
 
         private int callsForHandleAlarm = 0;
@@ -79,4 +79,10 @@ public class AlarmHandlerTest extends IntegrationTest {
         }
         
     }
+
+    @Override
+    protected String getComponentID() {
+        return "AlarmHandlerUnderTest";
+    }
+
 }

@@ -27,7 +27,6 @@ package org.bitrepository.protocol;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
@@ -47,7 +46,7 @@ public class ProtocolComponentFactoryTest {
     
     protected void setupSettings() throws Exception {
         SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader("settings/xml/bitrepository-devel"));
-        settings = settingsLoader.getSettings();
+        settings = settingsLoader.getSettings(getClass().getSimpleName());
     }
     
     @SuppressWarnings("unused")

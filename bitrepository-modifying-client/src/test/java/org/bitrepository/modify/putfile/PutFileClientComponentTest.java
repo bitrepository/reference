@@ -24,10 +24,6 @@
  */
 package org.bitrepository.modify.putfile;
 
-import java.io.File;
-import java.math.BigInteger;
-import java.util.concurrent.TimeUnit;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -39,15 +35,19 @@ import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
-import org.bitrepository.modify.ModifyComponentFactory;
-import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
+import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.modify.ModifyComponentFactory;
+import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Tests for the components of the PutFileClient.
@@ -61,7 +61,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     @BeforeMethod(alwaysRun=true)
     public void initialise() throws Exception {
         if(useMockupPillar()) {
-            messageFactory = new TestPutFileMessageFactory(settings.getCollectionID());
+            messageFactory = new TestPutFileMessageFactory(componentSettings.getCollectionID());
         }
 
         testFile = new File("src/test/resources/test-files/", DEFAULT_FILE_ID);
@@ -73,7 +73,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Testing the initialization through the ModifyComponentFactory.");
         addStep("Use the ModifyComponentFactory to instantiate a PutFileClient.", 
                 "It should be an instance of SimplePutFileClient");
-        PutFileClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager, TEST_CLIENT_ID);
+        PutFileClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(componentSettings, securityManager, TEST_CLIENT_ID);
         Assert.assertTrue(pfc instanceof ConversationBasedPutFileClient, "The PutFileClient '" + pfc + "' should be instance of '" 
                 + ConversationBasedPutFileClient.class.getName() + "'");
     }
@@ -83,8 +83,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the PutClient. Makes a whole conversation for the put client for a 'good' scenario.");
         addStep("Initialise the number of pillars to one", "Should be OK.");
 
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 
@@ -137,7 +137,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Validate the steps of the PutClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
-        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -158,7 +158,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                     receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(putFileFinalResponse);
         }
-        for(int i = 1; i < 2* settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 1; i < 2* componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             OperationEventType eventType = testEventHandler.waitForEvent().getType();
             Assert.assertTrue( (eventType == OperationEventType.COMPONENT_COMPLETE)
                     || (eventType == OperationEventType.PROGRESS),
@@ -173,9 +173,9 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Initialise the number of pillars and the PutClient. Sets the identification timeout to 1 sec.", 
                 "Should be OK.");
 
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
-        settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(1000L));
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        componentSettings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(1000L));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
         
@@ -212,9 +212,9 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Initialise the number of pillars and the PutClient. Sets the operation timeout to 1 sec.", 
                 "Should be OK.");
 
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
-        settings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(1000L));
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        componentSettings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(1000L));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
         
@@ -263,7 +263,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Validate the steps of the PutClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
-        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -279,8 +279,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the handling of a operation failure for the PutClient. ");
         addStep("Initialise the number of pillars to one", "Should be OK.");
 
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 
@@ -332,7 +332,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Validate the steps of the PutClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
-        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -358,8 +358,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the handling of a identification failure for the PutClient. ");
         addStep("Initialise the number of pillars to one", "Should be OK.");
 
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 
@@ -414,17 +414,17 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     }
 
     /**
-     * Creates a new test PutFileClient based on the supplied settings. 
+     * Creates a new test PutFileClient based on the supplied componentSettings. 
      * 
      * Note that the normal way of creating client through the module factory would reuse components with settings from
      * previous tests.
      * @return A new PutFileClient(Wrapper).
      */
     private PutFileClient createPutFileClient() {
-        MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
-        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
+        MessageBus messageBus = new ActiveMQMessageBus(componentSettings.getMessageBusConfiguration(), securityManager);
+        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(componentSettings, securityManager);
         return new PutClientTestWrapper(new ConversationBasedPutFileClient(
-                messageBus, conversationMediator, settings, TEST_CLIENT_ID)
+                messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID)
         , testEventManager);
     }
 }

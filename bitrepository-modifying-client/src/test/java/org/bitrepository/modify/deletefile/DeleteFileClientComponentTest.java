@@ -24,8 +24,6 @@
  */
 package org.bitrepository.modify.deletefile;
 
-import java.math.BigInteger;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -38,16 +36,18 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileReque
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
+import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
-import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.math.BigInteger;
 
 /**
  * Tests for the components of the PutFileClient.
@@ -59,7 +59,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     @BeforeMethod(alwaysRun=true)
     public void initialise() throws Exception {
         if(useMockupPillar()) {
-            messageFactory = new TestDeleteFileMessageFactory(settings.getCollectionID());
+            messageFactory = new TestDeleteFileMessageFactory(componentSettings.getCollectionID());
         }
     }
 
@@ -68,7 +68,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Testing the initialization through the ModifyComponentFactory.");
         addStep("Use the ModifyComponentFactory to instantiate a PutFileClient.", 
                 "It should be an instance of SimplePutFileClient");
-        DeleteFileClient dfc = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, securityManager, 
+        DeleteFileClient dfc = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(componentSettings, securityManager,
                 TEST_CLIENT_ID);
         Assert.assertTrue(dfc instanceof ConversationBasedDeleteFileClient, "The DeleteFileClient '" + dfc 
                 + "' should be instance of '" + ConversationBasedDeleteFileClient.class.getName() + "'");
@@ -79,8 +79,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the DeleteClient. Makes a whole conversation for the delete client for a 'good' scenario.");
         addStep("Initialise the number of pillars to one", "Should be OK.");
 
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         DeleteFileClient deleteClient = createDeleteFileClient();
         
@@ -137,7 +137,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Validate the steps of the DeleteClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
-        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -158,7 +158,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                     receivedDeleteFileRequest, PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
             messageBus.sendMessage(deleteFileFinalResponse);
         }
-        for(int i = 1; i < 2* settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 1; i < 2* componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             OperationEventType eventType = testEventHandler.waitForEvent().getType();
             Assert.assertTrue( (eventType == OperationEventType.COMPONENT_COMPLETE)
                     || (eventType == OperationEventType.PROGRESS),
@@ -173,9 +173,9 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Initialise the number of pillars and the DeleteClient. Sets the identification timeout to 1 sec.", 
                 "Should be OK.");
 
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
-        settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(1000L));
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        componentSettings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(1000L));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         DeleteFileClient deleteClient = createDeleteFileClient();
         
@@ -221,9 +221,9 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Initialise the number of pillars and the DeleteClient. Sets the operation timeout to 1 sec.", 
                 "Should be OK.");
 
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
-        settings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(1000L));
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        componentSettings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(1000L));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         DeleteFileClient deleteClient = createDeleteFileClient();
         
@@ -280,7 +280,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Validate the steps of the DeleteClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
-        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -296,8 +296,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the handling of a operation failure for the DeleteClient. ");
         addStep("Initialise the number of pillars to one", "Should be OK.");
 
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         DeleteFileClient deleteClient = createDeleteFileClient();
         
@@ -354,7 +354,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Validate the steps of the DeleteClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
-        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -376,16 +376,16 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     }
 
     /**
-     * Creates a new test DeleteFileClient based on the supplied settings. 
+     * Creates a new test DeleteFileClient based on the supplied componentSettings. 
      * 
      * Note that the normal way of creating client through the module factory would reuse components with settings from
      * previous tests.
      * @return A new DeleteFileClient(Wrapper).
      */
     private DeleteFileClient createDeleteFileClient() {
-        MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
-        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
+        MessageBus messageBus = new ActiveMQMessageBus(componentSettings.getMessageBusConfiguration(), securityManager);
+        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(componentSettings, securityManager);
         return new DeleteClientTestWrapper(new ConversationBasedDeleteFileClient(
-                messageBus, conversationMediator, settings, TEST_CLIENT_ID), testEventManager);
+                messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID), testEventManager);
     }
 }

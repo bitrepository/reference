@@ -24,12 +24,6 @@
  */
 package org.bitrepository.access.getfileids;
 
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
-
-import javax.xml.bind.JAXBException;
-
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -56,6 +50,11 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import javax.xml.bind.JAXBException;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Test class for the 'GetFileIDsClient'.
  */
@@ -71,60 +70,60 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
     public void setUp() throws JAXBException {
         // TODO getFileIDsFromFastestPillar settings
         if (useMockupPillar()) {
-            testMessageFactory = new TestGetFileIDsMessageFactory(settings.getCollectionID());
+            testMessageFactory = new TestGetFileIDsMessageFactory(componentSettings.getCollectionID());
         }
         httpServer.clearFiles();
     }
 
     @Test(groups = {"regressiontest"})
     public void verifyGetFileIDsClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager,
-                TEST_CLIENT_ID) instanceof ConversationBasedGetFileIDsClient, 
-                "The default GetFileClient from the Access factory should be of the type '" + 
+        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileIDsClient(componentSettings, securityManager,
+                TEST_CLIENT_ID) instanceof ConversationBasedGetFileIDsClient,
+                "The default GetFileClient from the Access factory should be of the type '" +
                         ConversationBasedGetFileIDsClient.class.getName() + "'.");
     }
-    
+
     @Test(groups = {"regressiontest"})
     public void getFileIDsDeliveredAtUrl() throws Exception {
         addDescription("Tests the delivery of fileIDs from a pillar at a given URL.");
-        addStep("Initialise the variables for this test.", 
+        addStep("Initialise the variables for this test.",
                 "EventManager and GetFileIDsClient should be instantiated.");
 
         String deliveryFilename = "TEST-FILE-IDS-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
         fileIDs.setFileID(DEFAULT_FILE_ID);
-        
+
         if(useMockupPillar()) {
-            settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-            settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+            componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+            componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         }
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetFileIDsClient getFileIDsClient = createGetFileIDsClient();
 
-        addStep("Ensure the delivery file isn't already present on the http server", 
+        addStep("Ensure the delivery file isn't already present on the http server",
         "Should be remove if it already exists.");
         httpServer.removeFile(deliveryFilename);
         URL deliveryUrl = httpServer.getURL(deliveryFilename);
 
-        addStep("Request the delivery of the file ids of a file from the pillar(s). A callback listener should be supplied.", 
+        addStep("Request the delivery of the file ids of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
-        getFileIDsClient.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
+        getFileIDsClient.getFileIDs(componentSettings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
                 deliveryUrl, testEventHandler, "TEST-AUDIT");
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
                     IdentifyPillarsForGetFileIDsRequest.class);
-            Assert.assertEquals(receivedIdentifyRequestMessage, 
-                    testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage, 
+            Assert.assertEquals(receivedIdentifyRequestMessage,
+                    testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage,
                             collectionDestinationID));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
-        addStep("The pillar sends a response to the identify message.", 
+        addStep("The pillar sends a response to the identify message.",
                 "The callback listener should notify of the response and the client should send a GetFileIDsRequest "
-                + "message to the pillar"); 
+                + "message to the pillar");
 
         GetFileIDsRequest receivedGetFileIDsRequest = null;
         if (useMockupPillar()) {
@@ -132,95 +131,95 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
                     receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(identifyResponse);
             receivedGetFileIDsRequest = pillar1Destination.waitForMessage(GetFileIDsRequest.class);
-            Assert.assertEquals(receivedGetFileIDsRequest, 
+            Assert.assertEquals(receivedGetFileIDsRequest,
                     testMessageFactory.createGetFileIDsRequest(receivedGetFileIDsRequest, PILLAR1_ID, pillar1DestinationId));
         }
 
-        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
 
-        addStep("The pillar sends a getFileIDsProgressResponse to the GetFileIDsClient.", 
-                "The GetFileIDsClient should notify about the response through the callback interface."); 
+        addStep("The pillar sends a getFileIDsProgressResponse to the GetFileIDsClient.",
+                "The GetFileIDsClient should notify about the response through the callback interface.");
         if (useMockupPillar()) {
             GetFileIDsProgressResponse getFileIDsProgressResponse = testMessageFactory.createGetFileIDsProgressResponse(
                     receivedGetFileIDsRequest, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(getFileIDsProgressResponse);
         }
-        
+
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PROGRESS);
 
-        addStep("The resulting file is uploaded to the indicated url and the pillar sends a final response upload message", 
+        addStep("The resulting file is uploaded to the indicated url and the pillar sends a final response upload message",
                 "The GetFileIDsClient notifies that the file is ready through the callback listener and the uploaded file is present.");
         if (useMockupPillar()) {
             GetFileIDsFinalResponse completeMsg = testMessageFactory.createGetFileIDsFinalResponse(
                     receivedGetFileIDsRequest, PILLAR1_ID, pillar1DestinationId);
-            
+
             ResultingFileIDs res = new ResultingFileIDs();
             res.setResultAddress(receivedGetFileIDsRequest.getResultAddress());
             completeMsg.setResultingFileIDs(res);
-            
+
             messageBus.sendMessage(completeMsg);
         }
 
-        addStep("Receive and validate event results for the pillar.", 
+        addStep("Receive and validate event results for the pillar.",
                 "Should be a FileIDsCompletePillarEvent with the ResultingFileIDs containing only the URL.");
-        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             FileIDsCompletePillarEvent event = (FileIDsCompletePillarEvent) testEventHandler.waitForEvent();
             Assert.assertEquals(event.getType(), OperationEventType.COMPONENT_COMPLETE);
             ResultingFileIDs resFileIDs = event.getFileIDs();
             Assert.assertNotNull(resFileIDs, "The ResultingFileIDs may not be null.");
-            Assert.assertTrue(resFileIDs.getResultAddress().contains(deliveryUrl.toExternalForm()), 
+            Assert.assertTrue(resFileIDs.getResultAddress().contains(deliveryUrl.toExternalForm()),
                     "The resulting address'" + resFileIDs.getResultAddress() + "' should contain the argument address: '"
                     + deliveryUrl.toExternalForm() + "'");
             Assert.assertNull(resFileIDs.getFileIDsData(), "No FileIDsData should be returned.");
         }
-        
+
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
     }
-    
+
     @Test(groups = {"regressiontest"})
     public void getFileIDsDeliveredThroughMessage() throws Exception {
         addDescription("Tests the delivery of fileIDs from a pillar at a given URL.");
-        addStep("Initialise the variables for this test.", 
+        addStep("Initialise the variables for this test.",
                 "EventManager and GetFileIDsClient should be instantiated.");
 
         String deliveryFilename = "TEST-FILE-IDS-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
         fileIDs.setFileID(DEFAULT_FILE_ID);
-        
+
         if(useMockupPillar()) {
-            settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-            settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+            componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+            componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         }
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetFileIDsClient getFileIDsClient = createGetFileIDsClient();
 
-        addStep("Ensure the delivery file isn't already present on the http server", 
+        addStep("Ensure the delivery file isn't already present on the http server",
         "Should be remove if it already exists.");
         httpServer.removeFile(deliveryFilename);
 
-        addStep("Request the delivery of the file ids of a file from the pillar(s). A callback listener should be supplied.", 
+        addStep("Request the delivery of the file ids of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
-        getFileIDsClient.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
+        getFileIDsClient.getFileIDs(componentSettings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
                 null, testEventHandler, "TEST-AUDIT");
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
                     IdentifyPillarsForGetFileIDsRequest.class);
-            Assert.assertEquals(receivedIdentifyRequestMessage, 
-                    testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage, 
+            Assert.assertEquals(receivedIdentifyRequestMessage,
+                    testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage,
                             collectionDestinationID));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
-        addStep("The pillar sends a response to the identify message.", 
+        addStep("The pillar sends a response to the identify message.",
                 "The callback listener should notify of the response and the client should send a GetFileIDsRequest "
-                + "message to the pillar"); 
+                + "message to the pillar");
 
         GetFileIDsRequest receivedGetFileIDsRequest = null;
         if (useMockupPillar()) {
@@ -228,32 +227,32 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
                     receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(identifyResponse);
             receivedGetFileIDsRequest = pillar1Destination.waitForMessage(GetFileIDsRequest.class);
-            Assert.assertEquals(receivedGetFileIDsRequest, 
+            Assert.assertEquals(receivedGetFileIDsRequest,
                     testMessageFactory.createGetFileIDsRequest(receivedGetFileIDsRequest, PILLAR1_ID, pillar1DestinationId));
         }
 
-        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
 
-        addStep("The pillar sends a getFileIDsProgressResponse to the GetFileIDsClient.", 
-                "The GetFileIDsClient should notify about the response through the callback interface."); 
+        addStep("The pillar sends a getFileIDsProgressResponse to the GetFileIDsClient.",
+                "The GetFileIDsClient should notify about the response through the callback interface.");
         if (useMockupPillar()) {
             GetFileIDsProgressResponse getFileIDsProgressResponse = testMessageFactory.createGetFileIDsProgressResponse(
                     receivedGetFileIDsRequest, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(getFileIDsProgressResponse);
         }
-        
+
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PROGRESS);
 
-        addStep("The resulting file is uploaded to the indicated url and the pillar sends a final response upload message", 
+        addStep("The resulting file is uploaded to the indicated url and the pillar sends a final response upload message",
                 "The GetFileIDsClient notifies that the file is ready through the callback listener and the uploaded file is present.");
         if (useMockupPillar()) {
             GetFileIDsFinalResponse completeMsg = testMessageFactory.createGetFileIDsFinalResponse(
                     receivedGetFileIDsRequest, PILLAR1_ID, pillar1DestinationId);
-            
+
             ResultingFileIDs res = new ResultingFileIDs();
             FileIDsData fileIDsData = new FileIDsData();
             FileIDsDataItems fiddItems = new FileIDsDataItems();
@@ -262,17 +261,17 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
             fidItem.setLastModificationTime(CalendarUtils.getNow());
             fidItem.setFileID(fileID);
             fiddItems.getFileIDsDataItem().add(fidItem);
-            
+
             fileIDsData.setFileIDsDataItems(fiddItems);
             res.setFileIDsData(fileIDsData);
             completeMsg.setResultingFileIDs(res);
-            
+
             messageBus.sendMessage(completeMsg);
         }
 
-        addStep("Receive and validate event results for the pillar.", 
+        addStep("Receive and validate event results for the pillar.",
                 "Should be a FileIDsCompletePillarEvent with the ResultingFileIDs containing the list of fileids.");
-        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             FileIDsCompletePillarEvent event = (FileIDsCompletePillarEvent) testEventHandler.waitForEvent();
             Assert.assertEquals(event.getType(), OperationEventType.COMPONENT_COMPLETE);
             ResultingFileIDs resFileIDs = event.getFileIDs();
@@ -283,37 +282,37 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
             Assert.assertEquals(resFileIDs.getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size(),
                     1, "Response should contain same amount of fileids as requested.");
         }
-        
+
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
     }
-    
+
     @Test(groups = {"regressiontest"})
     public void noIdentifyResponses() throws Exception {
         addDescription("Tests the GetFileIDsClient handles lack of IdentifyPillarResponses gracefully.");
         addStep("Set the number of pillars for this SLA to 1 and a 3 second timeout for identifying pillar.", "");
-        
+
         String deliveryFilename = "TEST-FILE-ID-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
         fileIDs.setFileID(DEFAULT_FILE_ID);
-        
-        settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
+
+        componentSettings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
 
         if(useMockupPillar()) {
-            settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-            settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+            componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+            componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         }
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetFileIDsClient GetFileIDsClient = createGetFileIDsClient();
 
-        addStep("Ensure the delivery file isn't already present on the http server", 
+        addStep("Ensure the delivery file isn't already present on the http server",
                 "Should be remove if it already exists.");
         httpServer.removeFile(deliveryFilename);
         URL deliveryUrl = httpServer.getURL(deliveryFilename);
 
-        addStep("Request the delivery of the file id of a file from the pillar(s). A callback listener should be supplied.", 
+        addStep("Request the delivery of the file id of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
-        GetFileIDsClient.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
+        GetFileIDsClient.getFileIDs(componentSettings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
                 deliveryUrl, testEventHandler, "TEST-AUDIT");
 
         if (useMockupPillar()) {
@@ -329,46 +328,46 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
     @Test(groups = {"regressiontest"})
     public void conversationTimeout() throws Exception {
         addDescription("Tests the GetFileIDClient handles lack of GetFileIDsResponses gracefully");
-        addStep("Set the number of pillars for this Collection to 1 and a 3 second timeout for the conversation.", 
+        addStep("Set the number of pillars for this Collection to 1 and a 3 second timeout for the conversation.",
                 "Should not be able to fail here.");
 
         String deliveryFilename = "TEST-FILE-IDS-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
         fileIDs.setFileID(DEFAULT_FILE_ID);
-        
-        settings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
+
+        componentSettings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
 
         if(useMockupPillar()) {
-            settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-            settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+            componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+            componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         }
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetFileIDsClient GetFileIDsClient = createGetFileIDsClient();
 
-        addStep("Ensure the delivery file isn't already present on the http server", 
+        addStep("Ensure the delivery file isn't already present on the http server",
                 "Should be remove if it already exists.");
         httpServer.removeFile(deliveryFilename);
         URL deliveryUrl = httpServer.getURL(deliveryFilename);
 
-        addStep("Request the delivery of the file id of a file from the pillar(s). A callback listener should be supplied.", 
+        addStep("Request the delivery of the file id of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
-        GetFileIDsClient.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
+        GetFileIDsClient.getFileIDs(componentSettings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
                 deliveryUrl, testEventHandler, "TEST-AUDIT");
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
                     IdentifyPillarsForGetFileIDsRequest.class);
-            Assert.assertEquals(receivedIdentifyRequestMessage, 
-                    testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage, 
+            Assert.assertEquals(receivedIdentifyRequestMessage,
+                    testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage,
                             collectionDestinationID));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
-        addStep("The pillar sends a response to the identify message.", 
+        addStep("The pillar sends a response to the identify message.",
                 "The callback listener should notify of the response and the client should send a GetFileIDsRequest "
-                + "message to the pillar"); 
+                + "message to the pillar");
 
         GetFileIDsRequest receivedGetFileIDsRequest = null;
         if (useMockupPillar()) {
@@ -376,57 +375,57 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
                     receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(identifyResponse);
             receivedGetFileIDsRequest = pillar1Destination.waitForMessage(GetFileIDsRequest.class);
-            Assert.assertEquals(receivedGetFileIDsRequest, 
+            Assert.assertEquals(receivedGetFileIDsRequest,
                     testMessageFactory.createGetFileIDsRequest(receivedGetFileIDsRequest,PILLAR1_ID, pillar1DestinationId));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
-        
+
         addStep("Wait for at least 3 seconds", "An IdentifyPillarTimeout event should be received");
         Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.FAILED);
     }
-    
+
     @Test(groups = {"regressiontest"})
     public void testNoSuchFile() throws Exception {
         addDescription("Testing how a request for a non-existing file is handled.");
         addStep("Setting up variables and such.", "Should be OK.");
-        
+
         String deliveryFilename = "TEST-FILE-IDS-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
         fileIDs.setFileID(DEFAULT_FILE_ID);
-        
+
         if(useMockupPillar()) {
-            settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-            settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+            componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+            componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
         }
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetFileIDsClient GetFileIDsClient = createGetFileIDsClient();
 
-        addStep("Ensure the delivery file isn't already present on the http server", 
+        addStep("Ensure the delivery file isn't already present on the http server",
         "Should be remove if it already exists.");
         httpServer.removeFile(deliveryFilename);
         URL deliveryUrl = httpServer.getURL(deliveryFilename);
 
-        addStep("Request the delivery of the file id of a file from the pillar(s). A callback listener should be supplied.", 
+        addStep("Request the delivery of the file id of a file from the pillar(s). A callback listener should be supplied.",
         "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
-        GetFileIDsClient.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs, 
+        GetFileIDsClient.getFileIDs(componentSettings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
                 deliveryUrl, testEventHandler, "TEST-AUDIT");
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
                     IdentifyPillarsForGetFileIDsRequest.class);
-            Assert.assertEquals(receivedIdentifyRequestMessage, 
-                    testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage, 
+            Assert.assertEquals(receivedIdentifyRequestMessage,
+                    testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage,
                             collectionDestinationID));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
-        addStep("The pillar sends a response to the identify message.", 
+        addStep("The pillar sends a response to the identify message.",
                 "The callback listener should notify of the response and the client should send a GetFileIDsRequest "
-                + "message to the pillar"); 
+                + "message to the pillar");
 
         GetFileIDsRequest receivedGetFileIDsRequest = null;
         if (useMockupPillar()) {
@@ -434,11 +433,11 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
                     receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(identifyResponse);
             receivedGetFileIDsRequest = pillar1Destination.waitForMessage(GetFileIDsRequest.class);
-            Assert.assertEquals(receivedGetFileIDsRequest, 
+            Assert.assertEquals(receivedGetFileIDsRequest,
                     testMessageFactory.createGetFileIDsRequest(receivedGetFileIDsRequest,PILLAR1_ID, pillar1DestinationId));
         }
 
-        for(int i = 0; i < settings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -448,13 +447,13 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         if (useMockupPillar()) {
             GetFileIDsFinalResponse completeMsg = testMessageFactory.createGetFileIDsFinalResponse(
                     receivedGetFileIDsRequest, PILLAR1_ID, pillar1DestinationId);
-            
+
             ResponseInfo rfInfo = new ResponseInfo();
             rfInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             rfInfo.setResponseText("No such file.");
             completeMsg.setResponseInfo(rfInfo);
             completeMsg.setResultingFileIDs(null);
-            
+
             messageBus.sendMessage(completeMsg);
         }
 
@@ -462,18 +461,18 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
     }
 
-    
+
     /**
-     * Creates a new test GetFileIDsClient based on the supplied settings. 
-     * 
+     * Creates a new test GetFileIDsClient based on the supplied componentSettings.
+     *
      * Note that the normal way of creating client through the module factory would reuse components with settings from
      * previous tests.
      * @return A new GetFileIDsClient(Wrapper).
      */
     private GetFileIDsClient createGetFileIDsClient() {
-        MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
-        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
+        MessageBus messageBus = new ActiveMQMessageBus(componentSettings.getMessageBusConfiguration(), securityManager);
+        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(componentSettings, securityManager);
         return new GetFileIDsClientTestWrapper(new ConversationBasedGetFileIDsClient(
-                messageBus, conversationMediator, settings, TEST_CLIENT_ID), testEventManager);
+                messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID), testEventManager);
     }
 }

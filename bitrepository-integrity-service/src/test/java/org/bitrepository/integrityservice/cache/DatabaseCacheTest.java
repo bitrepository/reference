@@ -24,14 +24,6 @@
  */
 package org.bitrepository.integrityservice.cache;
 
-import java.io.File;
-import java.math.BigInteger;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -54,6 +46,14 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 public class DatabaseCacheTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
@@ -65,7 +65,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
     
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
-        settings = TestSettingsProvider.reloadSettings();
+        settings = TestSettingsProvider.reloadSettings("DatabaseCacheUnderTest");
         
         File dbFile = new File("src/test/resources/integritydb.jar");
         Assert.assertTrue(dbFile.isFile(), "The database file should exist");

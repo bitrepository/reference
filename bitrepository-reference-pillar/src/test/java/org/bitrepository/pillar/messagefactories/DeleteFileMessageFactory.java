@@ -24,124 +24,37 @@
  */
 package org.bitrepository.pillar.messagefactories;
 
-import java.util.UUID;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
-public class DeleteFileMessageFactory extends ClientTestMessageFactory {
-    final Settings settings;
+public class DeleteFileMessageFactory extends PillarTestMessageFactory {
+    private final String pillarID;
     
-    public DeleteFileMessageFactory(Settings pSettings) {
-        super(pSettings.getCollectionID());
-        this.settings = pSettings;
-    }
-    
-    public IdentifyPillarsForDeleteFileRequest createIdentifyPillarsForDeleteFileRequest( 
-            String auditTrail, String fileId, String from, String replyTo) {
-        IdentifyPillarsForDeleteFileRequest res = new IdentifyPillarsForDeleteFileRequest();
-        res.setAuditTrailInformation(auditTrail);
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(getNewCorrelationID());
-        res.setFileID(fileId);
-        res.setFrom(from);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setReplyTo(replyTo);
-        res.setTo(settings.getCollectionDestination());
-        res.setVersion(VERSION_DEFAULT);
-        
-        return res;
+    public DeleteFileMessageFactory(Settings clientSettings, String pillarID, String pillarDestination) {
+        super(clientSettings, pillarDestination);
+        this.pillarID = pillarID;
     }
 
-    public IdentifyPillarsForDeleteFileResponse createIdentifyPillarsForDeleteFileResponse(
-            String correlationId, String fileId, ChecksumSpecTYPE csType, String pillarId, String replyTo,  
-            ResponseInfo responseInfo, TimeMeasureTYPE timeToDeliver, String toTopic) {
-        IdentifyPillarsForDeleteFileResponse res = new IdentifyPillarsForDeleteFileResponse();
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(correlationId);
-        res.setFileID(fileId);
-        res.setFrom(pillarId);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setPillarChecksumSpec(csType);
-        res.setPillarID(pillarId);
-        res.setReplyTo(replyTo);
-        res.setResponseInfo(responseInfo);
-        res.setTimeToDeliver(timeToDeliver);
-        res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-
-        return res;
-    }
-    
-    public DeleteFileRequest createDeleteFileRequest(String auditTrail, ChecksumDataForFileTYPE existingData, 
-            ChecksumSpecTYPE csRequest, String correlationId, String fileId, String from, String pillarId, 
-            String replyTo, String toTopic) {
-        DeleteFileRequest res = new DeleteFileRequest();
-        res.setAuditTrailInformation(auditTrail);
-        res.setChecksumDataForExistingFile(existingData);
-        res.setChecksumRequestForExistingFile(csRequest);
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(correlationId);
-        res.setFileID(fileId);
-        res.setFrom(from);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setPillarID(pillarId);
-        res.setReplyTo(replyTo);
-        res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-
-        return res;
+    public IdentifyPillarsForDeleteFileRequest createIdentifyPillarsForDeleteFileRequest(String fileId) {
+        IdentifyPillarsForDeleteFileRequest request = new IdentifyPillarsForDeleteFileRequest();
+        initializeIdentifyRequest(request);
+        request.setFileID(fileId);
+        return request;
     }
 
-    public DeleteFileProgressResponse createDeleteFileProgressResponse(String correlationId, String fileId, 
-            String pillarId, String replyTo, ResponseInfo responseInfo, String toTopic) {
-        DeleteFileProgressResponse res = new DeleteFileProgressResponse();
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(correlationId);
-        res.setFileID(fileId);
-        res.setFrom(pillarId);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setPillarID(pillarId);
-        res.setReplyTo(replyTo);
-        res.setResponseInfo(responseInfo);
-        res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-
-        return res;
-    }
-
-    public DeleteFileFinalResponse createDeleteFileFinalResponse(ChecksumDataForFileTYPE csData, String correlationId, 
-            String fileId, String pillarId, String replyTo, ResponseInfo responseInfo, String toTopic) {
-        DeleteFileFinalResponse res = new DeleteFileFinalResponse();
-        res.setChecksumDataForExistingFile(csData);
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(correlationId);
-        res.setFileID(fileId);
-        res.setFrom(pillarId);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setPillarID(pillarId);
-        res.setReplyTo(replyTo);
-        res.setResponseInfo(responseInfo);
-        res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-        
-        return res;
-    }
-    
-    /**
-     * Method for generating new correlation IDs.
-     * @return A unique correlation id.
-     */
-    public String getNewCorrelationID() {
-        return UUID.randomUUID().toString();
+    public DeleteFileRequest createDeleteFileRequest(
+            ChecksumDataForFileTYPE existingData,
+            ChecksumSpecTYPE csRequest,
+            String fileId) {
+        DeleteFileRequest request = new DeleteFileRequest();
+        initializeOperationRequest(request);
+        request.setChecksumDataForExistingFile(existingData);
+        request.setChecksumRequestForExistingFile(csRequest);
+        request.setFileID(fileId);
+        request.setPillarID(pillarID);
+        return request;
     }
 }

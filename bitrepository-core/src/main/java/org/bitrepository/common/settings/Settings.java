@@ -26,20 +26,31 @@ package org.bitrepository.common.settings;
 
 import java.util.List;
 
+import org.bitrepository.protocol.messagebus.destination.DestinationHelper;
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.bitrepository.settings.collectionsettings.Permission;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
 
 /**
- * Wraps the {@link ReferenceSettings} {@link CollectionSettings}. Use a {@link SettingsProvider} to access settings
+ * Contains the general configuration to be used by reference code components. Provides acces to both
+ * {@link ReferenceSettings} and {@link CollectionSettings}. Use a {@link SettingsProvider} to access settings create
+ * <code>Settings</code> objects.
  */
 public class Settings {
-    protected ReferenceSettings referenceSettings;
-    protected CollectionSettings collectionSettings;
-    protected String componentID;
+    protected final String componentID;
+    protected final String receiverDestinationID;
+    protected final ReferenceSettings referenceSettings;
+    protected final CollectionSettings collectionSettings;
     
-    protected Settings(CollectionSettings collectionSettings, ReferenceSettings referenceSettings) {
+    protected Settings(
+            String componentID,
+            String receiverDestinationID,
+            CollectionSettings collectionSettings,
+            ReferenceSettings referenceSettings) {
+        this.componentID = componentID;
+        this.receiverDestinationID = receiverDestinationID;
+
         this.referenceSettings = referenceSettings;
         this.collectionSettings = collectionSettings;
     }
@@ -100,19 +111,11 @@ public class Settings {
         return collectionSettings;
     }
 
-    // ToDo Upgrade to constructor to force the settings of the componentID at construction time.
     public String getComponentID() {
         return componentID;
     }
 
-    public void setComponentID(String componentID) {
-        this.componentID = componentID;
-    }
-
-    public String getReceiverDestination() {
-        if (componentID != null) {
-            return getReferenceSettings().getClientSettings().getReceiverDestination() + "-" + componentID;
-        }
-        else return getReferenceSettings().getClientSettings().getReceiverDestination();
+    public String getReceiverDestinationID() {
+        return receiverDestinationID;
     }
 }

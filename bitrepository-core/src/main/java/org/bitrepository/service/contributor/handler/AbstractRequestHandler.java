@@ -62,9 +62,9 @@ public abstract class AbstractRequestHandler<T> implements RequestHandler<T> {
     protected void populateResponse(MessageRequest originalRequest, MessageResponse response){
         response.setCollectionID(getContext().getSettings().getCollectionID());
         response.setCorrelationID(originalRequest.getCorrelationID());
-        response.setFrom(getContext().getComponentID());
+        response.setFrom(getContext().getSettings().getComponentID());
         response.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        response.setReplyTo(getContext().getReplyTo());
+        response.setReplyTo(getContext().getSettings().getReceiverDestinationID());
         response.setTo(originalRequest.getReplyTo());
         response.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
     }

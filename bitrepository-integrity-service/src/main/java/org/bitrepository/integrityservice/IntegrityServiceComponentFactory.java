@@ -144,8 +144,6 @@ public final class IntegrityServiceComponentFactory {
      * @return The integrity service.
      */
     public IntegrityService createIntegrityService(Settings settings, SecurityManager securityManager) {
-        settings.setComponentID(settings.getReferenceSettings().getIntegrityServiceSettings().getID());
-        
         MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
         ContributorContext context = new ContributorContext(messageBus, settings);
         DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(

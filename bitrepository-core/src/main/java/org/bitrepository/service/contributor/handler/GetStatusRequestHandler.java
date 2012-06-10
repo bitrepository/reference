@@ -69,8 +69,8 @@ public class GetStatusRequestHandler extends AbstractRequestHandler<GetStatusReq
      * @param request The message to validate.
      */
     private void validateMessage(GetStatusRequest request) {
-        if(!request.getContributor().equals(getContext().getComponentID())) {
-            throw new IllegalArgumentException("Illegal argument exception. Expected: " + getContext().getComponentID()
+        if(!request.getContributor().equals(getContext().getSettings().getComponentID())) {
+            throw new IllegalArgumentException("Illegal argument exception. Expected: " + getContext().getSettings().getComponentID()
                     + ", but it was " + request.getContributor());
         }
     }
@@ -83,7 +83,7 @@ public class GetStatusRequestHandler extends AbstractRequestHandler<GetStatusReq
         GetStatusProgressResponse response = new GetStatusProgressResponse();
         populateResponse(request, response);
         response.setResponseInfo(ResponseInfoUtils.getInitialProgressResponse());
-        response.setContributor(getContext().getComponentID());
+        response.setContributor(getContext().getSettings().getComponentID());
         getContext().getDispatcher().sendMessage(response);
     }
     
@@ -115,7 +115,7 @@ public class GetStatusRequestHandler extends AbstractRequestHandler<GetStatusReq
     private GetStatusFinalResponse createFinalResponse(GetStatusRequest request) {
         GetStatusFinalResponse response = new GetStatusFinalResponse();
         populateResponse(request, response);
-        response.setContributor(getContext().getComponentID());
+        response.setContributor(getContext().getSettings().getComponentID());
 
         return response;
     }

@@ -21,10 +21,6 @@
  */
 package org.bitrepository.monitoringservice.alarm;
 
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositoryelements.StatusCode;
@@ -38,6 +34,10 @@ import org.bitrepository.service.contributor.ContributorContext;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
+
 public class MonitorAlerterTest extends IntegrationTest {
     
     static int callsForError = 0;
@@ -47,9 +47,8 @@ public class MonitorAlerterTest extends IntegrationTest {
         addDescription("Tests the " + BasicMonitoringServiceAlerter.class.getName());
         addStep("Setup", "");
         String componentID = "TestMonitorService";
-        settings.getReferenceSettings().getMonitoringServiceSettings().setMaxRetries(BigInteger.ONE);
-        ContributorContext context = new ContributorContext(messageBus, settings, componentID, 
-                settings.getReceiverDestination());
+        componentSettings.getReferenceSettings().getMonitoringServiceSettings().setMaxRetries(BigInteger.ONE);
+        ContributorContext context = new ContributorContext(messageBus, componentSettings);
         
         AlerterStatusStore store = new AlerterStatusStore();
         
@@ -98,6 +97,11 @@ public class MonitorAlerterTest extends IntegrationTest {
         res.setStatusInfo(si);
         res.setStatusTimestamp(CalendarUtils.getEpoch());
         return res;
+    }
+
+    @Override
+    protected String getComponentID() {
+        return "MonitorAlerterUnderTest";
     }
 
     class AlerterStatusStore extends MockStatusStore {

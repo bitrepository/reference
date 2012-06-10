@@ -21,9 +21,6 @@
  */
 package org.bitrepository.monitoringservice.status;
 
-import java.util.Arrays;
-import java.util.Map;
-
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositoryelements.StatusCode;
 import org.bitrepository.bitrepositoryelements.StatusInfo;
@@ -35,12 +32,15 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+import java.util.Map;
+
 public class ComponentStatusStoreTest extends ExtendedTestCase {
     Settings settings;
     
     @BeforeClass (alwaysRun = true)
     public void setup() {
-        settings = TestSettingsProvider.reloadSettings();
+        settings = TestSettingsProvider.reloadSettings("ComponentStatusStoreUnderTest");
     }
 
     @Test(groups = {"regressiontest"})

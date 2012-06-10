@@ -50,13 +50,15 @@ public class MessageBusTest extends IntegrationTest {
      * have been consumed by a listener.*/
     static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
 
+
+
     @Test(groups = { "regressiontest" })
     public final void messageBusConnectionTest() {
         addDescription("Verifies that we are able to connect to the message bus");
         addStep("Get a connection to the message bus from the "
                 + "<i>MessageBusConnection</i> connection class",
         "No exceptions should be thrown");
-        Assert.assertNotNull(ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager));
+        Assert.assertNotNull(ProtocolComponentFactory.getInstance().getMessageBus(componentSettings, securityManager));
     }
 
     @Test(groups = { "regressiontest" })
@@ -101,7 +103,7 @@ public class MessageBusTest extends IntegrationTest {
             ExampleMessageFactory.createMessage(AlarmMessage.class);
 
         addStep("Make a connection to the message bus and add two listeners", "No exceptions should be thrown");
-        MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
+        MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(componentSettings, securityManager);
         Assert.assertNotNull(con);
 
         MessageReceiver receiver1 = new MessageReceiver("receiver1", testEventManager);
@@ -248,7 +250,7 @@ public class MessageBusTest extends IntegrationTest {
             ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);
 
         String busUrl = "tcp://localhost:61616";
-        settings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration().setURL(busUrl);
+        componentSettings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration().setURL(busUrl);
         String destination = "EmbeddedMessageBus";
         content.setTo(destination);
         
@@ -256,7 +258,7 @@ public class MessageBusTest extends IntegrationTest {
                 + " be seen here.");
 
         LocalActiveMQBroker broker = new LocalActiveMQBroker(
-                settings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration());
+                componentSettings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration());
         try {
             broker.start();
 
@@ -272,7 +274,7 @@ public class MessageBusTest extends IntegrationTest {
             addStep("Connecting to the bus, and then connect to the local bus.", 
                     "Info-level logs should be seen here for both connections. "
                     + "Only the last is used.");
-            MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
+            MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(componentSettings, securityManager);
 
             addStep("Make a listener for the messagebus and make it listen. "
                     + "Then send a message for the message listener to catch.",
@@ -297,6 +299,11 @@ public class MessageBusTest extends IntegrationTest {
         } finally {
             broker.stop();
         }
+    }
+
+    @Override
+    protected String getComponentID() {
+        return getClass().getSimpleName();
     }
 
     protected class TestMessageListener implements MessageListener {

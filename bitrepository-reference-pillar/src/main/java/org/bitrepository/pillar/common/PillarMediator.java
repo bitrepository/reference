@@ -51,22 +51,17 @@ public abstract class PillarMediator extends AbstractContributorMediator {
     /**
      * Constructor.
      * Sets the parameters of this mediator, and adds itself as a listener to the destinations.
-     * 
-     * @param messagebus The messagebus for this instance.
-     * @param settings The settings for the reference pillar.
-     * @param refArchive The archive for the reference pillar.
      */
     public PillarMediator(PillarContext context) {
         super(context.getMessageBus());
 
         this.context = context;
     }
-    
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+
     @Override
     protected void handleRequest(MessageRequest request, RequestHandler handler) {
         try {
-            log.info("Recieving incomming transmission: {}", request);
+            log.info("Receiving request: " + request);
             validateBitrepositoryCollectionId(request.getCollectionID());
             handler.processRequest(request);
         } catch (IllegalArgumentException e) {

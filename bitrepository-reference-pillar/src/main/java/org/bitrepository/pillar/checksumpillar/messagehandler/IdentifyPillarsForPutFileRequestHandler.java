@@ -102,7 +102,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
         IdentifyPillarsForPutFileResponse reply = createFinalResponse(message);
 
         // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
-        reply.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
+        reply.setReplyTo(getSettings().getReceiverDestinationID());
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
                 getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
@@ -135,7 +135,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
         res.setTo(msg.getReplyTo());
         res.setCollectionID(getSettings().getCollectionID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
+        res.setReplyTo(getSettings().getReceiverDestinationID());
         res.setPillarChecksumSpec(getChecksumType());
         res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         

@@ -21,12 +21,6 @@
  */
 package org.bitrepository.alarm.store;
 
-import java.io.File;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.common.settings.Settings;
@@ -39,6 +33,12 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class AlarmDatabaseTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
@@ -53,7 +53,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
 
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
-        settings = TestSettingsProvider.reloadSettings();
+        settings = TestSettingsProvider.reloadSettings("AlarmDatabaseUnderTest");
         settings.getReferenceSettings().getAlarmServiceSettings().setAlarmServiceDatabaseUrl(DATABASE_URL);
         
         addStep("Initialise the database", "Should be unpacked from a jar-file.");

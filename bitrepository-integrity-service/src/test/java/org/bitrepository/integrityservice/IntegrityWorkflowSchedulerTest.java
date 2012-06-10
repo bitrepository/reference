@@ -41,7 +41,7 @@ public class IntegrityWorkflowSchedulerTest extends ExtendedTestCase {
     
     @BeforeClass (alwaysRun = true)
     public void setup() {
-        settings = TestSettingsProvider.reloadSettings();
+        settings = TestSettingsProvider.reloadSettings("IntegrityWorkflowSchedulerUnderTest");
     }
 
     @Test(groups = {"regressiontest", "integritytest"})

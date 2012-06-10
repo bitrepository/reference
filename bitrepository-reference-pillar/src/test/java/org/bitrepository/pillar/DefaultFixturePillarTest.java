@@ -25,6 +25,8 @@
 package org.bitrepository.pillar;
 
 import org.bitrepository.client.MessageReceiver;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
@@ -34,11 +36,11 @@ import org.bitrepository.protocol.message.ClientTestMessageFactory;
  */
 public abstract class DefaultFixturePillarTest extends IntegrationTest {
     protected static final String DEFAULT_FILE_ID = ClientTestMessageFactory.FILE_ID_DEFAULT;
-    protected static final String FROM = "UNIT-TEST";    
 
     protected static String pillarDestinationId;
-    
-    protected static String clientDestinationId;
+
+    protected Settings clientSettings;
+    protected String clientDestinationId;
     protected MessageReceiver clientTopic;
     
     /** Indicated whether reference pillars should be started should be started and used. Note that mockup pillars 
@@ -46,22 +48,33 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
     public boolean useEmbeddedPillar() {
         return System.getProperty("useEmbeddedPillar", "false").equals("true");
     }
-    
+
+    @Override
+    protected void setupSettings() {
+        super.setupSettings();
+        clientSettings = TestSettingsProvider.reloadSettings("TestClientForPillarTest");
+        clientSettings.getCollectionSettings().getProtocolSettings().setCollectionDestination(collectionDestinationID);
+
+        componentSettings.getReferenceSettings().getPillarSettings().setPillarID(getPillarID());
+    }
+
+    @Override
+    protected void initializeMessageBusListeners() {
+        super.initializeMessageBusListeners();
+        clientTopic = new MessageReceiver("Client topic receiver", testEventManager);
+        clientDestinationId = clientSettings.getReceiverDestinationID();
+        messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());
+
+        pillarDestinationId = componentSettings.getReceiverDestinationID();
+    }
+
     @Override
     protected void teardownMessageBusListeners() {
         messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
         super.teardownMessageBusListeners();
     }
 
-    @Override
-    protected void initializeMessageBusListeners() {
-        super.initializeMessageBusListeners();
-        clientDestinationId = settings.getReferenceSettings().getClientSettings().getReceiverDestination() + getTopicPostfix();
-        settings.getReferenceSettings().getClientSettings().setReceiverDestination(clientDestinationId);
-        clientTopic = new MessageReceiver("client topic receiver", testEventManager);
-        messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());    
-        
-        pillarDestinationId = settings.getReferenceSettings().getPillarSettings().getReceiverDestination() + getTopicPostfix();
-        settings.getReferenceSettings().getPillarSettings().setReceiverDestination(pillarDestinationId);
+    protected String getPillarID() {
+        return getComponentID();
     }
 }

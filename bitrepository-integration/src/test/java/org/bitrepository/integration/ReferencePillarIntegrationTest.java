@@ -24,9 +24,6 @@
  */
 package org.bitrepository.integration;
 
-import java.net.URL;
-import java.util.Date;
-
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.GetFileClient;
@@ -36,6 +33,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.TestEventHandler;
+import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
@@ -46,24 +44,32 @@ import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.PillarComponentFactory;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.net.URL;
+import java.util.Date;
+
 /**
  * Test class for the reference pillar.
+ *
+ * ToDo needs a general refactoring to stabilize and split into focused tests. This should also be used as the
+ * foundation for at general acceptance test of a running pillar. The refererence pilalr has it's own test.
  */
 public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
-    
+    @Override
+    protected String getComponentID() {
+        return "ReferencePillarUnderTest";
+    }
+
+    //ToDo needs a general refactoring to stabilize and split into focused tests.
     private static final String TEST_CLIENT_ID = "test-client";
 //    @Test(groups = {"regressiontest"})
     @Test(groups = {"integrationtest"})
     public void testPillarVsClients() throws Exception {
         addDescription("Tests the put functionality of the reference pillar.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        settings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-pillar-destination-jolf");
-        PillarComponentFactory.getInstance().getReferencePillar(messageBus, settings);
+        //PillarComponentFactory.getInstance().createReferencePillar(messageBus, componentSettings, "ReferencePillarUnderTest");
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         String REPLACE_FILE_ADDRES = "http://sandkasse-01.kb.dk/dav/dia.jpg";
         Long FILE_SIZE = 27L;
@@ -82,12 +88,9 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         
         XMLFileSettingsLoader settingsLoader = new XMLFileSettingsLoader("settings/xml/bitrepository-devel");
         SettingsProvider provider = new SettingsProvider(settingsLoader);
-        Settings clientSettings = provider.getSettings();
-        clientSettings.getCollectionSettings().setProtocolSettings(settings.getCollectionSettings().getProtocolSettings());
-        clientSettings.getCollectionSettings().setClientSettings(settings.getCollectionSettings().getClientSettings());
-        clientSettings.getReferenceSettings().getClientSettings().setReceiverDestination("TEST-client-destination");
+        Settings clientSettings = provider.getSettings("TEST-client");
         clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(settings.getReferenceSettings().getPillarSettings().getPillarID());
+        clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(componentSettings.getComponentID());
         
         addStep("Create a putclient and start a put operation.", 
                 "This should be caught by the pillar.");
@@ -110,7 +113,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         GetFileClient getClient = AccessComponentFactory.getInstance().createGetFileClient(clientSettings,
                 securityManager, TEST_CLIENT_ID);
         getClient.getFileFromSpecificPillar(FILE_ID, null, new URL(FILE_ADDRESS), 
-                settings.getReferenceSettings().getPillarSettings().getPillarID(), testEventHandler);
+                componentSettings.getComponentID(), testEventHandler);
         
         addStep("Validate the sequence of operations event for the GetFileClient", 
                 "Shoud be in correct order.");
@@ -130,7 +133,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         
         URL csurl = new URL(FILE_ADDRESS + "-cs");
         
-        getChecksums.getChecksums(clientSettings.getCollectionSettings().getClientSettings().getPillarIDs(), 
+        getChecksums.getChecksums(clientSettings.getCollectionSettings().getClientSettings().getPillarIDs(),
                 fileIDsForGetChecksums, DEFAULT_CHECKSUM_TYPE, csurl, testEventHandler, "AuditTrail: TESTING!!!");
         
         addStep("Validate the sequence of operation events for the getChecksumClient", 
@@ -152,7 +155,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         
         URL fileIDsUrl = new URL(FILE_ADDRESS + "-id");
         
-        getFileIDs.getFileIDs(clientSettings.getCollectionSettings().getClientSettings().getPillarIDs(), 
+        getFileIDs.getFileIDs(clientSettings.getCollectionSettings().getClientSettings().getPillarIDs(),
                 fileIdsForGetFileIDs, fileIDsUrl, testEventHandler, "AuditTrail: TESTING!!!");
         
         addStep("Validate the sequence of operation events for the getChecksumClient", 
@@ -183,7 +186,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         checksumDataNewFile.setChecksumValue(CHECKSUM_NEW_FILE);
         checksumDataNewFile.setCalculationTimestamp(CalendarUtils.getEpoch());
         
-        replaceFile.replaceFile(FILE_ID, settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+        replaceFile.replaceFile(FILE_ID, componentSettings.getComponentID(), 
                 checksumDataOldFile, checksumRequested, new URL(REPLACE_FILE_ADDRES), REPLACE_FILE_SIZE, 
                 checksumDataNewFile, checksumRequested, testEventHandler, "AuditTrail: TESTING!!!");
         
@@ -203,7 +206,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         DeleteFileClient deleteFile = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(clientSettings,
                 securityManager, TEST_CLIENT_ID);
 
-        deleteFile.deleteFile(FILE_ID, settings.getReferenceSettings().getPillarSettings().getPillarID(), 
+        deleteFile.deleteFile(FILE_ID, componentSettings.getComponentID(), 
                 checksumDataNewFile, checksumRequested, testEventHandler, "AuditTrail: TESTING!!!");
         
         addStep("Validate the sequence of operation events for the DeleteFileClient", 
@@ -216,4 +219,5 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
     }
+
 }

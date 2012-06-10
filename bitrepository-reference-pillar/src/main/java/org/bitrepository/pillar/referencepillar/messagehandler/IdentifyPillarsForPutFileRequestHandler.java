@@ -24,8 +24,6 @@
  */
 package org.bitrepository.pillar.referencepillar.messagehandler;
 
-import java.math.BigInteger;
-
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
@@ -38,6 +36,8 @@ import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
 
 /**
  * Class for handling the identification of this pillar for the purpose of performing the PutFile operation.
@@ -132,7 +132,7 @@ public class IdentifyPillarsForPutFileRequestHandler
         IdentifyPillarsForPutFileResponse reply = createFinalResponse(message);
 
         // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
-        reply.setReplyTo(getSettings().getReferenceSettings().getPillarSettings().getReceiverDestination());
+        reply.setReplyTo(getSettings().getReceiverDestinationID());
         reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
                 getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         reply.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR

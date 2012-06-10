@@ -52,7 +52,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
         OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
         MessageSigner messageSigner = new BasicMessageSigner();
-        Settings settings = TestSettingsProvider.reloadSettings();
+        Settings settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
         settings.getCollectionSettings().getProtocolSettings().setRequireMessageAuthentication(true);
         settings.getCollectionSettings().getProtocolSettings().setRequireOperationAuthorization(true);
         settings.getCollectionSettings().setPermissionSet(SecurityTestConstants.getDefaultPermissions());

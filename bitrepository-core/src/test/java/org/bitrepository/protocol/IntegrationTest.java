@@ -24,8 +24,8 @@
  */
 package org.bitrepository.protocol;
 
-import javax.swing.JFrame;
-
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.core.util.StatusPrinter;
 import org.bitrepository.client.MessageReceiver;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -33,9 +33,9 @@ import org.bitrepository.protocol.bus.MessageBusWrapper;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
 import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.bitrepository.protocol.http.EmbeddedHttpServer;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.jaccept.TestEventManager;
 import org.jaccept.gui.ComponentTestFrame;
 import org.jaccept.structure.ExtendedTestCase;
@@ -46,8 +46,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.core.util.StatusPrinter;
+import javax.swing.*;
 
 /**
  * Contains the generic parts for integration testing.
@@ -66,8 +65,9 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected static String alarmDestinationID;
     protected MessageReceiver alarmDestination; 
 
-    protected Settings settings;
     public SecurityManager securityManager;
+
+    protected Settings componentSettings;
 
     @BeforeClass (alwaysRun = true)
     public void setupTest() throws Exception {
@@ -102,7 +102,13 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * Initializes the settings.
      */
     protected void setupSettings() {
-        settings = TestSettingsProvider.reloadSettings();
+        componentSettings = TestSettingsProvider.reloadSettings(getComponentID());
+
+        collectionDestinationID = componentSettings.getCollectionDestination() + getTopicPostfix();
+        componentSettings.getCollectionSettings().getProtocolSettings().setCollectionDestination(collectionDestinationID);
+
+        alarmDestinationID = componentSettings.getAlarmDestination() + getTopicPostfix();
+        componentSettings.getCollectionSettings().getProtocolSettings().setAlarmDestination(alarmDestinationID);
     }
 
     // Experimental, use at own risk.
@@ -137,24 +143,20 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      */
     protected void setupMessageBus() throws Exception {
         if (useEmbeddedMessageBus()) { 
-            broker = new LocalActiveMQBroker(settings.getMessageBusConfiguration());
+            broker = new LocalActiveMQBroker(componentSettings.getMessageBusConfiguration());
             broker.start(); 
         }
         messageBus = new MessageBusWrapper(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), testEventManager);
+                ProtocolComponentFactory.getInstance().getMessageBus(componentSettings, securityManager), testEventManager);
     }
 
     /**
      * Defines the general destinations used in the tests and adds listeners to the message bus.
      */
     protected void initializeMessageBusListeners() {
-        collectionDestinationID = settings.getCollectionDestination() + getTopicPostfix();
-        settings.getCollectionSettings().getProtocolSettings().setCollectionDestination(collectionDestinationID);
         collectionDestination = new MessageReceiver("Collection topic receiver", testEventManager);
         messageBus.addListener(collectionDestinationID, collectionDestination.getMessageListener());
-          
-        alarmDestinationID = settings.getAlarmDestination() + getTopicPostfix();
-        settings.getCollectionSettings().getProtocolSettings().setAlarmDestination(alarmDestinationID);
+
         alarmDestination = new MessageReceiver("Alarm receiver", testEventManager);
         messageBus.addListener(alarmDestinationID, alarmDestination.getMessageListener());
     }
@@ -214,5 +216,14 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      */
     protected String getTopicPostfix() {
         return "-" + System.getProperty("user.name");
+    }
+
+    /**
+     * Should return a component independent settings by the implementing subclass.
+     */
+    protected abstract String getComponentID();
+
+    protected void addFixtureSetup(String setupDescription) {
+        addStep(setupDescription, "");
     }
 }

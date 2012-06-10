@@ -21,10 +21,6 @@
  */
 package org.bitrepository.access.getstatus;
 
-import java.math.BigInteger;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getstatus.conversation.StatusCompleteContributorEvent;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
@@ -36,11 +32,11 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusR
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
-import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
+import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.TestGetStatusMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.settings.collectionsettings.GetStatusSettings;
@@ -48,18 +44,22 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.math.BigInteger;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
 
         private TestGetStatusMessageFactory testMessageFactory;
 
         @BeforeMethod(alwaysRun=true)
         public void beforeMethodSetup() throws Exception {
-            testMessageFactory = new TestGetStatusMessageFactory(settings.getCollectionID());
+            testMessageFactory = new TestGetStatusMessageFactory(componentSettings.getCollectionID());
 
-            if (settings.getCollectionSettings().getGetStatusSettings() == null) {
-                settings.getCollectionSettings().setGetStatusSettings(new GetStatusSettings());
+            if (componentSettings.getCollectionSettings().getGetStatusSettings() == null) {
+                componentSettings.getCollectionSettings().setGetStatusSettings(new GetStatusSettings());
             }
-            List<String> contributers = settings.getCollectionSettings().getGetStatusSettings().getContributorIDs();
+            List<String> contributers = componentSettings.getCollectionSettings().getGetStatusSettings().getContributorIDs();
             contributers.clear();
             contributers.add(PILLAR1_ID);
             contributers.add(PILLAR2_ID);
@@ -68,7 +68,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         @Test(groups = {"regressiontest"})
         public void verifyGetStatusClientFromFactory() throws Exception {
             Assert.assertTrue(AccessComponentFactory.getInstance().createGetStatusClient(
-                    settings, securityManager, TEST_CLIENT_ID)
+                    componentSettings, securityManager, TEST_CLIENT_ID)
                     instanceof CollectionBasedGetStatusClient,
                     "The default GetStatusClient from the Access factory should be of the type '" +
                             CollectionBasedGetStatusClient.class.getName() + "'.");
@@ -82,7 +82,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
             addStep("Configure 3 second timeout for identifying contributers. " +
                     "The default 2 contributers collection is used", "");
 
-            settings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
+            componentSettings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
             TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
             GetStatusClient client = createGetStatusClient();
 
@@ -197,10 +197,10 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
          * @return A new GetStatusClient(Wrapper).
          */
         private GetStatusClient createGetStatusClient() {
-            MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
-            ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settings, securityManager);
+            MessageBus messageBus = new ActiveMQMessageBus(componentSettings.getMessageBusConfiguration(), securityManager);
+            ConversationMediator conversationMediator = new CollectionBasedConversationMediator(componentSettings, securityManager);
             return new GetStatusClientTestWrapper(new CollectionBasedGetStatusClient(
-                    messageBus, conversationMediator, settings, TEST_CLIENT_ID) , testEventManager);
+                    messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID) , testEventManager);
         }
         
         private ResultingStatus createTestResultingStatus(String componentID) {

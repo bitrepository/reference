@@ -21,13 +21,12 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
-import javax.jms.JMSException;
-
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.database.DBConnector;
 import org.bitrepository.common.database.DBSpecifics;
 import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
@@ -39,10 +38,12 @@ import org.bitrepository.service.contributor.ContributorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jms.JMSException;
+
 /**
  * The checksum pillar. 
  */
-public class ChecksumPillar {
+public class ChecksumPillar implements Pillar {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The messagebus for the pillar.*/
@@ -72,9 +73,7 @@ public class ChecksumPillar {
                 settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl());
         AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector(dbSpecifics, 
                 settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl()));
-        ContributorContext contributorContext = new ContributorContext(messageBus, settings, 
-                settings.getReferenceSettings().getPillarSettings().getPillarID(), 
-                settings.getReferenceSettings().getPillarSettings().getReceiverDestination());
+        ContributorContext contributorContext = new ContributorContext(messageBus, settings);
         PillarAlarmDispatcher alarms = new PillarAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(settings, messageBus, alarms, audits);
         mediator = new ChecksumPillarMediator(context, cache);

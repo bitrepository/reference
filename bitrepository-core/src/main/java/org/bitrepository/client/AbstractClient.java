@@ -24,11 +24,11 @@
  */
 package org.bitrepository.client;
 
+import org.bitrepository.client.conversation.Conversation;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileIDValidator;
-import org.bitrepository.client.conversation.Conversation;
-import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +65,6 @@ public class AbstractClient implements BitrepositoryClient {
         this.messageBus = messageBus;
         this.conversationMediator = conversationMediator;
         this.clientID = clientID;
-        settings.setComponentID(clientID);
         validator = new FileIDValidator(settings);
     }
     

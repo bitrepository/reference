@@ -24,9 +24,6 @@
  */
 package org.bitrepository.integrityservice;
 
-import java.io.File;
-import java.sql.Connection;
-
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -49,6 +46,9 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.sql.Connection;
+
 /**
  * Simple test case for the component factory.
  */
@@ -64,7 +64,7 @@ public class ComponentFactoryTest extends ExtendedTestCase {
 
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
-        settings = TestSettingsProvider.reloadSettings();
+        settings = TestSettingsProvider.reloadSettings("ComponentFactoryUnderTest");
         securityManager = new DummySecurityManager();
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
         settings.getReferenceSettings().getIntegrityServiceSettings().setIntegrityDatabaseUrl(DATABASE_URL);

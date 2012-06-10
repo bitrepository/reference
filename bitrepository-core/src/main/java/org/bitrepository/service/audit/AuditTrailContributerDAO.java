@@ -188,7 +188,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                     event.setActionOnFile(FileAction.fromValue(results.getString(operationPosition)));
                     event.setAuditTrailInformation(results.getString(auditTrailInformationPosition));
                     event.setInfo(results.getString(infoPosition));
-                    event.setReportingComponent(settings.getReferenceSettings().getPillarSettings().getPillarID());
+                    event.setReportingComponent(settings.getComponentID());
                     res.add(event);
                 }
             } finally {

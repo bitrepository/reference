@@ -94,7 +94,9 @@ public final class IntegrityServiceFactory {
             }
             loadProperties();
             SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
-            settings = settingsLoader.getSettings();         
+            String integrityServiceComponentID =
+                    settingsLoader.loadReferenceSettings().getAuditTrailServiceSettings().getID();
+            settings = settingsLoader.getSettings(integrityServiceComponentID);
         }
 
         return settings;

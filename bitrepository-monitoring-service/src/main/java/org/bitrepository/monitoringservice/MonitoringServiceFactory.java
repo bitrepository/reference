@@ -21,11 +21,6 @@
  */
 package org.bitrepository.monitoringservice;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
@@ -37,6 +32,11 @@ import org.bitrepository.protocol.security.MessageAuthenticator;
 import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * The factory for the monitoring service.
@@ -82,7 +82,10 @@ public class MonitoringServiceFactory {
             }
             loadProperties();
             SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
-            settings = settingsLoader.getSettings();         
+
+            String monitoringServiceComponentID =
+                    settingsLoader.loadReferenceSettings().getAuditTrailServiceSettings().getID();
+            settings = settingsLoader.getSettings(monitoringServiceComponentID);
         }
 
         return settings;
@@ -91,7 +94,7 @@ public class MonitoringServiceFactory {
     /**
      * Instantiated the security manager for the integrity service.
      * @return The security manager.
-     * @see getSettings()
+     * @see #getSettings()
      * @see {@link BasicSecurityManager}
      */
     public synchronized static BasicSecurityManager getSecurityManager() {
@@ -113,9 +116,9 @@ public class MonitoringServiceFactory {
      * Factory method to get a singleton instance of the SimpleIntegrityService. 
      * Uses the settings and the security manager.
      * @return The SimpleIntegrityService
-     * @see getSecurityManager()
-     * @see getSettings()
-     * @see {@link SimpleIntegrityService} 
+     * @see #getSecurityManager()
+     * @see #getSettings()
+     * @see {@link MonitoringService}
      */
     public synchronized static MonitoringService getMonitoringService() {
         if(monitoringService == null) {
