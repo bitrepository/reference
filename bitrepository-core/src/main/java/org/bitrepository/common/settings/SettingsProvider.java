@@ -64,10 +64,15 @@ public class SettingsProvider {
     public synchronized void reloadSettings(String componentID) {
     	CollectionSettings collectionSettings = settingsReader.loadSettings(CollectionSettings.class);
     	ReferenceSettings referenceSettings = settingsReader.loadSettings(ReferenceSettings.class);
-        // Fix this before commit
+
+        String receiverDestinationIDFactoryClass = null;
+        if (referenceSettings.getGeneralSettings() != null) {
+            referenceSettings.getGeneralSettings().getReceiverDestinationIDFactoryClass();
+        }
+
         DestinationHelper dh = new DestinationHelper(
                 componentID,
-                referenceSettings.getGeneralSettings().getReceiverDestinationIDFactoryClass(),
+                receiverDestinationIDFactoryClass,
                 collectionSettings.getProtocolSettings().getCollectionDestination());
         settings = new Settings(componentID, dh.getReceiverDestinationID(), collectionSettings, referenceSettings);
     }
