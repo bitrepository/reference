@@ -147,7 +147,7 @@ public final class IntegrityServiceComponentFactory {
         MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
         ContributorContext context = new ContributorContext(messageBus, settings);
         DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getAuditContributerDatabaseUrl());
+                settings.getReferenceSettings().getIntegrityServiceSettings().getAuditContributerDatabaseSpecifics());
         AuditTrailManager auditManager = new AuditTrailContributerDAO(settings, new DBConnector(dbSpecifics, 
                 settings.getReferenceSettings().getIntegrityServiceSettings().getAuditContributerDatabaseUrl()));
         
