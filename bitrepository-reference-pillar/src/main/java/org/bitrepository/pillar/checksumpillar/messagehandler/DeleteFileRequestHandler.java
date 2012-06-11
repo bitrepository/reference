@@ -87,7 +87,16 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         // Validate the message.
         validatePillarId(message.getPillarID());
         validateChecksumSpec(message.getChecksumRequestForExistingFile());
-        validateChecksumSpec(message.getChecksumDataForExistingFile().getChecksumSpec());
+        if(message.getChecksumDataForExistingFile() != null) {
+            validateChecksumSpec(message.getChecksumDataForExistingFile().getChecksumSpec());
+        } else if(getSettings().getCollectionSettings()
+                .getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
+            ResponseInfo responseInfo = new ResponseInfo();
+            responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
+            responseInfo.setResponseText("According to the contract a checksum for deleting a file is required.");
+            throw new InvalidMessageException(responseInfo);            
+        }
+        
         validateFileID(message.getFileID());
 
         // Validate, that we have the requested file.
@@ -99,22 +108,22 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
             throw new InvalidMessageException(responseInfo);
         }
         
-        // calculate and validate the checksum of the file.
         ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
-        
-        String calculatedChecksum = getCache().getChecksum(message.getFileID());
-        String requestChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
-        if(!calculatedChecksum.equals(requestChecksum)) {
-            // Log the different checksums, but do not send the right checksum back!
-            log.info("Failed to handle delete operation on file '" + message.getFileID() + "' since the request had "
-                    + "the checksum '" + requestChecksum + "' where our local file has the value '" 
-                    + calculatedChecksum + "'. Sending alarm and respond failure.");
-            
-            ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-            responseInfo.setResponseText("Requested to delete file '" + message.getFileID() + "' with checksum '"
-                    + requestChecksum + "', but our file had a different checksum.");
-            throw new IllegalOperationException(responseInfo);
+        if(checksumData != null) {
+            String calculatedChecksum = getCache().getChecksum(message.getFileID());
+            String requestChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
+            if(!calculatedChecksum.equals(requestChecksum)) {
+                // Log the different checksums, but do not send the right checksum back!
+                log.info("Failed to handle delete operation on file '" + message.getFileID() + "' since the request "
+                        + "had the checksum '" + requestChecksum + "' where our local file has the value '" 
+                        + calculatedChecksum + "'. Sending alarm and respond failure.");
+                
+                ResponseInfo responseInfo = new ResponseInfo();
+                responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
+                responseInfo.setResponseText("Requested to delete file '" + message.getFileID() + "' with checksum '"
+                        + requestChecksum + "', but our file had a different checksum.");
+                throw new IllegalOperationException(responseInfo);
+            }
         }
     }
 
@@ -135,6 +144,10 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
      * @return The requested checksum, or null if no such checksum is requested.
      */
     protected ChecksumDataForFileTYPE calculatedRequestedChecksum(DeleteFileRequest message) {
+        if(message.getChecksumRequestForExistingFile() == null) {
+            return null;
+        }
+        
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         ChecksumSpecTYPE checksumType = message.getChecksumRequestForExistingFile();
         

@@ -118,22 +118,18 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      * @param message The message to validate the FileIDs of.
      */
     private void validateFileIDs(GetChecksumsRequest message) throws RequestHandlerException {
-        // Validate the requested files
         FileIDs fileids = message.getFileIDs();
 
-        // go through all the files and find any missing
         String fileID = fileids.getFileID();
         if(fileID == null) {
             return;
         }
         validateFileID(fileID);
         
-        // if not missing, then all files have been found!
+        // Throw proper exception, if the file is missing.
         if(!getCache().hasFile(fileID)) {
-            // report on the missing files
             String errText = "The following file is missing: '" + fileID + "'";
             log.warn(errText);
-            // Then tell the mediator, that we failed.
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             fri.setResponseText(errText);

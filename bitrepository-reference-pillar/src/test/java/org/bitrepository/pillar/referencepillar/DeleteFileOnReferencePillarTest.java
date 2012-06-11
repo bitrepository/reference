@@ -24,6 +24,9 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
+import java.io.File;
+import java.util.Date;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -42,9 +45,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.util.Date;
-
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
@@ -60,8 +60,6 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
     public void pillarDeleteFileTestSuccessCase() throws Exception {
         addDescription("Tests the DeleteFile functionality of the reference pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        String auditTrail = null;
         
         ChecksumSpecTYPE csSpecExisting = new ChecksumSpecTYPE();
         csSpecExisting.setChecksumSalt(null);
@@ -151,8 +149,6 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String wrongID = "error-file-id";
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        String auditTrail = null;
         
         ChecksumSpecTYPE csSpecExisting = new ChecksumSpecTYPE();
         csSpecExisting.setChecksumSalt(null);
@@ -193,8 +189,6 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
         addDescription("Tests the DeleteFile functionality of the reference pillar for the scenario when the file does not exist.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        String auditTrail = null;
         
         ChecksumSpecTYPE csSpecExisting = new ChecksumSpecTYPE();
         csSpecExisting.setChecksumSalt(null);
@@ -229,8 +223,6 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
                 + "checksum is given as argument.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        String auditTrail = null;
         
         ChecksumSpecTYPE csSpecExisting = new ChecksumSpecTYPE();
         csSpecExisting.setChecksumSalt(null);

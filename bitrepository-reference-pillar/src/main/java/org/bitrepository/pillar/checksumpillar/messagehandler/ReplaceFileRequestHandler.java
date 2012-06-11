@@ -106,10 +106,27 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         validatePillarId(message.getPillarID());
         validateChecksumSpec(message.getChecksumRequestForExistingFile());
         validateChecksumSpec(message.getChecksumRequestForNewFile());
-        validateChecksumSpec(message.getChecksumDataForExistingFile().getChecksumSpec());
+        if(message.getChecksumDataForExistingFile() != null) {
+            validateChecksumSpec(message.getChecksumDataForExistingFile().getChecksumSpec());
+        } else if(getSettings().getCollectionSettings().getProtocolSettings()
+                .isRequireChecksumForDestructiveRequests()) {
+            ResponseInfo responseInfo = new ResponseInfo();
+            responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
+            responseInfo.setResponseText("According to the contract a checksum for file to be deleted during the "
+                    + "replacing operation is required.");
+            throw new InvalidMessageException(responseInfo);
+        }
         if(message.getChecksumDataForNewFile() != null) {
             validateChecksumSpec(message.getChecksumDataForNewFile().getChecksumSpec());
+        } else if(getSettings().getCollectionSettings().getProtocolSettings()
+                .isRequireChecksumForNewFileRequests()) {
+            ResponseInfo responseInfo = new ResponseInfo();
+            responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
+            responseInfo.setResponseText("According to the contract a checksum for new file in the "
+                    + "replacing operation is required.");
+            throw new InvalidMessageException(responseInfo);
         }
+        
         validateFileID(message.getFileID());
         
         // Validate, that we have the requested file.
@@ -123,20 +140,24 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         
         // calculate and validate the checksum of the file.
         ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
-        String checksum = getCache().getChecksum(message.getFileID());
-        String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
-        if(!checksum.equals(requestedChecksum)) {
-            // Log the different checksums, but do not send the right checksum back!
-            log.info("Failed to handle replace operation on file '" + message.getFileID() + "' since the request had "
-                    + "the checksum '" + requestedChecksum + "' where our local file has the value '" + checksum 
-                    + "'. Sending alarm and respond failure.");
-            String errMsg = "Requested to replace the file '" + message.getFileID() + "' with checksum '"
-                    + requestedChecksum + "', but our file had a different checksum.";
-            
-            ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-            responseInfo.setResponseText(errMsg);
-            throw new IllegalOperationException(responseInfo);
+        if(checksumData != null) { 
+            String checksum = getCache().getChecksum(message.getFileID());
+            String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
+            if(!checksum.equals(requestedChecksum)) {
+                // Log the different checksums, but do not send the right checksum back!
+                log.info("Failed to handle replace operation on file '" + message.getFileID() + "' since the request had "
+                        + "the checksum '" + requestedChecksum + "' where our local file has the value '" + checksum 
+                        + "'. Sending alarm and respond failure.");
+                String errMsg = "Requested to replace the file '" + message.getFileID() + "' with checksum '"
+                        + requestedChecksum + "', but our file had a different checksum.";
+                
+                ResponseInfo responseInfo = new ResponseInfo();
+                responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
+                responseInfo.setResponseText(errMsg);
+                throw new IllegalOperationException(responseInfo);
+            }
+        } else {
+            log.debug("No checksum for validation of the existing file.");
         }
     }
     
@@ -194,7 +215,6 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
                 throw new IllegalOperationException(responseInfo);
             }
         } else {
-            // TODO is such a checksum required?
             log.warn("No checksum for validating the new file.");
         }
         
@@ -207,7 +227,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
      * @param newChecksum The new checksum to replace the old one with.
      */
     private void replaceTheEntry(ReplaceFileRequest message, String newChecksum) {
-        String oldChecksum = Base16Utils.decodeBase16(message.getChecksumDataForExistingFile().getChecksumValue());
+        String oldChecksum = getCache().getChecksum(message.getFileID());
         getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Replacing the file.", 
                 message.getAuditTrailInformation(), FileAction.REPLACE_FILE); 
         getCache().replaceEntry(message.getFileID(), oldChecksum, newChecksum);

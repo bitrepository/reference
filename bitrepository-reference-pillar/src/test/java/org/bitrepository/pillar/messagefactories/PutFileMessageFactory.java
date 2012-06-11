@@ -40,136 +40,47 @@
 package org.bitrepository.pillar.messagefactories;
 
 import java.math.BigInteger;
-import java.util.UUID;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
-public class PutFileMessageFactory extends ClientTestMessageFactory {
-
-    final Settings settings;
+public class PutFileMessageFactory extends PillarTestMessageFactory {
+    private final String pillarID;
     
-    public PutFileMessageFactory(Settings pSettings) {
-        super(pSettings.getCollectionID());
-        this.settings = pSettings;
+    public PutFileMessageFactory(Settings clientSettings, String pillarID, String pillarDestination) {
+        super(clientSettings, pillarDestination);
+        this.pillarID = pillarID;
     }
     
-    public IdentifyPillarsForPutFileRequest createIdentifyPillarsForPutFileRequest(String auditTrail, 
-            String fileId, Long fileSize, String from, String replyTo) {
+    public IdentifyPillarsForPutFileRequest createIdentifyPillarsForPutFileRequest(String fileId, Long fileSize) {
         IdentifyPillarsForPutFileRequest res = new IdentifyPillarsForPutFileRequest();
-        res.setAuditTrailInformation(auditTrail);
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(getNewCorrelationID());
+        initializeIdentifyRequest(res);
         res.setFileID(fileId);
         if(fileSize != null) {
             res.setFileSize(BigInteger.valueOf(fileSize));
         }
-        res.setFrom(from);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setReplyTo(replyTo);
-        res.setTo(settings.getCollectionDestination());
-        res.setVersion(VERSION_DEFAULT);
         
         return res;
     }
 
-    public IdentifyPillarsForPutFileResponse createIdentifyPillarsForPutFileResponse(
-            String correlationId, ChecksumSpecTYPE pillarCsType, String pillarId, String replyTo,  
-            ResponseInfo responseInfo, TimeMeasureTYPE timeToDeliver, String toTopic) {
-        IdentifyPillarsForPutFileResponse res = new IdentifyPillarsForPutFileResponse();
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(correlationId);
-        res.setFrom(pillarId);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setPillarChecksumSpec(pillarCsType);
-        res.setPillarID(pillarId);
-        res.setReplyTo(replyTo);
-        res.setResponseInfo(responseInfo);
-        res.setTimeToDeliver(timeToDeliver);
-        res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-        
-        return res;
-    }
-    
-    public PutFileRequest createPutFileRequest(String auditTrail, ChecksumDataForFileTYPE checksumDataForFile,
-            ChecksumSpecTYPE csReturnSpec, String correlationId, String url, String fileId, Long fileSize,
-            String from, String pillarId, String replyTo, String toTopic) {
+    public PutFileRequest createPutFileRequest(
+            ChecksumDataForFileTYPE checksumDataForFile,
+            ChecksumSpecTYPE csReturnSpec,
+            String url, String fileId, Long fileSize) {
         PutFileRequest res = new PutFileRequest();
-        res.setAuditTrailInformation(auditTrail);
+        initializeOperationRequest(res);
         res.setChecksumDataForNewFile(checksumDataForFile);
         res.setChecksumRequestForNewFile(csReturnSpec);
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);
         if(fileSize != null) {
             res.setFileSize(BigInteger.valueOf(fileSize));
         }
-        res.setFrom(from);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setPillarID(pillarId);
-        res.setReplyTo(replyTo);
-        res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
+        res.setPillarID(pillarID);
         
         return res;
-    }
-
-    public PutFileProgressResponse createPutFileProgressResponse(String correlationId, String url, String fileId, 
-            String pillarId, ChecksumSpecTYPE checksumSpec, String replyTo, ResponseInfo prInfo, String toTopic) {
-        PutFileProgressResponse res = new PutFileProgressResponse();
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(correlationId);
-        res.setFileAddress(url);
-        res.setFileID(fileId);
-        res.setFrom(pillarId);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setPillarID(pillarId);
-        res.setPillarChecksumSpec(checksumSpec);
-        res.setReplyTo(replyTo);
-        res.setResponseInfo(prInfo);
-        res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-        
-        return res;
-    }
-
-    public PutFileFinalResponse createPutFileFinalResponse(ChecksumDataForFileTYPE checksumNewFile, 
-            String correlationId, String url, String fileId, ChecksumSpecTYPE checksumSpec, String pillarId, 
-            String replyTo, ResponseInfo frInfo, String toTopic) {
-        PutFileFinalResponse res = new PutFileFinalResponse();
-        res.setChecksumDataForNewFile(checksumNewFile);
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(correlationId);
-        res.setFileAddress(url);
-        res.setFileID(fileId);
-        res.setFrom(pillarId);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setPillarChecksumSpec(checksumSpec);
-        res.setPillarID(pillarId);
-        res.setReplyTo(replyTo);
-        res.setResponseInfo(frInfo);
-        res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-        
-        return res;
-    }
-    
-    /**
-     * Method for generating new correlation IDs.
-     * @return A unique correlation id.
-     */
-    private String getNewCorrelationID() {
-        return UUID.randomUUID().toString();
     }
 }

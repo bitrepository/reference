@@ -31,10 +31,13 @@ import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 
 public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     protected GetFileMessageFactory msgFactory;
@@ -80,5 +83,15 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     @Override
     protected String getComponentID() {
         return "ReferencePillarUnderTest";
+    }
+    
+    protected void initializeArchiveWithEmptyFile() {
+        addFixtureSetup("Initialize the Reference pillar cache with en empty file.");
+        try {
+            archive.downloadFileForValidation(DEFAULT_FILE_ID, new ByteArrayInputStream(new byte[0]));
+            archive.moveToArchive(DEFAULT_FILE_ID);
+        } catch (Exception e) {
+            Assert.fail("Could not instantiate the archive", e);
+        }
     }
 }

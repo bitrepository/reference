@@ -79,7 +79,7 @@ public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHand
             ChecksumUtils.verifyAlgorithm(checksumSpec);
         } catch (NoSuchAlgorithmException e) {
             ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FAILURE);
+            fri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
             fri.setResponseText(e.toString());
             throw new InvalidMessageException(fri, e);
         }

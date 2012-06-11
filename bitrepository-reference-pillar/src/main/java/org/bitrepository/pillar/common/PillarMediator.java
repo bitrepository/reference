@@ -58,6 +58,7 @@ public abstract class PillarMediator extends AbstractContributorMediator {
         this.context = context;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     protected void handleRequest(MessageRequest request, RequestHandler handler) {
         try {
