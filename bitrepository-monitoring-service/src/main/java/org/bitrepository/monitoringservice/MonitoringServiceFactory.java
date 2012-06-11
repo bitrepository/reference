@@ -83,8 +83,13 @@ public class MonitoringServiceFactory {
             loadProperties();
             SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
 
+            if (settingsLoader.loadReferenceSettings().getMonitoringServiceSettings() == null) {
+                throw new IllegalArgumentException("Unable to start MonitoringService, " +
+                        "no MonitoringServiceSettings defined in reference settings i directory: " + confDir);
+            }
+
             String monitoringServiceComponentID =
-                    settingsLoader.loadReferenceSettings().getAuditTrailServiceSettings().getID();
+                    settingsLoader.loadReferenceSettings().getMonitoringServiceSettings().getID();
             settings = settingsLoader.getSettings(monitoringServiceComponentID);
         }
 

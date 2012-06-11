@@ -46,7 +46,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 
-import javax.swing.*;
+import javax.swing.JFrame;
 
 /**
  * Contains the generic parts for integration testing.

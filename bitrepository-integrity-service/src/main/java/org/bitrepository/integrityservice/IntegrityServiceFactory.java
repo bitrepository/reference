@@ -94,8 +94,14 @@ public final class IntegrityServiceFactory {
             }
             loadProperties();
             SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
+
+            if (settingsLoader.loadReferenceSettings().getIntegrityServiceSettings() == null) {
+                throw new IllegalArgumentException("Unable to start IntegrityService, " +
+                        "no IntegrityServiceSettings defined in reference settings i directory: " + confDir);
+            }
+
             String integrityServiceComponentID =
-                    settingsLoader.loadReferenceSettings().getAuditTrailServiceSettings().getID();
+                    settingsLoader.loadReferenceSettings().getIntegrityServiceSettings().getID();
             settings = settingsLoader.getSettings(integrityServiceComponentID);
         }
 

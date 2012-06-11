@@ -1,5 +1,3 @@
-package org.bitrepository.protocol.messagebus.destination;
-
 /*
 * #%L
 * Bitmagasin integrationstest
@@ -23,6 +21,8 @@ package org.bitrepository.protocol.messagebus.destination;
 * #L%
 */
 
+package org.bitrepository.protocol.messagebus.destination;
+
 /**
  * Provides destination utilities.
  */
@@ -31,6 +31,13 @@ public class DestinationHelper {
     private final String collectionDestinationID;
     private ReceiverDestinationIDFactory receiverDestinationIDFactory;
 
+    /**
+     * Create a <code>DestinationHelper</code> object with the specified charactaristica
+     * @param componentID The componentID to use for the destination.
+     * @param receiverDestinationIDFactoryClass The class to use for constructing receiverDestinationID.
+     *                                          See {@link ReceiverDestinationIDFactory} for possible subclasses.
+     * @param collectionDestinationID
+     */
     public DestinationHelper(String componentID, String receiverDestinationIDFactoryClass, String collectionDestinationID) {
         this.componentID = componentID;
         this.collectionDestinationID = collectionDestinationID;

@@ -97,6 +97,10 @@ public final class AuditTrailServiceFactory {
             PermissionStore permissionStore;
             SecurityManager securityManager;
             SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(configurationDir));
+            if (settingsLoader.loadReferenceSettings().getAuditTrailServiceSettings() == null) {
+                throw new IllegalArgumentException("Unable to start Audit Trail Service, " +
+                        "no AuditTrailServiceSettings defined in reference settings i directory: " + configurationDir);
+            }
             String auditTrailComponentID =
                     settingsLoader.loadReferenceSettings().getAuditTrailServiceSettings().getID();
             Settings settings = settingsLoader.getSettings(auditTrailComponentID);

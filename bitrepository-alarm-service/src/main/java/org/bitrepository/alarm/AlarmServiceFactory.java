@@ -55,7 +55,7 @@ import org.bitrepository.service.contributor.SimpleContributorMediator;
  */
 public class AlarmServiceFactory {
     /** The alarm service. 
-     * @see getAlarmService().*/
+     * @see #getAlarmService().*/
     private static AlarmService alarmService;
     /** The path to the directory containing the configuration files.*/
     private static String configurationDir;
@@ -93,8 +93,13 @@ public class AlarmServiceFactory {
             SecurityManager securityManager;
             SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(configurationDir));
 
+            if (settingsLoader.loadReferenceSettings().getAlarmServiceSettings() == null) {
+                throw new IllegalArgumentException("Unable to start AlarmService, " +
+                        "no AlarmServiceSettings defined in reference settings i directory: " + configurationDir);
+            }
+
             String alarmServiceComponentID =
-                    settingsLoader.loadReferenceSettings().getAuditTrailServiceSettings().getID();
+                    settingsLoader.loadReferenceSettings().getAlarmServiceSettings().getID();
             Settings settings = settingsLoader.getSettings(alarmServiceComponentID);
             try {
                 loadProperties();

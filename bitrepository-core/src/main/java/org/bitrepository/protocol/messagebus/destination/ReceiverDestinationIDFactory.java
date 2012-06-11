@@ -21,6 +21,9 @@
  */
 package org.bitrepository.protocol.messagebus.destination;
 
+/**
+ * Defines the interface for classes implementing functionality for constructing receiverDestinationIDs.
+ */
 public interface ReceiverDestinationIDFactory {
     public String getReceiverDestinationID(String componentID, String collectionDestinationID);
 }
