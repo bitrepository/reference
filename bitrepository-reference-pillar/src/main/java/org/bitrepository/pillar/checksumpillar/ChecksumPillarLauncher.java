@@ -31,8 +31,6 @@ import org.bitrepository.pillar.PillarRunner;
  * ChecksumPillar.
  */
 public final class ChecksumPillarLauncher {
-    private static final String DEFAULT_PILLAR_ID = "ChecksumPillar";
-    
     /**
      * Private constructor. To prevent instantiation of this utility class.
      */
@@ -48,7 +46,7 @@ public final class ChecksumPillarLauncher {
     public static void main(String[] args) {
         String pathToSettings = args[0];
         String pathToKeyFile = args[1];
-        String pillarID =  args.length == 3 ? pillarID = args[2]: DEFAULT_PILLAR_ID ;
+        String pillarID =  args.length == 3 ? pillarID = args[2]: null;
         ChecksumPillar checksumPillar =
                 PillarComponentFactory.getInstance().createChecksumPillar(pathToSettings, pathToKeyFile, pillarID);
         PillarRunner.launchPillar(checksumPillar);

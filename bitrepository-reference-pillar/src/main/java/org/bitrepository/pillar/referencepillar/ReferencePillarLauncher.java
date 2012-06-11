@@ -34,8 +34,6 @@ import org.bitrepository.pillar.PillarRunner;
  * It just loads the configurations and uses them to create the PillarSettings needed for starting the ReferencePillar.
  */
 public final class ReferencePillarLauncher {
-    private static final String DEFAULT_PILLAR_ID = "ReferencePillar";
-
     /**
      * Private constructor. To prevent instantiation of this utility class.
      */
@@ -51,7 +49,7 @@ public final class ReferencePillarLauncher {
     public static void main(String[] args) {
         String pathToSettings = args[0];
         String pathToKeyFile = args[1];
-        String pillarID =  args.length == 3 ? pillarID = args[2]: DEFAULT_PILLAR_ID ;
+        String pillarID =  args.length == 3 ? pillarID = args[2]: null;
         Pillar fullPillar =
                 PillarComponentFactory.getInstance().createReferencePillar(pathToSettings, pathToKeyFile, pillarID);
         PillarRunner.launchPillar(fullPillar);

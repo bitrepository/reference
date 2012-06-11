@@ -41,6 +41,7 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.settings.referencesettings.ReferenceSettings;
 
 /**
  * Component factory for this module.
@@ -75,8 +76,7 @@ public final class PillarComponentFactory {
      * @param pillarID The pillars componentID.
      * @return The reference requested pillar.
      */
-    public ReferencePillar createReferencePillar(
-            String pathToSettings, String pathToKeyFile, String pillarID) {
+    public ReferencePillar createReferencePillar(String pathToSettings, String pathToKeyFile, String pillarID) {
         Settings settings = loadSettings(pillarID, pathToSettings);
         SecurityManager securityManager = loadSecurityManager(pathToKeyFile, settings);
 
@@ -118,6 +118,11 @@ public final class PillarComponentFactory {
             settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(DEFAULT_PATH_TO_SETTINGS));
         } else {
             settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(pathToSettings));
+        }
+        
+        if(pillarID == null) {
+            ReferenceSettings referenceSettings = settingsLoader.loadReferenceSettings();
+            pillarID = referenceSettings.getPillarSettings().getPillarID();
         }
 
         return settingsLoader.getSettings(pillarID);
