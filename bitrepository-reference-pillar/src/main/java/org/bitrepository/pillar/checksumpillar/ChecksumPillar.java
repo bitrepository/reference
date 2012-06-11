@@ -70,7 +70,7 @@ public class ChecksumPillar implements Pillar {
         
         log.info("Starting the checksum pillar!");
         DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
-                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl());
+                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseSpecifics());
         AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector(dbSpecifics, 
                 settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl()));
         ContributorContext contributorContext = new ContributorContext(messageBus, settings);

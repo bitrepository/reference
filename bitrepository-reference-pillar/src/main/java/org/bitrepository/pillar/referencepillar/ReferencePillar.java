@@ -71,7 +71,7 @@ public class ReferencePillar implements Pillar {
         
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
         DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
-                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl());
+                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseSpecifics());
         AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector(dbSpecifics, 
                 settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl()));
         ContributorContext contributorContext = new ContributorContext(messageBus, settings);
