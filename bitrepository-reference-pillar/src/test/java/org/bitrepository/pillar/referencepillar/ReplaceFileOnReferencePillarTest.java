@@ -88,7 +88,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void pillarReplaceTestSuccessCase() throws Exception {
+    public void referencePillarReplaceTestSuccessCase() throws Exception {
         addDescription("Tests the replace functionality of the reference pillar for the successful scenario.");
         addStep("Setting up the variables for the test.", "Should be instantiated.");
         initializeArchiveWithEmptyFile();
@@ -162,7 +162,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarReplaceFileTestFailedNoSuchFileDuringIdentify() throws Exception {
+    public void referencePillarReplaceFileTestFailedNoSuchFileDuringIdentify() throws Exception {
         addDescription("Tests the ReplaceFile functionality of the checksum pillar for the scenario when the file does not exist.");
         initializeArchiveWithEmptyFile();
 
@@ -184,22 +184,20 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarReplaceFileTestFailedNoSuchFileDuringOperation() throws Exception {
+    public void referencePillarReplaceFileTestFailedNoSuchFileDuringOperation() throws Exception {
         addDescription("Tests the ReplaceFile functionality of the reference pillar for the scenario when the file " +
                 "does not exist.");
         initializeArchiveWithEmptyFile();
 
-        addStep("Send a deleteFileRequest for a none-existing file.",
-                "A FILE_NOT_FOUND_FAILURE response should be return, and the original file should remain in the cache.");
+        addStep("Send message for replacing the file", "Should send ");
         messageBus.sendMessage(msgFactory.createReplaceFileRequest(csData, replaceCsData, csSpec, csSpec, FILE_ADDRESS, "NoneExistingFile", FILE_SIZE));
-
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
         Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), 0);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarReplaceFileTestMissingExistingChecksumArgument() throws Exception {
+    public void referencePillarReplaceFileTestMissingExistingChecksumArgument() throws Exception {
         addDescription("Tests that a missing 'ChecksumOnExistingFile' will not delete the file.");
         Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         initializeArchiveWithEmptyFile();
@@ -212,7 +210,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarReplaceFileTestBadExistingChecksumArgument() throws Exception {
+    public void referencePillarReplaceFileTestBadExistingChecksumArgument() throws Exception {
         addDescription("Tests that a wrong checksum in 'ChecksumOnExistingFile' will not delete the file.");
         Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         initializeArchiveWithEmptyFile();
@@ -230,7 +228,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarReplaceFileTestAllowedMissingExistingChecksum() throws Exception {
+    public void referencePillarReplaceFileTestAllowedMissingExistingChecksum() throws Exception {
         addDescription("Tests that a missing 'ChecksumOnExistingFile' will replace the file, when it has been allowed "
                 + "to perform destructive operations in the settings.");
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
@@ -245,7 +243,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarReplaceFileTestMissingNewChecksumArgument() throws Exception {
+    public void referencePillarReplaceFileTestMissingNewChecksumArgument() throws Exception {
         addDescription("Tests that a missing 'ChecksumOnNewFile' will replace the file, if it is required but not given.");
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
         Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForNewFileRequests());
@@ -258,7 +256,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarReplaceFileTestBadNewChecksumArgument() throws Exception {
+    public void referencePillarReplaceFileTestBadNewChecksumArgument() throws Exception {
         addDescription("Tests that a wrong checksum in 'ChecksumOnNewFile' will not delete the file.");
         Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         initializeArchiveWithEmptyFile();
@@ -276,7 +274,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarReplaceFileTestAllowedMissingNewChecksum() throws Exception {
+    public void referencePillarReplaceFileTestAllowedMissingNewChecksum() throws Exception {
         addDescription("Tests that a missing 'ChecksumOnNewFile' will replace the file, if it is it not required nor given.");
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
         Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForNewFileRequests());
@@ -290,7 +288,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     }
  
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarReplaceFileTestBadExistingChecksumSpec() throws Exception {
+    public void referencePillarReplaceFileTestBadExistingChecksumSpec() throws Exception {
         addDescription("Tests that bad checksum spec in 'ChecksumOnExistingFile' will not replace the file.");
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
         Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForNewFileRequests());
@@ -313,7 +311,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarReplaceFileTestBadNewChecksumSpec() throws Exception {
+    public void referencePillarReplaceFileTestBadNewChecksumSpec() throws Exception {
         addDescription("Tests that bad checksum spec in 'ChecksumOnNewFile' will not replace the file.");
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
         Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForNewFileRequests());
@@ -336,7 +334,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarReplaceFileTestBadExistingChecksumRequestSpec() throws Exception {
+    public void referencePillarReplaceFileTestBadExistingChecksumRequestSpec() throws Exception {
         addDescription("Tests that bad checksum spec in 'ChecksumSpecForExistingFile' will not replace the file.");
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
         Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForNewFileRequests());
@@ -355,7 +353,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarReplaceFileTestBadNewChecksumRequestSpec() throws Exception {
+    public void referencePillarReplaceFileTestBadNewChecksumRequestSpec() throws Exception {
         addDescription("Tests that bad checksum spec in 'ChecksumSpecForNewFile' will not replace the file.");
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
         Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForNewFileRequests());
@@ -374,7 +372,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarReplaceFileSuccessWithoutChecksums() throws Exception {
+    public void referencePillarReplaceFileSuccessWithoutChecksums() throws Exception {
         addDescription("Tests that it is possible to replace a file without any checksums if settings allows it.");
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
