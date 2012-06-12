@@ -37,9 +37,8 @@ public class AuditTrailConversation extends AbstractConversation {
     private final AuditTrailConversationContext context;
     
     public AuditTrailConversation (AuditTrailConversationContext context) {
-        // The flow controller is obsolent (after blocking functionality has been removed) and is therefore nulled.
         // EventHandler is access through the ConversationContext and is therefore nulled in the 'old' constructor).
-        super(context.getMessageSender(), context.getConversationID(), null ,null);
+        super(context.getMessageSender(), context.getConversationID(), null);
         this.context = context;
         context.setState(new IdentifyingAuditTrailContributors(context));
     }

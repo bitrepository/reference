@@ -43,7 +43,7 @@ public class SimpleReplaceFileConversation extends AbstractConversation {
      * @param context The conversation's context.
      */
     public SimpleReplaceFileConversation(ReplaceFileConversationContext context) {
-        super(context.getMessageSender(), context.getConversationID(), null, null);
+        super(context.getMessageSender(), context.getConversationID(), null);
         this.context = context;
         context.setState(new IdentifyPillarsForReplaceFile(context));
     }

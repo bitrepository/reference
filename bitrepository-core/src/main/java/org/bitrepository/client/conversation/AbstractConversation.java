@@ -57,8 +57,7 @@ public abstract class AbstractConversation extends AbstractMessageListener imple
     public AbstractConversation(
             MessageSender messageSender, 
             String conversationID, 
-            EventHandler eventHandler,
-            FlowController flowController) {
+            EventHandler eventHandler) {
         this.messageSender = messageSender;
         this.conversationID = conversationID;
         this.startTime = System.currentTimeMillis();

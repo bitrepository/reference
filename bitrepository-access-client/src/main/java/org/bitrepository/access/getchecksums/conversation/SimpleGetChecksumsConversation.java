@@ -49,7 +49,7 @@ public class SimpleGetChecksumsConversation extends AbstractConversation {
      * @param eventHandler The handler of events.
      */
     public SimpleGetChecksumsConversation(GetChecksumsConversationContext context) {
-        super(context.getMessageSender(), context.getConversationID(), null, null);
+        super(context.getMessageSender(), context.getConversationID(), null);
         this.context = context;
         context.setState(new IdentifyPillarsForGetChecksums(context));
     }

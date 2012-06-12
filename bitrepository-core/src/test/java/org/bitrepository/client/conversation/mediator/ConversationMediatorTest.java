@@ -27,7 +27,6 @@ package org.bitrepository.client.conversation.mediator;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.conversation.AbstractConversation;
 import org.bitrepository.client.conversation.ConversationState;
-import org.bitrepository.client.conversation.FlowController;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -69,7 +68,7 @@ public abstract class ConversationMediatorTest {
         private Object result = null;
 
         public ConversationStub(MessageSender messageSender, String conversationID) {
-            super(messageSender, conversationID, null, new FlowController(settings));
+            super(messageSender, conversationID, null);
         }
 
         @Override

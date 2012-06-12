@@ -43,7 +43,7 @@ public class SimpleDeleteFileConversation extends AbstractConversation {
      * @param context The conversation's context.
      */
     public SimpleDeleteFileConversation(DeleteFileConversationContext context) {
-        super(context.getMessageSender(), context.getConversationID(), null, null);
+        super(context.getMessageSender(), context.getConversationID(), null);
         this.context = context;
         context.setState(new IdentifyPillarsForDeleteFile(context));
     }

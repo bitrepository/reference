@@ -32,7 +32,7 @@ public class GetStatusConversation extends AbstractConversation {
     private final GetStatusConversationContext context;
     
     public GetStatusConversation(GetStatusConversationContext context) {
-        super(context.getMessageSender(), context.getConversationID(), null, null);
+        super(context.getMessageSender(), context.getConversationID(), null);
         this.context = context;
         context.setState(new IdentifyingContributorsForGetStatus(context));
     }
