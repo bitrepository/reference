@@ -176,8 +176,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
     public void referencePillarPutFileTestMissingChecksum() throws Exception {
         addDescription("Tests that the checksum pillar rejects putting a file, which already exists. During the operation fase");
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
-        PutFileRequest putRequest = msgFactory.createPutFileRequest(null, 
-                csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE);
+        PutFileRequest putRequest = msgFactory.createPutFileRequest(null, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE);
         messageBus.sendMessage(putRequest);
         
         addStep("Retrieve the FinalResponse for the put request", "The put response should be sent by the pillar.");

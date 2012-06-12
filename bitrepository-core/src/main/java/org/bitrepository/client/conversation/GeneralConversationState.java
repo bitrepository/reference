@@ -43,7 +43,7 @@ import java.util.TimerTask;
  */
 public abstract class GeneralConversationState {
     /** The timer used for timeout checks. */
-    private final Timer timer = new Timer();
+    private static final Timer timer = new Timer();
     /** The timer task for timeout of identify in this conversation. */
     private final TimerTask stateTimeoutTask = new StateTimerTask();
 

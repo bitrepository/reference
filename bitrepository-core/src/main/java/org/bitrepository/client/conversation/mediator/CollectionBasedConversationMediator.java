@@ -81,6 +81,7 @@ import java.util.TimerTask;
 /**
  * Conversation handler that delegates messages to registered conversations.
  */
+@SuppressWarnings("deprecation")
 public class CollectionBasedConversationMediator implements ConversationMediator {
     /** Logger for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -91,7 +92,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     /** The timer used to schedule cleaning of conversations.
      * @see ConversationCleaner 
      */
-    private final Timer cleanTimer;
+    private static final Timer cleanTimer = new Timer();
 
     /**
      * Create a mediator that handles conversations and mediates messages sent on the
@@ -106,7 +107,6 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         MessageBusManager.getMessageBus(settings, securityManager).
             addListener(settings.getReceiverDestinationID(), this);
         this.settings = settings;
-        cleanTimer = new Timer(true);
         cleanTimer.scheduleAtFixedRate( new ConversationCleaner(), 0, 
                 settings.getReferenceSettings().getClientSettings().getMediatorCleanupInterval().longValue());
     }
@@ -595,7 +595,6 @@ public class CollectionBasedConversationMediator implements ConversationMediator
      * the conversations map while cleaning.
      */
     private final class ConversationCleaner extends TimerTask {
-        @SuppressWarnings("rawtypes")
         @Override
         public void run() {
             Conversation[] conversationArray = 
