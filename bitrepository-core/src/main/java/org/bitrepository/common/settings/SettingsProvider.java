@@ -67,7 +67,8 @@ public class SettingsProvider {
 
         String receiverDestinationIDFactoryClass = null;
         if (referenceSettings.getGeneralSettings() != null) {
-            referenceSettings.getGeneralSettings().getReceiverDestinationIDFactoryClass();
+            receiverDestinationIDFactoryClass =
+                referenceSettings.getGeneralSettings().getReceiverDestinationIDFactoryClass();
         }
 
         DestinationHelper dh = new DestinationHelper(
