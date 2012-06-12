@@ -48,7 +48,7 @@ public class SimpleGetFileIDsConversation extends AbstractConversation {
      * @param eventHandler The handler of events.
      */
     public SimpleGetFileIDsConversation(GetFileIDsConversationContext context) {
-        super(context.getMessageSender(), context.getConversationID(), null, null);
+        super(context.getMessageSender(), context.getConversationID(), null);
         this.context = context;
         context.setState(new IdentifyPillarsForGetFileIDs(context));
     }

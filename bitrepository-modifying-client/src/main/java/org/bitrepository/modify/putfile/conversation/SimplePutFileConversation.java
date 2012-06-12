@@ -46,7 +46,7 @@ public class SimplePutFileConversation extends AbstractConversation {
      * @param context The conversation's context.
      */
     public SimplePutFileConversation(PutFileConversationContext context) {
-        super(context.getMessageSender(), context.getConversationID(), null, null);
+        super(context.getMessageSender(), context.getConversationID(), null);
         this.context = context;
         context.setState(new IdentifyPillarsForPutFile(context));
     }

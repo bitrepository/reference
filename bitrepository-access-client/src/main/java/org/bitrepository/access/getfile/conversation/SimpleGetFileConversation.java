@@ -46,7 +46,7 @@ public class SimpleGetFileConversation extends AbstractConversation {
      * @param messageSender The message bus used for sending messages.
      */
     public SimpleGetFileConversation(GetFileConversationContext context) {
-        super(context.getMessageSender(), context.getConversationID(), null, null);
+        super(context.getMessageSender(), context.getConversationID(), null);
         this.context = context;
         context.setState(new IdentifyingPillarsForGetFile(context));
     }
