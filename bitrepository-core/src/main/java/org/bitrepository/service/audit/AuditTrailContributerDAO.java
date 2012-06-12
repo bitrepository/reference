@@ -97,6 +97,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     
     @Override
     public void addAuditEvent(String fileId, String actor, String info, String auditTrail, FileAction operation) {
+        ArgumentValidator.checkNotNull(operation, "FileAction operation");
         log.info("Inserting an audit event  for file '" + fileId + "', from actor '" + actor 
                 + "' performing operation '" + operation + "', with the audit trail information '" + auditTrail + "'");
         
@@ -111,6 +112,12 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
             actorGuid = retrieveActorGuid("null");
         } else {
             actorGuid = retrieveActorGuid(actor);
+        }
+        if(auditTrail == null) {
+            auditTrail = "";
+        }
+        if(info == null) {
+            info = "";
         }
         
         String insertSql = "INSERT INTO " + AUDITTRAIL_TABLE + " ( " + AUDITTRAIL_FILE_GUID + " , " 

@@ -129,6 +129,15 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
             throw new InvalidMessageException(responseInfo);
         }
         
+        // Validate, that we have the requested file.
+        if(!getArchive().hasFile(message.getFileID())) {
+            ResponseInfo responseInfo = new ResponseInfo();
+            responseInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
+            responseInfo.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
+                    + "not have that file!");
+            throw new InvalidMessageException(responseInfo);
+        }
+
         // validate, that we have enough space for the new file.
         long useableSizeLeft = getArchive().sizeLeftInArchive()
                 - getSettings().getReferenceSettings().getPillarSettings().getMinimumSizeLeft();

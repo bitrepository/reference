@@ -21,6 +21,9 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.MockAlarmDispatcher;
@@ -34,10 +37,6 @@ import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 
 public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     protected GetFileMessageFactory msgFactory;
