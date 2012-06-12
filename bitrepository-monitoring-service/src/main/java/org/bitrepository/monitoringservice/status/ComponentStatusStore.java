@@ -30,10 +30,19 @@ import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Storage for the status of the different components.
+ */
 public class ComponentStatusStore implements StatusStore {
+    /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
+    /** The mapping between components and their respective status.*/
     private final ConcurrentMap<String, ComponentStatus> statusMap;
     
+    /**
+     * Constructor.
+     * @param components The components whose status are to be stored in this store.
+     */
     public ComponentStatusStore(List<String> components) {
         statusMap = new ConcurrentHashMap<String, ComponentStatus>();
         for(String component : components) {

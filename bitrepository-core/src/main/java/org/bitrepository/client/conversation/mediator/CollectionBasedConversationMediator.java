@@ -89,10 +89,14 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     private final Map<String, Conversation> conversations;
     /** The injected settings defining the mediator behavior */
     private final Settings settings;
+    /** Defines that the timer is a daemon thread. */
+    private static final Boolean TIMER_IS_DAEMON = true;
+    /** The name of the timer.*/
+    private static final String NAME_OF_TIMER = "Collection based conversation timer";
     /** The timer used to schedule cleaning of conversations.
      * @see ConversationCleaner 
      */
-    private static final Timer cleanTimer = new Timer();
+    private static final Timer cleanTimer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
 
     /**
      * Create a mediator that handles conversations and mediates messages sent on the

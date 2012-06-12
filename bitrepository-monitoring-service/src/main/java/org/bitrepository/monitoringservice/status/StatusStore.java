@@ -25,6 +25,9 @@ import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 
+/**
+ * Interface for the storage of statuses.
+ */
 public interface StatusStore {
     /**
      * Updates the status of a given component.
@@ -33,6 +36,11 @@ public interface StatusStore {
      */
     void updateStatus(String componentID, ResultingStatus status);
     
+    /**
+     * Tells the store that new statuses have been requested from the components.
+     * This should increase the 'missingReplies' for each component, and whenever the component delivers its
+     * reply, then the 'missingReplies' are set to zero again.
+     */
     void updateReplyCounts();
     
     /**

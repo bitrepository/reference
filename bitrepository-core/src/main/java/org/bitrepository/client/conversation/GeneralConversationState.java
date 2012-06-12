@@ -42,8 +42,12 @@ import java.util.TimerTask;
  * ToDo Implement ConversationState and consider moving selected method here when this class is in general usage.
  */
 public abstract class GeneralConversationState {
+    /** Defines that the timer is a daemon thread. */
+    private static final Boolean TIMER_IS_DAEMON = true;
+    /** The name of the timer.*/
+    private static final String NAME_OF_TIMER = "Timer for the conversation state";
     /** The timer used for timeout checks. */
-    private static final Timer timer = new Timer();
+    private static final Timer timer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
     /** The timer task for timeout of identify in this conversation. */
     private final TimerTask stateTimeoutTask = new StateTimerTask();
 

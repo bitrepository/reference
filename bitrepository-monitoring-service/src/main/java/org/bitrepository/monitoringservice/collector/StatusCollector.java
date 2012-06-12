@@ -34,7 +34,6 @@ import org.bitrepository.monitoringservice.status.StatusStore;
  * The collector of status messages.
  */
 public class StatusCollector {
-
     /** The getStatusClient */
     private GetStatusClient getStatusClient;
     /** The store for the status results.*/
@@ -43,10 +42,12 @@ public class StatusCollector {
     private EventHandler eventHandler;
     /** Defines that the timer is a daemon thread. */
     private static final Boolean TIMER_IS_DAEMON = true;
+    /** The name of the timer.*/
+    private static final String NAME_OF_TIMER = "GetStatus collection timer";
     /** Timer for collecting statuses on a regular basis */
-    private Timer timer;
+    private static final Timer timer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
     /** Time between getStatus collections */
-    private long collectionInterval = 300000;
+    private final long collectionInterval;
     
     /**
      * Constructor.
@@ -61,7 +62,6 @@ public class StatusCollector {
         eventHandler = new GetStatusEventHandler(statusStore, alerter);
         this.statusStore = statusStore;
         collectionInterval = settings.getReferenceSettings().getMonitoringServiceSettings().getCollectionInterval();
-        timer = new Timer("GetStatus collection timer", TIMER_IS_DAEMON);
     }
     
     /** Start the collection of statuses */
@@ -74,6 +74,11 @@ public class StatusCollector {
         timer.cancel();
     }
     
+    /**
+     * The timertask for collecting the status.
+     * Tells the store that a new status request has been issued, and then starts the conversation for retrieving the 
+     * status from all the contributors.
+     */
     private class StatusCollectorTimerTask extends TimerTask {
         @Override
         public void run() {
