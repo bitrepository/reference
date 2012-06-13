@@ -46,10 +46,6 @@ public class PuttingFile extends PerformingOperationState {
     private Map<String,String> activeContributors;
     private ContributorResponseStatus responseStatus;
 
-    /**
-     * Constructor.
-     * @param conversation The conversation in this state.
-     */
     public PuttingFile(PutFileConversationContext context, List<SelectedComponentInfo> contributors) {
         this.context = context;
         this.activeContributors = new HashMap<String,String>();
@@ -86,6 +82,8 @@ public class PuttingFile extends PerformingOperationState {
         msg.setFileAddress(context.getUrlForFile().toExternalForm());
         msg.setFileID(context.getFileID());
         msg.setFileSize(context.getFileSize());
+        msg.setChecksumDataForNewFile(context.getChecksumForValidationAtPillar());
+        msg.setChecksumRequestForNewFile(context.getChecksumRequestForValidation());
         context.getMonitor().requestSent("Sending request for put file", activeContributors.keySet().toString());
         for(String pillar : activeContributors.keySet()) {
             msg.setPillarID(pillar);
