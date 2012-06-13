@@ -2,12 +2,12 @@
   <parent>
     <groupId>org.bitrepository.reference</groupId>
     <artifactId>bitrepository-parent</artifactId>
-    <version>0.14.2-SNAPSHOT</version>
+    <version>0.14.2</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>bitrepository-modifying-client</artifactId>
-  <version>0.14</version>
+  <version>0.14.2</version>
   <name>Bitrepository Modifying Client</name>
   <description>Functionality for modifying the content of a Bitrepository system. This includes PutFIle, 
   Replace and Delete functionality.</description>
