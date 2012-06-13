@@ -175,7 +175,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void referencePillarPutFileTestMissingChecksum() throws Exception {
         addDescription("Tests that the checksum pillar rejects putting a file, which already exists. During the operation fase");
-        context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
+        componentSettings.getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
         PutFileRequest putRequest = msgFactory.createPutFileRequest(null, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE);
         messageBus.sendMessage(putRequest);
         

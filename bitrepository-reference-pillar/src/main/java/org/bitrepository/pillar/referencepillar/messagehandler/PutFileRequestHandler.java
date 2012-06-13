@@ -93,12 +93,11 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         validatePillarId(message.getPillarID());
         if(message.getChecksumDataForNewFile() != null) {
             validateChecksumSpecification(message.getChecksumDataForNewFile().getChecksumSpec());
-        } else if(getSettings().getCollectionSettings()
-                .getProtocolSettings().isRequireChecksumForNewFileRequests()) {
+        } else if(getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
             responseInfo.setResponseText("According to the contract a checksum for creating a new file is required.");
-            throw new InvalidMessageException(responseInfo);            
+            throw new InvalidMessageException(responseInfo);
         }
         
         validateChecksumSpecification(message.getChecksumRequestForNewFile());
