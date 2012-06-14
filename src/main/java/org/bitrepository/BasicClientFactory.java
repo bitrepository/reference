@@ -41,6 +41,7 @@ public class BasicClientFactory {
     public synchronized static void init(String configurationDir) {
     	confDir = configurationDir;
     	ServiceUrl.init(configurationDir);
+        loadProperties();
     }
     
     /**
@@ -54,7 +55,6 @@ public class BasicClientFactory {
         	}
         	SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
             Settings settings = settingsLoader.getSettings(clientID);
-            loadProperties();
             PermissionStore permissionStore = new PermissionStore();
             MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
             MessageSigner signer = new BasicMessageSigner();
