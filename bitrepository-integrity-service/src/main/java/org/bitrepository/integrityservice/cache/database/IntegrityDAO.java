@@ -362,7 +362,7 @@ public class IntegrityDAO {
             // In that case reject the current checksum state.
             if(existingDate == null || existingDate.getTime() < filelistTimestamp.getTime()) {
                 String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_FILE_UPDATE + " = ?, " 
-                        + FI_FILE_STATE + " = ? " + FI_CHECKSUM_STATE + " = ? WHERE " + FI_GUID + " = ?";
+                        + FI_FILE_STATE + " = ? , " + FI_CHECKSUM_STATE + " = ? WHERE " + FI_GUID + " = ?";
                 DatabaseUtils.executeStatement(dbConnector.getConnection(), updateSql, filelistTimestamp, 
                         FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal(), guid);
             } else {
