@@ -50,7 +50,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
     /** The name of the queue to send the messages.*/
     private static String QUEUE = "TEST-QUEUE";
     /** The number of messages to send.*/
-    private static int NUMBER_OF_MESSAGES = 100;
+    private static int NUMBER_OF_MESSAGES = 1000;
     /** The number of threads to send the messages. */
     private static int NUMBER_OF_SENDERS = 10;
 
@@ -87,7 +87,8 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
                     try {
                         wait(TIME_FOR_MESSAGE_TRANSFER_WAIT);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        // expected
+//                        e.printStackTrace();
                     }
                 }
             }

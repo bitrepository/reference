@@ -24,31 +24,31 @@ package org.bitrepository.audittrails.preserver;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileUtils;
 
 /**
- * Performs the extraction and packaging of audit trails into a file.
- * Most of the methods are package protected.
- * 
- * The name of the file with the packed audit trails is 'audit-trail-' and then the timestamp in millis.
- * It has the extension '.zip'.
+ * Performs the extraction and packaging of audit trails for preservation.
+ * Only packs the audit trails with a larger sequence number than the reached sequence number for the given 
+ * contributor.
  */
 public class AuditPacker {
     /** The audit trail store.*/
     private final AuditTrailStore store;
-    /** The container for the audit trails.*/
-    private final File container;
-    /** The compressed file. */
-    private final File zippedFile ;
-    /** The writer for the container.*/
-    private final PrintWriter writer;
-    
+    /** The settings.*/
+    private final Settings settings;
+    /** The directory where the temporary files are stored.*/
+    private final File directory;
+    /** Map between the contributor id and the reached preservation sequence number. */
+    private Map<String, Long> seqReached = new HashMap<String, Long>();
+        
     /** Whether the output stream should be appended to the file.*/
     private static final boolean APPEND = true;
     
@@ -56,27 +56,83 @@ public class AuditPacker {
      * Constructor.
      * @param store The audit trail store
      */
-    public AuditPacker(AuditTrailStore store) {
+    public AuditPacker(AuditTrailStore store, Settings settings) {
         this.store = store;
-        container = new File("audit-trails-" + System.currentTimeMillis());
-        zippedFile = new File(container.getName() + ".zip");
-
-        try {
-            container.createNewFile();
-            OutputStream outStream = new FileOutputStream(container, APPEND);
-            writer = new PrintWriter(outStream);
-        } catch (IOException e) {
-            throw new IllegalStateException("Cannot instantiate l", e);
+        this.settings = settings;
+        this.directory = FileUtils.retrieveDirectory(settings.getReferenceSettings().getAuditTrailServiceSettings()
+                .getAuditTrailPreservationTemporaryDirectory());
+        
+        initialiseReachedSequenceNumbers();
+    }
+    
+    /**
+     * Makes a copy of the map, which is returned.
+     * @return A mapping between the contributor ids and their preservation sequence numbers.
+     */
+    public Map<String, Long> getSequenceNumbersReached() {
+        return new HashMap<String, Long>(seqReached);
+    }
+    
+    /**
+     * Retrieves the preservation sequence number for each contributor and inserts it into the map.
+     */
+    private void initialiseReachedSequenceNumbers() {
+        for(String contributor : settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs()) {
+            Long seq = store.getPreservationSequenceNumber(contributor);
+            seqReached.put(contributor, seq);
         }
     }
     
     /**
-     * @param contributorId The id of the contributor.
-     * @return The sequence number of the next audit trail to be preserved (e.g. largest of the packed
-     * sequence numbers plus one).
+     * Creates a new package with all the newest audit trails from all contributors, e.g. all the audit trails with a 
+     * larger sequence number than the reached.
+     * Cleans up the temporary container afterwards.
+     * @return A compressed file with all the audit trails. 
      */
-    long packContributor(String contributorId) {
-        
+    public synchronized File createNewPackage() {
+        File container = new File(directory, "audit-trails-" + System.currentTimeMillis());
+        try {
+            container.createNewFile();
+            packContributors(container);
+            return createCompressedFile(container);
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot package the newest audit trails.", e);
+        } finally {
+            // cleaning up.
+            if(container.exists()) {
+                FileUtils.delete(container);
+            }
+        }
+    }
+    
+    /**
+     * Packs all newest audit trails from every contributor into the given file.
+     * @param container The file where the audit trails should be written.
+     * @throws IOException If writing to the file somehow fails.
+     */
+    private void packContributors(File container) throws IOException {
+        PrintWriter writer = null;
+        try {
+            writer = new PrintWriter(new FileOutputStream(container, APPEND));
+            for(String contributor : settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs()) {
+                Long seq = packContributor(contributor, writer);
+                seqReached.put(contributor, seq);
+            }
+        } finally {
+            if(writer != null) {
+                writer.flush();
+                writer.close();
+            }
+        }
+    }
+    
+    /**
+     * Writes all the newest audit trails for a single contributor to the PrintWriter.
+     * @param contributorId The id of the contributor to write the files for.
+     * @param writer The PrinterWriter where the output will be written.
+     * @return The sequence number reached +1 (to tell which sequence number is next).
+     */
+    private Long packContributor(String contributorId, PrintWriter writer) {
         long nextSeqNumber = store.getPreservationSequenceNumber(contributorId);
         long largestSeqNumber = -1;
         
@@ -87,39 +143,24 @@ public class AuditPacker {
             if(largestSeqNumber < event.getSequenceNumber().longValue()) {
                 largestSeqNumber = event.getSequenceNumber().longValue();
             }
-            
-            writer.print(event.toString());            
+            writer.println(event.toString());            
         }
         
         return largestSeqNumber + 1;
     }
     
     /**
-     * Performs the compression of the file and returns it, ready for ingest.
-     * @return The package
+     * Compresses the given file into a zip-file.
+     * It will have the same name as the file to compress, just with the extension '.zip', and it will
+     * be placed in the directory defined in settings.
+     * 
+     * @param fileToCompress The file to compress.
+     * @return The compressed file.
+     * @throws IOException If anything goes wrong.
      */
-    File compressFile() {
-        try {
-            writer.flush();
-            writer.close();
-            
-            FileUtils.zipFile(container, zippedFile);
-            
-            return zippedFile; 
-        } catch (IOException e) {
-            throw new IllegalStateException("", e);
-        }
-    }
-    
-    /**
-     * Cleans up after the packaging by deleting the local files.
-     */
-    public void cleanUp() {
-        if(container.exists()) {
-            FileUtils.delete(container);
-        }
-        if(zippedFile.exists()) {
-            FileUtils.delete(zippedFile);
-        }
+    private File createCompressedFile(File fileToCompress) throws IOException {
+        File zippedFile = new File(directory, fileToCompress.getName() + ".zip");
+        FileUtils.zipFile(fileToCompress, zippedFile);
+        return zippedFile;
     }
 }

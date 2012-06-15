@@ -351,19 +351,20 @@ public class IntegrityDAO {
             String insertSql = "INSERT INTO " + FILE_INFO_TABLE + " ( " + FI_PILLAR_GUID + ", " + FI_FILE_GUID + ", "
                     + FI_LAST_FILE_UPDATE + ", " + FI_LAST_CHECKSUM_UPDATE + ", " + FI_FILE_STATE + ", " 
                     + FI_CHECKSUM_STATE + ") VALUES ( ?, ?, ?, ?, ?, ? )";
-            DatabaseUtils.executeStatement(dbConnector.getConnection(), insertSql, pillarGuid, fileGuid, filelistTimestamp,
-                    new Date(0), FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
+            DatabaseUtils.executeStatement(dbConnector.getConnection(), insertSql, pillarGuid, fileGuid, 
+                    filelistTimestamp, new Date(0), FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
         } else {
             String validateSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE + " WHERE " + FI_GUID 
                     + " = ?";
             Date existingDate = DatabaseUtils.selectDateValue(dbConnector.getConnection(), validateSql, guid);
             
-            // Only insert the date, if it is newer than the recorded one.
+            // Only insert the date, if it is newer than the recorded one. 
+            // In that case reject the current checksum state.
             if(existingDate == null || existingDate.getTime() < filelistTimestamp.getTime()) {
                 String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_FILE_UPDATE + " = ?, " 
-                        + FI_FILE_STATE + " = ? WHERE " + FI_GUID + " = ?";
+                        + FI_FILE_STATE + " = ? " + FI_CHECKSUM_STATE + " = ? WHERE " + FI_GUID + " = ?";
                 DatabaseUtils.executeStatement(dbConnector.getConnection(), updateSql, filelistTimestamp, 
-                        FileState.EXISTING.ordinal(), guid);
+                        FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal(), guid);
             } else {
                 log.debug("The existing entry '" + existingDate + "' is not older than the new entry '"
                         + filelistTimestamp + "'.");

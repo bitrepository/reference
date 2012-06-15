@@ -27,7 +27,9 @@ package org.bitrepository.protocol.performancetest;
 import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
+import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
@@ -67,7 +69,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
      * Requires to send at least five per second.
      * @throws Exception 
      */
-    @Test( groups = {"StressTest"} )
+//    @Test( groups = {"StressTest"} )
     public void SendLargeMessagesDistributed() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
@@ -89,7 +91,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
                 try {
                     wait(TIME_FRAME);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
             }
 
@@ -139,7 +141,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
                 try {
                     wait(TIME_FRAME);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
             }
 
@@ -170,11 +172,13 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
             payload.append(BUFFER_TEXT);
         }
 
-        addStep("Creating a message of size '" + payload.length() + "' bytes", 
-        "Should be allowed");
+        addStep("Creating a message of size '" + payload.length() + "' bytes", "Should be allowed");
         AlarmMessage message = ExampleMessageFactory.createMessage(AlarmMessage.class);
         Alarm alarm = new Alarm();
         alarm.setAlarmText(payload.toString());
+        alarm.setAlarmRaiser("test");
+        alarm.setAlarmCode(AlarmCode.INVALID_MESSAGE);
+        alarm.setOrigDateTime(CalendarUtils.getEpoch());
         message.setAlarm(alarm);
         return message;
     }

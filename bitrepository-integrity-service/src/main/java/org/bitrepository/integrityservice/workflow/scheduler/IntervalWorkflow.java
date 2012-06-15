@@ -27,12 +27,16 @@ package org.bitrepository.integrityservice.workflow.scheduler;
 import java.util.Date;
 
 import org.bitrepository.integrityservice.workflow.Workflow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract trigger, that triggers at given interval.
  * Trigger will run the run() method, if triggered.
  */
 public abstract class IntervalWorkflow implements Workflow {
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
     /** The date for the next run of the workflow.*/
     private Date nextRun;
     /** The name of the workflow.*/
@@ -63,6 +67,7 @@ public abstract class IntervalWorkflow implements Workflow {
     
     @Override
     public void trigger() {
+        log.info("Starting the workflow: " + getName());
         nextRun = new Date(System.currentTimeMillis() + interval);
         runWorkflow();
     }
