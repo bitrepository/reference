@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.IntegrityService;
-import org.bitrepository.integrityservice.workflow.Workflow;
+import org.bitrepository.integrityservice.scheduler.WorkflowTask;
 import org.bitrepository.service.LifeCycledService;
 
 /**
@@ -81,7 +81,7 @@ public class IntegrityServiceWebInterface implements IntegrityService, LifeCycle
     }
     
     @Override
-    public Collection<Workflow> getWorkflows() {
+    public Collection<WorkflowTask> getWorkflows() {
         return service.getWorkflows();
     }
 

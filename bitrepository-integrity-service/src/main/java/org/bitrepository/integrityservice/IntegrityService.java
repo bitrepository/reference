@@ -23,14 +23,14 @@ package org.bitrepository.integrityservice;
 
 import java.util.Collection;
 
-import org.bitrepository.integrityservice.workflow.Workflow;
+import org.bitrepository.integrityservice.scheduler.WorkflowTask;
 
 public interface IntegrityService {
     /**
      * Retrieves all the scheduled tasks in the system, which are running.
      * @return The names of the tasks, which are scheduled by the system.
      */
-    Collection<Workflow> getWorkflows();
+    Collection<WorkflowTask> getWorkflows();
     
     /**
      * @param pillarId The pillar which has the files.
