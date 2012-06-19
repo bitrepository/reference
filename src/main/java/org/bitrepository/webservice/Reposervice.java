@@ -189,6 +189,7 @@ public class Reposervice {
 
         WebserviceInputChecker.checkFileIDParameter(fileID);
         WebserviceInputChecker.checkChecksumTypeParameter(checksumType);
+        WebserviceInputChecker.checkSaltParameter(salt);
         
     	Map<String, Map<String, String>> result = client.getChecksums(fileID, checksumType, salt);
     	if(result == null) {
@@ -245,6 +246,7 @@ public class Reposervice {
 
         WebserviceInputChecker.checkFileIDParameter(fileID);
         WebserviceInputChecker.checkChecksumTypeParameter(checksumType);
+        WebserviceInputChecker.checkSaltParameter(salt);
 
     	Map<String, Map<String, String>> result = client.getChecksums(fileID, checksumType, salt);
     	if(result == null) {
