@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CollectionSettings xmlns="http://bitrepository.org/settings/CollectionSettings.xsd">
+  <!-- CollectionID is identifier for the collection -->
+  <CollectionID>dummy-collection-id</CollectionID>
+  <ProtocolSettings>
+    <!-- 
+      DefaultChecksumType is the checksum that should be used by default in the collection.
+      I.e. MD5 or SHA1 (others are supported on protocol level.)
+    -->
+    <DefaultChecksumType>MD5</DefaultChecksumType>
+    <!--
+      AllowedFileIDPattern defines the allowed fileIDs in the collection. 
+      This is formatted as a Java regular expression 
+    -->
+    <AllowedFileIDPattern>[a-zA-Z_\.\-0-9]+</AllowedFileIDPattern>
+    <!--
+      RequireMessageAuthentication, defines whether all messages received by any component
+      in the system should authenticate the message by signature check against known certificates. 
+      Setting this to true, implies that all messages sent should be signed by sender. 
+    -->
+    <RequireMessageAuthentication>true</RequireMessageAuthentication>
+    <!-- 
+      RequireOperationAuthorization, defines whether operations should be authorized against 
+      permissions defined in CollectionSettings (in the bottom of this file).
+    -->
+    <RequireOperationAuthorization>true</RequireOperationAuthorization>
+    <!--
+      RequireChecksumForDestructiveRequests, defines whether it is required to provide a checksum
+      when running a destructive request (i.e. deleting or replacing a file).
+    -->
+    <RequireChecksumForDestructiveRequests>true</RequireChecksumForDestructiveRequests>
+    <!--
+      RequireChecksumForNewFileRequests, defines whether it is required to provide a checksum
+      when ingesting a file in the bitrepository (i.e. when putting or replacing a file).
+    -->
+    <RequireChecksumForNewFileRequests>true</RequireChecksumForNewFileRequests>
+    <!--
+      CollectionDestination, defines the destination topic for broardcast messages within the collection 
+      I.e. for identify* requests. 
+    -->
+    <CollectionDestination>topic://dummy-collection-id</CollectionDestination>
+    <!-- 
+      AlarmDestination, defines the destination to where alarms are send. This should be a topic, 
+      so that multiple components interested in receiving alarms won't steal them from eachother. 
+    -->
+    <AlarmDestination>topic://dummy-collection-id.alarms</AlarmDestination>
+    <MessageBusConfiguration>
+    <!-- Identifier for the message bus configuration -->
+      <Name>my messagebus</Name>
+      <!--
+        The URL for connecting to the messagebus (network). For encrypted communication with 
+        the messagebus, use ssl:// as protocol. For unencrypted, use tcp://
+      -->
+      <URL>failover:(ssl://enrcypted-messagebus:61601?keepAlive=true, tcp://unencrypted-messagebus:12345?keepAlive=true)</URL>
+    </MessageBusConfiguration>
+  </ProtocolSettings>
+
+  <!-- General settings for the various clients -->
+  <ClientSettings>
+    <!-- 
+      IdentificationTimeout, the maximum time which clients should wait for identify* responses during
+      the identification phase of an operation. 
+      Unit in milliseconds. 
+    -->
+    <IdentificationTimeout>10000</IdentificationTimeout>
+    <!-- 
+      OperationTimeout, the maximum time which clients should wait for an operation to finish after 
+      an successful identification phase. 
+      Unit in milliseconds. 
+    -->
+    <OperationTimeout>3600000</OperationTimeout>
+    <!--
+      List of pillars that belongs in the collection. Clients will only expect answers from 
+      pillars listed here.
+    -->
+    <PillarIDs>pillar1</PillarIDs>
+    <PillarIDs>pillar2</PillarIDs>
+  </ClientSettings>
+
+  <!-- 
+    Specific settings for pillars. 
+    This section is currently empty
+  -->
+  <PillarSettings></PillarSettings>
+
+  <!--  
+    Specific settings for DeleteFile operations
+    This section is currently empty
+  -->
+  <DeleteFileSettings></DeleteFileSettings>
+
+  <!-- Specific settings for AuditTrails operations -->
+  <GetAuditTrailSettings>
+    <!-- 
+      List of components expected to deliver audit trail information. 
+      Only components listed here will be asked for audit trail information. 
+    -->
+    <ContributorIDs>pillar1</ContributorIDs>
+    <ContributorIDs>pillar2</ContributorIDs>
+    <ContributorIDs>integrity-service</ContributorIDs>
+  </GetAuditTrailSettings>
+
+  <!-- 
+    Specific settings for GetChecksums operations
+    This section is currently empty
+  -->
+  <GetChecksumsSettings></GetChecksumsSettings>
+
+  <!-- 
+    Specific settings for GetFile operations
+    This section is currently empty
+  -->
+  <GetFileSettings></GetFileSettings>
+
+  <!-- 
+    Specific settings for GetFileIDs operations
+    This section is currently empty
+  -->
+  <GetFileIDsSettings></GetFileIDsSettings>
+
+  <!-- Specific settings for Status monitoring -->
+  <GetStatusSettings>
+      <!-- 
+        List of components expected to deliver status information 
+        Only components listed here will be asked for status information. 
+      -->
+      <ContributorIDs>pillar1</ContributorIDs>
+      <ContributorIDs>pillar2</ContributorIDs>
+      <ContributorIDs>alarm-service</ContributorIDs>
+      <ContributorIDs>integrity-service</ContributorIDs>
+      <ContributorIDs>audittrail-service</ContributorIDs>
+  </GetStatusSettings>
+
+  <!-- 
+    Specific settings for PutFile operations
+    This section is currently empty
+  -->
+  <PutFileSettings></PutFileSettings>
+
+  <!-- 
+    Specific settings for ReplaceFile operations
+    This section is currently empty
+  -->
+  <ReplaceFileSettings></ReplaceFileSettings>
+
+  <!-- 
+    Settings for defining the different permission in the collection. 
+    Permissions are needed when one or more of the following is true:
+      - The messagebus is encrypted
+      - A file transfer protocol requires certificates (i.e. when using https)
+      - Messages needs signing (for MessageAuthentication or OperationAuthorization)
+    
+    A permission contains:
+      - Description, a textual description to tell who, what and why. 
+      - Certificate, the Certificate and optionally who is allowed to use it
+      - InfrastructurePermission, a list of infrastructure related permissions
+      - OperationPermission, a list of permissions related to operations 
+        and where it pertains. The OperationPermission's list is optional.
+
+    A certificate element consists of:
+      - CertificateData, the base64 encoded public part of a X.509 certificate
+      - AllowedCertificateUsers, contains a list of IDs for the components allowed
+        to use the certificate. The list is optional. 
+   
+    InfrastructurePermission can be either: 
+      - MessageBusServer, used for the messagebus server's certificate
+      - MessageBusClient, used for clients of the messagebus
+      - FileExchangeServer, used for file exchange server certificate
+      - FileExcahngeClient, used for clients of the file exchange server
+      - MessageSigner, used for pillars to allow them to sign messages (responses)
+      
+    OperationPermission element consistes of:
+      - Operation, which is one of:
+        + GetFile, for allowing IdentifyPillarsForGetFileRequest's and GetFileRequest's.
+        + PutFile, for allowing IdentifyPillarsForPutFileRequest's and PutFileRequest's.
+        + GetChecksums, for allowing IdentifyPillarsForGetChecksumsRequest's and 
+          GetChecksumsRequest's.
+        + GetFileIDs, for allowing IdentifyPillarsForGetFileIDsRequest's and 
+          GetFileIDsRequest's.
+        + DeleteFile, for allowing IdentifyPillarsForDeleteFileRequest's and
+          DeleteFileRequest's.
+        + ReplaceFile, for allowing IdentifyPillarsForReplaceFileRequest's and
+          ReplaceFileRequest's. 
+        + GetAuditTrails, for allowing IdentifyContributorsForGetAuditTrailsRequest's 
+          and GetAuditTrailsRequest's
+        + GetStatus, for allowing IdentifyContributorsForGetStatusRequest's and 
+          GetStatusRequest's. 
+        + All, "meta permission" allowing anything to be performed. 
+      - AllowedComponents, a list of IDs for components where the OperationPermission
+        is valid. 
+  -->
+  <PermissionSet>
+     <Permission>
+      <Description>Messagebus and HTTPS server certificate</Description>
+      <Certificate>
+        <CertificateData>
+          ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz0123456789++
+          ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz0123456789++
+          ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz0123456789++
+          ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz0123456789++
+          ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz0123456789++
+          ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz0123456789++
+          ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz0123456789++
+          ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz0123456789++
+          ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz0123456789++
+          ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz0123456789++
+          ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz0123456789++
+          ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz0123456789++
+          ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz0123456789++
+          ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz0123456789++
+          ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuv
+        </CertificateData>
+      </Certificate>
+      <InfrastructurePermission>MessageBusServer</InfrastructurePermission>
+      <InfrastructurePermission>FileExchangeClient</InfrastructurePermission>
+      <InfrastructurePermission>FileExchangeServer</InfrastructurePermission>
+      <OperationPermission>
+        <Operation>All</Operation>
+      </OperationPermission>
+    </Permission>
+</PermissionSet>
+</CollectionSettings>
