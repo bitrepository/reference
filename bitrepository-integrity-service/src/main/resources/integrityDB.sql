@@ -86,7 +86,7 @@ create table files (
                                  -- The guid for a given file.
     file_id varchar (255) not null,
                                  -- The id for the file.
-    creation_date date           -- The date for the creation of the file.
+    creation_date timestamp      -- The date for the creation of the file.
                                  -- Or the time where it was first seen by
                                  -- the integrity client.
 );

@@ -249,7 +249,7 @@ public class DatabaseUtils {
                             + dbConnection + "'. Returning a null.");
                     return null;
                 }
-                Date resultDate = res.getDate(1);
+                Timestamp resultDate = res.getTimestamp(1);
                 if (res.wasNull()) {
                     resultDate = null;
                 }

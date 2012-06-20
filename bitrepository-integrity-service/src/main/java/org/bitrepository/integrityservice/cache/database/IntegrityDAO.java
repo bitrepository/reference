@@ -332,7 +332,32 @@ public class IntegrityDAO {
         String removeFileInfoEntrySql = "DELETE FROM " + FILE_INFO_TABLE + " WHERE " + FI_FILE_GUID + " = ?";
         DatabaseUtils.executeStatement(dbConnector.getConnection(), removeFileInfoEntrySql, guid);
     }
+    
+    /**
+     * Finds the id of the files which at any pillar exists but is missing its checksum state.
+     */
+    public List<String> findMissingChecksums() {
+        log.debug("Locating files which are missing the checksum at any pillar.");
+        String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
+                + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "." 
+                + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? AND " + FILE_INFO_TABLE 
+                + "." + FI_CHECKSUM_STATE + " = ?";
+        
+        return DatabaseUtils.selectStringList(dbConnector.getConnection(), requestSql, FileState.EXISTING.ordinal(), 
+                ChecksumState.UNKNOWN.ordinal());
+    }
 
+    /**
+     * Finds the id of the files which at any pillar exists but is missing its checksum state.
+     */
+    public List<String> findMissingFiles() {
+        log.debug("Locating files which are missing at any pillar.");
+        String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
+                + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "."
+                + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? ";
+        return DatabaseUtils.selectStringList(dbConnector.getConnection(), requestSql, FileState.MISSING.ordinal());
+    }
+    
     /**
      * Updates or creates the given timestamp for the latest modified date of the given file on the given pillar.
      * @param pillarGuid The guid for the pillar.
@@ -358,16 +383,18 @@ public class IntegrityDAO {
                     + " = ?";
             Date existingDate = DatabaseUtils.selectDateValue(dbConnector.getConnection(), validateSql, guid);
             
-            // Only insert the date, if it is newer than the recorded one. 
-            // In that case reject the current checksum state.
+            // Insert the date, if it is newer than the recorded one, and also reject the current checksum state.
+            // Otherwise just set the filestate to 'exists'.
             if(existingDate == null || existingDate.getTime() < filelistTimestamp.getTime()) {
                 String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_FILE_UPDATE + " = ?, " 
                         + FI_FILE_STATE + " = ? , " + FI_CHECKSUM_STATE + " = ? WHERE " + FI_GUID + " = ?";
                 DatabaseUtils.executeStatement(dbConnector.getConnection(), updateSql, filelistTimestamp, 
                         FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal(), guid);
             } else {
-                log.debug("The existing entry '" + existingDate + "' is not older than the new entry '"
-                        + filelistTimestamp + "'.");
+                String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? WHERE " + FI_GUID 
+                        + " = ?";
+                DatabaseUtils.executeStatement(dbConnector.getConnection(), updateSql, FileState.EXISTING.ordinal(), 
+                        guid);
             }
         }
     }

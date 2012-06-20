@@ -108,4 +108,16 @@ public interface IntegrityModel {
      * @param fileId The id of the file to be removed from cache.
      */
     void deleteFileIdEntry(String fileId);
+    
+    /**
+     * Locates the files which exists but are missing their checksum at any pillar.
+     * @return The list of file ids for the files which exists but are missing their checksum at any pillar.
+     */
+    List<String> findMissingChecksums();
+    
+    /**
+     * Locates the files which are missing at any pillar.
+     * @return The list of file ids for the files which are missing at any pillar.
+     */
+    List<String> findMissingFiles();
 }

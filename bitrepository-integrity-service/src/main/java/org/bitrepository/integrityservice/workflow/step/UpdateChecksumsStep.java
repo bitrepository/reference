@@ -1,6 +1,5 @@
-package org.bitrepository.integrityservice.scheduler.workflow.step;
+package org.bitrepository.integrityservice.workflow.step;
 
-import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -10,23 +9,25 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The step for collecting a single file.
+ * The step for collecting the checksums of all files from all pillars.
  */
-public class CollectChecksumsStep implements WorkflowStep {
+public class UpdateChecksumsStep implements WorkflowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
+    /** The constant for all file ids.*/
+    private static final String ALL_FILE_IDS = "true";
+    
     /** The settings.*/
     private final Settings settings;
-    /** The client for retrieving the checksums.*/
-    private final GetChecksumsClient client;
+    /** The collector for retrieving the checksums.*/
+    private final IntegrityInformationCollector collector;
     /** The model where the integrity data is stored.*/
     private final IntegrityModel store;
-    /** The id of the file to collect.*/
-    private final String fileid;
     
     /**
      * Constructor.
@@ -35,16 +36,15 @@ public class CollectChecksumsStep implements WorkflowStep {
      * @param store The storage for the integrity data.
      * @param fileid The id of the file to collect.
      */
-    public CollectChecksumsStep(Settings settings, GetChecksumsClient client, IntegrityModel store, String fileid) {
+    public UpdateChecksumsStep(Settings settings, IntegrityInformationCollector collector, IntegrityModel store) {
         this.settings = settings;
-        this.client = client;
+        this.collector = collector;
         this.store = store;
-        this.fileid = fileid;
     }
     
     @Override
     public String getName() {
-        return "Collecting checksums for file '" + fileid + "'.";
+        return "Collecting checksums for all files.";
     }
 
     @Override
@@ -53,15 +53,16 @@ public class CollectChecksumsStep implements WorkflowStep {
         
         ChecksumsEventHandler eventHandler = new ChecksumsEventHandler();
         
-        client.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), getFileIds(), 
-                getChecksumSpec(), null, eventHandler, "IntegrityService: " + getName());
+        collector.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), getFileIds(), 
+                getChecksumSpec(), "IntegrityService: " + getName(), eventHandler);
         while(eventHandler.isRunning()) {
             try {
                 this.wait();
             } catch (InterruptedException e) {
-                log.debug("Integrrupted while waiting for finish.", e);
+                log.debug("Interrupted while waiting for step to finish.", e);
             }
         }
+        log.debug("Finished collecting the checksums.");
     }
     
     /**
@@ -69,7 +70,7 @@ public class CollectChecksumsStep implements WorkflowStep {
      */
     private FileIDs getFileIds() {
         FileIDs fileids = new FileIDs();
-        fileids.setFileID(fileid);
+        fileids.setAllFileIDs(ALL_FILE_IDS);
         return fileids;
     }
     

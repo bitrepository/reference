@@ -24,6 +24,14 @@
  */
 package org.bitrepository.integrityservice.cache;
 
+import java.io.File;
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -42,17 +50,9 @@ import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityservice.mocks.MockAuditManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.io.File;
-import java.math.BigInteger;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 public class DatabaseCacheTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
@@ -63,7 +63,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
     File dbDir = null;
     MockAuditManager auditManager;
     
-    @BeforeClass (alwaysRun = true)
+    @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("DatabaseCacheUnderTest");
         
@@ -78,7 +78,7 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         auditManager = new MockAuditManager();
     }
 
-    @AfterClass (alwaysRun = true)
+    @AfterMethod (alwaysRun = true)
     public void shutdown() throws Exception {
         if(dbDir != null) {
             FileUtils.delete(dbDir);
@@ -323,12 +323,120 @@ public class DatabaseCacheTest extends ExtendedTestCase {
         Assert.assertEquals(cache.getAllFileIDs(), Arrays.asList(fileId1));
     }
     
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testMissingFiles() throws Exception {
+        addDescription("Test whether the database can detect files with the filestate MISSING");
+        addStep("Setup variables and constants.", "Should not be a problem.");
+        String pillarId1 = "integrityCheckTest";
+        String fileId1 = "TEST-FILE-ID";
+        String fileId2 = "ANOTHER-TEST-FILE-ID";
+        FileIDs fileIDs = new FileIDs();
+        fileIDs.setAllFileIDs("true");
+
+        addStep("Setup database cache and integrity checker", "Should not be a problem");
+        settings.getReferenceSettings().getIntegrityServiceSettings().setIntegrityDatabaseUrl(DATABASE_URL);
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId1);
+        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0);
+        IntegrityDatabase cache = new IntegrityDatabase(settings);
+        
+        addStep("Validate initial state", "Should not be any files or checksums missing");
+        Assert.assertEquals(cache.findMissingFiles().size(), 0);
+
+        addStep("Insert data for two files.", "Since no checksum");
+        FileIDsData fileIdsBoth = getFileIDsData(fileId1, fileId2);
+        cache.addFileIDs(fileIdsBoth, fileIDs, pillarId1);
+        Assert.assertEquals(cache.findMissingFiles().size(), 0);
+
+        addStep("Set one file to missing.", "Should be found");
+        cache.setFileMissing(fileId1, Arrays.asList(pillarId1));
+        List<String> missingFiles = cache.findMissingFiles();
+        Assert.assertEquals(missingFiles.size(), 1);
+        Assert.assertEquals(missingFiles.get(0), fileId1);
+        
+        addStep("Set the other file to missing.", "Should be found");
+        cache.setFileMissing(fileId2, Arrays.asList(pillarId1));
+        missingFiles = cache.findMissingFiles();
+        Assert.assertEquals(missingFiles.size(), 2);
+        Assert.assertEquals(missingFiles.get(0), fileId1);
+        Assert.assertEquals(missingFiles.get(1), fileId2);
+        
+        addStep("Insert data for only one file", "The other should still be missing");
+        fileIdsBoth = getFileIDsData(fileId1);
+        cache.addFileIDs(fileIdsBoth, fileIDs, pillarId1);
+        missingFiles = cache.findMissingFiles();
+        Assert.assertEquals(missingFiles.size(), 1);
+        Assert.assertEquals(missingFiles.get(0), fileId2);
+    }
+
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testMissingChecksums() throws Exception {
+        addDescription("Test whether the database can detect files with the checksumstate UNKNOWN even though the file exists");
+        addStep("Setup variables and constants.", "Should not be a problem.");
+        String pillarId1 = "integrityCheckTest-3";
+        String fileId1 = "TEST-FILE-ID"; // + new Date().getTime();
+        String fileId2 = "ANOTHER-TEST-FILE-ID"; //-" + new Date().getTime();
+        FileIDs fileIDs = new FileIDs();
+        fileIDs.setAllFileIDs("true");
+
+        addStep("Setup database cache and integrity checker", "Should not be a problem");
+        settings.getReferenceSettings().getIntegrityServiceSettings().setIntegrityDatabaseUrl(DATABASE_URL);
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(pillarId1);
+        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0);
+        IntegrityDatabase cache = new IntegrityDatabase(settings);
+        
+        List<String> missingChecksums;
+        
+        addStep("Validate initial state", "Should not be any files or checksums missing");
+        Assert.assertEquals(cache.findMissingFiles().size(), 0);
+
+        addStep("Insert file data for two files.", "Should give missing checksum for both files.");
+        FileIDsData fileIdsBoth = getFileIDsData(fileId1, fileId2);
+        cache.addFileIDs(fileIdsBoth, fileIDs, pillarId1);
+        Assert.assertEquals(cache.findMissingFiles().size(), 0);
+        Assert.assertEquals(cache.findMissingChecksums().size(), 2);
+
+        addStep("Add some checksum data for the files", "Should still give missing checksums.");
+        List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(fileId1, "checksum");
+        csData.addAll(getChecksumResults(fileId2, "muskcehc"));
+        cache.addChecksums(csData, getChecksumSpec(), pillarId1);
+        Assert.assertEquals(cache.findMissingFiles().size(), 0);
+        Assert.assertEquals(cache.findMissingChecksums().size(), 2);
+
+        addStep("change the checksum state to valid for one file", "Only one file should miss its checksum");
+        cache.setChecksumAgreement(fileId1, Arrays.asList(pillarId1));
+        Assert.assertEquals(cache.findMissingFiles().size(), 0);
+        missingChecksums = cache.findMissingChecksums();
+        Assert.assertEquals(missingChecksums.size(), 1);
+        Assert.assertEquals(missingChecksums.get(0), fileId2);
+        
+        addStep("Change the file state", "Should no longer be missing any checksums");
+        cache.setFileMissing(fileId2, Arrays.asList(pillarId1));
+        Assert.assertEquals(cache.findMissingFiles().size(), 1);
+        missingChecksums = cache.findMissingChecksums();
+        Assert.assertEquals(missingChecksums.size(), 0);
+        
+        addStep("Insert file data for two files.", "The second one should be missing its checksum again.");
+        cache.addFileIDs(fileIdsBoth, fileIDs, pillarId1);
+        Assert.assertEquals(cache.findMissingFiles().size(), 0);
+        missingChecksums = cache.findMissingChecksums();
+        Assert.assertEquals(missingChecksums.size(), 1);
+        Assert.assertEquals(missingChecksums.get(0), fileId2);
+        
+        addStep("change the checksum state to error for the other file", "Should not be missing its checksum any more.");
+        cache.setChecksumError(fileId2, Arrays.asList(pillarId1));
+        Assert.assertEquals(cache.findMissingFiles().size(), 0);
+        missingChecksums = cache.findMissingChecksums();
+        Assert.assertEquals(missingChecksums.size(), 0);
+    }
+    
     private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileId, String checksum) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         
         ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
         csData.setChecksumValue(checksum.getBytes());
-        csData.setCalculationTimestamp(CalendarUtils.getEpoch());
+        csData.setCalculationTimestamp(CalendarUtils.getNow());
         csData.setFileID(fileId);
         res.add(csData);
         return res;

@@ -1,4 +1,4 @@
-package org.bitrepository.integrityservice.scheduler.workflow.step;
+package org.bitrepository.integrityservice.workflow.step;
 
 /**
  * The interface for a step for a workflow.

@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityservice.scheduler;
+package org.bitrepository.service.scheduler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,14 +31,13 @@ import java.util.Map;
 import java.util.Timer;
 
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.integrityservice.scheduler.workflow.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Scheduler that uses Timer to trigger events.
  */
-public class TimerbasedScheduler implements IntegrityScheduler {
+public class TimerbasedScheduler implements ServiceScheduler {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -47,7 +46,7 @@ public class TimerbasedScheduler implements IntegrityScheduler {
     /** The period between testing whether triggers have triggered. */
     private final long schedulerInterval;
     /** The map between the running timertasks and their names.*/
-    private Map<String, IntervalBasedWorkflowTask> intervalTasks = new HashMap<String, IntervalBasedWorkflowTask>();
+    private Map<String, WorkflowTask> intervalTasks = new HashMap<String, WorkflowTask>();
     
     /** The name of the timer.*/
     private static final String TIMER_NAME = "Integrity Information Scheduler";
@@ -73,14 +72,14 @@ public class TimerbasedScheduler implements IntegrityScheduler {
         } else {
             log.debug("Created a workflow named '" + name + "': " + workflow);
         }
-        IntervalBasedWorkflowTask task = new IntervalBasedWorkflowTask(interval, name, workflow);
+        WorkflowTask task = new WorkflowTask(interval, name, workflow);
         timer.scheduleAtFixedRate(task, NO_DELAY, schedulerInterval);
         intervalTasks.put(name, task);
     }
     
     @Override
     public boolean removeWorkflow(String name) {
-        IntervalBasedWorkflowTask task = intervalTasks.remove(name);
+        WorkflowTask task = intervalTasks.remove(name);
         if(task == null) {
             return false;
         }
@@ -90,7 +89,7 @@ public class TimerbasedScheduler implements IntegrityScheduler {
     }
     
     @Override
-    public List<WorkflowTask> getWorkflows() {
+    public List<WorkflowTask> getScheduledWorkflows() {
         List<WorkflowTask> workflows = new ArrayList<WorkflowTask>();
         workflows.addAll(intervalTasks.values());
         

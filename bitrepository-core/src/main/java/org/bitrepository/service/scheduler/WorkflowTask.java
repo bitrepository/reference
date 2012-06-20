@@ -1,13 +1,16 @@
-package org.bitrepository.integrityservice.scheduler;
+package org.bitrepository.service.scheduler;
 
 import java.util.Date;
 import java.util.TimerTask;
 
-import org.bitrepository.integrityservice.scheduler.workflow.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class IntervalBasedWorkflowTask extends TimerTask implements WorkflowTask {
+/**
+ * A timer task encapsulating a workflow.
+ * Used for scheduling workflows to run continuously at a given interval.
+ */
+public class WorkflowTask extends TimerTask {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The date for the next run of the workflow.*/
@@ -24,36 +27,47 @@ public class IntervalBasedWorkflowTask extends TimerTask implements WorkflowTask
      * @param interval The interval between triggering events in milliseconds.
      * @param name The name of this workflow.
      */
-    public IntervalBasedWorkflowTask(long interval, String name, Workflow workflow) {
+    public WorkflowTask(long interval, String name, Workflow workflow) {
         this.interval = interval;
         this.name = name;
         this.workflow = workflow;
         nextRun = new Date();
     }
     
-    @Override
+    /**
+     * @return The date for the next time the encapsulated workflow should run.
+     */
     public Date getNextRun() {
         return new Date(nextRun.getTime());
     }
     
-    @Override
+    /**
+     * @return The interval between the runs in millis.
+     */
     public long getTimeBetweenRuns() {
         return interval;
     }
     
-    @Override
+    /**
+     * Trigger the workflow.
+     * Resets the date for the next run of the workflow.
+     */
     public void trigger() {
         log.info("Starting the workflow: " + getName());
         nextRun = new Date(System.currentTimeMillis() + interval);
         workflow.start();
     }
     
-    @Override
+    /**
+     * @return The name of the workflow.
+     */
     public String getName() {
         return name;
     }
     
-    @Override
+    /**
+     * @return The current state of the workflow.
+     */
     public String currentState() {
         return workflow.currentState();
     }
