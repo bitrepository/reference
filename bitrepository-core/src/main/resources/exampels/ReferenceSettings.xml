@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceSettings xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd">
+  <GeneralSettings>
+    <!--  
+      Defines the class that the different clients uses to construct their private destination.
+      The setting is optional, and if left out defaults to DefaultReceiverDestinationIDFactory. 
+      Currently the following classes are available:
+      - DefaultReceiverDestinationIDFactory (The default)
+      - UserSpecificReceiverDestinationIDFactory
+    -->   
+    <ReceiverDestinationIDFactoryClass>org.bitrepository.protocol.messagebus.destination.DefaultReceiverDestinationIDFactory</ReceiverDestinationIDFactoryClass>
+  </GeneralSettings>
+
+  <ClientSettings>
+    <!-- 
+      The interval at which conversations are cleaned up. 
+      Unit in milliseconds.       
+    -->
+    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
+
+    <!-- 
+      The maximum amount of time a whole conversation may take. 
+      This has some relation to Timeouts in CollectionSettings under ClientSettings. As such
+      when writing the configuration, the values there should be taken into consideration. 
+    -->
+    <ConversationTimeout>3600000</ConversationTimeout>
+  </ClientSettings>
+
+  <!-- 
+    Settings for the Reference and Checksum pillars. 
+  -->
+  <PillarSettings> 
+    <!-- 
+      ID of the pillar 
+    -->
+    <PillarID>test-pillar</PillarID>
+
+    <!-- 
+      Path to the base directory for file storage 
+    -->
+    <FileDir>test-archive</FileDir>
+
+    <!--
+      The minimum amounts of bytes available on storage prior to accepting a PutFileRequest. 
+    -->    
+    <MinimumSizeLeft>1000000000</MinimumSizeLeft>
+
+    <!-- 
+      Time estimate for how long it will take the pillar to start the delivery of a file
+      when requested. 
+      Time in milliseconds. 
+    -->
+    <TimeToStartDeliver>1000</TimeToStartDeliver>
+    
+    <!-- ChecksumPillarChecksumSpecification* is scheduled to be removed. Using CollectionSettings
+         standard checksum instead. -->
+    <ChecksumPillarChecksumSpecificationType>MD5</ChecksumPillarChecksumSpecificationType>
+    <ChecksumPillarChecksumSpecificationSalt>ABAB</ChecksumPillarChecksumSpecificationSalt>
+
+    <!-- 
+      JDBC database url for the AuditContributor database for the pillar
+    -->
+    <AuditContributerDatabaseUrl>jdbc:derby:auditcontributordb</AuditContributerDatabaseUrl>
+
+    <!-- 
+      Class to handle the specific type of DBMS. 
+      Default class path provides: 
+        - org.bitrepository.common.database.DerbyDBEmbeddedSpecifics - Used for derby databases
+        - org.bitrepository.common.database.PostgreSQLConnector - Used for postgresql databases
+    -->
+    <AuditContributerDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditContributerDatabaseSpecifics>
+
+    <!-- 
+      Setting of how severe alarms needs to be before they are sent. 
+      Available levels:
+        - EMERGENCY 
+        - ERROR 
+        - WARNING
+    -->
+    <AlarmLevel>ERROR</AlarmLevel>
+  </PillarSettings>
+
+  <!-- 
+    Settings for the DeleteFileClient
+    Currently this section is empty
+  -->
+  <DeleteFileSettings></DeleteFileSettings>
+
+  <!-- 
+    Settings for the GetAuditTrailsClient
+    Currently this section is empty
+  -->
+  <GetAuditTrailSettings></GetAuditTrailSettings>
+
+  <!-- 
+    Settings for the GetChecksumsFileClient
+    Currently this section is empty
+  -->
+  <GetChecksumsSettings></GetChecksumsSettings>
+
+  <!-- 
+    Settings for the GetFileClient
+    Currently this section is empty
+  -->
+  <GetFileSettings></GetFileSettings>
+
+  <!-- 
+    Settings for the GetFileIDsClient
+    Currently this section is empty
+  -->
+  <GetFileIDsSettings></GetFileIDsSettings>
+
+  <!-- 
+    Settings for the GetStatusClient
+    Currently this section is empty
+  -->
+  <GetStatusSettings></GetStatusSettings>
+
+  <!-- 
+    Settings for the PutFileClient
+    Currently this section is empty
+  -->
+  <PutFileSettings></PutFileSettings>
+
+  <!-- 
+    Settings for the ReplaceFileClient
+    Currently this section is empty
+  -->
+  <ReplaceFileSettings></ReplaceFileSettings>
+
+  <!-- Settings for the AlarmService -->
+  <AlarmServiceSettings>
+    <!-- ID of the service -->
+    <ID>alarm-service</ID>
+
+    <!--  
+      Configuration for sending mails upon reception an alarm. 
+      The element is optional, if missing alarm notifications won't be sent by mail. 
+    -->
+    <MailingConfiguration> 
+      <!-- Recepient of the alarm notification mails -->
+      <MailReceiver>foo@example.com</MailReceiver> 
+      <!-- The sender of the alarm notification mails -->
+      <MailSender>foo@example.com</MailSender> 
+      <!-- Address for the (smtp) mailserver for sending mails -->
+      <MailServer>mail.server.com</MailServer> 
+    </MailingConfiguration>
+
+    <!-- JDBC database url for the AlarmService for persisting alarms -->
+    <AlarmServiceDatabaseUrl>jdbc:derby:/home/bitmag/var/alarmservicedb/</AlarmServiceDatabaseUrl>
+    
+    <!-- 
+      Class to handle the specific type of DBMS. 
+      Default class path provides: 
+        - org.bitrepository.common.database.DerbyDBEmbeddedSpecifics - Used for derby databases
+        - org.bitrepository.common.database.PostgreSQLConnector - Used for postgresql databases
+    -->
+    <AlarmDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AlarmDatabaseSpecifics>
+  </AlarmServiceSettings>
+
+  <!-- Settings for the AuditTrailService -->
+  <AuditTrailServiceSettings>
+    <!-- ID of the service -->
+    <ID>audittrail-service</ID>
+    <!-- Setting to determine if a missing/non-responding contributor is an alarm situation -->
+    <SendAlarmOnMissingContributer>false</SendAlarmOnMissingContributer>
+    <!-- JDBC database url for the AuditTrailService for persisting AuditTrails -->
+    <AuditTrailServiceDatabaseUrl>jdbc:derby:/home/bitmag/var/auditservicedb</AuditTrailServiceDatabaseUrl>
+
+    <!-- 
+      Class to handle the specific type of DBMS. 
+      Default class path provides: 
+        - org.bitrepository.common.database.DerbyDBEmbeddedSpecifics - Used for derby databases
+        - org.bitrepository.common.database.PostgreSQLConnector - Used for postgresql databases
+    -->
+    <AuditServiceDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditServiceDatabaseSpecifics>
+
+    <!-- 
+      Defines the interval at which AuditTrails should be collected.
+      Timeunit in milliseconds. 
+    --> 
+    <CollectAuditInterval>3600000</CollectAuditInterval> 
+
+    <!-- 
+      Interval at which to check if its time to collect audit trails
+      Timeunit in milliseconds
+    -->
+    <TimerTaskCheckInterval>2000</TimerTaskCheckInterval>
+    
+    <!-- 
+      The interval at which collected AuditTrails are backedup / preserved. 
+      Timeunit in milliseconds
+    -->
+    <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
+
+    <!-- 
+      Directory for temporary storage of AuditTrails for preservation.
+    -->
+    <AuditTrailPreservationTemporaryDirectory>/tmp/</AuditTrailPreservationTemporaryDirectory>
+  </AuditTrailServiceSettings>
+
+  <!-- Settings for the IntegrityService -->
+  <IntegrityServiceSettings>
+    <!-- ID of the service -->
+    <ID>integrity-service</ID>
+
+    <!-- 
+      Interval between checksums consistency check. 
+      Timeunit in milliseconds
+     -->
+    <SchedulerInterval>2000</SchedulerInterval>
+
+    <!-- JDBC database url for the cache of integrity information -->
+    <IntegrityDatabaseUrl>jdbc:derby:/home/bitmag/var/integrity.db</IntegrityDatabaseUrl>
+
+    <!-- 
+      Class to handle the specific type of DBMS. 
+      Default class path provides: 
+        - org.bitrepository.common.database.DerbyDBEmbeddedSpecifics - Used for derby databases
+        - org.bitrepository.common.database.PostgreSQLConnector - Used for postgresql databases
+    -->
+    <IntegrityDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</IntegrityDatabaseSpecifics>
+
+    <!-- 
+      Interval between fileIDs consistency check.
+      Timeunit in milliseconds.    
+    -->
+    <TimeBeforeMissingFileCheck>3600000</TimeBeforeMissingFileCheck> 
+    <!-- JDBC database url for Integrity service's audit trail information -->
+    <AuditContributerDatabaseUrl>jdbc:derby:/home/bitmag/var/auditcontributerdb</AuditContributerDatabaseUrl>
+
+    <!-- 
+      Class to handle the specific type of DBMS. 
+      Default class path provides: 
+        - org.bitrepository.common.database.DerbyDBEmbeddedSpecifics - Used for derby databases
+        - org.bitrepository.common.database.PostgreSQLConnector - Used for postgresql databases
+    -->
+    <AuditContributerDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditContributerDatabaseSpecifics>
+  </IntegrityServiceSettings>
+
+  <!-- Settings for the Monitoring / Status service -->
+  <MonitoringServiceSettings>
+    <!-- ID for the service -->
+    <ID>monitoring-service</ID>
+    <!-- 
+      Interval at which status is requested. 
+      Timeunit in milliseconds.
+    -->
+    <CollectionInterval>60000</CollectionInterval> <!-- 1 minute -->
+    <!-- 
+      The maximum number of times a component may fail to respond before 
+      it being marked as unresponsive 
+    -->    
+    <MaxRetries>3</MaxRetries>
+  </MonitoringServiceSettings>
+</ReferenceSettings>
