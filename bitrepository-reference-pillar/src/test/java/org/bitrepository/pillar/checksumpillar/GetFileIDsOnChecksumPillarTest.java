@@ -59,8 +59,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
         String auditTrail = "GET-FILE-IDS-TEST";
         String CHECKSUM = "1234cccccccc4321";
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
-                ChecksumType.MD5.toString());
+        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
         
@@ -132,8 +131,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
         String auditTrail = "GET-FILE-IDS-TEST";
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
-                ChecksumType.MD5.toString());
+        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
         
@@ -169,8 +167,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
         String FILE_IDS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
-                ChecksumType.MD5.toString());
+        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
         

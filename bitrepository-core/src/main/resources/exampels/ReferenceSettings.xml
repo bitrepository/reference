@@ -51,11 +51,6 @@
       Time in milliseconds. 
     -->
     <TimeToStartDeliver>1000</TimeToStartDeliver>
-    
-    <!-- ChecksumPillarChecksumSpecification* is scheduled to be removed. Using CollectionSettings
-         standard checksum instead. -->
-    <ChecksumPillarChecksumSpecificationType>MD5</ChecksumPillarChecksumSpecificationType>
-    <ChecksumPillarChecksumSpecificationSalt>ABAB</ChecksumPillarChecksumSpecificationSalt>
 
     <!-- 
       JDBC database url for the AuditContributor database for the pillar
@@ -147,7 +142,7 @@
     </MailingConfiguration>
 
     <!-- JDBC database url for the AlarmService for persisting alarms -->
-    <AlarmServiceDatabaseUrl>jdbc:derby:/home/bitmag/var/alarmservicedb/</AlarmServiceDatabaseUrl>
+    <AlarmServiceDatabaseUrl>jdbc:derby:alarmservicedb/</AlarmServiceDatabaseUrl>
     
     <!-- 
       Class to handle the specific type of DBMS. 
@@ -165,7 +160,7 @@
     <!-- Setting to determine if a missing/non-responding contributor is an alarm situation -->
     <SendAlarmOnMissingContributer>false</SendAlarmOnMissingContributer>
     <!-- JDBC database url for the AuditTrailService for persisting AuditTrails -->
-    <AuditTrailServiceDatabaseUrl>jdbc:derby:/home/bitmag/var/auditservicedb</AuditTrailServiceDatabaseUrl>
+    <AuditTrailServiceDatabaseUrl>jdbc:derby:auditservicedb</AuditTrailServiceDatabaseUrl>
 
     <!-- 
       Class to handle the specific type of DBMS. 
@@ -211,7 +206,7 @@
     <SchedulerInterval>2000</SchedulerInterval>
 
     <!-- JDBC database url for the cache of integrity information -->
-    <IntegrityDatabaseUrl>jdbc:derby:/home/bitmag/var/integrity.db</IntegrityDatabaseUrl>
+    <IntegrityDatabaseUrl>jdbc:derby:integritydb</IntegrityDatabaseUrl>
 
     <!-- 
       Class to handle the specific type of DBMS. 
@@ -227,7 +222,7 @@
     -->
     <TimeBeforeMissingFileCheck>3600000</TimeBeforeMissingFileCheck> 
     <!-- JDBC database url for Integrity service's audit trail information -->
-    <AuditContributerDatabaseUrl>jdbc:derby:/home/bitmag/var/auditcontributerdb</AuditContributerDatabaseUrl>
+    <AuditContributerDatabaseUrl>jdbc:derby:auditcontributerdb</AuditContributerDatabaseUrl>
 
     <!-- 
       Class to handle the specific type of DBMS. 
