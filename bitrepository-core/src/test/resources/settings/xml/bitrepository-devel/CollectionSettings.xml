@@ -27,7 +27,7 @@
 <CollectionSettings xmlns="http://bitrepository.org/settings/CollectionSettings.xsd">
   <CollectionID>TEST</CollectionID>
   <ProtocolSettings>
-    <DefaultChecksumType>md5</DefaultChecksumType>
+    <DefaultChecksumType>MD5</DefaultChecksumType>
     <AllowedFileIDPattern>[a-zA-z0-9\-_.]{5,250}</AllowedFileIDPattern>
     <RequireMessageAuthentication>false</RequireMessageAuthentication>
     <RequireOperationAuthorization>false</RequireOperationAuthorization>

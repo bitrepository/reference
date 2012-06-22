@@ -134,20 +134,6 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="ChecksumPillarChecksumSpecificationType" type="xs:string" maxOccurs="1">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The checksum specification for the checksum pillar.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="ChecksumPillarChecksumSpecificationSalt" type="xs:string" maxOccurs="1" minOccurs="0">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The checksum specification for the checksum pillar.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
         <xs:element name="AuditContributerDatabaseUrl" type="xs:string">
           <xs:annotation>
             <xs:documentation xml:lang="en">

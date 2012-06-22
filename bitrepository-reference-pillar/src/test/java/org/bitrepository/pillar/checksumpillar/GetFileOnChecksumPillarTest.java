@@ -56,8 +56,7 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String auditTrail = "GET-FILE-TEST";
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
-                ChecksumType.MD5.toString());
+        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
         
@@ -93,8 +92,7 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String auditTrail = "GET-FILE-TEST";
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
-                ChecksumType.MD5.toString());
+        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
         
