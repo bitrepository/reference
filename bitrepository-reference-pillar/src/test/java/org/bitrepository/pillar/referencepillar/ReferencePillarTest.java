@@ -29,7 +29,6 @@ import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.MockAlarmDispatcher;
 import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.service.contributor.ContributorContext;
@@ -39,8 +38,6 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
 public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
-    protected GetFileMessageFactory msgFactory;
-
     protected ReferenceArchive archive;
     protected ReferencePillarMediator mediator;
     protected MockAlarmDispatcher alarmDispatcher;
@@ -49,7 +46,6 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
-        msgFactory = new GetFileMessageFactory(componentSettings);
         File fileDir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
         componentSettings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         if(fileDir.exists()) {

@@ -64,11 +64,6 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
         putCsData.setChecksumValue(Base16Utils.encodeBase16(PUT_CHECKSUM));
     }
     
-    @BeforeMethod(alwaysRun=true)
-    public void initialiseGetChecksumsTests() throws Exception {
-        msgFactory = new PutFileMessageFactory(clientSettings, getPillarID(), pillarDestinationId);
-    }
-
     @Test( groups = {"regressiontest", "pillartest"})
     public void referencePillarPutFileTestSuccessCase() throws Exception {
         addDescription("Tests the put functionality of the checksum pillar for the successful scenario.");

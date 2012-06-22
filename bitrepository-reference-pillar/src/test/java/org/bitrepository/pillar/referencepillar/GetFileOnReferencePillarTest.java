@@ -24,6 +24,12 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
+import java.io.File;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.Date;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -33,23 +39,25 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.io.File;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.Date;
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
 public class GetFileOnReferencePillarTest extends ReferencePillarTest {
-    
+    protected GetFileMessageFactory msgFactory;
+
+    @BeforeMethod (alwaysRun=true)
+    public void initialiseGetFileTests() throws Exception {
+        msgFactory = new GetFileMessageFactory(clientSettings);
+    }
+
     @AfterMethod (alwaysRun=true) 
     public void closeArchive() {
         File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
