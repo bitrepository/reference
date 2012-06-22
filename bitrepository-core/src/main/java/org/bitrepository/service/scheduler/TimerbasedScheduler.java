@@ -22,14 +22,13 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityservice.workflow;
+package org.bitrepository.service.scheduler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import org.bitrepository.common.settings.Settings;
 import org.slf4j.Logger;
@@ -38,16 +37,16 @@ import org.slf4j.LoggerFactory;
 /**
  * Scheduler that uses Timer to trigger events.
  */
-public class TimerWorkflowScheduler implements IntegrityWorkflowScheduler {
+public class TimerbasedScheduler implements ServiceScheduler {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /** The timer that schedules events. */
     private final Timer timer;
     /** The period between testing whether triggers have triggered. */
-    private final long interval;
+    private final long schedulerInterval;
     /** The map between the running timertasks and their names.*/
-    private Map<String, WorkflowTimerTask> workflowTimerTasks = new HashMap<String, WorkflowTimerTask>();
+    private Map<String, WorkflowTask> intervalTasks = new HashMap<String, WorkflowTask>();
     
     /** The name of the timer.*/
     private static final String TIMER_NAME = "Integrity Information Scheduler";
@@ -60,28 +59,27 @@ public class TimerWorkflowScheduler implements IntegrityWorkflowScheduler {
      *
      * @param configuration The configuration for the collection. Currently contains polling interval.
      */
-    public TimerWorkflowScheduler(Settings settings) {
-        this.interval = settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval();
+    public TimerbasedScheduler(Settings settings) {
+        this.schedulerInterval = settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval();
         timer = new Timer(TIMER_NAME, TIMER_IS_DEAMON);
     }
 
     @Override
-    public void putWorkflow(Workflow workflow) {
-        String name = workflow.getName();
+    public void putWorkflow(Workflow workflow, String name, Long interval) {
+        
         if(removeWorkflow(name)) {
             log.info("Recreated workflow named '" + name + "': " + workflow);
         } else {
             log.debug("Created a workflow named '" + name + "': " + workflow);
         }
-        WorkflowTimerTask task = new WorkflowTimerTask(workflow);
-        timer.scheduleAtFixedRate(task, NO_DELAY, interval);
-        
-        workflowTimerTasks.put(name, task);
+        WorkflowTask task = new WorkflowTask(interval, name, workflow);
+        timer.scheduleAtFixedRate(task, NO_DELAY, schedulerInterval);
+        intervalTasks.put(name, task);
     }
     
     @Override
     public boolean removeWorkflow(String name) {
-        TimerTask task = workflowTimerTasks.remove(name);
+        WorkflowTask task = intervalTasks.remove(name);
         if(task == null) {
             return false;
         }
@@ -91,43 +89,10 @@ public class TimerWorkflowScheduler implements IntegrityWorkflowScheduler {
     }
     
     @Override
-    public List<Workflow> getWorkflows() {
-        List<Workflow> workflows = new ArrayList<Workflow>();
-        for(WorkflowTimerTask task : workflowTimerTasks.values()) {
-            workflows.add(task.getWorkflow());
-        }
+    public List<WorkflowTask> getScheduledWorkflows() {
+        List<WorkflowTask> workflows = new ArrayList<WorkflowTask>();
+        workflows.addAll(intervalTasks.values());
         
         return workflows;
-    }
-    
-    /**
-     * TimerTask for the triggers.
-     */
-    private static class WorkflowTimerTask extends TimerTask {
-        /** The trigger to test and run. */
-        private Workflow workflow;
-
-        /** Initialise a task that tests a trigger and runs it if it has triggered.
-         *
-         * @param workflow The trigger to test and run.
-         */
-        public WorkflowTimerTask(Workflow workflow) {
-            this.workflow = workflow;
-        }
-
-        @Override
-        public void run() {
-            if(workflow.getNextRun().getTime() <= System.currentTimeMillis()) {
-                workflow.trigger();
-            }
-        }
-        
-        /**
-         * Extract the workflow for this timer task.
-         * @return The workflow.
-         */
-        public Workflow getWorkflow() {
-            return workflow;
-        }
     }
 }

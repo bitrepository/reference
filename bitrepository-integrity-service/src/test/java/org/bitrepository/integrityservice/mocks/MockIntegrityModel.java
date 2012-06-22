@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.mocks;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -153,5 +154,25 @@ public class MockIntegrityModel implements IntegrityModel {
     }
     public int getCallsForDeleteFileIdEntry() {
         return callsForDeleteFileIdEntry;
+    }
+    
+    private int callsForFindMissingChecksums = 0;
+    @Override
+    public List<String> findMissingChecksums() {
+        callsForFindMissingChecksums++;
+        return new ArrayList<String>();
+    }
+    public int getCallsForFindMissingChecksums() {
+        return callsForFindMissingChecksums;
+    }
+
+    private int callsForFindMissingFiles = 0;
+    @Override
+    public List<String> findMissingFiles() {
+        callsForFindMissingFiles++;
+        return new ArrayList<String>();
+    }
+    public int getCallsForFindMissingFiles() {
+        return callsForFindMissingFiles;
     }
 }

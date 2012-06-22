@@ -22,9 +22,8 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityservice.workflow;
+package org.bitrepository.service.scheduler;
 
-import java.util.Date;
 
 /**
  * Interface for defining a workflow.
@@ -40,25 +39,6 @@ import java.util.Date;
  * {@link org.bitrepository.integrityservice.checking.IntegrityChecker}
  */
 public interface Workflow {
-    /**
-     * @return The name for the given workflow.
-     */
-    String getName();
-    
-    /**
-     * @return The date for the next run of this workflow.
-     */
-    Date getNextRun();
-    
-    /**
-     * The time between the automatically triggering of the workflow.
-     * @return The number of milliseconds from the workflow is triggered until it automatically is triggered again.
-     */
-    long getTimeBetweenRuns();
-    
-    /**
-     * Trigger a workflow event.
-     * This should reinitiate the 'next run', and perform the given workflow.
-     */
-    void trigger();
+    void start();
+    String currentState();
 }

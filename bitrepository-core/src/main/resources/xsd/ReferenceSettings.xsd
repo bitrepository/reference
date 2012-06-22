@@ -396,6 +396,13 @@
               </xs:documentation>
             </xs:annotation>
           </xs:element>
+          <xs:element name="AuditTrailPreservationTemporaryDirectory" type="xs:string">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                Path to the directory where the temporary audit trail preservation files are stored. 
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
         </xs:sequence>
       </xs:complexType>
     </xs:element>

@@ -35,11 +35,11 @@ import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityservice.collector.DelegatingIntegrityInformationCollector;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityservice.mocks.MockAuditManager;
-import org.bitrepository.integrityservice.workflow.TimerWorkflowScheduler;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.service.scheduler.TimerbasedScheduler;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -117,8 +117,8 @@ public class ComponentFactoryTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest", "integritytest"})
     public void verifySchedulerFromFactory() throws Exception {
         Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settings)
-                instanceof TimerWorkflowScheduler, 
-                "The default Scheduler should be the '" + TimerWorkflowScheduler.class.getName() + "'");
+                instanceof TimerbasedScheduler, 
+                "The default Scheduler should be the '" + TimerbasedScheduler.class.getName() + "'");
     }
 
 }

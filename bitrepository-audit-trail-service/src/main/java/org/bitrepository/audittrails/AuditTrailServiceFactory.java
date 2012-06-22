@@ -28,7 +28,7 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.audittrails.preserver.AuditTrailPreserver;
-import org.bitrepository.audittrails.preserver.LocalAuditTrailPreservation;
+import org.bitrepository.audittrails.preserver.LocalAuditTrailPreserver;
 import org.bitrepository.audittrails.store.AuditTrailServiceDAO;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.common.settings.Settings;
@@ -125,7 +125,7 @@ public final class AuditTrailServiceFactory {
                 AuditTrailClient client = AccessComponentFactory.getInstance().createAuditTrailClient(settings, 
                         securityManager, settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
                 AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
-                AuditTrailPreserver preserver = new LocalAuditTrailPreservation(settings, store, putClient);
+                AuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, putClient);
                 
                 auditTrailService = new AuditTrailService(store, collector, mediator, preserver);
             } catch (IOException e) {

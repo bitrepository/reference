@@ -26,8 +26,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -35,6 +33,7 @@ import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
@@ -47,11 +46,9 @@ import org.slf4j.LoggerFactory;
  * 
  * 
  */
-public class LocalAuditTrailPreservation implements AuditTrailPreserver {
+public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    /** The settings for the audit trail.*/
-    private final Settings settings;
     /** The audit trails store, where the audit trails can be extracted.*/
     private final AuditTrailStore store;
     /** The put file client for sending the resulting files. */
@@ -66,6 +63,8 @@ public class LocalAuditTrailPreservation implements AuditTrailPreserver {
     private Timer timer;
     /** The timertask for preserving the audit trails.*/
     private AuditPreservationTimerTask auditTask = null;
+    /** The Audit trail packer for packing and compressing the audit trails.*/
+    private final AuditPacker auditPacker;
     
     /**
      * Constructor.
@@ -73,18 +72,18 @@ public class LocalAuditTrailPreservation implements AuditTrailPreserver {
      * @param store The storage of the audit trails, which should be preserved.
      * @param client The PutFileClient for putting the audit trail packages to the collection.
      */
-    public LocalAuditTrailPreservation(Settings settings, AuditTrailStore store, PutFileClient client) {
+    public LocalAuditTrailPreserver(Settings settings, AuditTrailStore store, PutFileClient client) {
         ArgumentValidator.checkNotNull(settings, "Settings settings");
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
         ArgumentValidator.checkNotNull(client, "PutFileClient client");
         
-        this.settings = settings;
         this.store = store;
         this.client = client;
         this.checkInterval = settings.getReferenceSettings().getAuditTrailServiceSettings()
                 .getTimerTaskCheckInterval();
         this.timeLimit = settings.getReferenceSettings().getAuditTrailServiceSettings()
                 .getAuditTrailPreservationInterval();
+        this.auditPacker = new AuditPacker(store, settings);
     }
     
     @Override
@@ -121,29 +120,24 @@ public class LocalAuditTrailPreservation implements AuditTrailPreserver {
      * Performs the audit trails preservation.
      * Uses the AuditPacker to pack the audit trails in a file, then uploads the file to the default file-server, and
      * finally use the PutFileClient to ingest the package into the collection.
+     * When the 'put' has completed the Store is updated with the newest preservation sequence numbers for the 
+     * contributors.
      */
-    private void performAuditTrailPreservation() {
-        Map<String, Long> reachedSeqNumber = new HashMap<String, Long>();
-        
-        AuditPacker packer = new AuditPacker(store);
+    private synchronized void performAuditTrailPreservation() {
         try {
-            for(String contributor : settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs()) {
-                Long seqNumber = packer.packContributor(contributor);
-                reachedSeqNumber.put(contributor, seqNumber);
-                log.debug("Packed contributor '" + contributor + "' untill sequence number '" + seqNumber + "'.");
-            }
-            
-            File auditPackage = packer.compressFile();
+            File auditPackage = auditPacker.createNewPackage();
             URL url = uploadFile(auditPackage);
             log.info("Uploaded the file '" + auditPackage + "' to '" + url.toExternalForm() + "'");
             
-            EventHandler eventHandler = new AuditPreservationEventHandler(reachedSeqNumber, store);
+            EventHandler eventHandler = new AuditPreservationEventHandler(auditPacker.getSequenceNumbersReached(), 
+                    store);
             client.putFile(url, auditPackage.getName(), auditPackage.length(), null, null, eventHandler, 
                     "Preservation of audit trails from the AuditTrail service.");
-        } catch (Exception e) {
+
+            log.debug("Cleanup of the uploaded audit trail package.");
+            FileUtils.delete(auditPackage);
+        } catch (IOException e) {
             throw new CoordinationLayerException("Cannot perform the preservation of audit trails.", e);
-        } finally {
-            packer.cleanUp();
         }
     }
     

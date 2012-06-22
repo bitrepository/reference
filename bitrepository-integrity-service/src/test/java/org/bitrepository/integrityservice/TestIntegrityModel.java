@@ -276,4 +276,16 @@ public class TestIntegrityModel implements IntegrityModel {
         // TODO Auto-generated method stub
         
     }
+
+    @Override
+    public List<String> findMissingChecksums() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<String> findMissingFiles() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

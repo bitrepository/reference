@@ -28,59 +28,17 @@ import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
-import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.pillar.MockAlarmDispatcher;
-import org.bitrepository.pillar.MockAuditManager;
-import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
-import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
-import org.bitrepository.service.contributor.ContributorContext;
-import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.io.File;
 
 public class GetStatusOnReferencePillarTest extends ReferencePillarTest {
     GetStatusMessageFactory msgFactory;
     
-    ReferenceArchive archive;
-    ReferencePillarMediator mediator;
-    MockAlarmDispatcher alarmDispatcher;
-    MockAuditManager audits;
-    
     @BeforeMethod (alwaysRun=true)
     public void initialiseDeleteFileTests() throws Exception {
         msgFactory = new GetStatusMessageFactory(componentSettings);
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
-        if(dir.exists()) {
-            FileUtils.delete(dir);
-        }
-        
-        addStep("Initialize the pillar.", "Should not be a problem.");
-        componentSettings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
-        archive = new ReferenceArchive(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
-        audits = new MockAuditManager();
-        ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
-        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        PillarContext context = new PillarContext(componentSettings, messageBus, alarmDispatcher, audits);
-        mediator = new ReferencePillarMediator(context, archive);
-        mediator.start();
-    }
-    
-    @AfterMethod (alwaysRun=true) 
-    public void closeArchive() {
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
-        if(dir.exists()) {
-            FileUtils.delete(dir);
-        }
-        
-        if(mediator != null) {
-            mediator.close();
-        }
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

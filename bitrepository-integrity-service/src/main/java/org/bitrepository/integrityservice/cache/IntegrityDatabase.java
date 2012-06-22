@@ -166,4 +166,14 @@ public class IntegrityDatabase implements IntegrityModel {
         
         return missingFiles;
     }
+
+    @Override
+    public List<String> findMissingChecksums() {
+        return store.findMissingChecksums();
+    }
+
+    @Override
+    public List<String> findMissingFiles() {
+        return store.findMissingFiles();
+    }
 }

@@ -32,4 +32,6 @@ public interface IntegrityAlerter {
      * @param report The report to base the alarm upon.
      */
     void integrityFailed(IntegrityReport report);
+    
+//    void 
 }

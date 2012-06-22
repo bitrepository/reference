@@ -62,6 +62,7 @@
     <CollectAuditInterval>3600000</CollectAuditInterval>
     <TimerTaskCheckInterval>60000</TimerTaskCheckInterval>
     <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
+    <AuditTrailPreservationTemporaryDirectory>tmpDir</AuditTrailPreservationTemporaryDirectory>
   </AuditTrailServiceSettings>
   <IntegrityServiceSettings>
     <ID>integrity-service</ID>

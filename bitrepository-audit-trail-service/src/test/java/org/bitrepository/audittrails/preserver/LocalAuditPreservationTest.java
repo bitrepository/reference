@@ -68,11 +68,11 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().add(PILLARID);
         
         addStep("Create the preserver", "No calls to store or client");
-        LocalAuditTrailPreservation preserver = new LocalAuditTrailPreservation(settings, store, client);
+        LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client);
         
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
         Assert.assertEquals(store.getCallsToGetAuditTrails(), 0);
-        Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 0);
+        Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 1);
         Assert.assertEquals(store.getCallsToLargestSequenceNumber(), 0);
         Assert.assertEquals(store.getCallsToSetPreservationSequenceNumber(), 0);
         Assert.assertEquals(client.getCallsToPutFile(), 0);
@@ -87,7 +87,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         addStep("stop the scheduling", "Should have made calls to the store and the client regarding the preservation");
         preserver.close();
         Assert.assertEquals(store.getCallsToGetAuditTrails(), settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().size());
-        Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 1);
+        Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);
         Assert.assertEquals(client.getCallsToPutFile(), 1);
     }
     
@@ -104,14 +104,17 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         
         addStep("Create the preserver and populate the store", "");
         store.addAuditTrails(createEvents());
-        LocalAuditTrailPreservation preserver = new LocalAuditTrailPreservation(settings, store, client);
+        LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client);
+        Assert.assertEquals(store.getCallsToGetAuditTrails(), 0);
+        Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 1);
+        Assert.assertEquals(client.getCallsToPutFile(), 0);
         
         addStep("Call the preservation of audit trails now.", 
                 "Should make calls to the store, upload the file and call the client");
         preserver.preserveAuditTrailsNow();
         
         Assert.assertEquals(store.getCallsToGetAuditTrails(), settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().size());
-        Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 1);
+        Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);
         Assert.assertEquals(client.getCallsToPutFile(), 1);
         
         addStep("Check whether a file has been uploaded.", "");

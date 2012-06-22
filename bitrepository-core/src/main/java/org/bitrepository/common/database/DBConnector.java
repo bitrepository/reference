@@ -24,6 +24,7 @@ package org.bitrepository.common.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DBConnector {
     /** The pool of connections.*/
-    private Map<Thread, Connection> connectionPool = new WeakHashMap<Thread, Connection>();
+    private Map<Thread, Connection> connectionPool = Collections.synchronizedMap(new WeakHashMap<Thread, Connection>());
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
@@ -54,6 +55,9 @@ public class DBConnector {
      * @param url The URL for the database.
      */
     public DBConnector(DBSpecifics specifics, String url) {
+        ArgumentValidator.checkNotNull(specifics, "DBSpecifics specifics");
+        ArgumentValidator.checkNotNullOrEmpty(url, "String url");
+        
         this.dbUrl = url;
         this.specifics = specifics;
     }
@@ -63,8 +67,6 @@ public class DBConnector {
      * @return The connection to the database.
      */
     public Connection getConnection() {
-        ArgumentValidator.checkNotNullOrEmpty(dbUrl, "String dbUrl");
-        
         try {
             Connection connection = connectionPool.get(Thread.currentThread());
             boolean renew = ((connection == null) 

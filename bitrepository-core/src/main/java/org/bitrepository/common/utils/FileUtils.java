@@ -312,6 +312,7 @@ public final class FileUtils {
             while((bytesRead = inputStream.read(buffer)) > 0) {
                 outStream.write(buffer, 0, bytesRead);
             }
+            outStream.flush();
         } finally {
             if (inputStream != null) {
                 inputStream.close();
