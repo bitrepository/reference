@@ -37,7 +37,7 @@ import javax.ws.rs.Produces;
 
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
-import org.bitrepository.integrityservice.scheduler.WorkflowTask;
+import org.bitrepository.service.scheduler.WorkflowTask;
 
 @Path("/IntegrityService")
 public class RestIntegrityService {
@@ -81,7 +81,7 @@ public class RestIntegrityService {
     public String getWorkflowSetup() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        Collection<WorkflowTask> workflows = service.getWorkflows();
+        Collection<WorkflowTask> workflows = service.getScheduledWorkflows();
         Iterator<WorkflowTask> it = workflows.iterator();
         while(it.hasNext()) {
             WorkflowTask workflowTasl = it.next();
@@ -105,7 +105,7 @@ public class RestIntegrityService {
     public String getWorkflowList() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        Collection<WorkflowTask> workflows = service.getWorkflows();
+        Collection<WorkflowTask> workflows = service.getScheduledWorkflows();
         Iterator<WorkflowTask> it = workflows.iterator();
         while(it.hasNext()) {
             String name = it.next().getName();
@@ -126,7 +126,7 @@ public class RestIntegrityService {
     @Consumes("application/x-www-form-urlencoded")
     @Produces("text/html")
     public String startWorkflow(@FormParam ("workflowID") String workflowID) {
-        Collection<WorkflowTask> workflows = service.getWorkflows();
+        Collection<WorkflowTask> workflows = service.getScheduledWorkflows();
         for(WorkflowTask workflowTask : workflows) {
             if(workflowTask.getName().equals(workflowID)) {
                 workflowTask.trigger();

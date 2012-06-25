@@ -1,6 +1,7 @@
-package org.bitrepository.integrityservice.scheduler.workflow;
+package org.bitrepository.integrityservice.workflow;
 
-import org.bitrepository.integrityservice.scheduler.workflow.step.WorkflowStep;
+import org.bitrepository.integrityservice.workflow.step.WorkflowStep;
+import org.bitrepository.service.scheduler.Workflow;
 
 /**
  * Abstract interface for running a Workflow based on WorkflowSteps.

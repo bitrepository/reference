@@ -25,7 +25,6 @@
 package org.bitrepository.pillar;
 
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.pillar.checksumpillar.ChecksumPillar;
 import org.bitrepository.pillar.checksumpillar.cache.FilebasedChecksumStore;
@@ -41,7 +40,6 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.settings.referencesettings.ReferenceSettings;
 
 /**
  * Component factory for this module.
@@ -113,19 +111,14 @@ public final class PillarComponentFactory {
      * @return The settings.
      */
     private static Settings loadSettings(String pillarID, String pathToSettings) {
-        SettingsProvider settingsLoader;
         if(pathToSettings == null || pathToSettings.isEmpty()) {
-            settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(DEFAULT_PATH_TO_SETTINGS));
-        } else {
-            settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(pathToSettings));
-        }
-        
-        if(pillarID == null) {
-            ReferenceSettings referenceSettings = settingsLoader.loadReferenceSettings();
-            pillarID = referenceSettings.getPillarSettings().getPillarID();
+            pathToSettings = DEFAULT_PATH_TO_SETTINGS;
         }
 
-        return settingsLoader.getSettings(pillarID);
+        PillarSettingsProvider settingsLoader =
+                new PillarSettingsProvider(new XMLFileSettingsLoader(pathToSettings), pillarID);
+
+        return settingsLoader.getSettings();
     }
 
     /**

@@ -22,18 +22,16 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityservice.scheduler;
+package org.bitrepository.service.scheduler;
 
 import java.util.Collection;
-
-import org.bitrepository.integrityservice.scheduler.workflow.Workflow;
 
 /**
  * Interface for scheduling integrity information collection.
  *
  * Implementations should apply all triggers at reasonable intervals.
  */
-public interface IntegrityScheduler {
+public interface ServiceScheduler {
     /**
      * Adds a workflow for the scheduler to schedule. 
      * @param workflow The workflow to schedule.
@@ -51,7 +49,7 @@ public interface IntegrityScheduler {
     boolean removeWorkflow(String name);
     
     /**
-     * @return The list of all workflows.
+     * @return The list of all workflows currently scheduled by the scheduler.
      */
-    Collection<WorkflowTask> getWorkflows();
+    Collection<WorkflowTask> getScheduledWorkflows();
 }

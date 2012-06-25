@@ -33,6 +33,7 @@ import java.util.List;
 
 public class SettingsLoaderTest extends ExtendedTestCase{
     private static final String PATH_TO_SETTINGS = "settings/xml/bitrepository-devel";
+    private static final String PATH_TO_EXAMPLE_SETTINGS = "examples/settings";
 
     @Test(groups = { "regressiontest" })
     public void testDevelopmentCollectionSettingsLoading() throws Exception {
@@ -43,4 +44,14 @@ public class SettingsLoaderTest extends ExtendedTestCase{
         List<String> expectedPillarIDs = Arrays.asList(new String[] {"Pillar1", "Pillar2"});
         Assert.assertEquals(settings.getCollectionSettings().getClientSettings().getPillarIDs(), expectedPillarIDs);
     }
+    
+    @Test(groups = { "regressiontest" })
+    public void testExampleSettingsLoading() throws Exception {
+        SettingsProvider settingsLoader = 
+                new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_EXAMPLE_SETTINGS), getClass().getSimpleName());
+
+        settingsLoader.getSettings();
+    }
+
+    
 }

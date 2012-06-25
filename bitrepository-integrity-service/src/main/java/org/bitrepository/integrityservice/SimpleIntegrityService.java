@@ -36,34 +36,24 @@ import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityservice.collector.eventhandler.ChecksumsUpdaterAndValidatorEventHandler;
-import org.bitrepository.integrityservice.scheduler.IntegrityScheduler;
-import org.bitrepository.integrityservice.scheduler.WorkflowTask;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
+import org.bitrepository.service.scheduler.ServiceScheduler;
+import org.bitrepository.service.scheduler.WorkflowTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Simple integrity service.
  */
-public class SimpleIntegrityService implements IntegrityService, LifeCycledService {
+public class SimpleIntegrityService implements IntegrityService {
     /** The log.*/
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    /** The default name of the trigger.*/
-    private static final String DEFAULT_NAME_OF_OBSOLETE_CHECKSUM_WORKFLOW = "The Obsolete Checksum Collector Workflow";
-    /** The default name of the trigger.*/
-    private static final String DEFAULT_NAME_OF_ALL_FILEIDS_WORKFLOW = "The FileIDs Collector Workflow";
-    /** The default name of the trigger.*/
-    private static final String DEFAULT_NAME_OF_ALL_CHECKSUMS_WORKFLOW = "The Checksums Collector Workflow";
-    /** The default name of the trigger.*/
-    private static final String DEFAULT_NAME_OF_INTEGRITY_VALIDATOR_WORKFLOW = "The Integrity Validator Workflow.";
-
     /** The scheduler. */
-    private final IntegrityScheduler scheduler;
+    private final ServiceScheduler scheduler;
     /** The information collector. */
     private final IntegrityInformationCollector collector;
     /** The cache.*/
@@ -83,7 +73,7 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
      * Constructor.
      * @param settings The settings for the service.
      */
-    public SimpleIntegrityService(IntegrityModel model, IntegrityScheduler scheduler, IntegrityChecker checker, 
+    public SimpleIntegrityService(IntegrityModel model, ServiceScheduler scheduler, IntegrityChecker checker, 
             IntegrityAlerter alerter, IntegrityInformationCollector collector, AuditTrailManager auditManager, 
             Settings settings, MessageBus messageBus) {
         this.settings = settings;
@@ -188,8 +178,8 @@ public class SimpleIntegrityService implements IntegrityService, LifeCycledServi
     }
     
     @Override
-    public Collection<WorkflowTask> getWorkflows() {
-        return scheduler.getWorkflows();
+    public Collection<WorkflowTask> getScheduledWorkflows() {
+        return scheduler.getScheduledWorkflows();
     }
     
     @Override

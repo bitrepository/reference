@@ -61,8 +61,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
         String CHECKSUM = "1234cccccccc4321";
         String CS_DELIVERY_ADDRESS = null;
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
-                ChecksumType.MD5.toString());
+        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
 
@@ -144,8 +143,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String auditTrail = "GET-CHECKSUMS-TEST";
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
-                ChecksumType.MD5.toString());
+        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
 
@@ -186,8 +184,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String auditTrail = "GET-CHECKSUMS-TEST";
         String CS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
-        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
-                ChecksumType.MD5.toString());
+        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
 
@@ -228,8 +225,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
         String CHECKSUM = "1234cccccccc4321";
         String CS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
-                ChecksumType.MD5.toString());
+        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
 
@@ -275,8 +271,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
         String CS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" 
                 + System.currentTimeMillis() + getTopicPostfix();
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
-                ChecksumType.MD5.toString());
+        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setAllFileIDs("true");
 

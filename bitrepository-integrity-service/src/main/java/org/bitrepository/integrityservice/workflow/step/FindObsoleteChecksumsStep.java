@@ -1,12 +1,10 @@
-package org.bitrepository.integrityservice.scheduler.workflow.step;
+package org.bitrepository.integrityservice.workflow.step;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.integrityservice.cache.FileInfo;
+import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,15 +26,18 @@ public class FindObsoleteChecksumsStep implements WorkflowStep {
     private final Long obsoleteTimeout;
     /** The mapping between */
     private List<String> obsoleteChecksums = new ArrayList<String>();
-    
+    /** The dispatcher of alarms.*/
+    private final IntegrityAlerter dispatcher;
+
     /**
      * Constructor.
      * @param store The storage for the integrity data.
      * @param obsoleteTimeout The interval for a checksum timestamp to timeout and become obsolete.
      */
-    public FindObsoleteChecksumsStep(IntegrityModel store, long obsoleteTimeout) {
+    public FindObsoleteChecksumsStep(IntegrityModel store, IntegrityAlerter alarmDispatcher, long obsoleteTimeout) {
         this.store = store;
         this.obsoleteTimeout = obsoleteTimeout;
+        this.dispatcher = alarmDispatcher;
     }
     
     @Override
@@ -51,18 +52,13 @@ public class FindObsoleteChecksumsStep implements WorkflowStep {
      */
     @Override
     public synchronized void performStep() {
-        long currentTimeoutTime = System.currentTimeMillis() - obsoleteTimeout;
-        for(String fileId : store.getAllFileIDs()) {
-            // TODO: this needs optimization.
-            for(FileInfo fileinfo : store.getFileInfos(fileId)) {
-                if(fileinfo.getChecksumState() == ChecksumState.VALID && CalendarUtils.convertFromXMLGregorianCalendar(
-                        fileinfo.getDateForLastChecksumCheck()).getTime() < currentTimeoutTime) {
-                    log.warn("Checksum is obsolete for the file '" + fileId + "', at least at pillar '" 
-                            + fileinfo.getPillarId() + "'.");
-                    obsoleteChecksums.add(fileId);
-                    break;
-                }
-            }
+        List<String> missingFiles = store.findMissingFiles();
+        
+        if(missingFiles.isEmpty()) {
+            log.debug("No files are missing at any pillar.");
+        } else {
+            // TODO
+//            dispatcher.
         }
     }
 

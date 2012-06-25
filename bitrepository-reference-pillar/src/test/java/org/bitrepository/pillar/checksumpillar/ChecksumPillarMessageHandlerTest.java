@@ -21,7 +21,6 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
-import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMessageHandler;
@@ -35,10 +34,7 @@ public class ChecksumPillarMessageHandlerTest extends ChecksumPillarTest {
     public void invalidChecksumCase() throws Exception {
         addDescription("Tests that the ChecksumPillar does not start with an invalid checksum.");
         addStep("Setup", "Should create a invalid checksum.");
-        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationType(
-                ChecksumType.MD5.toString());
-        componentSettings.getReferenceSettings().getPillarSettings().setChecksumPillarChecksumSpecificationSalt(
-                "1234cccc4321");
+        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType("md");
 
         try {
             new MockChecksumMessageHandler(context, cache);

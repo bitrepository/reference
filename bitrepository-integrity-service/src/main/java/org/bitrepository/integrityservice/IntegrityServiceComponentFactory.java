@@ -39,14 +39,14 @@ import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityservice.collector.DelegatingIntegrityInformationCollector;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
-import org.bitrepository.integrityservice.scheduler.IntegrityScheduler;
-import org.bitrepository.integrityservice.scheduler.TimerbasedScheduler;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.audit.AuditTrailContributerDAO;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.service.scheduler.ServiceScheduler;
+import org.bitrepository.service.scheduler.TimerbasedScheduler;
 
 /**
  * Provides access to the different component in the integrity module (Spring/IOC wannabe)
@@ -74,7 +74,7 @@ public final class IntegrityServiceComponentFactory {
 
     // --------------------- Components-----------------------
     /** The integrity information scheduler. */
-    private IntegrityScheduler integrityInformationScheduler;
+    private ServiceScheduler integrityInformationScheduler;
     /** The integrity information collector. */
     private IntegrityInformationCollector integrityInformationCollector;
     /** The integrity information collector. */
@@ -87,7 +87,7 @@ public final class IntegrityServiceComponentFactory {
      * @param settings The settings for the information scheduler.
      * @return an <code>IntegrityInformationScheduler</code> that schedules integrity information collection.
      */
-    public IntegrityScheduler getIntegrityInformationScheduler(Settings settings) {
+    public ServiceScheduler getIntegrityInformationScheduler(Settings settings) {
         if (integrityInformationScheduler == null) {
             integrityInformationScheduler = new TimerbasedScheduler(settings);
         }
@@ -152,7 +152,7 @@ public final class IntegrityServiceComponentFactory {
                 settings.getReferenceSettings().getIntegrityServiceSettings().getAuditContributerDatabaseUrl()));
         
         IntegrityModel model = getCachedIntegrityInformationStorage(settings);
-        IntegrityScheduler scheduler = getIntegrityInformationScheduler(settings);
+        ServiceScheduler scheduler = getIntegrityInformationScheduler(settings);
         IntegrityChecker checker = getIntegrityChecker(settings, model, auditManager);
         IntegrityAlerter alarmDispatcher = new IntegrityAlarmDispatcher(context);
         

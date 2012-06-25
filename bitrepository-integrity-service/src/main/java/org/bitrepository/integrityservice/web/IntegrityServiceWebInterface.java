@@ -29,8 +29,8 @@ import java.util.List;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.IntegrityService;
-import org.bitrepository.integrityservice.scheduler.WorkflowTask;
 import org.bitrepository.service.LifeCycledService;
+import org.bitrepository.service.scheduler.WorkflowTask;
 
 /**
  * The IntegrityService wrapped into the interface for a web server.
@@ -81,8 +81,8 @@ public class IntegrityServiceWebInterface implements IntegrityService, LifeCycle
     }
     
     @Override
-    public Collection<WorkflowTask> getWorkflows() {
-        return service.getWorkflows();
+    public Collection<WorkflowTask> getScheduledWorkflows() {
+        return service.getScheduledWorkflows();
     }
 
     @Override

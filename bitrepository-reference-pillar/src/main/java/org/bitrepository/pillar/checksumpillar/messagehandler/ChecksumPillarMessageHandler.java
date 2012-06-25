@@ -59,11 +59,7 @@ public abstract class ChecksumPillarMessageHandler<T> extends PillarMessageHandl
         this.cache = refCache;
         this.checksumType = new ChecksumSpecTYPE();
         checksumType.setChecksumType(ChecksumType.fromValue(
-                getSettings().getReferenceSettings().getPillarSettings().getChecksumPillarChecksumSpecificationType()));
-        String salt = getSettings().getReferenceSettings().getPillarSettings().getChecksumPillarChecksumSpecificationSalt();
-        if(salt != null) {
-            checksumType.setChecksumSalt(Base16Utils.encodeBase16(salt));
-        }
+                getSettings().getCollectionSettings().getProtocolSettings().getDefaultChecksumType()));
         try {
             ChecksumUtils.verifyAlgorithm(checksumType);
         } catch (NoSuchAlgorithmException e) {

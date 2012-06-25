@@ -1,8 +1,9 @@
-package org.bitrepository.integrityservice.scheduler.workflow.step;
+package org.bitrepository.integrityservice.workflow.step;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
@@ -16,9 +17,6 @@ import org.slf4j.LoggerFactory;
  * It goes through every file id available, extracts all the fileinfos and validates whether any pillars
  * are missing the given checksum (e.g. whether the ChecksumState is Unknown and the FileState is not Missing).
  * This is a very simple and definitely not optimized way of finding missing checksums.
- * 
- * TODO make a method in the database for extracting all the ids of all the files which have the checksum state 
- * Unknown for any pillar. 
  */
 public class FindMissingChecksumsStep implements WorkflowStep {
     /** The log.*/
@@ -27,13 +25,16 @@ public class FindMissingChecksumsStep implements WorkflowStep {
     private final IntegrityModel store;
     /** The mapping between */
     private List<String> missingChecksums = new ArrayList<String>();
-    
+    /** The dispatcher of alarms.*/
+    private final IntegrityAlerter dispatcher;
+
     /**
      * Constructor.
      * @param store The storage for the integrity data.
      */
-    public FindMissingChecksumsStep(IntegrityModel store) {
+    public FindMissingChecksumsStep(IntegrityModel store, IntegrityAlerter alarmDispatcher) {
         this.store = store;
+        this.dispatcher = alarmDispatcher;
     }
     
     @Override
@@ -45,21 +46,16 @@ public class FindMissingChecksumsStep implements WorkflowStep {
      * Goes through all the file ids in the database and extract their respective fileinfos.
      * Then it goes through all the file infos to validate that the file at no pillar exists but has an unknown state 
      * for the checksum.
-     * TODO needs optimization for the extraction of file ids.
      */
     @Override
     public synchronized void performStep() {
-        for(String fileId : store.getAllFileIDs()) {
-            // TODO: this needs optimization.
-            for(FileInfo fileinfo : store.getFileInfos(fileId)) {
-                if(fileinfo.getFileState() == FileState.EXISTING &&
-                        fileinfo.getChecksumState() == ChecksumState.UNKNOWN) {
-                    log.warn("Checksum is missing for the file '" + fileId + "', at least at pillar '" 
-                            + fileinfo.getPillarId() + "'.");
-                    missingChecksums.add(fileId);
-                    break;
-                }
-            }
+        List<String> missingChecksums = store.findMissingChecksums();
+        
+        if(missingChecksums.isEmpty()) {
+            log.debug("No files are missing their checksum.");
+        } else {
+            // TODO
+//            dispatcher.
         }
     }
 
