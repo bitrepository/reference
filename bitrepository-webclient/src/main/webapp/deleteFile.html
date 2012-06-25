@@ -1,0 +1,119 @@
+<html>
+
+<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" />	
+
+<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="defaultText.js"></script>
+
+<script>
+    $(function() {
+        $("#deleteForm").buttonset();
+    });
+</script>
+
+    <div class="ui-widget">
+    
+    <form id="deleteForm" action="javascript:submit()">
+        <div>
+            <p><b>Delete file</b></p>
+            <table border="0">
+                <tr>
+                    <td>File ID:</td>
+                    <td>&nbsp;</td>
+                    <td><input class="defaultText" title="File ID" id="fileID" type="text"/></td>
+                </tr>
+                <tr>
+                    <td>Pillar ID:</td>
+                    <td>&nbsp;</td>
+                    <td>
+                    	<select id="pillarSelector">
+                    		<option value=""> </option>
+                		</select>	
+                    </td>
+                </tr>
+                <tr>
+                    <td>Checksum:</td>
+                    <td>&nbsp;</td>
+                    <td><input id="deleteChecksum" type="text"/></td>
+                </tr>
+                <tr valign="top">
+                    <td>Checksum type:</td>
+                    <td>&nbsp;</td>
+                    <td> 
+                        <input type="radio" name="deleteChecksumType" id="deletemd5ChecksumType" value="MD5" checked="yes"/> 
+                        <label for="deletemd5ChecksumType">MD5</label>
+                        <input type="radio" name="deleteChecksumType" id="deletesha1ChecksumType" value="SHA1"/> 
+                        <label for="deletesha1ChecksumType">SHA1</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Salt (optional):</td>
+                    <td>&nbsp;</td>
+                    <td><input type="text" id="deleteChecksumSalt"/></td>
+                </tr>
+                <tr valign="top">
+                    <td>Checksum type:</td>
+                    <td>&nbsp;</td>
+                    <td> 
+                        <input type="radio" name="approveChecksumType" id="approveDisableChecksum" value="disabled" checked="yes"/> 
+                        <label for="approveDisableChecksum">disable</label>
+                        <input type="radio" name="approveChecksumType" id="approvemd5ChecksumType" value="MD5"/> 
+                        <label for="approvemd5ChecksumType">MD5</label>
+                        <input type="radio" name="approveChecksumType" id="approvesha1ChecksumType" value="SHA1"/> 
+                        <label for="approvesha1ChecksumType">SHA1</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Salt (optional):</td>
+                    <td>&nbsp;</td>
+                    <td><input type="text" id="approveChecksumSalt"/></td>
+                </tr>
+            </table> 
+            <input type="submit" value="Delete file"/>
+        </div>
+    </form>
+    <div id="status"> </div>
+    
+    <script>
+        $(function(){
+            $.getJSON('repo/reposervice/getPillarList/',{}, function(j){
+                var options = '';
+                for (var i = 0; i < j.length; i++) {
+                    options += '<option value="' + j[i].optionValue + '">' + j[i].optionDisplay + '</option>';
+                }
+                $("select#pillarSelector").html(options);
+            })
+        })
+    </script>
+    
+    <script>
+        $("#deleteForm").submit(function() {
+            var fileID = $("#fileID").val();
+            fileID = fileID.replace(/\s+/g, '');
+            var pillarID = $("#pillarSelector option:selected").val();
+            var verifyChecksumVal = $("#deleteChecksum").val();
+            var verifyChecksumType = $("input[name=deleteChecksumType]:checked").val();
+            var verifyChecksumSalt = $("#deleteChecksumSalt").val();
+            var requestChecksumType = $("input[name=approveChecksumType]:checked").val();
+            var requestChecksumSalt = $("#approveChecksumSalt").val();   	
+            	
+            var command = "repo/reposervice/deleteFile/?fileID=" + fileID + "&pillarID=" + pillarID +
+            		"&deleteChecksum=" + verifyChecksumVal + "&deleteChecksumType="+ verifyChecksumType + 
+            		"&deleteChecksumSalt=" + verifyChecksumSalt + "&approveChecksumType=" + requestChecksumType + 
+            		"&approveChecksumSalt=" + requestChecksumSalt;
+            
+            $('#status').load(command, function(response, status, xhr) {
+                if (status == "error") {
+                    $("#status").html(response);
+                }
+            }).show();
+            return true;
+        });
+    </script> 
+    
+   	<script>
+  		function submit() { return ; }
+  	</script>
+    </div>
+</html>

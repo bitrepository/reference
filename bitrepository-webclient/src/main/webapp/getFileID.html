@@ -1,0 +1,58 @@
+<html>
+<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" />	
+<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="defaultText.js"></script>
+
+
+	<script>
+	    $(function() {
+	    	$("#allFileIDs").button();
+		    $("#getFileIDForm").buttonset();
+	    });
+    </script>
+
+    <div class=ui-widget id=getFileIDTab>
+        <form id="getFileIDForm">
+            <p><b>Get FileIDs</b></p>
+            <table border="0">
+                <tr valign="top">
+                    <td>FileID:&nbsp; &nbsp;</td>
+                    <td><input class="defaultText" title="FileID" id="getFileID" type="text"/></td>
+                </tr>
+                <tr>
+                	<td></td>
+               	    <td><input type="checkbox" id="allFileIDs" /><label for="allFileIDs">All FileIDs</label></td>
+                </tr>
+            </table> 
+            <input type="submit" value="Get fileID"/>
+        </form>
+    </div>
+    
+    <script>
+        $("#getFileIDForm").submit(function() {
+            var fileID = $("#getFileID").val();     
+            var allFileIDs = $("#allFileIDs").is(':checked');
+            //var allFileIDs = $("#allFileIDs").button("option", "checked");
+            var setAllFileIDs = "false";
+            
+            if(allFileIDs) {
+                setAllFileIDs = "true"
+            } else {
+                if (fileID == "") {
+                    //$('#messagediv').html("<p2>List of fileIDs empty!</p2>").show().fadeOut(5000);
+                    return false;
+                }
+            }
+         
+            var command = "repo/reposervice/getFileIDsHtml/?fileIDs=" + fileID + "&allFileIDs=" + setAllFileIDs;
+            var windowName = "";
+            var windowSize = "width=600,height=400,scrollbars=yes";
+    
+            window.open(command, windowName, windowSize);
+            event.preventDefault();
+            //$('#messagediv').html("<p>Requesting fileIDs!</p>").show().fadeOut(5000);
+            return true;
+        });
+    </script>        
+</html>
