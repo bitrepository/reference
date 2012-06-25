@@ -21,8 +21,11 @@
  */
 package org.bitrepository.monitoringservice;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
@@ -32,11 +35,8 @@ import org.bitrepository.protocol.security.MessageAuthenticator;
 import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
+import org.bitrepository.service.ServiceSettingsProvider;
+import org.bitrepository.service.ServiceType;
 
 /**
  * The factory for the monitoring service.
@@ -81,16 +81,10 @@ public class MonitoringServiceFactory {
                 throw new IllegalStateException("No configuration directory has been set!");
             }
             loadProperties();
-            SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
+            ServiceSettingsProvider settingsLoader =
+                    new ServiceSettingsProvider(new XMLFileSettingsLoader(confDir), ServiceType.MonitoringService);
 
-            if (settingsLoader.loadReferenceSettings().getMonitoringServiceSettings() == null) {
-                throw new IllegalArgumentException("Unable to start MonitoringService, " +
-                        "no MonitoringServiceSettings defined in reference settings i directory: " + confDir);
-            }
-
-            String monitoringServiceComponentID =
-                    settingsLoader.loadReferenceSettings().getMonitoringServiceSettings().getID();
-            settings = settingsLoader.getSettings(monitoringServiceComponentID);
+            settings = settingsLoader.getSettings();
         }
 
         return settings;

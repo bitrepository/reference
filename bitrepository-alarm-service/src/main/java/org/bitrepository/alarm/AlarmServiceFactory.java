@@ -29,12 +29,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
-
 import org.bitrepository.alarm.handling.handlers.AlarmStorer;
 import org.bitrepository.alarm.store.AlarmServiceDAO;
 import org.bitrepository.alarm.store.AlarmStore;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -47,6 +45,8 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.service.ServiceSettingsProvider;
+import org.bitrepository.service.ServiceType;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
 
@@ -91,16 +91,10 @@ public class AlarmServiceFactory {
             OperationAuthorizor authorizer;
             PermissionStore permissionStore;
             SecurityManager securityManager;
-            SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(configurationDir));
+            ServiceSettingsProvider settingsLoader =
+                    new ServiceSettingsProvider(new XMLFileSettingsLoader(configurationDir), ServiceType.AlarmService);
 
-            if (settingsLoader.loadReferenceSettings().getAlarmServiceSettings() == null) {
-                throw new IllegalArgumentException("Unable to start AlarmService, " +
-                        "no AlarmServiceSettings defined in reference settings i directory: " + configurationDir);
-            }
-
-            String alarmServiceComponentID =
-                    settingsLoader.loadReferenceSettings().getAlarmServiceSettings().getID();
-            Settings settings = settingsLoader.getSettings(alarmServiceComponentID);
+            Settings settings = settingsLoader.getSettings();
             try {
                 loadProperties();
                 permissionStore = new PermissionStore();

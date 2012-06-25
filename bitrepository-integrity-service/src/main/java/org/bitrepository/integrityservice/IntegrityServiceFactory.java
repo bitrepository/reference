@@ -23,8 +23,12 @@
  * #L%
  */
 package org.bitrepository.integrityservice;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.integrityservice.web.IntegrityServiceWebInterface;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
@@ -35,11 +39,8 @@ import org.bitrepository.protocol.security.MessageAuthenticator;
 import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
+import org.bitrepository.service.ServiceSettingsProvider;
+import org.bitrepository.service.ServiceType;
 
 /**
  * Factory class for instantiating the integrity service
@@ -93,16 +94,9 @@ public final class IntegrityServiceFactory {
                 throw new IllegalStateException("No configuration directory has been set!");
             }
             loadProperties();
-            SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
-
-            if (settingsLoader.loadReferenceSettings().getIntegrityServiceSettings() == null) {
-                throw new IllegalArgumentException("Unable to start IntegrityService, " +
-                        "no IntegrityServiceSettings defined in reference settings i directory: " + confDir);
-            }
-
-            String integrityServiceComponentID =
-                    settingsLoader.loadReferenceSettings().getIntegrityServiceSettings().getID();
-            settings = settingsLoader.getSettings(integrityServiceComponentID);
+            ServiceSettingsProvider settingsLoader =
+                    new ServiceSettingsProvider(new XMLFileSettingsLoader(confDir), ServiceType.IntegrityService);
+            settings = settingsLoader.getSettings();
         }
 
         return settings;

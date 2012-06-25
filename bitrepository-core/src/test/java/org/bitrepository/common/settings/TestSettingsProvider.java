@@ -29,23 +29,23 @@ package org.bitrepository.common.settings;
  * Helper class for easy access to the settings located in the <code>settings/xml</code> dir.
  */
 public class TestSettingsProvider {
-    /** The SettingsProvider to use for accessing the settings */
-    private final static SettingsProvider settingsprovider = 
-            new SettingsProvider(new XMLFileSettingsLoader("settings/xml/bitrepository-devel"));
-     
     /** 
      * Returns the settings for the collection defined by the COLLECTIONID_PROPERTY system variable if defined. If 
      * undefined the DEVELOPMENT_ENVIRONMENT settings will be loaded.
      */
     public static Settings getSettings(String componentID) {
-        return settingsprovider.getSettings(componentID);
+        return createSettingsProvider(componentID).getSettings();
     }
     
     /** 
      * Reloads the settings from disk.
      */
     public static Settings reloadSettings(String componentID) {
-        settingsprovider.reloadSettings(componentID);
+        createSettingsProvider(componentID).reloadSettings();
         return getSettings(componentID);
+    }
+
+    private static SettingsProvider createSettingsProvider(String componentID) {
+        return new SettingsProvider(new XMLFileSettingsLoader("settings/xml/bitrepository-devel"), componentID);
     }
 }

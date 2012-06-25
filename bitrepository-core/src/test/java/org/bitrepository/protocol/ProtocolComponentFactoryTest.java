@@ -45,8 +45,11 @@ public class ProtocolComponentFactoryTest {
     }
     
     protected void setupSettings() throws Exception {
-        SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader("settings/xml/bitrepository-devel"));
-        settings = settingsLoader.getSettings(getClass().getSimpleName());
+        SettingsProvider settingsLoader =
+                new SettingsProvider(
+                        new XMLFileSettingsLoader("settings/xml/bitrepository-devel"),
+                        getClass().getSimpleName());
+        settings = settingsLoader.getSettings();
     }
     
     @SuppressWarnings("unused")
