@@ -87,7 +87,17 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
     protected void validateMessage(DeleteFileRequest message) throws RequestHandlerException {
         validatePillarId(message.getPillarID());
         validateChecksumSpecification(message.getChecksumRequestForExistingFile());
-        validateChecksumSpecification(message.getChecksumDataForExistingFile().getChecksumSpec());
+        if(message.getChecksumDataForExistingFile() != null) {
+            validateChecksumSpecification(message.getChecksumDataForExistingFile().getChecksumSpec());
+        } else if(getSettings().getCollectionSettings().getProtocolSettings()
+                .isRequireChecksumForDestructiveRequests()) {
+            ResponseInfo responseInfo = new ResponseInfo();
+            responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
+            responseInfo.setResponseText("According to the contract a checksum for file to be deleted during the "
+                    + "deleting operation is required.");
+            throw new IllegalOperationException(responseInfo);
+        }
+        
         validateFileID(message.getFileID());
 
         // Validate, that we have the requested file.
@@ -101,26 +111,30 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
         
         // calculate and validate the checksum of the file.
         ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
-        ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
-        
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation checksum "
-                + "on the file, which should be deleted.", message.getAuditTrailInformation(), 
-                FileAction.CHECKSUM_CALCULATED);
-        String calculatedChecksum = ChecksumUtils.generateChecksum(getArchive().getFile(message.getFileID()), 
-                checksumType);
-        String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
-        if(!calculatedChecksum.equals(requestedChecksum)) {
-            // Log the different checksums, but do not send the right checksum back!
-            log.info("Failed to handle delete operation on file '" + message.getFileID() + "' since the request had "
-                    + "the checksum '" + requestedChecksum + "' where our local file has the value '" 
-                    + calculatedChecksum + "'. Sending alarm and respond failure.");
-            String errMsg = "Requested to delete file '" + message.getFileID() + "' with checksum '"
-                    + requestedChecksum + "', but our file had a different checksum.";
-            
-            ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-            responseInfo.setResponseText(errMsg);
-            throw new IllegalOperationException(responseInfo);
+        if(checksumData != null) {
+            ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
+
+            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation "
+                    + "checksum on the file, which should be deleted.", message.getAuditTrailInformation(), 
+                    FileAction.CHECKSUM_CALCULATED);
+            String calculatedChecksum = ChecksumUtils.generateChecksum(getArchive().getFile(message.getFileID()), 
+                    checksumType);
+            String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
+            if(!calculatedChecksum.equals(requestedChecksum)) {
+                // Log the different checksums, but do not send the right checksum back!
+                log.info("Failed to handle delete operation on file '" + message.getFileID() + "' since the request "
+                        + "had the checksum '" + requestedChecksum + "' where our local file has the value '" 
+                        + calculatedChecksum + "'. Sending alarm and respond failure.");
+                String errMsg = "Requested to delete file '" + message.getFileID() + "' with checksum '"
+                + requestedChecksum + "', but our file had a different checksum.";
+
+                ResponseInfo responseInfo = new ResponseInfo();
+                responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
+                responseInfo.setResponseText(errMsg);
+                throw new IllegalOperationException(responseInfo);
+            }
+        } else {
+            log.debug("No checksum for validation of the existing file before delete.");
         }
     }
 
@@ -149,8 +163,12 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
      * @return The requested checksum, or null if no such checksum is requested.
      */
     protected ChecksumDataForFileTYPE calculatedRequestedChecksum(DeleteFileRequest message) {
-        ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         ChecksumSpecTYPE checksumType = message.getChecksumRequestForExistingFile();
+        if(checksumType == null) {
+            return null;
+        }
+        
+        ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         
         getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the requested checksum "
                 + "on the file, which should be deleted.", message.getAuditTrailInformation(), 

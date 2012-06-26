@@ -270,4 +270,31 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
         Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 1, "Should have tried to send an alarm.");
     }
+    
+
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void checksumPillarDeleteFileTestMissingChecksumArgument() throws Exception {
+        addDescription("Tests that a missing 'ChecksumOnExistingFile' will not delete the file.");
+        Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        initializeArchiveWithEmptyFile();
+        messageBus.sendMessage(msgFactory.createDeleteFileRequest(null, null, DEFAULT_FILE_ID));
+        DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
+        Assert.assertTrue(archive.hasFile(DEFAULT_FILE_ID));
+    }
+
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void checksumPillarDeleteFileTestAllowedMissingChecksum() throws Exception {
+        addDescription("Tests that a missing 'ChecksumOnExistingFile' will delete the file, when it has been allowed "
+                + "to perform destructive operations in the settings.");
+        context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
+        Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        initializeArchiveWithEmptyFile();
+        messageBus.sendMessage(msgFactory.createDeleteFileRequest(null, null, DEFAULT_FILE_ID));
+        DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.OPERATION_COMPLETED);
+        Assert.assertFalse(archive.hasFile(DEFAULT_FILE_ID));
+    }
 }
