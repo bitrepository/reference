@@ -1,5 +1,27 @@
+/*
+ * #%L
+ * Bitrepository Webclient
+ * %%
+ * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.utils;
 
+import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -31,7 +53,7 @@ public class XMLGregorianCalendarConverter {
      *  value in the date parameter. If the date parameter is null then
      *  this method will simply return null.
      */
-    public static XMLGregorianCalendar asXMLGregorianCalendar(java.util.Date date) {
+    public static XMLGregorianCalendar asXMLGregorianCalendar(Date date) {
         if (date == null) {
             return null;
         } else {
@@ -49,7 +71,7 @@ public class XMLGregorianCalendarConverter {
      *  value in the xgc parameter. If the xgc parameter is null then
      *  this method will simply return null.
      */
-    public static java.util.Date asDate(XMLGregorianCalendar xgc) {
+    public static Date asDate(XMLGregorianCalendar xgc) {
         if (xgc == null) {
             return null;
         } else {

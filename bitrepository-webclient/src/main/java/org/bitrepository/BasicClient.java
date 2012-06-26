@@ -1,3 +1,24 @@
+/*
+ * #%L
+ * Bitrepository Webclient
+ * %%
+ * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository;
 
 import org.bitrepository.access.AccessComponentFactory;
@@ -50,7 +71,7 @@ public class BasicClient {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private ArrayBlockingQueue<String> shortLog;
     private List<URL> completedFiles;
-    
+
     public BasicClient(Settings settings, SecurityManager securityManager, String logFile, String clientID) {
         log.debug("---- Basic client instanciating ----");
         this.logFile = logFile;
@@ -73,7 +94,7 @@ public class BasicClient {
         log.debug("---- Basic client instanciated ----");
 
     }
-    
+
     public void shutdown() {
         putClient.shutdown();
         getClient.shutdown();
@@ -82,30 +103,30 @@ public class BasicClient {
         deleteFileClient.shutdown();
         replaceFileClient.shutdown();
     }
-    
+
     public String putFile(String fileID, long fileSize, URL url, String putChecksum, String putChecksumType,
-    		String putSalt, String approveChecksumType, String approveSalt) {
+            String putSalt, String approveChecksumType, String approveSalt) {
         ChecksumDataForFileTYPE checksumDataForNewFile = null;
         if(putChecksum != null) {
             checksumDataForNewFile = makeChecksumData(putChecksum, putChecksumType, putSalt);
         }
-        
+
         ChecksumSpecTYPE checksumRequestForNewFile = null;
         if(approveChecksumType != null) {
             checksumRequestForNewFile = makeChecksumSpec(approveChecksumType, approveSalt);
         }
-        
+
         putClient.putFile(url, fileID, fileSize, checksumDataForNewFile, checksumRequestForNewFile, 
-            		eventHandler, "Stuff this Christmas turkey!!");
+                eventHandler, "Stuff this Christmas turkey!!");
         return "Placing '" + fileID + "' in Bitrepository :)";
     }
-    
+
     public String getFile(String fileID, URL url) {
-       GetFileEventHandler handler = new GetFileEventHandler(url, completedFiles, eventHandler);
-       getClient.getFileFromFastestPillar(fileID, null, url, handler);
-       return "Fetching '" + fileID + "' from Bitrepository :)";
+        GetFileEventHandler handler = new GetFileEventHandler(url, completedFiles, eventHandler);
+        getClient.getFileFromFastestPillar(fileID, null, url, handler);
+        return "Fetching '" + fileID + "' from Bitrepository :)";
     }
-    
+
     public String getLog() {
         File logfile = new File(logFile);
         try {
@@ -123,7 +144,7 @@ public class BasicClient {
             return "Unable to read log... '" + logfile.getAbsolutePath() + "'";
         }
     }
-    
+
     public String getHtmlLog() {
         File logfile = new File(logFile);
         try {
@@ -141,21 +162,21 @@ public class BasicClient {
             return "Unable to read log... '" + logfile.getAbsolutePath() + "'";
         }
     }
-    
+
     public String getShortHtmlLog() {
-    	StringBuilder sb = new StringBuilder();
-    	List<String> entries = new ArrayList<String>();
-    	for(String entry : shortLog) {
-    		entries.add(entry);
-    	}
-    	Collections.reverse(entries);
-    	for(String entry : entries) {
-    		sb.append(entry + "<br>");
-    	}
-    	
-    	return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        List<String> entries = new ArrayList<String>();
+        for(String entry : shortLog) {
+            entries.add(entry);
+        }
+        Collections.reverse(entries);
+        for(String entry : entries) {
+            sb.append(entry + "<br>");
+        }
+
+        return sb.toString();
     }
-    
+
     public String getSettingsSummary() {
         StringBuilder sb = new StringBuilder();
         CollectionSettings collectionSettings = settings.getCollectionSettings();
@@ -163,29 +184,29 @@ public class BasicClient {
         sb.append("Pillar(s) in configuration: <br> <i>");
         List<String> pillarIDs = collectionSettings.getClientSettings().getPillarIDs(); 
         for(String pillarID : pillarIDs) {
-        	sb.append("&nbsp;&nbsp;&nbsp; " + pillarID + "<br>");
+            sb.append("&nbsp;&nbsp;&nbsp; " + pillarID + "<br>");
         }
         sb.append("</i>");
         sb.append("Messagebus URL: <br> &nbsp;&nbsp;&nbsp; <i>"); 
         sb.append(collectionSettings.getProtocolSettings().getMessageBusConfiguration().getURL() + "</i><br>");
         return sb.toString();
     }
-    
+
     public List<String> getPillarList() {
-    	return settings.getCollectionSettings().getClientSettings().getPillarIDs();
+        return settings.getCollectionSettings().getClientSettings().getPillarIDs();
     }
-    
+
     public Map<String, Map<String, String>> getChecksums(String fileIDsText, String checksumType, String salt) {
         ChecksumSpecTYPE checksumSpecItem = makeChecksumSpec(checksumType, salt);
-    	FileIDs fileIDs = new FileIDs();
-    	fileIDs.setFileID(fileIDsText);
+        FileIDs fileIDs = new FileIDs();
+        fileIDs.setFileID(fileIDsText);
 
-    	GetChecksumsResults results = new GetChecksumsResults();
-    	GetChecksumsEventHandler handler = new GetChecksumsEventHandler(results, eventHandler);
-    	
-    	getChecksumClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
-					fileIDs, checksumSpecItem, null, handler, "Arf arf, deliver those checksums");
-    	
+        GetChecksumsResults results = new GetChecksumsResults();
+        GetChecksumsEventHandler handler = new GetChecksumsEventHandler(results, eventHandler);
+
+        getChecksumClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
+                fileIDs, checksumSpecItem, null, handler, "Arf arf, deliver those checksums");
+
         try {
             while(!results.isDone() && !results.hasFailed()) {
                 Thread.sleep(500);
@@ -193,33 +214,33 @@ public class BasicClient {
         } catch (InterruptedException e) {
             // Uhm, we got aborted, should return error..
         }
-    	return results.getResults();
+        return results.getResults();
     }
-    
-    public GetFileIDsResults getFileIDs(String fileIDsText, boolean allFileIDs) {
-    	GetFileIDsResults results = new GetFileIDsResults(
-    			settings.getCollectionSettings().getClientSettings().getPillarIDs());
-    	GetFileIDsEventHandler handler = new GetFileIDsEventHandler(results, eventHandler);
-    	FileIDs fileIDs = new FileIDs();
-    	
-    	if(allFileIDs) {
-    		fileIDs.setAllFileIDs(allFileIDs);
-    	} else {
-    	    fileIDs.setFileID(fileIDsText);
-    	}
-    	try {
-    	    getFileIDsClient.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
-    	            fileIDs, null, handler, "Deliver my fileIDs garrh");
 
-    	    while(!results.isDone() && !results.hasFailed()) {
-    	        Thread.sleep(500);
-    	    }
-		} catch (InterruptedException e) {
-			// Uhm, we got aborted, should return error..
-		}		
-    	return results;
+    public GetFileIDsResults getFileIDs(String fileIDsText, boolean allFileIDs) {
+        GetFileIDsResults results = new GetFileIDsResults(
+                settings.getCollectionSettings().getClientSettings().getPillarIDs());
+        GetFileIDsEventHandler handler = new GetFileIDsEventHandler(results, eventHandler);
+        FileIDs fileIDs = new FileIDs();
+
+        if(allFileIDs) {
+            fileIDs.setAllFileIDs(allFileIDs);
+        } else {
+            fileIDs.setFileID(fileIDsText);
+        }
+        try {
+            getFileIDsClient.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
+                    fileIDs, null, handler, "Deliver my fileIDs garrh");
+
+            while(!results.isDone() && !results.hasFailed()) {
+                Thread.sleep(500);
+            }
+        } catch (InterruptedException e) {
+            // Uhm, we got aborted, should return error..
+        }		
+        return results;
     }
-    
+
     public String deleteFile(String fileID, String pillarID, String deleteChecksum, String deleteChecksumType, 
             String deleteChecksumSalt, String approveChecksumType, String approveChecksumSalt) {
         if(fileID == null) {
@@ -235,24 +256,24 @@ public class BasicClient {
             return "Checksum type for pillar check is invalid";
         }
         ChecksumDataForFileTYPE verifyingChecksum = makeChecksumData(deleteChecksum, deleteChecksumType, 
-        		deleteChecksumSalt);
+                deleteChecksumSalt);
         ChecksumSpecTYPE requestedChecksumSpec = null;
         log.info("----- Got DeleteFileRequest with approveChecksumtype = " + approveChecksumType);
         if(approveChecksumType != null && !approveChecksumType.equals("disabled")) {
             requestedChecksumSpec = makeChecksumSpec(approveChecksumType, approveChecksumSalt);
         }      
-        
+
         deleteFileClient.deleteFile(fileID, pillarID, verifyingChecksum, requestedChecksumSpec, 
-        		eventHandler, "Kick that file");
-        
+                eventHandler, "Kick that file");
+
         return "Deleting file";
     }
-    
+
     public String replaceFile(String fileID, String pillarID, String oldFileChecksum, String oldFileChecksumType,
-    		String oldFileChecksumSalt, String oldFileRequestChecksumType, String oldFileRequestChecksumSalt,
-    		URL url, long newFileSize, String newFileChecksum, String newFileChecksumType,
-    		String newFileChecksumSalt, String newFileRequestChecksumType, String newFileRequestChecksumSalt) {
-    	if(fileID == null) {
+            String oldFileChecksumSalt, String oldFileRequestChecksumType, String oldFileRequestChecksumSalt,
+            URL url, long newFileSize, String newFileChecksum, String newFileChecksumType,
+            String newFileChecksumSalt, String newFileRequestChecksumType, String newFileRequestChecksumSalt) {
+        if(fileID == null) {
             return "Missing fileID!";
         }
         if(pillarID == null || !settings.getCollectionSettings().getClientSettings().getPillarIDs().contains(pillarID)) {
@@ -271,39 +292,39 @@ public class BasicClient {
             return "Checksum type for pillar check of new file is invalid";
         }
         if(url == null) {
-        	return "Url for the file is missing.";
+            return "Url for the file is missing.";
         }
         ChecksumDataForFileTYPE oldFileChecksumData = makeChecksumData(oldFileChecksum, oldFileChecksumType,
-        		oldFileChecksumSalt);
+                oldFileChecksumSalt);
         ChecksumDataForFileTYPE newFileChecksumData = makeChecksumData(newFileChecksum, newFileChecksumType,
-        		newFileChecksumSalt);
+                newFileChecksumSalt);
         ChecksumSpecTYPE oldFileChecksumRequest = null;
         if(oldFileRequestChecksumType != null && (!oldFileRequestChecksumType.equals("disabled") &&
-        		!oldFileRequestChecksumType.trim().equals(""))) {
+                !oldFileRequestChecksumType.trim().equals(""))) {
             oldFileChecksumRequest = makeChecksumSpec(oldFileRequestChecksumType, oldFileRequestChecksumSalt);
         }
         ChecksumSpecTYPE newFileChecksumRequest = null;
         if(newFileRequestChecksumType != null && (!newFileRequestChecksumType.equals("disabled") &&
-        		!newFileRequestChecksumType.trim().equals(""))) {
-        	newFileChecksumRequest = makeChecksumSpec(newFileRequestChecksumType, newFileRequestChecksumSalt);
+                !newFileRequestChecksumType.trim().equals(""))) {
+            newFileChecksumRequest = makeChecksumSpec(newFileRequestChecksumType, newFileRequestChecksumSalt);
         }
-        
+
         replaceFileClient.replaceFile(fileID, pillarID, oldFileChecksumData, oldFileChecksumRequest, url, 
-        		newFileSize, newFileChecksumData, newFileChecksumRequest, eventHandler, "Swap away!");
-        
-    	return "Replacing file";
+                newFileSize, newFileChecksumData, newFileChecksumRequest, eventHandler, "Swap away!");
+
+        return "Replacing file";
     }
-    
+
     public String getCompletedFiles() {
         StringBuilder sb = new StringBuilder();
         sb.append("<b>Completed files:</b><br>");
         for(URL url : completedFiles) {
             sb.append("<a href=\"" + url.toExternalForm() + "\">" + url.getFile() + "</a> <br>");
         }
-        
+
         return sb.toString();
     }
-    
+
     private void changeLogFiles() {
         File oldLogFile = new File(logFile);
         String date = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
@@ -311,7 +332,7 @@ public class BasicClient {
         System.out.println("Moving old log file to: " + newName);
         oldLogFile.renameTo(new File(newName));
     }
-    
+
     private ChecksumDataForFileTYPE makeChecksumData(String checksum, String checksumType, String checksumSalt) {
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumValue(HexUtils.stringToByteArray(checksum));
@@ -320,21 +341,20 @@ public class BasicClient {
         checksumData.setChecksumSpec(makeChecksumSpec(checksumType, checksumSalt));
         return checksumData;
     }
-    
+
     private ChecksumSpecTYPE makeChecksumSpec(String checksumType, String checksumSalt) {
         ChecksumSpecTYPE spec = new ChecksumSpecTYPE();
-        
+
         if(checksumType == null || checksumType.trim().equals("")) {
             checksumType = settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType();
         }
-        
+
         if(checksumSalt != null && !checksumSalt.trim().equals("")) {
             spec.setChecksumSalt(HexUtils.stringToByteArray(checksumSalt));
             checksumType = "HMAC_" + checksumType;
         }
         spec.setChecksumType(ChecksumType.fromValue(checksumType));
-        
+
         return spec;
     }
-    
 }
