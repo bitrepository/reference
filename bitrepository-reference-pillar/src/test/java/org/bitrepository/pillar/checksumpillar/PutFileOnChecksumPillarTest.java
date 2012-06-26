@@ -253,7 +253,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
     
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarPutFileTestNoChecksumAllowed() throws Exception {
-        addDescription("Tests that it is possible to put with any checksums is settings allow.");
+        addDescription("Tests that it is possible to put without any checksums if the collection settings allows it.");
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
         Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
 
@@ -268,7 +268,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
     
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarPutFileTestBadURL() throws Exception {
-        addDescription("Tests how the pillar reacts to a bad URL.");
+        addDescription("Tests that the pillar handles a bad URL correct.");
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
         Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
 

@@ -44,13 +44,14 @@ import java.util.Date;
  */
 public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
     private GetFileIDsMessageFactory msgFactory;
-    FileIDs allFileIDs;
+    static final FileIDs allFileIDs = new FileIDs();
+    static {
+        allFileIDs.setAllFileIDs("true");        
+    }
 
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetFileIDsOnReferencePillarTest() throws Exception {
         msgFactory = new GetFileIDsMessageFactory(componentSettings);
-        allFileIDs = new FileIDs();
-        allFileIDs.setAllFileIDs("true");
     }    
 
     @Test( groups = {"regressiontest", "pillartest"})

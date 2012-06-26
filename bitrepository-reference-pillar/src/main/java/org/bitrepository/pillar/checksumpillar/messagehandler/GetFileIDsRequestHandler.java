@@ -97,10 +97,8 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
     
     /**
      * Method for validating the content of the GetFileIDsRequest message. 
-     * Is it possible to perform the operation?
-     * 
      * @param message The message to validate.
-     * @return Whether it is valid.
+     * @throws RequestHandlerException If the requested operation is not possible to perform.
      */
     private void validateMessage(GetFileIDsRequest message) throws RequestHandlerException {
         validatePillarId(message.getPillarID());
@@ -115,8 +113,9 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      * Otherwise an {@link InvalidMessageException} with the appropriate errorcode is thrown.
      * @param message The message containing the list files. An empty filelist is expected 
      * when "AllFiles" or the parameter option is used.
+     * @throws InvalidMessageException If the requested file does not exist.
      */
-    public void checkThatAllRequestedFilesAreAvailable(GetFileIDsRequest message) throws RequestHandlerException {
+    public void checkThatAllRequestedFilesAreAvailable(GetFileIDsRequest message) throws InvalidMessageException {
         FileIDs fileids = message.getFileIDs();
         if(fileids.isSetAllFileIDs()) {
             return ;

@@ -93,7 +93,8 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
                 .getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-            responseInfo.setResponseText("According to the contract a checksum for deleting a file is required.");
+            responseInfo.setResponseText("No checksum was supplied for the file to delete, even though according to "
+                    + "the contract a checksum for file to be deleted during the deleting operation is required.");
             throw new IllegalOperationException(responseInfo);            
         }
         
@@ -114,7 +115,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
             String requestChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
             if(!calculatedChecksum.equals(requestChecksum)) {
                 // Log the different checksums, but do not send the right checksum back!
-                log.info("Failed to handle delete operation on file '" + message.getFileID() + "' since the request "
+                log.warn("Failed to handle delete operation on file '" + message.getFileID() + "' since the request "
                         + "had the checksum '" + requestChecksum + "' where our local file has the value '" 
                         + calculatedChecksum + "'. Sending alarm and respond failure.");
                 
@@ -125,7 +126,8 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
                 throw new IllegalOperationException(responseInfo);
             }
         } else {
-            log.debug("No checksum for validation of the existing file before delete.");
+            log.debug("No checksum for validation of the existing file before delete the file '" + message.getFileID() 
+                    + "'");
         }
     }
 
