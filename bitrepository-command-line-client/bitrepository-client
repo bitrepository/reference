@@ -1,0 +1,150 @@
+#!/bin/bash
+
+SERVICEURL="http://bitmag-stage01:9350/bitrepository-webclient/repo/reposervice"
+WEBDAVSERVER="https://bitmag-stage01.statsbiblioteket.dk/dav/stage-a/"
+CURLPARMS="-E ./mycert.pem --cacert ./mycert.pem"
+
+do_put() {
+	curl $CURLPARMS --silent -T "$filename" $WEBDAVSERVER > /dev/null
+	stripedfilename=`basename $filename`
+	filesize=`du -b $filename | cut -f1`
+	checksum=`md5sum $filename | cut -f1 --delimiter=" "`
+	command="$SERVICEURL/putfile/?fileID=$stripedfilename&url=$WEBDAVSERVER$stripedfilename&fileSize=$filesize&putChecksum=$checksum&putChecksumType=MD5"
+	curl --silent $command
+	echo ""
+}
+
+do_delete() {
+	command="$SERVICEURL/deleteFile/?fileID=$filename&pillarID=$pillarID&deleteChecksum=$checksumValue&deleteChecksumType=$checksumType"
+	curl --silent $command
+}
+
+do_getlog() {
+	command="$SERVICEURL/getLog/"
+	curl --silent $command
+}
+
+do_get() {
+	command="$SERVICEURL/getfile/?fileID=$filename&url=$WEBDAVSERVER"
+	curl --silent $command
+	echo ""
+}
+
+do_getchecksum() {
+	command="$SERVICEURL/getChecksums/?fileID=$filename&checksumType=$checksumType&salt=$salt"
+	curl --silent $command
+}
+
+do_listfiles() {
+    command="$SERVICEURL/getFileIDs/"
+    curl --silent $command
+}
+
+do_webserver_remove_file() {
+	curl $CURLPARMS --silent -X DELETE $WEBDAVSERVER$filename > /dev/null 
+}
+
+do_webserver_get_file() {
+	curl $CURLPARMS --silent $WEBDAVSERVER$filename > $filename
+}
+
+print_delete_usage() {
+    echo "Usage br-client delete <filename> <pillarID> <checksumType> <checksumValue> \nChecksumType: MD5 or SHA1" 
+}
+
+case "$1" in
+  put)
+	filename=$2
+	if [ -e $filename ]
+	then 
+		do_put $filename
+	else 
+		echo "Usage: br-client put <filename>"	
+		exit 1
+	fi
+	;;
+  getlog)
+	do_getlog;;
+  get)
+	filename=$2
+	if [ -z $filename ]
+	then
+		echo "Usage br-client get <filename>"
+		exit 1
+	else
+		do_get $filename
+	fi
+	;;
+  getchecksum)
+	filename=$2
+	if [ -z $filename ]
+	then 
+		echo "Usage br-client getchecksum <filename> [<checksumType> <salt>]"
+		exit 1
+	fi
+	checksumType=$3
+	if [ -z $checksumType ]
+	then 
+		checksumType="MD5"
+	fi
+	salt=$4
+	do_getchecksum $filename $checksumType $salt
+	;;
+  list-files)
+    do_listfiles
+    ;;
+  delete)
+	filename=$2
+	if [ -z $filename ] 
+	then
+		print_delete_usage
+		exit 1
+    fi
+    pillarID=$3
+    if [ -z $pillarID ]
+    then
+		print_delete_usage
+		exit 2
+    fi      
+    checksumType=$4
+    if [ -z $checksumType ]
+    then
+		print_delete_usage
+		exit 2
+    fi      
+    checksumValue=$5
+    if [ -z $checksumValue ]
+    then
+		print_delete_usage
+		exit 2
+    fi      
+
+    do_delete $filename $pillarID $checksumType $checksumValue
+	;;
+  remove-file)
+	filename=$2
+	if [ -z $filename ] 
+	then
+		echo "Usage br-client remove-file <filename>"
+		exit 1
+	else
+		do_webserver_remove_file $filename
+	fi
+	;;
+  get-file) 
+	filename=$2
+	if [ -z $filename ]
+	then
+		echo "Usage br-client get-file <filename>"
+		exit 1
+	else
+		do_webserver_get_file $filename
+	fi
+esac
+
+
+
+
+
+
+
