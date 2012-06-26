@@ -53,8 +53,8 @@ public class BasicClientFactory {
         	if(confDir == null) {
         		throw new RuntimeException("No configuration dir has been set!");
         	}
-        	SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
-            Settings settings = settingsLoader.getSettings(clientID);
+        	SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir), clientID);
+            Settings settings = settingsLoader.getSettings();
             PermissionStore permissionStore = new PermissionStore();
             MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
             MessageSigner signer = new BasicMessageSigner();

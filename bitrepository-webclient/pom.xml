@@ -1,61 +1,15 @@
+<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-  <groupId>org.bitrepository</groupId>
-  <artifactId>bitrepository-webclient</artifactId>
-  <version>0.17-SNAPSHOT</version>
-  <packaging>war</packaging>
-
   <parent>
-    <groupId>org.sbforge</groupId>
-    <artifactId>sbforge-parent</artifactId>
-    <version>10</version>
+    <groupId>org.bitrepository.reference</groupId>
+    <artifactId>bitrepository-parent</artifactId>
+    <version>0.17-SNAPSHOT</version>
   </parent>
+  <artifactId>bitrepository-webclient</artifactId>
+  <packaging>war</packaging>
+  <name>Bitrepository Webclient</name>
 
-  <name>bitrepository-webclient</name>
-
-  <repositories>
-    <repository>
-      <id>sbforge-nexus</id>
-      <url>https://sbforge.org/nexus/content/groups/public</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <issueManagement>
-    <system>JIRA</system>
-    <url>https://sbforge.org/jira/browse/BITMAG</url>
-  </issueManagement>
-
-  <ciManagement>
-    <system>Jenkins</system>
-    <url>https://sbforge.org/jenkins/</url>
-  </ciManagement>
-
-  <distributionManagement>
-    <site>
-      <id>sbforge-nexus</id>
-      <name>SBForge Maven site</name>
-      <url>dav:https://sbforge.org/maven/bitrepository/sites/web-client/${project.version}</url>
-    </site>
-  </distributionManagement>
-  
-  <organization>
-    <name>The State and University Library, The Royal Library and The State Archives, Denmark</name>
-    <url>https://sbforge.org/display/BITMAG</url>
-  </organization>
-
-  <scm>
-    <connection>scm:git:http://sbforge.org/fisheye/git/bitrepository-webclient.git</connection>
-    <developerConnection>scm:git:https://sbforge.org/fisheye/git/bitrepository-webclient.git</developerConnection>
-    <url>https://sbforge.org/fisheye/browse/bitrepository-webclient</url>
-  </scm>
-  
   <dependencies>
     <dependency>
       <groupId>javax</groupId>
@@ -63,84 +17,47 @@
       <version>6.0</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.5</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-server</artifactId>
       <version>1.8</version>
     </dependency>
-
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
       <version>1.1</version>
     </dependency>
-
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-modifying-client</artifactId>
-      <version>${bitrepository-version}</version>
+      <version>${project.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-access-client</artifactId>
-      <version>${bitrepository-version}</version>
+      <version>${project.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-core</artifactId>
-      <version>${bitrepository-version}</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jul-to-slf4j</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>log4j-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-          <compilerArguments>
-            <endorseddirs>${endorsed.dir}</endorseddirs>
-          </compilerArguments>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -218,12 +135,9 @@
       </plugins>
     </pluginManagement>
   </build>
-  
+
   <properties>
     <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <bitrepository-version>0.15</bitrepository-version>
-    <slf4j.version>1.6.4</slf4j.version>
   </properties>
 
 </project>
