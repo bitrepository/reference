@@ -24,23 +24,22 @@
  */
 package org.bitrepository.integrityservice;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
-import org.bitrepository.integrityservice.collector.eventhandler.ChecksumsUpdaterAndValidatorEventHandler;
+import org.bitrepository.integrityservice.workflow.BasicIntegrityWorkflow;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
 import org.bitrepository.service.scheduler.ServiceScheduler;
+import org.bitrepository.service.scheduler.Workflow;
 import org.bitrepository.service.scheduler.WorkflowTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +67,8 @@ public class SimpleIntegrityService implements IntegrityService {
     private final ContributorMediator contributor;
     /** The messagebus for communication.*/
     private final MessageBus messageBus;
+    /** The list of available workflows.*/
+    private final List<Workflow> workflows = new ArrayList<Workflow>();
     
     /**
      * Constructor.
@@ -86,95 +87,20 @@ public class SimpleIntegrityService implements IntegrityService {
         
         this.contributor = new SimpleContributorMediator(messageBus, settings, auditManager);
         contributor.start();
+        
+        initialiseWorkflows();
     }
     
     @Override
-    public void startChecksumIntegrityCheck(long millisSinceLastUpdate, long intervalBetweenChecks) {
-//        EventHandler eventHandler = new ChecksumsUpdaterAndValidatorEventHandler(cache, checker, alerter, 
-//                getFileIDsWithAllFileIDs());
-//        
-//        // Default checksum used.
-//        ChecksumSpecTYPE checksumType = new ChecksumSpecTYPE();
-//        checksumType.setChecksumType(ChecksumType.fromValue(
-//                settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType()));
-//        
-//        Workflow workflow = new CollectObsoleteChecksumsWorkflow(intervalBetweenChecks, 
-//                DEFAULT_NAME_OF_OBSOLETE_CHECKSUM_WORKFLOW, millisSinceLastUpdate, checksumType, collector, cache, 
-//                eventHandler);
-//        
-//        scheduler.putWorkflow(workflow);
-    }
-    
-    @Override
-    public void startAllFileIDsIntegrityCheck(long intervalBetweenCollecting) {
-//        EventHandler eventHandler = new FileIDsUpdaterAndValidatorEventHandler(cache, checker, alerter, 
-//                getFileIDsWithAllFileIDs());
-//        Workflow workflow = new CollectAllFileIDsWorkflow(intervalBetweenCollecting, 
-//                DEFAULT_NAME_OF_ALL_FILEIDS_WORKFLOW, settings, collector, eventHandler);
-//        scheduler.putWorkflow(workflow);
+    public Collection<Workflow> getAllWorkflows() {
+        List<Workflow> res = new ArrayList<Workflow>();
+        res.addAll(workflows);
+        return res;
     }
 
     @Override
-    public void startAllChecksumsIntegrityCheck(long intervalBetweenCollecting) {
-//        EventHandler eventHandler = new ChecksumsUpdaterAndValidatorEventHandler(cache, checker, alerter, 
-//                getFileIDsWithAllFileIDs());
-//        ChecksumSpecTYPE checksumType = new ChecksumSpecTYPE();
-//        checksumType.setChecksumType(ChecksumType.fromValue(
-//                settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType()));
-//        
-//        Workflow workflow = new CollectAllChecksumsWorkflow(intervalBetweenCollecting, 
-//                DEFAULT_NAME_OF_ALL_CHECKSUMS_WORKFLOW, checksumType, settings, collector, eventHandler);
-//        
-//        scheduler.putWorkflow(workflow);
-    }
-    
-    /**
-     * Initiates the scheduling of a checking of all the checksums and file id for all the data in the cache.
-     * @param intervalBetweenCollecting The time between the workflow is run.
-     */
-    public void startIntegrityValidator(long intervalBetweenCollecting) {
-//        Workflow workflow = new IntegrityValidatorWorkflow(intervalBetweenCollecting, 
-//                DEFAULT_NAME_OF_INTEGRITY_VALIDATOR_WORKFLOW, checker);
-//        
-//        scheduler.putWorkflow(workflow);
-    }
-    
-    /**
-     * Collects and integrity checks the checksum for a given file on all pillars. 
-     * Algorithm and salt are optional and can be used for requiring a recalculation of the checksums.
-     * @param fileID The id of the file to collect its checksum for.
-     * @param checksumAlgorithm The algorithm to use for the checksum collecting. 
-     * If null, then the default from settings is used.
-     * @param salt The salt for the checksum calculation. If null or empty string, then no salt is used. 
-     * @param auditTrailInformation The information for the audit.
-     */
-    public void checkChecksums(String fileID, String checksumAlgorithm, String salt, String auditTrailInformation) {
-        FileIDs fileIDs = new FileIDs();
-        fileIDs.setFileID(fileID);
-        
-        ChecksumSpecTYPE checksumType = new ChecksumSpecTYPE();
-        if(checksumAlgorithm == null || checksumAlgorithm.isEmpty()) {
-            checksumType.setChecksumType(ChecksumType.fromValue(
-                    settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType()));
-        } else {
-            checksumType.setChecksumType(ChecksumType.fromValue(checksumAlgorithm));
-        }
-        checksumType.setChecksumSalt(salt.getBytes());
-        
-        EventHandler eventHandler = new ChecksumsUpdaterAndValidatorEventHandler(cache, checker, alerter, 
-                getFileIDsWithAllFileIDs());
-        collector.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
-                fileIDs, checksumType, auditTrailInformation, eventHandler);
-    }
-    
-    /**
-     * TODO perhaps move to utility???
-     * @return A FileIDs where all FileIDs are set.
-     */
-    private FileIDs getFileIDsWithAllFileIDs() {
-        FileIDs allFileIDs = new FileIDs();
-        allFileIDs.setAllFileIDs("TRUE");
-        return allFileIDs;
+    public void scheduleWorkflow(Workflow workflow, long timeBetweenRuns) {
+        scheduler.putWorkflow(workflow, workflow.getClass().getName(), timeBetweenRuns);
     }
     
     @Override
@@ -214,5 +140,13 @@ public class SimpleIntegrityService implements IntegrityService {
         if(contributor != null) {
             contributor.close();
         }
+    }
+    
+    /**
+     * Initialises the workflows.
+     */
+    private void initialiseWorkflows() {
+        Workflow w1 = new BasicIntegrityWorkflow(settings, collector, cache, checker, alerter);
+        workflows.add(w1);
     }
 }

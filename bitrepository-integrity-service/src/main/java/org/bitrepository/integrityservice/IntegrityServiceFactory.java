@@ -41,6 +41,7 @@ import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.service.ServiceSettingsProvider;
 import org.bitrepository.service.ServiceType;
+import org.bitrepository.service.scheduler.Workflow;
 
 /**
  * Factory class for instantiating the integrity service
@@ -57,7 +58,6 @@ public final class IntegrityServiceFactory {
     private static final String PRIVATE_KEY_FILE = "org.bitrepository.integrity-service.privateKeyFile";
     /** The time of one week.*/
     private static final long DEFAULT_MAX_TIME_SINCE_UPDATE = 604800000;
-    
     
     /** The settings. */
     private static Settings settings;
@@ -137,6 +137,9 @@ public final class IntegrityServiceFactory {
             getSecurityManager();
             simpleIntegrityService = IntegrityServiceComponentFactory.getInstance().createIntegrityService(settings, 
                     securityManager);
+            for(Workflow workflow : simpleIntegrityService.getAllWorkflows()) {
+                simpleIntegrityService.scheduleWorkflow(workflow, DEFAULT_MAX_TIME_SINCE_UPDATE);
+            }
         }
         
         return simpleIntegrityService;
@@ -152,14 +155,10 @@ public final class IntegrityServiceFactory {
      */
     public static synchronized IntegrityServiceWebInterface getIntegrityServiceWebInterface() {
         if(integrityServiceWebInterface == null) {
-            long timeSinceLastChecksumUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
-            long timeSinceLastFileIDsUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
             getSettings();
             getIntegrityService();
             integrityServiceWebInterface = new IntegrityServiceWebInterface(simpleIntegrityService, settings);
-            simpleIntegrityService.startChecksumIntegrityCheck(timeSinceLastChecksumUpdate, 
-                    settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval());
-            simpleIntegrityService.startAllFileIDsIntegrityCheck(timeSinceLastFileIDsUpdate);
+            
         }
         return integrityServiceWebInterface;
     }

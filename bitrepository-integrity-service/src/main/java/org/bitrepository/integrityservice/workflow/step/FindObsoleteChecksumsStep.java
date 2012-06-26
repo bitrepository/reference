@@ -78,7 +78,6 @@ public class FindObsoleteChecksumsStep implements WorkflowStep {
         if(missingFiles.isEmpty()) {
             log.debug("No files are missing at any pillar.");
         } else {
-            // TODO
 //            dispatcher.
         }
     }

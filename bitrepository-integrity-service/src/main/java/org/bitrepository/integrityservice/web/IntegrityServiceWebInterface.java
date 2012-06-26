@@ -30,6 +30,7 @@ import java.util.List;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.IntegrityService;
 import org.bitrepository.service.LifeCycledService;
+import org.bitrepository.service.scheduler.Workflow;
 import org.bitrepository.service.scheduler.WorkflowTask;
 
 /**
@@ -96,17 +97,12 @@ public class IntegrityServiceWebInterface implements IntegrityService, LifeCycle
     }
 
     @Override
-    public void startChecksumIntegrityCheck(long millisSinceLastUpdate, long intervalBetweenChecks) {
-        service.startChecksumIntegrityCheck(millisSinceLastUpdate, intervalBetweenChecks);
+    public Collection<Workflow> getAllWorkflows() {
+        return service.getAllWorkflows();
     }
 
     @Override
-    public void startAllFileIDsIntegrityCheck(long intervalBetweenCollecting) {
-        service.startAllFileIDsIntegrityCheck(intervalBetweenCollecting);
-    }
-
-    @Override
-    public void startAllChecksumsIntegrityCheck(long intervalBetweenCollecting) {
-        service.startAllChecksumsIntegrityCheck(intervalBetweenCollecting);
+    public void scheduleWorkflow(Workflow workflow, long timeBetweenRuns) {
+        service.scheduleWorkflow(workflow, timeBetweenRuns);
     }
 }
