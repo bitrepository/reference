@@ -36,7 +36,7 @@
     <PillarID>test-pillar</PillarID>
 
     <!-- 
-      Path to the base directory for file storage 
+      Path to the base directory for file storage and checksum files (for the checksumpillar)
     -->
     <FileDir>test-archive</FileDir>
 
