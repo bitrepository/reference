@@ -51,9 +51,9 @@ import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.ServiceSettingsProvider;
-import org.bitrepository.service.ServiceType;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
+import org.bitrepository.settings.referencesettings.ServiceType;
 
 /**
  * Factory class for accessing the AuditTrailService 
@@ -97,7 +97,8 @@ public final class AuditTrailServiceFactory {
             PermissionStore permissionStore;
             SecurityManager securityManager;
             ServiceSettingsProvider settingsLoader =
-                    new ServiceSettingsProvider(new XMLFileSettingsLoader(configurationDir), ServiceType.AuditTrailService);
+                    new ServiceSettingsProvider(
+                            new XMLFileSettingsLoader(configurationDir), ServiceType.AUDIT_TRAIL_SERVICE);
 
             Settings settings = settingsLoader.getSettings();
             try {
