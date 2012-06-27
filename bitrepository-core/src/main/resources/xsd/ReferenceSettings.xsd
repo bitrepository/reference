@@ -281,7 +281,6 @@
       <xs:enumeration value="AuditTrailService" />
       <xs:enumeration value="IntegrityService" />
       <xs:enumeration value="MonitoringService" />
-      <xs:enumeration value="Other" />
     </xs:restriction>
   </xs:simpleType>
     
