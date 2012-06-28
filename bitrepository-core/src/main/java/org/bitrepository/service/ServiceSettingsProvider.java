@@ -28,9 +28,10 @@ package org.bitrepository.service;
 import org.bitrepository.common.settings.SettingsLoader;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
+import org.bitrepository.settings.referencesettings.ServiceType;
 
 public class ServiceSettingsProvider extends SettingsProvider {
-    private ServiceType serviceType;
+    private final ServiceType serviceType;
 
     /**
      * Creates a <code>SettingsProvider</code> which will use the provided <code>SettingsLoader</code> for loading the
@@ -46,13 +47,13 @@ public class ServiceSettingsProvider extends SettingsProvider {
 
     protected String getComponentID(ReferenceSettings referenceSettings) {
         switch (serviceType) {
-            case AlarmService:
+            case ALARM_SERVICE:
                 return referenceSettings.getAlarmServiceSettings().getID();
-            case AuditTrailService:
+            case AUDIT_TRAIL_SERVICE:
                 return referenceSettings.getAuditTrailServiceSettings().getID();
-            case IntegrityService:
+            case INTEGRITY_SERVICE:
                 return referenceSettings.getIntegrityServiceSettings().getID();
-            case MonitoringService:
+            case MONITORING_SERVICE:
                 return referenceSettings.getMonitoringServiceSettings().getID();
             default:
                 throw new IllegalArgumentException("Unknown service type");

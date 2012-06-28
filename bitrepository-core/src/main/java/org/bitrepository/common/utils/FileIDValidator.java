@@ -41,8 +41,7 @@ public class FileIDValidator {
     private static final String SYSTEM_LIMIT = "[^\\p{Cntrl}]{1,254}";
     
     /**
-     * Constructor.
-     * @param context The context for the pillar.
+     * @param settings The context for the pillar.
      */
     public FileIDValidator(Settings settings) {
         regex = settings.getCollectionSettings().getProtocolSettings().getAllowedFileIDPattern();

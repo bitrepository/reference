@@ -25,7 +25,6 @@
 package org.bitrepository.common.settings;
 
 import org.bitrepository.protocol.messagebus.destination.DestinationHelper;
-import org.bitrepository.service.ServiceType;
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
 
@@ -39,7 +38,6 @@ public class SettingsProvider {
     /** The loaded settings */
     private Settings settings;
     private String componentID;
-    private ServiceType serviceType;
     private ReferenceSettings referenceSettings;
     
     /**
@@ -71,10 +69,6 @@ public class SettingsProvider {
     	CollectionSettings collectionSettings = settingsReader.loadSettings(CollectionSettings.class);
     	ReferenceSettings referenceSettings = settingsReader.loadSettings(ReferenceSettings.class);
 
-        if (serviceType != null) {
-            componentID = getComponentID(referenceSettings);
-        }
-
         String receiverDestinationIDFactoryClass = null;
         if (referenceSettings.getGeneralSettings() != null) {
             receiverDestinationIDFactoryClass =
@@ -82,10 +76,10 @@ public class SettingsProvider {
         }
 
         DestinationHelper dh = new DestinationHelper(
-                componentID,
+                getComponentID(referenceSettings),
                 receiverDestinationIDFactoryClass,
                 collectionSettings.getProtocolSettings().getCollectionDestination());
-        settings = new Settings(componentID, dh.getReceiverDestinationID(), collectionSettings, referenceSettings);
+        settings = new Settings(getComponentID(referenceSettings), dh.getReceiverDestinationID(), collectionSettings, referenceSettings);
     }
 
     /**
