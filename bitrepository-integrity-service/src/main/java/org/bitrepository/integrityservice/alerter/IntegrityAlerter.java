@@ -21,7 +21,7 @@
  */
 package org.bitrepository.integrityservice.alerter;
 
-import org.bitrepository.integrityservice.checking.IntegrityReport;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
 
 /**
  * The integrity alerter, for creating alarms based on an integrity report.
@@ -32,6 +32,4 @@ public interface IntegrityAlerter {
      * @param report The report to base the alarm upon.
      */
     void integrityFailed(IntegrityReport report);
-    
-//    void 
 }

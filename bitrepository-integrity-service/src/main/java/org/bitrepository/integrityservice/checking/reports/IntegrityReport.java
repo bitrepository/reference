@@ -1,6 +1,9 @@
 /*
  * #%L
- * Bitrepository Integrity Service
+ * Bitrepository Integrity Client
+ * 
+ * $Id$
+ * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -19,19 +22,20 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityservice.mocks;
+package org.bitrepository.integrityservice.checking.reports;
 
-import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
-
-public class MockIntegrityAlerter implements IntegrityAlerter {
+/**
+ * Container for the results of an integrity check.
+ */
+public interface IntegrityReport {
+    /**
+     * @return Whether the integrity check gave a positive result. E.g. returns false, if any integrity problems 
+     * occurred (whether any files were missing, any disagreements about checksum, etc.).
+     */
+    public abstract boolean hasIntegrityIssues();
     
-    private int callsForIntegrityFailed = 0;
-    @Override
-    public void integrityFailed(IntegrityReport report) {
-        callsForIntegrityFailed++;
-    }
-    public int getCallsForIntegrityFailed() {
-        return callsForIntegrityFailed;
-    }
+    /** 
+     * @return A human readable report for the integrity problem.
+     */
+    public abstract String generateReport();
 }

@@ -348,7 +348,21 @@ public class IntegrityDAO {
     }
 
     /**
-     * Finds the id of the files which at any pillar exists but is missing its checksum state.
+     * Finds the id of the files which have a checksum older than a given date.
+     * @param date The date for the checksum to be older than.
+     * @return The list of ids for the files which have a checksum older than the given date.
+     */
+    public List<String> findFilesWithOldChecksum(Date date) {
+        log.debug("Locating files which are missing at any pillar.");
+        String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
+                + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "."
+                + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_LAST_CHECKSUM_UPDATE + " < ? ";
+        return DatabaseUtils.selectStringList(dbConnector.getConnection(), requestSql, date);
+    }
+    
+    /**
+     * Finds the id of the files which at any pillar does not exist.
+     * @return The list of ids for the files which are missing at some pillar.
      */
     public List<String> findMissingFiles() {
         log.debug("Locating files which are missing at any pillar.");
@@ -356,6 +370,22 @@ public class IntegrityDAO {
                 + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "."
                 + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? ";
         return DatabaseUtils.selectStringList(dbConnector.getConnection(), requestSql, FileState.MISSING.ordinal());
+    }
+    
+    /**
+     * Finds the ids of the pillars where the given file is missing.
+     * @param fileId The id of the file which is missing.
+     * @return The list of ids for the pillars where the file is missing (empty list of the file is not missing).
+     */
+    public List<String> getMissingAtPillars(String fileId) {
+        log.debug("Locating the pillars where a given file is missing.");
+        String requestSql = "SELECT " + PILLAR_TABLE + "." + PILLAR_ID + " FROM " + PILLAR_TABLE + " JOIN "
+                + FILE_INFO_TABLE + " ON " + PILLAR_TABLE + "." + PILLAR_GUID + "=" + FILE_INFO_TABLE + "."
+                + FI_PILLAR_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? AND " + FILE_INFO_TABLE 
+                + "." + FI_FILE_GUID + " = ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID 
+                + " = ? )";
+        return DatabaseUtils.selectStringList(dbConnector.getConnection(), requestSql, FileState.MISSING.ordinal(), 
+                fileId);
     }
     
     /**

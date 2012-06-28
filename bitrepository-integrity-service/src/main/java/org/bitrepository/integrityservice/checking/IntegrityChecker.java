@@ -25,12 +25,12 @@
 package org.bitrepository.integrityservice.checking;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
 
 /**
  * This is the interface for checking the integrity of the data in the cache.
  * 
- * It should be called by the collector, when it has finished collecting integrity data.
- * Whenever a check goes badly, it should send an Alarm message about it.
+ * The checks should be performed by the steps of workflows.
  */
 public interface IntegrityChecker {
     /**
@@ -48,4 +48,20 @@ public interface IntegrityChecker {
      * @return Whether the checksums of the given file ids where validated.
      */
     IntegrityReport checkChecksum(FileIDs fileIDs);
+    
+    /**
+     * Validates whether any checksums are missing from any pillar, even though the pillar contains 
+     * the file.
+     * 
+     * @return The report containing the information about any missing checksums
+     */
+    IntegrityReport checkMissingChecksums();
+    
+    /**
+     * Validates whether any files are older than a given interval.
+     * 
+     * @param outdatedInterval The amount of milliseconds for a checksum to become outdated.
+     * @return The report for the check.
+     */
+    IntegrityReport checkObsoleteChecksums(long outdatedInterval);
 }

@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
@@ -28,15 +29,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A workflow step for finding missing checksums.
- * 
- * It goes through every file id available, extracts all the fileinfos and validates whether any pillars
- * are missing the given checksum (e.g. whether the ChecksumState is Unknown and the FileState is not Missing).
- * This is a very simple and definitely not optimized way of finding missing checksums.
+ * The step for validating the integrity of the file ids.
+ * Based on this integrity report, it is decided whether to dispatch an alarm.
  */
-public class FindMissingChecksumsStep implements WorkflowStep {
+public class IntegrityValidationFileIDsStep implements WorkflowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
+    /** The constant for all file ids.*/
+    private static final String ALL_FILE_IDS = "true";
     /** Checker for performing the integrity checks.*/
     private final IntegrityChecker checker;
     /** The dispatcher of alarms.*/
@@ -44,32 +44,38 @@ public class FindMissingChecksumsStep implements WorkflowStep {
     
     /**
      * Constructor.
-     * @param store The storage for the integrity data.
-     * @param obsoleteTimeout The interval for a checksum timestamp to timeout and become obsolete.
+     * @param checker The checker for performing the integrity checks.
+     * @param alarmDispatcher The dispatcher of alarms.
      */
-    public FindMissingChecksumsStep(IntegrityChecker checker, IntegrityAlerter alarmDispatcher) {
+    public IntegrityValidationFileIDsStep(IntegrityChecker checker, IntegrityAlerter alarmDispatcher) {
         this.checker = checker;
         this.dispatcher = alarmDispatcher;
     }
     
     @Override
     public String getName() {
-        return "Finding missing checksums";
+        return "Validating the integrity of the file ids.";
+    }
+
+    @Override
+    public void performStep() {
+        FileIDs fileIds = createAllFileIDs();
+        IntegrityReport report = checker.checkFileIDs(fileIds);
+        
+        if(report.hasIntegrityIssues()) {
+            log.warn("Integrity issues found: " + report.generateReport());
+            dispatcher.integrityFailed(report);
+        } else {
+            log.info("No integrity issues found: " + report.generateReport());
+        }
     }
 
     /**
-     * Goes through all the file ids in the database and extract their respective fileinfos.
-     * Then it goes through all the file infos to validate that the file at no pillar exists but has an unknown state 
-     * for the checksum.
+     * @return A FileIDs object for all file ids.
      */
-    @Override
-    public synchronized void performStep() {
-        IntegrityReport report = checker.checkMissingChecksums();
-        
-        if(report.hasIntegrityIssues()) {
-            log.debug("No files are missing at any pillar.");
-        } else {
-            dispatcher.integrityFailed(report);
-        }
+    private FileIDs createAllFileIDs() {
+        FileIDs res = new FileIDs();
+        res.setAllFileIDs(ALL_FILE_IDS);
+        return res;
     }
 }

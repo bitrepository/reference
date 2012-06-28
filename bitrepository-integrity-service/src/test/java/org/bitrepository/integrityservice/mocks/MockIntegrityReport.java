@@ -21,17 +21,22 @@
  */
 package org.bitrepository.integrityservice.mocks;
 
-import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
 
-public class MockIntegrityAlerter implements IntegrityAlerter {
-    
-    private int callsForIntegrityFailed = 0;
+public class MockIntegrityReport implements IntegrityReport {
+
+    private boolean state = true; 
+    public void setIntegrityIssues(boolean state) {
+        this.state = state;
+    }
     @Override
-    public void integrityFailed(IntegrityReport report) {
-        callsForIntegrityFailed++;
+    public boolean hasIntegrityIssues() {
+        return state;
     }
-    public int getCallsForIntegrityFailed() {
-        return callsForIntegrityFailed;
+
+    @Override
+    public String generateReport() {
+        return "";
     }
+
 }

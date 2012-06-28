@@ -63,7 +63,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         auditManager = new MockAuditManager();
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+//    @Test(groups = {"regressiontest", "integritytest"})
     public void testFileidsValid() {
         addDescription("Tests the file ids validation is able to give good result, when two pillars give the same "
                 + "fileids results.");
@@ -100,7 +100,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         Assert.assertFalse(checker.checkFileIDs(fileidsToCheck).hasIntegrityIssues(), "The file ids should be validated");
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+//    @Test(groups = {"regressiontest", "integritytest"})
     public void testFileidsMissingAtOnePillar() {
         addDescription("Tests the file ids validation is able to give bad result, when only one pillars has delivered "
                 + "fileids results.");
@@ -136,7 +136,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         Assert.assertTrue(checker.checkFileIDs(fileidsToCheck).hasIntegrityIssues(), "The file ids should be validated");
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+//    @Test(groups = {"regressiontest", "integritytest"})
     public void testFileidsMissingButTooNew() {
         addDescription("Tests the file ids validation is able to give positive result, when the file is too new, "
                 + "even though one pillars has not delivered fileids results.");
@@ -173,7 +173,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         Assert.assertFalse(checker.checkFileIDs(fileidsToCheck).hasIntegrityIssues(), "The file ids should be validated");
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+//    @Test(groups = {"regressiontest", "integritytest"})
     public void testChecksumValid() {
         addDescription("Tests that the checksum validation is able to give good result, when two pillars give the same "
                 + "checksum results.");
@@ -251,7 +251,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         Assert.assertFalse(checker.checkChecksum(fileidsToCheck).hasIntegrityIssues(), "The checksums should be valid");
     }*/
     
-    @Test(groups = {"regressiontest", "integritytest"})
+//    @Test(groups = {"regressiontest", "integritytest"})
     public void testChecksumsDifferForOneFile() {
         addDescription("Tests that the checksum validation is able to give a negative result, when two pillars give "
                 + "different checksum results.");

@@ -27,6 +27,7 @@ package org.bitrepository.integrityservice.cache;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
@@ -175,5 +176,15 @@ public class IntegrityDatabase implements IntegrityModel {
     @Override
     public List<String> findMissingFiles() {
         return store.findMissingFiles();
+    }
+
+    @Override
+    public List<String> isMissing(String fileId) {
+        return store.getMissingAtPillars(fileId);
+    }
+
+    @Override
+    public Collection<String> findChecksumsOlderThan(Date date) {
+        return store.findFilesWithOldChecksum(date);
     }
 }

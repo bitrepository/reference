@@ -29,10 +29,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.database.ChecksumState;
+import org.bitrepository.integrityservice.cache.database.FileState;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
+import org.bitrepository.integrityservice.checking.reports.MissingChecksumReport;
+import org.bitrepository.integrityservice.checking.reports.MissingFileReport;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,40 +50,42 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The cache for the integrity data.*/
     private final IntegrityModel cache;
-    /** The settings.*/
-    private final Settings settings;
-    /** The audit trail manager.*/
-    private final AuditTrailManager auditManager;
-
+    /** FileExistenceValdiator for validating whether all pillars contain given files.*/
+    private final FileExistenceValidator fileIdChecker;
+    /** Finds the obsolete checksums.*/
+    private final ObsoleteChecksumFinder obsoleteChecksumFinder;
+    /** Validates the checksum.*/
+    private final ChecksumIntegrityValidator checksumValidator;
+    
     /**
      * Constructor.
+     * @param settings The settings for the system.
+     * @param cache The cache with the integrity model.
+     * @param auditManager the audit trail manager.
      */
     public SimpleIntegrityChecker(Settings settings, IntegrityModel cache, AuditTrailManager auditManager) {
         this.cache = cache;
-        this.settings = settings;
-        this.auditManager = auditManager;
+        
+        this.fileIdChecker = new FileExistenceValidator(settings, cache, auditManager);
+        this.obsoleteChecksumFinder = new ObsoleteChecksumFinder(cache);
+        this.checksumValidator = new ChecksumIntegrityValidator(settings, cache, auditManager);
     }
     
     @Override
     public IntegrityReport checkFileIDs(FileIDs fileIDs) {
         log.info("Validating the files: '" + fileIDs + "'");
+        // TODO could perhaps be optimised by using the method 'getMissingFileIDs' from the database ??
         Collection<String> requestedFileIDs = getRequestedFileIDs(fileIDs);
         
-        IntegrityReport report = new IntegrityReport();
-        FileExistenceValidator fValidator = new FileExistenceValidator(cache, settings);
-        for(String fileId : requestedFileIDs) {
-            IntegrityReport singleReport = fValidator.validateFile(fileId);
-            report.combineWithReport(singleReport);
+        MissingFileReport report = fileIdChecker.generateReport(requestedFileIDs);
             
-            if(singleReport.hasIntegrityIssues()) {
-                auditManager.addAuditEvent(fileId, "IntegrityService", singleReport.generateReport(), 
-                        "IntegrityService checking files.", FileAction.INCONSISTENCY);
-            }
-        }
-        
         if(report.hasIntegrityIssues()) {
             log.warn("Found errors in the integrity check: " + report.generateReport());
-            validateWhetherDeletingFileID(report);
+            
+            for(String deleteableFileId : report.getDeleteableFiles()) {
+                log.info("The file '{}' is deleteable and will be removed from the cache.", deleteableFileId);
+                cache.deleteFileIdEntry(deleteableFileId);
+            }
         }
         
         return report;
@@ -89,24 +96,33 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
         log.info("Validating the checksum for the files: '" + fileIDs + "'");
         Collection<String> requestedFileIDs = getRequestedFileIDs(fileIDs);
         
-        IntegrityReport report = new IntegrityReport();
+        return checksumValidator.generateReport(requestedFileIDs);
+    }
+    
+    @Override
+    public IntegrityReport checkMissingChecksums() {
+        MissingChecksumReport report = new MissingChecksumReport();
         
-        for(String fileId : requestedFileIDs) {
-            ChecksumValidator checksumValidator = new ChecksumValidator(cache, fileId);
-            IntegrityReport singleReport = checksumValidator.validateChecksum();
-            report.combineWithReport(singleReport);
+        for(String fileId : cache.findMissingChecksums()) {
+            List<String> pillarIds = new ArrayList<String>();
             
-            if(singleReport.hasIntegrityIssues()) {
-                auditManager.addAuditEvent(fileId, "IntegrityService", singleReport.generateReport(), 
-                        "IntegrityService checking files.", FileAction.INCONSISTENCY);
+            // TODO make a better method for this! Perhaps directly in the database.
+            for(FileInfo fileinfo : cache.getFileInfos(fileId)) {
+                if(fileinfo.getFileState() == FileState.EXISTING 
+                        && fileinfo.getChecksumState() == ChecksumState.UNKNOWN) {
+                    pillarIds.add(fileinfo.getPillarId());
+                }
             }
-        }
-        
-        if(report.hasIntegrityIssues()) {
-            log.warn("Found errors in the integrity check: " + report.generateReport());
+            
+            report.reportMissingChecksum(fileId, pillarIds);
         }
         
         return report;
+    }
+
+    @Override
+    public IntegrityReport checkObsoleteChecksums(long outdatedInterval) {
+        return obsoleteChecksumFinder.generateReport(outdatedInterval);
     }
     
     /**
@@ -120,25 +136,5 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
         } 
         return Arrays.asList(fileIDs.getFileID());
     }
-    
-    /**
-     * Validates the integrity report for whether any file ids are missing on all pillars, and therefore should be
-     * removed from the database.
-     * @param report The report to analyse.
-     */
-    private void validateWhetherDeletingFileID(IntegrityReport report) {
-        log.info("Checking for files missing at all pillars.");
-        for(MissingFileData missingFile : report.getMissingFiles()) {
-            List<String> pillars = new ArrayList<String>();
-            pillars.addAll(settings.getCollectionSettings().getClientSettings().getPillarIDs());
-            
-            for(String pillarId : missingFile.getPillarIds()) {
-                pillars.remove(pillarId);
-            }
-            
-            if(pillars.isEmpty()) {
-                cache.deleteFileIdEntry(missingFile.getFileId());
-            }
-        }
-    }
+
 }

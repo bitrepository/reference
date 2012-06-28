@@ -25,6 +25,7 @@
 package org.bitrepository.integrityservice.cache;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
@@ -116,8 +117,22 @@ public interface IntegrityModel {
     List<String> findMissingChecksums();
     
     /**
+     * Locates the id of all the files which are older than a given date.
+     * @param date The date for the checksum to be old than.
+     * @return The list of ids for the files which have an old checksum.
+     */
+    Collection<String> findChecksumsOlderThan(Date date);
+    
+    /**
      * Locates the files which are missing at any pillar.
      * @return The list of file ids for the files which are missing at any pillar.
      */
     List<String> findMissingFiles();
+    
+    /**
+     * Checks whether a given file is missing and returns the list of pillars, where it is missing.
+     * @param fileId The id of the file to check whether it is missing.
+     * @return The list of pillars where it is missing (empty list, if not missing at any pillar).
+     */
+    List<String> isMissing(String fileId);
 }

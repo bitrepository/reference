@@ -28,7 +28,8 @@ import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityservice.workflow.step.FindMissingChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.FindObsoleteChecksumsStep;
-import org.bitrepository.integrityservice.workflow.step.IntegrityValidationStep;
+import org.bitrepository.integrityservice.workflow.step.IntegrityValidationChecksumStep;
+import org.bitrepository.integrityservice.workflow.step.IntegrityValidationFileIDsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
 
@@ -67,19 +68,22 @@ public class BasicIntegrityWorkflow extends StepBasedWorkflow {
     
     @Override
     public void start() {
-        UpdateFileIDsStep fileIDsStep = new UpdateFileIDsStep(settings, collector, store);
-        performStep(fileIDsStep);
+        UpdateFileIDsStep updateFileIDsStep = new UpdateFileIDsStep(settings, collector, store);
+        performStep(updateFileIDsStep);
         
-        UpdateChecksumsStep checksumStep = new UpdateChecksumsStep(settings, collector, store);
-        performStep(checksumStep);
+        UpdateChecksumsStep updateChecksumStep = new UpdateChecksumsStep(settings, collector, store);
+        performStep(updateChecksumStep);
         
-        IntegrityValidationStep integrityStep = new IntegrityValidationStep(checker, alerter);
-        performStep(integrityStep);
+        IntegrityValidationFileIDsStep validateFileidsStep = new IntegrityValidationFileIDsStep(checker, alerter);
+        performStep(validateFileidsStep);
         
-        FindMissingChecksumsStep findMissingChecksums = new FindMissingChecksumsStep(store, alerter);
+        IntegrityValidationChecksumStep validateChecksumStep = new IntegrityValidationChecksumStep(checker, alerter);
+        performStep(validateChecksumStep);
+        
+        FindMissingChecksumsStep findMissingChecksums = new FindMissingChecksumsStep(checker, alerter);
         performStep(findMissingChecksums);
         
-        FindObsoleteChecksumsStep findObsoleteChecksums = new FindObsoleteChecksumsStep(store, alerter,
+        FindObsoleteChecksumsStep findObsoleteChecksums = new FindObsoleteChecksumsStep(checker, alerter,
                 settings.getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck());
         performStep(findObsoleteChecksums);
     }

@@ -28,92 +28,108 @@ import java.util.List;
 import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.checking.reports.ChecksumReport;
+import org.bitrepository.service.audit.AuditTrailManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Validator of checksums for a given file.
- * Uses the cache to extract information about the file for the different pillars, and then uses this information
- * to validate whether the different pillars agree upon the checksum, or the given file has integrity issues.
+ * Validates the checksum integrity.
  */
-public class ChecksumValidator {
+public class ChecksumIntegrityValidator {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The cache for the integrity data.*/
     private final IntegrityModel cache;
-    /** The id of the file to have its checksum validated.*/
-    private final String fileId;
-    /** The different informations about this file for the different pillars.*/
-    private final Collection<FileInfo> fileInfos;
-    /** The ids of the pillars containing this file.*/
+    /** The audit trail manager.*/
+    private final AuditTrailManager auditManager;
+    /** The list of pillar ids.*/
     private final List<String> pillarIds;
     
     /**
      * Constructor.
-     * @param cache The cache for the integrity data.
+     * @param settings The settings for the system.
+     * @param cache The cache with the integrity model.
+     * @param auditManager the audit trail manager.
      */
-    public ChecksumValidator(IntegrityModel cache, String fileId) {
+    public ChecksumIntegrityValidator(Settings settings, IntegrityModel cache, AuditTrailManager auditManager) {
         this.cache = cache;
-        this.fileId = fileId;
-        this.fileInfos = cache.getFileInfos(fileId);
-        this.pillarIds = getPillarIds(fileInfos);
+        this.auditManager = auditManager;
+        
+        this.pillarIds = settings.getCollectionSettings().getClientSettings().getPillarIDs();
     }
 
     /**
-     * Performs the actual checksum validation. 
-     * Starts by validating the checksum specifications of the file.
-     * Then the different checksum are counted. If more than one checksum is found, then it is voted which
-     * one is chosen to be the correct checksum, and the pillars where the file has a different checksum is marked
-     * as having integrity issues.
-     * @return The report of the checksum validation.
+     * Performs the validation of the checksums for the given file ids.
+     * This includes voting if some of the checksums differs between the pillars.
+     * 
+     * @param requestedFileIDs The list of ids for the files to validate.
+     * @return The report for the results of the validation.
      */
-    public IntegrityReport validateChecksum() {
-        if(!validateChecksumSpec()) {
-            IntegrityReport report = new IntegrityReport();
-            report.addFileWithCheksumSpecIssues(fileId);
-            return report;
+    public ChecksumReport generateReport(Collection<String> requestedFileIDs) {
+        ChecksumReport report = new ChecksumReport();
+        
+        for(String fileId : requestedFileIDs) {
+            Collection<FileInfo> fileinfos = cache.getFileInfos(fileId);
+            if(!validateChecksumSpec(fileinfos)) {
+                report.reportBadChecksumSpec(fileId);
+                auditManager.addAuditEvent(fileId, "IntegrityService", "The file '" + fileId +"' does not have the "
+                        + "same checksum type at all pillars", "IntegrityService checking files.", 
+                        FileAction.INCONSISTENCY);
+            } else {
+                validateSingleFile(fileId, fileinfos, report);
+            }
         }
         
-        // Maps between pillar and checksum, and between checksum and count of the given checksum.
-        Map<String, Integer> checksumCount = getChecksumCount(fileInfos);
-        
-        // Vote if necessary and tell the cache of the results.
-        if(checksumCount.size() > 1) {
-            log.trace("Has to vote for the checksum on file '" + fileId + "'");
-            String chosenChecksum = voteForChecksum(checksumCount);
-            
-            return handleVoteResults(chosenChecksum);
-        } else {
-            // All the pillars must have the same checksum, and the file does not have checksum issues.
-            cache.setChecksumAgreement(fileId, pillarIds);
-            IntegrityReport report = new IntegrityReport();
-            report.addFileWithoutIssue(fileId);
-            return report;        
-        }
+        return report;
     }
     
     /**
      * Validates whether the checksum specifications are the same for each pillar.
-     * @return Whether every pillar have delivered the same checksum.
+     * @return Whether every pillar have delivered the same type of checksum.
      */
-    private boolean validateChecksumSpec() {
+    private boolean validateChecksumSpec(Collection<FileInfo> fileinfos) {
         ChecksumSpecTYPE csType = null;
-        for(FileInfo fileInfo : fileInfos) {
+        for(FileInfo fileInfo : fileinfos) {
             if(csType == null) {
                 csType = fileInfo.getChecksumType();
                 continue;
             }
-            
+
             if(!csType.equals(fileInfo.getChecksumType())) {
-                log.warn("Expected to see the ChecksumSpec: '" + csType + "', but it was '" 
-                        + fileInfo.getChecksumType() + "'. Integrity issue found for the file infos: {}", fileInfos);
+                log.warn("Expected to see the ChecksumSpec: '" + csType + "', but it was '"
+                        + fileInfo.getChecksumType() + "'. Integrity issue found for the file infos: {}", fileinfos);
                 return false;
             }
         }
-        
+
         return true;
+    }
+    
+    /**
+     * 
+     * @param fileinfos
+     * @param report
+     */
+    private void validateSingleFile(String fileId, Collection<FileInfo> fileinfos, ChecksumReport report) {
+        Map<String, Integer> checksumCount = getChecksumCount(fileinfos);
+        
+        if(checksumCount.size() > 1) {
+            log.debug("Has to vote for the checksum on file '" + fileId + "'");
+            String chosenChecksum = voteForChecksum(checksumCount);
+            handleVoteResults(chosenChecksum, fileId, fileinfos, report);
+            
+            auditManager.addAuditEvent(fileId, "IntegrityService", "Checksum inconsistency for file '" + fileId + "':"
+                    + fileinfos, "IntegrityService validating the checksums.", 
+                    FileAction.INCONSISTENCY);
+        } else {
+            cache.setChecksumAgreement(fileId, pillarIds);
+            report.reportNoChecksumIssues(fileId);
+        }
     }
     
     /**
@@ -170,54 +186,39 @@ public class ChecksumValidator {
     }
     
     /**
-     * Generates a integrity report based on the scenario where not all pillars agreed upon the checksum, and there 
-     * had to be voted to find a common checksum, which is chosen as the correct checksum.
-     * The pillars with this chosen checksum will be marked as valid, whereas the others will be marked as having 
-     * checksum errors.
+     * 
      * @param chosenChecksum The chosen checksum to validate the pillars against. If this is null, then no checksum is 
      * valid and all pillars will be set to having an invalid checksum.
-     * @return The report for the vote containing the pillars with invalid checksum.
+     * @param fileId The id of the file to handle the voting results of.
+     * @param fileinfos The collection of fileinfos for the given file.
+     * @param report The report where the results are put.
      */
-    private IntegrityReport handleVoteResults(String chosenChecksum) {
-        IntegrityReport report = new IntegrityReport();
-        
+    private void handleVoteResults(String chosenChecksum, String fileId, Collection<FileInfo> fileinfos, ChecksumReport report) {
         if(chosenChecksum == null) {
             cache.setChecksumError(fileId, pillarIds);
-            report.addIncorrectChecksums(fileId, pillarIds);
+            for(FileInfo fi : fileinfos) {
+                report.reportChecksumError(fileId, fi.getPillarId(), fi.getChecksum());
+            }
         } else {
-            List<String> missingPillars = new ArrayList<String>();
-            List<String> presentPillars = new ArrayList<String>();
+            List<String> pillarsWithCorrectChecksum = new ArrayList<String>();
+            List<String> pillarsWithWrongChecksum = new ArrayList<String>();
             
-            for(FileInfo fileInfo : fileInfos) {
-                if(!fileInfo.getChecksum().equals(chosenChecksum)) {
-                    missingPillars.add(fileInfo.getPillarId());
+            for(FileInfo fileInfo : fileinfos) {
+                if(fileInfo.getChecksum().equals(chosenChecksum)) {
+                    pillarsWithCorrectChecksum.add(fileInfo.getPillarId());
                 } else {
-                    presentPillars.add(fileInfo.getPillarId());
+                    pillarsWithWrongChecksum.add(fileInfo.getPillarId());
+                    report.reportChecksumError(fileId, fileInfo.getPillarId(), fileInfo.getChecksum());
                 }
             }
             
-            if(!presentPillars.isEmpty()) {
-                cache.setChecksumAgreement(fileId, presentPillars);
+            if(!pillarsWithCorrectChecksum.isEmpty()) {
+                cache.setChecksumAgreement(fileId, pillarsWithCorrectChecksum);
+                report.reportChecksumAgreement(fileId, pillarsWithCorrectChecksum, chosenChecksum);
             }
-            if(!missingPillars.isEmpty()) {
-                cache.setChecksumError(fileId, missingPillars);
+            if(!pillarsWithWrongChecksum.isEmpty()) {
+                cache.setChecksumError(fileId, pillarsWithWrongChecksum);
             }
-            report.addIncorrectChecksums(fileId, missingPillars);
         }
-        
-        return report;
-    }
-    
-    /**
-     * Method for extracting the pillar ids from a list of file infos.
-     * @param fileInfos The collection of information about a given file.
-     * @return The pillars who have information about this file.
-     */
-    private List<String> getPillarIds(Collection<FileInfo> fileInfos) {
-        List<String> res = new ArrayList<String>();
-        for(FileInfo fileInfo : fileInfos) {
-            res.add(fileInfo.getPillarId());
-        }
-        return res;
     }
 }
