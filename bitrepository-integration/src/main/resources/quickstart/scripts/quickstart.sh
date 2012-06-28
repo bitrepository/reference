@@ -33,9 +33,12 @@ cd $quickstartdir
 #Setup configuration files, this includes:
 # - Create symlinks for CollectionSettings files in relevant configuration folders
 # - Setup paths to configs in relevant config files 
-for directory in $(ls -l conf | grep "^d" | cut -d " " -f9) do
+for directory in $(ls -l conf | grep "^d" | cut -d " " -f9) 
+do
         cd "conf/$directory"
-	rm CollectionSettings.xml
+	if [ -a "CollectionSettings.xml" ]; then
+		rm CollectionSettings.xml
+	fi
         ln -s ../CollectionSettings.xml .
 	sed -i s%\<\!--foobarpattern--\>%$quickstartdir/% ReferenceSettings.xml > /dev/null
 	sed -i s%\{user.home\}%$quickstartdir% logback.xml 
@@ -44,7 +47,8 @@ done
 
 sed -i s%eventsfile%$quickstartdir/webclient-events% $configdir/webclient/webclient.properties 
 
-for file in $(ls -l tomcat-services/*.xml | cut -d " " -f9) do
+for file in $(ls -l tomcat-services/*.xml | cut -d " " -f9) 
+do
 	sed -i s%\${user.home}%$quickstartdir/% $file
 done
 
@@ -83,6 +87,15 @@ fi
 curl http://apache.mirrors.webname.dk/tomcat/tomcat-6/v6.0.35/bin/apache-tomcat-6.0.35.tar.gz > tomcat.tar.gz
 tar xfz tomcat.tar.gz
 mv apache-tomcat-* tomcat
+
+cd tomcat/conf
+if [ ! -d Catalina ]; then
+        echo "Catalina dir is missing"
+        mkdir Catalina
+        cd Catalina
+        mkdir localhost
+fi
+cd $quickstartdir
 
 for app in bitrepository-webclient.xml bitrepository-alarm-service.xml bitrepository-integrity-service.xml bitrepository-audit-trail-service.xml  bitrepository-monitoring-service.xml ; do
 	ln -sf $quickstartdir/tomcat-services/$app $quickstartdir/tomcat/conf/Catalina/localhost/$app
