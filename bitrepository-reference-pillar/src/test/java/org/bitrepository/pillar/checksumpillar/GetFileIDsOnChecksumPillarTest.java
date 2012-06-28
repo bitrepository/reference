@@ -44,10 +44,13 @@ import java.util.Date;
  */
 public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
     private GetFileIDsMessageFactory msgFactory;
-    
+    FileIDs allFileIDs;
+
     @BeforeMethod (alwaysRun=true)
-    public void initialiseGetFileIDsOnChecksum() throws Exception {
+    public void initialiseGetFileIDsOnReferencePillarTest() throws Exception {
         msgFactory = new GetFileIDsMessageFactory(componentSettings);
+        allFileIDs = new FileIDs();
+        allFileIDs.setAllFileIDs("true");
     }    
 
     @Test( groups = {"regressiontest", "pillartest"})
@@ -214,6 +217,35 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                         finalResponse.getResponseInfo(), 
                         finalResponse.getResultingFileIDs(),
                         finalResponse.getTo()));      
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void pillarGetFileIDsTestBadDeliveryURL() throws Exception {
+        addDescription("Test the case when the delivery URL is unaccessible.");
+        String badURL = "http://localhost:61616/¾";
+        GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
+                null, msgFactory.getNewCorrelationID(), allFileIDs, getPillarID(), getPillarID(), 
+                clientDestinationId, badURL, pillarDestinationId);
+        messageBus.sendMessage(getFileIDsRequest);
+        
+        GetFileIDsFinalResponse finalResponse = clientTopic.waitForMessage(GetFileIDsFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.FILE_TRANSFER_FAILURE);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void pillarGetFileIDsTestDeliveryThroughMessage() throws Exception {
+        addDescription("Test the case when the results should be delivered through the message .");
+        GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
+                null, msgFactory.getNewCorrelationID(), allFileIDs, getPillarID(), getPillarID(), 
+                clientDestinationId, null, pillarDestinationId);
+        messageBus.sendMessage(getFileIDsRequest);
+        
+        GetFileIDsFinalResponse finalResponse = clientTopic.waitForMessage(GetFileIDsFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.OPERATION_COMPLETED);
+        Assert.assertNull(finalResponse.getResultingFileIDs().getResultAddress());
+        Assert.assertNotNull(finalResponse.getResultingFileIDs().getFileIDsData());
     }
 
     @Override

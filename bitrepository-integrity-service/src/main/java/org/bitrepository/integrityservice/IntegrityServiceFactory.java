@@ -40,7 +40,7 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.service.ServiceSettingsProvider;
-import org.bitrepository.service.ServiceType;
+import org.bitrepository.settings.referencesettings.ServiceType;
 
 /**
  * Factory class for instantiating the integrity service
@@ -95,7 +95,7 @@ public final class IntegrityServiceFactory {
             }
             loadProperties();
             ServiceSettingsProvider settingsLoader =
-                    new ServiceSettingsProvider(new XMLFileSettingsLoader(confDir), ServiceType.IntegrityService);
+                    new ServiceSettingsProvider(new XMLFileSettingsLoader(confDir), ServiceType.INTEGRITY_SERVICE);
             settings = settingsLoader.getSettings();
         }
 

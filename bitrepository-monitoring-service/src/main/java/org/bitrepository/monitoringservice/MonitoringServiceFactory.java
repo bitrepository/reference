@@ -36,7 +36,7 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.service.ServiceSettingsProvider;
-import org.bitrepository.service.ServiceType;
+import org.bitrepository.settings.referencesettings.ServiceType;
 
 /**
  * The factory for the monitoring service.
@@ -82,7 +82,7 @@ public class MonitoringServiceFactory {
             }
             loadProperties();
             ServiceSettingsProvider settingsLoader =
-                    new ServiceSettingsProvider(new XMLFileSettingsLoader(confDir), ServiceType.MonitoringService);
+                    new ServiceSettingsProvider(new XMLFileSettingsLoader(confDir), ServiceType.MONITORING_SERVICE);
 
             settings = settingsLoader.getSettings();
         }

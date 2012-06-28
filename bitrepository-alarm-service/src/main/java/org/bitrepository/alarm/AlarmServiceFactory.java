@@ -46,9 +46,9 @@ import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.ServiceSettingsProvider;
-import org.bitrepository.service.ServiceType;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
+import org.bitrepository.settings.referencesettings.ServiceType;
 
 /**
  * Class for launching an alarm service.
@@ -92,7 +92,7 @@ public class AlarmServiceFactory {
             PermissionStore permissionStore;
             SecurityManager securityManager;
             ServiceSettingsProvider settingsLoader =
-                    new ServiceSettingsProvider(new XMLFileSettingsLoader(configurationDir), ServiceType.AlarmService);
+                    new ServiceSettingsProvider(new XMLFileSettingsLoader(configurationDir), ServiceType.ALARM_SERVICE);
 
             Settings settings = settingsLoader.getSettings();
             try {

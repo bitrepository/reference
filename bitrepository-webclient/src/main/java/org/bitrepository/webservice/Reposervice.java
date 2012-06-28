@@ -1,3 +1,24 @@
+/*
+ * #%L
+ * Bitrepository Webclient
+ * %%
+ * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.webservice;
 
 import java.net.MalformedURLException;
@@ -23,14 +44,14 @@ import org.bitrepository.GetFileIDsResults;
 
 @Path("/reposervice")
 public class Reposervice {
-    
+
     private BasicClient client;
-    
-    
+
+
     public Reposervice() {
         client = BasicClientFactory.getInstance();
     }
-    
+
     /**
      * putFile exposes the possibility of uploading a file to the bitrepository collection that the webservice 
      * is configured to use. The three parameters are all mandatory.
@@ -62,12 +83,12 @@ public class Reposervice {
                 approveChecksumTypeStr = approveChecksumType;
             }
             return client.putFile(fileID, fileSize, makeUrl(URL), putChecksum, putChecksumType, putSalt, 
-        		approveChecksumTypeStr, approveSalt);
+                    approveChecksumTypeStr, approveSalt);
         } catch (IllegalArgumentException e) {
             throw new WebserviceIllegalArgumentException(e.getMessage());
         }
     }
-    
+
     /**
      * getFile exposes the possibility of downloading a file from the bitrepository collection that the webservice 
      * is configured to use. The two parameters are all mandatory.
@@ -89,7 +110,7 @@ public class Reposervice {
             throw new WebserviceIllegalArgumentException(e.getMessage());
         }
     }
-    
+
     /**
      * Lists files that has completed upload from the collection. 
      */
@@ -99,7 +120,7 @@ public class Reposervice {
     public String getCompletedFiles() {
         return client.getCompletedFiles();
     }
-    
+
     /**
      * getLog gets the log of events that has happened since the webclient were started. The log contains a textual description 
      * of all events that has occurred, both successes and failures.  
@@ -111,7 +132,7 @@ public class Reposervice {
     public String getLog() {
         return client.getLog();
     }
-    
+
     @GET
     @Path("/getPillarList/")
     @Produces("text/json")
@@ -130,7 +151,7 @@ public class Reposervice {
         sb.append("]");
         return sb.toString();
     }
-    
+
     /**
      * getHtmlLog gets the log of events that has happened since the webclient were started. The log contains a textual description 
      * of all events that has occurred, both successes and failures.  
@@ -142,7 +163,7 @@ public class Reposervice {
     public String getHtmlLog() {
         return client.getHtmlLog();
     }
-    
+
     /**
      * getShortHtmlLog gets the latests 25 log entries in reverse order. The log contains a textual description 
      * of all events that has occurred, both successes and failures.  
@@ -152,9 +173,9 @@ public class Reposervice {
     @Path("/getShortHtmlLog")
     @Produces("text/html")
     public String getShortHtmlLog() {
-    	return client.getShortHtmlLog();
+        return client.getShortHtmlLog();
     }
-    
+
     /**
      * getSettingsSummary provides a summary of some important settings of the Bitrepository collection, herein:
      * - The message bus which that is communicated with
@@ -168,7 +189,7 @@ public class Reposervice {
     public String getSummarySettings() {
         return client.getSettingsSummary();
     }
-    
+
     /**
      * getChecksumsHtml exposes the possibility of requesting checksums for the files present in the Bitrepository.
      * The two first parameters are mandatory.
@@ -183,49 +204,49 @@ public class Reposervice {
     @Path("getChecksumsHtml")
     @Produces("text/html")
     public String getChecksumsHtml(
-    		@QueryParam("fileID") String fileID,
-    		@QueryParam("checksumType") String checksumType,
-    		@QueryParam("salt") String salt) throws WebserviceIllegalArgumentException {
+            @QueryParam("fileID") String fileID,
+            @QueryParam("checksumType") String checksumType,
+            @QueryParam("salt") String salt) throws WebserviceIllegalArgumentException {
 
         WebserviceInputChecker.checkFileIDParameter(fileID);
         WebserviceInputChecker.checkChecksumTypeParameter(checksumType);
         WebserviceInputChecker.checkSaltParameter(salt);
-        
-    	Map<String, Map<String, String>> result = client.getChecksums(fileID, checksumType, salt);
-    	if(result == null) {
-    		return "<html><body><b>Failed!</b></body></html>";
-    	}
-    	StringBuilder sb = new StringBuilder();
-    	sb.append("<html><body><table>");
-    	Set<String> returnedFileIDs = result.keySet();
-    	ArrayList <String> pillarIDList = new ArrayList<String>();
-    	
-    	sb.append("<tr> <td><b>File Id:</b></td><td>&nbsp;</td>");
-    	for(String fileId : returnedFileIDs) {
-    		Set<String> pillarIDs = result.get(fileId).keySet();
-    		for(String pillarID : pillarIDs) {
-    			pillarIDList.add(pillarID);
-    			sb.append("<td><b>Checksums from " + pillarID + ":</b></td>");
-    		}
-    		break;
-    	}
-    	sb.append("</tr>");
-    	for(String fileId : returnedFileIDs) {
-    		sb.append("<tr> <td> " + fileId + "</td><td>&nbsp;</td>"); 
-    		for(String pillarID : pillarIDList) {
-    			if(result.get(fileId).containsKey(pillarID)) {
-    				sb.append("<td> " + result.get(fileId).get(pillarID) + " </td>");	
-    			} else {
-    				sb.append("<td> unknown </td>");
-    			}
-    		}
-    		sb.append("</tr>");
-    	}
-    	sb.append("</table></body></html>");
-    	
-    	return sb.toString();
+
+        Map<String, Map<String, String>> result = client.getChecksums(fileID, checksumType, salt);
+        if(result == null) {
+            return "<html><body><b>Failed!</b></body></html>";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html><body><table>");
+        Set<String> returnedFileIDs = result.keySet();
+        ArrayList <String> pillarIDList = new ArrayList<String>();
+
+        sb.append("<tr> <td><b>File Id:</b></td><td>&nbsp;</td>");
+        for(String fileId : returnedFileIDs) {
+            Set<String> pillarIDs = result.get(fileId).keySet();
+            for(String pillarID : pillarIDs) {
+                pillarIDList.add(pillarID);
+                sb.append("<td><b>Checksums from " + pillarID + ":</b></td>");
+            }
+            break;
+        }
+        sb.append("</tr>");
+        for(String fileId : returnedFileIDs) {
+            sb.append("<tr> <td> " + fileId + "</td><td>&nbsp;</td>"); 
+            for(String pillarID : pillarIDList) {
+                if(result.get(fileId).containsKey(pillarID)) {
+                    sb.append("<td> " + result.get(fileId).get(pillarID) + " </td>");	
+                } else {
+                    sb.append("<td> unknown </td>");
+                }
+            }
+            sb.append("</tr>");
+        }
+        sb.append("</table></body></html>");
+
+        return sb.toString();
     }
-    
+
     /**
      * getChecksums exposes the possibility of requesting checksums for the files present in the Bitrepository.
      * The two first parameters are mandatory.
@@ -240,44 +261,44 @@ public class Reposervice {
     @Path("getChecksums")
     @Produces("text/plain")
     public String getChecksums(
-    		@QueryParam("fileID") String fileID,
-    		@QueryParam("checksumType") String checksumType,
-    		@QueryParam("salt") String salt) throws WebserviceIllegalArgumentException {
+            @QueryParam("fileID") String fileID,
+            @QueryParam("checksumType") String checksumType,
+            @QueryParam("salt") String salt) throws WebserviceIllegalArgumentException {
 
         WebserviceInputChecker.checkFileIDParameter(fileID);
         WebserviceInputChecker.checkChecksumTypeParameter(checksumType);
         WebserviceInputChecker.checkSaltParameter(salt);
 
-    	Map<String, Map<String, String>> result = client.getChecksums(fileID, checksumType, salt);
-    	if(result == null) {
-    		return "Failed!";
-    	}
-    	StringBuilder sb = new StringBuilder();
-    	Set<String> returnedFileIDs = result.keySet();
-    	ArrayList <String> pillarIDList = new ArrayList<String>();
-    	
-    	sb.append("FileID \t");
-    	for(String fileId : returnedFileIDs) {
-    		Set<String> pillarIDs = result.get(fileId).keySet();
-    		for(String pillarID : pillarIDs) {
-    			pillarIDList.add(pillarID);
-    			sb.append(pillarID + "\t");
-    		}
-    		break;
-    	}
-    	sb.append("\n");
-    	for(String fileId : returnedFileIDs) {
-    		sb.append(fileId + "\t"); 
-    		for(String pillarID : pillarIDList) {
-    			if(result.get(fileId).containsKey(pillarID)) {
-    				sb.append(result.get(fileId).get(pillarID) + "\t");	
-    			} else {
-    				sb.append("unknown \t");
-    			}
-    		}
-    		sb.append("\n");
-    	}
-    	return sb.toString();
+        Map<String, Map<String, String>> result = client.getChecksums(fileID, checksumType, salt);
+        if(result == null) {
+            return "Failed!";
+        }
+        StringBuilder sb = new StringBuilder();
+        Set<String> returnedFileIDs = result.keySet();
+        ArrayList <String> pillarIDList = new ArrayList<String>();
+
+        sb.append("FileID \t");
+        for(String fileId : returnedFileIDs) {
+            Set<String> pillarIDs = result.get(fileId).keySet();
+            for(String pillarID : pillarIDs) {
+                pillarIDList.add(pillarID);
+                sb.append(pillarID + "\t");
+            }
+            break;
+        }
+        sb.append("\n");
+        for(String fileId : returnedFileIDs) {
+            sb.append(fileId + "\t"); 
+            for(String pillarID : pillarIDList) {
+                if(result.get(fileId).containsKey(pillarID)) {
+                    sb.append(result.get(fileId).get(pillarID) + "\t");	
+                } else {
+                    sb.append("unknown \t");
+                }
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
     /**
@@ -294,39 +315,39 @@ public class Reposervice {
     @Path("getFileIDsHtml")
     @Produces("text/html")
     public String getFileIDsHtml(
-    		@QueryParam("fileIDs") String fileIDs,
-    		@QueryParam("allFileIDs") boolean allFileIDs) throws WebserviceIllegalArgumentException {
-    	GetFileIDsResults results = client.getFileIDs(fileIDs, allFileIDs);
-    	if(results.getResults() == null) {
-    		return "<p>Get file ID's provided no results.</p>";
-    	}
-    	StringBuilder sb = new StringBuilder();
-    	sb.append("<html><head><style> #good{background-color:#31B404;} #bad{background-color:#B40404;} " +
-    			"td{padding: 5px;}</style></head><body>"); 
-    	
-    	sb.append("<table> <tr valign=\"top\"> \n <td>");
-    	sb.append("<table> <tr> <th> <b>File Id:</b> </th> <th>&nbsp;&nbsp;" +
-    			"</th><th><b>Number of answers </b></th></tr>");
-    	Set<String> IDs = results.getResults().keySet();
-    	String status;
-    	for(String ID : IDs) {
-    		if(results.getResults().get(ID).size() == results.getPillarList().size()) {
-    			status = "good";
-    		} else {
-    			status = "bad";
-    		}
-    		sb.append("<tr><td id=" + status + ">" + ID + "</td><td></td><td>" + 
-    				results.getResults().get(ID).size() +"</td></tr>");
-    	}
-    	sb.append("</table> </td> <td>&nbsp;&nbsp;</td><td><table><tr> <th> <b> Pillar list</b> </th> </tr>");
-    	for(String pillar : results.getPillarList()) {
-    		sb.append("<tr><td>" + pillar + "</td></tr>");
-    	}
-    	sb.append("</table></td> </tr> </table></body></html>");
-    	
-    	return sb.toString();
+            @QueryParam("fileIDs") String fileIDs,
+            @QueryParam("allFileIDs") boolean allFileIDs) throws WebserviceIllegalArgumentException {
+        GetFileIDsResults results = client.getFileIDs(fileIDs, allFileIDs);
+        if(results.getResults() == null) {
+            return "<p>Get file ID's provided no results.</p>";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html><head><style> #good{background-color:#31B404;} #bad{background-color:#B40404;} " +
+        "td{padding: 5px;}</style></head><body>"); 
+
+        sb.append("<table> <tr valign=\"top\"> \n <td>");
+        sb.append("<table> <tr> <th> <b>File Id:</b> </th> <th>&nbsp;&nbsp;" +
+        "</th><th><b>Number of answers </b></th></tr>");
+        Set<String> IDs = results.getResults().keySet();
+        String status;
+        for(String ID : IDs) {
+            if(results.getResults().get(ID).size() == results.getPillarList().size()) {
+                status = "good";
+            } else {
+                status = "bad";
+            }
+            sb.append("<tr><td id=" + status + ">" + ID + "</td><td></td><td>" + 
+                    results.getResults().get(ID).size() +"</td></tr>");
+        }
+        sb.append("</table> </td> <td>&nbsp;&nbsp;</td><td><table><tr> <th> <b> Pillar list</b> </th> </tr>");
+        for(String pillar : results.getPillarList()) {
+            sb.append("<tr><td>" + pillar + "</td></tr>");
+        }
+        sb.append("</table></td> </tr> </table></body></html>");
+
+        return sb.toString();
     }
-    
+
     /**
      * getFileIDs exposes the possibility of requesting listing of all files present in the Bitrepository.
      * @return A string containing one fileID per line.  
@@ -342,10 +363,10 @@ public class Reposervice {
                 sb.append(ID + "\n");
             }
         }
-        
+
         return sb.toString();
     }
-    
+
     @GET
     @Path("deleteFile")
     @Produces("text/html")
@@ -360,7 +381,7 @@ public class Reposervice {
         WebserviceInputChecker.checkFileIDParameter(fileID);
         WebserviceInputChecker.checkPillarIDParameter(pillarID);
         WebserviceInputChecker.checkChecksumParameter(deleteChecksum);
-        
+
         try {
             return client.deleteFile(fileID, pillarID, deleteChecksum, deleteChecksumType, deleteChecksumSalt, 
                     approveChecksumType, approveChecksumSalt);
@@ -385,7 +406,7 @@ public class Reposervice {
             @QueryParam("newFileChecksumSalt") String newFileChecksumSalt,
             @QueryParam("newFileRequestChecksumType") String newFileRequestChecksumType,
             @QueryParam("newFileRequestChecksumSalt") String newFileRequestChecksumSalt) throws WebserviceIllegalArgumentException {
-        
+
         WebserviceInputChecker.checkFileIDParameter(fileID);
         WebserviceInputChecker.checkFileSizeParameter(fileSize);
         WebserviceInputChecker.checkPillarIDParameter(pillarID);
@@ -400,7 +421,7 @@ public class Reposervice {
         WebserviceInputChecker.checkSaltParameter(newFileChecksumSalt);
         WebserviceInputChecker.checkSaltParameter(newFileRequestChecksumSalt);
         //WebserviceInputChecker.checkChecksumTypeParameter(newFileRequestChecksumType);
-        
+
         try {
             return client.replaceFile(fileID, pillarID, oldFileChecksum, oldFileChecksumType, oldFileChecksumSalt, 
                     oldFileRequestChecksumType, oldFileRequestChecksumSalt, makeUrl(url), Long.parseLong(fileSize), newFileChecksum, 
@@ -409,7 +430,7 @@ public class Reposervice {
             throw new WebserviceIllegalArgumentException(e.getMessage());
         }
     }
-    
+
     private URL makeUrl(String urlStr) {     
         try {
             return new URL(urlStr);

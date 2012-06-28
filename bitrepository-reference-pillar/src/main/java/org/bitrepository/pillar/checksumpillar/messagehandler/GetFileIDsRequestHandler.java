@@ -30,9 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
@@ -120,19 +118,14 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      */
     public void checkThatAllRequestedFilesAreAvailable(GetFileIDsRequest message) throws RequestHandlerException {
         FileIDs fileids = message.getFileIDs();
-        
-        List<String> missingFiles = new ArrayList<String>();
-        String fileID = fileids.getFileID();
-        if(fileID != null && !getCache().hasFile(fileID)) {
-            missingFiles.add(fileID);
+        if(fileids.isSetAllFileIDs()) {
+            return ;
         }
         
-        // Throw exception if any files are missing.
-        if(!missingFiles.isEmpty()) {
+        if(!getCache().hasFile(fileids.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
-            
+            irInfo.setResponseText("Missing the file: '" + fileids.getFileID() + "'");
             throw new InvalidMessageException(irInfo);
         }
     }
