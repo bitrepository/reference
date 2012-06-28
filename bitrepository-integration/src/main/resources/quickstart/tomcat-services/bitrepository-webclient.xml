@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context override="true" docBase="${user.home}/tomcat-services/bitrepository-webclient.war">
+  <Parameter name="configurationDir" value="${user.home}/conf/webclient"  override="false"  />
+</Context>

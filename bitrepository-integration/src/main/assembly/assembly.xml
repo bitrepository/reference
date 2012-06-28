@@ -1,0 +1,58 @@
+<assembly>
+
+    <id>bundle</id>
+
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+     <dependencySets>
+       <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>${prefix}/tomcat-services</outputDirectory>
+            <includes>
+                <include>org.bitrepository.reference:bitrepository-*-service</include>
+                <include>org.bitrepository.reference:bitrepository-webclient</include>
+            </includes>
+            <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
+            <scope>runtime</scope>
+        </dependencySet> 
+
+       <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>${prefix}</outputDirectory>
+            <includes>
+                <include>org.bitrepository.reference:bitrepository-reference-pillar</include>
+            </includes>
+            <scope>runtime</scope>
+        </dependencySet> 
+    </dependencySets> 
+
+
+    <fileSets>
+        <fileSet>
+            <outputDirectory>${prefix}/scripts</outputDirectory>
+            <directory>src/main/resources/quickstart/scripts</directory>
+            <directoryMode>0744</directoryMode>
+            <fileMode>0644</fileMode>
+            <filtered>true</filtered>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>${prefix}/conf</outputDirectory>
+            <directory>src/main/resources/quickstart/conf</directory>
+            <directoryMode>0744</directoryMode>
+            <fileMode>0644</fileMode>
+            <filtered>true</filtered>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>${prefix}/tomcat-services</outputDirectory>
+            <directory>src/main/resources/quickstart/tomcat-services</directory>
+            <directoryMode>0744</directoryMode>
+            <fileMode>0644</fileMode>
+            <filtered>true</filtered>
+        </fileSet>
+    </fileSets>
+
+</assembly>
+

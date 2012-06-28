@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceSettings xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd">
+  <GeneralSettings>
+    <ReceiverDestinationIDFactoryClass>org.bitrepository.protocol.messagebus.destination.DefaultReceiverDestinationIDFactory</ReceiverDestinationIDFactoryClass>
+  </GeneralSettings>
+
+  <ClientSettings>
+    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
+    <ConversationTimeout>3600000</ConversationTimeout>
+  </ClientSettings>
+
+  <IntegrityServiceSettings>
+    <ID>integrity-service</ID>
+    <SchedulerInterval>2000</SchedulerInterval>
+    <IntegrityDatabaseUrl>jdbc:derby:<!--foobarpattern-->conf/integrityservice/integritydb</IntegrityDatabaseUrl>
+    <IntegrityDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</IntegrityDatabaseSpecifics>
+    <TimeBeforeMissingFileCheck>3600000</TimeBeforeMissingFileCheck> 
+    <AuditContributerDatabaseUrl>jdbc:derby:<!--foobarpattern-->conf/integrityservice/auditcontributerdb</AuditContributerDatabaseUrl>
+    <AuditContributerDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditContributerDatabaseSpecifics>
+  </IntegrityServiceSettings>
+</ReferenceSettings>

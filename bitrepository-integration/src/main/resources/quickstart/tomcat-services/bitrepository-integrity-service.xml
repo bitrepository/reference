@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context override="true" docBase="${user.home}/tomcat-services/bitrepository-integrity-service.war">
+  <Parameter name="integrityServiceConfDir" value="${user.home}/conf/integrity-service"  override="false"  />
+</Context>
+

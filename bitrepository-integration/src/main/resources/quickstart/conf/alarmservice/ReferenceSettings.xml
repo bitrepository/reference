@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceSettings xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd">
+  <GeneralSettings>
+    <ReceiverDestinationIDFactoryClass>org.bitrepository.protocol.messagebus.destination.DefaultReceiverDestinationIDFactory</ReceiverDestinationIDFactoryClass>
+  </GeneralSettings>
+
+  <ClientSettings>
+    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
+    <ConversationTimeout>3600000</ConversationTimeout>
+  </ClientSettings>
+
+  <AlarmServiceSettings>
+    <ID>alarm-service</ID>
+    <AlarmServiceDatabaseUrl>jdbc:derby:<!--foobarpattern-->conf/alarmservice/alarmservicedb/</AlarmServiceDatabaseUrl>
+    <AlarmDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AlarmDatabaseSpecifics>
+  </AlarmServiceSettings>
+</ReferenceSettings>

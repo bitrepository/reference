@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceSettings xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd">
+  <GeneralSettings>
+    <ReceiverDestinationIDFactoryClass>org.bitrepository.protocol.messagebus.destination.DefaultReceiverDestinationIDFactory</ReceiverDestinationIDFactoryClass>
+  </GeneralSettings>
+
+  <ClientSettings>
+    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
+    <ConversationTimeout>3600000</ConversationTimeout>
+  </ClientSettings>
+
+  <PillarSettings> 
+    <PillarID>quick-start-checksum</PillarID>
+    <FileDir><!--foobarpattern-->var/checksumpillar</FileDir>
+    <MinimumSizeLeft>1000000000</MinimumSizeLeft>
+    <TimeToStartDeliver>1000</TimeToStartDeliver>
+    <AuditContributerDatabaseUrl>jdbc:derby:<!--foobarpattern-->conf/checksumpillar/auditcontributordb</AuditContributerDatabaseUrl>
+    <AuditContributerDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditContributerDatabaseSpecifics>
+    <AlarmLevel>ERROR</AlarmLevel>
+  </PillarSettings>
+</ReferenceSettings>

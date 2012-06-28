@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context override="true" docBase="${user.home}/tomcat-services/bitrepository-audit-trail-service.war">
+  <Parameter name="auditTrailServiceConfDir" value="${user.home}/conf/audittrailservice"  override="false"  />
+</Context>

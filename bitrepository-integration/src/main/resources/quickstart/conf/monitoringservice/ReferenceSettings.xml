@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceSettings xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd">
+  <GeneralSettings>
+    <ReceiverDestinationIDFactoryClass>org.bitrepository.protocol.messagebus.destination.DefaultReceiverDestinationIDFactory</ReceiverDestinationIDFactoryClass>
+  </GeneralSettings>
+
+  <ClientSettings>
+    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
+    <ConversationTimeout>3600000</ConversationTimeout>
+  </ClientSettings>
+  
+  <GetStatusSettings></GetStatusSettings>
+  
+  <MonitoringServiceSettings>
+    <ID>monitoring-service</ID>
+    <CollectionInterval>60000</CollectionInterval>
+    <MaxRetries>3</MaxRetries>
+  </MonitoringServiceSettings>
+</ReferenceSettings>

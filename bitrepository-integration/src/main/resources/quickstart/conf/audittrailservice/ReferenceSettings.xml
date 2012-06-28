@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceSettings xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd">
+  <GeneralSettings>
+    <ReceiverDestinationIDFactoryClass>org.bitrepository.protocol.messagebus.destination.DefaultReceiverDestinationIDFactory</ReceiverDestinationIDFactoryClass>
+  </GeneralSettings>
+
+  <ClientSettings>
+    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
+    <ConversationTimeout>3600000</ConversationTimeout>
+  </ClientSettings>
+  
+  <GetAuditTrailSettings></GetAuditTrailSettings>
+
+  <AuditTrailServiceSettings>
+    <ID>audittrail-service</ID>
+    <SendAlarmOnMissingContributer>false</SendAlarmOnMissingContributer>
+    <AuditTrailServiceDatabaseUrl>jdbc:derby:<!--foobarpattern-->conf/audittrailservice/auditservicedb</AuditTrailServiceDatabaseUrl>
+    <AuditServiceDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditServiceDatabaseSpecifics>
+    <CollectAuditInterval>3600000</CollectAuditInterval> 
+    <TimerTaskCheckInterval>2000</TimerTaskCheckInterval>
+    <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
+    <AuditTrailPreservationTemporaryDirectory>/tmp/</AuditTrailPreservationTemporaryDirectory>
+  </AuditTrailServiceSettings>
+</ReferenceSettings>

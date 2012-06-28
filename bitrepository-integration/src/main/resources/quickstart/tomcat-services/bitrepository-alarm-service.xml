@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context override="true" docBase="${user.home}/tomcat-services/bitrepository-alarm-service.war">
+  <Parameter name="alarmServiceConfDir" value="${user.home}/conf/alarmservice/"  override="false"  />
+</Context>
+
