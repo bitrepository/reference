@@ -103,7 +103,7 @@ public class AlarmServiceFactory {
                 authorizer = new BasicOperationAuthorizor(permissionStore);
                 securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
                         authenticator, signer, authorizer, permissionStore, 
-                        settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
+                        settings.getReferenceSettings().getAlarmServiceSettings().getID());
                 
                 MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, 
                         securityManager);
