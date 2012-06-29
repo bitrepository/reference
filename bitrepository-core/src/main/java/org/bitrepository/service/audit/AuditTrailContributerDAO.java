@@ -64,8 +64,8 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The connection to the database.*/
     private DBConnector dbConnector;
-    /** The settings.*/
-    private final Settings settings;
+    /** The componentID.*/
+    private final String componentID;
     
     /** 
      * Constructor.
@@ -74,7 +74,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     public AuditTrailContributerDAO(Settings settings, DBConnector dbConnector) {
         ArgumentValidator.checkNotNull(settings, "settings");
         
-        this.settings = settings;
+        this.componentID = settings.getComponentID();
         this.dbConnector = dbConnector;
         
         getConnection();
@@ -90,8 +90,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
             Connection dbConnection = dbConnector.getConnection();
             return dbConnection;
         } catch (Exception e) {
-            throw new IllegalStateException("Could not instantiate the database with the url '"
-                    + settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl() + "'", e);
+            throw new IllegalStateException("Could not instantiate the database", e);
         }
     }
     
@@ -195,7 +194,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                     event.setActionOnFile(FileAction.fromValue(results.getString(operationPosition)));
                     event.setAuditTrailInformation(results.getString(auditTrailInformationPosition));
                     event.setInfo(results.getString(infoPosition));
-                    event.setReportingComponent(settings.getComponentID());
+                    event.setReportingComponent(componentID);
                     res.add(event);
                 }
             } finally {
