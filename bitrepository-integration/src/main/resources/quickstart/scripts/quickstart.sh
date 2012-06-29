@@ -67,11 +67,11 @@ do
         cd $quickstartdir
 done
 
-sed -i s%eventsfile%$quickstartdir/webclient-events% $configdir/webclient/webclient.properties 
+sed -i s%eventsfile%$quickstartdir/logs/webclient-events% $configdir/webclient/webclient.properties 
 
 for file in $(ls -l tomcat-services/*.xml | cut -d " " -f9) 
 do
-	sed -i s%\${user.home}%$quickstartdir/% $file
+	sed -i s%\${user.home}%$quickstartdir% $file
 done
 
 refpillarzipfile=$(ls -l *.zip | cut -d " " -f9)
