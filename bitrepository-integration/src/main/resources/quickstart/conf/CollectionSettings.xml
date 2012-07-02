@@ -22,147 +22,49 @@
   -->
 
 <CollectionSettings xmlns="http://bitrepository.org/settings/CollectionSettings.xsd">
-  <!-- CollectionID is identifier for the collection -->
   <CollectionID>quick-start-collection</CollectionID>
   <ProtocolSettings>
-    <!-- 
-      DefaultChecksumType is the checksum that should be used by default in the collection.
-      I.e. MD5 or SHA1 (others are supported on protocol level.)
-    -->
     <DefaultChecksumType>MD5</DefaultChecksumType>
-    <!--
-      AllowedFileIDPattern defines the allowed fileIDs in the collection. 
-      This is formatted as a Java regular expression 
-    -->
-    <AllowedFileIDPattern>[a-zA-Z_\.\-0-9]{1-250}</AllowedFileIDPattern>
-    <!--
-      RequireMessageAuthentication, defines whether all messages received by any component
-      in the system should authenticate the message by signature check against known certificates. 
-      Setting this to true, implies that all messages sent should be signed by sender. 
-    -->
+    <AllowedFileIDPattern>[a-zA-Z_\.\-0-9]{1,250}</AllowedFileIDPattern>
     <RequireMessageAuthentication>false</RequireMessageAuthentication>
-    <!-- 
-      RequireOperationAuthorization, defines whether operations should be authorized against 
-      permissions defined in CollectionSettings (in the bottom of this file).
-    -->
     <RequireOperationAuthorization>false</RequireOperationAuthorization>
-    <!--
-      RequireChecksumForDestructiveRequests, defines whether it is required to provide a checksum
-      when running a destructive request (i.e. deleting or replacing a file).
-    -->
     <RequireChecksumForDestructiveRequests>true</RequireChecksumForDestructiveRequests>
-    <!--
-      RequireChecksumForNewFileRequests, defines whether it is required to provide a checksum
-      when ingesting a file in the bitrepository (i.e. when putting or replacing a file).
-    -->
     <RequireChecksumForNewFileRequests>true</RequireChecksumForNewFileRequests>
-    <!--
-      CollectionDestination, defines the destination topic for broardcast messages within the collection 
-      I.e. for identify* requests. 
-    -->
     <CollectionDestination>topic://quick-start-collection</CollectionDestination>
-    <!-- 
-      AlarmDestination, defines the destination to where alarms are send. This should be a topic, 
-      so that multiple components interested in receiving alarms won't steal them from eachother. 
-    -->
     <AlarmDestination>topic://quick-start-collection.alarms</AlarmDestination>
     <MessageBusConfiguration>
-    <!-- Identifier for the message bus configuration -->
       <Name>Local ActiveMQ</Name>
-      <!--
-        The URL for connecting to the messagebus (network). For encrypted communication with 
-        the messagebus, use ssl:// as protocol. For unencrypted, use tcp://
-      -->
       <URL>failover:(tcp://localhost:61616?keepAlive=true)</URL>
     </MessageBusConfiguration>
   </ProtocolSettings>
-
-  <!-- General settings for the various clients -->
   <ClientSettings>
-    <!-- 
-      IdentificationTimeout, the maximum time which clients should wait for identify* responses during
-      the identification phase of an operation. 
-      Unit in milliseconds. 
-    -->
     <IdentificationTimeout>180000</IdentificationTimeout>
-    <!-- 
-      OperationTimeout, the maximum time which clients should wait for an operation to finish after 
-      an successful identification phase. 
-      Unit in milliseconds. 
-    -->
     <OperationTimeout>3600000</OperationTimeout>
-    <!--
-      List of pillars that belongs in the collection. Clients will only expect answers from 
-      pillars listed here.
-    -->
-    <PillarIDs>quick-start-checksum</PillarIDs>
-    <PillarIDs>quick-start-reference</PillarIDs>
+    <PillarIDs>checksum-pillar</PillarIDs>
+    <PillarIDs>reference1-pillar</PillarIDs>
+    <PillarIDs>reference2-pillar</PillarIDs>
   </ClientSettings>
-
-  <!-- 
-    Specific settings for pillars. 
-    This section is currently empty
-  -->
   <PillarSettings></PillarSettings>
-
-  <!--  
-    Specific settings for DeleteFile operations
-    This section is currently empty
-  -->
   <DeleteFileSettings></DeleteFileSettings>
-
-  <!-- Specific settings for AuditTrails operations -->
   <GetAuditTrailSettings>
-    <!-- 
-      List of components expected to deliver audit trail information. 
-      Only components listed here will be asked for audit trail information. 
-    -->
-    <ContributorIDs>quick-start-checksum</ContributorIDs>
-    <ContributorIDs>quick-start-reference</ContributorIDs>
+    <ContributorIDs>checksum-pillar</ContributorIDs>
+    <ContributorIDs>reference1-pillar</ContributorIDs>
+    <ContributorIDs>reference2-pillar</ContributorIDs>
     <ContributorIDs>integrity-service</ContributorIDs>
   </GetAuditTrailSettings>
 
-  <!-- 
-    Specific settings for GetChecksums operations
-    This section is currently empty
-  -->
   <GetChecksumsSettings></GetChecksumsSettings>
-
-  <!-- 
-    Specific settings for GetFile operations
-    This section is currently empty
-  -->
   <GetFileSettings></GetFileSettings>
-
-  <!-- 
-    Specific settings for GetFileIDs operations
-    This section is currently empty
-  -->
   <GetFileIDsSettings></GetFileIDsSettings>
-
-  <!-- Specific settings for Status monitoring -->
   <GetStatusSettings>
-      <!-- 
-        List of components expected to deliver status information 
-        Only components listed here will be asked for status information. 
-      -->
-      <ContributorIDs>quick-start-checksum</ContributorIDs>
-      <ContributorIDs>quick-start-reference</ContributorIDs>
+      <ContributorIDs>checksum-pillar</ContributorIDs>
+      <ContributorIDs>reference1-pillar</ContributorIDs>
+      <ContributorIDs>reference2-pillar</ContributorIDs>
       <ContributorIDs>alarm-service</ContributorIDs>
       <ContributorIDs>integrity-service</ContributorIDs>
       <ContributorIDs>audittrail-service</ContributorIDs>
   </GetStatusSettings>
-
-  <!-- 
-    Specific settings for PutFile operations
-    This section is currently empty
-  -->
   <PutFileSettings></PutFileSettings>
-
-  <!-- 
-    Specific settings for ReplaceFile operations
-    This section is currently empty
-  -->
   <ReplaceFileSettings></ReplaceFileSettings>
 
 </CollectionSettings>

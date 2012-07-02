@@ -32,11 +32,11 @@
   </ClientSettings>
 
   <PillarSettings> 
-    <PillarID>quick-start-checksum</PillarID>
+    <PillarID>checksum-pillar</PillarID>
     <FileDir><!--foobarpattern-->var/checksumpillar</FileDir>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
-    <AuditContributerDatabaseUrl>jdbc:derby:<!--foobarpattern-->conf/checksumpillar/auditcontributordb</AuditContributerDatabaseUrl>
+    <AuditContributerDatabaseUrl>jdbc:derby:<!--foobarpattern-->conf/checksumpillar/auditcontributerdb</AuditContributerDatabaseUrl>
     <AuditContributerDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditContributerDatabaseSpecifics>
     <AlarmLevel>ERROR</AlarmLevel>
   </PillarSettings>

@@ -433,7 +433,7 @@ in preparation for the xsd -> java class file generation -->
   </profiles>
 
   <properties>
-    <message.xml.version>17</message.xml.version>
+    <message.xml.version>18</message.xml.version>
     <collection.settings.version>0.9</collection.settings.version>
     <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
     <slf4j.version>1.6.4</slf4j.version>

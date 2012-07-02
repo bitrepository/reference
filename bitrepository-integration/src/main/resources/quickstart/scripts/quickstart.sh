@@ -47,34 +47,37 @@ cd var
 if [ ! -d "checksumpillar" ]; then
 	mkdir checksumpillar
 fi
-if [ ! -d "referencepillar" ]; then
-	mkdir referencepillar
+if [ ! -d "reference1pillar" ]; then
+	mkdir reference1pillar
+fi
+if [ ! -d "reference2pillar" ]; then
+	mkdir reference2pillar
 fi
 cd $quickstartdir
 
 #Setup configuration files, this includes:
 # - Create symlinks for CollectionSettings files in relevant configuration folders
 # - Setup paths to configs in relevant config files 
-for directory in $(ls -l conf | grep "^d" | cut -d " " -f9) 
+#for directory in $(ls -l conf | grep "^d" | cut -d " " -f10) 
+for directory in $(find conf -maxdepth 1 -mindepth 1 -type d)
 do
-        cd "conf/$directory"
-	if [ -a "CollectionSettings.xml" ]; then
-		rm CollectionSettings.xml
-	fi
-        ln -s ../CollectionSettings.xml .
+        cd "$directory"
+        ln -sf ../CollectionSettings.xml .
 	sed -i s%\<\!--foobarpattern--\>%$quickstartdir/% ReferenceSettings.xml > /dev/null
 	sed -i s%\{user.home\}%$quickstartdir% logback.xml 
         cd $quickstartdir
 done
 
-sed -i s%eventsfile%$quickstartdir/webclient-events% $configdir/webclient/webclient.properties 
+sed -i s%eventsfile%$quickstartdir/logs/webclient-events% $configdir/webclient/webclient.properties 
 
-for file in $(ls -l tomcat-services/*.xml | cut -d " " -f9) 
+#for file in $(ls -l tomcat-services/*.xml | cut -d " " -f10) 
+for file in $(find tomcat-services -iname '*.xml')
 do
-	sed -i s%\${user.home}%$quickstartdir/% $file
+	sed -i s%\${user.home}%$quickstartdir% $file
 done
 
-refpillarzipfile=$(ls -l *.zip | cut -d " " -f9)
+#refpillarzipfile=$(ls -l *.zip | cut -d " " -f10)
+refpillarzipfile=$(ls *.zip)
 if [ ! -z $refpillarzipfile ]; then
 	unzip $refpillarzipfile > /dev/null
 	rm $refpillarzipfile
@@ -87,20 +90,33 @@ if [ ! -d "checksumpillar" ]; then
 	cp -r $refpillardistdir/lib checksumpillar/.
 	cp -r $refpillardistdir/bin checksumpillar/.
 	ln -s ../conf/checksumpillar checksumpillar/conf
-	cd checksumpillar/bin
-	./checksum-pillar-startup-script.sh
-	cd $quickstartdir
 fi
+cd checksumpillar/bin
+./checksum-pillar-startup-script.sh
+cd $quickstartdir
 
-if [ ! -d "referencepillar" ]; then
-	mkdir "referencepillar" 
-	cp -r $refpillardistdir/lib referencepillar/.
-	cp -r $refpillardistdir/bin referencepillar/.
-	ln -s ../conf/referencepillar referencepillar/conf
-	cd referencepillar/bin
-	./reference-pillar-startup-script.sh
-	cd $quickstartdir
+
+if [ ! -d "reference1pillar" ]; then
+	mkdir "reference1pillar" 
+	cp -r $refpillardistdir/lib reference1pillar/.
+	cp -r $refpillardistdir/bin reference1pillar/.
+	ln -s ../conf/reference1pillar reference1pillar/conf
 fi
+cd reference1pillar/bin
+./reference-pillar-startup-script.sh
+cd $quickstartdir
+
+
+if [ ! -d "reference2pillar" ]; then
+        mkdir "reference2pillar"
+        cp -r $refpillardistdir/lib reference2pillar/.
+        cp -r $refpillardistdir/bin reference2pillar/.
+        ln -s ../conf/reference2pillar reference2pillar/conf
+fi
+cd reference2pillar/bin
+./reference-pillar-startup-script.sh
+cd $quickstartdir
+
 
 #Fetch, unpack, setup Apache Tomcat server
 if [ -d "tomcat" ]; then

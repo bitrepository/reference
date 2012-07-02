@@ -22,6 +22,6 @@
   -->
 
 <Context override="true" docBase="${user.home}/tomcat-services/bitrepository-integrity-service.war">
-  <Parameter name="integrityServiceConfDir" value="${user.home}/conf/integrity-service"  override="false"  />
+  <Parameter name="integrityServiceConfDir" value="${user.home}/conf/integrityservice"  override="false"  />
 </Context>
 

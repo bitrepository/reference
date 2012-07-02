@@ -45,7 +45,7 @@ public final class ChecksumPillarLauncher {
      */
     public static void main(String[] args) {
         String pathToSettings = args[0];
-        String pathToKeyFile = args[1];
+        String pathToKeyFile = args.length >=2 ? args[1] : null;
         String pillarID =  args.length == 3 ? pillarID = args[2]: null;
         ChecksumPillar checksumPillar =
                 PillarComponentFactory.getInstance().createChecksumPillar(pathToSettings, pathToKeyFile, pillarID);
