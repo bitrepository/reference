@@ -21,6 +21,12 @@
  */
 package org.bitrepository.audittrails.store;
 
+import java.io.File;
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.util.Date;
+import java.util.List;
+
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -31,15 +37,9 @@ import org.bitrepository.common.utils.DatabaseTestUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.io.File;
-import java.math.BigInteger;
-import java.sql.Connection;
-import java.util.Date;
-import java.util.List;
 
 public class AuditDatabaseTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
@@ -54,7 +54,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
     String DATABASE_URL = "jdbc:derby:" + DATABASE_DIRECTORY + "/" + DATABASE_NAME;
     File dbDir = null;
 
-    @BeforeClass (alwaysRun = true)
+    @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AuditDatabaseUnderTest");
         settings.getReferenceSettings().getAuditTrailServiceSettings().setAuditTrailServiceDatabaseUrl(DATABASE_URL);
@@ -70,7 +70,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         dbCon.close();
     }
     
-    @AfterClass (alwaysRun = true)
+    @AfterMethod (alwaysRun = true)
     public void shutdown() throws Exception {
         addStep("Cleanup after test.", "Should remove directory with test material.");
         if(dbDir != null) {
@@ -150,7 +150,27 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         
         database.close();
     }
-    
+
+    @Test(groups = {"regressiontest", "databasetest"})
+    public void AuditDatabasePreservationTest() throws Exception {
+        addDescription("Tests the functions related to the preservation of the database.");
+        addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
+        AuditTrailServiceDAO database = new AuditTrailServiceDAO(settings);
+
+        addStep("Validate the preservation sequence number", 
+                "Should be zero, since it has not been updated yet.");
+        long pindex = database.getPreservationSequenceNumber(pillarId);
+        Assert.assertEquals(pindex, 0);
+
+        addStep("Validate the insertion of the preservation sequence number",
+                "Should be the same value extracted afterwards.");
+        long givenPreservationIndex = 123456789;
+        database.setPreservationSequenceNumber(pillarId, givenPreservationIndex);
+        Assert.assertEquals(database.getPreservationSequenceNumber(pillarId), givenPreservationIndex);
+
+        database.close();
+    }
+
     private AuditTrailEvents createEvents() {
         AuditTrailEvents events = new AuditTrailEvents();
         
