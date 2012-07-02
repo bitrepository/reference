@@ -274,6 +274,15 @@
       </xs:annotation>
     </xs:complexType>
   </xs:element>
+
+  <xs:simpleType name="ServiceType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="AlarmService" />
+      <xs:enumeration value="AuditTrailService" />
+      <xs:enumeration value="IntegrityService" />
+      <xs:enumeration value="MonitoringService" />
+    </xs:restriction>
+  </xs:simpleType>
     
   <xs:element name="MonitoringServiceSettings">
     <xs:complexType>
@@ -301,6 +310,7 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
 
     <xs:element name="AlarmServiceSettings">
       <xs:complexType>

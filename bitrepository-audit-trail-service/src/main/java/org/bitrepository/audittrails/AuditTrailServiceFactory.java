@@ -24,6 +24,11 @@
  */
 package org.bitrepository.audittrails;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
@@ -32,7 +37,6 @@ import org.bitrepository.audittrails.preserver.LocalAuditTrailPreserver;
 import org.bitrepository.audittrails.store.AuditTrailServiceDAO;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;
@@ -46,14 +50,10 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.service.ServiceSettingsProvider;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
+import org.bitrepository.settings.referencesettings.ServiceType;
 
 /**
  * Factory class for accessing the AuditTrailService 
@@ -96,14 +96,11 @@ public final class AuditTrailServiceFactory {
             OperationAuthorizor authorizer;
             PermissionStore permissionStore;
             SecurityManager securityManager;
-            SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(configurationDir));
-            if (settingsLoader.loadReferenceSettings().getAuditTrailServiceSettings() == null) {
-                throw new IllegalArgumentException("Unable to start Audit Trail Service, " +
-                        "no AuditTrailServiceSettings defined in reference settings i directory: " + configurationDir);
-            }
-            String auditTrailComponentID =
-                    settingsLoader.loadReferenceSettings().getAuditTrailServiceSettings().getID();
-            Settings settings = settingsLoader.getSettings(auditTrailComponentID);
+            ServiceSettingsProvider settingsLoader =
+                    new ServiceSettingsProvider(
+                            new XMLFileSettingsLoader(configurationDir), ServiceType.AUDIT_TRAIL_SERVICE);
+
+            Settings settings = settingsLoader.getSettings();
             try {
                 loadProperties();
                 permissionStore = new PermissionStore();

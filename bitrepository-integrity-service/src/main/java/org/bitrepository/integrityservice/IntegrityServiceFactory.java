@@ -23,8 +23,12 @@
  * #L%
  */
 package org.bitrepository.integrityservice;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.integrityservice.web.IntegrityServiceWebInterface;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
@@ -35,11 +39,9 @@ import org.bitrepository.protocol.security.MessageAuthenticator;
 import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
+import org.bitrepository.service.ServiceSettingsProvider;
+import org.bitrepository.service.scheduler.Workflow;
+import org.bitrepository.settings.referencesettings.ServiceType;
 
 /**
  * Factory class for instantiating the integrity service
@@ -56,7 +58,6 @@ public final class IntegrityServiceFactory {
     private static final String PRIVATE_KEY_FILE = "org.bitrepository.integrity-service.privateKeyFile";
     /** The time of one week.*/
     private static final long DEFAULT_MAX_TIME_SINCE_UPDATE = 604800000;
-    
     
     /** The settings. */
     private static Settings settings;
@@ -93,16 +94,9 @@ public final class IntegrityServiceFactory {
                 throw new IllegalStateException("No configuration directory has been set!");
             }
             loadProperties();
-            SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir));
-
-            if (settingsLoader.loadReferenceSettings().getIntegrityServiceSettings() == null) {
-                throw new IllegalArgumentException("Unable to start IntegrityService, " +
-                        "no IntegrityServiceSettings defined in reference settings i directory: " + confDir);
-            }
-
-            String integrityServiceComponentID =
-                    settingsLoader.loadReferenceSettings().getIntegrityServiceSettings().getID();
-            settings = settingsLoader.getSettings(integrityServiceComponentID);
+            ServiceSettingsProvider settingsLoader =
+                    new ServiceSettingsProvider(new XMLFileSettingsLoader(confDir), ServiceType.INTEGRITY_SERVICE);
+            settings = settingsLoader.getSettings();
         }
 
         return settings;
@@ -143,6 +137,9 @@ public final class IntegrityServiceFactory {
             getSecurityManager();
             simpleIntegrityService = IntegrityServiceComponentFactory.getInstance().createIntegrityService(settings, 
                     securityManager);
+            for(Workflow workflow : simpleIntegrityService.getAllWorkflows()) {
+                simpleIntegrityService.scheduleWorkflow(workflow, DEFAULT_MAX_TIME_SINCE_UPDATE);
+            }
         }
         
         return simpleIntegrityService;
@@ -158,14 +155,10 @@ public final class IntegrityServiceFactory {
      */
     public static synchronized IntegrityServiceWebInterface getIntegrityServiceWebInterface() {
         if(integrityServiceWebInterface == null) {
-            long timeSinceLastChecksumUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
-            long timeSinceLastFileIDsUpdate = DEFAULT_MAX_TIME_SINCE_UPDATE;
             getSettings();
             getIntegrityService();
             integrityServiceWebInterface = new IntegrityServiceWebInterface(simpleIntegrityService, settings);
-            simpleIntegrityService.startChecksumIntegrityCheck(timeSinceLastChecksumUpdate, 
-                    settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval());
-            simpleIntegrityService.startAllFileIDsIntegrityCheck(timeSinceLastFileIDsUpdate);
+            
         }
         return integrityServiceWebInterface;
     }

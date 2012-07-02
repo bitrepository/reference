@@ -1,0 +1,54 @@
+<!--
+  #%L
+  Bitrepository Webclient
+  %%
+  Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as 
+  published by the Free Software Foundation, either version 2.1 of the 
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Lesser Public License for more details.
+  
+  You should have received a copy of the GNU General Lesser Public 
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  #L%
+  -->
+
+<%@page import="org.bitrepository.webservice.ServiceUrlFactory" %>
+<%@page import="org.bitrepository.webservice.ServiceUrl" %>
+<html>
+<head>
+<title>JSP Example</title>
+</head>
+<body bgcolor="ffffcc">
+<center>
+<h2>Date and Time</h2>
+<%  
+java.util.Date today = new java.util.Date();
+out.println("Today's date is: "+today);
+%>
+<br>
+Test to see if configuration class for service urls works
+<br>
+Alarm service url: 
+<% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
+<%= su.getAlarmServiceUrl() %>
+<br>
+AuditTrail service url: 
+<%= su.getAuditTrailServiceUrl() %>
+<br>
+Integrity service url: 
+<%= su.getIntegrityServiceUrl() %>
+<br>
+Default http server url: 
+<%= su.getDefaultHttpServerUrl() %>
+<br>
+</center>     
+</body>     
+</html>  

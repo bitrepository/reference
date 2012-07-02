@@ -26,7 +26,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.integrityservice.alerter.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
-import org.bitrepository.integrityservice.checking.IntegrityReport;
+import org.bitrepository.integrityservice.mocks.MockIntegrityReport;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
@@ -67,7 +67,7 @@ public class IntegrityAlerterTest extends ExtendedTestCase {
         };
         
         addStep("Call the function for integrity failure.", "Should attempt to make a call for 'error'.");
-        alerter.integrityFailed(new IntegrityReport());
+        alerter.integrityFailed(new MockIntegrityReport());
         Assert.assertEquals(callsForError, 1);
     }
 }

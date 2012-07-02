@@ -114,7 +114,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     public long getPreservationSequenceNumber(String contributorId) {
         ArgumentValidator.checkNotNullOrEmpty(contributorId, "String contributorId");
         String sql = "SELECT " + CONTRIBUTOR_PRESERVATION_SEQ + " FROM " + CONTRIBUTOR_TABLE + " WHERE " 
-                + CONTRIBUTOR_ID + " = ? ) ";
+                + CONTRIBUTOR_ID + " = ? ";
         
         Long seq = DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, contributorId);
         if(seq != null) {

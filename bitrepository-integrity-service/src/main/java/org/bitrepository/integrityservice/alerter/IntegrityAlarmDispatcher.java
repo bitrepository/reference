@@ -26,7 +26,7 @@ package org.bitrepository.integrityservice.alerter;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.bitrepository.integrityservice.checking.IntegrityReport;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.contributor.ContributorContext;
 

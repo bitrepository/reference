@@ -23,6 +23,7 @@ package org.bitrepository.integrityservice.mocks;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
@@ -174,5 +175,25 @@ public class MockIntegrityModel implements IntegrityModel {
     }
     public int getCallsForFindMissingFiles() {
         return callsForFindMissingFiles;
+    }
+    
+    private int callsForFindChecksumsOlderThan = 0;
+    @Override
+    public Collection<String> findChecksumsOlderThan(Date date) {
+        callsForFindChecksumsOlderThan++;
+        return new ArrayList<String>();
+    }
+    public int getCallsForFindChecksumsOlderThan() {
+        return callsForFindChecksumsOlderThan;
+    }
+    
+    private int callsForIsMissing = 0;
+    @Override
+    public List<String> isMissing(String fileId) {
+        callsForIsMissing++;
+        return new ArrayList<String>();
+    }
+    public int getCallsForIsMissing() {
+        return callsForIsMissing;
     }
 }

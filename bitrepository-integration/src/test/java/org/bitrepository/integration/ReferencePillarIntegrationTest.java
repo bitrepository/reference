@@ -87,8 +87,8 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         
         XMLFileSettingsLoader settingsLoader = new XMLFileSettingsLoader("settings/xml/bitrepository-devel");
-        SettingsProvider provider = new SettingsProvider(settingsLoader);
-        Settings clientSettings = provider.getSettings("TEST-client");
+        SettingsProvider provider = new SettingsProvider(settingsLoader, "TEST-client");
+        Settings clientSettings = provider.getSettings();
         clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(componentSettings.getComponentID());
         

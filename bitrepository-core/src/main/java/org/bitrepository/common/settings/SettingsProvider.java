@@ -37,23 +37,27 @@ public class SettingsProvider {
     private final SettingsLoader settingsReader;
     /** The loaded settings */
     private Settings settings;
+    private String componentID;
+    private ReferenceSettings referenceSettings;
     
     /**
      * Creates a <code>SettingsProvider</code> which will use the provided <code>SettingsLoader</code> for loading the 
      * settings.
      * @param settingsReader Use for loading the settings.
+     * @param componentID The componentID to use for these settings
      */
-    public SettingsProvider(SettingsLoader settingsReader) {
+    public SettingsProvider(SettingsLoader settingsReader, String componentID) {
         this.settingsReader = settingsReader;
+        this.componentID = componentID;
     }
-    
+
     /**
      * Gets the settings, if no settings has been loaded into memory, will load the settings from disk
      * @return The settings 
      */
-    public synchronized Settings getSettings(String componentID) {
+    public synchronized Settings getSettings() {
         if(settings == null) {
-            reloadSettings(componentID);
+            reloadSettings();
         }
         return settings;
     }
@@ -61,7 +65,7 @@ public class SettingsProvider {
     /**
     * Will load the settings from disk. Will overwrite any settings already in the provider.
     */
-    public synchronized void reloadSettings(String componentID) {
+    public synchronized void reloadSettings() {
     	CollectionSettings collectionSettings = settingsReader.loadSettings(CollectionSettings.class);
     	ReferenceSettings referenceSettings = settingsReader.loadSettings(ReferenceSettings.class);
 
@@ -72,17 +76,17 @@ public class SettingsProvider {
         }
 
         DestinationHelper dh = new DestinationHelper(
-                componentID,
+                getComponentID(referenceSettings),
                 receiverDestinationIDFactoryClass,
                 collectionSettings.getProtocolSettings().getCollectionDestination());
-        settings = new Settings(componentID, dh.getReceiverDestinationID(), collectionSettings, referenceSettings);
+        settings = new Settings(getComponentID(referenceSettings), dh.getReceiverDestinationID(), collectionSettings, referenceSettings);
     }
 
     /**
-     * Will load the reference settings from disk.
-     * @return The loaded referenceSettings
+     * Provides extension point for subclass componentID generation.
+     * @return generate ComponentID
      */
-    public synchronized ReferenceSettings loadReferenceSettings() {
-        return settingsReader.loadSettings(ReferenceSettings.class);
+    protected String getComponentID(ReferenceSettings referenceSettings) {
+        return componentID;
     }
 }

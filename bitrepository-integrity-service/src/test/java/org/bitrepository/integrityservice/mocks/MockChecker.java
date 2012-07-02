@@ -23,7 +23,11 @@ package org.bitrepository.integrityservice.mocks;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
-import org.bitrepository.integrityservice.checking.IntegrityReport;
+import org.bitrepository.integrityservice.checking.reports.ChecksumReport;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
+import org.bitrepository.integrityservice.checking.reports.MissingChecksumReport;
+import org.bitrepository.integrityservice.checking.reports.MissingFileReport;
+import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReport;
 
 public class MockChecker implements IntegrityChecker {
     
@@ -31,6 +35,8 @@ public class MockChecker implements IntegrityChecker {
     
     private int callsForCheckFileIDs = 0;
     private int callsForCheckChecksums = 0;
+    private int callsForCheckMissingChecksums = 0;
+    private int callsForCheckObsoleteChecksums = 0;
     
     public int getCallsForCheckFileIDs() {
         return callsForCheckFileIDs;
@@ -40,16 +46,35 @@ public class MockChecker implements IntegrityChecker {
         return callsForCheckChecksums;
     }
 
+    public int getCallsForCheckMissingChecksums() {
+        return callsForCheckMissingChecksums;
+    }
+
+    public int getCallsForCheckObsoleteChecksums() {
+        return callsForCheckObsoleteChecksums;
+    }
+
     @Override
     public IntegrityReport checkFileIDs(FileIDs fileIDs) {
         callsForCheckFileIDs++;
-        return new IntegrityReport();
+        return new MissingFileReport();
     }
     
     @Override
     public IntegrityReport checkChecksum(FileIDs fileIDs) {
         callsForCheckChecksums++;
-        return new IntegrityReport();
+        return new ChecksumReport();
     }
-    
+
+    @Override
+    public IntegrityReport checkMissingChecksums() {
+        callsForCheckMissingChecksums++;
+        return new MissingChecksumReport();
+    }
+
+    @Override
+    public IntegrityReport checkObsoleteChecksums(long outdatedInterval) {
+        callsForCheckObsoleteChecksums++;
+        return new ObsoleteChecksumReport();
+    }
 }

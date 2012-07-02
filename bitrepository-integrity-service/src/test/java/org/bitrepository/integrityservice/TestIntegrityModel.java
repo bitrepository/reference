@@ -24,6 +24,7 @@ package org.bitrepository.integrityservice;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -285,6 +286,18 @@ public class TestIntegrityModel implements IntegrityModel {
 
     @Override
     public List<String> findMissingFiles() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Collection<String> findChecksumsOlderThan(Date date) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<String> isMissing(String fileId) {
         // TODO Auto-generated method stub
         return null;
     }

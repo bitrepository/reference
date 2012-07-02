@@ -23,119 +23,89 @@ package org.bitrepository.integrityservice.checking;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.cache.database.FileState;
+import org.bitrepository.integrityservice.checking.reports.MissingFileReport;
+import org.bitrepository.service.audit.AuditTrailManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Validator for whether a file is missing at some pillars.
+ * An integrity checksum tool for validating the existence of files at given pillars.
  */
 public class FileExistenceValidator {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The cache for the integrity data.*/
     private final IntegrityModel cache;
-    /** The settings for the system.*/
+    /** The settings.*/
     private final Settings settings;
-    /** The ids of the pillars containing this file.*/
-    private final List<String> pillarIds;
+    /** The audit trail manager.*/
+    private final AuditTrailManager auditManager;
     
     /**
      * Constructor.
-     * @param cache The cache with the integrity data.
      * @param settings The settings for the system.
+     * @param cache The cache with the integrity model.
+     * @param auditManager the audit trail manager.
      */
-    public FileExistenceValidator(IntegrityModel cache, Settings settings) {
+    public FileExistenceValidator(Settings settings, IntegrityModel cache, AuditTrailManager auditManager) {
         this.cache = cache;
         this.settings = settings;
-        this.pillarIds = settings.getCollectionSettings().getClientSettings().getPillarIDs();
+        this.auditManager = auditManager;
     }
     
     /**
-     * Validates which pillars have the given file id.
-     * It is first validated if the date of the file is too new.
-     * 
-     * 
-     * @param fileId The id of the file to validate.
-     * @return The report for the results of the file validation.
+     * Validates the existence of the given file ids, and creates a report with on the pillars where the files 
+     * are missing.
+     * This will also detect if a file is deleteable, thus not existing at any pillar and can be deleted from the 
+     * integrity model.
+     *  
+     * @param requestedFileIDs The list of files to validate.
+     * @return The report for the existence state of the given files.
      */
-    public IntegrityReport validateFile(String fileId) {
-        Collection<FileInfo> fileInfos = cache.getFileInfos(fileId);
-        IntegrityReport report = new IntegrityReport();
+    public MissingFileReport generateReport(Collection<String> requestedFileIDs) {
+        MissingFileReport report = new MissingFileReport();
+        for(String fileId : requestedFileIDs) {
+            List<String> pillarIds = cache.isMissing(fileId);
 
-        // validate the timestamp.
-        Date date = getEarliestDate(fileInfos);
-        if(!validateTimestamp(date)) {
-            report.addTooNewFile(fileId);
-            return report;
-        }
-        
-        // Find the pillars which are missing the 
-        List<String> pillarsMissingTheFile = findPillarsMissingTheFile(fileInfos);
-        if(pillarsMissingTheFile.isEmpty()) {
-            report.addFileWithoutIssue(fileId);
-        } else {
-            cache.setFileMissing(fileId, pillarsMissingTheFile);
-            report.addMissingFile(fileId, pillarsMissingTheFile);
+            if(pillarIds.isEmpty()) {
+                log.debug("No one is missing the file '{}'", fileId);
+                continue;
+            }
+            
+            auditManager.addAuditEvent(fileId, "IntegrityService", "The file '" + fileId +"' does not exist at "
+                    + "the pillars '" + pillarIds + "'", "IntegrityService checking files.", 
+                    FileAction.INCONSISTENCY);
+            
+            if(isAllPillars(pillarIds)) {
+                report.reportDeletableFile(fileId);
+            } else {
+                report.reportMissingFile(fileId, pillarIds);
+            }
         }
         
         return report;
     }
     
     /**
-     * Go through the pillars and find those, where the file is missing.
-     * 
-     * @param fileInfos The information about the given file id for the different pillars.
-     * @return The ids of the pillars, where the file id missing.
+     * Validates whether the given list of pillar ids contains the ids of all the known pillars.
+     * @param pillarIds The list of pillar ids.
+     * @return Whether the list of pillar ids is equivalent to list in settings. 
      */
-    private List<String> findPillarsMissingTheFile(Collection<FileInfo> fileInfos) {
-        List<String> unfoundPillars = new ArrayList<String>();
-        unfoundPillars.addAll(pillarIds);
+    private boolean isAllPillars(List<String> pillarIds) {
+        List<String> knownPillars = new ArrayList<String>(
+                settings.getCollectionSettings().getClientSettings().getPillarIDs());
         
-        for(FileInfo fileinfo : fileInfos) {
-            if(fileinfo.getFileState() == FileState.MISSING) {
-                continue;
-            }
-            if(!unfoundPillars.remove(fileinfo.getPillarId())) {
-                log.warn("Not expected pillar '" + fileinfo.getPillarId() + "' for file '" + fileinfo.getFileId() 
-                        + "'");
-            }
-        }
-        return unfoundPillars;
-    }
-    
-    /**
-     * Finds the earliest date for the file on any pillar.
-     * 
-     * @param fileInfos The information about the file on the pillars.
-     * @return The earliest date for the file.
-     */
-    private Date getEarliestDate(Collection<FileInfo> fileInfos) {
-        Date res = new Date();
-        for(FileInfo fileinfo : fileInfos) {
-            Date fileDate = CalendarUtils.convertFromXMLGregorianCalendar(fileinfo.getDateForLastFileIDCheck());
-            if(res.getTime() > fileDate.getTime()) {
-                res = fileDate;
+        for(String pillarId : pillarIds) {
+            if(!knownPillars.remove(pillarId)) {
+                log.warn("Did not know pillar '" + pillarId + "'");
             }
         }
         
-        return res;
-    }
-    
-    /**
-     * @param date The earliest date for the given file.
-     * @return Whether more time has passed since the timestamp than required by the settings.
-     */
-    private boolean validateTimestamp(Date date) {
-        long millisSinceTimestamp = new Date().getTime() - date.getTime();
-        return millisSinceTimestamp 
-                > settings.getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck();
+        return knownPillars.isEmpty();
     }
 }

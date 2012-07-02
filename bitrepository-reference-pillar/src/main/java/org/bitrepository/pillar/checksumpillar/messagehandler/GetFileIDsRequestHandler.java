@@ -30,9 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
@@ -99,10 +97,8 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
     
     /**
      * Method for validating the content of the GetFileIDsRequest message. 
-     * Is it possible to perform the operation?
-     * 
      * @param message The message to validate.
-     * @return Whether it is valid.
+     * @throws RequestHandlerException If the requested operation is not possible to perform.
      */
     private void validateMessage(GetFileIDsRequest message) throws RequestHandlerException {
         validatePillarId(message.getPillarID());
@@ -117,22 +113,18 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      * Otherwise an {@link InvalidMessageException} with the appropriate errorcode is thrown.
      * @param message The message containing the list files. An empty filelist is expected 
      * when "AllFiles" or the parameter option is used.
+     * @throws InvalidMessageException If the requested file does not exist.
      */
-    public void checkThatAllRequestedFilesAreAvailable(GetFileIDsRequest message) throws RequestHandlerException {
+    public void checkThatAllRequestedFilesAreAvailable(GetFileIDsRequest message) throws InvalidMessageException {
         FileIDs fileids = message.getFileIDs();
-        
-        List<String> missingFiles = new ArrayList<String>();
-        String fileID = fileids.getFileID();
-        if(fileID != null && !getCache().hasFile(fileID)) {
-            missingFiles.add(fileID);
+        if(fileids.isSetAllFileIDs()) {
+            return ;
         }
         
-        // Throw exception if any files are missing.
-        if(!missingFiles.isEmpty()) {
+        if(!getCache().hasFile(fileids.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
-            
+            irInfo.setResponseText("Missing the file: '" + fileids.getFileID() + "'");
             throw new InvalidMessageException(irInfo);
         }
     }

@@ -27,6 +27,7 @@ package org.bitrepository.pillar.checksumpillar;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -235,7 +236,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
     
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarPutFileTestBadChecksumSpecRequested() throws Exception {
-        addDescription("Tests the file will not be put if a bad checksum is given.");
+        addDescription("Tests whether the file will not be put if a bad checksum is given.");
         Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         
         ChecksumSpecTYPE badCsType = new ChecksumSpecTYPE();
@@ -247,6 +248,36 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void checksumPillarPutFileTestNoChecksumAllowed() throws Exception {
+        addDescription("Tests that it is possible to put without any checksums if the collection settings allows it.");
+        context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
+        Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+
+        messageBus.sendMessage(msgFactory.createPutFileRequest(null, 
+                null, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+        PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.OPERATION_COMPLETED);
+        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID));
+    }
+    
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void checksumPillarPutFileTestBadURL() throws Exception {
+        addDescription("Tests that the pillar handles a bad URL correct.");
+        context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
+        Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+
+        String badUrl = FILE_ADDRESS + "-ERROR-" + new Date().getTime();
+        messageBus.sendMessage(msgFactory.createPutFileRequest(null, 
+                null, badUrl, DEFAULT_FILE_ID, FILE_SIZE));
+        PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.FILE_TRANSFER_FAILURE);
         Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
     }
 }

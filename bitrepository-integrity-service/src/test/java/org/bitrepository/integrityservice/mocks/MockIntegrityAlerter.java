@@ -22,7 +22,7 @@
 package org.bitrepository.integrityservice.mocks;
 
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
-import org.bitrepository.integrityservice.checking.IntegrityReport;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
 
 public class MockIntegrityAlerter implements IntegrityAlerter {
     

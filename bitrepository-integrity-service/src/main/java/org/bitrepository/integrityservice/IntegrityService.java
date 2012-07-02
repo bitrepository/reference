@@ -24,6 +24,7 @@ package org.bitrepository.integrityservice;
 import java.util.Collection;
 
 import org.bitrepository.service.LifeCycledService;
+import org.bitrepository.service.scheduler.Workflow;
 import org.bitrepository.service.scheduler.WorkflowTask;
 
 public interface IntegrityService extends LifeCycledService {
@@ -32,6 +33,12 @@ public interface IntegrityService extends LifeCycledService {
      * @return The names of the tasks, which are scheduled by the system.
      */
     Collection<WorkflowTask> getScheduledWorkflows();
+    
+    /**
+     * Retrieves all the available workflows, even those which have not been scheduled.
+     * @return All the available workflows. 
+     */
+    Collection<Workflow> getAllWorkflows();
     
     /**
      * @param pillarId The pillar which has the files.
@@ -52,23 +59,11 @@ public interface IntegrityService extends LifeCycledService {
     long getNumberOfChecksumErrors(String pillarId);
 
     /**
-     * Initiates the scheduling of checksum collecting and integrity checking.
-     * @param millisSinceLastUpdate The time since last update for a checksum to be calculated.
-     * @param intervalBetweenChecks The time between checking for outdated checksums.
+     * Initiates the scheduling of a workflow.
+     * @param workflow The workflow to schedule.
+     * @param intervalBetweenRuns The time between running the workflow.
      */
-    void startChecksumIntegrityCheck(long millisSinceLastUpdate, long intervalBetweenChecks);
-
-    /**
-     * Initiates the scheduling of collecting and checking of all the file ids from all the pillars.
-     * @param intervalBetweenCollecting The time between collecting all the file ids.
-     */
-    void startAllFileIDsIntegrityCheck(long intervalBetweenCollecting);
-
-    /**
-     * Initiates the scheduling of collecting and checking of all the checksums from all the pillars.
-     * @param intervalBetweenCollecting The time between collecting all the file ids.
-     */
-    public void startAllChecksumsIntegrityCheck(long intervalBetweenCollecting);
+    void scheduleWorkflow(Workflow workflow, long timeBetweenRuns);
     
     /**
      * Shut down the integrity service.

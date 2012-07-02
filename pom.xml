@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.bitrepository.reference</groupId>
   <artifactId>bitrepository-parent</artifactId>
-  <version>0.16-SNAPSHOT</version>
+  <version>0.17-SNAPSHOT</version>
 
   <parent>
     <groupId>org.sbforge</groupId>
@@ -25,6 +25,7 @@
     <module>bitrepository-reference-pillar</module>
     <module>bitrepository-monitoring-service</module>
     <module>bitrepository-integration</module>
+    <module>bitrepository-webclient</module>
   </modules>
 
   <repositories>

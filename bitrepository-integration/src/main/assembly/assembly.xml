@@ -1,0 +1,79 @@
+<!--
+  #%L
+  Bitrepository Integration
+  %%
+  Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as 
+  published by the Free Software Foundation, either version 2.1 of the 
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Lesser Public License for more details.
+  
+  You should have received a copy of the GNU General Lesser Public 
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  #L%
+  -->
+<assembly>
+
+    <id>bundle</id>
+
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+     <dependencySets>
+       <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>${prefix}/tomcat-services</outputDirectory>
+            <includes>
+                <include>org.bitrepository.reference:bitrepository-*-service</include>
+                <include>org.bitrepository.reference:bitrepository-webclient</include>
+            </includes>
+            <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
+            <scope>runtime</scope>
+        </dependencySet> 
+
+       <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>${prefix}</outputDirectory>
+            <includes>
+                <include>org.bitrepository.reference:bitrepository-reference-pillar</include>
+            </includes>
+            <scope>runtime</scope>
+        </dependencySet> 
+    </dependencySets> 
+
+
+    <fileSets>
+        <fileSet>
+            <outputDirectory>${prefix}/scripts</outputDirectory>
+            <directory>src/main/resources/quickstart/scripts</directory>
+            <directoryMode>0744</directoryMode>
+            <fileMode>0744</fileMode>
+            <filtered>false</filtered>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>${prefix}/conf</outputDirectory>
+            <directory>src/main/resources/quickstart/conf</directory>
+            <directoryMode>0744</directoryMode>
+            <fileMode>0644</fileMode>
+            <filtered>false</filtered>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>${prefix}/tomcat-services</outputDirectory>
+            <directory>src/main/resources/quickstart/tomcat-services</directory>
+            <directoryMode>0744</directoryMode>
+            <fileMode>0644</fileMode>
+            <filtered>false</filtered>
+        </fileSet>
+    </fileSets>
+
+</assembly>
+

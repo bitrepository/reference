@@ -38,9 +38,9 @@ public class SettingsLoaderTest extends ExtendedTestCase{
     @Test(groups = { "regressiontest" })
     public void testDevelopmentCollectionSettingsLoading() throws Exception {
         SettingsProvider settingsLoader = 
-                new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_SETTINGS));
+                new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_SETTINGS), getClass().getSimpleName());
 
-        Settings settings = settingsLoader.getSettings(getClass().getSimpleName());
+        Settings settings = settingsLoader.getSettings();
         List<String> expectedPillarIDs = Arrays.asList(new String[] {"Pillar1", "Pillar2"});
         Assert.assertEquals(settings.getCollectionSettings().getClientSettings().getPillarIDs(), expectedPillarIDs);
     }
@@ -48,9 +48,9 @@ public class SettingsLoaderTest extends ExtendedTestCase{
     @Test(groups = { "regressiontest" })
     public void testExampleSettingsLoading() throws Exception {
         SettingsProvider settingsLoader = 
-                new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_EXAMPLE_SETTINGS));
+                new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_EXAMPLE_SETTINGS), getClass().getSimpleName());
 
-        Settings settings = settingsLoader.getSettings(getClass().getSimpleName());
+        settingsLoader.getSettings();
     }
 
     

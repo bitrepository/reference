@@ -1,12 +1,16 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <groupId>org.bitrepository.reference</groupId>
     <artifactId>bitrepository-parent</artifactId>
-    <version>0.16-SNAPSHOT</version>
+    <version>0.17-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>bitrepository-integration</artifactId>
   <name>Bitrepository Integration</name>
+  <properties>
+    <prefix>bitrepository-quickstart</prefix>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.apache.activemq</groupId>
@@ -17,11 +21,11 @@
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
       <version>1.6.1</version>
-    </dependency>    
+    </dependency>
     <dependency>
-    	<groupId>org.jaccept</groupId>
-    	<artifactId>jaccept-core</artifactId>
-    	<version>0.2</version>
+      <groupId>org.jaccept</groupId>
+      <artifactId>jaccept-core</artifactId>
+      <version>0.2</version>
     </dependency>
     <!-- THE TEST SCOPE -->
     <dependency>
@@ -36,18 +40,55 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    
+    
+  <dependency>
+    <groupId>org.bitrepository.reference</groupId>
+    <artifactId>bitrepository-alarm-service</artifactId>
+    <version>${project.version}</version>
+    <type>war</type>
+  </dependency>
+  <dependency>
+    <groupId>org.bitrepository.reference</groupId>
+    <artifactId>bitrepository-webclient</artifactId>
+    <version>${project.version}</version>
+    <type>war</type>
+  </dependency>
+  <dependency>
+    <groupId>org.bitrepository.reference</groupId>
+    <artifactId>bitrepository-integrity-service</artifactId>
+    <version>${project.version}</version>
+    <type>war</type>
+  </dependency>
+  <dependency>
+    <groupId>org.bitrepository.reference</groupId>
+    <artifactId>bitrepository-audit-trail-service</artifactId>
+    <version>${project.version}</version>
+    <type>war</type>
+  </dependency>
+  <dependency>
+    <groupId>org.bitrepository.reference</groupId>
+    <artifactId>bitrepository-monitoring-service</artifactId>
+    <version>${project.version}</version>
+    <type>war</type>
+  </dependency>
+  
+  
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-reference-pillar</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+        <type>zip</type>
     </dependency>
+    
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-core</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
+    
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-reference-pillar</artifactId>
@@ -59,10 +100,35 @@
   <description>Here you can find the functionality for working with crosscutting module concerns. 
   This is mainly integration tests.</description>
   <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/assembly.xml</descriptor>
+          </descriptors>
+          <attach>true</attach>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+
+
     <resources>
-        <resource>
-            <directory>src/main/resources</directory>
-        </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
     </resources>
   </build>
 </project>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  Bitrepository Webclient
+  %%
+  Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as 
+  published by the Free Software Foundation, either version 2.1 of the 
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Lesser Public License for more details.
+  
+  You should have received a copy of the GNU General Lesser Public 
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  #L%
+  -->
+
+<web-app>
+   	<display-name>Bitrepository webservice</display-name>
+   
+ 	<welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+		<welcome-file>index-v1.html</welcome-file>
+	</welcome-file-list>
+	
+   	<servlet>
+ 		<servlet-name>Bitrepository-webclient</servlet-name>
+ 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+		<init-param>
+ 			<param-name>com.sun.jersey.config.property.packages</param-name>
+ 			<param-value>org.bitrepository.webservice</param-value>
+ 		</init-param>
+ 	</servlet>
+ 	
+ 	<servlet-mapping>
+ 		<servlet-name>Bitrepository-webclient</servlet-name>
+ 		<url-pattern>/repo/*</url-pattern>
+ 	</servlet-mapping>
+ 	
+ 	<listener>
+		<listener-class>org.bitrepository.webservice.WebclientContextListener</listener-class>
+	</listener>
+ 	
+</web-app>
+
+
