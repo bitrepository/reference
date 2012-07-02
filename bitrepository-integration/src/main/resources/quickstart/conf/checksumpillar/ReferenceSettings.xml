@@ -32,7 +32,7 @@
   </ClientSettings>
 
   <PillarSettings> 
-    <PillarID>quick-start-checksum</PillarID>
+    <PillarID>checksum-pillar</PillarID>
     <FileDir><!--foobarpattern-->var/checksumpillar</FileDir>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
