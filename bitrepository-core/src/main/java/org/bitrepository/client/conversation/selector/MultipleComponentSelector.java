@@ -21,6 +21,7 @@
  */
 package org.bitrepository.client.conversation.selector;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.exceptions.UnableToFinishException;
@@ -58,7 +59,9 @@ public class MultipleComponentSelector implements ComponentSelector {
      */
     public void processResponse(MessageResponse response) throws UnexpectedResponseException {
         responseStatus.responseReceived(response.getFrom());
-        selectedComponents.add(new SelectedComponentInfo(response.getFrom(), response.getReplyTo()));
+        if(response.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
+            selectedComponents.add(new SelectedComponentInfo(response.getFrom(), response.getReplyTo()));                
+        }
     }
 
     @Override
