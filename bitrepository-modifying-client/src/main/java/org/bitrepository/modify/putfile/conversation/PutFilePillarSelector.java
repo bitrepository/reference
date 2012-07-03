@@ -34,7 +34,7 @@ import org.bitrepository.client.exceptions.UnexpectedResponseException;
  * Extends the <code>MultipleComponentSelector</code> with test of correct message type.
  */
 public class PutFilePillarSelector extends MultipleComponentSelector {
-    
+        
     /**
      * @param pillarsWhichShouldRespond The IDs of the pillars to be selected.
      */

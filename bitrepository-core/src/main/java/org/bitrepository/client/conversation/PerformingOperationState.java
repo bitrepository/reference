@@ -36,6 +36,8 @@ import java.util.Arrays;
  */
 public abstract class PerformingOperationState extends GeneralConversationState {
 
+    protected boolean operationSucceded = true;
+    
     @Override
     protected void processMessage(MessageResponse msg) {
         if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) ||
@@ -64,7 +66,11 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     @Override
     protected GeneralConversationState getNextState() throws UnableToFinishException {
         if (getResponseStatus().haveAllComponentsResponded()) {
-            getContext().getMonitor().complete("Finished operation");
+            if(operationSucceded) {
+                getContext().getMonitor().complete("Finished operation");
+            } else {
+                getContext().getMonitor().operationFailed("One or more components has failed");
+            }
             return new FinishedState(getContext());
         } else {
             return this;
