@@ -26,9 +26,11 @@ package org.bitrepository.access.getchecksums.selector;
 
 import java.util.Collection;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.selector.MultipleComponentSelector;
+import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 /**
@@ -47,7 +49,10 @@ public class PillarSelectorForGetChecksums extends MultipleComponentSelector {
     @Override
     public void processResponse(MessageResponse response) throws UnexpectedResponseException {
         if (response instanceof IdentifyPillarsForGetChecksumsResponse) {
-            super.processResponse(response);
+            responseStatus.responseReceived(response.getFrom());
+            if(response.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
+                selectedComponents.add(new SelectedComponentInfo(response.getFrom(), response.getReplyTo()));                
+            }
         } else {
             throw new UnexpectedResponseException("Are currently only expecting IdentifyPillarsForGetChecksums's");
         }
