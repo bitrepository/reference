@@ -59,6 +59,9 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         validateFileID(fileId);
+        if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
+            ArgumentValidator.checkNotNull(checksumForPillar, "ChecksumForPillar");
+        }
         
         log.info("Requesting the deletion of the file '" + fileId + "' from the pillar '" + pillarId 
                 + "' with checksum '" + checksumForPillar + "', while requested checksum '" + checksumRequested 
@@ -77,6 +80,9 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         validateFileID(fileId);
+        if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
+            ArgumentValidator.checkNotNull(checksumForPillar, "ChecksumForPillar");
+        }
         
         log.info("Requesting the deletion of the file '" + fileId + "' from all pillars with checksum '" 
         + checksumForPillar + "', while requested checksum '" + checksumRequested 

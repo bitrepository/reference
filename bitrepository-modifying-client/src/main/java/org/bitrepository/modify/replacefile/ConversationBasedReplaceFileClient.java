@@ -65,8 +65,10 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
             EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
-        ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
         validateFileID(fileId);
+        if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
+            ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
+        }
         
         log.info("Requesting the replacement of the file '" + fileId + "' at the pillar '" + pillarId + "' from the "
                 + "URL '" + url + "' and with the size '" + sizeOfNewFile + "', where the old file has the checksum '" 
@@ -90,8 +92,10 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile, 
             EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
-        ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
         validateFileID(fileId);
+        if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
+            ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
+        }
         
         log.info("Requesting the replacement of the file '" + fileId + "' at every pillar from the URL '" + url 
                 + "' and with the size '" + sizeOfNewFile + "', where the old file has the checksum '" 
