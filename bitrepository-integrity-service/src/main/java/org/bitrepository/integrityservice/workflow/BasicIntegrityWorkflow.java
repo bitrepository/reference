@@ -54,8 +54,10 @@ public class BasicIntegrityWorkflow extends StepBasedWorkflow {
     /**
      * Constructor.
      * @param settings The settings.
-     * @param client The client for collecting the checksums.
+     * @param collector The collector for collecting the file ids and the checksums.
      * @param store The storage for the integrity data.
+     * @param checker The checker for validating the content of the database.
+     * @param alerter The integrity alerter for sending alarms, when necessary.
      */
     public BasicIntegrityWorkflow(Settings settings, IntegrityInformationCollector collector, IntegrityModel store,
             IntegrityChecker checker, IntegrityAlerter alerter) {

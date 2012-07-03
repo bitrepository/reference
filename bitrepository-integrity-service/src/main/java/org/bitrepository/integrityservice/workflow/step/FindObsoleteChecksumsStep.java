@@ -66,7 +66,7 @@ public class FindObsoleteChecksumsStep implements WorkflowStep {
         IntegrityReport report = checker.checkObsoleteChecksums(obsoleteTimeout);
         
         if(report.hasIntegrityIssues()) {
-            log.debug("No files are missing at any pillar.");
+            log.debug("No checksum are obsolete at any pillar.");
         } else {
             dispatcher.integrityFailed(report);
         }

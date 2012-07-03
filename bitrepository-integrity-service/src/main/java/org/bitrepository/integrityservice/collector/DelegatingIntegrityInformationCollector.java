@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Integrity information collector that delegates collecting information to the clients.
+ * TODO split into two different collectors. One for collecting the file ids and one for the checksums.
  */
 public class DelegatingIntegrityInformationCollector implements IntegrityInformationCollector {
     /** The log.*/
@@ -63,7 +64,7 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     }
 
     @Override
-    public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation, 
+    public synchronized void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation, 
             EventHandler eventHandler) {
         try {
             auditManager.addAuditEvent("" + fileIDs.getFileID(), "IntegrityService", 
@@ -76,7 +77,7 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     }
 
     @Override
-    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType, 
+    public synchronized void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType, 
             String auditTrailInformation, EventHandler eventHandler) {
         try {
             auditManager.addAuditEvent("" + fileIDs.getFileID(), "IntegrityService", 

@@ -50,6 +50,7 @@ public class UpdateFileIDsStep implements WorkflowStep {
     
     /**
      * Constructor.
+     * TODO should only have injected the necessary, not entire settings.
      * @param settings The settings.
      * @param client The client for collecting the fileids.
      * @param store The storage for the integrity data.
@@ -109,13 +110,19 @@ public class UpdateFileIDsStep implements WorkflowStep {
                 handleResult((FileIDsCompletePillarEvent) event);
             } else if(event.getType() == OperationEventType.COMPLETE) {
                 log.debug("Complete: " + event.toString());
-                isFinished = true;
-                notify();
+                finish();
             } else if(event.getType() == OperationEventType.FAILED) {
                 log.warn("Failure: " + event.toString());
-                isFinished = true;
-                notify();
+                finish();
             }
+        }
+        
+        /**
+         * Set the state to finished, and notify the waiting step.
+         */
+        private void finish() {
+            isFinished = true;
+            notify();            
         }
         
         /**

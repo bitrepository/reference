@@ -178,8 +178,16 @@ public class IntegrityDatabase implements IntegrityModel {
         return store.findMissingFiles();
     }
 
+    /*
+     * TODO make the following container:
+     * class FileIDOnPillars {
+     *   String fileID;
+     *   List<String> pillarIDs.
+     *   ......
+     * }
+     */
     @Override
-    public List<String> isMissing(String fileId) {
+    public List<String> getPillarsMissingFile(String fileId) {
         return store.getMissingAtPillars(fileId);
     }
 

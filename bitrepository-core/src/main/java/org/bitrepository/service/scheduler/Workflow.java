@@ -27,18 +27,16 @@ package org.bitrepository.service.scheduler;
 
 /**
  * Interface for defining a workflow.
- * A workflow collects data or validate data, or a combination of these two. 
- * 
- * Implementations for a workflow for collection of integrity information should use an
- * {@link org.bitrepository.integrityservice.collector.IntegrityInformationCollector}.
- *
- * Conditions for the trigger should pull on configuration combined with data from the
- * {@link org.bitrepository.integrityservice.cache.IntegrityModel}.
- * 
- * Implementations for a workflow which checks the integrity of the data should use an
- * {@link org.bitrepository.integrityservice.checking.IntegrityChecker}
+ * A workflow performs a given task for the respective service. 
  */
 public interface Workflow {
+    /**
+     * Start the workflow.
+     */
     void start();
+    
+    /**
+     * @return A human readable text telling the current state of the workflow.
+     */
     String currentState();
 }

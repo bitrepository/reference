@@ -40,7 +40,7 @@ import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
 import org.bitrepository.service.scheduler.ServiceScheduler;
 import org.bitrepository.service.scheduler.Workflow;
-import org.bitrepository.service.scheduler.WorkflowTask;
+import org.bitrepository.service.scheduler.WorkflowTimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,11 +100,11 @@ public class SimpleIntegrityService implements IntegrityService {
 
     @Override
     public void scheduleWorkflow(Workflow workflow, long timeBetweenRuns) {
-        scheduler.putWorkflow(workflow, workflow.getClass().getName(), timeBetweenRuns);
+        scheduler.scheduleWorkflow(workflow, workflow.getClass().getSimpleName(), timeBetweenRuns);
     }
     
     @Override
-    public Collection<WorkflowTask> getScheduledWorkflows() {
+    public Collection<WorkflowTimerTask> getScheduledWorkflows() {
         return scheduler.getScheduledWorkflows();
     }
     

@@ -297,7 +297,7 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public List<String> isMissing(String fileId) {
+    public List<String> getPillarsMissingFile(String fileId) {
         // TODO Auto-generated method stub
         return null;
     }

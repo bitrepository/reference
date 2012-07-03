@@ -189,7 +189,7 @@ public class MockIntegrityModel implements IntegrityModel {
     
     private int callsForIsMissing = 0;
     @Override
-    public List<String> isMissing(String fileId) {
+    public List<String> getPillarsMissingFile(String fileId) {
         callsForIsMissing++;
         return new ArrayList<String>();
     }

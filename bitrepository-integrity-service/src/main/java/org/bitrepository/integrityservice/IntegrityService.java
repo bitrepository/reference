@@ -25,14 +25,14 @@ import java.util.Collection;
 
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.scheduler.Workflow;
-import org.bitrepository.service.scheduler.WorkflowTask;
+import org.bitrepository.service.scheduler.WorkflowTimerTask;
 
 public interface IntegrityService extends LifeCycledService {
     /**
      * Retrieves all the scheduled tasks in the system, which are running.
      * @return The names of the tasks, which are scheduled by the system.
      */
-    Collection<WorkflowTask> getScheduledWorkflows();
+    Collection<WorkflowTimerTask> getScheduledWorkflows();
     
     /**
      * Retrieves all the available workflows, even those which have not been scheduled.

@@ -30,12 +30,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
-import org.bitrepository.common.settings.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Scheduler that uses Timer to trigger events.
+ * Scheduler that uses Timer to run workflows.
  */
 public class TimerbasedScheduler implements ServiceScheduler {
     /** The log.*/
@@ -46,40 +45,40 @@ public class TimerbasedScheduler implements ServiceScheduler {
     /** The period between testing whether triggers have triggered. */
     private final long schedulerInterval;
     /** The map between the running timertasks and their names.*/
-    private Map<String, WorkflowTask> intervalTasks = new HashMap<String, WorkflowTask>();
+    private Map<String, WorkflowTimerTask> intervalTasks = new HashMap<String, WorkflowTimerTask>();
     
     /** The name of the timer.*/
-    private static final String TIMER_NAME = "Integrity Information Scheduler";
+    private static final String TIMER_NAME = "Service Scheduler";
     /** Whether the timer is a deamon.*/
     private static final boolean TIMER_IS_DEAMON = true;
     /** A timer delay of 0 seconds.*/
     private static final Long NO_DELAY = 0L;
 
-    /** Setup a timer task for triggering all triggers at requested interval.
+    /** Setup a timer task for running the workflows at requested interval.
      *
-     * @param configuration The configuration for the collection. Currently contains polling interval.
+     * @param interval The interval for the scheduling of a workflow.
      */
-    public TimerbasedScheduler(Settings settings) {
-        this.schedulerInterval = settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval();
+    public TimerbasedScheduler(long interval) {
+        this.schedulerInterval = interval;
         timer = new Timer(TIMER_NAME, TIMER_IS_DEAMON);
     }
 
     @Override
-    public void putWorkflow(Workflow workflow, String name, Long interval) {
+    public void scheduleWorkflow(Workflow workflow, String name, Long interval) {
         
-        if(removeWorkflow(name)) {
+        if(cancelWorkflow(name)) {
             log.info("Recreated workflow named '" + name + "': " + workflow);
         } else {
             log.debug("Created a workflow named '" + name + "': " + workflow);
         }
-        WorkflowTask task = new WorkflowTask(interval, name, workflow);
+        WorkflowTimerTask task = new WorkflowTimerTask(interval, name, workflow);
         timer.scheduleAtFixedRate(task, NO_DELAY, schedulerInterval);
         intervalTasks.put(name, task);
     }
     
     @Override
-    public boolean removeWorkflow(String name) {
-        WorkflowTask task = intervalTasks.remove(name);
+    public boolean cancelWorkflow(String name) {
+        WorkflowTimerTask task = intervalTasks.remove(name);
         if(task == null) {
             return false;
         }
@@ -89,8 +88,8 @@ public class TimerbasedScheduler implements ServiceScheduler {
     }
     
     @Override
-    public List<WorkflowTask> getScheduledWorkflows() {
-        List<WorkflowTask> workflows = new ArrayList<WorkflowTask>();
+    public List<WorkflowTimerTask> getScheduledWorkflows() {
+        List<WorkflowTimerTask> workflows = new ArrayList<WorkflowTimerTask>();
         workflows.addAll(intervalTasks.values());
         
         return workflows;

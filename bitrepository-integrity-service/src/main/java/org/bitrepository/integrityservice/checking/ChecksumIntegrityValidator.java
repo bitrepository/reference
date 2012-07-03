@@ -67,6 +67,8 @@ public class ChecksumIntegrityValidator {
      * Performs the validation of the checksums for the given file ids.
      * This includes voting if some of the checksums differs between the pillars.
      * 
+     * TODO implement solution to avoid going through all file ids, by using SQL and the database instead.
+     * 
      * @param requestedFileIDs The list of ids for the files to validate.
      * @return The report for the results of the validation.
      */
@@ -111,9 +113,9 @@ public class ChecksumIntegrityValidator {
     }
     
     /**
-     * 
-     * @param fileinfos
-     * @param report
+     * Validates the checksum for a single file. 
+     * @param fileinfos The fileinfos for the given file.
+     * @param report The report with the results of the validation.
      */
     private void validateSingleFile(String fileId, Collection<FileInfo> fileinfos, ChecksumReport report) {
         Map<String, Integer> checksumCount = getChecksumCount(fileinfos);
@@ -143,6 +145,7 @@ public class ChecksumIntegrityValidator {
         for(FileInfo fileInfo : fileInfos) {
             // Validate that the checksum has been found.
             String checksum = fileInfo.getChecksum();
+            // TODO validate the checksum state, or make an entry to the database.
             if(checksum == null || checksum.isEmpty()) {
                 log.warn("The file '" + fileInfo.getFileId() + "' is missing checksum at '" + fileInfo.getPillarId() 
                         + "'. Ignoring: {}", fileInfo);
@@ -186,14 +189,15 @@ public class ChecksumIntegrityValidator {
     }
     
     /**
-     * 
+     * Handles the results of a vote. 
      * @param chosenChecksum The chosen checksum to validate the pillars against. If this is null, then no checksum is 
      * valid and all pillars will be set to having an invalid checksum.
      * @param fileId The id of the file to handle the voting results of.
      * @param fileinfos The collection of fileinfos for the given file.
      * @param report The report where the results are put.
      */
-    private void handleVoteResults(String chosenChecksum, String fileId, Collection<FileInfo> fileinfos, ChecksumReport report) {
+    private void handleVoteResults(String chosenChecksum, String fileId, Collection<FileInfo> fileinfos, 
+            ChecksumReport report) {
         if(chosenChecksum == null) {
             cache.setChecksumError(fileId, pillarIds);
             for(FileInfo fi : fileinfos) {

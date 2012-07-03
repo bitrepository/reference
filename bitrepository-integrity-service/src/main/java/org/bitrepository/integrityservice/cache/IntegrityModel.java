@@ -134,5 +134,5 @@ public interface IntegrityModel {
      * @param fileId The id of the file to check whether it is missing.
      * @return The list of pillars where it is missing (empty list, if not missing at any pillar).
      */
-    List<String> isMissing(String fileId);
+    List<String> getPillarsMissingFile(String fileId);
 }
