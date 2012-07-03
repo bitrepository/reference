@@ -36,6 +36,12 @@ import java.util.Arrays;
  */
 public abstract class PerformingOperationState extends GeneralConversationState {
 
+    /**
+     * Boolean to indicate whether a operation as a whole was a success. 
+     * The concrete implementation of PerformingOperationState (e.g. PuttingFile, GettingChecksums etc)
+     * should set operationSucceded to false if an operation is judged failed. Which policy to do decide this
+     * is up to the concrete class. 
+     */
     protected boolean operationSucceded = true;
     
     @Override
