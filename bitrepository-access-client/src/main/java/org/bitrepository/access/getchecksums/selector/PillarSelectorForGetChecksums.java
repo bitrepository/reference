@@ -49,10 +49,7 @@ public class PillarSelectorForGetChecksums extends MultipleComponentSelector {
     @Override
     public void processResponse(MessageResponse response) throws UnexpectedResponseException {
         if (response instanceof IdentifyPillarsForGetChecksumsResponse) {
-            responseStatus.responseReceived(response.getFrom());
-            if(response.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
-                selectedComponents.add(new SelectedComponentInfo(response.getFrom(), response.getReplyTo()));                
-            }
+            super.processResponse(response);
         } else {
             throw new UnexpectedResponseException("Are currently only expecting IdentifyPillarsForGetChecksums's");
         }
