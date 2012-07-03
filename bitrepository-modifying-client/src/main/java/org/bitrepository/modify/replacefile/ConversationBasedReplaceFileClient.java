@@ -69,6 +69,10 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
         if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
             ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
         }
+        if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
+            ArgumentValidator.checkNotNull(checksumForNewFileValidationAtPillar,
+                    "ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar");
+        }
         
         log.info("Requesting the replacement of the file '" + fileId + "' at the pillar '" + pillarId + "' from the "
                 + "URL '" + url + "' and with the size '" + sizeOfNewFile + "', where the old file has the checksum '" 
@@ -95,6 +99,10 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
         validateFileID(fileId);
         if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
             ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
+        }
+        if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
+            ArgumentValidator.checkNotNull(checksumForNewFileValidationAtPillar,
+                    "ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar");
         }
         
         log.info("Requesting the replacement of the file '" + fileId + "' at every pillar from the URL '" + url 
