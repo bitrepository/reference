@@ -34,7 +34,7 @@
       AllowedFileIDPattern defines the allowed fileIDs in the collection. 
       This is formatted as a Java regular expression 
     -->
-    <AllowedFileIDPattern>[a-zA-Z_\.\-0-9]{1-250}</AllowedFileIDPattern>
+    <AllowedFileIDPattern>[a-zA-Z_\.\-0-9]{1,250}</AllowedFileIDPattern>
     <!--
       RequireMessageAuthentication, defines whether all messages received by any component
       in the system should authenticate the message by signature check against known certificates. 
