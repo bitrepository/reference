@@ -265,7 +265,6 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID));
     }
     
-    
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarPutFileTestBadURL() throws Exception {
         addDescription("Tests that the pillar handles a bad URL correct.");

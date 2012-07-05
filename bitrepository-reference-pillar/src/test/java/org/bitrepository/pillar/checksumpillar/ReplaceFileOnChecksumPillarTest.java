@@ -371,7 +371,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
         initializeCacheWithMD5ChecksummedFile();
-        messageBus.sendMessage(msgFactory.createReplaceFileRequest(csData, replaceCsData, csSpec, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+        messageBus.sendMessage(msgFactory.createReplaceFileRequest(null, null, null, null, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
 
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 

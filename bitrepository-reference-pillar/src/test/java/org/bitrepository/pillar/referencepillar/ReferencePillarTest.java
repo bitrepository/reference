@@ -46,6 +46,8 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     protected MockAlarmDispatcher alarmDispatcher;
     protected MockAuditManager audits;
     protected PillarContext context;
+    
+    protected final String EMPTY_FILE_CHECKSUM = "d41d8cd98f00b204e9800998ecf8427e";
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {

@@ -237,7 +237,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
         ResultingChecksums res = new ResultingChecksums();
         
         String url = message.getResultAddress();
-        if(url != null && !url.isEmpty()) {
+        if(url != null) {
             try {
                 File fileToUpload = makeTemporaryChecksumFile(message, checksumList);
                 uploadFile(fileToUpload, url);
