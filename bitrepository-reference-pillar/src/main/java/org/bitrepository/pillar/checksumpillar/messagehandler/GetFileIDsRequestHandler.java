@@ -160,7 +160,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
                 + "file ids.", message.getAuditTrailInformation(), FileAction.GET_FILEID);
         
         String resultingAddress = message.getResultAddress();
-        if(resultingAddress == null || resultingAddress.isEmpty()) {
+        if(resultingAddress == null) {
             res.setFileIDsData(data);
         } else {
             try {

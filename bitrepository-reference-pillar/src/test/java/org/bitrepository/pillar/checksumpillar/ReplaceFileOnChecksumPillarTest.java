@@ -27,6 +27,7 @@ package org.bitrepository.pillar.checksumpillar;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -377,5 +378,18 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), REPLACE_CHECKSUM);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void checksumPillarReplaceFileBadURL() throws Exception {
+        addDescription("Tests the handling of a bad URL in the request.");
+        initializeCacheWithMD5ChecksummedFile();
+        String fileAddress = "http://127.0.0.1/¾" + new Date().getTime();
+        messageBus.sendMessage(msgFactory.createReplaceFileRequest(csData, replaceCsData, csSpec, csSpec, fileAddress, DEFAULT_FILE_ID, FILE_SIZE));
+
+        ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.FILE_TRANSFER_FAILURE);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
     }
 }

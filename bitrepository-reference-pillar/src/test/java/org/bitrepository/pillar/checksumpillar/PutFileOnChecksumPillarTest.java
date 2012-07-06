@@ -279,4 +279,14 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
                 ResponseCode.FILE_TRANSFER_FAILURE);
         Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
     }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void checksumPillarPutFileTestNoFileIdInIdentification() throws Exception {
+        addDescription("Tests that it is possible to identify without the fileid or the filesize.");
+
+        messageBus.sendMessage(msgFactory.createIdentifyPillarsForPutFileRequest(null, null));
+        IdentifyPillarsForPutFileResponse identifyResponse = clientTopic.waitForMessage(IdentifyPillarsForPutFileResponse.class);
+        Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.IDENTIFICATION_POSITIVE);
+    }
 }

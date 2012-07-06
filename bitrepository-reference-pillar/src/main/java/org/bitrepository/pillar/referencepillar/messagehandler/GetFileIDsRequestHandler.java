@@ -159,7 +159,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
                 + "file ids.", message.getAuditTrailInformation(), FileAction.GET_FILEID);
         
         String resultingAddress = message.getResultAddress();
-        if(resultingAddress == null || resultingAddress.isEmpty()) {
+        if(resultingAddress == null) {
             res.setFileIDsData(data);
         } else {
             try {
@@ -213,7 +213,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      * @param fileID The requested fileID to find and validate the existence of.
      * @return The list of the ids of the requested files in the archive, wrapped in the requested datastructure.
      */
-    private FileIDsData retrieveSpecifiedFileIDs(String fileID) throws RequestHandlerException {
+    private FileIDsData retrieveSpecifiedFileIDs(String fileID) {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems fileIDList = new FileIDsDataItems();
         fileIDList.getFileIDsDataItem().add(getDataItemForFileID(fileID));            
@@ -226,14 +226,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      * @param fileID The fileID to validate and make into a FileIDsDataItem.
      * @return The FileIDsDataItem for the requested fileID.
      */
-    private FileIDsDataItem getDataItemForFileID(String fileID) throws RequestHandlerException {
-        if(!getArchive().getFile(fileID).isFile()) {
-            ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            ri.setResponseText("The file '" + fileID + "' is not valid. It either does not exist or "
-                    +" it is a directory instead of a file.");
-            throw new InvalidMessageException(ri);
-        }
+    private FileIDsDataItem getDataItemForFileID(String fileID) {
         FileIDsDataItem fileIDData = new FileIDsDataItem();
         long timestamp = getArchive().getFile(fileID).lastModified();
         fileIDData.setLastModificationTime(CalendarUtils.getFromMillis(timestamp));

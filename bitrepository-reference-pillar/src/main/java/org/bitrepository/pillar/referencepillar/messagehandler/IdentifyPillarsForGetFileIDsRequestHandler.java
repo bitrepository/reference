@@ -24,9 +24,6 @@
  */
 package org.bitrepository.pillar.referencepillar.messagehandler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -89,17 +86,11 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         }
         validateFileID(message.getFileIDs().getFileID());
         
-        List<String> missingFiles = new ArrayList<String>();
         String fileID = fileids.getFileID();
         if(fileID != null && !getArchive().hasFile(fileID)) {
-            missingFiles.add(fileID);
-        }
-        
-        // Throw exception if any files are missing.
-        if(!missingFiles.isEmpty()) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
+            irInfo.setResponseText("The following file is missing: '" + fileID + "'");
             
             throw new IdentifyContributorException(irInfo);
         }

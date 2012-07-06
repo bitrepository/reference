@@ -280,7 +280,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void referencePillarPutFileTestNoChecksumAllowed() throws Exception {
+    public void referencePillarPutFileTestNoChecksumRequired() throws Exception {
         addDescription("Tests that it is possible to put without any checksums if the collection settings allows it.");
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
         Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
@@ -291,5 +291,15 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
         Assert.assertTrue(archive.hasFile(DEFAULT_FILE_ID));
+    }
+
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void referencePillarPutFileTestNoFileIdOrFileSizeInIdentification() throws Exception {
+        addDescription("Tests that it is possible to identify without the fileid or the filesize.");
+
+        messageBus.sendMessage(msgFactory.createIdentifyPillarsForPutFileRequest(null, null));
+        IdentifyPillarsForPutFileResponse identifyResponse = clientTopic.waitForMessage(IdentifyPillarsForPutFileResponse.class);
+        Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.IDENTIFICATION_POSITIVE);
     }
 }
