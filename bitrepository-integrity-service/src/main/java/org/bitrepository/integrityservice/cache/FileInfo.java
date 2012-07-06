@@ -196,7 +196,8 @@ public class FileInfo {
     
     @Override
     public String toString() {
-        return "Pillar id: " + pillarId + ", File id: " + fileId + " (date: " + fileCreationTimestamp + "), Checksum: " 
-                + checksum + " (date: " + checksumLastCheck + "), Checksum type: " + checksumType;
+        return "Pillar id: " + pillarId + ", File id: " + fileId + " (state: " + fileState + ", date: " 
+                + fileCreationTimestamp + "), Checksum: " + checksum + " (state: " + checksumState + ", date: " 
+                + checksumLastCheck + "), Checksum type: " + checksumType;
     }
 }

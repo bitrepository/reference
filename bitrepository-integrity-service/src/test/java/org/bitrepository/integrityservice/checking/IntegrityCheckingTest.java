@@ -36,6 +36,7 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
 import org.bitrepository.integrityservice.mocks.MockAuditManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -63,7 +64,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         auditManager = new MockAuditManager();
     }
     
-//    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest", "integritytest"})
     public void testFileidsValid() {
         addDescription("Tests the file ids validation is able to give good result, when two pillars give the same "
                 + "fileids results.");
@@ -97,7 +98,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         fileidsToCheck.setAllFileIDs("true");
         
         addStep("Check whether all pillars have all the file ids", "They should contain the same files.");
-        Assert.assertFalse(checker.checkFileIDs(fileidsToCheck).hasIntegrityIssues(), "The file ids should be validated");
+        Assert.assertFalse(checker.checkFileIDs(fileidsToCheck).hasIntegrityIssues());
     }
     
 //    @Test(groups = {"regressiontest", "integritytest"})
@@ -123,7 +124,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         }
         fileidsData1.setFileIDsDataItems(items1);
         
-        // add the files for two pillars.
+        addStep("add the files for only one pillar pillars.", "Should not have data for the other.");
         cache.addFileIDs(fileidsData1, allFileIDs, TEST_PILLAR_1);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
@@ -300,6 +301,6 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
     }
     
     private IntegrityModel getIntegrityModel() {
-        return new TestIntegrityModel();
+        return new TestIntegrityModel(settings.getCollectionSettings().getClientSettings().getPillarIDs());
     }
 }

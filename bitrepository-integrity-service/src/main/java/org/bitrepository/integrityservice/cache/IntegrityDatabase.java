@@ -62,7 +62,8 @@ public class IntegrityDatabase implements IntegrityModel {
         DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseSpecifics());
         this.store = new IntegrityDAO(new DBConnector(dbSpecifics, 
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseUrl()));
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseUrl()),
+                settings.getCollectionSettings().getClientSettings().getPillarIDs());
     }
     
     /**

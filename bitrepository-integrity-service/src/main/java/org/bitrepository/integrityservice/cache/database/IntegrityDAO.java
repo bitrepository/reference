@@ -73,15 +73,33 @@ public class IntegrityDAO {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The connection to the database.*/
     private final DBConnector dbConnector;
+    /** The ids of the pillars.*/
+    private final List<String> pillarIds;
     
     /** 
      * Constructor.
      * @param dbConnector The connection to the database, where the cache is stored.
      */
-    public IntegrityDAO(DBConnector dbConnector) {
+    public IntegrityDAO(DBConnector dbConnector, List<String> pillarIds) {
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
         
         this.dbConnector = dbConnector;
+        this.pillarIds = pillarIds;
+        initialisePillars();
+    }
+    
+    /**
+     * Initialises the ids of all the pillars.
+     */
+    private void initialisePillars() {
+        for(String pillarId : pillarIds) {
+            Long guid = retrievePillarGuid(pillarId);
+            if(guid == null) {
+                log.debug("Inserting the pillar '" + pillarId + "' into the pillar table.");
+                String sql = "INSERT INTO " + PILLAR_TABLE +" ( " + PILLAR_ID + " ) VALUES ( ? )";
+                DatabaseUtils.executeStatement(dbConnector.getConnection(), sql, pillarId);
+            }
+        }
     }
     
     /**
@@ -368,8 +386,8 @@ public class IntegrityDAO {
         log.debug("Locating files which are missing at any pillar.");
         String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
                 + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "."
-                + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? ";
-        return DatabaseUtils.selectStringList(dbConnector.getConnection(), requestSql, FileState.MISSING.ordinal());
+                + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " != ? ";
+        return DatabaseUtils.selectStringList(dbConnector.getConnection(), requestSql, FileState.EXISTING.ordinal());
     }
     
     /**
@@ -381,10 +399,10 @@ public class IntegrityDAO {
         log.debug("Locating the pillars where a given file is missing.");
         String requestSql = "SELECT " + PILLAR_TABLE + "." + PILLAR_ID + " FROM " + PILLAR_TABLE + " JOIN "
                 + FILE_INFO_TABLE + " ON " + PILLAR_TABLE + "." + PILLAR_GUID + "=" + FILE_INFO_TABLE + "."
-                + FI_PILLAR_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? AND " + FILE_INFO_TABLE 
+                + FI_PILLAR_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " != ? AND " + FILE_INFO_TABLE 
                 + "." + FI_FILE_GUID + " = ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID 
                 + " = ? )";
-        return DatabaseUtils.selectStringList(dbConnector.getConnection(), requestSql, FileState.MISSING.ordinal(), 
+        return DatabaseUtils.selectStringList(dbConnector.getConnection(), requestSql, FileState.EXISTING.ordinal(), 
                 fileId);
     }
     
@@ -489,13 +507,23 @@ public class IntegrityDAO {
     
     /**
      * Inserts a new file id into the 'files' table in the database.
+     * Also creates an entry in the 'fileinfo' table for every pillar.
      * @param fileId The id of the file to insert.
      */
     private void insertFileID(String fileId) {
         log.debug("Inserting the file '" + fileId + "' into the files table.");
-        String sql = "INSERT INTO " + FILES_TABLE + " ( " + FILES_ID + ", " + FILES_CREATION_DATE 
+        String fileSql = "INSERT INTO " + FILES_TABLE + " ( " + FILES_ID + ", " + FILES_CREATION_DATE 
                 + " ) VALUES ( ?, ? )";
-        DatabaseUtils.executeStatement(dbConnector.getConnection(), sql, fileId, new Date());
+        DatabaseUtils.executeStatement(dbConnector.getConnection(), fileSql, fileId, new Date());
+        
+        for(String pillar : pillarIds)  {
+            String fileinfoSql = "INSERT INTO " + FILE_INFO_TABLE + " ( " + FI_FILE_GUID + ", " + FI_PILLAR_GUID + ", "
+                    + FI_CHECKSUM_STATE + ", " + FI_FILE_STATE + " ) VALUES ( (SELECT " + FILES_GUID + " FROM " 
+                    + FILES_TABLE + " WHERE " + FILES_ID + " = ? ), (SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ? ), ?, ? )";
+            DatabaseUtils.executeStatement(dbConnector.getConnection(), fileinfoSql, fileId, pillar, 
+                    ChecksumState.UNKNOWN.ordinal(), FileState.UNKNOWN.ordinal());
+        }
     }
     
     /**
@@ -503,15 +531,10 @@ public class IntegrityDAO {
      * @param pillarId The id of the pillar to retrieve the guid of.
      * @return The guid of the pillar with the given id.
      */
-    private long retrievePillarGuid(String pillarId) {
+    private Long retrievePillarGuid(String pillarId) {
         log.trace("Retrieving the guid for pillar '{}'.", pillarId);
         String sql = "SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ?";
         Long guid = DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, pillarId);
-        // If no entry, then make one and extract the guid.
-        if(guid == null) {
-            insertPillarID(pillarId);
-            guid = DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, pillarId);
-        }
         return guid;
     }
     
@@ -524,16 +547,6 @@ public class IntegrityDAO {
         log.trace("Retrieving the id of the pillar with the guid '{}'.", guid);
         String sql = "SELECT " + PILLAR_ID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_GUID + " = ?";
         return DatabaseUtils.selectStringValue(dbConnector.getConnection(), sql, guid);
-    }
-    
-    /**
-     * Creates a new entry in the 'pillar' table for the given pillar id.
-     * @param pillarId The id of the pillar which are to be inserted into the 'pillar' table.
-     */
-    private void insertPillarID(String pillarId) {
-        log.debug("Inserting the pillar '" + pillarId + "' into the pillar table.");
-        String sql = "INSERT INTO " + PILLAR_TABLE +" ( " + PILLAR_ID + " ) VALUES ( ? )";
-        DatabaseUtils.executeStatement(dbConnector.getConnection(), sql, pillarId);
     }
     
     /**
