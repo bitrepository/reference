@@ -87,9 +87,13 @@ public class IntegrityDAO {
      */
     private void initialisePillars() {
         for(String pillarId : pillarIds) {
-            log.debug("Inserting the pillar '" + pillarId + "' into the pillar table.");
-            String sql = "INSERT INTO " + PILLAR_TABLE +" ( " + PILLAR_ID + " ) VALUES ( ? )";
-            DatabaseUtils.executeStatement(dbConnector.getConnection(), sql, pillarId);
+            if(retrievePillarGuid(pillarId) == null) {
+                log.debug("Inserting the pillar '" + pillarId + "' into the pillar table.");
+                String sql = "INSERT INTO " + PILLAR_TABLE +" ( " + PILLAR_ID + " ) VALUES ( ? )";
+                DatabaseUtils.executeStatement(dbConnector.getConnection(), sql, pillarId);
+            } else {
+                log.debug("Already know the pillar '" + pillarId + "'. Will not recreate the entry in the database.");
+            }
         }
     }
     
@@ -106,7 +110,7 @@ public class IntegrityDAO {
         long pillarGuid = retrievePillarGuid(pillarId);
         
         for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
-            long fileGuid = retrieveFileGuid(dataItem.getFileID());
+            long fileGuid = retrieveFileGuidOrCreateNew(dataItem.getFileID());
             Date modifyDate = CalendarUtils.convertFromXMLGregorianCalendar(dataItem.getLastModificationTime());
             
             updateFileInfoLastFileUpdateTimestamp(pillarGuid, fileGuid, modifyDate);
@@ -146,7 +150,13 @@ public class IntegrityDAO {
         final int indexFileState = 5;
         final int indexChecksumState = 6;
         
-        long fileGuid = retrieveFileGuid(fileId);
+        Long fileGuid = retrieveFileGuidOrNull(fileId);
+        
+        if(fileGuid == null) {
+            log.info("Trying to retrieve file infos for non-existing file id: '" + fileId + "'.");
+            return new ArrayList<FileInfo>();
+        }
+        
         List<FileInfo> res = new ArrayList<FileInfo>();
         String sql = "SELECT " + FI_LAST_FILE_UPDATE + ", " + FI_CHECKSUM + ", " + FI_LAST_CHECKSUM_UPDATE + ", " 
                 + FI_PILLAR_GUID + ", " + FI_FILE_STATE + ", " + FI_CHECKSUM_STATE + " FROM " + FILE_INFO_TABLE 
@@ -158,9 +168,9 @@ public class IntegrityDAO {
                 dbResult = DatabaseUtils.selectObject(dbConnector.getConnection(), sql, fileGuid);
                 
                 while(dbResult.next()) {
-                    Date lastFileCheck = dbResult.getDate(indexLastFileCheck);
+                    Date lastFileCheck = dbResult.getTimestamp(indexLastFileCheck);
                     String checksum = dbResult.getString(indexChecksum);
-                    Date lastChecksumCheck = dbResult.getDate(indexLastChecksumCheck);
+                    Date lastChecksumCheck = dbResult.getTimestamp(indexLastChecksumCheck);
                     long pillarGuid = dbResult.getLong(indexPillarGuid);
                     
                     String pillarId = retrievePillarFromGuid(pillarGuid);
@@ -294,7 +304,12 @@ public class IntegrityDAO {
      */
     public void removeFileId(String fileId) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
-        Long guid = retrieveFileGuid(fileId);
+        Long guid = retrieveFileGuidOrNull(fileId);
+        
+        if(guid == null) {
+            log.warn("The file '" + fileId + "' has already been removed.");
+            return;
+        }
         
         log.info("Removing the file id '" + fileId + "' from the files table.");
         String removeFileIDSql = "DELETE FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ?";
@@ -362,6 +377,7 @@ public class IntegrityDAO {
     
     /**
      * Updates or creates the given timestamp for the latest modified date of the given file on the given pillar.
+     * TODO should be optimized, since all file infos are created along with a new the file id. 
      * @param pillarGuid The guid for the pillar.
      * @param fileGuid The guid for the file.
      * @param filelistTimestamp The timestamp for when the file was latest modified.
@@ -403,6 +419,7 @@ public class IntegrityDAO {
     
     /**
      * Updates an entry in the FileInfo table with the results of a GetChecksums operation of a single file.
+     * TODO Optimization since the file infos are created along with a new file id.
      * @param data The result of the GetChecksums operation.
      * @param pillarGuid The guid of the pillar.
      * @param checksumGuid The guid of the checksum.
@@ -411,7 +428,7 @@ public class IntegrityDAO {
         log.debug("Updating pillar with guid '" + pillarGuid + "' with checksum data '" + data + "'");
         Date csTimestamp = CalendarUtils.convertFromXMLGregorianCalendar(data.getCalculationTimestamp());
         String checksum = Base16Utils.decodeBase16(data.getChecksumValue());
-        Long fileGuid = retrieveFileGuid(data.getFileID());
+        Long fileGuid = retrieveFileGuidOrCreateNew(data.getFileID());
 
         // retrieve the guid if the entry already exists.
         String retrievalSql = "SELECT " + FI_GUID + " FROM " + FILE_INFO_TABLE + " WHERE " + FI_PILLAR_GUID 
@@ -446,16 +463,27 @@ public class IntegrityDAO {
      * @param fileId The id of the file to retrieve the guid of.
      * @return The guid of the file with the given id.
      */
-    private long retrieveFileGuid(String fileId) {
+    private long retrieveFileGuidOrCreateNew(String fileId) {
         log.trace("Retrieving guid for file '{}'.", fileId);
         String sql = "SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ?";
         Long guid = DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, fileId);
         // If no entry, then make one and extract the guid.
         if(guid == null) {
-            insertFileID(fileId);
+            insertNewFileID(fileId);
             guid = DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, fileId);
         }
         return guid;
+    }
+    
+    /**
+     * Retrieves the guid corresponding to a given file id. If no such entry exists, then a null is returned.
+     * @param fileId The id of the file to retrieve the guid of.
+     * @return The guid of the file with the given id, or null if the guid does not exist.
+     */
+    private Long retrieveFileGuidOrNull(String fileId) {
+        log.trace("Retrieving guid for file '{}'.", fileId);
+        String sql = "SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ?";
+        return DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, fileId);
     }
     
     /**
@@ -463,7 +491,7 @@ public class IntegrityDAO {
      * Also creates an entry in the 'fileinfo' table for every pillar.
      * @param fileId The id of the file to insert.
      */
-    private void insertFileID(String fileId) {
+    private void insertNewFileID(String fileId) {
         log.debug("Inserting the file '" + fileId + "' into the files table.");
         String fileSql = "INSERT INTO " + FILES_TABLE + " ( " + FILES_ID + ", " + FILES_CREATION_DATE 
                 + " ) VALUES ( ?, ? )";
@@ -480,15 +508,15 @@ public class IntegrityDAO {
     }
     
     /**
-     * Retrieves the guid corresponding to a given pillar id. If no such entry exists, then it is created.
+     * Retrieves the guid corresponding to a given pillar id. All the pillar ids should be created initially.
      * @param pillarId The id of the pillar to retrieve the guid of.
-     * @return The guid of the pillar with the given id.
+     * @return The guid of the pillar with the given id. 
+     * Returns a null if the pillar id is not known by the database yet.
      */
     private Long retrievePillarGuid(String pillarId) {
         log.trace("Retrieving the guid for pillar '{}'.", pillarId);
         String sql = "SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ?";
-        Long guid = DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, pillarId);
-        return guid;
+        return DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, pillarId);
     }
     
     /**

@@ -65,14 +65,6 @@ public class IntegrityDatabase implements IntegrityModel {
                 settings.getCollectionSettings().getClientSettings().getPillarIDs());
     }
     
-    /**
-     * Retrieve the interface to the database, which stores the integrity data.
-     * @return The database store.
-     */
-    public IntegrityDAO getStore() {
-        return store;
-    }
-    
     @Override
     public void addFileIDs(FileIDsData data, FileIDs expectedFileIDs, String pillarId) {
         store.updateFileIDs(data, pillarId);
@@ -143,30 +135,6 @@ public class IntegrityDatabase implements IntegrityModel {
         store.removeFileId(fileId);
     }
     
-    /**
-     * Find the difference between the expected file ids and the delivered ones.
-     * 
-     * @param data The delivered file ids data.
-     * @param expectedFileIDs The expected file ids.
-     * @return The list containing the difference between expected and received data items.
-     */
-    private List<String> retrieveMissingFileIDs(FileIDsData data, FileIDs expectedFileIDs) {
-        List<String> missingFiles;
-        
-        if(expectedFileIDs.isSetAllFileIDs()) {
-            missingFiles = store.getAllFileIDs();
-        } else {
-            missingFiles = new ArrayList<String>();
-            missingFiles.add(expectedFileIDs.getFileID());
-        }
-        
-        for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
-            missingFiles.remove(dataItem.getFileID());
-        }
-        
-        return missingFiles;
-    }
-
     @Override
     public List<String> findMissingChecksums() {
         return store.findMissingChecksums();
@@ -193,5 +161,29 @@ public class IntegrityDatabase implements IntegrityModel {
     @Override
     public Collection<String> findChecksumsOlderThan(Date date) {
         return store.findFilesWithOldChecksum(date);
+    }
+    
+    /**
+     * Find the difference between the expected file ids and the delivered ones.
+     * 
+     * @param data The delivered file ids data.
+     * @param expectedFileIDs The expected file ids.
+     * @return The list containing the difference between expected and received data items.
+     */
+    private List<String> retrieveMissingFileIDs(FileIDsData data, FileIDs expectedFileIDs) {
+        List<String> missingFiles;
+        
+        if(expectedFileIDs.isSetAllFileIDs()) {
+            missingFiles = store.getAllFileIDs();
+        } else {
+            missingFiles = new ArrayList<String>();
+            missingFiles.add(expectedFileIDs.getFileID());
+        }
+        
+        for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
+            missingFiles.remove(dataItem.getFileID());
+        }
+        
+        return missingFiles;
     }
 }
