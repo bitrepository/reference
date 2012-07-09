@@ -140,8 +140,7 @@ public class UpdateChecksumsStep implements WorkflowStep {
          * @param event The event for the completion of a GetChecksums for a single pillar.
          */
         private void handleResult(ChecksumsCompletePillarEvent event) {
-            store.addChecksums(event.getChecksums().getChecksumDataItems(), event.getChecksumType(), 
-                    event.getContributorID());
+            store.addChecksums(event.getChecksums().getChecksumDataItems(), event.getContributorID());
         }
         
         /**

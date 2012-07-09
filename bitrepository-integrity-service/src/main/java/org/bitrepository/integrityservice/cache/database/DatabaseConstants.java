@@ -41,9 +41,6 @@ public final class DatabaseConstants {
     public static final String FI_FILE_GUID = "file_guid";
     /** The guid of the pillar for an entry in the File Info table. A long/bigint value.*/
     public static final String FI_PILLAR_GUID = "pillar_guid";
-    /** The guid of the checksum specification for an entry in the File Info table. A long/bigint value, may be null.
-     *  This should always by the checksum specification of the latest checksum calculated.*/
-    public static final  String FI_CHECKSUM_GUID = "checksum_guid";
     /** The checksum value of an entry in the File Info table. A String value, which may be null.*/
     public static final  String FI_CHECKSUM = "checksum";
     /** The timestamp for the file creation or latest modification. A date/timestamp value, may be null.*/
@@ -72,16 +69,4 @@ public final class DatabaseConstants {
     public static final  String PILLAR_GUID = "pillar_guid";
     /** The id of the pillar. String value.*/
     public static final  String PILLAR_ID = "pillar_id";
-    /** The guid of the checksum specification corresponding to a checksum pillar. A long/bigint value, may be null.*/
-    public static final  String PILLAR_CHECKSUM_SPEC_GUID = "checksum_spec_guid";
-    
-    // THE CHECKSUMSPEC TABLE
-    /** The name of the checksum specification table.*/
-    public static final  String CHECKSUM_TABLE = "checksumspec";
-    /** The guid of an entry in the checksum table. Primary automatically generated key. A long/bigint value.*/
-    public static final  String CHECKSUM_GUID = "checksum_guid";
-    /** The name of the algorithm for the checksum specification. A string value.*/
-    public static final  String CHECKSUM_ALGORITHM = "checksum_algorithm";
-    /** The salt of the checksum specification. A string value, may be null.*/
-    public static final  String CHECKSUM_SALT = "checksum_salt";
 }

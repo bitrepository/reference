@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
@@ -97,8 +97,7 @@ public class TestIntegrityModel implements IntegrityModel {
     }
     
     @Override
-    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, 
-            String pillarId) {
+    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId) {
         for(ChecksumDataForChecksumSpecTYPE checksumResult : data) {
             log.debug("Adding/updating checksums for file '" + checksumResult.getFileID() + "' for pillar '" 
                     + pillarId + "'");
@@ -106,21 +105,19 @@ public class TestIntegrityModel implements IntegrityModel {
             if(!cache.containsKey(checksumResult.getFileID())) {
                 instantiateFileInfoListForFileId(checksumResult.getFileID());
             }
-            updateChecksum(checksumResult, checksumType, pillarId);
+            updateChecksum(checksumResult, pillarId);
         }
     }
     
     /**
      * Updates a file info with checksum results.
      * @param checksumData The results of a checksum calculation.
-     * @param checksumType The type of checksum calculation (e.g. algorithm and optionally salt).
      * @param pillarId The id of the pillar, where it has been calculated.
      */
-    private void updateChecksum(ChecksumDataForChecksumSpecTYPE checksumData, ChecksumSpecTYPE checksumType, 
-            String pillarId) {
+    private void updateChecksum(ChecksumDataForChecksumSpecTYPE checksumData, String pillarId) {
         CollectionFileIDInfo fileInfos = cache.get(checksumData.getFileID());
         
-        fileInfos.updateChecksums(checksumData, checksumType, pillarId);
+        fileInfos.updateChecksums(checksumData, pillarId);
         cache.put(checksumData.getFileID(), fileInfos);
     }
     
@@ -194,6 +191,7 @@ public class TestIntegrityModel implements IntegrityModel {
             
             currentInfo.setDateForLastFileIDCheck(fileIdData.getLastModificationTime());
             currentInfo.setFileState(FileState.EXISTING);
+            currentInfo.setChecksumState(ChecksumState.UNKNOWN);
             
             // put it back into the list and that back into the cache.
             fileIDInfos.add(currentInfo);
@@ -204,11 +202,9 @@ public class TestIntegrityModel implements IntegrityModel {
          * Also updates the 'latestChecksumUpdate'.
          * 
          * @param checksumData The results of the GetChecksumOperation for this given file.
-         * @param checksumType The type of checksum (e.g. algorithm and optional salt).
          * @param pillarId The id of the pillar.
          */
-        void updateChecksums(ChecksumDataForChecksumSpecTYPE checksumData, ChecksumSpecTYPE checksumType,
-                String pillarId) {
+        void updateChecksums(ChecksumDataForChecksumSpecTYPE checksumData, String pillarId) {
             
             // Extract current file info and update it or create a new one.
             FileInfo currentInfo = null;
@@ -223,14 +219,14 @@ public class TestIntegrityModel implements IntegrityModel {
             if(currentInfo == null) {
                 // create a new file info
                 currentInfo = new FileInfo(checksumData.getFileID(), checksumData.getCalculationTimestamp(), 
-                        new String(checksumData.getChecksumValue()), checksumType, 
-                        checksumData.getCalculationTimestamp(), pillarId, FileState.UNKNOWN, ChecksumState.UNKNOWN);
+                        Base16Utils.decodeBase16(checksumData.getChecksumValue()), 
+                        checksumData.getCalculationTimestamp(), pillarId, FileState.EXISTING, ChecksumState.UNKNOWN);
             } else {
                 // Update the existing file info
                 currentInfo.setDateForLastFileIDCheck(checksumData.getCalculationTimestamp());
                 currentInfo.setDateForLastChecksumCheck(checksumData.getCalculationTimestamp());
-                currentInfo.setChecksum(new String(checksumData.getChecksumValue()));
-                currentInfo.setChecksumType(checksumType);
+                currentInfo.setChecksum(Base16Utils.decodeBase16(checksumData.getChecksumValue()));
+                currentInfo.setFileState(FileState.EXISTING);
             }
             
             // put it back into the list and that back into the cache.

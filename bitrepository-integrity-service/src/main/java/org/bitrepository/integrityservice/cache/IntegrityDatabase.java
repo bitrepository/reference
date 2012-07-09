@@ -31,7 +31,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
@@ -85,9 +84,8 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, 
-            String pillarId) {
-        store.updateChecksumData(data, checksumType, pillarId);
+    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId) {
+        store.updateChecksumData(data, pillarId);
     }
 
     @Override

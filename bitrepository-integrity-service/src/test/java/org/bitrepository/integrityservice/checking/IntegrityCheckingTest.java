@@ -24,6 +24,9 @@
  */
 package org.bitrepository.integrityservice.checking;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -36,15 +39,11 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
 import org.bitrepository.integrityservice.mocks.MockAuditManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class IntegrityCheckingTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
@@ -198,8 +197,8 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         }
         
         // add the checksums for two pillars.
-        cache.addChecksums(checksumData, checksumtype, TEST_PILLAR_1);
-        cache.addChecksums(checksumData, checksumtype, TEST_PILLAR_2);
+        cache.addChecksums(checksumData, TEST_PILLAR_1);
+        cache.addChecksums(checksumData, TEST_PILLAR_2);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
         IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);
@@ -284,8 +283,8 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         }
         
         // add the checksums for two pillars.
-        cache.addChecksums(checksumData1, checksumtype, TEST_PILLAR_1);
-        cache.addChecksums(checksumData2, checksumtype, TEST_PILLAR_2);
+        cache.addChecksums(checksumData1, TEST_PILLAR_1);
+        cache.addChecksums(checksumData2, TEST_PILLAR_2);
         
         addStep("Instantiate the IntegrityChecker and the file ids to validate", "Should validate all the files.");
         IntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);

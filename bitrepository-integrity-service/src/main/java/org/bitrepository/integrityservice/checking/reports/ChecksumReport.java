@@ -34,8 +34,6 @@ public class ChecksumReport implements IntegrityReport {
     private final List<String> filesWithoutIssues = new ArrayList<String>();
     /** The map between the ids of the files with issues and their respective checksum issue.*/
     private final Map<String, ChecksumIssue> filesWithIssues = new HashMap<String, ChecksumIssue>();
-    /** The list of ids for the files with checksum specification issues.*/
-    private final List<String> filesWithChecksumSpecIssues = new ArrayList<String>();
     
     /**
      * Keeps track of the id of a file which has no checksum issues.
@@ -73,17 +71,9 @@ public class ChecksumReport implements IntegrityReport {
         filesWithIssues.get(fileId).addDisagreeingPillar(pillarId, checksum);
     }
     
-    /**
-     * Handle the report about a file id where the checksum specifications differ between the pillars.
-     * @param fileId The id of the file with checksum spec issues.
-     */
-    public void reportBadChecksumSpec(String fileId) {
-        filesWithChecksumSpecIssues.add(fileId);
-    }
-    
     @Override
     public boolean hasIntegrityIssues() {
-        return !filesWithIssues.isEmpty() || !filesWithChecksumSpecIssues.isEmpty();
+        return !filesWithIssues.isEmpty();
     }
 
     @Override
@@ -98,11 +88,21 @@ public class ChecksumReport implements IntegrityReport {
             res.append(ci.toString());
         }
         
-        if(!filesWithChecksumSpecIssues.isEmpty()) {
-            res.append("Files with checksum specification issues: " + filesWithChecksumSpecIssues + "\n");
-        }
-        
         return res.toString();
+    }
+    
+    /**
+     * @return The validated files without issues.
+     */
+    public List<String> getFilesWithoutIssues() {
+        return new ArrayList<String>(filesWithoutIssues);
+    }
+
+    /**
+     * @return The validated files with issues. A map between the file ids and their issues.
+     */
+    public Map<String, ChecksumIssue> getFilesWithIssues() {
+        return new HashMap<String, ChecksumIssue>(filesWithIssues);
     }
 
     /**
@@ -110,15 +110,15 @@ public class ChecksumReport implements IntegrityReport {
      * Including the pillar ids both for the pillars who have agreed upon a given checksum, and the pillars
      * which does not agree (if no agreement, then all the pillars 'does not agree').
      */
-    private class ChecksumIssue {
+    public class ChecksumIssue {
         /** The id of the file where the checksum is missing.*/
-        final String fileId;
+        private final String fileId;
         /** The agreed upon checksum for the file.*/
-        String checksum = null;
+        private String checksum = null;
         /** The list of id for the pillars who agree about the checksum. */
-        List<String> agreingPillars;
+        private List<String> agreingPillars;
         /** Mapping between the pillars who disagree about the common checksum, and their respective checksum.*/
-        final Map<String, String> disAgreeingPillars;
+        private final Map<String, String> disAgreeingPillars;
         
         /**
          * Constructor.
@@ -149,6 +149,34 @@ public class ChecksumReport implements IntegrityReport {
         public void setAgreeingPillars(String checksum, List<String> pillarIds) {
             this.checksum = checksum;
             this.agreingPillars = pillarIds;
+        }
+        
+        /**
+         * @return The id of the file for this checksum issue.
+         */
+        public String getFileId() {
+            return fileId;
+        }
+        
+        /**
+         * @return The mapping between the disagreeing pillar ids and their checksum.
+         */
+        public Map<String, String> getDisagreeingPillars() {
+            return new HashMap<String, String>(disAgreeingPillars);
+        }
+        
+        /**
+         * @return The checksum agreed upon.
+         */
+        public String getChecksum() {
+            return checksum;
+        }
+        
+        /**
+         * @return The list of pillars agreeing on the common checksum.
+         */
+        public List<String> getAgreeingPillars() {
+            return new ArrayList<String>(agreingPillars);
         }
         
         @Override

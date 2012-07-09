@@ -68,7 +68,8 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
         
         this.fileIdChecker = new FileExistenceValidator(settings, cache, auditManager);
         this.obsoleteChecksumFinder = new ObsoleteChecksumFinder(cache);
-        this.checksumValidator = new ChecksumIntegrityValidator(settings, cache, auditManager);
+        this.checksumValidator = new ChecksumIntegrityValidator(
+                settings.getCollectionSettings().getClientSettings().getPillarIDs(), cache, auditManager);
     }
     
     @Override
@@ -136,5 +137,4 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
         } 
         return Arrays.asList(fileIDs.getFileID());
     }
-
 }
