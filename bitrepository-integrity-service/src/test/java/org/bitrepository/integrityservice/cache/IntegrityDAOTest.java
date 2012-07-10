@@ -212,6 +212,31 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertNotNull(fileinfos);
         Assert.assertEquals(fileinfos.size(), 0);
     }
+
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testDeletingNonExistingEntry() throws Exception {
+        addDescription("Tests the deletion of an nonexisting FileID entry.");
+        IntegrityDAO cache = createDAO();
+        
+        String nonexistingFileEntry = "NON-EXISTING-FILE-ENTRY" + new Date().getTime();
+
+        addStep("Create data", "Should be ingested into the database");
+        FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
+        cache.updateFileIDs(data1, TEST_PILLAR_1);
+        cache.updateFileIDs(data1, TEST_PILLAR_2);
+        
+        Assert.assertEquals(cache.getAllFileIDs().size(), 1);
+        Collection<FileInfo> fileinfos = cache.getFileInfosForFile(TEST_FILE_ID);
+        Assert.assertNotNull(fileinfos);
+        Assert.assertEquals(fileinfos.size(), 2);
+        
+        addStep("Delete a nonexisting entry", "Should not change the state of the database.");
+        cache.removeFileId(nonexistingFileEntry);
+        Assert.assertEquals(cache.getAllFileIDs().size(), 1);
+        fileinfos = cache.getFileInfosForFile(TEST_FILE_ID);
+        Assert.assertNotNull(fileinfos);
+        Assert.assertEquals(fileinfos.size(), 2);
+    }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testSettingStateToMissing() throws Exception {

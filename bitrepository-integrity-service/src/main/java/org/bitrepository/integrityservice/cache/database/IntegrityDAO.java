@@ -33,7 +33,6 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_CHECKSUM_STATE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_GUID;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_STATE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_GUID;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_CHECKSUM_UPDATE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_FILE_UPDATE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_PILLAR_GUID;
@@ -61,6 +60,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Handles the communication with the integrity database.
+ * 
+ * TODO handle the case, when a new pillar is added to the existing system. 
  */
 public class IntegrityDAO {
     /** The log.*/
@@ -107,13 +108,12 @@ public class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         
         log.info("Updating the file ids '" + data + "' for pillar '" + pillarId + "'");
-        long pillarGuid = retrievePillarGuid(pillarId);
         
         for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
-            long fileGuid = retrieveFileGuidOrCreateNew(dataItem.getFileID());
+            ensureFileIdExists(dataItem.getFileID());
             Date modifyDate = CalendarUtils.convertFromXMLGregorianCalendar(dataItem.getLastModificationTime());
             
-            updateFileInfoLastFileUpdateTimestamp(pillarGuid, fileGuid, modifyDate);
+            updateFileInfoLastFileUpdateTimestamp(pillarId, dataItem.getFileID(), modifyDate);
         }
     }
     
@@ -127,10 +127,9 @@ public class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         
         log.info("Updating the checksum data '" + data + "' for pillar '" + pillarId + "'");
-        long pillarGuid = retrievePillarGuid(pillarId);
-        
         for(ChecksumDataForChecksumSpecTYPE csData : data) {
-            updateFileInfoWithChecksum(csData, pillarGuid);
+            ensureFileIdExists(csData.getFileID());
+            updateFileInfoWithChecksum(csData, pillarId);
         }
     }
     
@@ -150,7 +149,7 @@ public class IntegrityDAO {
         final int indexFileState = 5;
         final int indexChecksumState = 6;
         
-        Long fileGuid = retrieveFileGuidOrNull(fileId);
+        Long fileGuid = retrieveFileGuid(fileId);
         
         if(fileGuid == null) {
             log.info("Trying to retrieve file infos for non-existing file id: '" + fileId + "'.");
@@ -304,7 +303,7 @@ public class IntegrityDAO {
      */
     public void removeFileId(String fileId) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
-        Long guid = retrieveFileGuidOrNull(fileId);
+        Long guid = retrieveFileGuid(fileId);
         
         if(guid == null) {
             log.warn("The file '" + fileId + "' has already been removed.");
@@ -376,103 +375,62 @@ public class IntegrityDAO {
     }
     
     /**
-     * Updates or creates the given timestamp for the latest modified date of the given file on the given pillar.
-     * TODO should be optimized, since all file infos are created along with a new the file id. 
-     * @param pillarGuid The guid for the pillar.
-     * @param fileGuid The guid for the file.
+     * Updates the file info for the given file at the given pillar.
+     * It is always set to 'EXISTING' and if the timestamp is new, then it is also updated along with setting the 
+     * checksum state to 'UNKNOWN'.
+     * @param pillarId The id for the pillar.
+     * @param fileId The id for the file.
      * @param filelistTimestamp The timestamp for when the file was latest modified.
      */
-    private void updateFileInfoLastFileUpdateTimestamp(long pillarGuid, long fileGuid, Date filelistTimestamp) {
-        log.debug("Set Last_File_Update timestamp to '" + filelistTimestamp + "' for file with guid '" + fileGuid 
-                + "' at pillar with guid'" + pillarGuid + "'.");
-        String retrievalSql = "SELECT " + FI_GUID + " FROM " + FILE_INFO_TABLE + " WHERE " + FI_PILLAR_GUID 
-                + " = ? AND " + FI_FILE_GUID + " = ?";
-        Long guid = DatabaseUtils.selectLongValue(dbConnector.getConnection(), retrievalSql, pillarGuid, fileGuid);
+    private void updateFileInfoLastFileUpdateTimestamp(String pillarId, String fileId, Date filelistTimestamp) {
+        log.debug("Set Last_File_Update timestamp to '" + filelistTimestamp + "' for file '" + fileId
+                + "' at pillar '" + pillarId + "'.");
+        String updateExistenceSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? WHERE " + FI_FILE_GUID 
+                + " = ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ? ) and " 
+                + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID 
+                + " = ? )";
+        DatabaseUtils.executeStatement(dbConnector.getConnection(), updateExistenceSql, FileState.EXISTING.ordinal(),
+                fileId, pillarId);
         
-        // if guid is null, then make new entry. Otherwise validate / update.
-        if(guid == null) {
-            String insertSql = "INSERT INTO " + FILE_INFO_TABLE + " ( " + FI_PILLAR_GUID + ", " + FI_FILE_GUID + ", "
-                    + FI_LAST_FILE_UPDATE + ", " + FI_LAST_CHECKSUM_UPDATE + ", " + FI_FILE_STATE + ", " 
-                    + FI_CHECKSUM_STATE + ") VALUES ( ?, ?, ?, ?, ?, ? )";
-            DatabaseUtils.executeStatement(dbConnector.getConnection(), insertSql, pillarGuid, fileGuid, 
-                    filelistTimestamp, new Date(0), FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
-        } else {
-            String validateSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE + " WHERE " + FI_GUID 
-                    + " = ?";
-            Date existingDate = DatabaseUtils.selectDateValue(dbConnector.getConnection(), validateSql, guid);
-            
-            // Insert the date, if it is newer than the recorded one, and also reject the current checksum state.
-            // Otherwise just set the filestate to 'exists'.
-            if(existingDate == null || existingDate.getTime() < filelistTimestamp.getTime()) {
-                String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_FILE_UPDATE + " = ?, " 
-                        + FI_FILE_STATE + " = ? , " + FI_CHECKSUM_STATE + " = ? WHERE " + FI_GUID + " = ?";
-                DatabaseUtils.executeStatement(dbConnector.getConnection(), updateSql, filelistTimestamp, 
-                        FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal(), guid);
-            } else {
-                String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? WHERE " + FI_GUID 
-                        + " = ?";
-                DatabaseUtils.executeStatement(dbConnector.getConnection(), updateSql, FileState.EXISTING.ordinal(), 
-                        guid);
-            }
-        }
+        // If it is newer than current file_id_timestamp, then update it and set 'checksums' to unknown.
+        String updateTimestampSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_FILE_UPDATE + " = ?, " 
+                + FI_CHECKSUM_STATE + " = ? " + " WHERE " + FI_FILE_GUID + " = ( SELECT " + FILES_GUID + " FROM " 
+                + FILES_TABLE + " WHERE " + FILES_ID + " = ? ) and " + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID 
+                + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ? ) and " + FI_LAST_FILE_UPDATE + " < ?";
+        DatabaseUtils.executeStatement(dbConnector.getConnection(), updateTimestampSql, filelistTimestamp, 
+                ChecksumState.UNKNOWN.ordinal(), fileId, pillarId, filelistTimestamp);
     }
     
     /**
-     * Updates an entry in the FileInfo table with the results of a GetChecksums operation of a single file.
-     * TODO Optimization since the file infos are created along with a new file id.
+     * Updates the entry in the file info table for the given pillar and the file with the checksum data, if it has a
+     * newer timestamp than the existing entry.
+     * In that case the new checksum and its timestamp is inserted, and the checksum state is set to 'UNKNOWN'.
      * @param data The result of the GetChecksums operation.
-     * @param pillarGuid The guid of the pillar.
-     * @param checksumGuid The guid of the checksum.
+     * @param pillarId The guid of the pillar.
      */
-    private void updateFileInfoWithChecksum(ChecksumDataForChecksumSpecTYPE data, long pillarGuid) {
-        log.debug("Updating pillar with guid '" + pillarGuid + "' with checksum data '" + data + "'");
+    private void updateFileInfoWithChecksum(ChecksumDataForChecksumSpecTYPE data, String pillarId) {
+        log.debug("Updating pillar '" + pillarId + "' with checksum data '" + data + "'");
         Date csTimestamp = CalendarUtils.convertFromXMLGregorianCalendar(data.getCalculationTimestamp());
         String checksum = Base16Utils.decodeBase16(data.getChecksumValue());
-        Long fileGuid = retrieveFileGuidOrCreateNew(data.getFileID());
-
-        // retrieve the guid if the entry already exists.
-        String retrievalSql = "SELECT " + FI_GUID + " FROM " + FILE_INFO_TABLE + " WHERE " + FI_PILLAR_GUID 
-                + " = ? AND " + FI_FILE_GUID + " = ?";
-        Long guid = DatabaseUtils.selectLongValue(dbConnector.getConnection(), retrievalSql, pillarGuid, fileGuid);
-        
-        // if guid is null, then make new entry. Otherwise validate / update.
-        if(guid == null) {
-            String insertSql = "INSERT INTO " + FILE_INFO_TABLE + " ( " + FI_PILLAR_GUID + ", " + FI_FILE_GUID + ", " 
-                    + FI_LAST_CHECKSUM_UPDATE + ", " + FI_CHECKSUM + ", " + FI_FILE_STATE 
-                    + ", " + FI_CHECKSUM_STATE + ") VALUES ( ?, ?, ?, ?, ?, ?, ? )";
-            DatabaseUtils.executeStatement(dbConnector.getConnection(), insertSql, pillarGuid, fileGuid, csTimestamp,
-                    checksum, FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
-        } else {
-            String validateSql = "SELECT " + FI_LAST_CHECKSUM_UPDATE + " FROM " + FILE_INFO_TABLE + " WHERE " 
-                    + FI_GUID + " = ?";
-            Date existingDate = DatabaseUtils.selectDateValue(dbConnector.getConnection(), validateSql, guid);
-            
-            // Only update, if it has a newer checksum timestamp than the recorded one.
-            if(existingDate == null || existingDate.getTime() < csTimestamp.getTime()) {
-                String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_CHECKSUM_UPDATE + " = ?, " 
-                        + FI_CHECKSUM + " = ?, " + FI_FILE_STATE + " = ?, " + FI_CHECKSUM_STATE + " = ? WHERE " 
-                        + FI_GUID + " = ?";
-                DatabaseUtils.executeStatement(dbConnector.getConnection(), updateSql, csTimestamp, checksum, 
-                        FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal(), guid);
-            }
-        }
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_CHECKSUM_UPDATE + " = ?, "
+                + FI_CHECKSUM_STATE + " = ? , " + FI_CHECKSUM + " = ? WHERE " + FI_FILE_GUID + " = ( SELECT " + FILES_GUID + " FROM "
+                + FILES_TABLE + " WHERE " + FILES_ID + " = ? ) and " + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID
+                + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ? ) and " + FI_LAST_CHECKSUM_UPDATE + " < ?";
+        DatabaseUtils.executeStatement(dbConnector.getConnection(), updateSql, csTimestamp, 
+                ChecksumState.UNKNOWN.ordinal(), checksum, data.getFileID(), pillarId, csTimestamp);
     }
     
     /**
-     * Retrieves the guid corresponding to a given file id. If no such entry exists, then it is created.
-     * @param fileId The id of the file to retrieve the guid of.
-     * @return The guid of the file with the given id.
+     * Ensures that the entries for the file with the given id exists (both in the 'files' table and 
+     * the 'file_info' table)
+     * @param fileId The id of the file to ensure the existence of.
      */
-    private long retrieveFileGuidOrCreateNew(String fileId) {
+    private void ensureFileIdExists(String fileId) {
         log.trace("Retrieving guid for file '{}'.", fileId);
         String sql = "SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ?";
-        Long guid = DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, fileId);
-        // If no entry, then make one and extract the guid.
-        if(guid == null) {
+        if(DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, fileId) == null) {
             insertNewFileID(fileId);
-            guid = DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, fileId);
         }
-        return guid;
     }
     
     /**
@@ -480,7 +438,7 @@ public class IntegrityDAO {
      * @param fileId The id of the file to retrieve the guid of.
      * @return The guid of the file with the given id, or null if the guid does not exist.
      */
-    private Long retrieveFileGuidOrNull(String fileId) {
+    private Long retrieveFileGuid(String fileId) {
         log.trace("Retrieving guid for file '{}'.", fileId);
         String sql = "SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ?";
         return DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, fileId);
@@ -497,13 +455,15 @@ public class IntegrityDAO {
                 + " ) VALUES ( ?, ? )";
         DatabaseUtils.executeStatement(dbConnector.getConnection(), fileSql, fileId, new Date());
         
+        Date epoch = new Date(0);
         for(String pillar : pillarIds)  {
             String fileinfoSql = "INSERT INTO " + FILE_INFO_TABLE + " ( " + FI_FILE_GUID + ", " + FI_PILLAR_GUID + ", "
-                    + FI_CHECKSUM_STATE + ", " + FI_FILE_STATE + " ) VALUES ( (SELECT " + FILES_GUID + " FROM " 
-                    + FILES_TABLE + " WHERE " + FILES_ID + " = ? ), (SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE 
-                    + " WHERE " + PILLAR_ID + " = ? ), ?, ? )";
+                    + FI_CHECKSUM_STATE + ", " + FI_LAST_CHECKSUM_UPDATE + ", " + FI_FILE_STATE + ", " 
+                    + FI_LAST_FILE_UPDATE + " ) VALUES ( (SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " 
+                    + FILES_ID + " = ? ), (SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID 
+                    + " = ? ), ?, ?, ?, ? )";
             DatabaseUtils.executeStatement(dbConnector.getConnection(), fileinfoSql, fileId, pillar, 
-                    ChecksumState.UNKNOWN.ordinal(), FileState.UNKNOWN.ordinal());
+                    ChecksumState.UNKNOWN.ordinal(), epoch, FileState.UNKNOWN.ordinal(), epoch);
         }
     }
     
