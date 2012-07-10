@@ -136,7 +136,11 @@ public class TestIntegrityModel implements IntegrityModel {
     
     @Override
     public List<FileInfo> getFileInfos(String fileId) {
-        return cache.get(fileId).getFileIDInfos();
+        if(cache.containsKey(fileId)) {
+            return cache.get(fileId).getFileIDInfos();
+        } else {
+            return new ArrayList<FileInfo>();
+        }
     }
 
     @Override
@@ -218,17 +222,15 @@ public class TestIntegrityModel implements IntegrityModel {
             }
             if(currentInfo == null) {
                 // create a new file info
-                currentInfo = new FileInfo(checksumData.getFileID(), checksumData.getCalculationTimestamp(), 
+                currentInfo = new FileInfo(checksumData.getFileID(), CalendarUtils.getEpoch(), 
                         Base16Utils.decodeBase16(checksumData.getChecksumValue()), 
                         checksumData.getCalculationTimestamp(), pillarId, FileState.EXISTING, ChecksumState.UNKNOWN);
             } else {
                 // Update the existing file info
-                currentInfo.setDateForLastFileIDCheck(checksumData.getCalculationTimestamp());
                 currentInfo.setDateForLastChecksumCheck(checksumData.getCalculationTimestamp());
                 currentInfo.setChecksum(Base16Utils.decodeBase16(checksumData.getChecksumValue()));
                 currentInfo.setFileState(FileState.EXISTING);
             }
-            
             // put it back into the list and that back into the cache.
             fileIDInfos.add(currentInfo);
         }

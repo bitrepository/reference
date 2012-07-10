@@ -139,7 +139,6 @@ public class FileExistenceValidatorVersusDatabaseTest extends IntegrityDatabaseT
 
     private IntegrityModel getIntegrityModel() {
         return new IntegrityDatabase(settings);
-
     }
     
     private FileIDs getAllFileIDs() {
@@ -147,5 +146,4 @@ public class FileExistenceValidatorVersusDatabaseTest extends IntegrityDatabaseT
         res.setAllFileIDs("true");
         return res;
     }
-
 }

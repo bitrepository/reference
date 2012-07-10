@@ -191,7 +191,7 @@ public class ChecksumReport implements IntegrityReport {
             res.append("The pillars who disagree about the checksum has the following checksum: '" 
                     + disAgreeingPillars + "'");
             
-            return fileId + "";
+            return res.toString();
         }
     }
 }

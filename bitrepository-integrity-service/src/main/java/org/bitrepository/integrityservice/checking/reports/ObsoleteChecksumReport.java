@@ -51,7 +51,7 @@ public class ObsoleteChecksumReport implements IntegrityReport {
     
     @Override
     public boolean hasIntegrityIssues() {
-        return obsoleteChecksum.isEmpty();
+        return !obsoleteChecksum.isEmpty();
     }
     
     @Override
@@ -69,9 +69,16 @@ public class ObsoleteChecksumReport implements IntegrityReport {
     }
     
     /**
+     * @return The mapping between the file ids with obsolete checksums and the obsolete checksum data.
+     */
+    public Map<String, ObsoleteChecksumData> getObsoleteChecksum() {
+        return obsoleteChecksum;
+    }
+    
+    /**
      * Container for the information about the obsolete pillars for a single file. 
      */
-    private class ObsoleteChecksumData {
+    public class ObsoleteChecksumData {
         /** The id of the file where the checksum is missing.*/
         final String fileId;
         /** The list of id for the pillars where the checksum of the file is missing. */
@@ -93,6 +100,14 @@ public class ObsoleteChecksumReport implements IntegrityReport {
          */
         public void addPillar(String pillarId, XMLGregorianCalendar date) {
             pillarDates.put(pillarId, date);
+        }
+        
+        /**
+         * @return The mapping between the pillars where the file has an old checksum and the date for the last 
+         * checksum calculation.
+         */
+        public Map<String, XMLGregorianCalendar> getPillarDates() {
+            return pillarDates;
         }
     }
 }

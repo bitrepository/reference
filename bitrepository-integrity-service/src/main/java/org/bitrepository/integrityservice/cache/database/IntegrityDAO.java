@@ -385,12 +385,7 @@ public class IntegrityDAO {
     private void updateFileInfoLastFileUpdateTimestamp(String pillarId, String fileId, Date filelistTimestamp) {
         log.debug("Set Last_File_Update timestamp to '" + filelistTimestamp + "' for file '" + fileId
                 + "' at pillar '" + pillarId + "'.");
-        String updateExistenceSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? WHERE " 
-                + FI_FILE_GUID + " = ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID 
-                + " = ? ) and " + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " 
-                + PILLAR_ID + " = ? )";
-        DatabaseUtils.executeStatement(dbConnector.getConnection(), updateExistenceSql, FileState.EXISTING.ordinal(),
-                fileId, pillarId);
+        setFileExisting(fileId, pillarId);
         
         // If it is newer than current file_id_timestamp, then update it and set 'checksums' to unknown.
         String updateTimestampSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_FILE_UPDATE + " = ?, " 
@@ -410,16 +405,32 @@ public class IntegrityDAO {
      */
     private void updateFileInfoWithChecksum(ChecksumDataForChecksumSpecTYPE data, String pillarId) {
         log.debug("Updating pillar '" + pillarId + "' with checksum data '" + data + "'");
+        setFileExisting(data.getFileID(), pillarId);
+        
         Date csTimestamp = CalendarUtils.convertFromXMLGregorianCalendar(data.getCalculationTimestamp());
         String checksum = Base16Utils.decodeBase16(data.getChecksumValue());
         String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_CHECKSUM_UPDATE + " = ?, "
-                + FI_CHECKSUM_STATE + " = ? , " + FI_FILE_STATE + " = ? , " + FI_CHECKSUM + " = ? WHERE " 
-                + FI_FILE_GUID + " = ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID 
-                + " = ? ) and " + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " 
-                + PILLAR_ID + " = ? ) and " + FI_LAST_CHECKSUM_UPDATE + " < ?";
+                + FI_CHECKSUM_STATE + " = ? , " + FI_CHECKSUM + " = ? WHERE " + FI_FILE_GUID + " = ( SELECT " 
+                + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ? ) and " + FI_PILLAR_GUID 
+                + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ? ) and " 
+                + FI_LAST_CHECKSUM_UPDATE + " < ?";
         DatabaseUtils.executeStatement(dbConnector.getConnection(), updateSql, csTimestamp, 
-                ChecksumState.UNKNOWN.ordinal(), FileState.EXISTING.ordinal(), checksum, data.getFileID(), pillarId, 
+                ChecksumState.UNKNOWN.ordinal(), checksum, data.getFileID(), pillarId, 
                 csTimestamp);
+    }
+    
+    /**
+     * Sets the file state to 'EXISTING' for a given file at a given pillar.
+     * @param fileId The id of the file.
+     * @param pillarId The id of the pillar.
+     */
+    private void setFileExisting(String fileId, String pillarId) {
+        String updateExistenceSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? WHERE " 
+                + FI_FILE_GUID + " = ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID
+                + " = ? ) and " + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE "
+                + PILLAR_ID + " = ? )";
+        DatabaseUtils.executeStatement(dbConnector.getConnection(), updateExistenceSql, FileState.EXISTING.ordinal(),
+                fileId, pillarId);
     }
     
     /**

@@ -22,11 +22,11 @@
 package org.bitrepository.integrityservice.checking;
 
 import java.util.Date;
+import java.util.HashSet;
 
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReport;
 
@@ -53,11 +53,11 @@ public class ObsoleteChecksumFinder {
     public ObsoleteChecksumReport generateReport(long timeout) {
         ObsoleteChecksumReport report = new ObsoleteChecksumReport();
         Long outDated = System.currentTimeMillis() - timeout;
-        for(String fileId : cache.findChecksumsOlderThan(new Date(outDated))) {
-            // TODO make a better method for this! Perhaps directly in the database.
+        HashSet<String> filesWithOldChecksum = new HashSet<String>(cache.findChecksumsOlderThan(new Date(outDated)));
+        for(String fileId : filesWithOldChecksum) {
             for(FileInfo fileinfo : cache.getFileInfos(fileId)) {
-                if(fileinfo.getFileState() != FileState.EXISTING 
-                        || fileinfo.getChecksumState() == ChecksumState.UNKNOWN) {
+                System.err.println(fileinfo);
+                if(fileinfo.getFileState() != FileState.EXISTING) {
                     continue;
                 }
                 

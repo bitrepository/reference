@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityservice.checking;
+package org.bitrepository.integrityservice.integration;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -34,25 +34,23 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.integrityservice.TestIntegrityModel;
+import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
+import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityservice.checking.reports.ChecksumReport;
 import org.bitrepository.integrityservice.checking.reports.MissingChecksumReport;
 import org.bitrepository.integrityservice.checking.reports.MissingFileReport;
 import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReport;
 import org.bitrepository.integrityservice.mocks.MockAuditManager;
-import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class IntegrityCheckingTest extends ExtendedTestCase {
+public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
-    Settings settings;
     MockAuditManager auditManager;
     
     public static final String TEST_PILLAR_1 = "test-pillar-1";
@@ -64,8 +62,9 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
     public static final Long DEFAULT_TIMEOUT = 60000L;
 
     @BeforeClass (alwaysRun = true)
-    public void setup() {
-        settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
+    @Override
+    public void setup() throws Exception {
+        super.setup();
         settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_1);
         settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
@@ -235,7 +234,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         addStep("Check the checksum status.", "Should not find the issue.");
         MissingChecksumReport report = checker.checkMissingChecksums();
         Assert.assertTrue(report.hasIntegrityIssues());
-        Assert.assertEquals(report.getMissingChecksums().size(), 1);
+        Assert.assertEquals(report.getMissingChecksums().size(), 1, report.generateReport());
         Assert.assertEquals(report.getMissingChecksums().get(0).getFileId(), TEST_FILE_1);
         Assert.assertEquals(report.getMissingChecksums().get(0).getPillarIds(), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2));
     }
@@ -245,7 +244,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         addDescription("Test that it is possible to find a single pillar with missing checksum.");
         IntegrityModel cache = getIntegrityModel();
         SimpleIntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);
-       
+        
         addStep("Initialise the data cache", "Should be created and put into the cache.");
         FileIDsData fileidsData = createFileIdData(TEST_FILE_1, TEST_FILE_2);
         cache.addFileIDs(fileidsData, createAllFileIDs(), TEST_PILLAR_1);
@@ -336,6 +335,6 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
     }
     
     private IntegrityModel getIntegrityModel() {
-        return new TestIntegrityModel(settings.getCollectionSettings().getClientSettings().getPillarIDs());
+        return new IntegrityDatabase(settings);
     }
 }
