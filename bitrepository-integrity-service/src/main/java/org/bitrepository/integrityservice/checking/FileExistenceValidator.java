@@ -102,9 +102,7 @@ public class FileExistenceValidator {
                 settings.getCollectionSettings().getClientSettings().getPillarIDs());
         
         for(String pillarId : pillarIds) {
-            if(!knownPillars.remove(pillarId)) {
-                log.warn("Did not know pillar '" + pillarId + "'");
-            }
+            knownPillars.remove(pillarId);
         }
         
         return knownPillars.isEmpty();

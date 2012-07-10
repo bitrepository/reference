@@ -186,13 +186,9 @@ public class ChecksumIntegrityValidator {
                 }
             }
             
-            if(!pillarsWithCorrectChecksum.isEmpty()) {
-                cache.setChecksumAgreement(fileId, pillarsWithCorrectChecksum);
-                report.reportChecksumAgreement(fileId, pillarsWithCorrectChecksum, chosenChecksum);
-            }
-            if(!pillarsWithWrongChecksum.isEmpty()) {
-                cache.setChecksumError(fileId, pillarsWithWrongChecksum);
-            }
+            cache.setChecksumError(fileId, pillarsWithWrongChecksum);
+            cache.setChecksumAgreement(fileId, pillarsWithCorrectChecksum);
+            report.reportChecksumAgreement(fileId, pillarsWithCorrectChecksum, chosenChecksum);
         }
     }
 }
