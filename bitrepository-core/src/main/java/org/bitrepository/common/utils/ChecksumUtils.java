@@ -37,6 +37,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.CoordinationLayerException;
 
 /**
@@ -229,5 +230,17 @@ public final class ChecksumUtils {
         } else {
             throw new NoSuchAlgorithmException("The checksum specification '" + checksumSpec + "' is not supported.");
         }
+    }
+    
+    /**
+     * Creates the ChecksumSpecTYPE for the default value in settings.
+     * @param settings The settings to retrieve the default algorithm from.
+     * @return The default checksum spec type from settings.
+     */
+    public static ChecksumSpecTYPE getDefault(Settings settings) {
+        ChecksumSpecTYPE res = new ChecksumSpecTYPE();
+        res.setChecksumType(ChecksumType.valueOf(
+                settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType()));
+        return res;
     }
 }

@@ -62,7 +62,7 @@ public class FindMissingChecksumsStep implements WorkflowStep {
     public synchronized void performStep() {
         IntegrityReport report = checker.checkMissingChecksums();
         
-        if(report.hasIntegrityIssues()) {
+        if(!report.hasIntegrityIssues()) {
             log.debug("No checksum are missing from any pillar.");
         } else {
             dispatcher.integrityFailed(report);

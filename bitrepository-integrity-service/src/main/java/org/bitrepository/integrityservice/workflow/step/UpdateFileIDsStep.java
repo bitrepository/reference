@@ -21,12 +21,14 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import java.util.List;
+
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.FileIDsUtils;
+import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.slf4j.Logger;
@@ -38,28 +40,30 @@ import org.slf4j.LoggerFactory;
 public class UpdateFileIDsStep implements WorkflowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    /** The constant for all file ids.*/
-    private static final String ALL_FILE_IDS = "true";
     
-    /** The settings.*/
-    private final Settings settings;
     /** The collector for retrieving the file ids.*/
     private final IntegrityInformationCollector collector;
     /** The model where the integrity data is stored.*/
     private final IntegrityModel store;
+    /** The pillar ids.*/
+    private final List<String> pillarIds;
+    /** The integrity alerter.*/
+    private final IntegrityAlerter alerter;
     
     /**
      * Constructor.
-     * TODO should only have injected the necessary, not entire settings.
-     * @param settings The settings.
-     * @param client The client for collecting the fileids.
+     * Constructor.
+     * @param collector The client for collecting the checksums.
      * @param store The storage for the integrity data.
-     * @param fileid The id of the file to collect.
+     * @param alerter The alerter for sending failures.
+     * @param pillarIds The ids of the pillars to collect the file ids from.
      */
-    public UpdateFileIDsStep(Settings settings, IntegrityInformationCollector collector, IntegrityModel store) {
-        this.settings = settings;
+    public UpdateFileIDsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
+            List<String> pillarIds) {
         this.collector = collector;
         this.store = store;
+        this.pillarIds = pillarIds;
+        this.alerter = alerter;
     }
     
     @Override
@@ -73,8 +77,7 @@ public class UpdateFileIDsStep implements WorkflowStep {
         
         FileIDsEventHandler eventHandler = new FileIDsEventHandler();
         
-        collector.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(), getFileIds(), 
-                "IntegrityService: " + getName(), eventHandler);
+        collector.getFileIDs(pillarIds, FileIDsUtils.getAllFileIDs(), "IntegrityService: " + getName(), eventHandler);
         while(eventHandler.isRunning()) {
             try {
                 this.wait();
@@ -84,15 +87,6 @@ public class UpdateFileIDsStep implements WorkflowStep {
         }
         
         log.debug("Finished collecting the file ids.");
-    }
-    
-    /**
-     * @return The FileIDs object for the specific file.
-     */
-    private FileIDs getFileIds() {
-        FileIDs fileids = new FileIDs();
-        fileids.setAllFileIDs(ALL_FILE_IDS);
-        return fileids;
     }
     
     /**
@@ -113,6 +107,7 @@ public class UpdateFileIDsStep implements WorkflowStep {
                 finish();
             } else if(event.getType() == OperationEventType.FAILED) {
                 log.warn("Failure: " + event.toString());
+                alerter.operationFailed("Could not update the file ids: " + event.toString());
                 finish();
             }
         }
@@ -121,8 +116,10 @@ public class UpdateFileIDsStep implements WorkflowStep {
          * Set the state to finished, and notify the waiting step.
          */
         private void finish() {
-            isFinished = true;
-            notify();            
+            synchronized(this) {
+                isFinished = true;
+                notify();
+            }           
         }
         
         /**
@@ -130,7 +127,7 @@ public class UpdateFileIDsStep implements WorkflowStep {
          * @param event The event for the completion of a GetFileIDs for a single pillar.
          */
         private void handleResult(FileIDsCompletePillarEvent event) {
-            store.addFileIDs(event.getFileIDs().getFileIDsData(), getFileIds(), event.getContributorID());
+            store.addFileIDs(event.getFileIDs().getFileIDsData(), FileIDsUtils.getAllFileIDs(), event.getContributorID());
         }
         
         /**

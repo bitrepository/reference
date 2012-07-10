@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.workflow;
 
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
@@ -70,23 +71,31 @@ public class BasicIntegrityWorkflow extends StepBasedWorkflow {
     
     @Override
     public void start() {
-        UpdateFileIDsStep updateFileIDsStep = new UpdateFileIDsStep(settings, collector, store);
-        performStep(updateFileIDsStep);
-        
-        UpdateChecksumsStep updateChecksumStep = new UpdateChecksumsStep(settings, collector, store);
-        performStep(updateChecksumStep);
-        
-        IntegrityValidationFileIDsStep validateFileidsStep = new IntegrityValidationFileIDsStep(checker, alerter);
-        performStep(validateFileidsStep);
-        
-        IntegrityValidationChecksumStep validateChecksumStep = new IntegrityValidationChecksumStep(checker, alerter);
-        performStep(validateChecksumStep);
-        
-        FindMissingChecksumsStep findMissingChecksums = new FindMissingChecksumsStep(checker, alerter);
-        performStep(findMissingChecksums);
-        
-        FindObsoleteChecksumsStep findObsoleteChecksums = new FindObsoleteChecksumsStep(checker, alerter,
-                settings.getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck());
-        performStep(findObsoleteChecksums);
+        try {
+            UpdateFileIDsStep updateFileIDsStep = new UpdateFileIDsStep(collector, store, alerter,
+                    settings.getCollectionSettings().getClientSettings().getPillarIDs());
+            performStep(updateFileIDsStep);
+            
+            UpdateChecksumsStep updateChecksumStep = new UpdateChecksumsStep(collector, store, alerter,
+                    settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
+                    ChecksumUtils.getDefault(settings));
+            performStep(updateChecksumStep);
+            
+            IntegrityValidationFileIDsStep validateFileidsStep = new IntegrityValidationFileIDsStep(checker, alerter);
+            performStep(validateFileidsStep);
+            
+            IntegrityValidationChecksumStep validateChecksumStep = new IntegrityValidationChecksumStep(checker, 
+                    alerter);
+            performStep(validateChecksumStep);
+            
+            FindMissingChecksumsStep findMissingChecksums = new FindMissingChecksumsStep(checker, alerter);
+            performStep(findMissingChecksums);
+            
+            FindObsoleteChecksumsStep findObsoleteChecksums = new FindObsoleteChecksumsStep(checker, alerter,
+                    settings.getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck());
+            performStep(findObsoleteChecksums);
+        } finally {
+            finish();
+        }
     }
 }
