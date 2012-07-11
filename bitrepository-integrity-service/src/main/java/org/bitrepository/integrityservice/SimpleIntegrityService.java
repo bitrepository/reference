@@ -93,14 +93,16 @@ public class SimpleIntegrityService implements IntegrityService {
     
     @Override
     public Collection<Workflow> getAllWorkflows() {
-        List<Workflow> res = new ArrayList<Workflow>();
-        res.addAll(workflows);
+        List<Workflow> res = new ArrayList<Workflow>(workflows);
         return res;
     }
 
     @Override
     public void scheduleWorkflow(Workflow workflow, long timeBetweenRuns) {
         scheduler.scheduleWorkflow(workflow, workflow.getClass().getSimpleName(), timeBetweenRuns);
+        if(!workflows.contains(workflow)) {
+            workflows.add(workflow);
+        }
     }
     
     @Override

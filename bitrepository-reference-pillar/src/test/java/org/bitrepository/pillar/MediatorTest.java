@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.common.PillarMediator;
+import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.service.contributor.handler.RequestHandler;
 import org.bitrepository.service.exception.RequestHandlerException;

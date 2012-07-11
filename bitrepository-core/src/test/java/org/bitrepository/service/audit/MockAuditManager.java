@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar;
+package org.bitrepository.service.audit;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

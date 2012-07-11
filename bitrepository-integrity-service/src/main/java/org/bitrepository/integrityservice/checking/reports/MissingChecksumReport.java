@@ -47,7 +47,7 @@ public class MissingChecksumReport implements IntegrityReport {
     
     @Override
     public String generateReport() {
-        if(missingChecksum.isEmpty()) {
+        if(!hasIntegrityIssues()) {
             return "No missing checksums. \n";
         }
         

@@ -78,7 +78,7 @@ public class ChecksumReport implements IntegrityReport {
 
     @Override
     public String generateReport() {
-        if(hasIntegrityIssues()) {
+        if(!hasIntegrityIssues()) {
             return "No checksums issues. \n";
         }
         

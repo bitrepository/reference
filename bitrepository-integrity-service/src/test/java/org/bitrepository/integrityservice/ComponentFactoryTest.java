@@ -24,13 +24,15 @@
  */
 package org.bitrepository.integrityservice;
 
+import java.io.File;
+import java.sql.Connection;
+
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.DatabaseTestUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityservice.collector.DelegatingIntegrityInformationCollector;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
@@ -39,86 +41,113 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.service.scheduler.ServiceScheduler;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
-import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.io.File;
-import java.sql.Connection;
 
 /**
  * Simple test case for the component factory.
  */
-public class ComponentFactoryTest extends ExtendedTestCase {
+public class ComponentFactoryTest extends IntegrityDatabaseTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
-    Settings settings;
     MessageBus messageBus;
     SecurityManager securityManager;
-    String DATABASE_NAME = "integritydb";
-    String DATABASE_DIRECTORY = "test-data";
-    String DATABASE_URL = "jdbc:derby:" + DATABASE_DIRECTORY + "/" + DATABASE_NAME;
-    File dbDir = null;
+    
+    File auditDir = null;
 
-    @BeforeClass (alwaysRun = true)
+    @BeforeMethod (alwaysRun = true)
+    @Override
     public void setup() throws Exception {
-        settings = TestSettingsProvider.reloadSettings("ComponentFactoryUnderTest");
+        super.setup();
         securityManager = new DummySecurityManager();
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
-        settings.getReferenceSettings().getIntegrityServiceSettings().setIntegrityDatabaseUrl(DATABASE_URL);
-        
-        File dbFile = new File("src/test/resources/integritydb.jar");
-        Assert.assertTrue(dbFile.isFile(), "The database file should exist");
-        
-        dbDir = FileUtils.retrieveDirectory(DATABASE_DIRECTORY);
-        FileUtils.retrieveSubDirectory(dbDir, DATABASE_NAME);
-        
-        Connection dbCon = DatabaseTestUtils.takeDatabase(dbFile, DATABASE_NAME, dbDir);
-        dbCon.close();
     }
     
     @AfterClass (alwaysRun = true)
-    public void shutdown() throws Exception {
-        if(dbDir != null) {
-            FileUtils.delete(dbDir);
+    @Override
+    public void cleanup() throws Exception {
+        super.cleanup();
+        if(auditDir != null) {
+            FileUtils.delete(auditDir);
         }
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
-    public void verifyCacheFromFactory() throws Exception {
-        Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings)
-                instanceof IntegrityDatabase,
-                "The default Cache should be the '" + IntegrityDatabase.class.getName() + "' but was '"
-                + IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings).getClass().getName() + "'");
+    public void verifySchedulerFromFactory() throws Exception {
+        addDescription("Test the instantiation of the Scheduler from the component factory.");
+        ServiceScheduler scheduler = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settings);
+        Assert.assertNotNull(scheduler);
+        Assert.assertTrue(scheduler instanceof TimerbasedScheduler);
+        Assert.assertEquals(scheduler, IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settings));
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
     public void verifyCollectorFromFactory() throws Exception {
+        addDescription("Test the instantiation of the Collector from the component factory.");
         IntegrityInformationCollector collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 new MockAuditManager());
-        Assert.assertTrue(collector instanceof DelegatingIntegrityInformationCollector, 
-                "The default Collector should be the '" + DelegatingIntegrityInformationCollector.class.getName() + "'");
+        Assert.assertNotNull(collector);
+        Assert.assertTrue(collector instanceof DelegatingIntegrityInformationCollector);
+        Assert.assertEquals(collector, IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
+                AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
+                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
+                AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
+                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
+                new MockAuditManager()));
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
     public void verifyIntegrityCheckerFromFactory() throws Exception {
-        IntegrityModel cache = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings);
-        Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, cache, new MockAuditManager())
-                instanceof SimpleIntegrityChecker, 
-                "The default IntegrityChecker should be the '" + SimpleIntegrityChecker.class.getName() + "'");
+        addDescription("Test the instantiation of the IntegrityChecker from the component factory.");
+        IntegrityChecker checker = IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, 
+                IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings), 
+                new MockAuditManager());
+        Assert.assertNotNull(checker);
+        Assert.assertTrue(checker instanceof SimpleIntegrityChecker);
+        Assert.assertEquals(checker, IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, 
+                IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings), 
+                new MockAuditManager()));
+    }
+    
+    @Test(groups = {"regressiontest", "integritytest"})
+    public void verifyCacheFromFactory() throws Exception {
+        addDescription("Test the instantiation of the IntegrityModel from the component factory.");
+        IntegrityModel integrityModel = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings);
+        Assert.assertNotNull(integrityModel);
+        Assert.assertTrue(integrityModel instanceof IntegrityDatabase);
+        Assert.assertEquals(integrityModel, IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings));
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
-    public void verifySchedulerFromFactory() throws Exception {
-        Assert.assertTrue(IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settings)
-                instanceof TimerbasedScheduler, 
-                "The default Scheduler should be the '" + TimerbasedScheduler.class.getName() + "'");
+    public void verifyServiceFromFactory() throws Exception {
+        addDescription("Test the instantiation of the IntegrityService from the component factory.");
+        instantiateAuditContributorDatabase();
+        IntegrityService service = IntegrityServiceComponentFactory.getInstance().createIntegrityService(settings, securityManager);
+        Assert.assertNotNull(service);
+        Assert.assertTrue(service instanceof SimpleIntegrityService);
     }
-
+    
+    private void instantiateAuditContributorDatabase() throws Exception {
+        String DATABASE_NAME = "auditcontributerdb";
+        String DATABASE_DIRECTORY = "test-data";
+        String DATABASE_URL = "jdbc:derby:" + DATABASE_DIRECTORY + "/" + DATABASE_NAME;
+        settings.getReferenceSettings().getIntegrityServiceSettings().setAuditContributerDatabaseUrl(DATABASE_URL);
+        
+        addStep("Initialise the database", "Should be unpacked from a jar-file.");
+        File dbFile = new File("../bitrepository-core/src/test/resources/auditcontributerdb.jar");
+        Assert.assertTrue(dbFile.isFile(), "The database file should exist");
+        
+        auditDir = FileUtils.retrieveDirectory(DATABASE_DIRECTORY);
+        FileUtils.retrieveSubDirectory(auditDir, DATABASE_NAME);
+        
+        Connection dbCon = DatabaseTestUtils.takeDatabase(dbFile, DATABASE_NAME, auditDir);
+        dbCon.close();
+    }
 }

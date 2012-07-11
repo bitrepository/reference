@@ -80,6 +80,7 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
             public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType,
                     String auditTrailInformation, EventHandler eventHandler) {
                 super.getChecksums(pillarIDs, fileIDs, checksumType, auditTrailInformation, eventHandler);
+                eventHandler.handleEvent(new ContributorEvent(OperationEventType.IDENTIFICATION_COMPLETE, "", TEST_PILLAR_1, "conversationID"));
                 ChecksumsCompletePillarEvent event = new ChecksumsCompletePillarEvent(createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1), 
                         createChecksumSpecTYPE(), TEST_PILLAR_1, "info", "conversationID");
                 eventHandler.handleEvent(event);

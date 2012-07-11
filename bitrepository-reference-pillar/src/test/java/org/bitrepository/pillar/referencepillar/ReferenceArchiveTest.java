@@ -30,10 +30,10 @@ import java.util.Arrays;
 
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.MockAlarmDispatcher;
-import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
+import org.bitrepository.service.audit.MockAuditManager;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;

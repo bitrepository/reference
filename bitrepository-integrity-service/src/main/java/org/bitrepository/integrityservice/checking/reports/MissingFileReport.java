@@ -79,7 +79,7 @@ public class MissingFileReport implements IntegrityReport {
     
     @Override
     public String generateReport() {
-        if(missingFiles.isEmpty() && deleteableFiles.isEmpty()) {
+        if(!hasIntegrityIssues()) {
             return "No missing files. \n";
         }
         

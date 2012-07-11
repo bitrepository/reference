@@ -56,7 +56,7 @@ public class ObsoleteChecksumReport implements IntegrityReport {
     
     @Override
     public String generateReport() {
-        if(obsoleteChecksum.isEmpty()) {
+        if(!hasIntegrityIssues()) {
             return "No missing checksums. \n";
         }
         
