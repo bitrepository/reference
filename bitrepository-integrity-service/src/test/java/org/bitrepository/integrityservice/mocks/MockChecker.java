@@ -24,7 +24,6 @@ package org.bitrepository.integrityservice.mocks;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.checking.reports.ChecksumReport;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
 import org.bitrepository.integrityservice.checking.reports.MissingChecksumReport;
 import org.bitrepository.integrityservice.checking.reports.MissingFileReport;
 import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReport;
@@ -55,25 +54,25 @@ public class MockChecker implements IntegrityChecker {
     }
 
     @Override
-    public IntegrityReport checkFileIDs(FileIDs fileIDs) {
+    public MissingFileReport checkFileIDs(FileIDs fileIDs) {
         callsForCheckFileIDs++;
         return new MissingFileReport();
     }
     
     @Override
-    public IntegrityReport checkChecksum(FileIDs fileIDs) {
+    public ChecksumReport checkChecksum(FileIDs fileIDs) {
         callsForCheckChecksums++;
         return new ChecksumReport();
     }
 
     @Override
-    public IntegrityReport checkMissingChecksums() {
+    public MissingChecksumReport checkMissingChecksums() {
         callsForCheckMissingChecksums++;
         return new MissingChecksumReport();
     }
 
     @Override
-    public IntegrityReport checkObsoleteChecksums(long outdatedInterval) {
+    public ObsoleteChecksumReport checkObsoleteChecksums(long outdatedInterval) {
         callsForCheckObsoleteChecksums++;
         return new ObsoleteChecksumReport();
     }

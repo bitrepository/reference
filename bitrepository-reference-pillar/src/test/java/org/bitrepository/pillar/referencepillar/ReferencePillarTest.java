@@ -27,10 +27,10 @@ import java.io.File;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.MockAlarmDispatcher;
-import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
+import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
@@ -43,6 +43,8 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     protected MockAlarmDispatcher alarmDispatcher;
     protected MockAuditManager audits;
     protected PillarContext context;
+    
+    protected final String EMPTY_FILE_CHECKSUM = "d41d8cd98f00b204e9800998ecf8427e";
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {

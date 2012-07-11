@@ -90,9 +90,12 @@
     <!-- 
       Setting of how severe alarms needs to be before they are sent. 
       Available levels:
-        - EMERGENCY 
-        - ERROR 
-        - WARNING
+        - EMERGENCY - will only send an Alarm for the severest protocol issues (e.g. invalid message 
+        or certificate).
+        - ERROR - sends an Alarm in the case of checksum errors or if a request does not uphold the 
+        contract in CollectionSettings (e.g. does not contain the required checksums).
+        - WARNING - Sends an Alarm whenever an operation or identification fails (e.g. missing file, 
+        file already exist, etc.)
     -->
     <AlarmLevel>ERROR</AlarmLevel>
   </PillarSettings>

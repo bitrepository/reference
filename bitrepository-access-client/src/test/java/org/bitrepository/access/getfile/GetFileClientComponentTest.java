@@ -237,7 +237,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
     }
 
-    @Test(groups = {"regressiontest"})
+    //@Test(groups = {"regressiontest"})
     public void chooseFastestPillarGetFileClientWithIdentifyTimeout() throws Exception {
         addDescription("Verify that the FastestPillarGetFile works correct without receiving responses from all " +
                 "pillars.");
@@ -287,7 +287,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
             fastReply.setTimeToDeliver(fastTime);
             messageBus.sendMessage(fastReply);
 
-            GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
+            GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class, 20, TimeUnit.SECONDS);
             Assert.assertEquals(receivedGetFileRequest, 
                     testMessageFactory.createGetFileRequest(receivedGetFileRequest, NO_FILE_PART, fastPillarID, 
                             pillar1DestinationId, TEST_CLIENT_ID));

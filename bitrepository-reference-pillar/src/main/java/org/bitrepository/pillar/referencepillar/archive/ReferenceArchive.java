@@ -27,7 +27,6 @@ package org.bitrepository.pillar.referencepillar.archive;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -161,13 +160,13 @@ public class ReferenceArchive implements FileStore {
     }
 
     @Override
-    public void deleteFile(String fileID) throws FileNotFoundException {
+    public void deleteFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
         // Move old file to retain area.
         File oldFile = new File(fileDir, fileID);
         if(!oldFile.isFile()) {
-            throw new FileNotFoundException("Cannot locate the file to delete '" + oldFile.getAbsolutePath() + "'!");
+            throw new IllegalStateException("Cannot locate the file to delete '" + oldFile.getAbsolutePath() + "'!");
         }
         File retainFile = new File(retainDir, fileID);
         
@@ -185,20 +184,18 @@ public class ReferenceArchive implements FileStore {
      * moves the new file to the fileDir (from the tmpDir).
      * 
      * @param fileID The id of the file to perform the replace function upon.
-     * @throws FileNotFoundException If the new file with the given fileID does not exist within the tmpDir, or if the 
-     * old file with the given fileID does not exist within the fileDir. 
      */
-    public synchronized void replaceFile(String fileID) throws FileNotFoundException {
+    public synchronized void replaceFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         
         File oldFile = new File(fileDir, fileID);
         if(!oldFile.isFile()) {
-            throw new FileNotFoundException("Cannot locate the file to be replaced '" + oldFile.getAbsolutePath() 
+            throw new IllegalStateException("Cannot locate the file to be replaced '" + oldFile.getAbsolutePath() 
                     + "'.");
         }
         File newFile = new File(tmpDir, fileID);
-        if(!oldFile.isFile()) {
-            throw new FileNotFoundException("Cannot locate the file to replace '" + newFile.getAbsolutePath() + "'.");
+        if(!newFile.isFile()) {
+            throw new IllegalStateException("Cannot locate the file to replace '" + newFile.getAbsolutePath() + "'.");
         }
         
         deleteFile(fileID);

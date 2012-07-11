@@ -33,15 +33,33 @@ public class ChecksumPillarMessageHandlerTest extends ChecksumPillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void invalidChecksumCase() throws Exception {
         addDescription("Tests that the ChecksumPillar does not start with an invalid checksum.");
-        addStep("Setup", "Should create a invalid checksum.");
-        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType("md");
+        addStep("Test with checksum type 'OTHER'", "Should be invalid and throw an exception.");
+        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType("OTHER");
 
         try {
             new MockChecksumMessageHandler(context, cache);
             Assert.fail("Should throw an IllegalArgumentException here.");
         } catch (IllegalArgumentException e) {
             // expected
+            System.err.println(e);
         }
+        
+        addStep("Test with invalid checksum type", "Should be invalid and throw an exception.");
+        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType("ERROR");
+
+        try {
+            new MockChecksumMessageHandler(context, cache);
+            Assert.fail("Should throw an IllegalArgumentException here.");
+        } catch (IllegalArgumentException e) {
+            // expected
+            System.err.println(e);
+        }
+
+        addStep("Check with valid checksum type (MD5)", "Should create message handler.");
+        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType("MD5");
+
+        ChecksumPillarMessageHandler<MessageResponse> handler = new MockChecksumMessageHandler(context, cache);
+        Assert.assertNotNull(handler);
     }
 
     private class MockChecksumMessageHandler extends ChecksumPillarMessageHandler<MessageResponse> {

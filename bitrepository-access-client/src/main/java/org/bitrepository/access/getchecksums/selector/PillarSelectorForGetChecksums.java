@@ -38,7 +38,7 @@ public class PillarSelectorForGetChecksums extends MultipleComponentSelector {
 
     /**
      * Constructor.
-     * @param pillars The IDs of the pillars to be selected.
+     * @param pillarsWhichShouldRespond The IDs of the pillars to be selected.
      */
     public PillarSelectorForGetChecksums(Collection<String> pillarsWhichShouldRespond) {
         super(pillarsWhichShouldRespond);

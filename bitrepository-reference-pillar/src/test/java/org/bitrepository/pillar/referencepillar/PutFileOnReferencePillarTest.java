@@ -239,4 +239,62 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
         Assert.assertFalse(archive.hasFile(DEFAULT_FILE_ID));
     }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void referencePillarPutFileTestBadURL() throws Exception {
+        addDescription("Tests the ReferencePillars handling of a bad URL in the PutFile request.");
+        Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        
+        messageBus.sendMessage(msgFactory.createPutFileRequest(putCsData, 
+                csSpec, "http://localhost:1/error", DEFAULT_FILE_ID, FILE_SIZE));
+        PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.FILE_TRANSFER_FAILURE);
+        Assert.assertFalse(archive.hasFile(DEFAULT_FILE_ID));
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void referencePillarPutFileTestTooLargeFileInIdentification() throws Exception {
+        addDescription("Tests when the PutFile identification delivers a too large file.");
+        messageBus.sendMessage(msgFactory.createIdentifyPillarsForPutFileRequest(DEFAULT_FILE_ID, Long.MAX_VALUE));
+        IdentifyPillarsForPutFileResponse identifyResponse = clientTopic.waitForMessage(IdentifyPillarsForPutFileResponse.class);
+        Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.FAILURE);
+        Assert.assertFalse(archive.hasFile(DEFAULT_FILE_ID));
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void referencePillarPutFileTestTooLargeFileInOperation() throws Exception {
+        addDescription("Tests when the PutFile identification delivers a too large file.");
+        messageBus.sendMessage(msgFactory.createPutFileRequest(putCsData, 
+                csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, Long.MAX_VALUE));
+        PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.FAILURE);
+        Assert.assertFalse(archive.hasFile(DEFAULT_FILE_ID));
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void referencePillarPutFileTestNoChecksumRequired() throws Exception {
+        addDescription("Tests that it is possible to put without any checksums if the collection settings allows it.");
+        context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
+        Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+
+        messageBus.sendMessage(msgFactory.createPutFileRequest(null, 
+                null, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+        PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.OPERATION_COMPLETED);
+        Assert.assertTrue(archive.hasFile(DEFAULT_FILE_ID));
+    }
+
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void referencePillarPutFileTestNoFileIdOrFileSizeInIdentification() throws Exception {
+        addDescription("Tests that it is possible to identify without the fileid or the filesize.");
+
+        messageBus.sendMessage(msgFactory.createIdentifyPillarsForPutFileRequest(null, null));
+        IdentifyPillarsForPutFileResponse identifyResponse = clientTopic.waitForMessage(IdentifyPillarsForPutFileResponse.class);
+        Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.IDENTIFICATION_POSITIVE);
+    }
 }

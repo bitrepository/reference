@@ -42,12 +42,12 @@ public class MissingChecksumReport implements IntegrityReport {
     
     @Override
     public boolean hasIntegrityIssues() {
-        return missingChecksum.isEmpty();
+        return !missingChecksum.isEmpty();
     }
     
     @Override
     public String generateReport() {
-        if(missingChecksum.isEmpty()) {
+        if(!hasIntegrityIssues()) {
             return "No missing checksums. \n";
         }
         
@@ -60,9 +60,16 @@ public class MissingChecksumReport implements IntegrityReport {
     }
     
     /**
+     * @return The missing checksums.
+     */
+    public List<MissingChecksum> getMissingChecksums() {
+        return missingChecksum;
+    }
+    
+    /**
      * Container for the information about a single file missing the checksum at some pillar(s).
      */
-    private class MissingChecksum {
+    public class MissingChecksum {
         /** The id of the file where the checksum is missing.*/
         final String fileId;
         /** The list of id for the pillars where the checksum of the file is missing. */
@@ -76,6 +83,20 @@ public class MissingChecksumReport implements IntegrityReport {
         public MissingChecksum(String fileId, List<String> pillarIds) {
             this.fileId = fileId;
             this.pillarIds = pillarIds;
+        }
+        
+        /**
+         * @return The id of the file which is missing the checksum.
+         */
+        public String getFileId() {
+            return fileId;
+        }
+        
+        /**
+         * @return The ids of the pillars who are missing the checksum.
+         */
+        public List<String> getPillarIds() {
+            return pillarIds;
         }
     }
 }

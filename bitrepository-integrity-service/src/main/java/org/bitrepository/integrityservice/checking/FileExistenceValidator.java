@@ -63,6 +63,7 @@ public class FileExistenceValidator {
      * are missing.
      * This will also detect if a file is deleteable, thus not existing at any pillar and can be deleted from the 
      * integrity model.
+     * TODO change so we do not need a list of file ids.
      *  
      * @param requestedFileIDs The list of files to validate.
      * @return The report for the existence state of the given files.
@@ -70,7 +71,7 @@ public class FileExistenceValidator {
     public MissingFileReport generateReport(Collection<String> requestedFileIDs) {
         MissingFileReport report = new MissingFileReport();
         for(String fileId : requestedFileIDs) {
-            List<String> pillarIds = cache.isMissing(fileId);
+            List<String> pillarIds = cache.getPillarsMissingFile(fileId);
 
             if(pillarIds.isEmpty()) {
                 log.debug("No one is missing the file '{}'", fileId);
@@ -101,9 +102,7 @@ public class FileExistenceValidator {
                 settings.getCollectionSettings().getClientSettings().getPillarIDs());
         
         for(String pillarId : pillarIds) {
-            if(!knownPillars.remove(pillarId)) {
-                log.warn("Did not know pillar '" + pillarId + "'");
-            }
+            knownPillars.remove(pillarId);
         }
         
         return knownPillars.isEmpty();

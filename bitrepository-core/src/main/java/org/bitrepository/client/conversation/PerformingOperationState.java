@@ -36,6 +36,14 @@ import java.util.Arrays;
  */
 public abstract class PerformingOperationState extends GeneralConversationState {
 
+    /**
+     * Boolean to indicate whether a operation as a whole was a success. 
+     * The concrete implementation of PerformingOperationState (e.g. PuttingFile, GettingChecksums etc)
+     * should set operationSucceded to false if an operation is judged failed. Which policy to do decide this
+     * is up to the concrete class. 
+     */
+    protected boolean operationSucceded = true;
+    
     @Override
     protected void processMessage(MessageResponse msg) {
         if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) ||
@@ -64,7 +72,11 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     @Override
     protected GeneralConversationState getNextState() throws UnableToFinishException {
         if (getResponseStatus().haveAllComponentsResponded()) {
-            getContext().getMonitor().complete("Finished operation");
+            if(operationSucceded) {
+                getContext().getMonitor().complete("Finished operation");
+            } else {
+                getContext().getMonitor().operationFailed("One or more components has failed");
+            }
             return new FinishedState(getContext());
         } else {
             return this;

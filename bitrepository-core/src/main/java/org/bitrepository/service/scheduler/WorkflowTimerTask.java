@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * A timer task encapsulating a workflow.
  * Used for scheduling workflows to run continuously at a given interval.
  */
-public class WorkflowTask extends TimerTask {
+public class WorkflowTimerTask extends TimerTask {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The date for the next run of the workflow.*/
@@ -48,7 +48,7 @@ public class WorkflowTask extends TimerTask {
      * @param interval The interval between triggering events in milliseconds.
      * @param name The name of this workflow.
      */
-    public WorkflowTask(long interval, String name, Workflow workflow) {
+    public WorkflowTimerTask(long interval, String name, Workflow workflow) {
         this.interval = interval;
         this.name = name;
         this.workflow = workflow;
@@ -65,7 +65,7 @@ public class WorkflowTask extends TimerTask {
     /**
      * @return The interval between the runs in millis.
      */
-    public long getTimeBetweenRuns() {
+    public long getIntervalBetweenRuns() {
         return interval;
     }
     
@@ -73,7 +73,7 @@ public class WorkflowTask extends TimerTask {
      * Trigger the workflow.
      * Resets the date for the next run of the workflow.
      */
-    public void trigger() {
+    public void runWorkflow() {
         log.info("Starting the workflow: " + getName());
         nextRun = new Date(System.currentTimeMillis() + interval);
         workflow.start();
@@ -96,7 +96,7 @@ public class WorkflowTask extends TimerTask {
     @Override
     public void run() {
         if(getNextRun().getTime() <= System.currentTimeMillis()) {
-           trigger();
+           runWorkflow();
         }
     }
 }

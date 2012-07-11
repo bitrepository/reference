@@ -327,7 +327,6 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.FILE_TRANSFER_FAILURE);
     }
     
-
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarGetFileIDsTestDeliveryThroughMessage() throws Exception {
         addDescription("Test the case when the results should be delivered through the message .");

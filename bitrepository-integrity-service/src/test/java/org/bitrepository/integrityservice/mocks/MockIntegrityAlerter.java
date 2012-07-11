@@ -34,4 +34,13 @@ public class MockIntegrityAlerter implements IntegrityAlerter {
     public int getCallsForIntegrityFailed() {
         return callsForIntegrityFailed;
     }
+    
+    private int callsForOperationFailed = 0;
+    @Override
+    public void operationFailed(String issue) {
+        callsForOperationFailed++;
+    }
+    public int getCallsForOperationFailed() {
+        return callsForOperationFailed;
+    }
 }

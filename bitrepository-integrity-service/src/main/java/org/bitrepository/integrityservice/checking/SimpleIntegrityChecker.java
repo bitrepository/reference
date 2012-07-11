@@ -27,6 +27,7 @@ package org.bitrepository.integrityservice.checking;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -35,9 +36,10 @@ import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.FileState;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
+import org.bitrepository.integrityservice.checking.reports.ChecksumReport;
 import org.bitrepository.integrityservice.checking.reports.MissingChecksumReport;
 import org.bitrepository.integrityservice.checking.reports.MissingFileReport;
+import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReport;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,11 +70,12 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
         
         this.fileIdChecker = new FileExistenceValidator(settings, cache, auditManager);
         this.obsoleteChecksumFinder = new ObsoleteChecksumFinder(cache);
-        this.checksumValidator = new ChecksumIntegrityValidator(settings, cache, auditManager);
+        this.checksumValidator = new ChecksumIntegrityValidator(
+                settings.getCollectionSettings().getClientSettings().getPillarIDs(), cache, auditManager);
     }
     
     @Override
-    public IntegrityReport checkFileIDs(FileIDs fileIDs) {
+    public MissingFileReport checkFileIDs(FileIDs fileIDs) {
         log.info("Validating the files: '" + fileIDs + "'");
         // TODO could perhaps be optimised by using the method 'getMissingFileIDs' from the database ??
         Collection<String> requestedFileIDs = getRequestedFileIDs(fileIDs);
@@ -92,7 +95,7 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
     }
     
     @Override
-    public IntegrityReport checkChecksum(FileIDs fileIDs) {
+    public ChecksumReport checkChecksum(FileIDs fileIDs) {
         log.info("Validating the checksum for the files: '" + fileIDs + "'");
         Collection<String> requestedFileIDs = getRequestedFileIDs(fileIDs);
         
@@ -100,10 +103,11 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
     }
     
     @Override
-    public IntegrityReport checkMissingChecksums() {
+    public MissingChecksumReport checkMissingChecksums() {
         MissingChecksumReport report = new MissingChecksumReport();
         
-        for(String fileId : cache.findMissingChecksums()) {
+        HashSet<String> filesWithMissingChecksum = new HashSet<String>(cache.findMissingChecksums());
+        for(String fileId : filesWithMissingChecksum) {
             List<String> pillarIds = new ArrayList<String>();
             
             // TODO make a better method for this! Perhaps directly in the database.
@@ -121,7 +125,7 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
     }
 
     @Override
-    public IntegrityReport checkObsoleteChecksums(long outdatedInterval) {
+    public ObsoleteChecksumReport checkObsoleteChecksums(long outdatedInterval) {
         return obsoleteChecksumFinder.generateReport(outdatedInterval);
     }
     
@@ -136,5 +140,4 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
         } 
         return Arrays.asList(fileIDs.getFileID());
     }
-
 }

@@ -378,4 +378,35 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
 //                "Only one alarm should have been sent.");
 //        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 1);
     }
+    
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void pillarGeneralTestBadDeliveryURL() throws Exception {
+        addDescription("Tests that the ReferencePillar can handle a bad delivery URL.");
+        addStep("Set up constants and variables.", "Should not fail here!");
+        String auditTrail = null;
+
+        addStep("Move the test file into the file directory.", "Should be all-right");
+        File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
+        Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        String fileAddress = "http://127.0.0.1/¾" + new Date().getTime();
+        
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
+                + dir.getAbsolutePath() + "'");
+        FileUtils.copyFile(testfile, new File(dir, FILE_ID));
+        
+        addStep("Create and send the actual GetFile message to the pillar.", 
+        "Should be received and handled by the pillar.");
+        GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, 
+                msgFactory.getNewCorrelationID(), fileAddress, FILE_ID, null, getPillarID(), getPillarID(), 
+                clientDestinationId, pillarDestinationId);
+        messageBus.sendMessage(getRequest);
+
+        addStep("Retrieve the FinalResponse for the GetFile request", 
+        "The GetFile response should be sent by the pillar.");
+        GetFileFinalResponse finalResponse = clientTopic.waitForMessage(GetFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_TRANSFER_FAILURE);
+    }
 }

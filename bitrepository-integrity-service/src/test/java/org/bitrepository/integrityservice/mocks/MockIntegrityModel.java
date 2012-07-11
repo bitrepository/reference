@@ -27,7 +27,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.integrityservice.cache.FileInfo;
@@ -59,9 +58,9 @@ public class MockIntegrityModel implements IntegrityModel {
 
     private int callsForAddChecksums = 0;
     @Override
-    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, String pillarId) {
+    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId) {
         callsForAddChecksums++;
-        integrityModel.addChecksums(data, checksumType, pillarId);
+        integrityModel.addChecksums(data, pillarId);
     }
     public int getCallsForAddChecksums() {
         return callsForAddChecksums;
@@ -189,7 +188,7 @@ public class MockIntegrityModel implements IntegrityModel {
     
     private int callsForIsMissing = 0;
     @Override
-    public List<String> isMissing(String fileId) {
+    public List<String> getPillarsMissingFile(String fileId) {
         callsForIsMissing++;
         return new ArrayList<String>();
     }

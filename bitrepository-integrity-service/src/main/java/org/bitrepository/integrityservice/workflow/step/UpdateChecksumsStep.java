@@ -21,14 +21,15 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import java.util.List;
+
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.common.settings.Settings;
+import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.slf4j.Logger;
@@ -37,30 +38,38 @@ import org.slf4j.LoggerFactory;
 /**
  * The step for collecting the checksums of all files from all pillars.
  */
-public class UpdateChecksumsStep implements WorkflowStep {
+public class UpdateChecksumsStep implements WorkflowStep{
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The constant for all file ids.*/
     private static final String ALL_FILE_IDS = "true";
     
-    /** The settings.*/
-    private final Settings settings;
     /** The collector for retrieving the checksums.*/
     private final IntegrityInformationCollector collector;
     /** The model where the integrity data is stored.*/
     private final IntegrityModel store;
+    /** The pillar ids.*/
+    private final List<String> pillarIds;
+    /** The checksum spec type.*/
+    private final ChecksumSpecTYPE checksumType;
+    /** The integrity alerter.*/
+    private final IntegrityAlerter alerter;
     
     /**
      * Constructor.
-     * @param settings The settings.
-     * @param client The client for collecting the checksums.
+     * @param collector The client for collecting the checksums.
      * @param store The storage for the integrity data.
-     * @param fileid The id of the file to collect.
+     * @param alerter The alerter for sending failures.
+     * @param pillarIds The ids of the pillars to collect the checksum from.
+     * @param checksumType The type of checksum to collect.
      */
-    public UpdateChecksumsStep(Settings settings, IntegrityInformationCollector collector, IntegrityModel store) {
-        this.settings = settings;
+    public UpdateChecksumsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
+            List<String> pillarIds, ChecksumSpecTYPE checksumType) {
         this.collector = collector;
         this.store = store;
+        this.pillarIds = pillarIds;
+        this.checksumType = checksumType;
+        this.alerter = alerter;
     }
     
     @Override
@@ -74,11 +83,10 @@ public class UpdateChecksumsStep implements WorkflowStep {
         
         ChecksumsEventHandler eventHandler = new ChecksumsEventHandler();
         
-        collector.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(), getFileIds(), 
-                getChecksumSpec(), "IntegrityService: " + getName(), eventHandler);
+        collector.getChecksums(pillarIds, getFileIds(), checksumType, "IntegrityService: " + getName(), eventHandler);
         while(eventHandler.isRunning()) {
             try {
-                this.wait();
+                eventHandler.wait();
             } catch (InterruptedException e) {
                 log.debug("Interrupted while waiting for step to finish.", e);
             }
@@ -96,16 +104,6 @@ public class UpdateChecksumsStep implements WorkflowStep {
     }
     
     /**
-     * @return The checksum specification for the collecting of the checksums.
-     */
-    private ChecksumSpecTYPE getChecksumSpec() {
-        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
-        csType.setChecksumType(ChecksumType.fromValue(
-                settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType()));
-        return csType;
-    }
-    
-    /**
      * Handles the results of the GetChecksums conversation.
      * Sends a notify when everything is complete or failed.
      */
@@ -119,10 +117,19 @@ public class UpdateChecksumsStep implements WorkflowStep {
                 handleResult((ChecksumsCompletePillarEvent) event);
             } else if(event.getType() == OperationEventType.COMPLETE) {
                 log.debug("Complete: " + event.toString());
-                isFinished = true;
-                notify();
+                finish();
             } else if(event.getType() == OperationEventType.FAILED) {
                 log.warn("Failure: " + event.toString());
+                alerter.operationFailed("Could not update the checksums: " + event.toString());
+                finish();
+            }
+        }
+        
+        /**
+         * Set the state to finished, and notify the waiting step.
+         */
+        private void finish() {
+            synchronized(this) {
                 isFinished = true;
                 notify();
             }
@@ -133,8 +140,7 @@ public class UpdateChecksumsStep implements WorkflowStep {
          * @param event The event for the completion of a GetChecksums for a single pillar.
          */
         private void handleResult(ChecksumsCompletePillarEvent event) {
-            store.addChecksums(event.getChecksums().getChecksumDataItems(), event.getChecksumType(), 
-                    event.getContributorID());
+            store.addChecksums(event.getChecksums().getChecksumDataItems(), event.getContributorID());
         }
         
         /**

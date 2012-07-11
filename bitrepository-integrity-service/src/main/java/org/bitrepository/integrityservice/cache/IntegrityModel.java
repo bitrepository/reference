@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 
@@ -50,7 +49,7 @@ public interface IntegrityModel {
      * @param data The received data.
      * @param pillarId The id of the pillar the received data comes from.
      */
-    void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, String pillarId);
+    void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId);
 
     /**
      * Retrieves the information of a given file id for all pillars.
@@ -134,5 +133,5 @@ public interface IntegrityModel {
      * @param fileId The id of the file to check whether it is missing.
      * @return The list of pillars where it is missing (empty list, if not missing at any pillar).
      */
-    List<String> isMissing(String fileId);
+    List<String> getPillarsMissingFile(String fileId);
 }

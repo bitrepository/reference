@@ -188,16 +188,9 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
      * @param message The message requesting the file to be deleted.
      */
     protected void deleteTheFile(DeleteFileRequest message) throws RequestHandlerException {
-        try {
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Deleting the file.", 
-                    message.getAuditTrailInformation(), FileAction.DELETE_FILE);
-            getArchive().deleteFile(message.getFileID());
-        } catch (Exception e) {
-            ResponseInfo ir = new ResponseInfo();
-            ir.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            ir.setResponseText("Could not delete the file from the archive: " + e.getMessage());
-            throw new InvalidMessageException(ir, e);
-        }
+        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Deleting the file.", 
+                message.getAuditTrailInformation(), FileAction.DELETE_FILE);
+        getArchive().deleteFile(message.getFileID());
     }
 
     /**

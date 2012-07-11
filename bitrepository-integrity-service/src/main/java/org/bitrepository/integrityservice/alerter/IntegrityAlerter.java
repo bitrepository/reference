@@ -32,4 +32,10 @@ public interface IntegrityAlerter {
      * @param report The report to base the alarm upon.
      */
     void integrityFailed(IntegrityReport report);
+    
+    /**
+     * Send an alarm based on an exception.
+     * @param issue The reason for the exception.
+     */
+    void operationFailed(String issue);
 }

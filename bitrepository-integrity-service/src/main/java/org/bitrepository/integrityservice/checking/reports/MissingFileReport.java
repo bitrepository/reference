@@ -22,7 +22,9 @@
 package org.bitrepository.integrityservice.checking.reports;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The report for a missing files check.
@@ -59,14 +61,25 @@ public class MissingFileReport implements IntegrityReport {
         return new ArrayList<String>(deleteableFiles);
     }
     
+    /**
+     * @return The map between the ids of the missing files and the corresponding pillar ids.
+     */
+    public Map<String, List<String>> getMissingFiles() {
+        Map<String, List<String>> res = new HashMap<String, List<String>>();
+        for(MissingFile mf : missingFiles) {
+            res.put(mf.fileId, mf.pillarIds);
+        }
+        return res;
+    }
+    
     @Override
     public boolean hasIntegrityIssues() {
-        return missingFiles.isEmpty() || deleteableFiles.isEmpty();
+        return !missingFiles.isEmpty() || !deleteableFiles.isEmpty();
     }
     
     @Override
     public String generateReport() {
-        if(missingFiles.isEmpty() && deleteableFiles.isEmpty()) {
+        if(!hasIntegrityIssues()) {
             return "No missing files. \n";
         }
         

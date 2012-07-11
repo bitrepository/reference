@@ -31,7 +31,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
@@ -62,15 +61,8 @@ public class IntegrityDatabase implements IntegrityModel {
         DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseSpecifics());
         this.store = new IntegrityDAO(new DBConnector(dbSpecifics, 
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseUrl()));
-    }
-    
-    /**
-     * Retrieve the interface to the database, which stores the integrity data.
-     * @return The database store.
-     */
-    public IntegrityDAO getStore() {
-        return store;
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseUrl()),
+                settings.getCollectionSettings().getClientSettings().getPillarIDs());
     }
     
     @Override
@@ -84,9 +76,8 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, 
-            String pillarId) {
-        store.updateChecksumData(data, checksumType, pillarId);
+    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId) {
+        store.updateChecksumData(data, pillarId);
     }
 
     @Override
@@ -144,6 +135,34 @@ public class IntegrityDatabase implements IntegrityModel {
         store.removeFileId(fileId);
     }
     
+    @Override
+    public List<String> findMissingChecksums() {
+        return store.findMissingChecksums();
+    }
+
+    @Override
+    public List<String> findMissingFiles() {
+        return store.findMissingFiles();
+    }
+
+    /*
+     * TODO make the following container:
+     * class FileIDOnPillars {
+     *   String fileID;
+     *   List<String> pillarIDs.
+     *   ......
+     * }
+     */
+    @Override
+    public List<String> getPillarsMissingFile(String fileId) {
+        return store.getMissingAtPillars(fileId);
+    }
+
+    @Override
+    public Collection<String> findChecksumsOlderThan(Date date) {
+        return store.findFilesWithOldChecksum(date);
+    }
+    
     /**
      * Find the difference between the expected file ids and the delivered ones.
      * 
@@ -166,25 +185,5 @@ public class IntegrityDatabase implements IntegrityModel {
         }
         
         return missingFiles;
-    }
-
-    @Override
-    public List<String> findMissingChecksums() {
-        return store.findMissingChecksums();
-    }
-
-    @Override
-    public List<String> findMissingFiles() {
-        return store.findMissingFiles();
-    }
-
-    @Override
-    public List<String> isMissing(String fileId) {
-        return store.getMissingAtPillars(fileId);
-    }
-
-    @Override
-    public Collection<String> findChecksumsOlderThan(Date date) {
-        return store.findFilesWithOldChecksum(date);
     }
 }

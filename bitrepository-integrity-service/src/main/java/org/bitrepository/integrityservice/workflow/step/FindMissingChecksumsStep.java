@@ -29,10 +29,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A workflow step for finding missing checksums.
- * 
- * It goes through every file id available, extracts all the fileinfos and validates whether any pillars
- * are missing the given checksum (e.g. whether the ChecksumState is Unknown and the FileState is not Missing).
- * This is a very simple and definitely not optimized way of finding missing checksums.
+ * Uses the IntegrityChecker to perform the actual check.
  */
 public class FindMissingChecksumsStep implements WorkflowStep {
     /** The log.*/
@@ -58,16 +55,15 @@ public class FindMissingChecksumsStep implements WorkflowStep {
     }
 
     /**
-     * Goes through all the file ids in the database and extract their respective fileinfos.
-     * Then it goes through all the file infos to validate that the file at no pillar exists but has an unknown state 
-     * for the checksum.
+     * Uses IntegrityChecker to validate whether any checksums are missing.
+     * Dispatches an alarm if any checksums were missing.
      */
     @Override
     public synchronized void performStep() {
         IntegrityReport report = checker.checkMissingChecksums();
         
-        if(report.hasIntegrityIssues()) {
-            log.debug("No files are missing at any pillar.");
+        if(!report.hasIntegrityIssues()) {
+            log.debug("No checksum are missing from any pillar.");
         } else {
             dispatcher.integrityFailed(report);
         }

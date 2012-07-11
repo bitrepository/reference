@@ -24,131 +24,38 @@
  */
 package org.bitrepository.pillar.messagefactories;
 
-import java.util.UUID;
-
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
-public class GetChecksumsMessageFactory extends ClientTestMessageFactory {
+public class GetChecksumsMessageFactory extends PillarTestMessageFactory {
+    private final String pillarID;
 
-    final Settings settings;
-    
-    public GetChecksumsMessageFactory(Settings pSettings) {
-        super(pSettings.getCollectionID());
-        this.settings = pSettings;
+    public GetChecksumsMessageFactory(Settings clientSettings, String pillarID, String pillarDestination) {
+        super(clientSettings, pillarDestination);
+        this.pillarID = pillarID;
     }
-    
-    public IdentifyPillarsForGetChecksumsRequest createIdentifyPillarsForGetChecksumsRequest( 
-            String auditTrail, ChecksumSpecTYPE csSpec, FileIDs fileId, String from, String replyTo) {
+
+    public IdentifyPillarsForGetChecksumsRequest createIdentifyPillarsForGetChecksumsRequest(ChecksumSpecTYPE csSpec, 
+            FileIDs fileId) {
         IdentifyPillarsForGetChecksumsRequest res = new IdentifyPillarsForGetChecksumsRequest();
-        res.setAuditTrailInformation(auditTrail);
+        initializeIdentifyRequest(res);
         res.setChecksumRequestForExistingFile(csSpec);
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(getNewCorrelationID());
         res.setFileIDs(fileId);
-        res.setFrom(from);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setReplyTo(replyTo);
-        res.setTo(settings.getCollectionDestination());
-        res.setVersion(VERSION_DEFAULT);
         
         return res;
     }
 
-    public IdentifyPillarsForGetChecksumsResponse createIdentifyPillarsForGetChecksumsResponse(
-            ChecksumSpecTYPE csSpec, String correlationId, FileIDs fileId, ChecksumSpecTYPE pillarCsType,
-            String pillarId, String replyTo, ResponseInfo responseInfo, TimeMeasureTYPE timeToDeliver, String toTopic) {
-        IdentifyPillarsForGetChecksumsResponse res = new IdentifyPillarsForGetChecksumsResponse();
-        res.setChecksumRequestForExistingFile(csSpec);
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(correlationId);
-        res.setFileIDs(fileId);
-        res.setFrom(pillarId);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setPillarChecksumSpec(pillarCsType);
-        res.setPillarID(pillarId);
-        res.setReplyTo(replyTo);
-        res.setResponseInfo(responseInfo);
-        res.setTimeToDeliver(timeToDeliver);
-        res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-
-        return res;
-    }
-    
-    public GetChecksumsRequest createGetChecksumsRequest(String auditTrail, ChecksumSpecTYPE csSpec, 
-            String correlationId, FileIDs fileId, String from, String pillarId, String replyTo, String url, 
-            String toTopic) {
+    public GetChecksumsRequest createGetChecksumsRequest(ChecksumSpecTYPE csSpec, FileIDs fileId, String url) {
         GetChecksumsRequest res = new GetChecksumsRequest();
-        res.setAuditTrailInformation(auditTrail);
+        initializeOperationRequest(res);
         res.setChecksumRequestForExistingFile(csSpec);
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
-        res.setFrom(from);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setPillarID(pillarId);
-        res.setReplyTo(replyTo);
+        res.setPillarID(pillarID);
         res.setResultAddress(url);
-        res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
 
         return res;
-    }
-
-    public GetChecksumsProgressResponse createGetChecksumsProgressResponse(ChecksumSpecTYPE csSpec, 
-            String correlationId, FileIDs fileId, String pillarId, String replyTo, ResponseInfo prInfo, String url, 
-            String toTopic) {
-        GetChecksumsProgressResponse res = new GetChecksumsProgressResponse();
-        res.setChecksumRequestForExistingFile(csSpec);
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(correlationId);
-        res.setFileIDs(fileId);
-        res.setFrom(pillarId);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setPillarID(pillarId);
-        res.setReplyTo(replyTo);
-        res.setResponseInfo(prInfo);
-        res.setResultAddress(url);
-        res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-
-        return res;
-    }
-
-    public GetChecksumsFinalResponse createGetChecksumsFinalResponse(ChecksumSpecTYPE csSpec, String correlationId, 
-            String pillarId, String replyTo, ResponseInfo frInfo, ResultingChecksums results, String toTopic) {
-        GetChecksumsFinalResponse res = new GetChecksumsFinalResponse();
-        res.setChecksumRequestForExistingFile(csSpec);
-        res.setCollectionID(settings.getCollectionID());
-        res.setCorrelationID(correlationId);
-        res.setFrom(pillarId);
-        res.setMinVersion(VERSION_DEFAULT);
-        res.setPillarID(pillarId);
-        res.setReplyTo(replyTo);
-        res.setResponseInfo(frInfo);
-        res.setResultingChecksums(results);
-        res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-
-        return res;
-    }
-    
-    /**
-     * Method for generating new correlation IDs.
-     * @return A unique correlation id.
-     */
-    public String getNewCorrelationID() {
-        return UUID.randomUUID().toString();
     }
 }

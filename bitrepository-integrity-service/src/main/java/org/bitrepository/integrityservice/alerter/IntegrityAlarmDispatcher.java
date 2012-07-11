@@ -50,4 +50,12 @@ public class IntegrityAlarmDispatcher extends AlarmDispatcher implements Integri
         ad.setAlarmText(report.generateReport());
         error(ad);
     }
+
+    @Override
+    public void operationFailed(String issue) {
+        Alarm ad = new Alarm();
+        ad.setAlarmCode(AlarmCode.FAILED_OPERATION);
+        ad.setAlarmText(issue);
+        error(ad);
+    }
 }

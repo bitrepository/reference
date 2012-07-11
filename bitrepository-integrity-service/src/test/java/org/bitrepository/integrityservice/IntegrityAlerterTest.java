@@ -51,9 +51,8 @@ public class IntegrityAlerterTest extends ExtendedTestCase {
     static int callsForError = 0;
     
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testIntegrityAlerter() {
-        addDescription("Test the IntegrityAlerter");
-        addStep("Setup", "Should not fail.");
+    public void testIntegrityFailed() {
+        addDescription("Test the IntegrityFailed method for the IntegrityAlerter");
         ContributorContext context = new ContributorContext(messageBus, settings);
         callsForError = 0;
         
@@ -68,6 +67,26 @@ public class IntegrityAlerterTest extends ExtendedTestCase {
         
         addStep("Call the function for integrity failure.", "Should attempt to make a call for 'error'.");
         alerter.integrityFailed(new MockIntegrityReport());
+        Assert.assertEquals(callsForError, 1);
+    }
+    
+    @Test(groups = {"regressiontest", "integritytest"})
+    public void testOperationFailed() {
+        addDescription("Test the OperationFailed method for the IntegrityAlerter");
+        ContributorContext context = new ContributorContext(messageBus, settings);
+        callsForError = 0;
+        
+        addStep("Create the alerter, but remove the actual sending of the alarm", 
+                "Should increase the counter 'callsForError'");
+        IntegrityAlerter alerter = new IntegrityAlarmDispatcher(context) {
+            @Override
+            public void error(Alarm alarm) {
+                callsForError++;
+            }
+        };
+        
+        addStep("Call the function for integrity failure.", "Should attempt to make a call for 'error'.");
+        alerter.operationFailed("Testing the ability to fail.");
         Assert.assertEquals(callsForError, 1);
     }
 }

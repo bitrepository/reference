@@ -89,7 +89,8 @@ public final class IntegrityServiceComponentFactory {
      */
     public ServiceScheduler getIntegrityInformationScheduler(Settings settings) {
         if (integrityInformationScheduler == null) {
-            integrityInformationScheduler = new TimerbasedScheduler(settings);
+            integrityInformationScheduler = new TimerbasedScheduler(
+                    settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval());
         }
         return integrityInformationScheduler;
     }

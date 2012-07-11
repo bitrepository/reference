@@ -37,7 +37,7 @@ import javax.ws.rs.Produces;
 
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
-import org.bitrepository.service.scheduler.WorkflowTask;
+import org.bitrepository.service.scheduler.WorkflowTimerTask;
 
 @Path("/IntegrityService")
 public class RestIntegrityService {
@@ -81,13 +81,14 @@ public class RestIntegrityService {
     public String getWorkflowSetup() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        Collection<WorkflowTask> workflows = service.getScheduledWorkflows();
-        Iterator<WorkflowTask> it = workflows.iterator();
+        Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
+        Iterator<WorkflowTimerTask> it = workflows.iterator();
         while(it.hasNext()) {
-            WorkflowTask workflowTasl = it.next();
+            WorkflowTimerTask workflowTasl = it.next();
             sb.append("{\"workflowID\": \"" + workflowTasl.getName() + "\"," +
                     "\"nextRun\": \"" + workflowTasl.getNextRun() + "\"," +
-                    "\"executionInterval\": \"" + TimeUtils.millisecondsToHuman(workflowTasl.getTimeBetweenRuns()) + "\"}");
+                    "\"executionInterval\": \"" + TimeUtils.millisecondsToHuman(workflowTasl.getIntervalBetweenRuns()) 
+                    + "\"}");
             if(it.hasNext()) {
                 sb.append(",");
             }
@@ -105,8 +106,8 @@ public class RestIntegrityService {
     public String getWorkflowList() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        Collection<WorkflowTask> workflows = service.getScheduledWorkflows();
-        Iterator<WorkflowTask> it = workflows.iterator();
+        Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
+        Iterator<WorkflowTimerTask> it = workflows.iterator();
         while(it.hasNext()) {
             String name = it.next().getName();
             sb.append("{\"workflowID\":\"" + name + "\"}");
@@ -126,10 +127,10 @@ public class RestIntegrityService {
     @Consumes("application/x-www-form-urlencoded")
     @Produces("text/html")
     public String startWorkflow(@FormParam ("workflowID") String workflowID) {
-        Collection<WorkflowTask> workflows = service.getScheduledWorkflows();
-        for(WorkflowTask workflowTask : workflows) {
+        Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
+        for(WorkflowTimerTask workflowTask : workflows) {
             if(workflowTask.getName().equals(workflowID)) {
-                workflowTask.trigger();
+                workflowTask.runWorkflow();
                 return "Workflow '" + workflowID + "' started";        
             }
         }

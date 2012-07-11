@@ -43,8 +43,6 @@ insert into tableversions ( tablename, version )
             values ( 'files', 1);
 insert into tableversions ( tablename, version )
             values ( 'pillar', 1);
-insert into tableversions ( tablename, version )
-            values ( 'checksum', 1);
 
 --*************************************************************************--
 -- Name:     fileinfo
@@ -59,8 +57,6 @@ create table fileinfo (
                                  -- The unique id for a specific file on a specific pillar.
     file_guid bigint not null,   -- The guid for the file.
     pillar_guid bigint not null, -- The guid for the pillar.
-    checksum_guid bigint,        -- The guid for the specific checksum, which
-                                 -- was used for the latest checksum calculation.
     checksum varchar(100),       -- The checksum for the given file on the given pillar.
     last_file_update timestamp,  -- The last time a 'GetFileIDs' for the fileinfo has been answered.
     last_checksum_update timestamp,
@@ -103,29 +99,8 @@ create index filedateindex on files ( file_id, creation_date );
 create table pillar (
     pillar_guid bigint not null generated always as identity primary key,
                                  -- The GUID for the pillar.
-    pillar_id varchar(100) not null,
+    pillar_id varchar(100) not null
                                  -- The id of the pillar.
-    checksum_spec_guid bigint    -- If it is a ChecksumPillar, then this 
-                                 -- would be refering to the type of checksum
-                                 -- the pillar is using.
 );
 
 create index pillarindex on pillar ( pillar_id );
-
---*************************************************************************--
--- Name:     checksumspec
--- Descr.:   Contains the information about the cheksum specifications.
--- Purpose:  Keeps track of the different checksum specification. E.g. the 
---           name of the algorithm and the salt.
--- Expected entry count: Some, though not many
---*************************************************************************--
-create table checksumspec (
-    checksum_guid bigint not null generated always as identity primary key,
-                                 -- The guid for this checksum specification.
-    checksum_algorithm varchar(100) not null,
-                                 -- The name of the algorithm for the checksum.
-    checksum_salt varchar(100) not null
-                                 -- The salt for the checksum calculation.
-);
-
-create index checksumindex on checksumspec ( checksum_algorithm, checksum_salt );
