@@ -97,6 +97,55 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
         Assert.assertEquals(alerter.getCallsForOperationFailed(), 0);
         Assert.assertEquals(collector.getNumberOfCallsForGetChecksums(), 1);
     }
+    
+    @Test(groups = {"regressiontest", "integritytest"})
+    public void testThreadedResults() {
+        addDescription("Test the step for updating the checksums delivers the results to the integrity model.");
+        MockCollector collector = new MockCollector() {
+            @Override
+            public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType,
+                    String auditTrailInformation, EventHandler eventHandler) {
+                super.getChecksums(pillarIDs, fileIDs, checksumType, auditTrailInformation, eventHandler);
+                new Thread(new TestEventHandler(eventHandler)).start();
+            }
+        };
+        MockIntegrityAlerter alerter = new MockIntegrityAlerter();
+        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
+        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, store, alerter, PILLAR_IDS, createChecksumSpecTYPE());
+        
+        step.performStep();
+        Assert.assertEquals(store.getCallsForAddChecksums(), 1);
+        Assert.assertEquals(alerter.getCallsForOperationFailed(), 0);
+        Assert.assertEquals(collector.getNumberOfCallsForGetChecksums(), 1);
+    }
+    
+    private class TestEventHandler implements Runnable {
+        final EventHandler eventHandler;
+        TestEventHandler(EventHandler eventhandler) {
+            this.eventHandler = eventhandler;
+        }
+        @Override
+        public void run() {
+            synchronized(this) {
+                try {
+                    wait(100);
+                    eventHandler.handleEvent(new ContributorEvent(OperationEventType.IDENTIFICATION_COMPLETE, "", TEST_PILLAR_1, "conversationID"));
+
+                    wait(1500);
+                    ChecksumsCompletePillarEvent event = new ChecksumsCompletePillarEvent(createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1), 
+                            createChecksumSpecTYPE(), TEST_PILLAR_1, "info", "conversationID");
+                    eventHandler.handleEvent(event);
+                    
+                    wait(100);
+                    eventHandler.handleEvent(new ContributorEvent(OperationEventType.COMPLETE, "", TEST_PILLAR_1, "conversationID"));
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            eventHandler.handleEvent(new ContributorEvent(OperationEventType.COMPLETE, "", TEST_PILLAR_1, "conversationID"));
+        }
+    }
 
     private ResultingChecksums createResultingChecksums(String checksum, String ... fileids) {
         ResultingChecksums res = new ResultingChecksums();

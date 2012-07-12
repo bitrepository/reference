@@ -114,9 +114,13 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         }
         if(auditTrail == null) {
             auditTrail = "";
+        } else if(auditTrail.length() > 255) {
+            auditTrail = auditTrail.substring(0, 255);
         }
         if(info == null) {
             info = "";
+        } else if(info.length() > 255) {
+            info = info.substring(0, 255);
         }
         
         String insertSql = "INSERT INTO " + AUDITTRAIL_TABLE + " ( " + AUDITTRAIL_FILE_GUID + " , " 

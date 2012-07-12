@@ -91,12 +91,12 @@ public class ChecksumIntegrityValidator {
         
         if(checksumCount.size() > 1) {
             log.debug("Has to vote for the checksum on file '" + fileId + "'");
+            auditManager.addAuditEvent(fileId, "IntegrityService", "Checksum inconsistency for file '" + fileId + "'. "
+                    + "The pillar have more than one unique checksum.", "IntegrityService validating the checksums.", 
+                    FileAction.INCONSISTENCY);
+            
             String chosenChecksum = voteForChecksum(checksumCount);
             handleVoteResults(chosenChecksum, fileId, fileinfos, report);
-            
-            auditManager.addAuditEvent(fileId, "IntegrityService", "Checksum inconsistency for file '" + fileId + "':"
-                    + fileinfos, "IntegrityService validating the checksums.", 
-                    FileAction.INCONSISTENCY);
         } else {
             cache.setChecksumAgreement(fileId, pillarIds);
             report.reportNoChecksumIssues(fileId);
