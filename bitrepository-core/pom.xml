@@ -149,6 +149,10 @@ in preparation for the xsd -> java class file generation -->
                   <directory>src/main/resources/xsd</directory>
                   <filtering>true</filtering>
                 </resource>
+                <resource>
+                  <directory>target/versioning</directory>
+                  <filtering>true</filtering>
+                </resource>
               </resources>
             </configuration>
           </execution>

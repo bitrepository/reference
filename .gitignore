@@ -1,2 +1,7 @@
 /target
 /.project
+bitrepository-alarm-service/derby.log
+bitrepository-audit-trail-service/derby.log
+bitrepository-core/derby.log
+bitrepository-integrity-service/derby.log
+
