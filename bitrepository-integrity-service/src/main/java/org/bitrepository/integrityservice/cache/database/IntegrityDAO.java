@@ -123,7 +123,7 @@ public class IntegrityDAO {
      * @param pillarId The id of the pillar, where the GetChecksums operation has been performed.
      */
     public void updateChecksumData(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId) {
-        ArgumentValidator.checkNotNullOrEmpty(data, "List<ChecksumDataForChecksumSpecTYPE data");
+        ArgumentValidator.checkNotNull(data, "List<ChecksumDataForChecksumSpecTYPE> data");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         
         log.info("Updating the checksum data '" + data + "' for pillar '" + pillarId + "'");
@@ -281,7 +281,7 @@ public class IntegrityDAO {
 
     /**
      * Sets a specific file have checksum errors at a given pillar.
-     * If the pillar does not have the given file, then it is ignored by the database.
+     * Unless the given file is missing at the given pillar.
      * @param fileId The id of the file, which has checksum error at the pillar.
      * @param pillarId The id of the pillar which has checksum error on the file.
      */
@@ -292,9 +292,9 @@ public class IntegrityDAO {
         String sql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? , " + FI_CHECKSUM_STATE 
                 + " = ? WHERE " + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " 
                 + PILLAR_ID + " = ? ) AND " + FI_FILE_GUID + " = ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE 
-                + " WHERE " + FILES_ID + " = ? )";
+                + " WHERE " + FILES_ID + " = ? ) AND " + FI_FILE_STATE + " != ?";
         DatabaseUtils.executeStatement(dbConnector.getConnection(), sql, FileState.EXISTING.ordinal(), 
-                ChecksumState.VALID.ordinal(), pillarId, fileId);
+                ChecksumState.VALID.ordinal(), pillarId, fileId, FileState.MISSING.ordinal());
     }
     
     /**

@@ -23,6 +23,8 @@ package org.bitrepository.integrityservice.workflow;
 
 import org.bitrepository.integrityservice.workflow.step.WorkflowStep;
 import org.bitrepository.service.scheduler.Workflow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract interface for running a Workflow based on WorkflowSteps.
@@ -30,6 +32,9 @@ import org.bitrepository.service.scheduler.Workflow;
  * @see WorkflowStep {@link WorkflowStep} 
  */
 public abstract class StepBasedWorkflow implements Workflow {
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
+    
     /** The default state when the workflow is not running.*/
     private static final String NOT_RUNNING = "The workflow is currently not running.";
     /** The prefix for telling which step is currently running. Should be postfixed with the step name.*/
@@ -43,7 +48,9 @@ public abstract class StepBasedWorkflow implements Workflow {
      */
     protected void performStep(WorkflowStep step) {
         this.currentStep = step;
+        log.info("Starting step: '" + step.getName() + "'");
         step.performStep();
+        log.info("Finished step: '" + step.getName() + "'");
     }
     
     /**

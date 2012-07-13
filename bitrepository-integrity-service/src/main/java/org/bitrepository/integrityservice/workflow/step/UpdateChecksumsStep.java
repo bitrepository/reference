@@ -23,14 +23,11 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import java.util.List;
 
-import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.eventhandler.OperationEvent;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.collector.IntegrityCollectorEventHandler;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +38,6 @@ import org.slf4j.LoggerFactory;
 public class UpdateChecksumsStep implements WorkflowStep{
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    /** The constant for all file ids.*/
-    private static final String ALL_FILE_IDS = "true";
     
     /** The collector for retrieving the checksums.*/
     private final IntegrityInformationCollector collector;
@@ -81,73 +76,15 @@ public class UpdateChecksumsStep implements WorkflowStep{
     public synchronized void performStep() {
         log.debug("Begin collecting the checksums.");
         
-        ChecksumsEventHandler eventHandler = new ChecksumsEventHandler();
-        
-        collector.getChecksums(pillarIds, getFileIds(), checksumType, "IntegrityService: " + getName(), eventHandler);
-        while(eventHandler.isRunning()) {
-            try {
-                eventHandler.wait();
-            } catch (InterruptedException e) {
-                log.debug("Interrupted while waiting for step to finish.", e);
-            }
+        IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, 60000);
+        collector.getChecksums(pillarIds, FileIDsUtils.getAllFileIDs(), checksumType, "IntegrityService: " + getName(),
+                eventHandler);
+        try {
+            eventHandler.getFinish();
+        } catch (InterruptedException e) {
+            // TODO      
         }
+        
         log.debug("Finished collecting the checksums.");
-    }
-    
-    /**
-     * @return The FileIDs object for the specific file.
-     */
-    private FileIDs getFileIds() {
-        FileIDs fileids = new FileIDs();
-        fileids.setAllFileIDs(ALL_FILE_IDS);
-        return fileids;
-    }
-    
-    /**
-     * Handles the results of the GetChecksums conversation.
-     * Sends a notify when everything is complete or failed.
-     */
-    private class ChecksumsEventHandler implements EventHandler {
-        /** Tells whether the event has finished.*/
-        private boolean isFinished = false;
-        
-        @Override
-        public void handleEvent(OperationEvent event) {
-            if(event.getType() == OperationEventType.COMPONENT_COMPLETE) {
-                handleResult((ChecksumsCompletePillarEvent) event);
-            } else if(event.getType() == OperationEventType.COMPLETE) {
-                log.debug("Complete: " + event.toString());
-                finish();
-            } else if(event.getType() == OperationEventType.FAILED) {
-                log.warn("Failure: " + event.toString());
-                alerter.operationFailed("Could not update the checksums: " + event.toString());
-                finish();
-            }
-        }
-        
-        /**
-         * Set the state to finished, and notify the waiting step.
-         */
-        private void finish() {
-            synchronized(this) {
-                isFinished = true;
-                notify();
-            }
-        }
-        
-        /**
-         * Handle the results of the GetChecksums operation at a single pillar.
-         * @param event The event for the completion of a GetChecksums for a single pillar.
-         */
-        private void handleResult(ChecksumsCompletePillarEvent event) {
-            store.addChecksums(event.getChecksums().getChecksumDataItems(), event.getContributorID());
-        }
-        
-        /**
-         * @return Whether the event is still running
-         */
-        public boolean isRunning() {
-            return !isFinished;
-        }        
     }
 }
