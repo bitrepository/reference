@@ -40,6 +40,7 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_ID;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_TABLE;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -66,14 +67,14 @@ import org.slf4j.LoggerFactory;
 public class IntegrityDAO {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    /** The connection to the database.*/
+    /** The connector to the database.*/
     private final DBConnector dbConnector;
     /** The ids of the pillars.*/
     private final List<String> pillarIds;
     
     /** 
      * Constructor.
-     * @param dbConnector The connection to the database, where the cache is stored.
+     * @param dbConnector The connector to the database, where the cache is stored.
      */
     public IntegrityDAO(DBConnector dbConnector, List<String> pillarIds) {
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
@@ -91,7 +92,7 @@ public class IntegrityDAO {
             if(retrievePillarGuid(pillarId) == null) {
                 log.debug("Inserting the pillar '" + pillarId + "' into the pillar table.");
                 String sql = "INSERT INTO " + PILLAR_TABLE +" ( " + PILLAR_ID + " ) VALUES ( ? )";
-                DatabaseUtils.executeStatement(dbConnector.getConnection(), sql, pillarId);
+                DatabaseUtils.executeStatement(dbConnector, sql, pillarId);
             } else {
                 log.debug("Already know the pillar '" + pillarId + "'. Will not recreate the entry in the database.");
             }
@@ -163,8 +164,10 @@ public class IntegrityDAO {
         
         try {
             ResultSet dbResult = null;
+            Connection conn = null;
             try {
-                dbResult = DatabaseUtils.selectObject(dbConnector.getConnection(), sql, fileGuid);
+                conn = dbConnector.getConnection();
+                dbResult = DatabaseUtils.selectObject(conn, sql, fileGuid);
                 
                 while(dbResult.next()) {
                     Date lastFileCheck = dbResult.getTimestamp(indexLastFileCheck);
@@ -186,6 +189,9 @@ public class IntegrityDAO {
                 if(dbResult != null) {
                     dbResult.close();
                 }
+                if(conn != null) {
+                    conn.close();
+                }
             }
         } catch (SQLException e) {
             throw new IllegalStateException("Could not retrieve the FileInfo for '" + fileId + "' with the SQL '"
@@ -200,7 +206,7 @@ public class IntegrityDAO {
     public List<String> getAllFileIDs() {
         log.trace("Retrieving all file ids.");
         String sql = "SELECT " + FILES_ID + " FROM " + FILES_TABLE;
-        return DatabaseUtils.selectStringList(dbConnector.getConnection(), sql, new Object[0]);
+        return DatabaseUtils.selectStringList(dbConnector, sql, new Object[0]);
     }
     
     /**
@@ -214,7 +220,7 @@ public class IntegrityDAO {
         Long pillarGuid = retrievePillarGuid(pillarId);
         String sql = "SELECT COUNT(*) FROM " + FILE_INFO_TABLE + " WHERE " + FI_PILLAR_GUID + " = ? AND "
                 + FI_FILE_STATE + " = ?";
-        return DatabaseUtils.selectIntValue(dbConnector.getConnection(), sql, pillarGuid, FileState.EXISTING.ordinal());
+        return DatabaseUtils.selectIntValue(dbConnector, sql, pillarGuid, FileState.EXISTING.ordinal());
     }
     
     /**
@@ -228,7 +234,7 @@ public class IntegrityDAO {
         Long pillarGuid = retrievePillarGuid(pillarId);
         String sql = "SELECT COUNT(*) FROM " + FILE_INFO_TABLE + " WHERE " + FI_PILLAR_GUID + " = ? AND "
                 + FI_FILE_STATE + " = ?";
-        return DatabaseUtils.selectIntValue(dbConnector.getConnection(), sql, pillarGuid, FileState.MISSING.ordinal());
+        return DatabaseUtils.selectIntValue(dbConnector, sql, pillarGuid, FileState.MISSING.ordinal());
     }
     
     /**
@@ -242,7 +248,7 @@ public class IntegrityDAO {
         Long pillarGuid = retrievePillarGuid(pillarId);
         String sql = "SELECT COUNT(*) FROM " + FILE_INFO_TABLE + " WHERE " + FI_PILLAR_GUID + " = ? AND "
                 + FI_CHECKSUM_STATE + " = ?";
-        return DatabaseUtils.selectIntValue(dbConnector.getConnection(), sql, pillarGuid, ChecksumState.ERROR.ordinal());
+        return DatabaseUtils.selectIntValue(dbConnector, sql, pillarGuid, ChecksumState.ERROR.ordinal());
     }
 
     /**
@@ -258,7 +264,7 @@ public class IntegrityDAO {
                 + " = ? WHERE " + FI_FILE_GUID + " = (SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " 
                 + FILES_ID + " = ? ) and " + FI_PILLAR_GUID + " = (SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE 
                 + " WHERE " + PILLAR_ID + " = ?)";
-        DatabaseUtils.executeStatement(dbConnector.getConnection(), sqlUpdate, FileState.MISSING.ordinal(), 
+        DatabaseUtils.executeStatement(dbConnector, sqlUpdate, FileState.MISSING.ordinal(), 
                 ChecksumState.UNKNOWN.ordinal(), fileId, pillarId);
     }
     
@@ -275,7 +281,7 @@ public class IntegrityDAO {
                 + " = ? WHERE " + FI_FILE_GUID + " = (SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE "
                 + FILES_ID + " = ? ) and " + FI_PILLAR_GUID + " = (SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE
                 + " WHERE " + PILLAR_ID + " = ?)";
-        DatabaseUtils.executeStatement(dbConnector.getConnection(), sqlUpdate, FileState.EXISTING.ordinal(), 
+        DatabaseUtils.executeStatement(dbConnector, sqlUpdate, FileState.EXISTING.ordinal(), 
                 ChecksumState.ERROR.ordinal(), fileId, pillarId);
     }
 
@@ -293,7 +299,7 @@ public class IntegrityDAO {
                 + " = ? WHERE " + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " 
                 + PILLAR_ID + " = ? ) AND " + FI_FILE_GUID + " = ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE 
                 + " WHERE " + FILES_ID + " = ? ) AND " + FI_FILE_STATE + " != ?";
-        DatabaseUtils.executeStatement(dbConnector.getConnection(), sql, FileState.EXISTING.ordinal(), 
+        DatabaseUtils.executeStatement(dbConnector, sql, FileState.EXISTING.ordinal(), 
                 ChecksumState.VALID.ordinal(), pillarId, fileId, FileState.MISSING.ordinal());
     }
     
@@ -312,11 +318,11 @@ public class IntegrityDAO {
         
         log.info("Removing the file id '" + fileId + "' from the files table.");
         String removeFileIDSql = "DELETE FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ?";
-        DatabaseUtils.executeStatement(dbConnector.getConnection(), removeFileIDSql, fileId);
+        DatabaseUtils.executeStatement(dbConnector, removeFileIDSql, fileId);
         
         log.info("Removing the entries for the file with id '" + fileId + "' from the file info table.");
         String removeFileInfoEntrySql = "DELETE FROM " + FILE_INFO_TABLE + " WHERE " + FI_FILE_GUID + " = ?";
-        DatabaseUtils.executeStatement(dbConnector.getConnection(), removeFileInfoEntrySql, guid);
+        DatabaseUtils.executeStatement(dbConnector, removeFileInfoEntrySql, guid);
     }
     
     /**
@@ -329,7 +335,7 @@ public class IntegrityDAO {
                 + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? AND " + FILE_INFO_TABLE 
                 + "." + FI_CHECKSUM_STATE + " = ?";
         
-        return DatabaseUtils.selectStringList(dbConnector.getConnection(), requestSql, FileState.EXISTING.ordinal(), 
+        return DatabaseUtils.selectStringList(dbConnector, requestSql, FileState.EXISTING.ordinal(), 
                 ChecksumState.UNKNOWN.ordinal());
     }
 
@@ -343,7 +349,7 @@ public class IntegrityDAO {
         String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
                 + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "."
                 + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_LAST_CHECKSUM_UPDATE + " < ? ";
-        return DatabaseUtils.selectStringList(dbConnector.getConnection(), requestSql, date);
+        return DatabaseUtils.selectStringList(dbConnector, requestSql, date);
     }
     
     /**
@@ -355,7 +361,7 @@ public class IntegrityDAO {
         String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
                 + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "."
                 + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " != ? ";
-        return DatabaseUtils.selectStringList(dbConnector.getConnection(), requestSql, FileState.EXISTING.ordinal());
+        return DatabaseUtils.selectStringList(dbConnector, requestSql, FileState.EXISTING.ordinal());
     }
     
     /**
@@ -370,7 +376,7 @@ public class IntegrityDAO {
                 + FI_PILLAR_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " != ? AND " + FILE_INFO_TABLE 
                 + "." + FI_FILE_GUID + " = ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID 
                 + " = ? )";
-        return DatabaseUtils.selectStringList(dbConnector.getConnection(), requestSql, FileState.EXISTING.ordinal(), 
+        return DatabaseUtils.selectStringList(dbConnector, requestSql, FileState.EXISTING.ordinal(), 
                 fileId);
     }
     
@@ -392,7 +398,7 @@ public class IntegrityDAO {
                 + FI_CHECKSUM_STATE + " = ? " + " WHERE " + FI_FILE_GUID + " = ( SELECT " + FILES_GUID + " FROM " 
                 + FILES_TABLE + " WHERE " + FILES_ID + " = ? ) and " + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID 
                 + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ? ) and " + FI_LAST_FILE_UPDATE + " < ?";
-        DatabaseUtils.executeStatement(dbConnector.getConnection(), updateTimestampSql, filelistTimestamp, 
+        DatabaseUtils.executeStatement(dbConnector, updateTimestampSql, filelistTimestamp, 
                 ChecksumState.UNKNOWN.ordinal(), fileId, pillarId, filelistTimestamp);
     }
     
@@ -414,7 +420,7 @@ public class IntegrityDAO {
                 + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ? ) and " + FI_PILLAR_GUID 
                 + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ? ) and " 
                 + FI_LAST_CHECKSUM_UPDATE + " < ?";
-        DatabaseUtils.executeStatement(dbConnector.getConnection(), updateSql, csTimestamp, 
+        DatabaseUtils.executeStatement(dbConnector, updateSql, csTimestamp, 
                 ChecksumState.UNKNOWN.ordinal(), checksum, data.getFileID(), pillarId, 
                 csTimestamp);
     }
@@ -429,7 +435,7 @@ public class IntegrityDAO {
                 + FI_FILE_GUID + " = ( SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID
                 + " = ? ) and " + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE "
                 + PILLAR_ID + " = ? )";
-        DatabaseUtils.executeStatement(dbConnector.getConnection(), updateExistenceSql, FileState.EXISTING.ordinal(),
+        DatabaseUtils.executeStatement(dbConnector, updateExistenceSql, FileState.EXISTING.ordinal(),
                 fileId, pillarId);
     }
     
@@ -441,7 +447,7 @@ public class IntegrityDAO {
     private void ensureFileIdExists(String fileId) {
         log.trace("Retrieving guid for file '{}'.", fileId);
         String sql = "SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ?";
-        if(DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, fileId) == null) {
+        if(DatabaseUtils.selectLongValue(dbConnector, sql, fileId) == null) {
             insertNewFileID(fileId);
         }
     }
@@ -454,7 +460,7 @@ public class IntegrityDAO {
     private Long retrieveFileGuid(String fileId) {
         log.trace("Retrieving guid for file '{}'.", fileId);
         String sql = "SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ?";
-        return DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, fileId);
+        return DatabaseUtils.selectLongValue(dbConnector, sql, fileId);
     }
     
     /**
@@ -466,7 +472,7 @@ public class IntegrityDAO {
         log.debug("Inserting the file '" + fileId + "' into the files table.");
         String fileSql = "INSERT INTO " + FILES_TABLE + " ( " + FILES_ID + ", " + FILES_CREATION_DATE 
                 + " ) VALUES ( ?, ? )";
-        DatabaseUtils.executeStatement(dbConnector.getConnection(), fileSql, fileId, new Date());
+        DatabaseUtils.executeStatement(dbConnector, fileSql, fileId, new Date());
         
         Date epoch = new Date(0);
         for(String pillar : pillarIds)  {
@@ -475,7 +481,7 @@ public class IntegrityDAO {
                     + FI_LAST_FILE_UPDATE + " ) VALUES ( (SELECT " + FILES_GUID + " FROM " + FILES_TABLE + " WHERE " 
                     + FILES_ID + " = ? ), (SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID 
                     + " = ? ), ?, ?, ?, ? )";
-            DatabaseUtils.executeStatement(dbConnector.getConnection(), fileinfoSql, fileId, pillar, 
+            DatabaseUtils.executeStatement(dbConnector, fileinfoSql, fileId, pillar, 
                     ChecksumState.UNKNOWN.ordinal(), epoch, FileState.UNKNOWN.ordinal(), epoch);
         }
     }
@@ -489,7 +495,7 @@ public class IntegrityDAO {
     private Long retrievePillarGuid(String pillarId) {
         log.trace("Retrieving the guid for pillar '{}'.", pillarId);
         String sql = "SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ?";
-        return DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, pillarId);
+        return DatabaseUtils.selectLongValue(dbConnector, sql, pillarId);
     }
     
     /**
@@ -500,6 +506,6 @@ public class IntegrityDAO {
     private String retrievePillarFromGuid(long guid) {
         log.trace("Retrieving the id of the pillar with the guid '{}'.", guid);
         String sql = "SELECT " + PILLAR_ID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_GUID + " = ?";
-        return DatabaseUtils.selectStringValue(dbConnector.getConnection(), sql, guid);
+        return DatabaseUtils.selectStringValue(dbConnector, sql, guid);
     }
 }

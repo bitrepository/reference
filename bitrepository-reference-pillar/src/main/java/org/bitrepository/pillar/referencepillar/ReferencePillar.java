@@ -24,10 +24,10 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
+import javax.jms.JMSException;
+
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.database.DBConnector;
-import org.bitrepository.common.database.DBSpecifics;
-import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
@@ -40,8 +40,6 @@ import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.jms.JMSException;
 
 /**
  * Reference pillar. This very simply starts the PillarMediator, which handles all the communications.
@@ -70,10 +68,8 @@ public class ReferencePillar implements Pillar {
         log.info("Starting the reference pillar!");
         
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
-        DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
-                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseSpecifics());
-        AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector(dbSpecifics, 
-                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl()));
+        AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector( 
+                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase()));
         ContributorContext contributorContext = new ContributorContext(messageBus, settings);
         PillarAlarmDispatcher alarms = new PillarAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(settings, messageBus, alarms, audits);

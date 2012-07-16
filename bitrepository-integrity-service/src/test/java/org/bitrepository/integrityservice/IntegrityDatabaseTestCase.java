@@ -7,6 +7,7 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 import java.io.File;
 import java.sql.Connection;
 
+import org.bitrepository.common.database.DBConnector;
 import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -39,14 +40,16 @@ public class IntegrityDatabaseTestCase extends ExtendedTestCase {
         FileUtils.retrieveSubDirectory(dbDir, DATABASE_NAME);
         
         dbCon = DatabaseTestUtils.takeDatabase(dbFile, DATABASE_NAME, dbDir);
-        settings.getReferenceSettings().getIntegrityServiceSettings().setIntegrityDatabaseUrl(DATABASE_URL);
+        dbCon.close();
+        settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase().setDatabaseURL(DATABASE_URL);
     }
     
     @AfterMethod (alwaysRun = true)
     public void clearDatabase() throws Exception {
-        DatabaseUtils.executeStatement(dbCon, "DELETE FROM " + FILE_INFO_TABLE, new Object[0]);
-        DatabaseUtils.executeStatement(dbCon, "DELETE FROM " + FILES_TABLE, new Object[0]);
-        DatabaseUtils.executeStatement(dbCon, "DELETE FROM " + PILLAR_TABLE, new Object[0]);
+        DBConnector connector = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
+        DatabaseUtils.executeStatement(connector, "DELETE FROM " + FILE_INFO_TABLE, new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM " + FILES_TABLE, new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM " + PILLAR_TABLE, new Object[0]);
     }
 
     @AfterClass (alwaysRun = true)

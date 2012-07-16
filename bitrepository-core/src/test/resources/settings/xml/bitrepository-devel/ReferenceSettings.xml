@@ -38,8 +38,10 @@
     <FileDir>test-archive</FileDir>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
-    <AuditContributerDatabaseUrl>jdbc:derby:auditcontributerdb</AuditContributerDatabaseUrl>
-    <AuditContributerDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditContributerDatabaseSpecifics>
+    <AuditTrailContributerDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:auditcontributerdb</DatabaseURL>
+    </AuditTrailContributerDatabase>
   </PillarSettings>
   <DeleteFileSettings></DeleteFileSettings>
   <GetAuditTrailSettings></GetAuditTrailSettings>
@@ -51,13 +53,17 @@
   <ReplaceFileSettings></ReplaceFileSettings>
   <AlarmServiceSettings>
     <ID>alarm-service</ID>
-    <AlarmServiceDatabaseUrl>jdbc:derby:alarmservicedb</AlarmServiceDatabaseUrl>
-    <AlarmDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AlarmDatabaseSpecifics>
+    <AlarmServiceDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:alarmservicedb</DatabaseURL>
+    </AlarmServiceDatabase>
   </AlarmServiceSettings>
   <AuditTrailServiceSettings>
     <ID>audit-trail-service</ID>
-    <AuditTrailServiceDatabaseUrl>jdbc:derby:auditservicedb</AuditTrailServiceDatabaseUrl>
-    <AuditServiceDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditServiceDatabaseSpecifics>
+    <AuditTrailServiceDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:auditservicedb</DatabaseURL>
+    </AuditTrailServiceDatabase>
     <CollectAuditInterval>3600000</CollectAuditInterval>
     <TimerTaskCheckInterval>60000</TimerTaskCheckInterval>
     <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
@@ -66,11 +72,15 @@
   <IntegrityServiceSettings>
     <ID>integrity-service</ID>
     <SchedulerInterval>600000</SchedulerInterval>
-    <IntegrityDatabaseUrl>jdbc:derby:integritydb</IntegrityDatabaseUrl>
-    <IntegrityDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</IntegrityDatabaseSpecifics>
+    <IntegrityDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:integritydb</DatabaseURL>
+    </IntegrityDatabase>
     <TimeBeforeMissingFileCheck>60000</TimeBeforeMissingFileCheck>
-    <AuditContributerDatabaseUrl>jdbc:derby:auditcontributerdb</AuditContributerDatabaseUrl>
-    <AuditContributerDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditContributerDatabaseSpecifics>
+    <AuditTrailContributerDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:auditcontributerdb</DatabaseURL>
+    </AuditTrailContributerDatabase>
   </IntegrityServiceSettings>
   <MonitoringServiceSettings>
     <ID>monitoring-service</ID>

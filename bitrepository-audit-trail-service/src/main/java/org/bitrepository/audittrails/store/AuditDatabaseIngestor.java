@@ -40,12 +40,12 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_FI
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_GUID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TABLE;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.database.DBConnector;
 import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.slf4j.Logger;
@@ -68,16 +68,16 @@ public class AuditDatabaseIngestor {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
-    /** The connection to the database.*/
-    private final Connection dbConnection;
+    /** The connector to the database.*/
+    private final DBConnector dbConnector;
     
     /**
      * Constructor.
-     * @param dbConnection The connection to the database, where the audit trails are to be ingested.
+     * @param dbConnector The connector to the database, where the audit trails are to be ingested.
      */
-    public AuditDatabaseIngestor(Connection dbConnection) {
-        ArgumentValidator.checkNotNull(dbConnection, "Connection dbConnection");
-        this.dbConnection = dbConnection;
+    public AuditDatabaseIngestor(DBConnector dbConnector) {
+        ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
+        this.dbConnector = dbConnector;
     }
     
     /**
@@ -89,7 +89,7 @@ public class AuditDatabaseIngestor {
         
         String sqlInsert = "INSERT INTO " + AUDITTRAIL_TABLE + " ( " + createIngestElementString(event) + " ) VALUES ( " 
                 + createIngestArgumentString(event) + " )";
-        DatabaseUtils.executeStatement(dbConnection, sqlInsert, extractArgumentsFromEvent(event));
+        DatabaseUtils.executeStatement(dbConnector, sqlInsert, extractArgumentsFromEvent(event));
     }
 
     /**
@@ -223,14 +223,14 @@ public class AuditDatabaseIngestor {
         String sqlRetrieve = "SELECT " + CONTRIBUTOR_GUID + " FROM " + CONTRIBUTOR_TABLE + " WHERE " 
                 + CONTRIBUTOR_ID + " = ?";
         
-        Long guid = DatabaseUtils.selectLongValue(dbConnection, sqlRetrieve, contributorId);
+        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, contributorId);
         
         if(guid == null) {
             log.debug("Inserting contributor '" + contributorId + "' into the contributor table.");
             String sqlInsert = "INSERT INTO " + CONTRIBUTOR_TABLE + " ( " + CONTRIBUTOR_ID + " ) VALUES ( ? )";
-            DatabaseUtils.executeStatement(dbConnection, sqlInsert, contributorId);
+            DatabaseUtils.executeStatement(dbConnector, sqlInsert, contributorId);
             
-            guid = DatabaseUtils.selectLongValue(dbConnection, sqlRetrieve, contributorId);
+            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, contributorId);
         }
         
         return guid;
@@ -244,14 +244,14 @@ public class AuditDatabaseIngestor {
      */
     private long retrieveFileGuid(String fileId) {
         String sqlRetrieve = "SELECT " + FILE_GUID + " FROM " + FILE_TABLE + " WHERE " + FILE_FILEID + " = ?";
-        Long guid = DatabaseUtils.selectLongValue(dbConnection, sqlRetrieve, fileId);
+        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId);
         
         if(guid == null) {
             log.debug("Inserting file '" + fileId + "' into the file table.");
             String sqlInsert = "INSERT INTO " + FILE_TABLE + " ( " + FILE_FILEID + " ) VALUES ( ? )";
-            DatabaseUtils.executeStatement(dbConnection, sqlInsert, fileId);
+            DatabaseUtils.executeStatement(dbConnector, sqlInsert, fileId);
             
-            guid = DatabaseUtils.selectLongValue(dbConnection, sqlRetrieve, fileId);
+            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId);
         }
         
         return guid;
@@ -266,14 +266,14 @@ public class AuditDatabaseIngestor {
     private long retrieveActorGuid(String actorName) {
         String sqlRetrieve = "SELECT " + ACTOR_GUID + " FROM " + ACTOR_TABLE + " WHERE " + ACTOR_NAME + " = ?";
         
-        Long guid = DatabaseUtils.selectLongValue(dbConnection, sqlRetrieve, actorName);
+        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, actorName);
         
         if(guid == null) {
             log.debug("Inserting actor '" + actorName + "' into the actor table.");
             String sqlInsert = "INSERT INTO " + ACTOR_TABLE + " ( " + ACTOR_NAME + " ) VALUES ( ? )";
-            DatabaseUtils.executeStatement(dbConnection, sqlInsert, actorName);
+            DatabaseUtils.executeStatement(dbConnector, sqlInsert, actorName);
             
-            guid = DatabaseUtils.selectLongValue(dbConnection, sqlRetrieve, actorName);
+            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, actorName);
         }
         
         return guid;

@@ -31,12 +31,12 @@ import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_GUI
 import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_ID;
 import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_TABLE;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.database.DBConnector;
 import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.slf4j.Logger;
@@ -55,15 +55,17 @@ import org.slf4j.LoggerFactory;
 public class AlarmDatabaseIngestor {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    /** The connection to the database, where the alarms should be ingested.*/
-    private final Connection dbConnection;
+    /** The connector to the database, where the alarms should be ingested.*/
+    private final DBConnector dbConnector;
     
     /**
      * Constructor.
-     * @param dbConnection The connection to the database, where the audit trails are to be ingested.
+     * @param dbConnection The connector to the database, where the audit trails are to be ingested.
      */
-    public AlarmDatabaseIngestor(Connection dbConnection) {
-        this.dbConnection = dbConnection;
+    public AlarmDatabaseIngestor(DBConnector dbConnector) {
+        ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
+        
+        this.dbConnector = dbConnector;
     }
     
     /**
@@ -75,7 +77,7 @@ public class AlarmDatabaseIngestor {
         
         String sqlInsert = "INSERT INTO " + ALARM_TABLE + " ( " + createIngestElementString(alarm) + " ) VALUES ( " 
                 + createIngestArgumentString(alarm) + " )";
-        DatabaseUtils.executeStatement(dbConnection, sqlInsert, extractArgumentsFromEvent(alarm));
+        DatabaseUtils.executeStatement(dbConnector, sqlInsert, extractArgumentsFromEvent(alarm));
     }
 
     /**
@@ -189,14 +191,14 @@ public class AlarmDatabaseIngestor {
         String sqlRetrieve = "SELECT " + COMPONENT_GUID + " FROM " + COMPONENT_TABLE + " WHERE " 
                 + COMPONENT_ID + " = ?";
         
-        Long guid = DatabaseUtils.selectLongValue(dbConnection, sqlRetrieve, componentId);
+        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, componentId);
         
         if(guid == null) {
             log.debug("Inserting component '" + componentId + "' into the component table.");
             String sqlInsert = "INSERT INTO " + COMPONENT_TABLE + " ( " + COMPONENT_ID + " ) VALUES ( ? )";
-            DatabaseUtils.executeStatement(dbConnection, sqlInsert, componentId);
+            DatabaseUtils.executeStatement(dbConnector, sqlInsert, componentId);
             
-            guid = DatabaseUtils.selectLongValue(dbConnection, sqlRetrieve, componentId);
+            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, componentId);
         }
         
         return guid;

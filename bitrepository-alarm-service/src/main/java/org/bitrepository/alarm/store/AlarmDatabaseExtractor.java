@@ -41,6 +41,7 @@ import java.util.List;
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.database.DBConnector;
 import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.slf4j.Logger;
@@ -73,20 +74,20 @@ public class AlarmDatabaseExtractor {
     
     /** The model containing the elements for the restriction.*/
     private final AlarmDatabaseExtractionModel model;
-    /** The connection to the database.*/
-    private final Connection dbConnection;
+    /** The connector to the database.*/
+    private final DBConnector dbConnector;
     
     /**
      * Constructor.
      * @param model The model for the restriction for the extraction from the database.
-     * @param dbConnection The connection to the database, where the alarms are to be extracted.
+     * @param dbConnector The connector to the database, where the alarms are to be extracted.
      */
-    public AlarmDatabaseExtractor(AlarmDatabaseExtractionModel model, Connection dbConnection) {
+    public AlarmDatabaseExtractor(AlarmDatabaseExtractionModel model, DBConnector dbConnector) {
         ArgumentValidator.checkNotNull(model, "ExtractModel model");
-        ArgumentValidator.checkNotNull(dbConnection, "Connection dbConnection");
+        ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
         
         this.model = model;
-        this.dbConnection = dbConnection;
+        this.dbConnector = dbConnector;
     }
     
     /**
@@ -99,10 +100,11 @@ public class AlarmDatabaseExtractor {
         try {
             ResultSet result = null;
             List<Alarm> res = new ArrayList<Alarm>();
-            
+            Connection conn = null;
             try {
+                conn = dbConnector.getConnection();
                 log.debug("Extracting sql '" + sql + "' with arguments '" + Arrays.asList(extractArgumentsFromModel()));
-                result = DatabaseUtils.selectObject(dbConnection, sql, extractArgumentsFromModel());
+                result = DatabaseUtils.selectObject(conn, sql, extractArgumentsFromModel());
                 
                 int i = 0;
                 while(result.next() && i < model.getMaxCount()) {
@@ -112,6 +114,9 @@ public class AlarmDatabaseExtractor {
             } finally {
                 if(result != null) {
                     result.close();
+                }
+                if(conn != null) {
+                    conn.close();
                 }
             }
             log.debug("Extracted the audit trails: {}", res);
@@ -265,6 +270,6 @@ public class AlarmDatabaseExtractor {
         String sqlRetrieve = "SELECT " + COMPONENT_ID + " FROM " + COMPONENT_TABLE + " WHERE " + COMPONENT_GUID 
                 + " = ?";
         
-        return DatabaseUtils.selectStringValue(dbConnection, sqlRetrieve, componentGuid);
+        return DatabaseUtils.selectStringValue(dbConnector, sqlRetrieve, componentGuid);
     }
 }

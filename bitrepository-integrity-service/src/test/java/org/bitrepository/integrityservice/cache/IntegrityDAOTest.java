@@ -35,8 +35,6 @@ import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.database.DBConnector;
-import org.bitrepository.common.database.DBSpecifics;
-import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
@@ -78,10 +76,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     public void reinitialiseDatabaseTest() throws Exception {
         addDescription("Testing the connection to the integrity database.");
         addStep("Setup manually.", "Should be created.");
-        DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseSpecifics());
-        DBConnector connector = new DBConnector(dbSpecifics, 
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseUrl());
+        DBConnector connector = new DBConnector(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
                         
         IntegrityDAO cache = new IntegrityDAO(connector, settings.getCollectionSettings().getClientSettings().getPillarIDs());
         Assert.assertNotNull(cache);
@@ -93,8 +89,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
             wait(100);
         }
         
-        DBConnector reconnector = new DBConnector(dbSpecifics, 
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseUrl());
+        DBConnector reconnector = new DBConnector(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         cache = new IntegrityDAO(reconnector, settings.getCollectionSettings().getClientSettings().getPillarIDs());
     }
 
@@ -359,10 +355,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     }
     
     private IntegrityDAO createDAO() {
-        DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseSpecifics());
-        return new IntegrityDAO(new DBConnector(dbSpecifics, 
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseUrl()),
+        return new IntegrityDAO(new DBConnector(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
                 settings.getCollectionSettings().getClientSettings().getPillarIDs());
     }
 }

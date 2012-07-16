@@ -27,15 +27,13 @@ import java.util.List;
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.common.database.DBConnector;
-import org.bitrepository.common.database.DBSpecifics;
-import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.settings.Settings;
 
 /**
  * The interface to the database for storing the Alarms.
  */
 public class AlarmServiceDAO implements AlarmStore {
-    /** The connection to the database.*/
+    /** The connector to the database.*/
     private DBConnector dbConnector;
     
     /** 
@@ -43,15 +41,13 @@ public class AlarmServiceDAO implements AlarmStore {
      * @param settings The settings.
      */
     public AlarmServiceDAO(Settings settings) {
-        DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
-                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmDatabaseSpecifics());
-        dbConnector = new DBConnector(dbSpecifics, 
-                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabaseUrl());
+        dbConnector = new DBConnector(
+                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
     }
     
     @Override
     public void addAlarm(Alarm alarm) {
-        AlarmDatabaseIngestor ingestor = new AlarmDatabaseIngestor(dbConnector.getConnection());
+        AlarmDatabaseIngestor ingestor = new AlarmDatabaseIngestor(dbConnector);
         ingestor.ingestAlarm(alarm);
     }
     
@@ -61,7 +57,7 @@ public class AlarmServiceDAO implements AlarmStore {
         AlarmDatabaseExtractionModel extractModel = new AlarmDatabaseExtractionModel(componentID, alarmCode, minDate, 
                 maxDate, fileID, count, ascending);
         
-        AlarmDatabaseExtractor extractor = new AlarmDatabaseExtractor(extractModel, dbConnector.getConnection());
+        AlarmDatabaseExtractor extractor = new AlarmDatabaseExtractor(extractModel, dbConnector);
         return extractor.extractAlarms();
     }
 }

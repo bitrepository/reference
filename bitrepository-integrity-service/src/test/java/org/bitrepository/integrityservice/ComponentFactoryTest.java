@@ -138,7 +138,7 @@ public class ComponentFactoryTest extends IntegrityDatabaseTestCase {
         String DATABASE_NAME = "auditcontributerdb";
         String DATABASE_DIRECTORY = "test-data";
         String DATABASE_URL = "jdbc:derby:" + DATABASE_DIRECTORY + "/" + DATABASE_NAME;
-        settings.getReferenceSettings().getIntegrityServiceSettings().setAuditContributerDatabaseUrl(DATABASE_URL);
+        settings.getReferenceSettings().getIntegrityServiceSettings().getAuditTrailContributerDatabase().setDatabaseURL(DATABASE_URL);
         
         addStep("Initialise the database", "Should be unpacked from a jar-file.");
         File dbFile = new File("../bitrepository-core/src/test/resources/auditcontributerdb.jar");

@@ -35,8 +35,6 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.database.DBConnector;
-import org.bitrepository.common.database.DBSpecifics;
-import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.slf4j.Logger;
@@ -58,10 +56,8 @@ public class IntegrityDatabase implements IntegrityModel {
      * @param storageConfiguration Contains configuration for storage. Currently URL, user and pass for database.
      */
     public IntegrityDatabase(Settings settings) {
-        DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseSpecifics());
-        this.store = new IntegrityDAO(new DBConnector(dbSpecifics, 
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseUrl()),
+        this.store = new IntegrityDAO(new DBConnector(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
                 settings.getCollectionSettings().getClientSettings().getPillarIDs());
     }
     

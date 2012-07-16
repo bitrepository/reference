@@ -126,7 +126,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         String insertSql = "INSERT INTO " + AUDITTRAIL_TABLE + " ( " + AUDITTRAIL_FILE_GUID + " , " 
                 + AUDITTRAIL_ACTOR_GUID + " , " + AUDITTRAIL_OPERATION + " , " + AUDITTRAIL_OPERATION_DATE + " , "
                 + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " ) VALUES ( ? , ? , ? , ? , ? , ? )";
-        DatabaseUtils.executeStatement(getConnection(), insertSql, fileGuid, actorGuid, operation.toString(), 
+        DatabaseUtils.executeStatement(dbConnector, insertSql, fileGuid, actorGuid, operation.toString(), 
                 new Date(), auditTrail, info);
     }
     
@@ -223,14 +223,14 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     private long retrieveFileGuid(String fileId) {
         String sqlRetrieve = "SELECT " + FILE_GUID + " FROM " + FILE_TABLE + " WHERE " + FILE_FILEID + " = ?";
         
-        Long guid = DatabaseUtils.selectLongValue(getConnection(), sqlRetrieve, fileId);
+        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId);
         
         if(guid == null) {
             log.debug("Inserting fileid '" + fileId + "' into the file table.");
             String sqlInsert = "INSERT INTO " + FILE_TABLE + " ( " + FILE_FILEID + " ) VALUES ( ? )";
-            DatabaseUtils.executeStatement(getConnection(), sqlInsert, fileId);
+            DatabaseUtils.executeStatement(dbConnector, sqlInsert, fileId);
             
-            guid = DatabaseUtils.selectLongValue(getConnection(), sqlRetrieve, fileId);
+            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId);
         }
         
         return guid;
@@ -244,7 +244,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     private String retrieveFileId(long fileGuid) {
         String sqlRetrieve = "SELECT " + FILE_FILEID + " FROM " + FILE_TABLE + " WHERE " + FILE_GUID + " = ?";
         
-        return DatabaseUtils.selectStringValue(getConnection(), sqlRetrieve, fileGuid);        
+        return DatabaseUtils.selectStringValue(dbConnector, sqlRetrieve, fileGuid);        
     }
     
     /**
@@ -256,14 +256,14 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     private long retrieveActorGuid(String actorName) {
         String sqlRetrieve = "SELECT " + ACTOR_GUID + " FROM " + ACTOR_TABLE + " WHERE " + ACTOR_NAME + " = ?";
         
-        Long guid = DatabaseUtils.selectLongValue(getConnection(), sqlRetrieve, actorName);
+        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, actorName);
         
         if(guid == null) {
             log.debug("Inserting actor '" + actorName + "' into the actor table.");
             String sqlInsert = "INSERT INTO " + ACTOR_TABLE + " ( " + ACTOR_NAME + " ) VALUES ( ? )";
-            DatabaseUtils.executeStatement(getConnection(), sqlInsert, actorName);
+            DatabaseUtils.executeStatement(dbConnector, sqlInsert, actorName);
             
-            guid = DatabaseUtils.selectLongValue(getConnection(), sqlRetrieve, actorName);
+            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, actorName);
         }
         
         return guid;
@@ -277,7 +277,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     private String retrieveActorName(long actorGuid) {
         String sqlRetrieve = "SELECT " + ACTOR_NAME + " FROM " + ACTOR_TABLE + " WHERE " + ACTOR_GUID + " = ?";
         
-        return DatabaseUtils.selectStringValue(getConnection(), sqlRetrieve, actorGuid);        
+        return DatabaseUtils.selectStringValue(dbConnector, sqlRetrieve, actorGuid);        
     }
     
     /**

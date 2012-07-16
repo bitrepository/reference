@@ -57,7 +57,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AuditDatabaseUnderTest");
-        settings.getReferenceSettings().getAuditTrailServiceSettings().setAuditTrailServiceDatabaseUrl(DATABASE_URL);
+        settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase().setDatabaseURL(DATABASE_URL);
         
         addStep("Initialise the database", "Should be unpacked from a jar-file.");
         File dbFile = new File("src/test/resources/auditservicedb.jar");

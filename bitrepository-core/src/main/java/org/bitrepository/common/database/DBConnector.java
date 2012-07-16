@@ -22,44 +22,58 @@
 package org.bitrepository.common.database;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.mchange.v2.c3p0.DataSources;
 
 /**
  * The connector to a database.
  */
 public class DBConnector {
-    /** The pool of connections.*/
-    private Map<Thread, Connection> connectionPool = Collections.synchronizedMap(new WeakHashMap<Thread, Connection>());
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    
-    /** A default value for the check timeout.*/
-    private static final int validityCheckTimeout = 10000;
-    
-    /** The URL to the database.*/
-    private final String dbUrl;
-    /** The specifics for the driver to the database.*/
-    private final DBSpecifics specifics;
+    /** The specifications for connection to the database.*/
+    private final DatabaseSpecifics databaseSpecifics;
+    /** The pool with data sources for the database connections.*/
+    private ComboPooledDataSource connectionPool;
     
     /**
      * Constructor.
      * @param specifics The specifics for the database.
      * @param url The URL for the database.
      */
-    public DBConnector(DBSpecifics specifics, String url) {
-        ArgumentValidator.checkNotNull(specifics, "DBSpecifics specifics");
-        ArgumentValidator.checkNotNullOrEmpty(url, "String url");
+    public DBConnector(DatabaseSpecifics databaseSpecifics) {
+        ArgumentValidator.checkNotNull(databaseSpecifics, "DatabaseSpecifics specifics");
         
-        this.dbUrl = url;
-        this.specifics = specifics;
+        this.databaseSpecifics = databaseSpecifics;
+        this.connectionPool = new ComboPooledDataSource();
+        
+        initialiseConnection();
+    }
+    
+    /**
+     * Initialises the connection to the database.
+     */
+    private void initialiseConnection() {
+        try {
+            log.info("Creating the connection to the database '" + databaseSpecifics + "'.");
+            connectionPool.setDriverClass(databaseSpecifics.getDriverClass());
+            connectionPool.setJdbcUrl(databaseSpecifics.getDatabaseURL());
+            if(databaseSpecifics.isSetUsername()) {
+                connectionPool.setUser(databaseSpecifics.getUsername());
+            }
+            if(databaseSpecifics.isSetPassword()) {
+                connectionPool.setPassword(databaseSpecifics.getPassword());
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not connect to the database '" + databaseSpecifics + "'", e);
+        }
     }
     
     /**
@@ -68,22 +82,21 @@ public class DBConnector {
      */
     public Connection getConnection() {
         try {
-            Connection connection = connectionPool.get(Thread.currentThread());
-            boolean renew = ((connection == null) 
-                    || (!connection.isValid(validityCheckTimeout)));
-            if (renew) {  
-                Class.forName(specifics.getDriverClassName());
-                connection = DriverManager.getConnection(dbUrl);
-                connection.setAutoCommit(false);
-                connectionPool.put(Thread.currentThread(), connection);
-                log.info("Connected to database using DBurl '"
-                        + dbUrl + "'  using driver '" + specifics.getDriverClassName() + "'");
-            }
-            return connection;
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("Can't find driver '" + specifics.getDriverClassName() + "'", e);
+            return connectionPool.getConnection();
         } catch (SQLException e) {
-            throw new IllegalStateException("Cannot instantiate the connection to the database.", e);
+            throw new IllegalStateException("Could not establish connection to the database: '" + databaseSpecifics 
+                    + "'", e);
+        }
+    }
+    
+    /**
+     * Cleans up after use.
+     */
+    public void cleanup() {
+        try {
+            DataSources.destroy(connectionPool);
+        } catch (SQLException e) {
+            log.error("Could not clean up the database '" + databaseSpecifics + "'.", e);
         }
     }
 }

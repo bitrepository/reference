@@ -38,8 +38,6 @@ import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.database.DBConnector;
-import org.bitrepository.common.database.DBSpecifics;
-import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.common.settings.Settings;
 import org.slf4j.Logger;
@@ -61,12 +59,8 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     public AuditTrailServiceDAO(Settings settings) {
         ArgumentValidator.checkNotNull(settings, "settings");
         
-        DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditServiceDatabaseSpecifics());
-        dbConnector = new DBConnector(dbSpecifics, 
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabaseUrl());
-        
-        dbConnector.getConnection();
+        dbConnector = new DBConnector(
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
     }
     
     @Override
@@ -82,7 +76,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         model.setStartDate(startDate);
         model.setEndDate(endDate);
 
-        AuditDatabaseExtractor extractor = new AuditDatabaseExtractor(model, dbConnector.getConnection());
+        AuditDatabaseExtractor extractor = new AuditDatabaseExtractor(model, dbConnector);
         return extractor.extractAuditEvents();
     }
     
@@ -90,7 +84,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     public void addAuditTrails(AuditTrailEvents newAuditTrails) {
         ArgumentValidator.checkNotNull(newAuditTrails, "AuditTrailEvents newAuditTrails");
         
-        AuditDatabaseIngestor ingestor = new AuditDatabaseIngestor(dbConnector.getConnection());
+        AuditDatabaseIngestor ingestor = new AuditDatabaseIngestor(dbConnector);
         for(AuditTrailEvent event : newAuditTrails.getAuditTrailEvent()) {
             ingestor.ingestAuditEvents(event);
         }
@@ -103,7 +97,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
                 + AUDITTRAIL_CONTRIBUTOR_GUID + " = ( SELECT " + CONTRIBUTOR_GUID + " FROM " + CONTRIBUTOR_TABLE 
                 + " WHERE " + CONTRIBUTOR_ID + " = ? ) ORDER BY " + AUDITTRAIL_SEQUENCE_NUMBER + " DESC";
         
-        Long seq = DatabaseUtils.selectFirstLongValue(dbConnector.getConnection(), sql, contributorId);
+        Long seq = DatabaseUtils.selectFirstLongValue(dbConnector, sql, contributorId);
         if(seq != null) {
             return seq.intValue();
         }
@@ -116,7 +110,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         String sql = "SELECT " + CONTRIBUTOR_PRESERVATION_SEQ + " FROM " + CONTRIBUTOR_TABLE + " WHERE " 
                 + CONTRIBUTOR_ID + " = ? ";
         
-        Long seq = DatabaseUtils.selectLongValue(dbConnector.getConnection(), sql, contributorId);
+        Long seq = DatabaseUtils.selectLongValue(dbConnector, sql, contributorId);
         if(seq != null) {
             return seq.intValue();
         }
@@ -129,7 +123,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         ArgumentValidator.checkNotNegative(seqNumber, "int seqNumber");
         String sqlUpdate = "UPDATE " + CONTRIBUTOR_TABLE + " SET " + CONTRIBUTOR_PRESERVATION_SEQ + " = ? WHERE " 
                 + CONTRIBUTOR_ID + " = ? ";
-        DatabaseUtils.executeStatement(dbConnector.getConnection(), sqlUpdate, seqNumber, contributorId);
+        DatabaseUtils.executeStatement(dbConnector, sqlUpdate, seqNumber, contributorId);
     }
 
     @Override

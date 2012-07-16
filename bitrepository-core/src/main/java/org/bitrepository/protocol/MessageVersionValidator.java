@@ -1,5 +1,7 @@
 package org.bitrepository.protocol;
 
+import java.math.BigInteger;
+
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocolversiondefinition.ProtocolVersionDefinition;
@@ -13,6 +15,10 @@ public class MessageVersionValidator {
 
     private static final Logger log = LoggerFactory.getLogger(MessageVersionValidator.class);
     private static final ProtocolVersionDefinition protocolVersion = new ProtocolVersionDefinition();
+    static {
+        protocolVersion.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
+        protocolVersion.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
+    }
     
     private MessageVersionValidator() {}
     
