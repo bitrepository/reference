@@ -8,6 +8,7 @@ public class InvalidMessageVersionException extends RuntimeException {
     private ResponseInfo response;
     
     public InvalidMessageVersionException(ResponseCode responseCode, String responseText) {
+    	super(responseText);
         response = new ResponseInfo();
         response.setResponseCode(responseCode);
         response.setResponseText(responseText);
