@@ -56,8 +56,14 @@ case "$1" in
   put)
 	filename=$2
 	if [ -e $filename ]
-	then 
-		do_put $filename
+	then
+		if [! -d $filename ]
+		then  
+			do_put $filename
+		else
+	 		echo "Error: put of directory is not supported!"
+			exit 1
+		fi
 	else 
 		echo "Usage: br-client put <filename>"	
 		exit 1
