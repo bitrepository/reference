@@ -97,10 +97,10 @@ public abstract class AbstractContributorMediator implements ContributorMediator
                 if (handler != null) {
                     handleRequest((MessageRequest) message, handler);
                 } else {
-                    log.debug("Received unsupported request type");
+                    log.debug("Received unhandled message request: \n{}", message);
                 }
             } else {
-                log.warn("Can only handle message requests, but received: \n{}", message);
+                log.trace("Can only handle message requests, but received: \n{}", message);
             }
         }
     }
