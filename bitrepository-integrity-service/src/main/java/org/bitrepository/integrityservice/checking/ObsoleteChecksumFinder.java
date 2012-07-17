@@ -56,7 +56,6 @@ public class ObsoleteChecksumFinder {
         HashSet<String> filesWithOldChecksum = new HashSet<String>(cache.findChecksumsOlderThan(new Date(outDated)));
         for(String fileId : filesWithOldChecksum) {
             for(FileInfo fileinfo : cache.getFileInfos(fileId)) {
-                System.err.println(fileinfo);
                 if(fileinfo.getFileState() != FileState.EXISTING) {
                     continue;
                 }

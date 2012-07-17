@@ -1,3 +1,24 @@
+/*
+ * #%L
+ * Bitrepository Integrity Service
+ * %%
+ * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.integrityservice.collector;
 
 import java.util.concurrent.BlockingQueue;
@@ -25,12 +46,13 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The model where the integrity data is stored.*/
     private final IntegrityModel store;
+    /** The alerter for issuing alarms.*/
     private final IntegrityAlerter alerter;
-    /** The amount of */
+    /** The amount of milliseconds before the results are required.*/
     private final long timeout;
     
     /** The queue used to store the received operation events. */
-    private final BlockingQueue<OperationEvent> eventQueue = new LinkedBlockingQueue<OperationEvent>();
+    private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<OperationEvent>();
 
     
     /**
@@ -51,18 +73,24 @@ public class IntegrityCollectorEventHandler implements EventHandler {
             handleResult(event);
         } else if(event.getType() == OperationEventType.COMPLETE) {
             log.debug("Complete: " + event.toString());
-            eventQueue.add(event);
+            finalEventQueue.add(event);
         } else if(event.getType() == OperationEventType.FAILED) {
             log.warn("Failure: " + event.toString());
             alerter.operationFailed("Failed integrity operation: " + event.toString());
-            eventQueue.add(event);
+            finalEventQueue.add(event);
         } else {
             log.debug("Received event: " + event.toString());
         }
     }
     
+    /**
+     * Retrieves the final event when the operation finishes. The final event is awaited for 'timeout' amount 
+     * of milliseconds. If no final events has occurred, then an InterruptedException is thrown.
+     * @return The final event.
+     * @throws InterruptedException If it timeouts before the final event.
+     */
     public OperationEvent getFinish() throws InterruptedException {
-        return eventQueue.poll(timeout, TimeUnit.MILLISECONDS);
+        return finalEventQueue.poll(timeout, TimeUnit.MILLISECONDS);
     }
     
     /**

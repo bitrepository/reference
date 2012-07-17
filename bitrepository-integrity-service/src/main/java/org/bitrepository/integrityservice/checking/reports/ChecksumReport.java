@@ -109,6 +109,7 @@ public class ChecksumReport implements IntegrityReport {
      * Container for the information about a single file with checksum issues.
      * Including the pillar ids both for the pillars who have agreed upon a given checksum, and the pillars
      * which does not agree (if no agreement, then all the pillars 'does not agree').
+     * By agreement is meant a majority has agreed to a common checksum.
      */
     public class ChecksumIssue {
         /** The id of the file where the checksum is missing.*/

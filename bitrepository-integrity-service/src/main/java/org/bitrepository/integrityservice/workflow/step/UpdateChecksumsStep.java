@@ -24,6 +24,8 @@ package org.bitrepository.integrityservice.workflow.step;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
@@ -49,7 +51,9 @@ public class UpdateChecksumsStep implements WorkflowStep{
     private final ChecksumSpecTYPE checksumType;
     /** The integrity alerter.*/
     private final IntegrityAlerter alerter;
-    
+    /** The timeout for waiting for the results of the GetChecksums operation.*/
+    private final Long timeout;
+
     /**
      * Constructor.
      * @param collector The client for collecting the checksums.
@@ -59,12 +63,14 @@ public class UpdateChecksumsStep implements WorkflowStep{
      * @param checksumType The type of checksum to collect.
      */
     public UpdateChecksumsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
-            List<String> pillarIds, ChecksumSpecTYPE checksumType) {
+            ChecksumSpecTYPE checksumType, Settings settings) {
         this.collector = collector;
         this.store = store;
-        this.pillarIds = pillarIds;
         this.checksumType = checksumType;
         this.alerter = alerter;
+        this.pillarIds = settings.getCollectionSettings().getClientSettings().getPillarIDs();
+        this.timeout = settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue()
+                + settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue();
     }
     
     @Override
@@ -74,17 +80,14 @@ public class UpdateChecksumsStep implements WorkflowStep{
 
     @Override
     public synchronized void performStep() {
-        log.debug("Begin collecting the checksums.");
-        
-        IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, 60000);
+        IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
         collector.getChecksums(pillarIds, FileIDsUtils.getAllFileIDs(), checksumType, "IntegrityService: " + getName(),
                 eventHandler);
         try {
-            eventHandler.getFinish();
+            OperationEvent event = eventHandler.getFinish();
+            log.debug("Collection of file ids had the final event: " + event);
         } catch (InterruptedException e) {
-            // TODO      
+            log.warn("Interrupted while collecting file ids.", e);
         }
-        
-        log.debug("Finished collecting the checksums.");
     }
 }

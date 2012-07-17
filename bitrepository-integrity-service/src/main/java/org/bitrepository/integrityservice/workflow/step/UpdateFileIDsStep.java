@@ -23,6 +23,8 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import java.util.List;
 
+import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
@@ -42,10 +44,12 @@ public class UpdateFileIDsStep implements WorkflowStep {
     private final IntegrityInformationCollector collector;
     /** The model where the integrity data is stored.*/
     private final IntegrityModel store;
-    /** The pillar ids.*/
-    private final List<String> pillarIds;
     /** The integrity alerter.*/
     private final IntegrityAlerter alerter;
+    /** The pillar ids.*/
+    private final List<String> pillarIds;
+    /** The timeout for waiting for the results of the GetFileIDs operation.*/
+    private final Long timeout;
     
     /**
      * Constructor.
@@ -55,11 +59,13 @@ public class UpdateFileIDsStep implements WorkflowStep {
      * @param pillarIds The ids of the pillars to collect the file ids from.
      */
     public UpdateFileIDsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
-            List<String> pillarIds) {
+            Settings settings) {
         this.collector = collector;
         this.store = store;
-        this.pillarIds = pillarIds;
         this.alerter = alerter;
+        this.pillarIds = settings.getCollectionSettings().getClientSettings().getPillarIDs();
+        this.timeout = settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue()
+                + settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue();
     }
     
     @Override
@@ -69,17 +75,14 @@ public class UpdateFileIDsStep implements WorkflowStep {
 
     @Override
     public synchronized void performStep() {
-        log.debug("Begin collecting the file ids.");
-        
-        IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, 60000);
+        IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
         collector.getFileIDs(pillarIds, FileIDsUtils.getAllFileIDs(), "IntegrityService: " + getName(),
                 eventHandler);
         try {
-            eventHandler.getFinish();
+            OperationEvent event = eventHandler.getFinish();
+            log.debug("Collection of file ids had the final event: " + event);
         } catch (InterruptedException e) {
-            // TODO
+            log.warn("Interrupted while collecting file ids.", e);
         }
-       
-        log.debug("Finished collecting the file ids.");
     }
 }
