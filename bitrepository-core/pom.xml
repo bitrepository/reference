@@ -101,6 +101,10 @@
       <resource>
         <directory>src/main/resources/configurations/xml</directory>
       </resource>
+      <resource>
+        <directory>target/versioning</directory>
+        <filtering>true</filtering>
+      </resource>
     </resources>
     <testResources>
       <testResource>
