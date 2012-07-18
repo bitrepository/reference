@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -369,5 +370,43 @@ public class TestIntegrityModel implements IntegrityModel {
             }
         }
         return res;
+    }
+
+    @Override
+    public List<String> getFilesWithDistinctChecksums() {
+        List<String> res = new ArrayList<String>();
+        for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
+            HashSet<String> checksums = new HashSet<String>();
+            for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                if(fileinfo.getChecksum() != null && fileinfo.getFileState() != FileState.MISSING) {
+                    checksums.add(fileinfo.getChecksum());
+                }
+            }
+            // more than 1 checksum, means disagreements.
+            if(checksums.size() > 1) {
+                res.add(collectionInfo.getKey());
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public void setFilesWithUnanimousChecksumToValid() {
+        for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
+            HashSet<String> checksums = new HashSet<String>();
+            for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                if(fileinfo.getChecksum() != null && fileinfo.getFileState() != FileState.MISSING) {
+                    checksums.add(fileinfo.getChecksum());
+                }
+            }
+            // 1 checksum means unanimous checksum.
+            if(checksums.size() == 1) {
+                for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                    if(fileinfo.getChecksum() != null && fileinfo.getFileState() != FileState.MISSING) {
+                        fileinfo.setChecksumState(ChecksumState.VALID);
+                    }
+                }
+            }
+        }
     }
 }

@@ -182,4 +182,14 @@ public class IntegrityDatabase implements IntegrityModel {
         
         return missingFiles;
     }
+
+    @Override
+    public List<String> getFilesWithDistinctChecksums() {
+        return store.getFilesWithDistinctChecksum();
+    }
+
+    @Override
+    public void setFilesWithUnanimousChecksumToValid() {
+        store.setFilesWithUnanimousChecksumToValid();
+    }
 }

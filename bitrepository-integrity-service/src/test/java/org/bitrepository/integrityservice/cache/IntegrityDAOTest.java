@@ -26,6 +26,7 @@ package org.bitrepository.integrityservice.cache;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -324,6 +325,50 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
             } else {
                 Assert.assertEquals(fi.getChecksumState(), ChecksumState.VALID);
             }
+        }
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testDistinctChecksum() throws Exception {
+        addDescription("Testing the location of indistinct checksums");
+        IntegrityDAO cache = createDAO();
+        
+        String checksum1_1 = "11";
+        String checksum1_2 = "12";
+        String checksum3 = "33";
+        String checksum2_1 = "21";
+        String checksum2_2 = "22";
+        
+        String BAD_FILE_ID_1 = "BAD-FILE-1";
+        String BAD_FILE_ID_2 = "BAD-FILE-2";
+        String GOOD_FILE_ID = "GOOD-FILE";
+
+        addStep("Create data", "Should be ingested into the database");
+        List<ChecksumDataForChecksumSpecTYPE> csData1_1 = getChecksumResults(BAD_FILE_ID_1, checksum1_1);
+        List<ChecksumDataForChecksumSpecTYPE> csData1_2 = getChecksumResults(BAD_FILE_ID_2, checksum1_2);
+        List<ChecksumDataForChecksumSpecTYPE> csData1_3 = getChecksumResults(GOOD_FILE_ID, checksum3);
+        cache.updateChecksumData(csData1_1, TEST_PILLAR_1);
+        cache.updateChecksumData(csData1_2, TEST_PILLAR_1);
+        cache.updateChecksumData(csData1_3, TEST_PILLAR_1);
+        List<ChecksumDataForChecksumSpecTYPE> csData2_1 = getChecksumResults(BAD_FILE_ID_1, checksum2_1);
+        List<ChecksumDataForChecksumSpecTYPE> csData2_2 = getChecksumResults(BAD_FILE_ID_2, checksum2_2);
+        List<ChecksumDataForChecksumSpecTYPE> csData2_3 = getChecksumResults(GOOD_FILE_ID, checksum3);
+        cache.updateChecksumData(csData2_1, TEST_PILLAR_2);
+        cache.updateChecksumData(csData2_2, TEST_PILLAR_2);
+        cache.updateChecksumData(csData2_3, TEST_PILLAR_2);
+
+        List<String> filesWithChecksumError = cache.getFilesWithDistinctChecksum();
+        Assert.assertEquals(filesWithChecksumError, Arrays.asList(BAD_FILE_ID_1, BAD_FILE_ID_2));
+        
+        cache.setFilesWithUnanimousChecksumToValid();
+        for(FileInfo fi : cache.getFileInfosForFile(BAD_FILE_ID_1)) {
+            Assert.assertEquals(fi.getChecksumState(), ChecksumState.UNKNOWN);
+        }
+        for(FileInfo fi : cache.getFileInfosForFile(BAD_FILE_ID_2)) {
+            Assert.assertEquals(fi.getChecksumState(), ChecksumState.UNKNOWN);
+        }
+        for(FileInfo fi : cache.getFileInfosForFile(GOOD_FILE_ID)) {
+            Assert.assertEquals(fi.getChecksumState(), ChecksumState.VALID);
         }
     }
     

@@ -30,18 +30,8 @@ import java.util.Map;
  * The report for the results of a checksum validation.
  */
 public class ChecksumReport implements IntegrityReport {
-    /** The list of ids for the files without any issues.*/
-    private final List<String> filesWithoutIssues = new ArrayList<String>();
     /** The map between the ids of the files with issues and their respective checksum issue.*/
     private final Map<String, ChecksumIssue> filesWithIssues = new HashMap<String, ChecksumIssue>();
-    
-    /**
-     * Keeps track of the id of a file which has no checksum issues.
-     * @param fileId The id of the file without checksum issues.
-     */
-    public void reportNoChecksumIssues(String fileId) {
-        filesWithoutIssues.add(fileId);
-    }
     
     /**
      * Handle the report about the pillar ids which agree about a checksum for a given file.
@@ -89,13 +79,6 @@ public class ChecksumReport implements IntegrityReport {
         }
         
         return res.toString();
-    }
-    
-    /**
-     * @return The validated files without issues.
-     */
-    public List<String> getFilesWithoutIssues() {
-        return new ArrayList<String>(filesWithoutIssues);
     }
 
     /**

@@ -172,7 +172,6 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
         addStep("Check the checksum status.", "Should have checksum issues.");
         ChecksumReport report = checker.checkChecksum(createAllFileIDs());
         Assert.assertTrue(report.hasIntegrityIssues());
-        Assert.assertEquals(report.getFilesWithoutIssues(), Arrays.asList(TEST_FILE_1));
         Assert.assertTrue(report.getFilesWithIssues().containsKey(TEST_FILE_2));
     }
 
@@ -200,7 +199,6 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
         addStep("Check the checksum status.", "Should not find the issue.");
         ChecksumReport report = checker.checkChecksum(singleFileID);
         Assert.assertFalse(report.hasIntegrityIssues());
-        Assert.assertEquals(report.getFilesWithoutIssues(), Arrays.asList(TEST_FILE_1));
     }
     
     @Test(groups = {"regressiontest", "integritytest"})

@@ -21,7 +21,6 @@
  */
 package org.bitrepository.integrityservice.mocks;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -160,7 +159,7 @@ public class MockIntegrityModel implements IntegrityModel {
     @Override
     public List<String> findMissingChecksums() {
         callsForFindMissingChecksums++;
-        return new ArrayList<String>();
+        return integrityModel.findMissingChecksums();
     }
     public int getCallsForFindMissingChecksums() {
         return callsForFindMissingChecksums;
@@ -170,7 +169,7 @@ public class MockIntegrityModel implements IntegrityModel {
     @Override
     public List<String> findMissingFiles() {
         callsForFindMissingFiles++;
-        return new ArrayList<String>();
+        return integrityModel.findMissingFiles();
     }
     public int getCallsForFindMissingFiles() {
         return callsForFindMissingFiles;
@@ -180,7 +179,7 @@ public class MockIntegrityModel implements IntegrityModel {
     @Override
     public Collection<String> findChecksumsOlderThan(Date date) {
         callsForFindChecksumsOlderThan++;
-        return new ArrayList<String>();
+        return integrityModel.findChecksumsOlderThan(date);
     }
     public int getCallsForFindChecksumsOlderThan() {
         return callsForFindChecksumsOlderThan;
@@ -190,9 +189,29 @@ public class MockIntegrityModel implements IntegrityModel {
     @Override
     public List<String> getPillarsMissingFile(String fileId) {
         callsForIsMissing++;
-        return new ArrayList<String>();
+        return integrityModel.getPillarsMissingFile(fileId);
     }
     public int getCallsForIsMissing() {
         return callsForIsMissing;
+    }
+    
+    private int callsForGetFilesWithDistinctChecksums = 0;
+    @Override
+    public List<String> getFilesWithDistinctChecksums() {
+        callsForGetFilesWithDistinctChecksums++;
+        return integrityModel.getFilesWithDistinctChecksums();
+    }
+    public int getCallsForGetFilesWithDistinctChecksums() {
+        return callsForGetFilesWithDistinctChecksums;
+    }
+    
+    private int callsForSetFilesWithUnanimousChecksumToValid = 0;
+    @Override
+    public void setFilesWithUnanimousChecksumToValid() {
+        callsForSetFilesWithUnanimousChecksumToValid++;
+        integrityModel.setFilesWithUnanimousChecksumToValid();
+    }
+    public int getCallsForSetFilesWithUnanimousChecksumToValid() {
+        return callsForSetFilesWithUnanimousChecksumToValid;
     }
 }

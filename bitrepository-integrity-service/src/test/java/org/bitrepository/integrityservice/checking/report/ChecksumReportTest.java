@@ -43,20 +43,6 @@ public class ChecksumReportTest extends ExtendedTestCase {
         ChecksumReport report = new ChecksumReport();
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getFilesWithIssues().size(), 0);
-        Assert.assertEquals(report.getFilesWithoutIssues().size(), 0);
-    }
-
-    @Test(groups = {"regressiontest", "integritytest"})
-    public void testChecksumReportWithNoIssues() {
-        addDescription("Tests checksum report when no issues are reported.");
-        ChecksumReport report = new ChecksumReport();
-        report.reportNoChecksumIssues(TEST_FILE_1);
-        Assert.assertFalse(report.hasIntegrityIssues());
-        Assert.assertEquals(report.getFilesWithIssues().size(), 0);
-        Assert.assertEquals(report.getFilesWithoutIssues().size(), 1);
-        Assert.assertEquals(report.getFilesWithoutIssues(), Arrays.asList(TEST_FILE_1));
-        
-        Assert.assertFalse(report.generateReport().contains(TEST_FILE_1));
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
@@ -69,7 +55,6 @@ public class ChecksumReportTest extends ExtendedTestCase {
         report.reportChecksumError(TEST_FILE_1, TEST_PILLAR_3, "checksum3");
         
         Assert.assertTrue(report.hasIntegrityIssues());
-        Assert.assertEquals(report.getFilesWithoutIssues().size(), 0);
         Assert.assertEquals(report.getFilesWithIssues().size(), 1);
         Assert.assertTrue(report.getFilesWithIssues().containsKey(TEST_FILE_1));
         Assert.assertNull(report.getFilesWithIssues().get(TEST_FILE_1).getChecksum());
@@ -91,7 +76,6 @@ public class ChecksumReportTest extends ExtendedTestCase {
         report.reportChecksumError(TEST_FILE_1, TEST_PILLAR_1, "wrongChecksum");
         
         Assert.assertTrue(report.hasIntegrityIssues());
-        Assert.assertEquals(report.getFilesWithoutIssues().size(), 0);
         Assert.assertEquals(report.getFilesWithIssues().size(), 1);
         Assert.assertTrue(report.getFilesWithIssues().containsKey(TEST_FILE_1));
         Assert.assertEquals(report.getFilesWithIssues().get(TEST_FILE_1).getChecksum(), correctChecksum);

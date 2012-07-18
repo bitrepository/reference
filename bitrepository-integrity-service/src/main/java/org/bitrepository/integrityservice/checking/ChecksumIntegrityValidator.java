@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.reports.ChecksumReport;
@@ -64,17 +65,21 @@ public class ChecksumIntegrityValidator {
      * Performs the validation of the checksums for the given file ids.
      * This includes voting if some of the checksums differs between the pillars.
      * 
-     * TODO implement solution to avoid going through all file ids, by using SQL and the database instead.
-     * 
      * @param requestedFileIDs The list of ids for the files to validate.
      * @return The report for the results of the validation.
      */
-    public ChecksumReport generateReport(Collection<String> requestedFileIDs) {
+    public ChecksumReport generateReport(FileIDs fileids) {
         ChecksumReport report = new ChecksumReport();
         
-        for(String fileId : requestedFileIDs) {
-            Collection<FileInfo> fileinfos = cache.getFileInfos(fileId);
-            validateSingleFile(fileId, fileinfos, report);
+        if(fileids.isSetFileID()) {
+            Collection<FileInfo> fileinfos = cache.getFileInfos(fileids.getFileID());
+            validateSingleFile(fileids.getFileID(), fileinfos, report);
+        } else {
+            for(String fileId : cache.getFilesWithDistinctChecksums()) {
+                Collection<FileInfo> fileinfos = cache.getFileInfos(fileId);
+                validateSingleFile(fileId, fileinfos, report);
+            }
+            cache.setFilesWithUnanimousChecksumToValid();
         }
         
         return report;
@@ -99,7 +104,7 @@ public class ChecksumIntegrityValidator {
             handleVoteResults(chosenChecksum, fileId, fileinfos, report);
         } else {
             cache.setChecksumAgreement(fileId, pillarIds);
-            report.reportNoChecksumIssues(fileId);
+            log.debug("No checksum issues found for the file '" + fileId + "'.");
         }
     }
     
