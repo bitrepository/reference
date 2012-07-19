@@ -125,7 +125,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         pResponse.setPillarChecksumSpec(null);
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-        prInfo.setResponseText("Started to receive date.");  
+        prInfo.setResponseText("Started to receive data.");  
         pResponse.setResponseInfo(prInfo);
         
         log.debug("Sending ProgressResponseInfo: " + prInfo);

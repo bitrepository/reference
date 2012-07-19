@@ -73,12 +73,11 @@ public class BasicIntegrityWorkflow extends StepBasedWorkflow {
     public void start() {
         try {
             UpdateFileIDsStep updateFileIDsStep = new UpdateFileIDsStep(collector, store, alerter,
-                    settings.getCollectionSettings().getClientSettings().getPillarIDs());
+                    settings);
             performStep(updateFileIDsStep);
             
             UpdateChecksumsStep updateChecksumStep = new UpdateChecksumsStep(collector, store, alerter,
-                    settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
-                    ChecksumUtils.getDefault(settings));
+                    ChecksumUtils.getDefault(settings), settings);
             performStep(updateChecksumStep);
             
             IntegrityValidationFileIDsStep validateFileidsStep = new IntegrityValidationFileIDsStep(checker, alerter);

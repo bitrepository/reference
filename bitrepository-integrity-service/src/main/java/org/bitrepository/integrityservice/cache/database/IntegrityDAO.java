@@ -381,6 +381,55 @@ public class IntegrityDAO {
     }
     
     /**
+<<<<<<< HEAD
+     * Extracting the file ids for the files with distinct checksums. Thus finding the files with checksum errors.
+     * It is done in the following way:
+     * 1. Find all the unique combinations of checksums and file guids in the FileInfo table. 
+     *   Though not for the files which are reported as missing.
+     * 2. Count the number of occurrences for each file guid (thus counting the amount of checksums for each file).
+     * 3. Eliminate the file guids which only had one count (thus removing the file guids with unanimous checksum).
+     * 4. Select the respective file ids for the remaining file guids.
+     * This is all combined into one single SQL statement for optimisation.
+     * 
+     * @return The list of file ids for the files with distinct checksums.
+     */
+    public List<String> getFilesWithDistinctChecksum() {
+        log.debug("Locating the pillars where a given file is missing.");
+        String findUniqueSql = "SELECT " + FI_CHECKSUM + " , " + FI_FILE_GUID + " FROM " + FILE_INFO_TABLE
+                + " WHERE " + FI_FILE_STATE + " != ? " + " GROUP BY " + FI_CHECKSUM + " , " + FI_FILE_GUID;
+        String countSql = "SELECT " + FI_FILE_GUID + " , COUNT(*) as num FROM ( " + findUniqueSql + " ) as unique1 "
+                + " GROUP BY " + FI_FILE_GUID;
+        String eliminateSql = "SELECT " + FI_FILE_GUID + " FROM ( " + countSql + " ) as count1 WHERE count1.num > 1";
+        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN ( " 
+                + eliminateSql + " ) as eliminate1 ON " + FILES_TABLE + "." + FILES_GUID + "=eliminate1." 
+                + FI_FILE_GUID;
+        List<String> res = DatabaseUtils.selectStringList(dbConnector, selectSql, FileState.MISSING.ordinal());
+        return res;
+    }
+    
+    /**
+     * Updating all the entries for the files with unanimous checksums to set their checksum state to valid.
+     * It is done in the following way:
+     * 1. Find all the unique combinations of checksums and file guids in the FileInfo table. 
+     *   Though not for the files which are reported as missing.
+     * 2. Count the number of occurrences for each file guid (thus counting the amount of checksums for each file).
+     * 3. Eliminate the files without an unanimous checksum (select only those with checksum count of 1).
+     * 4. Update the file infos for the respective files by settings their checksum state to valid.
+     * This is all combined into one single SQL statement for optimisation.
+     */
+    public void setFilesWithUnanimousChecksumToValid() {
+        String findUniqueSql = "SELECT " + FI_CHECKSUM + " , " + FI_FILE_GUID + " FROM " + FILE_INFO_TABLE
+                + " WHERE " + FI_FILE_STATE + " != ? " + " GROUP BY " + FI_CHECKSUM + " , " + FI_FILE_GUID;
+        String countSql = "SELECT " + FI_FILE_GUID + " , COUNT(*) as num FROM ( " + findUniqueSql + " ) as unique1 "
+                + " GROUP BY " + FI_FILE_GUID;
+        String eliminateSql = "SELECT " + FI_FILE_GUID + " FROM ( " + countSql + " ) as count1 WHERE count1.num = 1";
+        String updateSql = "UPDATE " + FILE_INFO_TABLE  + " SET " + FI_CHECKSUM_STATE + " = ? WHERE " 
+                + FI_CHECKSUM_STATE + " != ? AND " + FI_FILE_GUID + " IN ( " + eliminateSql + " )";
+        DatabaseUtils.executeStatement(dbConnector, updateSql, ChecksumState.VALID.ordinal(), 
+                ChecksumState.VALID.ordinal(), FileState.MISSING.ordinal());
+    }
+    
+    /**
      * Updates the file info for the given file at the given pillar.
      * It is always set to 'EXISTING' and if the timestamp is new, then it is also updated along with setting the 
      * checksum state to 'UNKNOWN'.

@@ -1,19 +1,40 @@
+/*
+ * #%L
+ * Bitrepository Integrity Service
+ * %%
+ * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.integrityservice.checking;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
-import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
+import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
@@ -56,7 +77,7 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
                 settings.getCollectionSettings().getClientSettings().getPillarIDs(), cache, auditManager);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        ChecksumReport report = validator.generateReport(cache.getAllFileIDs());
+        ChecksumReport report = validator.generateReport(FileIDsUtils.getAllFileIDs());
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
     }
     
@@ -74,10 +95,8 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
         cache.addChecksums(csData, TEST_PILLAR_3);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        ChecksumReport report = validator.generateReport(cache.getAllFileIDs());
+        ChecksumReport report = validator.generateReport(FileIDsUtils.getAllFileIDs());
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
-        Assert.assertEquals(report.getFilesWithoutIssues().size(), 1);
-        Assert.assertEquals(report.getFilesWithoutIssues(), Arrays.asList(FILE_1));
         for(FileInfo fi : cache.getFileInfos(FILE_1)) {
             Assert.assertEquals(fi.getChecksum(), "1234cccc4321");
             Assert.assertEquals(fi.getChecksumState(), ChecksumState.VALID);
@@ -98,10 +117,8 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
         cache.addChecksums(csData, TEST_PILLAR_2);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        ChecksumReport report = validator.generateReport(cache.getAllFileIDs());
+        ChecksumReport report = validator.generateReport(FileIDsUtils.getAllFileIDs());
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
-        Assert.assertEquals(report.getFilesWithoutIssues().size(), 1);
-        Assert.assertEquals(report.getFilesWithoutIssues(), Arrays.asList(FILE_1));
         Assert.assertEquals(report.getFilesWithIssues().size(), 0);
     }
 
@@ -119,7 +136,7 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
         cache.addChecksums(csData2, TEST_PILLAR_2);
         
         addStep("Validate the file ids", "Should have integrity issues. No entry should be valid.");
-        ChecksumReport report = validator.generateReport(cache.getAllFileIDs());
+        ChecksumReport report = validator.generateReport(FileIDsUtils.getAllFileIDs());
         Assert.assertTrue(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getFilesWithIssues().size(), 1);
         Assert.assertNotNull(report.getFilesWithIssues().get(FILE_1));
@@ -148,7 +165,7 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
         cache.addChecksums(csData3, TEST_PILLAR_3);
         
         addStep("Validate the file ids", "Should have integrity issues.");
-        ChecksumReport report = validator.generateReport(cache.getAllFileIDs());
+        ChecksumReport report = validator.generateReport(FileIDsUtils.getAllFileIDs());
         Assert.assertTrue(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getFilesWithIssues().size(), 1);
         Assert.assertNotNull(report.getFilesWithIssues().get(FILE_1));
@@ -175,7 +192,7 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
         cache.addChecksums(csData3, TEST_PILLAR_3);
         
         addStep("Validate the file ids", "Should have integrity issues.");
-        ChecksumReport report = validator.generateReport(cache.getAllFileIDs());
+        ChecksumReport report = validator.generateReport(FileIDsUtils.getAllFileIDs());
         Assert.assertTrue(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getFilesWithIssues().size(), 1);
         Assert.assertNotNull(report.getFilesWithIssues().get(FILE_1));
@@ -214,9 +231,8 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
         cache.addChecksums(csData, TEST_PILLAR_3);
         
         addStep("Validate the file ids", "No integrity issues and all should be valid");
-        ChecksumReport report = validator.generateReport(cache.getAllFileIDs());
+        ChecksumReport report = validator.generateReport(FileIDsUtils.getAllFileIDs());
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
-        System.err.println(cache.getFileInfos(FILE_1));
         for(FileInfo fi : cache.getFileInfos(FILE_1)) {
             Assert.assertEquals(fi.getChecksumState(), ChecksumState.VALID);
         }

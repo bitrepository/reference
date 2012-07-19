@@ -97,9 +97,7 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
     @Override
     public ChecksumReport checkChecksum(FileIDs fileIDs) {
         log.info("Validating the checksum for the files: '" + fileIDs + "'");
-        Collection<String> requestedFileIDs = getRequestedFileIDs(fileIDs);
-        
-        return checksumValidator.generateReport(requestedFileIDs);
+        return checksumValidator.generateReport(fileIDs);
     }
     
     @Override

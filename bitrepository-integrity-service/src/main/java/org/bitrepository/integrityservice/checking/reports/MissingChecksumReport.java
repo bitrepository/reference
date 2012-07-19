@@ -63,7 +63,7 @@ public class MissingChecksumReport implements IntegrityReport {
      * @return The missing checksums.
      */
     public List<MissingChecksum> getMissingChecksums() {
-        return missingChecksum;
+        return new ArrayList<MissingChecksum>(missingChecksum);
     }
     
     /**
@@ -96,7 +96,7 @@ public class MissingChecksumReport implements IntegrityReport {
          * @return The ids of the pillars who are missing the checksum.
          */
         public List<String> getPillarIds() {
-            return pillarIds;
+            return new ArrayList<String>(pillarIds);
         }
     }
 }

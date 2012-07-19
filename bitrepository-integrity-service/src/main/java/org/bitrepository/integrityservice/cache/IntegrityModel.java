@@ -134,4 +134,15 @@ public interface IntegrityModel {
      * @return The list of pillars where it is missing (empty list, if not missing at any pillar).
      */
     List<String> getPillarsMissingFile(String fileId);
+    
+    /**
+     * Retrieves the list of file ids for the files, where the pillars does not agree about the checksums.
+     * @return The list of file ids for the files with distinct checksums.
+     */
+    List<String> getFilesWithDistinctChecksums();
+    
+    /**
+     * Set the checksum state of a file to 'valid' its entries if the different checksums are unanimous.
+     */
+    void setFilesWithUnanimousChecksumToValid();
 }

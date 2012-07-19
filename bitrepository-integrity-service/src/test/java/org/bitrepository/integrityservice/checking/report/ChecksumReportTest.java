@@ -1,3 +1,24 @@
+/*
+ * #%L
+ * Bitrepository Integrity Service
+ * %%
+ * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.integrityservice.checking.report;
 
 import java.util.Arrays;
@@ -22,20 +43,6 @@ public class ChecksumReportTest extends ExtendedTestCase {
         ChecksumReport report = new ChecksumReport();
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getFilesWithIssues().size(), 0);
-        Assert.assertEquals(report.getFilesWithoutIssues().size(), 0);
-    }
-
-    @Test(groups = {"regressiontest", "integritytest"})
-    public void testChecksumReportWithNoIssues() {
-        addDescription("Tests checksum report when no issues are reported.");
-        ChecksumReport report = new ChecksumReport();
-        report.reportNoChecksumIssues(TEST_FILE_1);
-        Assert.assertFalse(report.hasIntegrityIssues());
-        Assert.assertEquals(report.getFilesWithIssues().size(), 0);
-        Assert.assertEquals(report.getFilesWithoutIssues().size(), 1);
-        Assert.assertEquals(report.getFilesWithoutIssues(), Arrays.asList(TEST_FILE_1));
-        
-        Assert.assertFalse(report.generateReport().contains(TEST_FILE_1));
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
@@ -48,7 +55,6 @@ public class ChecksumReportTest extends ExtendedTestCase {
         report.reportChecksumError(TEST_FILE_1, TEST_PILLAR_3, "checksum3");
         
         Assert.assertTrue(report.hasIntegrityIssues());
-        Assert.assertEquals(report.getFilesWithoutIssues().size(), 0);
         Assert.assertEquals(report.getFilesWithIssues().size(), 1);
         Assert.assertTrue(report.getFilesWithIssues().containsKey(TEST_FILE_1));
         Assert.assertNull(report.getFilesWithIssues().get(TEST_FILE_1).getChecksum());
@@ -70,7 +76,6 @@ public class ChecksumReportTest extends ExtendedTestCase {
         report.reportChecksumError(TEST_FILE_1, TEST_PILLAR_1, "wrongChecksum");
         
         Assert.assertTrue(report.hasIntegrityIssues());
-        Assert.assertEquals(report.getFilesWithoutIssues().size(), 0);
         Assert.assertEquals(report.getFilesWithIssues().size(), 1);
         Assert.assertTrue(report.getFilesWithIssues().containsKey(TEST_FILE_1));
         Assert.assertEquals(report.getFilesWithIssues().get(TEST_FILE_1).getChecksum(), correctChecksum);
