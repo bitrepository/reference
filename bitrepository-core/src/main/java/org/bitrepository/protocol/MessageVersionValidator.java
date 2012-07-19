@@ -14,12 +14,16 @@ import org.slf4j.LoggerFactory;
 public class MessageVersionValidator {
 
     private static final Logger log = LoggerFactory.getLogger(MessageVersionValidator.class);
-    private static final ProtocolVersionDefinition protocolVersion = new ProtocolVersionDefinition();
+    private static ProtocolVersionDefinition protocolVersion = new ProtocolVersionDefinition();
     static {
         protocolVersion.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
         protocolVersion.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
+        //protocolVersion = ProtocolVersionLoader.loadProtocolVersion();
     }
     
+    /**
+     * Private constructor 
+     */
     private MessageVersionValidator() {}
     
     public static void validateMessageVersion(Message message) throws InvalidMessageVersionException {
