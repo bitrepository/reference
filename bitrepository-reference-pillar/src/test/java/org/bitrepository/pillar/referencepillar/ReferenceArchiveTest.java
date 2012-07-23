@@ -61,7 +61,7 @@ public class ReferenceArchiveTest extends ReferencePillarTest {
         addDescription("Test the ReferenceArchive.");
         addStep("Setup", "Should be OK.");
         
-        ReferenceArchive archive = new ReferenceArchive(DIR_NAME);
+        ReferenceArchive archive = new ReferenceArchive(Arrays.asList(DIR_NAME));
         createExistingFile();
         
         addStep("test 'hasFile'", "Should be true for the existing one and false for the missing one.");

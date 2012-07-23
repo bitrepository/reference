@@ -54,7 +54,8 @@ public class FileBasedCacheTest extends ExtendedTestCase {
         settings = TestSettingsProvider.reloadSettings("FileBasedCacheUnderTest");
         csDir = FileUtils.retrieveDirectory(CHECKSUM_DIR);
         
-        settings.getReferenceSettings().getPillarSettings().setFileDir(csDir.getAbsolutePath());
+        settings.getReferenceSettings().getPillarSettings().getFileDir().clear();
+        settings.getReferenceSettings().getPillarSettings().getFileDir().add(csDir.getAbsolutePath());
     }
     
     @AfterMethod (alwaysRun=true) 

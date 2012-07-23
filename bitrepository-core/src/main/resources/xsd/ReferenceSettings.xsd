@@ -112,10 +112,10 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="FileDir" type="xs:string">
+        <xs:element name="FileDir" type="xs:string" minOccurs="1" maxOccurs="unbounded">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              Location for the base directory for storing the files.
+              The path to all the directories where the files should be archived.
             </xs:documentation>
           </xs:annotation>
         </xs:element>

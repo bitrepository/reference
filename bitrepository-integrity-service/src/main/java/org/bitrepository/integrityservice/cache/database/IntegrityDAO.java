@@ -381,7 +381,6 @@ public class IntegrityDAO {
     }
     
     /**
-<<<<<<< HEAD
      * Extracting the file ids for the files with distinct checksums. Thus finding the files with checksum errors.
      * It is done in the following way:
      * 1. Find all the unique combinations of checksums and file guids in the FileInfo table. 

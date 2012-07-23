@@ -184,7 +184,7 @@ public class FilebasedChecksumStore implements ChecksumStore {
     private void initializeFiles() {
         // Extract the dir-name and create the dir (if it does not yet exist).
         File checksumDir = FileUtils.retrieveDirectory(
-                settings.getReferenceSettings().getPillarSettings().getFileDir());
+                settings.getReferenceSettings().getPillarSettings().getFileDir().get(0));
         
         try {
             // Get the name and initialise the wrong entry file.

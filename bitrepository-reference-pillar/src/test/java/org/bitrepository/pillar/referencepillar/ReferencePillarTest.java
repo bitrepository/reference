@@ -48,7 +48,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
-        File fileDir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
+        File fileDir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0));
         componentSettings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         if(fileDir.exists()) {
             FileUtils.delete(fileDir);
@@ -67,7 +67,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
 
     @AfterMethod(alwaysRun=true)
     public void closeArchive() {
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0));
         if(dir.exists()) {
             FileUtils.delete(dir);
         }
