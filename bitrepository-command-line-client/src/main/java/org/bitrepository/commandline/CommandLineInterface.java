@@ -67,8 +67,6 @@ public abstract class CommandLineInterface {
             return parser.parse(options, args);
         } catch (ParseException e) {
             String errMsg = "Cannot parse the argumets: " + Arrays.asList(args);
-            System.err.println(errMsg);
-            System.err.println(listArguments());
             throw new IllegalStateException(errMsg, e);
         }
     }

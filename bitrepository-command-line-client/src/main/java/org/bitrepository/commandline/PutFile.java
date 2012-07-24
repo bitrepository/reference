@@ -51,20 +51,24 @@ public class PutFile extends CommandLineInterface {
     private PutFile(String ... args) {
         super();
         try {
+            System.out.println("Initialising arguments");
             cmd = parseArguments(args);
             settings = loadSettings(COMPONENT_ID, cmd.getOptionValue(Constants.SETTINGS_ARG));
             securityManager = loadSecurityManager(cmd.getOptionValue(Constants.PRIVATE_KEY_ARG), settings);
             
+            System.out.println("Instantiating the PutFileClient");
             client = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager, COMPONENT_ID);
         } catch (Exception e) {
             System.err.println(listArguments());
             throw new IllegalArgumentException(e);
         }
         
+        System.out.println("Performing the PutFile operation.");
         OperationEvent e = putTheFile();
         if(e.getType() == OperationEventType.COMPLETE) {
             System.out.println("PutFile operation successfull for the file '" 
                     + cmd.getOptionValue(Constants.FILE_PATH_ARG) + "': " + e);
+            System.exit(0);
         } else {
             System.err.println("PutFile failed for the file '" + cmd.getOptionValue(Constants.FILE_PATH_ARG) + "':" 
                     + e);
@@ -95,6 +99,7 @@ public class PutFile extends CommandLineInterface {
     
     @SuppressWarnings("deprecation")
     private OperationEvent putTheFile() {
+        
         File f = findTheFile();
         FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange();
         URL url = fileexchange.uploadToServer(f);

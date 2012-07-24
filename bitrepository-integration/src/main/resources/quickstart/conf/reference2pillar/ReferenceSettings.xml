@@ -36,8 +36,10 @@
     <FileDir><!--foobarpattern-->var/reference2pillar</FileDir>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
-    <AuditContributerDatabaseUrl>jdbc:derby:<!--foobarpattern-->conf/reference2pillar/auditcontributerdb</AuditContributerDatabaseUrl>
-    <AuditContributerDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditContributerDatabaseSpecifics>
+    <AuditTrailContributerDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/reference2pillar/auditcontributerdb</DatabaseURL>
+    </AuditTrailContributerDatabase>
     <AlarmLevel>ERROR</AlarmLevel>
   </PillarSettings>
 </ReferenceSettings>

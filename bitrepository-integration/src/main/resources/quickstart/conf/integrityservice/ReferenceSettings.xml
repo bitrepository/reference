@@ -34,10 +34,14 @@
   <IntegrityServiceSettings>
     <ID>integrity-service</ID>
     <SchedulerInterval>2000</SchedulerInterval>
-    <IntegrityDatabaseUrl>jdbc:derby:<!--foobarpattern-->conf/integrityservice/integritydb</IntegrityDatabaseUrl>
-    <IntegrityDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</IntegrityDatabaseSpecifics>
+    <IntegrityDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/integrityservice/integritydb</DatabaseURL>
+    </IntegrityDatabase>
     <TimeBeforeMissingFileCheck>3600000</TimeBeforeMissingFileCheck> 
-    <AuditContributerDatabaseUrl>jdbc:derby:<!--foobarpattern-->conf/integrityservice/auditcontributerdb</AuditContributerDatabaseUrl>
-    <AuditContributerDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditContributerDatabaseSpecifics>
+    <AuditTrailContributerDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/integrityservice/auditcontributerdb</DatabaseURL>
+    </AuditTrailContributerDatabase>
   </IntegrityServiceSettings>
 </ReferenceSettings>
