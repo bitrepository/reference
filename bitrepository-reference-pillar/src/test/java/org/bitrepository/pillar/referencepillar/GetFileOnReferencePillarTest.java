@@ -86,7 +86,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         Long FILE_SIZE = testfile.length();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
@@ -176,7 +176,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         Long FILE_SIZE = testfile.length();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
@@ -338,7 +338,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
@@ -392,7 +392,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String fileAddress = "http://127.0.0.1/¾" + new Date().getTime();
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
