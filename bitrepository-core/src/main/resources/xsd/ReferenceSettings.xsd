@@ -452,6 +452,12 @@
   </xs:element>
 
   <xs:complexType name="DatabaseSpecifics">
+    <xs:annotation>
+      <xs:documentation>
+        Could very well be improved with other configurations like:
+        http://www.mchange.com/projects/c3p0/#configuration_properties
+      </xs:documentation>
+    </xs:annotation>
     <xs:sequence>
       <xs:element name="DriverClass" type="xs:string">
         <xs:annotation>

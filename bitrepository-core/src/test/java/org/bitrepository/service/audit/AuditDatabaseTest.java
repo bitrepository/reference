@@ -75,7 +75,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
     }
 
     @Test(groups = {"regressiontest", "databasetest"})
-    public void testFileBasedCacheFunctions() throws Exception {
+    public void testAuditTrailDatabaseFunctions() throws Exception {
         addDescription("Testing the basic functions of the audit trail database interface.");
         addStep("Setup varibles and the database connection.", "No errors.");
         String fileId1 = "FILE-ID-1";
@@ -111,6 +111,6 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         events = daba.getAudits(fileId1, seq-3, null, null, null);
         Assert.assertEquals(events.size(), 1);
         
-        dbConnector.cleanup();
+        dbConnector.destroy();
     }
 }

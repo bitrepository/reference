@@ -45,8 +45,7 @@ public class DBConnector {
     
     /**
      * Constructor.
-     * @param specifics The specifics for the database.
-     * @param url The URL for the database.
+     * @param databaseSpecifics The specifics for the configuration of the database.
      */
     public DBConnector(DatabaseSpecifics databaseSpecifics) {
         ArgumentValidator.checkNotNull(databaseSpecifics, "DatabaseSpecifics specifics");
@@ -54,13 +53,13 @@ public class DBConnector {
         this.databaseSpecifics = databaseSpecifics;
         this.connectionPool = new ComboPooledDataSource();
         
-        initialiseConnection();
+        initialiseConnectionPool();
     }
     
     /**
-     * Initialises the connection to the database.
+     * Initialises the ConnectionPool for the connections to the database.
      */
-    private void initialiseConnection() {
+    private void initialiseConnectionPool() {
         try {
             log.info("Creating the connection to the database '" + databaseSpecifics + "'.");
             connectionPool.setDriverClass(databaseSpecifics.getDriverClass());
@@ -92,7 +91,7 @@ public class DBConnector {
     /**
      * Cleans up after use.
      */
-    public void cleanup() {
+    public void destroy() {
         try {
             DataSources.destroy(connectionPool);
         } catch (SQLException e) {
