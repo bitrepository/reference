@@ -21,9 +21,9 @@
  */
 package org.bitrepository.integrityservice.mocks;
 
-import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
 
-public class MockIntegrityReport implements IntegrityReport {
+public class MockIntegrityReport implements IntegrityReportModel {
 
     private boolean state = true; 
     public void setIntegrityIssues(boolean state) {

@@ -197,9 +197,9 @@ public class MockIntegrityModel implements IntegrityModel {
     
     private int callsForGetFilesWithDistinctChecksums = 0;
     @Override
-    public List<String> getFilesWithDistinctChecksums() {
+    public List<String> getFilesWithInconsistentChecksums() {
         callsForGetFilesWithDistinctChecksums++;
-        return integrityModel.getFilesWithDistinctChecksums();
+        return integrityModel.getFilesWithInconsistentChecksums();
     }
     public int getCallsForGetFilesWithDistinctChecksums() {
         return callsForGetFilesWithDistinctChecksums;
@@ -207,9 +207,9 @@ public class MockIntegrityModel implements IntegrityModel {
     
     private int callsForSetFilesWithUnanimousChecksumToValid = 0;
     @Override
-    public void setFilesWithUnanimousChecksumToValid() {
+    public void setFilesWithConsistentChecksumToValid() {
         callsForSetFilesWithUnanimousChecksumToValid++;
-        integrityModel.setFilesWithUnanimousChecksumToValid();
+        integrityModel.setFilesWithConsistentChecksumToValid();
     }
     public int getCallsForSetFilesWithUnanimousChecksumToValid() {
         return callsForSetFilesWithUnanimousChecksumToValid;

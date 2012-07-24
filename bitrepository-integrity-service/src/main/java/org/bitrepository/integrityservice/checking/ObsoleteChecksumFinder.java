@@ -28,7 +28,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.FileState;
-import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReport;
+import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
 
 /**
  * Finds obsolete checksums.
@@ -50,8 +50,8 @@ public class ObsoleteChecksumFinder {
      * @param timeout The amount of milliseconds for a checksum to become obsolete.
      * @return The report for the obsolete checksums check.
      */
-    public ObsoleteChecksumReport generateReport(long timeout) {
-        ObsoleteChecksumReport report = new ObsoleteChecksumReport();
+    public ObsoleteChecksumReportModel generateReport(long timeout) {
+        ObsoleteChecksumReportModel report = new ObsoleteChecksumReportModel();
         Long outDated = System.currentTimeMillis() - timeout;
         HashSet<String> filesWithOldChecksum = new HashSet<String>(cache.findChecksumsOlderThan(new Date(outDated)));
         for(String fileId : filesWithOldChecksum) {

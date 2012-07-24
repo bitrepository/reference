@@ -23,7 +23,7 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import java.util.Arrays;
 
-import org.bitrepository.integrityservice.checking.reports.MissingChecksumReport;
+import org.bitrepository.integrityservice.checking.reports.MissingChecksumReportModel;
 import org.bitrepository.integrityservice.mocks.MockChecker;
 import org.bitrepository.integrityservice.mocks.MockIntegrityAlerter;
 import org.jaccept.structure.ExtendedTestCase;
@@ -55,8 +55,8 @@ public class FindMissingChecksumsTest extends ExtendedTestCase {
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
         MockChecker checker = new MockChecker() {
             @Override
-            public MissingChecksumReport checkMissingChecksums() {
-                MissingChecksumReport res = super.checkMissingChecksums();
+            public MissingChecksumReportModel checkMissingChecksums() {
+                MissingChecksumReportModel res = super.checkMissingChecksums();
                 res.reportMissingChecksum(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1));
                 return res;
             }

@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * The report for a missing checksum check.
  */
-public class MissingChecksumReport implements IntegrityReport {
+public class MissingChecksumReportModel implements IntegrityReportModel {
     /** The list of missing checksums.*/
     private final List<MissingChecksum> missingChecksum = new ArrayList<MissingChecksum>();
     

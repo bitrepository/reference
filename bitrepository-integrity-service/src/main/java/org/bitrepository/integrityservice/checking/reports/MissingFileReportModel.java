@@ -31,7 +31,7 @@ import java.util.Map;
  * Will report on files missing on some pillars and the files which are missing at all pillars, which then can be 
  * deleted from the system.
  */
-public class MissingFileReport implements IntegrityReport {
+public class MissingFileReportModel implements IntegrityReportModel {
     /** The list of missing files.*/
     private final List<MissingFile> missingFiles = new ArrayList<MissingFile>();
     /** The list of files, which can be deleted.*/

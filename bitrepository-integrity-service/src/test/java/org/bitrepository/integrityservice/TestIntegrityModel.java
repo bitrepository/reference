@@ -373,7 +373,7 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public List<String> getFilesWithDistinctChecksums() {
+    public List<String> getFilesWithInconsistentChecksums() {
         List<String> res = new ArrayList<String>();
         for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
             HashSet<String> checksums = new HashSet<String>();
@@ -391,7 +391,7 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public void setFilesWithUnanimousChecksumToValid() {
+    public void setFilesWithConsistentChecksumToValid() {
         for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
             HashSet<String> checksums = new HashSet<String>();
             for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {

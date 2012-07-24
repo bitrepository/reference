@@ -32,7 +32,7 @@ import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.ObsoleteChecksumFinder;
-import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReport;
+import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
 import org.bitrepository.integrityservice.mocks.MockAuditManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -67,7 +67,7 @@ public class ObsoleteChecksumsFinderVersusDatabaseTest extends IntegrityDatabase
         ObsoleteChecksumFinder finder = new ObsoleteChecksumFinder(cache);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        ObsoleteChecksumReport report = finder.generateReport(DEFAULT_TIMEOUT);
+        ObsoleteChecksumReportModel report = finder.generateReport(DEFAULT_TIMEOUT);
         Assert.assertFalse(report.hasIntegrityIssues());
     }
     
@@ -82,7 +82,7 @@ public class ObsoleteChecksumsFinderVersusDatabaseTest extends IntegrityDatabase
         cache.addChecksums(csData, TEST_PILLAR_1);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        ObsoleteChecksumReport report = finder.generateReport(DEFAULT_TIMEOUT);
+        ObsoleteChecksumReportModel report = finder.generateReport(DEFAULT_TIMEOUT);
         Assert.assertFalse(report.hasIntegrityIssues());
     }
 
@@ -97,7 +97,7 @@ public class ObsoleteChecksumsFinderVersusDatabaseTest extends IntegrityDatabase
         cache.addChecksums(csData, TEST_PILLAR_1);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        ObsoleteChecksumReport report = finder.generateReport(DEFAULT_TIMEOUT);
+        ObsoleteChecksumReportModel report = finder.generateReport(DEFAULT_TIMEOUT);
         Assert.assertTrue(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getObsoleteChecksum().size(), 1);
         Assert.assertNotNull(report.getObsoleteChecksum().get(FILE_1));
@@ -119,7 +119,7 @@ public class ObsoleteChecksumsFinderVersusDatabaseTest extends IntegrityDatabase
         cache.addChecksums(csNewData, TEST_PILLAR_2);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        ObsoleteChecksumReport report = finder.generateReport(DEFAULT_TIMEOUT);
+        ObsoleteChecksumReportModel report = finder.generateReport(DEFAULT_TIMEOUT);
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getObsoleteChecksum().size(), 1);
         Assert.assertNotNull(report.getObsoleteChecksum().get(FILE_1));
@@ -139,7 +139,7 @@ public class ObsoleteChecksumsFinderVersusDatabaseTest extends IntegrityDatabase
         cache.setFileMissing(FILE_1, Arrays.asList(TEST_PILLAR_1));
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        ObsoleteChecksumReport report = finder.generateReport(DEFAULT_TIMEOUT);
+        ObsoleteChecksumReportModel report = finder.generateReport(DEFAULT_TIMEOUT);
         Assert.assertFalse(report.hasIntegrityIssues());
     }
     

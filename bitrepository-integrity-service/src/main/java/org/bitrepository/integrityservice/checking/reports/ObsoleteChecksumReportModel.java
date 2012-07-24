@@ -29,7 +29,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 /**
  * The report for a obsolete checksum check.
  */
-public class ObsoleteChecksumReport implements IntegrityReport {
+public class ObsoleteChecksumReportModel implements IntegrityReportModel {
     /** The mapping between a file id and its respective obsolete checksums data.*/
     private final Map<String, ObsoleteChecksumData> obsoleteChecksum = new HashMap<String, ObsoleteChecksumData>();
     

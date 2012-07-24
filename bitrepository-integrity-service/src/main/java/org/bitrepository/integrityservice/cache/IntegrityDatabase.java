@@ -49,6 +49,8 @@ public class IntegrityDatabase implements IntegrityModel {
 
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(this.getClass());
+    /** The settings.*/
+    private final Settings settings;
     
     /**
      * Initialize storage.
@@ -56,6 +58,7 @@ public class IntegrityDatabase implements IntegrityModel {
      * @param storageConfiguration Contains configuration for storage. Currently URL, user and pass for database.
      */
     public IntegrityDatabase(Settings settings) {
+        this.settings = settings;
         this.store = new IntegrityDAO(new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
                 settings.getCollectionSettings().getClientSettings().getPillarIDs());
@@ -184,12 +187,14 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public List<String> getFilesWithDistinctChecksums() {
-        return store.getFilesWithDistinctChecksum();
+    public List<String> getFilesWithInconsistentChecksums() {
+        Date maxDate = new Date(System.currentTimeMillis() - 
+                settings.getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck());
+        return store.findFilesWithInconsistentChecksums(maxDate);
     }
 
     @Override
-    public void setFilesWithUnanimousChecksumToValid() {
-        store.setFilesWithUnanimousChecksumToValid();
+    public void setFilesWithConsistentChecksumToValid() {
+        store.setFilesWithConsistentChecksumsToValid();
     }
 }

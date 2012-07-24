@@ -22,7 +22,7 @@
 package org.bitrepository.integrityservice.checking.report;
 
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReport;
+import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -36,7 +36,7 @@ public class ObsoleteChecksumReportTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest", "integritytest"})
     public void testEmptyObsoleteChecksumReport() {
         addDescription("Tests the empty obsolete checksum report.");
-        ObsoleteChecksumReport report = new ObsoleteChecksumReport();
+        ObsoleteChecksumReportModel report = new ObsoleteChecksumReportModel();
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getObsoleteChecksum().size(), 0);
     }
@@ -44,7 +44,7 @@ public class ObsoleteChecksumReportTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest", "integritytest"})
     public void testObsoleteChecksum() {
         addDescription("Tests obsolete checksum report when the file is obsolete at the pillar.");
-        ObsoleteChecksumReport report = new ObsoleteChecksumReport();
+        ObsoleteChecksumReportModel report = new ObsoleteChecksumReportModel();
         report.reportMissingChecksum(TEST_FILE_1, TEST_PILLAR_1, CalendarUtils.getEpoch());
         
         Assert.assertTrue(report.hasIntegrityIssues(), report.generateReport());

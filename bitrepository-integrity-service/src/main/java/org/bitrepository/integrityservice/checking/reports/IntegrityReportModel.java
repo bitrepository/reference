@@ -27,7 +27,7 @@ package org.bitrepository.integrityservice.checking.reports;
 /**
  * Container for the results of an integrity check.
  */
-public interface IntegrityReport {
+public interface IntegrityReportModel {
     /**
      * @return Whether the integrity check gave a positive result. E.g. returns false, if any integrity problems 
      * occurred (whether any files were missing, any disagreements about checksum, etc.).

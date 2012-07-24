@@ -25,7 +25,7 @@
 package org.bitrepository.integrityservice.checking;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
 
 /**
  * This is the interface for checking the integrity of the data in the cache.
@@ -39,15 +39,14 @@ public interface IntegrityChecker {
      * @param fileIDs The ids of the files to validate (e.g. a list of files or all files).
      * @return Whether the given file ids where validated.
      */
-    IntegrityReport checkFileIDs(FileIDs fileIDs);
+    IntegrityReportModel checkFileIDs(FileIDs fileIDs);
     
     /**
-     * Validates the checksum of the requested files for all the pillars.
+     * Validates the checksum of all the files for all the pillars.
      * 
-     * @param fileIDs The files, which checksum are requested to be validated.
      * @return Whether the checksums of the given file ids where validated.
      */
-    IntegrityReport checkChecksum(FileIDs fileIDs);
+    IntegrityReportModel checkChecksum();
     
     /**
      * Validates whether any checksums are missing from any pillar, even though the pillar contains 
@@ -55,7 +54,7 @@ public interface IntegrityChecker {
      * 
      * @return The report containing the information about any missing checksums
      */
-    IntegrityReport checkMissingChecksums();
+    IntegrityReportModel checkMissingChecksums();
     
     /**
      * Validates whether any files are older than a given interval.
@@ -63,5 +62,5 @@ public interface IntegrityChecker {
      * @param outdatedInterval The amount of milliseconds for a checksum to become outdated.
      * @return The report for the check.
      */
-    IntegrityReport checkObsoleteChecksums(long outdatedInterval);
+    IntegrityReportModel checkObsoleteChecksums(long outdatedInterval);
 }

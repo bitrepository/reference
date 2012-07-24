@@ -46,10 +46,10 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.TestIntegrityModel;
-import org.bitrepository.integrityservice.checking.reports.ChecksumReport;
-import org.bitrepository.integrityservice.checking.reports.MissingChecksumReport;
-import org.bitrepository.integrityservice.checking.reports.MissingFileReport;
-import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReport;
+import org.bitrepository.integrityservice.checking.reports.ChecksumReportModel;
+import org.bitrepository.integrityservice.checking.reports.MissingChecksumReportModel;
+import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
+import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
 import org.bitrepository.integrityservice.mocks.MockChecker;
 import org.bitrepository.integrityservice.mocks.MockCollector;
 import org.bitrepository.integrityservice.mocks.MockIntegrityAlerter;
@@ -134,26 +134,26 @@ public class BasicIntegrityWorkflowTest extends ExtendedTestCase {
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getCollectionSettings().getClientSettings().getPillarIDs()));
         MockChecker checker = new MockChecker() {
             @Override
-            public ObsoleteChecksumReport checkObsoleteChecksums(long outdatedInterval) {
-                ObsoleteChecksumReport res = super.checkObsoleteChecksums(outdatedInterval);
+            public ObsoleteChecksumReportModel checkObsoleteChecksums(long outdatedInterval) {
+                ObsoleteChecksumReportModel res = super.checkObsoleteChecksums(outdatedInterval);
                 res.reportMissingChecksum(TEST_FILE_1, TEST_PILLAR_1, CalendarUtils.getEpoch());
                 return res;
             }
             @Override
-            public MissingChecksumReport checkMissingChecksums() {
-                MissingChecksumReport res = super.checkMissingChecksums();
+            public MissingChecksumReportModel checkMissingChecksums() {
+                MissingChecksumReportModel res = super.checkMissingChecksums();
                 res.reportMissingChecksum(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1));
                 return res;
             }
             @Override
-            public ChecksumReport checkChecksum(FileIDs fileIDs) {
-                ChecksumReport res = super.checkChecksum(fileIDs);
-                res.reportChecksumError(TEST_FILE_1, TEST_PILLAR_1, DEFAULT_CHECKSUM);
+            public ChecksumReportModel checkChecksum() {
+                ChecksumReportModel res = super.checkChecksum();
+                res.reportChecksumIssue(TEST_FILE_1, TEST_PILLAR_1, DEFAULT_CHECKSUM);
                 return res;
             }
             @Override
-            public MissingFileReport checkFileIDs(FileIDs fileIDs) {
-                MissingFileReport res = super.checkFileIDs(fileIDs);
+            public MissingFileReportModel checkFileIDs(FileIDs fileIDs) {
+                MissingFileReportModel res = super.checkFileIDs(fileIDs);
                 res.reportMissingFile(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1));
                 return res;
             }

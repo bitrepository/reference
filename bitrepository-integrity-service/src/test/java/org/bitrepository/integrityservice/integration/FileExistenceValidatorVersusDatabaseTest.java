@@ -33,7 +33,7 @@ import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.FileExistenceValidator;
-import org.bitrepository.integrityservice.checking.reports.MissingFileReport;
+import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
 import org.bitrepository.integrityservice.mocks.MockAuditManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -66,7 +66,7 @@ public class FileExistenceValidatorVersusDatabaseTest extends IntegrityDatabaseT
         FileExistenceValidator validator = new FileExistenceValidator(settings, cache, auditManager);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        MissingFileReport report = validator.generateReport(cache.getAllFileIDs());
+        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs());
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
     }
     
@@ -96,7 +96,7 @@ public class FileExistenceValidatorVersusDatabaseTest extends IntegrityDatabaseT
         cache.addFileIDs(fileidData, getAllFileIDs(), TEST_PILLAR_1);
         
         addStep("Validate the file ids", "Should be missing at pillar 2.");
-        MissingFileReport report = validator.generateReport(cache.getAllFileIDs());
+        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs());
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getDeleteableFiles().size(), 0);
         Assert.assertEquals(report.getMissingFiles().size(), 1);
@@ -117,7 +117,7 @@ public class FileExistenceValidatorVersusDatabaseTest extends IntegrityDatabaseT
         cache.setFileMissing(FILE_1, Arrays.asList(TEST_PILLAR_1));
         
         addStep("Validate the file ids", "Should be missing at pillar 1.");
-        MissingFileReport report = validator.generateReport(cache.getAllFileIDs());
+        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs());
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getDeleteableFiles().size(), 0);
         Assert.assertEquals(report.getMissingFiles().size(), 1);
@@ -137,7 +137,7 @@ public class FileExistenceValidatorVersusDatabaseTest extends IntegrityDatabaseT
         cache.setFileMissing(FILE_1, Arrays.asList(TEST_PILLAR_1));
         
         addStep("Validate the file ids", "Should be missing at pillar 1.");
-        MissingFileReport report = validator.generateReport(cache.getAllFileIDs());
+        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs());
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getDeleteableFiles().size(), 1);
         Assert.assertEquals(report.getDeleteableFiles(), Arrays.asList(FILE_1));

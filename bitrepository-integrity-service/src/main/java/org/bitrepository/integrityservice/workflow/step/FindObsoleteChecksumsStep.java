@@ -23,7 +23,7 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +63,7 @@ public class FindObsoleteChecksumsStep implements WorkflowStep {
      */
     @Override
     public synchronized void performStep() {
-        IntegrityReport report = checker.checkObsoleteChecksums(obsoleteTimeout);
+        IntegrityReportModel report = checker.checkObsoleteChecksums(obsoleteTimeout);
         
         if(!report.hasIntegrityIssues()) {
             log.debug("No checksum are obsolete at any pillar.");

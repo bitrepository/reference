@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
@@ -38,12 +37,13 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.checking.reports.ChecksumReport;
-import org.bitrepository.integrityservice.checking.reports.MissingChecksumReport;
-import org.bitrepository.integrityservice.checking.reports.MissingFileReport;
-import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReport;
+import org.bitrepository.integrityservice.checking.reports.ChecksumReportModel;
+import org.bitrepository.integrityservice.checking.reports.MissingChecksumReportModel;
+import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
+import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
 import org.bitrepository.integrityservice.mocks.MockAuditManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -82,11 +82,11 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         
         addStep("Initialise the file ids data.", "Should be created and put into the cache.");
         FileIDsData fileidsData1 = createFileIdData(TEST_FILE_1);
-        cache.addFileIDs(fileidsData1, createAllFileIDs(), TEST_PILLAR_1);
-        cache.addFileIDs(fileidsData1, createAllFileIDs(), TEST_PILLAR_2);
+        cache.addFileIDs(fileidsData1, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_1);
+        cache.addFileIDs(fileidsData1, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_2);
         
         addStep("Check whether all pillars have all the file ids", "They should contain the same files.");
-        MissingFileReport report = checker.checkFileIDs(createAllFileIDs());
+        MissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs());
         Assert.assertFalse(report.hasIntegrityIssues());
     }
     
@@ -99,10 +99,10 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
 
         addStep("Initialise the file ids data.", "Should be created and put into the cache.");
         FileIDsData fileidsData1 = createFileIdData(TEST_FILE_1);
-        cache.addFileIDs(fileidsData1, createAllFileIDs(), TEST_PILLAR_1);
+        cache.addFileIDs(fileidsData1, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_1);
         
         addStep("Check whether all pillars have all the file ids", "Only one should contain the fileids, so it should return false");
-        MissingFileReport report = checker.checkFileIDs(createAllFileIDs());
+        MissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs());
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getMissingFiles().size(), 1);
         Assert.assertEquals(report.getDeleteableFiles().size(), 0);
@@ -121,11 +121,11 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
 
         addStep("Initialise the file ids data.", "Should be created and put into the cache.");
         FileIDsData fileidsData1 = createFileIdData(TEST_FILE_1);
-        cache.addFileIDs(fileidsData1, createAllFileIDs(), TEST_PILLAR_1);
+        cache.addFileIDs(fileidsData1, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_1);
         cache.setFileMissing(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1));
         
         addStep("Check whether all pillars have all the file ids", "Only one should contain the fileids, so it should return false");
-        MissingFileReport report = checker.checkFileIDs(createAllFileIDs());
+        MissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs());
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getMissingFiles().size(), 0);
         Assert.assertEquals(report.getDeleteableFiles().size(), 1);
@@ -149,7 +149,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addChecksums(checksumData, TEST_PILLAR_2);
         
         addStep("Check the checksum status.", "Should not have issues.");
-        ChecksumReport report = checker.checkChecksum(createAllFileIDs());
+        ChecksumReportModel report = checker.checkChecksum();
         Assert.assertFalse(report.hasIntegrityIssues());
     }
 
@@ -171,35 +171,9 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addChecksums(checksumData2, TEST_PILLAR_2);
         
         addStep("Check the checksum status.", "Should have checksum issues.");
-        ChecksumReport report = checker.checkChecksum(createAllFileIDs());
+        ChecksumReportModel report = checker.checkChecksum();
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertTrue(report.getFilesWithIssues().containsKey(TEST_FILE_2));
-    }
-
-    @Test(groups = {"regressiontest", "integritytest"})
-    public void testLimitedChecksumValidation() {
-        addDescription("Tests that is is possible to validate only one file. Starts by inserting common data for one "
-                + "file for both pillars, and different checksum data for the other file. By limiting the validation "
-                + "to only contain the good-case file, then no checksum issues should be found.");
-        IntegrityModel cache = getIntegrityModel();
-        SimpleIntegrityChecker checker = new SimpleIntegrityChecker(settings, cache, auditManager);
-       
-        FileIDs singleFileID = new FileIDs();
-        singleFileID.setFileID(TEST_FILE_1);
-        
-        addStep("Initialise the checksum results data.", "Should be created and put into the cache.");
-        List<ChecksumDataForChecksumSpecTYPE> checksumData = createChecksumData("1234cccc4321", TEST_FILE_1);
-        cache.addChecksums(checksumData, TEST_PILLAR_2);
-        cache.addChecksums(checksumData, TEST_PILLAR_2);
-        
-        List<ChecksumDataForChecksumSpecTYPE> checksumData1 = createChecksumData("1234567890", TEST_FILE_2);
-        List<ChecksumDataForChecksumSpecTYPE> checksumData2 = createChecksumData("0987654321", TEST_FILE_2);
-        cache.addChecksums(checksumData1, TEST_PILLAR_1);
-        cache.addChecksums(checksumData2, TEST_PILLAR_2);
-        
-        addStep("Check the checksum status.", "Should not find the issue.");
-        ChecksumReport report = checker.checkChecksum(singleFileID);
-        Assert.assertFalse(report.hasIntegrityIssues());
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
@@ -215,7 +189,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.setChecksumAgreement(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2));
         
         addStep("Check the checksum status.", "Should not find the issue.");
-        MissingChecksumReport report = checker.checkMissingChecksums();
+        MissingChecksumReportModel report = checker.checkMissingChecksums();
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
     }
     
@@ -227,11 +201,11 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
        
         addStep("Initialise the data cache", "Should be created and put into the cache.");
         FileIDsData fileidsData = createFileIdData(TEST_FILE_1);
-        cache.addFileIDs(fileidsData, createAllFileIDs(), TEST_PILLAR_1);
-        cache.addFileIDs(fileidsData, createAllFileIDs(), TEST_PILLAR_2);
+        cache.addFileIDs(fileidsData, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_1);
+        cache.addFileIDs(fileidsData, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_2);
         
         addStep("Check the checksum status.", "Should not find the issue.");
-        MissingChecksumReport report = checker.checkMissingChecksums();
+        MissingChecksumReportModel report = checker.checkMissingChecksums();
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getMissingChecksums().size(), 1);
         Assert.assertEquals(report.getMissingChecksums().get(0).getFileId(), TEST_FILE_1);
@@ -246,8 +220,8 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
        
         addStep("Initialise the data cache", "Should be created and put into the cache.");
         FileIDsData fileidsData = createFileIdData(TEST_FILE_1, TEST_FILE_2);
-        cache.addFileIDs(fileidsData, createAllFileIDs(), TEST_PILLAR_1);
-        cache.addFileIDs(fileidsData, createAllFileIDs(), TEST_PILLAR_2);
+        cache.addFileIDs(fileidsData, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_1);
+        cache.addFileIDs(fileidsData, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_2);
         List<ChecksumDataForChecksumSpecTYPE> checksumData1 = createChecksumData("1234cccc4321", TEST_FILE_1);
         cache.addChecksums(checksumData1, TEST_PILLAR_1);
         cache.addChecksums(checksumData1, TEST_PILLAR_2);
@@ -257,7 +231,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.setChecksumAgreement(TEST_FILE_2, Arrays.asList(TEST_PILLAR_1));
         
         addStep("Check the checksum status.", "Should be checksum missing at pillar 2.");
-        MissingChecksumReport report = checker.checkMissingChecksums();
+        MissingChecksumReportModel report = checker.checkMissingChecksums();
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getMissingChecksums().size(), 1);
         Assert.assertEquals(report.getMissingChecksums().get(0).getFileId(), TEST_FILE_2);
@@ -276,7 +250,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addChecksums(checksumData1, TEST_PILLAR_2);
         
         addStep("Check the checksum status.", "Should be checksum missing at pillar 2.");
-        ObsoleteChecksumReport report = checker.checkObsoleteChecksums(DEFAULT_TIMEOUT);
+        ObsoleteChecksumReportModel report = checker.checkObsoleteChecksums(DEFAULT_TIMEOUT);
         Assert.assertFalse(report.hasIntegrityIssues());
     }
     
@@ -293,7 +267,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addChecksums(checksumData, TEST_PILLAR_2);
         
         addStep("Check the checksum status.", "Should be checksum missing at pillar 2.");
-        ObsoleteChecksumReport report = checker.checkObsoleteChecksums(DEFAULT_TIMEOUT);
+        ObsoleteChecksumReportModel report = checker.checkObsoleteChecksums(DEFAULT_TIMEOUT);
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getObsoleteChecksum().size(), 1);
         Assert.assertNotNull(report.getObsoleteChecksum().get(TEST_FILE_1));
@@ -301,12 +275,6 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         Assert.assertTrue(report.getObsoleteChecksum().get(TEST_FILE_1).getPillarDates().containsKey(TEST_PILLAR_2));
     }
     
-    private FileIDs createAllFileIDs() {
-        FileIDs allFileIDs = new FileIDs();
-        allFileIDs.setAllFileIDs("true");
-        return allFileIDs;
-    }
-
     private FileIDsData createFileIdData(String ... fileids) {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems items = new FileIDsDataItems();

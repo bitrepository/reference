@@ -22,7 +22,7 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReport;
+import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
 import org.bitrepository.integrityservice.mocks.MockChecker;
 import org.bitrepository.integrityservice.mocks.MockIntegrityAlerter;
 import org.jaccept.structure.ExtendedTestCase;
@@ -54,8 +54,8 @@ public class FindObsoleteChecksumsStepTest extends ExtendedTestCase {
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
         MockChecker checker = new MockChecker() {
             @Override
-            public ObsoleteChecksumReport checkObsoleteChecksums(long outdatedInterval) {
-                ObsoleteChecksumReport res = super.checkObsoleteChecksums(outdatedInterval);
+            public ObsoleteChecksumReportModel checkObsoleteChecksums(long outdatedInterval) {
+                ObsoleteChecksumReportModel res = super.checkObsoleteChecksums(outdatedInterval);
                 res.reportMissingChecksum(TEST_FILE_1, TEST_PILLAR_1, CalendarUtils.getEpoch());
                 return res;
             }

@@ -21,8 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.integrityservice.checking.reports.ChecksumReport;
+import org.bitrepository.integrityservice.checking.reports.ChecksumReportModel;
 import org.bitrepository.integrityservice.mocks.MockChecker;
 import org.bitrepository.integrityservice.mocks.MockIntegrityAlerter;
 import org.jaccept.structure.ExtendedTestCase;
@@ -55,9 +54,9 @@ public class IntegrityValidationChecksumStepTest extends ExtendedTestCase {
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
         MockChecker checker = new MockChecker() {
             @Override
-            public ChecksumReport checkChecksum(FileIDs fileIDs) {
-                ChecksumReport res = super.checkChecksum(fileIDs);
-                res.reportChecksumError(TEST_FILE_1, TEST_PILLAR_1, DEFAULT_CHECKSUM);
+            public ChecksumReportModel checkChecksum() {
+                ChecksumReportModel res = super.checkChecksum();
+                res.reportChecksumIssue(TEST_FILE_1, TEST_PILLAR_1, DEFAULT_CHECKSUM);
                 return res;
             }
         };

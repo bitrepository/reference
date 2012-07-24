@@ -24,7 +24,7 @@ package org.bitrepository.integrityservice.workflow.step;
 import java.util.Arrays;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.integrityservice.checking.reports.MissingFileReport;
+import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
 import org.bitrepository.integrityservice.mocks.MockChecker;
 import org.bitrepository.integrityservice.mocks.MockIntegrityAlerter;
 import org.jaccept.structure.ExtendedTestCase;
@@ -56,8 +56,8 @@ public class IntegrityValidationFileIDsStepTest extends ExtendedTestCase {
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
         MockChecker checker = new MockChecker() {
             @Override
-            public MissingFileReport checkFileIDs(FileIDs fileIDs) {
-                MissingFileReport res = super.checkFileIDs(fileIDs);
+            public MissingFileReportModel checkFileIDs(FileIDs fileIDs) {
+                MissingFileReportModel res = super.checkFileIDs(fileIDs);
                 res.reportMissingFile(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1));
                 return res;
             }

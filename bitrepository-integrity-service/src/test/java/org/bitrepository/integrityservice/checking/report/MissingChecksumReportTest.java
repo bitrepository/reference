@@ -23,7 +23,7 @@ package org.bitrepository.integrityservice.checking.report;
 
 import java.util.Arrays;
 
-import org.bitrepository.integrityservice.checking.reports.MissingChecksumReport;
+import org.bitrepository.integrityservice.checking.reports.MissingChecksumReportModel;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -38,7 +38,7 @@ public class MissingChecksumReportTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest", "integritytest"})
     public void testEmptyMissingChecksumReport() {
         addDescription("Tests the empty missing checksum report.");
-        MissingChecksumReport report = new MissingChecksumReport();
+        MissingChecksumReportModel report = new MissingChecksumReportModel();
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getMissingChecksums().size(), 0);
     }
@@ -46,7 +46,7 @@ public class MissingChecksumReportTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest", "integritytest"})
     public void testMissingChecksumReportAtPillar() {
         addDescription("Tests missing checksum report when checksum is missing at a pillar.");
-        MissingChecksumReport report = new MissingChecksumReport();
+        MissingChecksumReportModel report = new MissingChecksumReportModel();
         report.reportMissingChecksum(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1));
         Assert.assertTrue(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getMissingChecksums().size(), 1);

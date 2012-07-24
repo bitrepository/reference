@@ -24,7 +24,7 @@ package org.bitrepository.integrityservice.workflow.step;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,7 @@ public class IntegrityValidationFileIDsStep implements WorkflowStep {
 
     @Override
     public void performStep() {
-        IntegrityReport report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs());
+        IntegrityReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs());
         
         if(report.hasIntegrityIssues()) {
             log.warn("Integrity issues found: " + report.generateReport());

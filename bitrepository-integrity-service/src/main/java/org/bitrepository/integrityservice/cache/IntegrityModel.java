@@ -139,10 +139,10 @@ public interface IntegrityModel {
      * Retrieves the list of file ids for the files, where the pillars does not agree about the checksums.
      * @return The list of file ids for the files with distinct checksums.
      */
-    List<String> getFilesWithDistinctChecksums();
+    List<String> getFilesWithInconsistentChecksums();
     
     /**
      * Set the checksum state of a file to 'valid' its entries if the different checksums are unanimous.
      */
-    void setFilesWithUnanimousChecksumToValid();
+    void setFilesWithConsistentChecksumToValid();
 }
