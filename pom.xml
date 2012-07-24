@@ -25,6 +25,7 @@
     <module>bitrepository-reference-pillar</module>
     <module>bitrepository-monitoring-service</module>
     <module>bitrepository-integration</module>
+    <module>bitrepository-command-line-client</module>
     <module>bitrepository-webclient</module>
   </modules>
 
