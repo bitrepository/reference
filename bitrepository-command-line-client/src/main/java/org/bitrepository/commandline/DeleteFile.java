@@ -21,9 +21,6 @@
  */
 package org.bitrepository.commandline;
 
-import java.io.File;
-import java.net.URL;
-
 import org.apache.commons.cli.Option;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -37,40 +34,38 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
-import org.bitrepository.modify.putfile.PutFileClient;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.protocol.security.SecurityManager;
 
 /**
- * Putting a file to the collection.
+ * Deleting a file from the collection.
  */
-public class PutFile {
+public class DeleteFile {
     /**
-     * @param args The arguments for performing the PutFile operation.
+     * @param args The arguments for performing the DeleteFile operation.
      */
     public static void main(String[] args) {
-        PutFile putfile = new PutFile(args);
-        putfile.performOperation();
+        DeleteFile deletefile = new DeleteFile(args);
+        deletefile.performOperation();
     }
     
     /** The component id. */
-    private final static String COMPONENT_ID = "PutFileClient";
+    private final static String COMPONENT_ID = "DeleteFileClient";
     
-    /** The settings for the put file client.*/
+    /** The settings for the delete file client.*/
     private final Settings settings;
     /** The security manager.*/
     private final SecurityManager securityManager;
-    /** The client for performing the PutFile operation.*/
-    private final PutFileClient client;
+    /** The client for performing the DeleteFile operation.*/
+    private final DeleteFileClient client;
     /** The handler for the command line arguments.*/
     private final CommandLineArgumentsHandler cmdHandler;
     
     /**
-     * 
-     * @param args
+     * Constructor.
+     * @param args The command line arguments for defining the operation.
      */
-    private PutFile(String ... args) {
+    private DeleteFile(String ... args) {
         System.out.println("Initialising arguments");
         cmdHandler = new CommandLineArgumentsHandler();
         try {
@@ -80,28 +75,12 @@ public class PutFile {
             settings = cmdHandler.loadSettings(COMPONENT_ID);
             securityManager = cmdHandler.loadSecurityManager(settings);
             
-            System.out.println("Instantiating the PutFileClient");
-            client = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager, COMPONENT_ID);
+            System.out.println("Instantiating the DeleteFileClient");
+            client = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, securityManager, 
+                    COMPONENT_ID);
         } catch (Exception e) {
             System.err.println(cmdHandler.listArguments());
             throw new IllegalArgumentException(e);
-        }
-    }
-    
-    /**
-     * Perform the PutFile operation.
-     */
-    public void performOperation() {
-        System.out.println("Performing the PutFile operation.");
-        OperationEvent e = putTheFile();
-        if(e.getType() == OperationEventType.COMPLETE) {
-            System.out.println("PutFile operation successfull for the file '" 
-                    + cmdHandler.getOptionValue(Constants.FILE_ARG) + "': " + e);
-            System.exit(0);
-        } else {
-            System.err.println("PutFile failed for the file '" + cmdHandler.getOptionValue(Constants.FILE_ARG) + "':" 
-                    + e);
-            System.exit(-1);
         }
     }
     
@@ -111,13 +90,17 @@ public class PutFile {
     private void createOptionsForCmdArgumentHandler() {
         cmdHandler.createDefaultOptions();
         
-        Option fileOption = new Option(Constants.FILE_ARG, true, "The path to the file, which is wanted to "
-                + "be put");
+        Option fileOption = new Option(Constants.FILE_ARG, true, "The id for the file to delete.");
         fileOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
         cmdHandler.addOption(fileOption);
         
+        Option pillarOption = new Option(Constants.PILLAR_ARG, true, "[OPTIONAL] The id of the pillar where the file "
+                + "should be delete. If no argument, then the file will be deleted at all pillars.");
+        pillarOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(pillarOption);
+        
         Option checksumOption = new Option(Constants.CHECKSUM_ARG, true, 
-                "[OPTIONAL] The checksum of the file to be put.");
+                "[OPTIONAL] The checksum of the file to be delete.");
         checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumOption);
         
@@ -132,29 +115,49 @@ public class PutFile {
     }
     
     /**
+     * Perform the DeleteFile operation.
+     */
+    public void performOperation() {
+        System.out.println("Performing the DeleteFile operation.");
+        OperationEvent e = deleteTheFile();
+        if(e.getType() == OperationEventType.COMPLETE) {
+            System.out.println("DeleteFile operation successfull for the file '" 
+                    + cmdHandler.getOptionValue(Constants.FILE_ARG) + "': " + e);
+            System.exit(0);
+        } else {
+            System.err.println("DeleteFile failed for the file '" + cmdHandler.getOptionValue(Constants.FILE_ARG) 
+                    + "':" + e);
+            System.exit(-1);
+        }
+    }
+    
+    /**
      * Initiates the operation and waits for the results.
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
-    @SuppressWarnings("deprecation")
-    private OperationEvent putTheFile() {
-        
-        File f = findTheFile();
-        FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange();
-        URL url = fileexchange.uploadToServer(f);
+    private OperationEvent deleteTheFile() {
+        String fileId = cmdHandler.getOptionValue(Constants.FILE_ARG);
         
         ChecksumDataForFileTYPE validationChecksum = getValidationChecksum();
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpec();
         
         CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings);
-        client.putFile(url, f.getName(), f.length(), validationChecksum, requestChecksum, eventHandler, 
-                "Putting the file '" + f.getName() + "' from commandLine.");
+        
+        if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
+            String pillarId = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
+            client.deleteFile(fileId, pillarId, validationChecksum, requestChecksum, eventHandler, 
+                    "Delete file from commandline for file '" + fileId + "' at pillar '" + pillarId + "'.");
+        } else {
+            client.deleteFileAtAllPillars(fileId, validationChecksum, requestChecksum, eventHandler, 
+                    "Delete file from commandline for file '" + fileId + "' at all pillars.");            
+        }
         
         return eventHandler.getFinish();
     }
     
     /**
-     * Creates the data structure for encapsulating the validation checksums for validation of the PutFile operation.
-     * @return The ChecksumDataForFileTYPE for the pillars to validate the PutFile operation.
+     * Creates the data structure for encapsulating the validation checksums for validation on the pillars.
+     * @return The ChecksumDataForFileTYPE for the pillars to validate the DeleteFile operation.
      */
     private ChecksumDataForFileTYPE getValidationChecksum() {
         if(!cmdHandler.hasOption(Constants.CHECKSUM_ARG)) {
@@ -184,21 +187,5 @@ public class PutFile {
             res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
         }
         return res;
-    }
-    
-    /**
-     * Finds the file from the arguments.
-     * @return 
-     */
-    private File findTheFile() {
-        String filePath = cmdHandler.getOptionValue(Constants.FILE_ARG);
-        
-        File file = new File(filePath);
-        if(!file.isFile()) {
-            throw new IllegalArgumentException("The file '" + filePath + "' is invalid. It does not exists or it "
-                    + "is a directory.");
-        }
-        
-        return file;
     }
 }

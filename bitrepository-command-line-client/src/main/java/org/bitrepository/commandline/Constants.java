@@ -1,3 +1,24 @@
+/*
+ * #%L
+ * Bitrepository Command Line
+ * %%
+ * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.commandline;
 
 /**
@@ -19,8 +40,10 @@ public class Constants {
     /** The path to the private key.*/
     public static final String PRIVATE_KEY_ARG = "k";
     
-    /** The path to the file.*/
-    public static final String FILE_PATH_ARG = "f";
+    /** The file argument.*/
+    public static final String FILE_ARG = "f";
+    /** The pillar argument.*/
+    public static final String PILLAR_ARG = "p";
     /** The checksum of the file.*/
     public static final String CHECKSUM_ARG = "c";
     /** The argument for the type of checksum to request.*/

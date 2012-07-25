@@ -36,8 +36,10 @@
   <AuditTrailServiceSettings>
     <ID>audittrail-service</ID>
     <SendAlarmOnMissingContributer>false</SendAlarmOnMissingContributer>
-    <AuditTrailServiceDatabaseUrl>jdbc:derby:<!--foobarpattern-->conf/audittrailservice/auditservicedb</AuditTrailServiceDatabaseUrl>
-    <AuditServiceDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditServiceDatabaseSpecifics>
+    <AuditTrailServiceDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/audittrailservice/auditservicedb</DatabaseURL>
+    </AuditTrailServiceDatabase>
     <CollectAuditInterval>3600000</CollectAuditInterval> 
     <TimerTaskCheckInterval>2000</TimerTaskCheckInterval>
     <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
