@@ -91,6 +91,22 @@
     </AuditTrailContributerDatabase>
 
     <!-- 
+      Database specification object for the data about the ChecksumDatabase.
+    -->
+    <ChecksumDatabase>
+    
+      <!-- 
+        The classpath for the driver for the database.  
+        -->
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      
+      <!--
+        The URL for the database. 
+        -->
+      <DatabaseURL>jdbc:derby:checksumdb</DatabaseURL>
+    </ChecksumDatabase>
+    
+    <!-- 
       Setting of how severe alarms needs to be before they are sent. 
       Available levels:
         - EMERGENCY - will only send an Alarm for the severest protocol issues (e.g. invalid message 

@@ -141,6 +141,13 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="ChecksumDatabase" type="DatabaseSpecifics">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The specifics for the ChecksumDatabase for the reference pillar.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element ref="AlarmLevel" minOccurs="0">
           <xs:annotation>
             <xs:documentation xml:lang="en">

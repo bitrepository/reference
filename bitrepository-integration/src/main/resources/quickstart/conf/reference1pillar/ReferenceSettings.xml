@@ -40,6 +40,10 @@
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/reference1pillar/auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
+    <ChecksumDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/reference1pillar/checksumdb</DatabaseURL>
+    </ChecksumDatabase>
     <AlarmLevel>ERROR</AlarmLevel>
   </PillarSettings>
 </ReferenceSettings>

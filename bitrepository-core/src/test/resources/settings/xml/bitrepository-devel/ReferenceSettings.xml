@@ -42,6 +42,10 @@
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
+    <ChecksumDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:checksumdb</DatabaseURL>
+    </ChecksumDatabase>
   </PillarSettings>
   <DeleteFileSettings></DeleteFileSettings>
   <GetAuditTrailSettings></GetAuditTrailSettings>
