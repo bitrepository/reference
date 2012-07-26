@@ -22,7 +22,7 @@
 package org.bitrepository.pillar.checksumpillar;
 
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
+import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMessageHandler;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.service.exception.RequestHandlerException;

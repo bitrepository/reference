@@ -26,8 +26,8 @@ package org.bitrepository.pillar;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.pillar.cache.FilebasedChecksumStore;
 import org.bitrepository.pillar.checksumpillar.ChecksumPillar;
-import org.bitrepository.pillar.checksumpillar.cache.FilebasedChecksumStore;
 import org.bitrepository.pillar.referencepillar.ReferencePillar;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;

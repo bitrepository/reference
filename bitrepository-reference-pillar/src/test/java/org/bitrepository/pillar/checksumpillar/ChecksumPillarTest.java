@@ -21,6 +21,8 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
+import java.util.Date;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -28,6 +30,7 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.MockAlarmDispatcher;
+import org.bitrepository.pillar.cache.MemoryCache;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.service.audit.MockAuditManager;
@@ -83,6 +86,6 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
     protected void initializeCacheWithMD5ChecksummedFile() {
         addFixtureSetup("Initialize the Checksum pillar cache with the default file checksum.");
         
-        cache.putEntry(DEFAULT_FILE_ID, DEFAULT_MD5_CHECKSUM);
+        cache.insertChecksumCalculation(DEFAULT_FILE_ID, DEFAULT_MD5_CHECKSUM, new Date());
     }
 }

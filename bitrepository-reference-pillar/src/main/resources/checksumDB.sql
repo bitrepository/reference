@@ -48,7 +48,7 @@ insert into tableversions ( tablename, version )
 -- Expected entry count: Very many, one for each file..
 --*************************************************************************--
 create table checksums (
-    sequence_number bigint not null generated always as identity primary key,
+    guid bigint not null generated always as identity primary key,
                                     -- The sequence number and unique key for this table.
     fileid varchar(255) not null,   -- The id of the file.
     checksum varchar(255),          -- The checksum of the file.

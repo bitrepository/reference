@@ -19,25 +19,22 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.checksumpillar.cache;
+package org.bitrepository.pillar.cache;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileUtils;
-import static org.bitrepository.pillar.checksumpillar.cache.ChecksumEntry.CHECKSUM_SEPARATOR;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +64,10 @@ public class FilebasedChecksumStore implements ChecksumStore {
     private static final String WRONG_FILENAME_PREFIX = "removed_";
     /** The suffix to the removedEntryFile. */
     private static final String WRONG_FILENAME_SUFFIX = ".checksum";
-    
+
+    /** The characters for separating different parts of an entry. */
+    private static final String ENTRY_SEPARATOR = "##";
+
     /**
      * The logger used by this class.
      */
@@ -290,7 +290,7 @@ public class FilebasedChecksumStore implements ChecksumStore {
                 FileWriter fw = new FileWriter(recreateFile);
                 try {
                     for(ChecksumEntry cs : checksumArchive.values()) {
-                        String record = cs.getFileId() + CHECKSUM_SEPARATOR + cs.getChecksum();
+                        String record = cs.getFileId() + ENTRY_SEPARATOR + cs.getChecksum();
                         fw.append(record + "\n");
                     }
                 } finally {
@@ -372,9 +372,10 @@ public class FilebasedChecksumStore implements ChecksumStore {
      * @param filename The name of the file to add.
      * @param checksum The checksum of the file to add.
      */
-    private synchronized void appendEntryToFile(String filename, String checksum) {
+    private synchronized void appendEntryToFile(ChecksumEntry entry) {
         // initialise the record.
-        String record = filename + CHECKSUM_SEPARATOR + checksum + "\n";
+        String record = entry.getFileId() + ENTRY_SEPARATOR + entry.getChecksum()+ ENTRY_SEPARATOR 
+                + entry.getCalculationDate().getTime() + "\n";
         
         // get a filewriter for the checksum file, and append the record. 
         boolean appendToFile = true;
@@ -430,27 +431,6 @@ public class FilebasedChecksumStore implements ChecksumStore {
     }
     
     @Override
-    public void putEntry(String fileId, String checksum) {
-        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
-        ArgumentValidator.checkNotNullOrEmpty(checksum, "String checksum");
-        synchronizeMemoryWithFile();
-        
-        if(hasFile(fileId)) {
-            if((getChecksum(fileId) != checksum)) {
-                throw new IllegalStateException("The file '" + fileId + "' is trying to be uploaded with another "
-                        + "checksum: '" + checksum + "'. Already knows the file with checksum '" + getChecksum(fileId)
-                        + "'.");
-            } else {
-                log.warn("The file '" + fileId + "' is already known to the cache with the identical checksum '"
-                        + checksum + "'.");
-            }
-        }
-        
-        checksumArchive.put(fileId, new ChecksumEntry(fileId, checksum));
-        appendEntryToFile(fileId, checksum);
-    }
-    
-    @Override
     public boolean hasFile(String fileId) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         synchronizeMemoryWithFile();
@@ -460,68 +440,10 @@ public class FilebasedChecksumStore implements ChecksumStore {
     }
     
     @Override
-    public String getChecksum(String fileId) {
-        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+    public Collection<String> getFileIDs() {
         synchronizeMemoryWithFile();
         
-        if(!checksumArchive.containsKey(fileId)) {
-            throw new IllegalStateException("No entry for file '" + fileId + "' to delete.");
-        }
-        
-        // Return the checksum of the record.
-        return checksumArchive.get(fileId).getChecksum();
-    }
-    
-    @Override
-    public Collection<String> getFileIDs(FileIDs fileIds) {
-        ArgumentValidator.checkNotNull(fileIds, "FileIDs fileIds");
-        synchronizeMemoryWithFile();
-        
-        if(fileIds.isSetAllFileIDs()) {
-            return checksumArchive.keySet();
-        }
-        
-        String fileId = fileIds.getFileID();
-        if(hasFile(fileId)) {
-            return Arrays.asList(fileId);
-        } else {
-            return Collections.emptyList();
-        }
-    }
-
-    @Override
-    public Map<String, Date> getLastModifiedDate(FileIDs fileIds) {
-        ArgumentValidator.checkNotNull(fileIds, "FileIDs fileIds");
-        synchronizeMemoryWithFile();
-        Collection<String> files = getFileIDs(fileIds);
-        
-        Date now = new Date();
-        Map<String, Date> res = new HashMap<String, Date>();
-        for(String file : files) {
-            res.put(file, now);
-        }
-        return res;
-    }
-    
-    @Override
-    public void replaceEntry(String fileId, String oldChecksum, String newChecksum) {
-        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
-        ArgumentValidator.checkNotNullOrEmpty(oldChecksum, "String oldChecksum");
-        ArgumentValidator.checkNotNullOrEmpty(newChecksum, "String newChecksum");
-        synchronizeMemoryWithFile();
-        
-        if(!checksumArchive.containsKey(fileId)) {
-            throw new IllegalStateException("No entry for file '" + fileId + "' to delete.");
-        }
-        
-        ChecksumEntry ce = checksumArchive.get(fileId);
-        if(!ce.getChecksum().equals(oldChecksum)) {
-            throw new IllegalStateException("Cannot replace the entry '" + fileId + "', since it does not have the "
-                    + "checksum '" + oldChecksum + "'.");
-        }
-
-        checksumArchive.put(fileId, new ChecksumEntry(fileId, newChecksum));
-        recreateArchiveFile();
+        return checksumArchive.keySet();
     }
     
     @Override
@@ -576,11 +498,62 @@ public class FilebasedChecksumStore implements ChecksumStore {
      * @return A ChecksumEntry corresponding the given line, or if it is wrongly
      */
     private ChecksumEntry parseLine(String line) {
-        String[] parts = line.split(CHECKSUM_SEPARATOR);
+        String[] parts = line.split(ENTRY_SEPARATOR);
         
-        if(parts.length < 2) {
+        if(parts.length < 3) {
             return null;
         } 
-        return new ChecksumEntry(parts[0], parts[1]);
+        return new ChecksumEntry(parts[0], parts[1], new Date(Long.parseLong(parts[2])));
+    }
+
+    @Override
+    public Date getCalculationDate(String fileId) {
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+        synchronizeMemoryWithFile();
+
+        return checksumArchive.get(fileId).getCalculationDate();
+    }
+
+    @Override
+    public ChecksumEntry getEntry(String fileId) {
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+        synchronizeMemoryWithFile();
+
+        return checksumArchive.get(fileId);
+    }
+
+    @Override
+    public Collection<ChecksumEntry> getAllEntries() {
+        synchronizeMemoryWithFile();
+
+        return checksumArchive.values();
+    }
+
+    @Override
+    public void insertChecksumCalculation(String fileId, String checksum, Date calculationDate) {
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+        ArgumentValidator.checkNotNullOrEmpty(checksum, "String checksum");
+        ArgumentValidator.checkNotNull(calculationDate, "Date calculationDate");
+        synchronizeMemoryWithFile();
+        
+        if(hasFile(fileId)) {
+            deleteEntry(fileId);
+        }
+        
+        ChecksumEntry entry = new ChecksumEntry(fileId, checksum, calculationDate);
+        checksumArchive.put(fileId, entry);
+        appendEntryToFile(entry);
+    }
+
+    @Override
+    public String getChecksum(String fileId) {
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+        synchronizeMemoryWithFile();
+        
+        if(!hasFile(fileId)) {
+            throw new IllegalStateException("No entry for file '" + fileId + "' to delete.");
+        }
+        
+        return checksumArchive.get(fileId).getChecksum();
     }
 }

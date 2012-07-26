@@ -26,6 +26,7 @@ package org.bitrepository.pillar.checksumpillar.messagehandler;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -39,7 +40,7 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
+import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -227,10 +228,9 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
      * @param newChecksum The new checksum to replace the old one with.
      */
     private void replaceTheEntry(ReplaceFileRequest message, String newChecksum) {
-        String oldChecksum = getCache().getChecksum(message.getFileID());
         getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Replacing the file.", 
                 message.getAuditTrailInformation(), FileAction.REPLACE_FILE); 
-        getCache().replaceEntry(message.getFileID(), oldChecksum, newChecksum);
+        getCache().insertChecksumCalculation(message.getFileID(), newChecksum, new Date());
     }
 
     /**

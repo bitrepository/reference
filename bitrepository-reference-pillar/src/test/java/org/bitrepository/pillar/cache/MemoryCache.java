@@ -19,17 +19,15 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.checksumpillar;
+package org.bitrepository.pillar.cache;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
+import org.bitrepository.pillar.cache.ChecksumEntry;
+import org.bitrepository.pillar.cache.ChecksumStore;
 
 /**
  * Very simple memory based implementation of the ChecksumCache.
@@ -40,57 +38,26 @@ public class MemoryCache implements ChecksumStore {
     /**
      * The checksum mapping between the file ids and their checksum.
      */
-    private Map<String, String> checksumMap = new HashMap<String, String>();
+    private Map<String, ChecksumEntry> checksumMap = new HashMap<String, ChecksumEntry>();
     
     public MemoryCache() {}
     
     @Override
     public String getChecksum(String fileId) {
-        return checksumMap.get(fileId);
+        if(checksumMap.containsKey(fileId)) {
+            return checksumMap.get(fileId).getChecksum();            
+        }
+        return null;
     }
     
     @Override
-    public Collection<String> getFileIDs(FileIDs fileIds) {
-        if(fileIds.isSetFileID()) {
-            if(checksumMap.containsKey(fileIds.getFileID())) {
-                return Arrays.asList(fileIds.getFileID());
-            } else {
-                return new ArrayList<String>();
-            }
-        }
-        
+    public Collection<String> getFileIDs() {
         return checksumMap.keySet();
-    }
-    
-    @Override
-    public Map<String, Date> getLastModifiedDate(FileIDs fileIds) {
-        Map<String, Date> res = new HashMap<String, Date>();
-        
-        for(String fileId : getFileIDs(fileIds)) {
-            res.put(fileId, new Date());
-        }
-        
-        return res;
-    }
-    
-    @Override
-    public void putEntry(String fileId, String checksum) {
-        checksumMap.put(fileId, checksum);
     }
     
     @Override
     public void deleteEntry(String fileId) {
         checksumMap.remove(fileId);
-    }
-    
-    @Override
-    public void replaceEntry(String fileId, String oldChecksum, String newChecksum) {
-        if(!checksumMap.get(fileId).equals(oldChecksum)) {
-            throw new IllegalStateException("Cannot replace the entry for '" + fileId + "' since it does not "
-                    + "have the checksum '" + oldChecksum + "'. Expected '" + checksumMap.get(fileId) + "'");
-        }
-        
-        checksumMap.put(fileId, newChecksum);
     }
     
     @Override
@@ -104,5 +71,25 @@ public class MemoryCache implements ChecksumStore {
      */
     public void cleanUp() {
         checksumMap.clear();
+    }
+
+    @Override
+    public Date getCalculationDate(String fileId) {
+        return checksumMap.get(fileId).getCalculationDate();
+    }
+
+    @Override
+    public ChecksumEntry getEntry(String fileId) {
+        return checksumMap.get(fileId);
+    }
+
+    @Override
+    public Collection<ChecksumEntry> getAllEntries() {
+        return checksumMap.values();
+    }
+
+    @Override
+    public void insertChecksumCalculation(String fileId, String checksum, Date calculationDate) {
+        checksumMap.put(fileId, new ChecksumEntry(fileId, checksum, calculationDate));
     }
 }

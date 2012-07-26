@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Date;
-import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -51,7 +50,8 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
+import org.bitrepository.pillar.cache.ChecksumEntry;
+import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -189,13 +189,21 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
         
         FileIDsData res = new FileIDsData();
         FileIDsDataItems fileIDList = new FileIDsDataItems();
-        for(Map.Entry<String, Date> fileDate : getCache().getLastModifiedDate(fileIDs).entrySet()) {
+        if(fileIDs.isSetFileID()) {
+            ChecksumEntry entry = getCache().getEntry(fileIDs.getFileID());
             FileIDsDataItem fileIDData = new FileIDsDataItem();
-            fileIDData.setFileID(fileDate.getKey());
-            fileIDData.setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(fileDate.getValue()));
-
+            fileIDData.setFileID(entry.getFileId());
+            fileIDData.setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
             fileIDList.getFileIDsDataItem().add(fileIDData);
+        } else {
+            for(ChecksumEntry entry : getCache().getAllEntries()) {
+                FileIDsDataItem fileIDData = new FileIDsDataItem();
+                fileIDData.setFileID(entry.getFileId());
+                fileIDData.setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
+                fileIDList.getFileIDsDataItem().add(fileIDData);
+            }
         }
+        
         res.setFileIDsDataItems(fileIDList);
         return res;
     }

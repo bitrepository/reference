@@ -26,6 +26,7 @@ package org.bitrepository.pillar.checksumpillar.messagehandler;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -38,7 +39,7 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
+import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -177,7 +178,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         
         getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Putting the downloaded file "
                 + "into archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE);
-        getCache().putEntry(message.getFileID(), calculatedChecksum);
+        getCache().insertChecksumCalculation(message.getFileID(), calculatedChecksum, new Date());
     }
     
     /**

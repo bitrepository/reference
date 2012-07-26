@@ -1,4 +1,4 @@
-package org.bitrepository.pillar.database;
+package org.bitrepository.pillar.cache;
 
 import java.util.Date;
 
