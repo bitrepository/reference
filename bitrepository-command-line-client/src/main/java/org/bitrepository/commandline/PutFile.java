@@ -74,47 +74,29 @@ public class PutFile {
         System.out.println("Initialising arguments");
         cmdHandler = new CommandLineArgumentsHandler();
         try {
-<<<<<<< HEAD
             createOptionsForCmdArgumentHandler();
             cmdHandler.parseArguments(args);
-=======
-            System.out.println("Initialising arguments");
-            cmd = parseArguments(args);
-            settings = loadSettings(COMPONENT_ID, cmd.getOptionValue(Constants.SETTINGS_ARG));
-            securityManager = loadSecurityManager(cmd.getOptionValue(Constants.PRIVATE_KEY_ARG), settings);
->>>>>>> refs/remotes/origin/master
             
-<<<<<<< HEAD
             settings = cmdHandler.loadSettings(COMPONENT_ID);
             securityManager = cmdHandler.loadSecurityManager(settings);
             
-=======
->>>>>>> refs/remotes/origin/master
             System.out.println("Instantiating the PutFileClient");
             client = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager, COMPONENT_ID);
         } catch (Exception e) {
             System.err.println(cmdHandler.listArguments());
             throw new IllegalArgumentException(e);
         }
-<<<<<<< HEAD
     }
     
     /**
      * Perform the PutFile operation.
      */
     public void performOperation() {
-=======
-        
->>>>>>> refs/remotes/origin/master
         System.out.println("Performing the PutFile operation.");
         OperationEvent e = putTheFile();
         if(e.getType() == OperationEventType.COMPLETE) {
             System.out.println("PutFile operation successfull for the file '" 
-<<<<<<< HEAD
                     + cmdHandler.getOptionValue(Constants.FILE_ARG) + "': " + e);
-=======
-                    + cmd.getOptionValue(Constants.FILE_PATH_ARG) + "': " + e);
->>>>>>> refs/remotes/origin/master
             System.exit(0);
         } else {
             System.err.println("PutFile failed for the file '" + cmdHandler.getOptionValue(Constants.FILE_ARG) + "':" 
