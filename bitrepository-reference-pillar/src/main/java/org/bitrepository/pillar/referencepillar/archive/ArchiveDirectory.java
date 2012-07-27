@@ -108,6 +108,18 @@ public class ArchiveDirectory {
      */
     public File getFileInTempDir(String fileId) {
         File res = new File(tmpDir, fileId);
+        if(!res.exists()) {
+            throw new IllegalStateException("The file '" + fileId + "' does not exist within the tmpDir.");
+        }
+        return res;
+    }
+    
+    /**
+     * @param fileId The id of the file
+     * @return A new file in the temporary directory.
+     */
+    public File getNewFileInTempDir(String fileId) {
+        File res = new File(tmpDir, fileId);
         if(res.exists()) {
             throw new IllegalStateException("Cannot create a new file in the temporary directory.");
         }

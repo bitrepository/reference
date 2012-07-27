@@ -24,11 +24,15 @@ package org.bitrepository.pillar.referencepillar;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.MockAlarmDispatcher;
+import org.bitrepository.pillar.cache.ChecksumStore;
+import org.bitrepository.pillar.cache.MemoryCache;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ContributorContext;
@@ -39,9 +43,11 @@ import org.testng.annotations.BeforeMethod;
 
 public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     protected ReferenceArchive archive;
+    protected ReferenceChecksumManager csManager;
     protected ReferencePillarMediator mediator;
     protected MockAlarmDispatcher alarmDispatcher;
     protected MockAuditManager audits;
+    protected ChecksumStore csCache;
     protected PillarContext context;
     
     protected final String EMPTY_FILE_CHECKSUM = "d41d8cd98f00b204e9800998ecf8427e";
@@ -55,12 +61,15 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
         }
 
         addStep("Initialize the pillar.", "Should not be a problem.");
+        csCache = new MemoryCache();
         archive = new ReferenceArchive(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
         audits = new MockAuditManager();
         ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
         alarmDispatcher = new MockAlarmDispatcher(contributorContext);
         context = new PillarContext(componentSettings, messageBus, alarmDispatcher, audits);
-        mediator = new ReferencePillarMediator(context, archive);
+        csManager = new ReferenceChecksumManager(archive, csCache, ChecksumUtils.getDefault(context.getSettings()), 
+                3600000L);
+        mediator = new ReferencePillarMediator(context, archive, csManager);
         mediator.start();
     }
 

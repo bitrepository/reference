@@ -40,6 +40,7 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.protocol.FileExchange;
@@ -294,11 +295,11 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     private ChecksumDataForFileTYPE calculatedChecksumForFile(ChecksumSpecTYPE checksumType, String fileId) {
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         
-        String checksum = getCache().getChecksum(fileId);
+        ChecksumEntry entry = getCache().getEntry(fileId);
         
         res.setChecksumSpec(checksumType);
-        res.setCalculationTimestamp(CalendarUtils.getNow());
-        res.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
+        res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
         
         return res;
     }

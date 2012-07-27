@@ -92,4 +92,9 @@ public class MemoryCache implements ChecksumStore {
     public void insertChecksumCalculation(String fileId, String checksum, Date calculationDate) {
         checksumMap.put(fileId, new ChecksumEntry(fileId, checksum, calculationDate));
     }
+
+    @Override
+    public void close() {
+        cleanUp();
+    }
 }

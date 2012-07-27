@@ -34,10 +34,9 @@ import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -52,12 +51,13 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /**
-     * Constructor.
-     * @param context The context of the message handler.
-     * @param referenceArchive The archive for the data.
+     * @param context The context for the pillar.
+     * @param referenceArchive The archive for the pillar.
+     * @param csManager The checksum manager for the pillar.
      */
-    public DeleteFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
-        super(context, referenceArchive);
+    protected DeleteFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive,
+            ReferenceChecksumManager csManager) {
+        super(context, referenceArchive, csManager);
     }
 
     @Override
@@ -117,8 +117,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
             getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation "
                     + "checksum on the file, which should be deleted.", message.getAuditTrailInformation(), 
                     FileAction.CHECKSUM_CALCULATED);
-            String calculatedChecksum = ChecksumUtils.generateChecksum(getArchive().getFile(message.getFileID()), 
-                    checksumType);
+            String calculatedChecksum = getCsManager().getChecksumForFile(message.getFileID(), checksumType);
             String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
             if(!calculatedChecksum.equals(requestedChecksum)) {
                 // Log the different checksums, but do not send the right checksum back!
@@ -169,18 +168,10 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
             return null;
         }
         
-        ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
-        
         getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the requested checksum "
                 + "on the file, which should be deleted.", message.getAuditTrailInformation(), 
                 FileAction.CHECKSUM_CALCULATED);
-        String checksum = ChecksumUtils.generateChecksum(getArchive().getFile(message.getFileID()), checksumType);
-        
-        res.setChecksumSpec(checksumType);
-        res.setCalculationTimestamp(CalendarUtils.getNow());
-        res.setChecksumValue(Base16Utils.encodeBase16(checksum));
-        
-        return res;
+        return getCsManager().getChecksumDataForFile(message.getFileID(), checksumType);
     }
     
     /**
@@ -191,6 +182,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
         getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Deleting the file.", 
                 message.getAuditTrailInformation(), FileAction.DELETE_FILE);
         getArchive().deleteFile(message.getFileID());
+        getCsManager().deleteEntry(message.getFileID());
     }
 
     /**

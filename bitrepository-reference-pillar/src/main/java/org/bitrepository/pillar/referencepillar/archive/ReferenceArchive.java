@@ -55,7 +55,7 @@ public class ReferenceArchive implements FileStore {
     /** 
      * Constructor. Initialises the file directory. 
      * 
-     * @param dirNames The list of paths to the archival base directories.
+     * @param dirPaths The list of paths to the archival base directories.
      */
     public ReferenceArchive(List<String> dirPaths) {
         ArgumentValidator.checkNotNullOrEmpty(dirPaths, "List<String> dirPaths");
@@ -111,7 +111,7 @@ public class ReferenceArchive implements FileStore {
         ArchiveDirectory dir = getDirWithMostSpace();
         File downloadedFile = null;
         synchronized(dir) {
-            downloadedFile = dir.getFileInTempDir(fileID);
+            downloadedFile = dir.getNewFileInTempDir(fileID);
             log.debug("Downloading the file '" + fileID + "' for validation.");
             
             // Save InputStream to the file.
@@ -218,6 +218,15 @@ public class ReferenceArchive implements FileStore {
      */
     public long sizeLeftInArchive() {
         return getDirWithMostSpace().getBytesLeft();
+    }
+    
+    /**
+     * Retrieves the file within a tmpDir.
+     * @param fileId The id of the file to locate within the tmpDir.
+     * @return The file in the tmpDir.
+     */
+    public File getFileInTmpDir(String fileId) {
+        return getDirWithTmpFile(fileId).getFileInTempDir(fileId);
     }
     
     /**

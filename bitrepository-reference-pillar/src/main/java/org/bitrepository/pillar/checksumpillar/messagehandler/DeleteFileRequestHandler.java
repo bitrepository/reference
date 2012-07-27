@@ -36,6 +36,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ResponseInfoUtils;
+import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.service.exception.IllegalOperationException;
@@ -155,11 +156,10 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         ChecksumSpecTYPE checksumType = message.getChecksumRequestForExistingFile();
         
-        String checksum = getCache().getChecksum(message.getFileID());
-        
+        ChecksumEntry entry = getCache().getEntry(message.getFileID());
         res.setChecksumSpec(checksumType);
-        res.setCalculationTimestamp(CalendarUtils.getNow());
-        res.setChecksumValue(checksum.getBytes());
+        res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
+        res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
         
         return res;
     }

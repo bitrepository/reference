@@ -34,6 +34,7 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.common.PillarMessageHandler;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 
@@ -43,19 +44,22 @@ import org.bitrepository.service.exception.RequestHandlerException;
 public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHandler<T> {
     /** The reference archive.*/
     private final ReferenceArchive archive;
+    /** The manager of checksums.*/
+    private final ReferenceChecksumManager csManager;
     
     /**
-     * Constructor. 
-     * @param settings The settings for handling the message.
-     * @param messageBus The bus for communication.
-     * @param alarmDispatcher The dispatcher of alarms.
-     * @param referenceArchive The archive for the data.
+     * @param context The context for the pillar.
+     * @param referenceArchive The archive for the pillar.
+     * @param csManager The checksum manager for the pillar.
      */
-    protected ReferencePillarMessageHandler(PillarContext context, ReferenceArchive referenceArchive) {
+    protected ReferencePillarMessageHandler(PillarContext context, ReferenceArchive referenceArchive,
+            ReferenceChecksumManager csManager) {
         super(context);
         ArgumentValidator.checkNotNull(referenceArchive, "referenceArchive");
+        ArgumentValidator.checkNotNull(csManager, "ReferenceChecksumManager csManager");
 
         this.archive = referenceArchive;
+        this.csManager = csManager;
     }
     
     /**
@@ -63,6 +67,13 @@ public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHand
      */
     protected ReferenceArchive getArchive() {
         return archive;
+    }
+    
+    /**
+     * @return The checksum manager for this handler.
+     */
+    protected ReferenceChecksumManager getCsManager() {
+        return csManager;
     }
     
     /**

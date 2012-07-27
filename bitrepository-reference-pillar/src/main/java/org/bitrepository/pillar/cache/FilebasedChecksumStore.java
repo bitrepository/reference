@@ -556,4 +556,7 @@ public class FilebasedChecksumStore implements ChecksumStore {
         
         return checksumArchive.get(fileId).getChecksum();
     }
+
+    @Override
+    public void close() { }
 }

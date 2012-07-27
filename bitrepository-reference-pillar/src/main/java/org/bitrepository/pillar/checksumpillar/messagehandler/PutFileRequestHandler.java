@@ -39,6 +39,7 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.protocol.FileExchange;
@@ -195,20 +196,21 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         fResponse.setResponseInfo(frInfo);
         fResponse.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
         
-        ChecksumDataForFileTYPE checksumForValidation = new ChecksumDataForFileTYPE();
-        
         if(message.getChecksumRequestForNewFile() != null) {
-            checksumForValidation.setChecksumValue(getCache().getChecksum(message.getFileID()).getBytes());
-            checksumForValidation.setCalculationTimestamp(CalendarUtils.getNow());
+            ChecksumDataForFileTYPE checksumForValidation = new ChecksumDataForFileTYPE();
+            
+            ChecksumEntry entry = getCache().getEntry(message.getFileID());
+            checksumForValidation.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
+            checksumForValidation.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(
+                    entry.getCalculationDate()));
             checksumForValidation.setChecksumSpec(message.getChecksumRequestForNewFile());
             log.debug("Requested checksum calculated: " + checksumForValidation);
+            
+            fResponse.setChecksumDataForNewFile(checksumForValidation);
         } else {
             // TODO is such a request required?
             log.info("No checksum validation requested.");
-            checksumForValidation = null;
         }
-        
-        fResponse.setChecksumDataForNewFile(checksumForValidation);
         
         log.debug("Sending PutFileFinalResponse: " + fResponse);
         getContext().getDispatcher().sendMessage(fResponse);

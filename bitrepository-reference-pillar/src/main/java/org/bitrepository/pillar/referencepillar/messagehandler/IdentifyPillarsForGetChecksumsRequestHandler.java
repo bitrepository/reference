@@ -36,6 +36,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
 
@@ -45,14 +46,15 @@ import org.bitrepository.service.exception.RequestHandlerException;
 public class IdentifyPillarsForGetChecksumsRequestHandler 
         extends ReferencePillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> {
     /**
-     * Constructor.
-     * @param context The context of the message handler.
-     * @param referenceArchive The archive for the data.
+     * @param context The context for the pillar.
+     * @param referenceArchive The archive for the pillar.
+     * @param csManager The checksum manager for the pillar.
      */
-    public IdentifyPillarsForGetChecksumsRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
-        super(context, referenceArchive);
+    protected IdentifyPillarsForGetChecksumsRequestHandler(PillarContext context, ReferenceArchive referenceArchive,
+            ReferenceChecksumManager csManager) {
+        super(context, referenceArchive, csManager);
     }
-
+    
     @Override
     public Class<IdentifyPillarsForGetChecksumsRequest> getRequestClass() {
         return IdentifyPillarsForGetChecksumsRequest.class;
