@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -48,12 +49,13 @@ public class IdentifyPillarsForReplaceFileRequestHandler
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
-     * Constructor.
-     * @param context The context of the message handler.
-     * @param referenceArchive The archive for the data.
+     * @param context The context for the pillar.
+     * @param referenceArchive The archive for the pillar.
+     * @param csManager The checksum manager for the pillar.
      */
-    public IdentifyPillarsForReplaceFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
-        super(context, referenceArchive);
+    protected IdentifyPillarsForReplaceFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive,
+            ReferenceChecksumManager csManager) {
+        super(context, referenceArchive, csManager);
     }
 
     @Override

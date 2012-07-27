@@ -18,13 +18,15 @@ public class ChecksumDAO implements ChecksumStore {
     private final ChecksumIngestor ingestor;
     /** The extractor for the database.*/
     private final ChecksumExtractor extractor;
+    /** The connector for the database.*/
+    private final DBConnector connector;
     
     /**
      * Constructor.
      * @param settings The settings.
      */
     public ChecksumDAO(Settings settings) {
-        DBConnector connector = new DBConnector(
+        connector = new DBConnector(
                 settings.getReferenceSettings().getPillarSettings().getChecksumDatabase());
         
         this.ingestor = new ChecksumIngestor(connector);
@@ -97,5 +99,10 @@ public class ChecksumDAO implements ChecksumStore {
             throw new IllegalStateException("No entry for file '" + fileId + "' to delete.");
         }
         return res;
+    }
+
+    @Override
+    public void close() {
+        connector.destroy();
     }
 }

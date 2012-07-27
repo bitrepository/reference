@@ -73,6 +73,13 @@
       Time in milliseconds. 
     -->
     <TimeToStartDeliver>1000</TimeToStartDeliver>
+    
+    <!--
+      The number of milliseconds for a checksum to become outdated in the ChecksumStore.
+      This is not used by the ChecksumPillar, since it anyway would not be able to 
+      recalculate the checksum. 
+     -->
+    <MaxAgeForChecksums>3600000</MaxAgeForChecksums>
 
     <!-- 
       Database specification object for the data about the AuditTrailContributer database.

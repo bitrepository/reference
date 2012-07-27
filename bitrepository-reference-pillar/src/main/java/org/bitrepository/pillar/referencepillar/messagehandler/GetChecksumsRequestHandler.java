@@ -39,7 +39,6 @@ import javax.xml.bind.JAXBException;
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetChecksumsResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -50,11 +49,9 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
-import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.service.exception.InvalidMessageException;
@@ -71,12 +68,13 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
-     * Constructor.
-     * @param context The context of the message handler.
-     * @param referenceArchive The archive for the data.
+     * @param context The context for the pillar.
+     * @param referenceArchive The archive for the pillar.
+     * @param csManager The checksum manager for the pillar.
      */
-    public GetChecksumsRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
-        super(context, referenceArchive);
+    protected GetChecksumsRequestHandler(PillarContext context, ReferenceArchive referenceArchive,
+            ReferenceChecksumManager csManager) {
+        super(context, referenceArchive, csManager);
     }
     
     @Override
@@ -181,7 +179,8 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
         getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
                 "Calculating the checksum.", message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
-        res.add(calculateSingleChecksum(fileids.getFileID(), message.getChecksumRequestForExistingFile()));
+        res.add(getCsManager().getChecksumDataForChecksumSpec(fileids.getFileID(), 
+                message.getChecksumRequestForExistingFile()));
         
         return res;
     }
@@ -199,28 +198,10 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
         for(String fileid : getArchive().getAllFileIds()) {
             getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
                     "Calculating the checksum.", message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
-            res.add(calculateSingleChecksum(fileid, message.getChecksumRequestForExistingFile()));
+            res.add(getCsManager().getChecksumDataForChecksumSpec(fileid, message.getChecksumRequestForExistingFile()));
         }
 
         return res;
-    }
-    
-    /**
-     * Performs the actual checksum calculation of a file. And Base64 encodes the results.
-     * 
-     * @param fileId The id of the file.
-     * @param csType The specifications for the calculation.
-     * @return The calculated checksum for the given file, calculated with the given checksum specification.
-     */
-    private ChecksumDataForChecksumSpecTYPE calculateSingleChecksum(String fileId, ChecksumSpecTYPE csType) {
-        File file = getArchive().getFile(fileId);
-        ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
-        String checksum = ChecksumUtils.generateChecksum(file, csType);
-        singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
-        singleFileResult.setFileID(fileId);
-        singleFileResult.setChecksumValue(Base16Utils.encodeBase16(checksum));
-        
-        return singleFileResult;
     }
     
     /**

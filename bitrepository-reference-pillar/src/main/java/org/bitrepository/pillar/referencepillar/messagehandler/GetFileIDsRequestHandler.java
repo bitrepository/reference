@@ -52,6 +52,7 @@ import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.service.exception.InvalidMessageException;
@@ -68,12 +69,13 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
-     * Constructor.
-     * @param context The context of the message handler.
-     * @param referenceArchive The archive for the data.
+     * @param context The context for the pillar.
+     * @param referenceArchive The archive for the pillar.
+     * @param csManager The checksum manager for the pillar.
      */
-    public GetFileIDsRequestHandler(PillarContext context, ReferenceArchive referenceArchive) {
-        super(context, referenceArchive);
+    protected GetFileIDsRequestHandler(PillarContext context, ReferenceArchive referenceArchive,
+            ReferenceChecksumManager csManager) {
+        super(context, referenceArchive, csManager);
     }
     
     @Override

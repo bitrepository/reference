@@ -59,4 +59,9 @@ public interface ChecksumStore {
      * @return Whether the file could be found.
      */
     boolean hasFile(String fileId);
+    
+    /**
+     * Closes and cleans up the ChecksumStore.
+     */
+    void close();
 }

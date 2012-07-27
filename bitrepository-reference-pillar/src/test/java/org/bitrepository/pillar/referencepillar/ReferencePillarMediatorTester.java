@@ -55,7 +55,7 @@ public class ReferencePillarMediatorTester extends ReferencePillarTest {
         ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
         alarmDispatcher = new MockAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(componentSettings, messageBus, alarmDispatcher, audits);
-        mediator = new ReferencePillarMediator(context, archive);
+        mediator = new ReferencePillarMediator(context, archive, csManager);
         mediator.start();
     }
     
