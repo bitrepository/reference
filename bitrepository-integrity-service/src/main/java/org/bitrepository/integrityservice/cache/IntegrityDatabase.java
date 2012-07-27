@@ -31,13 +31,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.database.DBConnector;
-import org.bitrepository.common.database.DBSpecifics;
-import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.slf4j.Logger;
@@ -52,6 +49,8 @@ public class IntegrityDatabase implements IntegrityModel {
 
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(this.getClass());
+    /** The settings.*/
+    private final Settings settings;
     
     /**
      * Initialize storage.
@@ -59,18 +58,10 @@ public class IntegrityDatabase implements IntegrityModel {
      * @param storageConfiguration Contains configuration for storage. Currently URL, user and pass for database.
      */
     public IntegrityDatabase(Settings settings) {
-        DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseSpecifics());
-        this.store = new IntegrityDAO(new DBConnector(dbSpecifics, 
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabaseUrl()));
-    }
-    
-    /**
-     * Retrieve the interface to the database, which stores the integrity data.
-     * @return The database store.
-     */
-    public IntegrityDAO getStore() {
-        return store;
+        this.settings = settings;
+        this.store = new IntegrityDAO(new DBConnector(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
+                settings.getCollectionSettings().getClientSettings().getPillarIDs());
     }
     
     @Override
@@ -84,9 +75,8 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, 
-            String pillarId) {
-        store.updateChecksumData(data, checksumType, pillarId);
+    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId) {
+        store.updateChecksumData(data, pillarId);
     }
 
     @Override
@@ -144,6 +134,34 @@ public class IntegrityDatabase implements IntegrityModel {
         store.removeFileId(fileId);
     }
     
+    @Override
+    public List<String> findMissingChecksums() {
+        return store.findMissingChecksums();
+    }
+
+    @Override
+    public List<String> findMissingFiles() {
+        return store.findMissingFiles();
+    }
+
+    /*
+     * TODO make the following container:
+     * class FileIDOnPillars {
+     *   String fileID;
+     *   List<String> pillarIDs.
+     *   ......
+     * }
+     */
+    @Override
+    public List<String> getPillarsMissingFile(String fileId) {
+        return store.getMissingAtPillars(fileId);
+    }
+
+    @Override
+    public Collection<String> findChecksumsOlderThan(Date date) {
+        return store.findFilesWithOldChecksum(date);
+    }
+    
     /**
      * Find the difference between the expected file ids and the delivered ones.
      * 
@@ -169,22 +187,14 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public List<String> findMissingChecksums() {
-        return store.findMissingChecksums();
+    public List<String> getFilesWithInconsistentChecksums() {
+        Date maxDate = new Date(System.currentTimeMillis() - 
+                settings.getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck());
+        return store.findFilesWithInconsistentChecksums(maxDate);
     }
 
     @Override
-    public List<String> findMissingFiles() {
-        return store.findMissingFiles();
-    }
-
-    @Override
-    public List<String> isMissing(String fileId) {
-        return store.getMissingAtPillars(fileId);
-    }
-
-    @Override
-    public Collection<String> findChecksumsOlderThan(Date date) {
-        return store.findFilesWithOldChecksum(date);
+    public void setFilesWithConsistentChecksumToValid() {
+        store.setFilesWithConsistentChecksumsToValid();
     }
 }

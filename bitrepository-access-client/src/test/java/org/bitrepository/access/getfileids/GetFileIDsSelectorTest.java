@@ -51,6 +51,7 @@ public class GetFileIDsSelectorTest extends ExtendedTestCase {
         addStep("Test against a negative response.", "Should throw an exception.");
         IdentifyPillarsForGetFileIDsResponse response = new IdentifyPillarsForGetFileIDsResponse();
         response.setFrom(PILLAR_ID_1);
+        response.setPillarID(PILLAR_ID_1);
         response.setResponseInfo(createNegativeIdentificationResponseInfo());
         
         try {
@@ -59,10 +60,6 @@ public class GetFileIDsSelectorTest extends ExtendedTestCase {
         } catch (UnexpectedResponseException e) {
             // expected
         }
-        
-        
-        Assert.assertEquals(selector.getOutstandingPillars(), Arrays.asList(PILLAR_ID_1));
-        Assert.assertFalse(selector.isFinished());
         
         addStep("Good case. New selector and a positive response.", "Should finish");
         selector = new PillarSelectorForGetFileIDs(Arrays.asList(PILLAR_ID_1));

@@ -21,13 +21,11 @@
  */
 package org.bitrepository.integrityservice.mocks;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.integrityservice.cache.FileInfo;
@@ -59,9 +57,9 @@ public class MockIntegrityModel implements IntegrityModel {
 
     private int callsForAddChecksums = 0;
     @Override
-    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, String pillarId) {
+    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId) {
         callsForAddChecksums++;
-        integrityModel.addChecksums(data, checksumType, pillarId);
+        integrityModel.addChecksums(data, pillarId);
     }
     public int getCallsForAddChecksums() {
         return callsForAddChecksums;
@@ -161,7 +159,7 @@ public class MockIntegrityModel implements IntegrityModel {
     @Override
     public List<String> findMissingChecksums() {
         callsForFindMissingChecksums++;
-        return new ArrayList<String>();
+        return integrityModel.findMissingChecksums();
     }
     public int getCallsForFindMissingChecksums() {
         return callsForFindMissingChecksums;
@@ -171,7 +169,7 @@ public class MockIntegrityModel implements IntegrityModel {
     @Override
     public List<String> findMissingFiles() {
         callsForFindMissingFiles++;
-        return new ArrayList<String>();
+        return integrityModel.findMissingFiles();
     }
     public int getCallsForFindMissingFiles() {
         return callsForFindMissingFiles;
@@ -181,7 +179,7 @@ public class MockIntegrityModel implements IntegrityModel {
     @Override
     public Collection<String> findChecksumsOlderThan(Date date) {
         callsForFindChecksumsOlderThan++;
-        return new ArrayList<String>();
+        return integrityModel.findChecksumsOlderThan(date);
     }
     public int getCallsForFindChecksumsOlderThan() {
         return callsForFindChecksumsOlderThan;
@@ -189,11 +187,31 @@ public class MockIntegrityModel implements IntegrityModel {
     
     private int callsForIsMissing = 0;
     @Override
-    public List<String> isMissing(String fileId) {
+    public List<String> getPillarsMissingFile(String fileId) {
         callsForIsMissing++;
-        return new ArrayList<String>();
+        return integrityModel.getPillarsMissingFile(fileId);
     }
     public int getCallsForIsMissing() {
         return callsForIsMissing;
+    }
+    
+    private int callsForGetFilesWithDistinctChecksums = 0;
+    @Override
+    public List<String> getFilesWithInconsistentChecksums() {
+        callsForGetFilesWithDistinctChecksums++;
+        return integrityModel.getFilesWithInconsistentChecksums();
+    }
+    public int getCallsForGetFilesWithDistinctChecksums() {
+        return callsForGetFilesWithDistinctChecksums;
+    }
+    
+    private int callsForSetFilesWithUnanimousChecksumToValid = 0;
+    @Override
+    public void setFilesWithConsistentChecksumToValid() {
+        callsForSetFilesWithUnanimousChecksumToValid++;
+        integrityModel.setFilesWithConsistentChecksumToValid();
+    }
+    public int getCallsForSetFilesWithUnanimousChecksumToValid() {
+        return callsForSetFilesWithUnanimousChecksumToValid;
     }
 }

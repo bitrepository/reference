@@ -42,7 +42,6 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
-import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.service.exception.IllegalOperationException;
@@ -324,15 +323,11 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
      * @param message The message with the request for the file to be replaced.
      */
     private void replaceTheFile(ReplaceFileRequest message) {
-        try {
-            log.info("Replacing the file '" + message.getFileID() + "' in the archive with the one in the "
-                    + "temporary area.");
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Replacing the file.", 
-                    message.getAuditTrailInformation(), FileAction.REPLACE_FILE); 
-            getArchive().replaceFile(message.getFileID());
-        } catch (IOException e) {
-            throw new CoordinationLayerException("Could not replace the old file with the new one.", e);
-        }
+        log.info("Replacing the file '" + message.getFileID() + "' in the archive with the one in the "
+                + "temporary area.");
+        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Replacing the file.", 
+                message.getAuditTrailInformation(), FileAction.REPLACE_FILE); 
+        getArchive().replaceFile(message.getFileID());
     }
     
     /**

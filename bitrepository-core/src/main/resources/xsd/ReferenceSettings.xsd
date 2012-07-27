@@ -112,10 +112,10 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="FileDir" type="xs:string">
+        <xs:element name="FileDir" type="xs:string" minOccurs="1" maxOccurs="unbounded">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              Location for the base directory for storing the files.
+              The path to all the directories where the files should be archived.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -134,17 +134,17 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="AuditContributerDatabaseUrl" type="xs:string">
+        <xs:element name="AuditTrailContributerDatabase" type="DatabaseSpecifics">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The url to the database, which contains the audit data for the contributer.
+              The specifics for the AuditContributorDatabase for the reference pillar.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="AuditContributerDatabaseSpecifics" type="xs:string">
+        <xs:element name="ChecksumDatabase" type="DatabaseSpecifics">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The name of the class for the database specifics for the audit contributor database.
+              The specifics for the ChecksumDatabase for the reference pillar.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -170,24 +170,25 @@
         <xs:enumeration value="EMERGENCY">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              Only the most critical incidents can cause an Alarm to be raised.
-              E.g. all the files at a Pillar is missing.
+              Will only send an Alarm for the severest protocol level issues 
+              (e.g. invalid message or certificate). 
             </xs:documentation>
           </xs:annotation>
         </xs:enumeration>
         <xs:enumeration value="ERROR">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              Raise an Alarm when an operation goes bad.
-              E.g. a file is only put on two out of three pillars.
+              Sends an Alarm in the case of checksum errors or if a request does not uphold the 
+              contract in CollectionSettings (e.g. does not contain the required checksums 
+              for a put, delete or replace operation).
             </xs:documentation>
           </xs:annotation>
         </xs:enumeration>
         <xs:enumeration value="WARNING">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              Raise an Alarm in every possible event.
-              E.g. not all expected pillars reply to an Identify request.
+              Sends an Alarm whenever an operation or identification fails (e.g. missing file, 
+              file already exist, etc.).
             </xs:documentation>
           </xs:annotation>
         </xs:enumeration>
@@ -311,178 +312,190 @@
     </xs:complexType>
   </xs:element>
 
-
-    <xs:element name="AlarmServiceSettings">
-      <xs:complexType>
-        <xs:annotation>
-          <xs:documentation>
-            The settings for the Alarm service.
-          </xs:documentation>
-        </xs:annotation>
-        <xs:sequence>
-          <xs:element name="ID" type="xs:string" />
-          <xs:element ref="MailingConfiguration" minOccurs="0"/>
-          <xs:element name="AlarmServiceDatabaseUrl" type="xs:string">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The url to the database, which contains the alarms for the service.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-          <xs:element name="AlarmDatabaseSpecifics" type="xs:string">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The name of the class for the database specifics for the alarm database.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-        </xs:sequence>
-      </xs:complexType>
-    </xs:element>
+  <xs:element name="AlarmServiceSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+          The settings for the Alarm service.
+        </xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="ID" type="xs:string" />
+        <xs:element ref="MailingConfiguration" minOccurs="0"/>
+        <xs:element name="AlarmServiceDatabase" type="DatabaseSpecifics">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The specifics for the AlarmServiceDatabase.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   
-    <xs:element name="AuditTrailServiceSettings">
-      <xs:complexType>
-        <xs:annotation>
-          <xs:documentation>
-            The settings for the Alarm service.
-          </xs:documentation>
-        </xs:annotation>
-        <xs:sequence>
-          <xs:element name="ID" type="xs:string" />
-          <xs:element name="SendAlarmOnMissingContributer" type="xs:boolean" minOccurs="0">
-            <xs:annotation>
-              <xs:documentation>
-                Specifies whether the audit trail services should send alarms when contributers defined to be part of
-                the collection, doesn't reply to identify requests. Default is false.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-          <xs:element name="AuditTrailServiceDatabaseUrl" type="xs:string">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The url to the database, which contains the audit data for the service.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-          <xs:element name="AuditServiceDatabaseSpecifics" type="xs:string">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The name of the class for the database specifics for the audit service database.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-          <xs:element name="CollectAuditInterval" type="xs:long">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The amount of milliseconds to between each collecting of audit trail data from the contributors.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-          <xs:element name="TimerTaskCheckInterval" type="xs:long">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The amount of milliseconds for the timertask to check whether it is time to run the collector.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-          <xs:element name="AuditTrailPreservationInterval" type="xs:long">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The amount of milliseconds between each preservation of audit trails.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-          <xs:element name="AuditTrailPreservationTemporaryDirectory" type="xs:string">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                Path to the directory where the temporary audit trail preservation files are stored. 
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-        </xs:sequence>
-      </xs:complexType>
-    </xs:element>
+  <xs:element name="AuditTrailServiceSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+          The settings for the Alarm service.
+        </xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="ID" type="xs:string" />
+        <xs:element name="SendAlarmOnMissingContributer" type="xs:boolean" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>
+              Specifies whether the audit trail services should send alarms when contributers defined to be part of
+              the collection, doesn't reply to identify requests. Default is false.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="AuditTrailServiceDatabase" type="DatabaseSpecifics">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The specifics for the AuditTrailServiceDatabase.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="CollectAuditInterval" type="xs:long">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The amount of milliseconds to between each collecting of audit trail data from the contributors.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="TimerTaskCheckInterval" type="xs:long">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The amount of milliseconds for the timertask to check whether it is time to run the collector.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="AuditTrailPreservationInterval" type="xs:long">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The amount of milliseconds between each preservation of audit trails.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="AuditTrailPreservationTemporaryDirectory" type="xs:string">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Path to the directory where the temporary audit trail preservation files are stored. 
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 
-    <xs:element name="IntegrityServiceSettings">
-      <xs:complexType>
+  <xs:element name="IntegrityServiceSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+          The settings for the Alarm service.
+        </xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="ID" type="xs:string" />
+        <xs:element name="SchedulerInterval" type="xs:long">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The amount of milliseconds between each time the scheduler collects integrity information.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="IntegrityDatabase" type="DatabaseSpecifics">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The specifics for the IntegrityDatabase.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="TimeBeforeMissingFileCheck" type="xs:long">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The url to the database, which contains the integrity data.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="AuditTrailContributerDatabase" type="DatabaseSpecifics">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The specifics for the AuditContributorDatabase for the integrity service.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+    
+  <xs:element name="MailingConfiguration">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="MailReceiver" type="xs:string">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The receiver of the mail. Several receiver will be split by a comma: ','.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="MailSender" type="xs:string">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The sender of the mail.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="MailServer" type="xs:string">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The server where the mail is sent from.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="DatabaseSpecifics">
+    <xs:annotation>
+      <xs:documentation>
+        Could very well be improved with other configurations like:
+        http://www.mchange.com/projects/c3p0/#configuration_properties
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="DriverClass" type="xs:string">
         <xs:annotation>
-          <xs:documentation>
-            The settings for the Alarm service.
+          <xs:documentation xml:lang="en">
+            The class for the driver for the database. E.g. 
+            'org.apache.derby.jdbc.EmbeddedDriver' or
+            'org.postgresql.Driver'
           </xs:documentation>
         </xs:annotation>
-        <xs:sequence>
-          <xs:element name="ID" type="xs:string" />
-          <xs:element name="SchedulerInterval" type="xs:long">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The amount of milliseconds between each time the scheduler collects integrity information.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-          <xs:element name="IntegrityDatabaseUrl" type="xs:string">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The url to the database, which contains the integrity data.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-          <xs:element name="IntegrityDatabaseSpecifics" type="xs:string">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The name of the class for the database specifics for the integrity database.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-          <xs:element name="TimeBeforeMissingFileCheck" type="xs:long">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The url to the database, which contains the integrity data.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-          <xs:element name="AuditContributerDatabaseUrl" type="xs:string">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The url to the database, which contains the audit data for the contributer.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-          <xs:element name="AuditContributerDatabaseSpecifics" type="xs:string">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The name of the class for the database specifics for the audit contributor database.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-        </xs:sequence>
-      </xs:complexType>
-    </xs:element>
-    
-    <xs:element name="MailingConfiguration">
-      <xs:complexType>
-        <xs:sequence>
-          <xs:element name="MailReceiver" type="xs:string">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The receiver of the mail. Several receiver will be split by a comma: ','.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-          <xs:element name="MailSender" type="xs:string">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The sender of the mail.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-          <xs:element name="MailServer" type="xs:string">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                The server where the mail is sent from.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:element>
-        </xs:sequence>
-      </xs:complexType>
-    </xs:element>
+      </xs:element>
+      <xs:element name="DatabaseURL" type="xs:string">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            The URL for accessing the database.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Username" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            OPTIONAL. The username for accessing the database. 
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Password" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            OPTIONAL. The password for accessing the database. 
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
 </xs:schema>

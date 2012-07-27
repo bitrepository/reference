@@ -21,10 +21,9 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +34,6 @@ import org.slf4j.LoggerFactory;
 public class IntegrityValidationChecksumStep implements WorkflowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    /** The constant for all file ids.*/
-    private static final String ALL_FILE_IDS = "true";
     /** Checker for performing the integrity checks.*/
     private final IntegrityChecker checker;
     /** The dispatcher of alarms.*/
@@ -59,8 +56,7 @@ public class IntegrityValidationChecksumStep implements WorkflowStep {
 
     @Override
     public void performStep() {
-        FileIDs fileIds = createAllFileIDs();
-        IntegrityReport report = checker.checkChecksum(fileIds);
+        IntegrityReportModel report = checker.checkChecksum();
         
         if(report.hasIntegrityIssues()) {
             log.warn("Integrity issues found: " + report.generateReport());
@@ -68,14 +64,5 @@ public class IntegrityValidationChecksumStep implements WorkflowStep {
         } else {
             log.info("No integrity issues found: " + report.generateReport());
         }
-    }
-
-    /**
-     * @return A FileIDs object for all file ids.
-     */
-    private FileIDs createAllFileIDs() {
-        FileIDs res = new FileIDs();
-        res.setAllFileIDs(ALL_FILE_IDS);
-        return res;
     }
 }

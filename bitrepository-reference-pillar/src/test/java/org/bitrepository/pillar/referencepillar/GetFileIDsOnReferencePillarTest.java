@@ -71,7 +71,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
         File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
@@ -155,7 +155,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
         File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
@@ -327,7 +327,6 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.FILE_TRANSFER_FAILURE);
     }
     
-
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarGetFileIDsTestDeliveryThroughMessage() throws Exception {
         addDescription("Test the case when the results should be delivered through the message .");

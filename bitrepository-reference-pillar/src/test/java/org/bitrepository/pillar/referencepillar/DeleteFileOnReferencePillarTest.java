@@ -78,7 +78,7 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
         csData.setChecksumSpec(csSpecExisting);
         csData.setChecksumValue(Base16Utils.encodeBase16(ChecksumUtils.generateChecksum(testfile, csSpecExisting)));
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, DEFAULT_FILE_ID));
@@ -167,7 +167,7 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
         csData.setChecksumSpec(csSpecExisting);
         csData.setChecksumValue(Base16Utils.encodeBase16(ChecksumUtils.generateChecksum(testfile, csSpecExisting)));
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
@@ -243,7 +243,7 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
         csData.setChecksumSpec(csSpecExisting);
         csData.setChecksumValue(Base16Utils.encodeBase16(ChecksumUtils.generateChecksum(testfile, csSpecRequest)));
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));

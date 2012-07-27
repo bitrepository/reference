@@ -28,15 +28,19 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 import org.bitrepository.access.getfile.TestGetFileMessageFactory;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class FastestPillarSelectorForGetFileTest {
+public class FastestPillarSelectorForGetFileTest extends ExtendedTestCase {
     private static final PillarStub slowPillar = 
         new PillarStub("slowPillar", "slowPillarTopic", new BigInteger("1"), 
                 TimeMeasureUnit.HOURS);
@@ -75,6 +79,7 @@ public class FastestPillarSelectorForGetFileTest {
     @Test (groups = { "regressiontest" })
     public void processBadResponsesTest() throws Exception {
         Assert.assertFalse(selector.isFinished(), "Selector thinks it is finish before processing responses");
+        Assert.assertFalse(selector.hasSelectedComponent());
 
         selector.processResponse(slowPillar.createResponse());
         try { 
@@ -100,6 +105,21 @@ public class FastestPillarSelectorForGetFileTest {
         Assert.assertEquals(selector.selectedPillar.getID(), fastPillar.pillarID, "Not pillarID from fastest pillar");
         Assert.assertEquals(selector.selectedPillar.getDestination(), 
                 fastPillar.pillarTopic, "Not pillarID from fastest pillar");
+    }
+
+    @Test (groups = { "regressiontest" })
+    public void processOtherResponsesTest() throws Exception {
+        addDescription("Test the handling of a wrong response");
+        IdentifyPillarsForGetFileIDsResponse fileidsResponse = new IdentifyPillarsForGetFileIDsResponse();
+        fileidsResponse.setFrom(PILLAR_IDS[0]);
+        fileidsResponse.setPillarID(PILLAR_IDS[0]);
+        fileidsResponse.setResponseInfo(createNegativeIdentificationResponseInfo());
+        try {
+            selector.processResponse(fileidsResponse);
+            Assert.fail("Should throw an exception here.");
+        } catch (UnexpectedResponseException e) {
+            // Expected.
+        }
     }
 
     private static class PillarStub {
@@ -130,5 +150,12 @@ public class FastestPillarSelectorForGetFileTest {
             response.setTimeToDeliver(timeToDeliver);
             return response;
         }
+    }
+    
+    private ResponseInfo createNegativeIdentificationResponseInfo() {
+        ResponseInfo resInfo = new ResponseInfo();
+        resInfo.setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);
+        resInfo.setResponseText("Failure");
+        return resInfo;
     }
 }

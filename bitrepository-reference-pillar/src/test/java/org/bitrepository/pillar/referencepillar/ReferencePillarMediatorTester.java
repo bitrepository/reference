@@ -23,10 +23,10 @@ package org.bitrepository.pillar.referencepillar;
 
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.MockAlarmDispatcher;
-import org.bitrepository.pillar.MockAuditManager;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
+import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.annotations.AfterMethod;
@@ -43,7 +43,7 @@ public class ReferencePillarMediatorTester extends ReferencePillarTest {
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetChecksumsTests() throws Exception {
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0));
         componentSettings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         if(dir.exists()) {
             FileUtils.delete(dir);
@@ -61,7 +61,7 @@ public class ReferencePillarMediatorTester extends ReferencePillarTest {
     
     @AfterMethod (alwaysRun=true) 
     public void closeArchive() {
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0));
         if(dir.exists()) {
             FileUtils.delete(dir);
         }

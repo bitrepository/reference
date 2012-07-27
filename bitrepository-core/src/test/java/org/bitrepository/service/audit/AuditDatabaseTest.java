@@ -21,11 +21,14 @@
  */
 package org.bitrepository.service.audit;
 
+import java.io.File;
+import java.sql.Connection;
+import java.util.Collection;
+import java.util.Date;
+
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.database.DBConnector;
-import org.bitrepository.common.database.DBSpecifics;
-import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.DatabaseTestUtils;
@@ -35,11 +38,6 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.io.File;
-import java.sql.Connection;
-import java.util.Collection;
-import java.util.Date;
 
 public class AuditDatabaseTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
@@ -55,7 +53,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
-        settings.getReferenceSettings().getPillarSettings().setAuditContributerDatabaseUrl(DATABASE_URL);
+        settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase().setDatabaseURL(DATABASE_URL);
         
         addStep("Initialise the database", "Should be unpacked from a jar-file.");
         File dbFile = new File("src/test/resources/auditcontributerdb.jar");
@@ -77,7 +75,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
     }
 
     @Test(groups = {"regressiontest", "databasetest"})
-    public void testFileBasedCacheFunctions() throws Exception {
+    public void testAuditTrailDatabaseFunctions() throws Exception {
         addDescription("Testing the basic functions of the audit trail database interface.");
         addStep("Setup varibles and the database connection.", "No errors.");
         String fileId1 = "FILE-ID-1";
@@ -85,10 +83,8 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         String actor = "ACTOR";
         String info = "Adding a info";
         String auditTrail = "AuditTrail";
-        DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
-                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseSpecifics());
-        AuditTrailContributerDAO daba = new AuditTrailContributerDAO(settings, new DBConnector(dbSpecifics, 
-                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl()));
+        DBConnector dbConnector = new DBConnector(settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase());
+        AuditTrailContributerDAO daba = new AuditTrailContributerDAO(settings, dbConnector);
         
         addStep("Populate the database.", "Should be inserted into database.");
         daba.addAuditEvent(fileId1, actor, info, auditTrail, FileAction.PUT_FILE);
@@ -114,5 +110,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         
         events = daba.getAudits(fileId1, seq-3, null, null, null);
         Assert.assertEquals(events.size(), 1);
+        
+        dbConnector.destroy();
     }
 }

@@ -24,19 +24,19 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
-import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.pillar.MockAlarmDispatcher;
-import org.bitrepository.pillar.MockAuditManager;
-import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
-import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
-import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Arrays;
+
+import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.pillar.MockAlarmDispatcher;
+import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
+import org.bitrepository.service.audit.MockAuditManager;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
 
 public class ReferenceArchiveTest extends ReferencePillarTest {
     protected ReferenceArchive archive;
@@ -61,7 +61,7 @@ public class ReferenceArchiveTest extends ReferencePillarTest {
         addDescription("Test the ReferenceArchive.");
         addStep("Setup", "Should be OK.");
         
-        ReferenceArchive archive = new ReferenceArchive(DIR_NAME);
+        ReferenceArchive archive = new ReferenceArchive(Arrays.asList(DIR_NAME));
         createExistingFile();
         
         addStep("test 'hasFile'", "Should be true for the existing one and false for the missing one.");
@@ -100,10 +100,18 @@ public class ReferenceArchiveTest extends ReferencePillarTest {
         try {
             archive.deleteFile(MISSING_FILE);
             Assert.fail("Should throw an exception here.");
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
            // Expected.
         }
         
+        addStep("Replace a file, which does not exist in the filedir.", "Should throw an exception");
+        try {
+            archive.replaceFile(MISSING_FILE);
+            Assert.fail("Should throw an exception here.");
+        } catch (IllegalStateException e) {
+           // Expected.
+        }
+
         addStep("Copy a file into the tmpDir and then use replace.", "Should create another file in retain dir and remove the one in tmpDir.");
         FileUtils.copyFile(new File(DIR_NAME + "/retainDir/" + EXISTING_FILE), 
                 new File(DIR_NAME + "/tmpDir/" + EXISTING_FILE));
@@ -111,14 +119,14 @@ public class ReferenceArchiveTest extends ReferencePillarTest {
         Assert.assertFalse(new File(DIR_NAME + "/tmpDir/" + EXISTING_FILE).isFile());
         Assert.assertTrue(new File(DIR_NAME + "/retainDir/" + EXISTING_FILE + ".old.old").isFile());
 
-//        
-//        try {
-//            archive.deleteFile(MISSING_FILE);
-//            Assert.fail("The file should not exist.");
-//        } catch (Exception e) {
-//            // expected 
-//        }
-//        
+        addStep("Try performing the replace, when the file in the tempdir has been removed.", "Should throw an exception");
+        try {
+            archive.replaceFile(EXISTING_FILE);
+            Assert.fail("Should throw an exception here.");
+        } catch (IllegalStateException e) {
+           // Expected.
+        }
+
         archive.close();
    }
     

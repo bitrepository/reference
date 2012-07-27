@@ -27,6 +27,7 @@ package org.bitrepository.pillar.referencepillar;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -53,7 +54,6 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     private ReplaceFileMessageFactory msgFactory;
     String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
     String REPLACE_CHECKSUM = "940a51b250e7aa82d8e8ea31217ff267";
-    String EMPTY_FILE_CHECKSUM = "d41d8cd98f00b204e9800998ecf8427e";
     Long FILE_SIZE;
     ChecksumDataForFileTYPE replaceCsData;
     ChecksumDataForFileTYPE csData;
@@ -377,11 +377,54 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
         initializeArchiveWithEmptyFile();
-        messageBus.sendMessage(msgFactory.createReplaceFileRequest(csData, replaceCsData, csSpec, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+        messageBus.sendMessage(msgFactory.createReplaceFileRequest(null, null, null, null, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
 
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), FILE_SIZE.longValue());
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void referencePillarPutFileTestTooLargeFileInIdentification() throws Exception {
+        addDescription("Tests when the PutFile identification delivers a too large file.");
+        initializeArchiveWithEmptyFile();
+        messageBus.sendMessage(msgFactory.createIdentifyPillarsForReplaceFileRequest(DEFAULT_FILE_ID, Long.MAX_VALUE));
+        IdentifyPillarsForReplaceFileResponse identifyResponse = clientTopic.waitForMessage(IdentifyPillarsForReplaceFileResponse.class);
+        Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.FAILURE);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void referencePillarPutFileTestNoFileSizeInIdentification() throws Exception {
+        addDescription("Tests when the PutFile identification does not deliver a file size. Should succeed");
+        initializeArchiveWithEmptyFile();
+        messageBus.sendMessage(msgFactory.createIdentifyPillarsForReplaceFileRequest(DEFAULT_FILE_ID, null));
+        IdentifyPillarsForReplaceFileResponse identifyResponse = clientTopic.waitForMessage(IdentifyPillarsForReplaceFileResponse.class);
+        Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.IDENTIFICATION_POSITIVE);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void referencePillarPutFileTestTooLargeFileInOperation() throws Exception {
+        addDescription("Tests when the PutFile identification delivers a too large file.");
+        initializeArchiveWithEmptyFile();
+        messageBus.sendMessage(msgFactory.createReplaceFileRequest(csData, replaceCsData, csSpec, csSpec, 
+                FILE_ADDRESS, DEFAULT_FILE_ID, Long.MAX_VALUE));
+        ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.FAILURE);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void replacePillarReplaceFileBadURL() throws Exception {
+        addDescription("Tests the handling of a bad URL in the request.");
+        initializeArchiveWithEmptyFile();
+        String fileAddress = "http://127.0.0.1/¾" + new Date().getTime();
+        messageBus.sendMessage(msgFactory.createReplaceFileRequest(csData, replaceCsData, csSpec, csSpec, fileAddress, DEFAULT_FILE_ID, FILE_SIZE));
+
+        ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.FILE_TRANSFER_FAILURE);
     }
 }

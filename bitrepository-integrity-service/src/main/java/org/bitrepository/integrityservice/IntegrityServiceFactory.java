@@ -137,6 +137,7 @@ public final class IntegrityServiceFactory {
             getSecurityManager();
             simpleIntegrityService = IntegrityServiceComponentFactory.getInstance().createIntegrityService(settings, 
                     securityManager);
+            // TODO make a settings for differentiating between the intervals of the workflows.
             for(Workflow workflow : simpleIntegrityService.getAllWorkflows()) {
                 simpleIntegrityService.scheduleWorkflow(workflow, DEFAULT_MAX_TIME_SINCE_UPDATE);
             }

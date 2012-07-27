@@ -27,7 +27,6 @@ package org.bitrepository.pillar.referencepillar.archive;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +36,6 @@ import java.util.List;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.FileStore;
-import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,66 +46,54 @@ import org.slf4j.LoggerFactory;
 public class ReferenceArchive implements FileStore {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-
-    // TODO replace these constants with settings.
-    /** Constant for the temporary directory name.*/
-    public static final String TEMPORARY_DIR = "tmpDir";
-    /** Constant for the file directory name.*/
-    public static final String FILE_DIR = "fileDir";
-    /** Constant for the retain directory name.*/
-    public static final String RETAIN_DIR = "retainDir";
     /** The maximum buffer for the stream interaction.*/
     public static final int MAX_BUFFER_SIZE = 32 * 1024;
 
-    /** The directory for the files. Contains three sub directories: tempDir, fileDir and retainDir.*/
-    private File baseDepositDir;
-
-    /** The directory where files are being downloaded to before they are put into the filedir. */
-    private File tmpDir;
-    /** The directory where the files are being stored.*/
-    private final File fileDir;
-    /** The directory where the files are moved, when they are removed from the archive.*/
-    private final File retainDir;
-
+    /** The list of directories to manage.*/
+    private final List<ArchiveDirectory> directories = new ArrayList<ArchiveDirectory>();
+    
     /** 
      * Constructor. Initialises the file directory. 
      * 
-     * @param dir The directory
+     * @param dirNames The list of paths to the archival base directories.
      */
-    public ReferenceArchive(String dirName) {
-        ArgumentValidator.checkNotNullOrEmpty(dirName, "String dirName");
+    public ReferenceArchive(List<String> dirPaths) {
+        ArgumentValidator.checkNotNullOrEmpty(dirPaths, "List<String> dirPaths");
 
-        // Instantiate the directories for this archive.
-        baseDepositDir = FileUtils.retrieveDirectory(dirName);
-        tmpDir = FileUtils.retrieveSubDirectory(baseDepositDir, TEMPORARY_DIR);
-        fileDir = FileUtils.retrieveSubDirectory(baseDepositDir, FILE_DIR);
-        retainDir = FileUtils.retrieveSubDirectory(baseDepositDir, RETAIN_DIR);
+        for(String dir : dirPaths) {
+            directories.add(new ArchiveDirectory(dir));
+        }
     }
 
     @Override
     public File getFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         
-        File res = new File(fileDir, fileID);
-        if(!res.isFile()) {
-            throw new IllegalArgumentException("The file '" + fileID + "' is not within the archive.");
+        for(ArchiveDirectory dir : directories) {
+            if(dir.hasFile(fileID)) {
+                return dir.getFile(fileID);
+            }
         }
-        return res;
+        throw new IllegalArgumentException("The file '" + fileID + "' is not within the archives.");
     }
 
     @Override
     public boolean hasFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         
-        return (new File(fileDir, fileID)).isFile();
+        for(ArchiveDirectory dir : directories) {
+            if(dir.hasFile(fileID)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public Collection<String> getAllFileIds() {
-        String[] ids = fileDir.list();
         List<String> res = new ArrayList<String>();
-        for(String id : ids) {
-            res.add(id);
+        for(ArchiveDirectory dir : directories) {
+            res.addAll(dir.getFileIds());
         }
         return res;
     }
@@ -122,29 +108,64 @@ public class ReferenceArchive implements FileStore {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         ArgumentValidator.checkNotNull(inputStream, "inputStream");
 
-        // Download the file first, then move it to the fileDir.
-        File downloadedFile = new File(tmpDir, fileID);
-        log.debug("Downloading the file '" + fileID + "' for validation.");
-        
-        // Save InputStream to the file.
-        BufferedOutputStream bufferedOutputstream = null;
-        try {
+        ArchiveDirectory dir = getDirWithMostSpace();
+        File downloadedFile = null;
+        synchronized(dir) {
+            downloadedFile = dir.getFileInTempDir(fileID);
+            log.debug("Downloading the file '" + fileID + "' for validation.");
+            
+            // Save InputStream to the file.
+            BufferedOutputStream bufferedOutputstream = null;
             try {
-                bufferedOutputstream = new BufferedOutputStream(new FileOutputStream(downloadedFile));
-                byte[] buffer = new byte[MAX_BUFFER_SIZE];
-                int bytesRead = 0;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    bufferedOutputstream.write(buffer, 0, bytesRead);
+                try {
+                    bufferedOutputstream = new BufferedOutputStream(new FileOutputStream(downloadedFile));
+                    byte[] buffer = new byte[MAX_BUFFER_SIZE];
+                    int bytesRead = 0;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        bufferedOutputstream.write(buffer, 0, bytesRead);
+                    }
+                } finally {
+                    if(bufferedOutputstream != null) {
+                        bufferedOutputstream.close();
+                    }
                 }
-            } finally {
-                if(bufferedOutputstream != null) {
-                    bufferedOutputstream.close();
-                }
+            } catch (IOException e) {
+                throw new CoordinationLayerException("Could not retrieve file '" + fileID + "'", e);
             }
-        } catch (IOException e) {
-            throw new CoordinationLayerException("Could not retrieve file '" + fileID + "'", e);
         }
+        return downloadedFile;
+    }
+    
+    @Override
+    public File downloadReplaceFileForValidation(String fileID, InputStream inputStream) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        ArgumentValidator.checkNotNull(inputStream, "inputStream");
 
+        ArchiveDirectory dir = getDirWithFile(fileID);
+        File downloadedFile = null;
+        synchronized(dir) {
+            downloadedFile = dir.getFileInTempDir(fileID);
+            log.debug("Downloading the file '" + fileID + "' for validation.");
+            
+            // Save InputStream to the file.
+            BufferedOutputStream bufferedOutputstream = null;
+            try {
+                try {
+                    bufferedOutputstream = new BufferedOutputStream(new FileOutputStream(downloadedFile));
+                    byte[] buffer = new byte[MAX_BUFFER_SIZE];
+                    int bytesRead = 0;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        bufferedOutputstream.write(buffer, 0, bytesRead);
+                    }
+                } finally {
+                    if(bufferedOutputstream != null) {
+                        bufferedOutputstream.close();
+                    }
+                }
+            } catch (IOException e) {
+                throw new CoordinationLayerException("Could not retrieve file '" + fileID + "'", e);
+            }
+        }
         return downloadedFile;
     }
     
@@ -153,30 +174,20 @@ public class ReferenceArchive implements FileStore {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         log.info("Moving the file '" + fileID + "' to archive.");
 
-        File downloadedFile = new File(tmpDir, fileID);
-        File archivedFile = new File(fileDir, fileID);
-        
-        // Move the file to the fileDir.
-        FileUtils.moveFile(downloadedFile, archivedFile);
+        ArchiveDirectory dir = getDirWithTmpFile(fileID);
+        synchronized(dir) {
+            dir.moveFromTmpToArchive(fileID);
+        }
     }
 
     @Override
-    public void deleteFile(String fileID) throws FileNotFoundException {
+    public void deleteFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
-        // Move old file to retain area.
-        File oldFile = new File(fileDir, fileID);
-        if(!oldFile.isFile()) {
-            throw new FileNotFoundException("Cannot locate the file to delete '" + oldFile.getAbsolutePath() + "'!");
+        ArchiveDirectory dir = getDirWithFile(fileID);
+        synchronized(dir) {
+            dir.deprecateFile(fileID);
         }
-        File retainFile = new File(retainDir, fileID);
-        
-        // If a version of the file already has been retained, then it should be deprecated.
-        if(retainFile.exists()) {
-            FileUtils.deprecateFile(retainFile);
-        }
-        
-        FileUtils.moveFile(oldFile, retainFile);
     }
     
     /**
@@ -185,24 +196,20 @@ public class ReferenceArchive implements FileStore {
      * moves the new file to the fileDir (from the tmpDir).
      * 
      * @param fileID The id of the file to perform the replace function upon.
-     * @throws FileNotFoundException If the new file with the given fileID does not exist within the tmpDir, or if the 
-     * old file with the given fileID does not exist within the fileDir. 
      */
-    public synchronized void replaceFile(String fileID) throws FileNotFoundException {
+    public synchronized void replaceFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         
-        File oldFile = new File(fileDir, fileID);
-        if(!oldFile.isFile()) {
-            throw new FileNotFoundException("Cannot locate the file to be replaced '" + oldFile.getAbsolutePath() 
-                    + "'.");
-        }
-        File newFile = new File(tmpDir, fileID);
-        if(!oldFile.isFile()) {
-            throw new FileNotFoundException("Cannot locate the file to replace '" + newFile.getAbsolutePath() + "'.");
+        ArchiveDirectory dir = getDirWithTmpFile(fileID);
+        if(dir != getDirWithFile(fileID)) {
+            throw new IllegalStateException("The file '" + fileID + "' cannot be replaced, since the archive "
+                    + "directory does not contain the given file to be replaced.");
         }
         
-        deleteFile(fileID);
-        moveToArchive(fileID);
+        synchronized(dir) {
+            dir.deprecateFile(fileID);
+            dir.moveFromTmpToArchive(fileID);
+        }
     }
     
     /**
@@ -210,7 +217,54 @@ public class ReferenceArchive implements FileStore {
      * @return The number of bytes left in the archive.
      */
     public long sizeLeftInArchive() {
-        return baseDepositDir.getFreeSpace();
+        return getDirWithMostSpace().getBytesLeft();
+    }
+    
+    /**
+     * Finds the directory with the most space left.
+     * @return The archive directory with the most space left.
+     */
+    private ArchiveDirectory getDirWithMostSpace() {
+        Long largestSize = -1L;
+        ArchiveDirectory res = null;
+        
+        for(ArchiveDirectory dir : directories) {
+            if(largestSize < dir.getBytesLeft()) {
+                largestSize = dir.getBytesLeft();
+                res = dir;
+            }
+        }
+        return res;
+    }
+    
+    /**
+     * Finds the archive directory with the given file within its archive directory.
+     * @param fileId The id of the file.
+     * @return The archive directory with the file.
+     */
+    private ArchiveDirectory getDirWithFile(String fileId) {
+        for(ArchiveDirectory dir : directories) {
+            if(dir.hasFile(fileId)) {
+                return dir;
+            }
+        }
+        
+        throw new IllegalStateException("Does not have the file '" + fileId + "' within any archive dirs.");
+    }
+
+    /**
+     * Finds the archive directory with the given file within its tmp directory, ready for archival.
+     * @param fileId The id of the file.
+     * @return The archive directory with the file in its tmp dir.
+     */
+    private ArchiveDirectory getDirWithTmpFile(String fileId) {
+        for(ArchiveDirectory dir : directories) {
+            if(dir.hasFileInTempDir(fileId)) {
+                return dir;
+            }
+        }
+        
+        throw new IllegalStateException("Does not have the file '" + fileId + "' within any archive dirs.");
     }
     
     /**

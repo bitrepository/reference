@@ -51,7 +51,8 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
+import org.bitrepository.pillar.cache.ChecksumEntry;
+import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -166,18 +167,34 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
 
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         
-        // Go through every file in the archive, calculate the checksum and put it into the results.
-        for(String fileid : getCache().getFileIDs(message.getFileIDs())) {
-            ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
-            singleFileResult.setCalculationTimestamp(CalendarUtils.getNow());
-            singleFileResult.setFileID(fileid);
-            byte[] checksum = Base16Utils.encodeBase16(getCache().getChecksum(fileid));
-            singleFileResult.setChecksumValue(checksum);
-            
-            res.add(singleFileResult);
+        
+        if(message.getFileIDs().isSetFileID()) {
+            ChecksumEntry entry = getCache().getEntry(message.getFileIDs().getFileID());
+            res.add(createChecksumDataForChecksumSpecTYPE(entry));            
+        } else {
+            // Go through every file in the archive, calculate the checksum and put it into the results.
+            for(ChecksumEntry entry : getCache().getAllEntries()) {
+                res.add(createChecksumDataForChecksumSpecTYPE(entry));
+            }
         }
 
         return res;
+    }
+    
+    /**
+     * Creates a ChecksumDataForChecksumSpecTYPE entry based on an ChecksumEntry.
+     * @param entry The entry to base the ChecksumDataForChecksumSpecTYPE on;
+     * @return The ChecksumDataForChecksumSpecTYPE based on the ChecksumEntry.
+     */
+    private ChecksumDataForChecksumSpecTYPE createChecksumDataForChecksumSpecTYPE(ChecksumEntry entry) {
+        ChecksumDataForChecksumSpecTYPE singleFileResult = new ChecksumDataForChecksumSpecTYPE();
+        singleFileResult.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(
+                entry.getCalculationDate()));
+        singleFileResult.setFileID(entry.getFileId());
+        byte[] checksum = Base16Utils.encodeBase16(entry.getChecksum());
+        singleFileResult.setChecksumValue(checksum);
+        
+        return singleFileResult;
     }
     
     /**
@@ -194,7 +211,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         ResultingChecksums res = new ResultingChecksums();
         
         String url = message.getResultAddress();
-        if(url != null && !url.isEmpty()) {
+        if(url != null) {
             try {
                 File fileToUpload = makeTemporaryChecksumFile(message, checksumList);
                 uploadFile(fileToUpload, url);

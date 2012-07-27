@@ -27,29 +27,27 @@ package org.bitrepository.service.scheduler;
 import java.util.Collection;
 
 /**
- * Interface for scheduling integrity information collection.
- *
- * Implementations should apply all triggers at reasonable intervals.
+ * Interface for scheduling workflows for the services.
  */
 public interface ServiceScheduler {
     /**
      * Adds a workflow for the scheduler to schedule. 
      * @param workflow The workflow to schedule.
-     * @param name The name of the workflow.
+     * @param workflowId The name of the workflow.
      * @param interval The interval for how often the workflow should be triggered.
      */
-    void putWorkflow(Workflow workflow, String name, Long interval);
+    void scheduleWorkflow(Workflow workflow, String workflowId, Long interval);
     
     /**
-     * Removes a trigger with the given name.
+     * Cancels the workflow with the given name.
      * 
-     * @param name
-     * @return Whether the trigger was successfully found and removed. 
+     * @param workflowId The name of the workflow to cancel.
+     * @return Whether the workflow was successfully found and removed. 
      */
-    boolean removeWorkflow(String name);
+    boolean cancelWorkflow(String workflowId);
     
     /**
      * @return The list of all workflows currently scheduled by the scheduler.
      */
-    Collection<WorkflowTask> getScheduledWorkflows();
+    Collection<WorkflowTimerTask> getScheduledWorkflows();
 }

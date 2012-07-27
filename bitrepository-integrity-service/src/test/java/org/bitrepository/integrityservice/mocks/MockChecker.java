@@ -23,11 +23,10 @@ package org.bitrepository.integrityservice.mocks;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
-import org.bitrepository.integrityservice.checking.reports.ChecksumReport;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
-import org.bitrepository.integrityservice.checking.reports.MissingChecksumReport;
-import org.bitrepository.integrityservice.checking.reports.MissingFileReport;
-import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReport;
+import org.bitrepository.integrityservice.checking.reports.ChecksumReportModel;
+import org.bitrepository.integrityservice.checking.reports.MissingChecksumReportModel;
+import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
+import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
 
 public class MockChecker implements IntegrityChecker {
     
@@ -55,26 +54,26 @@ public class MockChecker implements IntegrityChecker {
     }
 
     @Override
-    public IntegrityReport checkFileIDs(FileIDs fileIDs) {
+    public MissingFileReportModel checkFileIDs(FileIDs fileIDs) {
         callsForCheckFileIDs++;
-        return new MissingFileReport();
+        return new MissingFileReportModel();
     }
     
     @Override
-    public IntegrityReport checkChecksum(FileIDs fileIDs) {
+    public ChecksumReportModel checkChecksum() {
         callsForCheckChecksums++;
-        return new ChecksumReport();
+        return new ChecksumReportModel();
     }
 
     @Override
-    public IntegrityReport checkMissingChecksums() {
+    public MissingChecksumReportModel checkMissingChecksums() {
         callsForCheckMissingChecksums++;
-        return new MissingChecksumReport();
+        return new MissingChecksumReportModel();
     }
 
     @Override
-    public IntegrityReport checkObsoleteChecksums(long outdatedInterval) {
+    public ObsoleteChecksumReportModel checkObsoleteChecksums(long outdatedInterval) {
         callsForCheckObsoleteChecksums++;
-        return new ObsoleteChecksumReport();
+        return new ObsoleteChecksumReportModel();
     }
 }

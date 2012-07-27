@@ -51,6 +51,7 @@ import java.util.List;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.database.DBConnector;
 import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.slf4j.Logger;
@@ -85,20 +86,20 @@ public class AuditDatabaseExtractor {
     
     /** The model containing the elements for the restriction.*/
     private final ExtractModel model;
-    /** The connection to the database.*/
-    private final Connection dbConnection;
+    /** The connector to the database.*/
+    private final DBConnector dbConnector;
     
     /**
      * Constructor.
      * @param model The model for the restriction for the extraction from the database.
-     * @param dbConnection The connection to the database, where the audit trails are to be extracted.
+     * @param dbConnector The connector to the database, where the audit trails are to be extracted.
      */
-    public AuditDatabaseExtractor(ExtractModel model, Connection dbConnection) {
+    public AuditDatabaseExtractor(ExtractModel model, DBConnector dbConnector) {
         ArgumentValidator.checkNotNull(model, "ExtractModel model");
-        ArgumentValidator.checkNotNull(dbConnection, "Connection dbConnection");
+        ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
         
         this.model = model;
-        this.dbConnection = dbConnection;
+        this.dbConnector = dbConnector;
     }
     
     /**
@@ -111,10 +112,11 @@ public class AuditDatabaseExtractor {
         try {
             ResultSet result = null;
             List<AuditTrailEvent> res = new ArrayList<AuditTrailEvent>();
-            
+            Connection conn = null;
             try {
+                conn = dbConnector.getConnection();
                 log.debug("Extracting sql '" + sql + "' with arguments '" + Arrays.asList(extractArgumentsFromModel()));
-                result = DatabaseUtils.selectObject(dbConnection, sql, extractArgumentsFromModel());
+                result = DatabaseUtils.selectObject(conn, sql, extractArgumentsFromModel());
                 
                 while(result.next()) {
                     res.add(extractEvent(result));
@@ -122,6 +124,9 @@ public class AuditDatabaseExtractor {
             } finally {
                 if(result != null) {
                     result.close();
+                }
+                if(conn != null) {
+                    conn.close();
                 }
             }
             log.debug("Extracted the audit trails: {}", res);
@@ -299,7 +304,7 @@ public class AuditDatabaseExtractor {
         String sqlRetrieve = "SELECT " + CONTRIBUTOR_ID + " FROM " + CONTRIBUTOR_TABLE + " WHERE " + CONTRIBUTOR_GUID 
                 + " = ?";
         
-        return DatabaseUtils.selectStringValue(dbConnection, sqlRetrieve, contributorGuid);        
+        return DatabaseUtils.selectStringValue(dbConnector, sqlRetrieve, contributorGuid);        
     }
     
     /**
@@ -310,7 +315,7 @@ public class AuditDatabaseExtractor {
     private String retrieveFileId(long fileGuid) {
         String sqlRetrieve = "SELECT " + FILE_FILEID + " FROM " + FILE_TABLE + " WHERE " + FILE_GUID + " = ?";
         
-        return DatabaseUtils.selectStringValue(dbConnection, sqlRetrieve, fileGuid);        
+        return DatabaseUtils.selectStringValue(dbConnector, sqlRetrieve, fileGuid);        
     }
     
     /**
@@ -321,6 +326,6 @@ public class AuditDatabaseExtractor {
     private String retrieveActorName(long actorGuid) {
         String sqlRetrieve = "SELECT " + ACTOR_NAME + " FROM " + ACTOR_TABLE + " WHERE " + ACTOR_GUID + " = ?";
         
-        return DatabaseUtils.selectStringValue(dbConnection, sqlRetrieve, actorGuid);        
+        return DatabaseUtils.selectStringValue(dbConnector, sqlRetrieve, actorGuid);        
     }
 }

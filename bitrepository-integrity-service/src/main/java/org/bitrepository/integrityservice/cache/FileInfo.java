@@ -26,7 +26,6 @@ package org.bitrepository.integrityservice.cache;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
@@ -42,8 +41,6 @@ public class FileInfo {
     private XMLGregorianCalendar fileCreationTimestamp;
     /** The checksum of the file.*/
     private String checksum;
-    /** The type of checksum, e.g. algorithm and optional salt*/
-    private ChecksumSpecTYPE checksumType;
     /** The date for the last check of the checksum.*/
     private XMLGregorianCalendar checksumLastCheck;
     /** The id of the pillar.*/
@@ -58,19 +55,18 @@ public class FileInfo {
      * @param fileId The id of the file (may not be null)
      * @param fileLastCheck The date for the last check of the file id (if null, replaced by Epoch).
      * @param checksum The checksum of the file.
-     * @param checksumType The type of checksum (e.g. Algorithm and optionally salt). 
      * @param checksumLastCheck The date for the last check of the checksum (if null, replaced by Epoch).
      * @param pillarId The id of the pillar (may not be null)
+     * @param fileState The state for the file.
+     * @param checksumState The state for the checksum.
      */
     public FileInfo(String fileId, XMLGregorianCalendar fileLastCheck, String checksum, 
-            ChecksumSpecTYPE checksumType, XMLGregorianCalendar checksumLastCheck, String pillarId,
-            FileState fileState, ChecksumState checksumState) {
+            XMLGregorianCalendar checksumLastCheck, String pillarId, FileState fileState, ChecksumState checksumState) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileID");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         this.fileId = fileId;
         this.fileCreationTimestamp = fileLastCheck;
         this.checksum = checksum;
-        this.checksumType = checksumType;
         this.checksumLastCheck = checksumLastCheck;
         this.pillarId = pillarId;
         this.fileState = fileState;
@@ -93,7 +89,7 @@ public class FileInfo {
      * @param pillarId The id of the pillar.
      */
     public FileInfo(String fileId, String pillarId) {
-        this(fileId, null, null, null, null, pillarId, FileState.UNKNOWN, ChecksumState.UNKNOWN);
+        this(fileId, null, null, null, pillarId, FileState.UNKNOWN, ChecksumState.UNKNOWN);
     }
     
     /**
@@ -129,20 +125,6 @@ public class FileInfo {
      */
     public void setChecksum(String checksum) {
         this.checksum = checksum;
-    }
-    
-    /**
-     * @return The type of checksum, e.g. algorithm and optional salt.
-     */
-    public ChecksumSpecTYPE getChecksumType() {
-        return checksumType;
-    }
-    
-    /**
-     * @param checksumType The new type for the checksum, e.g. algorithm and optional salt.
-     */
-    public void setChecksumType(ChecksumSpecTYPE checksumType) {
-        this.checksumType = checksumType;
     }
     
     /**
@@ -196,7 +178,8 @@ public class FileInfo {
     
     @Override
     public String toString() {
-        return "Pillar id: " + pillarId + ", File id: " + fileId + " (date: " + fileCreationTimestamp + "), Checksum: " 
-                + checksum + " (date: " + checksumLastCheck + "), Checksum type: " + checksumType;
+        return "Pillar id: " + pillarId + ", File id: " + fileId + " (state: " + fileState + ", date: " 
+                + fileCreationTimestamp + "), Checksum: " + checksum + " (state: " + checksumState + ", date: " 
+                + checksumLastCheck + ")";
     }
 }

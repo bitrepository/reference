@@ -67,6 +67,8 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
+import org.bitrepository.protocol.InvalidMessageVersionException;
+import org.bitrepository.protocol.MessageVersionValidator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.messagebus.SpecificMessageListener;
@@ -438,6 +440,7 @@ public class ActiveMQMessageBus implements MessageBus {
                 securityManager.authenticateMessage(text, signature);
                 securityManager.authorizeCertificateUse(((Message) content).getFrom(), text, signature);
                 securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature);
+                MessageVersionValidator.validateMessageVersion((Message) content);
                 log.debug("Received message: " + text);
                 if (!(messageListener instanceof SpecificMessageListener)) {
                     messageListener.onMessage((Message) content);
@@ -535,6 +538,8 @@ public class ActiveMQMessageBus implements MessageBus {
                 log.error(e.getMessage(), e);
             } catch (CertificateUseException e) {
                 log.error(e.getMessage(), e);
+            } catch (InvalidMessageVersionException e) {
+            	log.error(e.getMessage(), e);
             } catch (Exception e) {
                 log.error("Error handling message. Received type was '" + type + "'.\n{}", text, e);
             }

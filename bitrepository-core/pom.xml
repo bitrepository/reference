@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.bitrepository.reference</groupId>
     <artifactId>bitrepository-parent</artifactId>
-    <version>0.17-SNAPSHOT</version>
+    <version>0.18-SNAPSHOT</version>
   </parent>
   <artifactId>bitrepository-core</artifactId>
   <name>Bitrepository Core</name>
@@ -46,6 +47,11 @@
       <version>10.6.1.0</version>
     </dependency>
     <dependency>
+      <groupId>c3p0</groupId>
+      <artifactId>c3p0</artifactId>
+      <version>0.9.1</version>
+    </dependency>
+    <dependency>
       <scope>test</scope>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
@@ -59,8 +65,9 @@
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-all</artifactId>
-      <!-- Note that we can't upgrade to 5.5, as this includes a dependency on a pre 1.6 slf4j, which is incompatible with
-        our 1.6.1 slf4j dependency, see https://issues.apache.org/jira/browse/AMQ-3296 (fixed in ActiveMQ 5.6.0) -->
+      <!-- Note that we can't upgrade to 5.5, as this includes a dependency 
+        on a pre 1.6 slf4j, which is incompatible with our 1.6.1 slf4j dependency, 
+        see https://issues.apache.org/jira/browse/AMQ-3296 (fixed in ActiveMQ 5.6.0) -->
       <version>5.4.3</version>
     </dependency>
     <dependency>
@@ -96,10 +103,18 @@
       <resource>
         <directory>src/main/resources/configurations/xml</directory>
       </resource>
+      <resource>
+        <directory>target/versioning</directory>
+        <filtering>true</filtering>
+      </resource>
     </resources>
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+      <testResource>
+        <directory>target/versioning</directory>
         <filtering>true</filtering>
       </testResource>
     </testResources>
@@ -117,10 +132,8 @@
             </goals>
             <configuration>
               <outputDirectory>${project.build.directory}</outputDirectory>
-              <!--
-                If attached is true (the default) the copy-resources step below will
-                re-include the resources from the last build in the current.
-              -->
+              <!-- If attached is true (the default) the copy-resources step 
+                below will re-include the resources from the last build in the current. -->
               <attached>false</attached>
               <resourceBundles>
                 <resourceBundle>org.bitrepository:bitrepository-message-xml:${message.xml.version}</resourceBundle>
@@ -131,8 +144,8 @@
         </executions>
       </plugin>
       <plugin>
-        <!-- Copies the jaxb bindings definition to the message xsd dir,
-in preparation for the xsd -> java class file generation -->
+        <!-- Copies the jaxb bindings definition to the message xsd dir, 
+          in preparation for the xsd -> java class file generation -->
         <artifactId>maven-resources-plugin</artifactId>
         <version>2.5</version>
         <executions>
@@ -147,6 +160,10 @@ in preparation for the xsd -> java class file generation -->
               <resources>
                 <resource>
                   <directory>src/main/resources/xsd</directory>
+                  <filtering>true</filtering>
+                </resource>
+                <resource>
+                  <directory>target/versioning</directory>
                   <filtering>true</filtering>
                 </resource>
               </resources>

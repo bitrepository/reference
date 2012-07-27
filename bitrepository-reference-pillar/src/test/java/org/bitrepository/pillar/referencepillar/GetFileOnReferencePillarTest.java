@@ -24,6 +24,12 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
+import java.io.File;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.Date;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -33,26 +39,28 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.io.File;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.Date;
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
 public class GetFileOnReferencePillarTest extends ReferencePillarTest {
-    
+    protected GetFileMessageFactory msgFactory;
+
+    @BeforeMethod (alwaysRun=true)
+    public void initialiseGetFileTests() throws Exception {
+        msgFactory = new GetFileMessageFactory(clientSettings);
+    }
+
     @AfterMethod (alwaysRun=true) 
     public void closeArchive() {
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0));
         if(dir.exists()) {
             FileUtils.delete(dir);
         }
@@ -78,7 +86,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         Long FILE_SIZE = testfile.length();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
@@ -168,7 +176,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         Long FILE_SIZE = testfile.length();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
@@ -330,7 +338,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir() + "/fileDir");
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
@@ -369,5 +377,36 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
 //        addStep("Validate that the pillar has sent an Alarm.", 
 //                "Only one alarm should have been sent.");
 //        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 1);
+    }
+    
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void pillarGeneralTestBadDeliveryURL() throws Exception {
+        addDescription("Tests that the ReferencePillar can handle a bad delivery URL.");
+        addStep("Set up constants and variables.", "Should not fail here!");
+        String auditTrail = null;
+
+        addStep("Move the test file into the file directory.", "Should be all-right");
+        File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
+        Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
+        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
+        String fileAddress = "http://127.0.0.1/¾" + new Date().getTime();
+        
+        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
+        Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
+                + dir.getAbsolutePath() + "'");
+        FileUtils.copyFile(testfile, new File(dir, FILE_ID));
+        
+        addStep("Create and send the actual GetFile message to the pillar.", 
+        "Should be received and handled by the pillar.");
+        GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, 
+                msgFactory.getNewCorrelationID(), fileAddress, FILE_ID, null, getPillarID(), getPillarID(), 
+                clientDestinationId, pillarDestinationId);
+        messageBus.sendMessage(getRequest);
+
+        addStep("Retrieve the FinalResponse for the GetFile request", 
+        "The GetFile response should be sent by the pillar.");
+        GetFileFinalResponse finalResponse = clientTopic.waitForMessage(GetFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_TRANSFER_FAILURE);
     }
 }

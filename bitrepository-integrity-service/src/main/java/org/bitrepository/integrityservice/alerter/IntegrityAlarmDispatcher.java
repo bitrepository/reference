@@ -26,7 +26,7 @@ package org.bitrepository.integrityservice.alerter;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.contributor.ContributorContext;
 
@@ -44,10 +44,18 @@ public class IntegrityAlarmDispatcher extends AlarmDispatcher implements Integri
     }
     
     @Override
-    public void integrityFailed(IntegrityReport report) {
+    public void integrityFailed(IntegrityReportModel report) {
         Alarm ad = new Alarm();
         ad.setAlarmCode(AlarmCode.INCONSISTENT_REQUEST);
         ad.setAlarmText(report.generateReport());
+        error(ad);
+    }
+
+    @Override
+    public void operationFailed(String issue) {
+        Alarm ad = new Alarm();
+        ad.setAlarmCode(AlarmCode.FAILED_OPERATION);
+        ad.setAlarmText(issue);
         error(ad);
     }
 }

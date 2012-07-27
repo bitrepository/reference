@@ -33,7 +33,9 @@
 
   <AlarmServiceSettings>
     <ID>alarm-service</ID>
-    <AlarmServiceDatabaseUrl>jdbc:derby:<!--foobarpattern-->conf/alarmservice/alarmservicedb/</AlarmServiceDatabaseUrl>
-    <AlarmDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AlarmDatabaseSpecifics>
+    <AlarmServiceDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/alarmservice/alarmservicedb</DatabaseURL>
+    </AlarmServiceDatabase>
   </AlarmServiceSettings>
 </ReferenceSettings>

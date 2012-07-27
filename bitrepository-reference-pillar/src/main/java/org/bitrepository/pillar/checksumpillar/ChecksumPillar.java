@@ -21,13 +21,13 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
+import javax.jms.JMSException;
+
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.database.DBConnector;
-import org.bitrepository.common.database.DBSpecifics;
-import org.bitrepository.common.database.DatabaseSpecificsFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.Pillar;
-import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
+import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.PillarContext;
@@ -37,8 +37,6 @@ import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.jms.JMSException;
 
 /**
  * The checksum pillar. 
@@ -69,10 +67,8 @@ public class ChecksumPillar implements Pillar {
         this.cache = refCache;
         
         log.info("Starting the checksum pillar!");
-        DBSpecifics dbSpecifics = DatabaseSpecificsFactory.retrieveDBSpecifics(
-                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseSpecifics());
-        AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector(dbSpecifics, 
-                settings.getReferenceSettings().getPillarSettings().getAuditContributerDatabaseUrl()));
+        AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector( 
+                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase()));
         ContributorContext contributorContext = new ContributorContext(messageBus, settings);
         PillarAlarmDispatcher alarms = new PillarAlarmDispatcher(contributorContext);
         PillarContext context = new PillarContext(settings, messageBus, alarms, audits);

@@ -31,7 +31,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.IntegrityService;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.scheduler.Workflow;
-import org.bitrepository.service.scheduler.WorkflowTask;
+import org.bitrepository.service.scheduler.WorkflowTimerTask;
 
 /**
  * The IntegrityService wrapped into the interface for a web server.
@@ -82,7 +82,7 @@ public class IntegrityServiceWebInterface implements IntegrityService, LifeCycle
     }
     
     @Override
-    public Collection<WorkflowTask> getScheduledWorkflows() {
+    public Collection<WorkflowTimerTask> getScheduledWorkflows() {
         return service.getScheduledWorkflows();
     }
 

@@ -54,7 +54,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AlarmDatabaseUnderTest");
-        settings.getReferenceSettings().getAlarmServiceSettings().setAlarmServiceDatabaseUrl(DATABASE_URL);
+        settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase().setDatabaseURL(DATABASE_URL);
         
         addStep("Initialise the database", "Should be unpacked from a jar-file.");
         File dbFile = new File("src/test/resources/alarmservicedb.jar");

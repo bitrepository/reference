@@ -24,8 +24,11 @@
  */
 package org.bitrepository.pillar.checksumpillar.messagehandler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.pillar.checksumpillar.cache.ChecksumStore;
+import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.common.PillarMediator;
 import org.bitrepository.service.contributor.handler.GetAuditTrailsRequestHandler;
@@ -33,9 +36,6 @@ import org.bitrepository.service.contributor.handler.GetStatusRequestHandler;
 import org.bitrepository.service.contributor.handler.IdentifyContributorsForGetAuditTrailsRequestHandler;
 import org.bitrepository.service.contributor.handler.IdentifyContributorsForGetStatusRequestHandler;
 import org.bitrepository.service.contributor.handler.RequestHandler;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This instance handles the conversations for the checksum pillar.

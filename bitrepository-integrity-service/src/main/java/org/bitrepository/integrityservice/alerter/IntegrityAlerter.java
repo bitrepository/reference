@@ -21,7 +21,7 @@
  */
 package org.bitrepository.integrityservice.alerter;
 
-import org.bitrepository.integrityservice.checking.reports.IntegrityReport;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
 
 /**
  * The integrity alerter, for creating alarms based on an integrity report.
@@ -31,5 +31,11 @@ public interface IntegrityAlerter {
      * Sends an alarm based on an integrity report.
      * @param report The report to base the alarm upon.
      */
-    void integrityFailed(IntegrityReport report);
+    void integrityFailed(IntegrityReportModel report);
+    
+    /**
+     * Send an alarm based on an exception.
+     * @param issue The reason for the exception.
+     */
+    void operationFailed(String issue);
 }

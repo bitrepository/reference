@@ -26,15 +26,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
@@ -53,6 +55,8 @@ public class TestIntegrityModel implements IntegrityModel {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
+    private final List<String> pillarIds;
+    
     /**
      * The memory cache for containing the information about the files in the system.
      * Synchronized for avoiding threading problems.
@@ -63,7 +67,9 @@ public class TestIntegrityModel implements IntegrityModel {
     /**
      * Constructor.
      */
-    public TestIntegrityModel() {}
+    public TestIntegrityModel(List<String> pillarIds) {
+        this.pillarIds = pillarIds;
+    }
     
     @Override
     public void addFileIDs(FileIDsData data, FileIDs expectedFileIDs, String pillarId) {
@@ -84,7 +90,7 @@ public class TestIntegrityModel implements IntegrityModel {
     private void updateFileId(FileIDsDataItem fileIdData, String pillarId) {
         CollectionFileIDInfo fileInfos = cache.get(fileIdData.getFileID());
         if(fileInfos == null) {
-            fileInfos = new CollectionFileIDInfo();
+            fileInfos = new CollectionFileIDInfo(fileIdData.getFileID());
         }
         
         fileInfos.updateFileIDs(fileIdData, pillarId);
@@ -92,8 +98,7 @@ public class TestIntegrityModel implements IntegrityModel {
     }
     
     @Override
-    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, ChecksumSpecTYPE checksumType, 
-            String pillarId) {
+    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId) {
         for(ChecksumDataForChecksumSpecTYPE checksumResult : data) {
             log.debug("Adding/updating checksums for file '" + checksumResult.getFileID() + "' for pillar '" 
                     + pillarId + "'");
@@ -101,21 +106,19 @@ public class TestIntegrityModel implements IntegrityModel {
             if(!cache.containsKey(checksumResult.getFileID())) {
                 instantiateFileInfoListForFileId(checksumResult.getFileID());
             }
-            updateChecksum(checksumResult, checksumType, pillarId);
+            updateChecksum(checksumResult, pillarId);
         }
     }
     
     /**
      * Updates a file info with checksum results.
      * @param checksumData The results of a checksum calculation.
-     * @param checksumType The type of checksum calculation (e.g. algorithm and optionally salt).
      * @param pillarId The id of the pillar, where it has been calculated.
      */
-    private void updateChecksum(ChecksumDataForChecksumSpecTYPE checksumData, ChecksumSpecTYPE checksumType, 
-            String pillarId) {
+    private void updateChecksum(ChecksumDataForChecksumSpecTYPE checksumData, String pillarId) {
         CollectionFileIDInfo fileInfos = cache.get(checksumData.getFileID());
         
-        fileInfos.updateChecksums(checksumData, checksumType, pillarId);
+        fileInfos.updateChecksums(checksumData, pillarId);
         cache.put(checksumData.getFileID(), fileInfos);
     }
     
@@ -128,13 +131,17 @@ public class TestIntegrityModel implements IntegrityModel {
             log.warn("Attempt to instantiate file, which already exists, averted");
             return;
         }
-        CollectionFileIDInfo fileIdInfo = new CollectionFileIDInfo();
+        CollectionFileIDInfo fileIdInfo = new CollectionFileIDInfo(fileId);
         cache.put(fileId, fileIdInfo);
     }
     
     @Override
     public List<FileInfo> getFileInfos(String fileId) {
-        return cache.get(fileId).getFileIDInfos();
+        if(cache.containsKey(fileId)) {
+            return cache.get(fileId).getFileIDInfos();
+        } else {
+            return new ArrayList<FileInfo>();
+        }
     }
 
     @Override
@@ -161,7 +168,11 @@ public class TestIntegrityModel implements IntegrityModel {
         /**
          * Constructor. Initializes and empty list of FileIDInfos.
          */
-        CollectionFileIDInfo() {}
+        CollectionFileIDInfo(String fileId) {
+            for(String pillarId : pillarIds) {
+                fileIDInfos.add(new FileInfo(fileId, pillarId));
+            }
+        }
         
         /**
          * Updates the FileIDInfo for a given pillar based on the results of a GetFileIDs operation.
@@ -183,8 +194,9 @@ public class TestIntegrityModel implements IntegrityModel {
                 currentInfo = new FileInfo(fileIdData.getFileID(), pillarId);
             }
             
-            // Update the file info
             currentInfo.setDateForLastFileIDCheck(fileIdData.getLastModificationTime());
+            currentInfo.setFileState(FileState.EXISTING);
+            currentInfo.setChecksumState(ChecksumState.UNKNOWN);
             
             // put it back into the list and that back into the cache.
             fileIDInfos.add(currentInfo);
@@ -195,11 +207,9 @@ public class TestIntegrityModel implements IntegrityModel {
          * Also updates the 'latestChecksumUpdate'.
          * 
          * @param checksumData The results of the GetChecksumOperation for this given file.
-         * @param checksumType The type of checksum (e.g. algorithm and optional salt).
          * @param pillarId The id of the pillar.
          */
-        void updateChecksums(ChecksumDataForChecksumSpecTYPE checksumData, ChecksumSpecTYPE checksumType,
-                String pillarId) {
+        void updateChecksums(ChecksumDataForChecksumSpecTYPE checksumData, String pillarId) {
             
             // Extract current file info and update it or create a new one.
             FileInfo currentInfo = null;
@@ -213,17 +223,15 @@ public class TestIntegrityModel implements IntegrityModel {
             }
             if(currentInfo == null) {
                 // create a new file info
-                currentInfo = new FileInfo(checksumData.getFileID(), checksumData.getCalculationTimestamp(), 
-                        new String(checksumData.getChecksumValue()), checksumType, 
-                        checksumData.getCalculationTimestamp(), pillarId, FileState.UNKNOWN, ChecksumState.UNKNOWN);
+                currentInfo = new FileInfo(checksumData.getFileID(), CalendarUtils.getEpoch(), 
+                        Base16Utils.decodeBase16(checksumData.getChecksumValue()), 
+                        checksumData.getCalculationTimestamp(), pillarId, FileState.EXISTING, ChecksumState.UNKNOWN);
             } else {
                 // Update the existing file info
-                currentInfo.setDateForLastFileIDCheck(checksumData.getCalculationTimestamp());
                 currentInfo.setDateForLastChecksumCheck(checksumData.getCalculationTimestamp());
-                currentInfo.setChecksum(new String(checksumData.getChecksumValue()));
-                currentInfo.setChecksumType(checksumType);
+                currentInfo.setChecksum(Base16Utils.decodeBase16(checksumData.getChecksumValue()));
+                currentInfo.setFileState(FileState.EXISTING);
             }
-            
             // put it back into the list and that back into the cache.
             fileIDInfos.add(currentInfo);
         }
@@ -238,67 +246,167 @@ public class TestIntegrityModel implements IntegrityModel {
 
     @Override
     public long getNumberOfFiles(String pillarId) {
-        // TODO Auto-generated method stub
-        return 0;
+        return cache.size();
     }
 
     @Override
     public long getNumberOfMissingFiles(String pillarId) {
-        // TODO Auto-generated method stub
-        return 0;
+        long res = 0L;
+        for(CollectionFileIDInfo fileinfos : cache.values()) {
+            for(FileInfo fi : fileinfos.fileIDInfos) {
+                if((fi.getPillarId() == pillarId) && (fi.getFileState() == FileState.MISSING)) {
+                    res++;
+                }
+            }
+        }
+        return res;
     }
 
     @Override
     public long getNumberOfChecksumErrors(String pillarId) {
-        // TODO Auto-generated method stub
-        return 0;
+        long res = 0L;
+        for(CollectionFileIDInfo fileinfos : cache.values()) {
+            for(FileInfo fi : fileinfos.fileIDInfos) {
+                if((fi.getPillarId() == pillarId) && (fi.getChecksumState() == ChecksumState.ERROR)) {
+                    res++;
+                }
+            }
+        }
+        return res;
     }
 
     @Override
     public void setFileMissing(String fileId, Collection<String> pillarIds) {
-        // TODO Auto-generated method stub
-        
+        CollectionFileIDInfo fileinfos = cache.get(fileId);
+        for(FileInfo fi : fileinfos.fileIDInfos)  {
+            if(pillarIds.contains(fi.getPillarId())) {
+                fi.setFileState(FileState.MISSING);
+            }
+        }
+        cache.put(fileId, fileinfos);
     }
 
     @Override
     public void setChecksumError(String fileId, Collection<String> pillarIds) {
-        // TODO Auto-generated method stub
-        
+        CollectionFileIDInfo fileinfos = cache.get(fileId);
+        for(FileInfo fi : fileinfos.fileIDInfos)  {
+            if(pillarIds.contains(fi.getPillarId())) {
+                fi.setChecksumState(ChecksumState.ERROR);
+            }
+        }
+        cache.put(fileId, fileinfos);
     }
 
     @Override
     public void setChecksumAgreement(String fileId, Collection<String> pillarIds) {
-        // TODO Auto-generated method stub
-        
+        CollectionFileIDInfo fileinfos = cache.get(fileId);
+        for(FileInfo fi : fileinfos.fileIDInfos)  {
+            if(pillarIds.contains(fi.getPillarId())) {
+                fi.setChecksumState(ChecksumState.VALID);
+            }
+        }
+        cache.put(fileId, fileinfos);
     }
 
     @Override
     public void deleteFileIdEntry(String fileId) {
-        // TODO Auto-generated method stub
-        
+        cache.remove(fileId);
     }
 
     @Override
     public List<String> findMissingChecksums() {
-        // TODO Auto-generated method stub
-        return null;
+        List<String> res = new ArrayList<String>();
+        for(CollectionFileIDInfo fileinfos : cache.values()) {
+            for(FileInfo fi : fileinfos.fileIDInfos) {
+                if((fi.getFileState() == FileState.EXISTING) && (fi.getChecksumState() == ChecksumState.UNKNOWN)) {
+                    res.add(fi.getFileId());
+                    break;
+                }
+            }
+        }
+        return res;
     }
 
     @Override
     public List<String> findMissingFiles() {
-        // TODO Auto-generated method stub
-        return null;
+        List<String> res = new ArrayList<String>();
+        for(CollectionFileIDInfo fileinfos : cache.values()) {
+            for(FileInfo fi : fileinfos.fileIDInfos) {
+                if(fi.getFileState() == FileState.MISSING) {
+                    res.add(fi.getFileId());
+                    break;
+                }
+            }
+        }
+        return res;
     }
 
     @Override
     public Collection<String> findChecksumsOlderThan(Date date) {
-        // TODO Auto-generated method stub
-        return null;
+        List<String> res = new ArrayList<String>();
+        for(CollectionFileIDInfo fileinfos : cache.values()) {
+            for(FileInfo fi : fileinfos.fileIDInfos) {
+                if(CalendarUtils.convertFromXMLGregorianCalendar(fi.getDateForLastChecksumCheck()).getTime() 
+                        < date.getTime()) {
+                    res.add(fi.getFileId());
+                    break;
+                }
+            }
+        }
+        return res;
     }
 
     @Override
-    public List<String> isMissing(String fileId) {
-        // TODO Auto-generated method stub
-        return null;
+    public List<String> getPillarsMissingFile(String fileId) {
+        if(!cache.containsKey(fileId))  {
+            return new ArrayList<String>();
+        }
+        
+        List<String> res = new ArrayList<String>(pillarIds);
+        CollectionFileIDInfo fileinfos = cache.get(fileId);
+        for(FileInfo fi : fileinfos.fileIDInfos)  {
+            if(fi.getFileState() == FileState.EXISTING) {
+                res.remove(fi.getPillarId());
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public List<String> getFilesWithInconsistentChecksums() {
+        List<String> res = new ArrayList<String>();
+        for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
+            HashSet<String> checksums = new HashSet<String>();
+            for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                if(fileinfo.getChecksum() != null && fileinfo.getFileState() != FileState.MISSING) {
+                    checksums.add(fileinfo.getChecksum());
+                }
+            }
+            // more than 1 checksum, means disagreements.
+            if(checksums.size() > 1) {
+                res.add(collectionInfo.getKey());
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public void setFilesWithConsistentChecksumToValid() {
+        for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
+            HashSet<String> checksums = new HashSet<String>();
+            for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                if(fileinfo.getChecksum() != null && fileinfo.getFileState() != FileState.MISSING) {
+                    checksums.add(fileinfo.getChecksum());
+                }
+            }
+            // 1 checksum means unanimous checksum.
+            if(checksums.size() == 1) {
+                for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                    if(fileinfo.getChecksum() != null && fileinfo.getFileState() != FileState.MISSING) {
+                        fileinfo.setChecksumState(ChecksumState.VALID);
+                    }
+                }
+            }
+        }
     }
 }

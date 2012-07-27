@@ -52,22 +52,23 @@ public class DatabaseUtils {
      * Retrieves an integer value from the database through the use of a SQL query, which requests 
      * the wanted integer value, and the arguments for the query to become a proper SQL statement.
      * 
-     * @param dbConnection The connection to the database.
+     * @param dbConnector For connecting to the database.
      * @param query The query for retrieving the integer value.
      * @param args The arguments for the database statement.
      * @return The integer value from the given statement.
      */
-    public static Integer selectIntValue(Connection dbConnection, String query, Object... args) {
-        ArgumentValidator.checkNotNull(dbConnection, "Connection dbConnection");
+    public static Integer selectIntValue(DBConnector dbConnector, String query, Object... args) {
+        ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
         
+        PreparedStatement ps = null; 
+        ResultSet res = null;
+        Connection conn = null;
         try {
-            PreparedStatement ps = null; 
-            ResultSet res = null;
-            
             try {
-                ps = createPreparedStatement(dbConnection, query, args);
+                conn = dbConnector.getConnection();
+                ps = createPreparedStatement(conn, query, args);
                 res = ps.executeQuery();
                 if (!res.next()) {
                     throw new IllegalStateException("No results from " + ps);
@@ -87,9 +88,12 @@ public class DatabaseUtils {
                 if(ps != null) {
                     ps.close();
                 }
+                if(conn != null) {
+                    conn.close();
+                }
             }
         } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, dbConnection, query, args);
+            throw failedExecutionOfStatement(e, conn, query, args);
         }
     }
     
@@ -97,25 +101,27 @@ public class DatabaseUtils {
      * Retrieves a long value from the database through the use of a SQL query, which requests 
      * the wanted long value, and the arguments for the query to become a proper SQL statement.
      * 
-     * @param dbConnection The connection to the database.
+     * @param dbConnector For connecting to the database.
      * @param query The query for retrieving the long value.
      * @param args The arguments for the database statement.
      * @return The long value from the given statement.
      */
-    public static Long selectLongValue(Connection dbConnection, String query, Object... args) {
-        ArgumentValidator.checkNotNull(dbConnection, "Connection dbConnection");
+    public static Long selectLongValue(DBConnector dbConnector, String query, Object... args) {
+        ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
         
+        PreparedStatement ps = null; 
+        ResultSet res = null;
+        Connection conn = null;
         try {
-            PreparedStatement ps = null;
-            ResultSet res = null; 
             try {
-                ps = createPreparedStatement(dbConnection, query, args);
+                conn = dbConnector.getConnection();
+                ps = createPreparedStatement(conn, query, args);
                 res = ps.executeQuery();
                 if (!res.next()) {
                     log.info("Got an empty result set for statement '" + query + "' with arguments '" 
-                            + Arrays.asList(args) + "' on database '" + dbConnection + "'. Returning a null.");
+                            + Arrays.asList(args) + "' on database '" + conn + "'. Returning a null.");
                     return null;
                 }
                 Long resultLong = res.getLong(1);
@@ -133,9 +139,12 @@ public class DatabaseUtils {
                 if(ps != null) {
                     ps.close();
                 }
+                if(conn != null) {
+                    conn.close();
+                }
             }
         } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, dbConnection, query, args);
+            throw failedExecutionOfStatement(e, conn, query, args);
         }
     }
     
@@ -144,25 +153,27 @@ public class DatabaseUtils {
      * to become a proper SQL statement, which requests the wanted set of long values, where only the first is 
      * returned.
      * 
-     * @param dbConnection The connection to the database.
+     * @param dbConnector For connecting to the database.
      * @param query The query for retrieving the long value.
      * @param args The arguments for the database statement.
      * @return The long value from the given statement.
      */
-    public static Long selectFirstLongValue(Connection dbConnection, String query, Object... args) {
-        ArgumentValidator.checkNotNull(dbConnection, "Connection dbConnection");
+    public static Long selectFirstLongValue(DBConnector dbConnector, String query, Object... args) {
+        ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
         
+        PreparedStatement ps = null; 
+        ResultSet res = null;
+        Connection conn = null;
         try {
-            PreparedStatement ps = null;
-            ResultSet res = null; 
             try {
-                ps = createPreparedStatement(dbConnection, query, args);
+                conn = dbConnector.getConnection();
+                ps = createPreparedStatement(conn, query, args);
                 res = ps.executeQuery();
                 if (!res.next()) {
                     log.info("Got an empty result set for statement '" + query + "' with arguments '" 
-                            + Arrays.asList(args) + "' on database '" + dbConnection + "'. Returning a null.");
+                            + Arrays.asList(args) + "' on database '" + conn + "'. Returning a null.");
                     return null;
                 }
                 Long resultLong = res.getLong(1);
@@ -177,9 +188,12 @@ public class DatabaseUtils {
                 if(ps != null) {
                     ps.close();
                 }
+                if(conn != null) {
+                    conn.close();
+                }
             }
         } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, dbConnection, query, args);
+            throw failedExecutionOfStatement(e, conn, query, args);
         }
     }
     
@@ -187,23 +201,24 @@ public class DatabaseUtils {
      * Retrieves a list of long values from the database through the use of a SQL query, which requests 
      * the wanted long values, and the arguments for the query to become a proper SQL statement.
      * 
-     * @param dbConnection The connection to the database.
+     * @param dbConnector For connecting to the database.
      * @param query The query for retrieving the long value.
      * @param args The arguments for the database statement.
      * @return The list of long values from the given statement.
      */
-    public static List<Long> selectLongList(Connection dbConnection, String query, Object... args) {
-        ArgumentValidator.checkNotNull(dbConnection, "Connection dbConnection");
+    public static List<Long> selectLongList(DBConnector dbConnector, String query, Object... args) {
+        ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
         
+        PreparedStatement ps = null; 
+        ResultSet res = null;
+        Connection conn = null;
         try {
-            PreparedStatement ps = null;
-            ResultSet res = null;
             List<Long> list = new ArrayList<Long>();
-            
             try {
-                ps = createPreparedStatement(dbConnection, query, args);
+                conn = dbConnector.getConnection();
+                ps = createPreparedStatement(conn, query, args);
                 res = ps.executeQuery();
                 
                 while(res.next()) {
@@ -217,9 +232,12 @@ public class DatabaseUtils {
                 if(ps != null) {
                     ps.close();
                 }
+                if(conn != null) {
+                    conn.close();
+                }
             }
         } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, dbConnection, query, args);
+            throw failedExecutionOfStatement(e, conn, query, args);
         }
     }
 
@@ -227,26 +245,28 @@ public class DatabaseUtils {
      * Retrieves an date value from the database through the use of a SQL query, which requests 
      * the wanted date value, and the arguments for the query to become a proper SQL statement.
      * 
-     * @param dbConnection The connection to the database.
+     * @param dbConnector For connecting to the database.
      * @param query The query for retrieving the date.
      * @param args The arguments for the database statement.
      * @return The date from the given statement.
      */
-    public static Date selectDateValue(Connection dbConnection, String query, Object... args) {
-        ArgumentValidator.checkNotNull(dbConnection, "Connection dbConnection");
+    public static Date selectDateValue(DBConnector dbConnector, String query, Object... args) {
+        ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
         
+        PreparedStatement ps = null; 
+        ResultSet res = null;
+        Connection conn = null;
         try {
-            PreparedStatement ps = null;
-            ResultSet res = null;
             try {
-                ps = createPreparedStatement(dbConnection, query, args);
+                conn = dbConnector.getConnection();
+                ps = createPreparedStatement(conn, query, args);
                 
                 res = ps.executeQuery();
                 if (!res.next()) {
                     log.info("Got an empty result set for statement '" + query + "' on database '"
-                            + dbConnection + "'. Returning a null.");
+                            + conn + "'. Returning a null.");
                     return null;
                 }
                 Timestamp resultDate = res.getTimestamp(1);
@@ -264,50 +284,36 @@ public class DatabaseUtils {
                 if(ps != null) {
                     ps.close();
                 }
+                if(conn != null) {
+                    conn.close();
+                }
             }
         } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, dbConnection, query, args);
+            throw failedExecutionOfStatement(e, conn, query, args);
         }
-    }
-    
-    /**
-     * Retrieves the result-set corresponding to an unspecified object through the use of a SQL query, which requests 
-     * the wanted data-set, and the arguments for the query to become a proper SQL statement. 
-     * This should only be used for advanced extractions of the database, e.g. several columns in a table.
-     * 
-     * NOTE: Remember to close the ResultSet after use. 
-     * TODO: find a way to close the PreparedStatement. If it is closed too soon it will also close the ResultSet.
-     * 
-     * @param dbConnection The connection to the database.
-     * @param query The SQL query to be executed on the database.
-     * @param args The arguments for the SQL statement.
-     * @return The requested result set.
-     */
-    public static ResultSet selectObject(Connection dbConnection, String query, Object... args) {
-        try {
-            PreparedStatement ps = createPreparedStatement(dbConnection, query, args);
-            return ps.executeQuery();
-        } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, dbConnection, query, args);
-        }        
     }
     
     /**
      * Retrieves a String value from the database through the use of a SQL query, which requests 
      * the wanted String value, and the arguments for the query to become a proper SQL statement.
      * 
-     * @param dbConnection The connection to the database.
+     * @param dbConnector For connecting to the database.
      * @param query The query to extract the String value.
      * @param args The arguments for the statement.
      * @return The requested string value, or null if no such value could be found.
      */
-    public static String selectStringValue(Connection dbConnection, String query, Object... args) {
+    public static String selectStringValue(DBConnector dbConnector, String query, Object... args) {
+        ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
+        ArgumentValidator.checkNotNullOrEmpty(query, "String query");
+        ArgumentValidator.checkNotNull(args, "Object... args");
+
+        PreparedStatement ps = null; 
+        ResultSet res = null;
+        Connection conn = null;
         try {
-            PreparedStatement ps = null; 
-            ResultSet res = null; 
-            
             try {
-                ps = createPreparedStatement(dbConnection, query, args);
+                conn = dbConnector.getConnection();
+                ps = createPreparedStatement(conn, query, args);
                 res = ps.executeQuery();
                 
                 if(!res.next()) {
@@ -323,9 +329,12 @@ public class DatabaseUtils {
                 if(ps != null) {
                     ps.close();
                 }
+                if(conn != null) {
+                    conn.close();
+                }
             }
         } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, dbConnection, query, args);
+            throw failedExecutionOfStatement(e, conn, query, args);
         }
     }
     
@@ -333,60 +342,107 @@ public class DatabaseUtils {
      * Retrieves a list of String value from the database through the use of a SQL query, which requests 
      * the wanted list of String value, and the arguments for the query to become a proper SQL statement.
      * 
-     * @param dbConnection The connection to the database.
+     * @param dbConnector For connecting to the database.
      * @param query The SQL query for retrieving the strings.
      * @param args The arguments for the statement.
      * @return The requested list of strings. If no strings were found, then the list is empty.
      */
-    public static List<String> selectStringList(Connection dbConnection, String query, Object... args) {
+    public static List<String> selectStringList(DBConnector dbConnector, String query, Object... args) {
+        ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
+        ArgumentValidator.checkNotNullOrEmpty(query, "String query");
+        ArgumentValidator.checkNotNull(args, "Object... args");
+
+        PreparedStatement ps = null; 
+        ResultSet res = null;
+        Connection conn = null;
         try {
-            PreparedStatement ps = null;
-            
-            ResultSet rs = null;
             try {
-                ps = createPreparedStatement(dbConnection, query, args);
-                rs = ps.executeQuery();
+                conn = dbConnector.getConnection();
+                ps = createPreparedStatement(conn, query, args);
+                res = ps.executeQuery();
                 
-                List<String> res = new ArrayList<String>();
-                while(rs.next()) {
-                    res.add(rs.getString(1));
+                List<String> list = new ArrayList<String>();
+                while(res.next()) {
+                    list.add(res.getString(1));
                 }
-                return res;
+                return list;
             } finally {
-                if(rs != null) {
-                    rs.close();
+                if(res != null) {
+                    res.close();
                 }
                 if(ps != null) {
                     ps.close();
                 }
+                if(conn != null) {
+                    conn.close();
+                }
             }
         } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, dbConnection, query, args);
+            throw failedExecutionOfStatement(e, conn, query, args);
         }
+    }
+    
+    /**
+     * Retrieves the result-set corresponding to an unspecified object through the use of a SQL query, which requests 
+     * the wanted data-set, and the arguments for the query to become a proper SQL statement. 
+     * This should only be used for advanced extractions of the database, e.g. several columns in a table.
+     * 
+     * NOTE: Remember to close the ResultSet and the connection after use.
+     * TODO: find a way to close the PreparedStatement. If it is closed too soon it will also close the ResultSet.
+     * 
+     * @param dbConnection The connection to the database.
+     * @param query The SQL query to be executed on the database.
+     * @param args The arguments for the SQL statement.
+     * @return The requested result set.
+     */
+    public static ResultSet selectObject(Connection dbConnection, String query, Object... args) {
+        ArgumentValidator.checkNotNull(dbConnection, "Connection dbConnection");
+        ArgumentValidator.checkNotNullOrEmpty(query, "String query");
+        ArgumentValidator.checkNotNull(args, "Object... args");
+        
+        try {
+            PreparedStatement ps = createPreparedStatement(dbConnection, query, args);
+            return ps.executeQuery();
+        } catch (SQLException e) {
+            throw failedExecutionOfStatement(e, dbConnection, query, args);
+        }        
     }
 
     /**
      * Executing a given statement, which should not return any results.
      * This is intended to be used especially for UPDATE commands.
      * 
-     * @param dbConnection The connection to the database.
+     * @param dbConnector For connecting to the database.
      * @param query The SQL query to execute.
      * @param args The arguments for the SQL statement.
      */
-    public static void executeStatement(Connection dbConnection, String query, Object... args) {
+    public static void executeStatement(DBConnector dbConnector, String query, Object... args) {
+        ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
+        ArgumentValidator.checkNotNullOrEmpty(query, "String query");
+        ArgumentValidator.checkNotNull(args, "Object... args");
+        
+        PreparedStatement ps = null; 
+        ResultSet res = null;
+        Connection conn = null;
         try {
-            PreparedStatement ps = null;
             try {
-                ps = createPreparedStatement(dbConnection, query, args);
+                conn = dbConnector.getConnection();
+                ps = createPreparedStatement(conn, query, args);
                 ps.executeUpdate();
-                dbConnection.commit();
+                conn.commit();
             } finally {
+                if(res != null) {
+                    res.close();
+                }
                 if(ps != null) {
                     ps.close();
                 }
+                if(conn != null) {
+                    conn.close();
+                }
             }
         } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, dbConnection, query, args);
+            throw failedExecutionOfStatement(e, conn, query, args);
         }
     }
     
