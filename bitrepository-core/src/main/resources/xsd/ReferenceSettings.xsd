@@ -134,6 +134,13 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="MaxAgeForChecksums" type="xs:nonNegativeInteger">
+          <xs:annotation>
+            <xs:documentation>
+              The number of milliseconds a checksum can be before it has to be recalculated.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element name="AuditTrailContributerDatabase" type="DatabaseSpecifics">
           <xs:annotation>
             <xs:documentation xml:lang="en">

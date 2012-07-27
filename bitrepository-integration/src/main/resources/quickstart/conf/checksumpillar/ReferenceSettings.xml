@@ -36,6 +36,7 @@
     <FileDir><!--foobarpattern-->var/checksumpillar</FileDir>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
+    <MaxAgeForChecksums>36000000000</MaxAgeForChecksums>
     <AuditTrailContributerDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/checksumpillar/auditcontributerdb</DatabaseURL>

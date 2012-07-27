@@ -76,7 +76,8 @@ public class ReferencePillar implements Pillar {
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
         csStore = new ChecksumDAO(settings);
         ReferenceChecksumManager manager = new ReferenceChecksumManager(archive, csStore, 
-                ChecksumUtils.getDefault(settings), 3600000);
+                ChecksumUtils.getDefault(settings), 
+                settings.getReferenceSettings().getPillarSettings().getMaxAgeForChecksums().longValue());
         AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector( 
                 settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase()));
         ContributorContext contributorContext = new ContributorContext(messageBus, settings);
