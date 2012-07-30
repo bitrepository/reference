@@ -29,7 +29,7 @@ import java.math.BigInteger;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileIDValidator;
-import org.bitrepository.protocol.ProtocolConstants;
+import org.bitrepository.protocol.ProtocolVersionLoader;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.handler.AbstractRequestHandler;
@@ -41,9 +41,9 @@ import org.bitrepository.service.exception.RequestHandlerException;
 public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> {
 
     /** The constant for the VERSION of the messages.*/
-    protected static final BigInteger VERSION = BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION);
+    protected static final BigInteger VERSION = ProtocolVersionLoader.loadProtocolVersion().getVersion();
     /** The constant for the MIN_VERSION of the messages.*/
-    protected static final BigInteger MIN_VERSION = BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION);
+    protected static final BigInteger MIN_VERSION = ProtocolVersionLoader.loadProtocolVersion().getMinVersion();
     
     /** The classpath to the 'xsd'.*/
     protected static final String XSD_CLASSPATH = "xsd/";

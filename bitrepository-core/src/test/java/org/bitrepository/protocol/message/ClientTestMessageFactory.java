@@ -27,7 +27,6 @@ import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-
 import java.math.BigInteger;
 
 /**
@@ -38,7 +37,6 @@ public abstract class ClientTestMessageFactory extends TestMessageFactory {
     // default attributes is specified through the example messages and the constants below can be removed
     protected static final String CORRELATION_ID_DEFAULT = "CorrelationID";
     public static final String FILE_ID_DEFAULT = "default-test-file.txt";
-    protected static final BigInteger VERSION_DEFAULT = BigInteger.valueOf(1L);
 
     protected static final TimeMeasureUnit TIME_MEASURE_UNIT_DEFAULT =
         TimeMeasureUnit.MILLISECONDS;
@@ -88,4 +86,5 @@ public abstract class ClientTestMessageFactory extends TestMessageFactory {
         response.setReplyTo(replyTo);
         response.setFrom(componentID);
     }
+
 }

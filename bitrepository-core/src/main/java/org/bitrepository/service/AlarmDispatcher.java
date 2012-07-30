@@ -24,18 +24,17 @@
  */
 package org.bitrepository.service;
 
+import java.util.UUID;
+
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.protocol.ProtocolConstants;
+import org.bitrepository.protocol.ProtocolVersionLoader;
 import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.math.BigInteger;
-import java.util.UUID;
 
 /**
  * The class for dispatching alarms.
@@ -123,11 +122,11 @@ public class AlarmDispatcher {
         message.setAlarm(alarm);
         message.setCollectionID(context.getSettings().getCollectionID());
         message.setCorrelationID(UUID.randomUUID().toString());
-        message.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
+        message.setMinVersion(ProtocolVersionLoader.loadProtocolVersion().getMinVersion());
         message.setReplyTo(context.getSettings().getReceiverDestinationID());
         message.setTo(context.getSettings().getAlarmDestination());
         message.setFrom(context.getSettings().getComponentID());
-        message.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
+        message.setVersion(ProtocolVersionLoader.loadProtocolVersion().getVersion());
         
         log.info("Sending alarm: \n{}", message);
         context.getDispatcher().sendMessage(message);

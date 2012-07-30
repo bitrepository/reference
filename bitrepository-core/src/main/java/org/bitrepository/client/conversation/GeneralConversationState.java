@@ -28,8 +28,8 @@ import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.exceptions.UnableToFinishException;
-import org.bitrepository.protocol.ProtocolConstants;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.protocol.ProtocolVersionLoader;
 
 import java.math.BigInteger;
 import java.util.Timer;
@@ -115,8 +115,8 @@ public abstract class GeneralConversationState {
 
     protected void initializeMessage(MessageRequest msg) {
         msg.setCorrelationID(getContext().getConversationID());
-        msg.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
-        msg.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
+        msg.setMinVersion(ProtocolVersionLoader.loadProtocolVersion().getMinVersion());
+        msg.setVersion(ProtocolVersionLoader.loadProtocolVersion().getVersion());
         msg.setCollectionID(getContext().getSettings().getCollectionID());
         msg.setReplyTo(getContext().getSettings().getReceiverDestinationID());
         msg.setAuditTrailInformation(getContext().getAuditTrailInformation());

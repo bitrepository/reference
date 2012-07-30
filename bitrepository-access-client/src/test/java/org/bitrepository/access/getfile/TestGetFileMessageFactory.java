@@ -62,11 +62,9 @@ public class TestGetFileMessageFactory extends ClientTestMessageFactory {
 
     public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileRequest() {
         IdentifyPillarsForGetFileRequest identifyPillarsForGetFileRequest = new IdentifyPillarsForGetFileRequest();
+        initializeMessageDetails(identifyPillarsForGetFileRequest);
         identifyPillarsForGetFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         identifyPillarsForGetFileRequest.setFileID(FILE_ID_DEFAULT);
-        identifyPillarsForGetFileRequest.setMinVersion(VERSION_DEFAULT);
-        identifyPillarsForGetFileRequest.setCollectionID(collectionID);
-        identifyPillarsForGetFileRequest.setVersion(VERSION_DEFAULT);
         return identifyPillarsForGetFileRequest;
     }
     
@@ -93,6 +91,7 @@ public class TestGetFileMessageFactory extends ClientTestMessageFactory {
             String pillarId, 
             String pillarDestinationId) {
         IdentifyPillarsForGetFileResponse identifyPillarsForGetFileResponse = new IdentifyPillarsForGetFileResponse();
+        initializeMessageDetails(identifyPillarsForGetFileResponse);
         identifyPillarsForGetFileResponse.setTo(receivedIdentifyRequestMessage.getReplyTo());
         identifyPillarsForGetFileResponse.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
         identifyPillarsForGetFileResponse.setCollectionID(
@@ -101,8 +100,6 @@ public class TestGetFileMessageFactory extends ClientTestMessageFactory {
         identifyPillarsForGetFileResponse.setPillarID(pillarId);
         identifyPillarsForGetFileResponse.setFileID(receivedIdentifyRequestMessage.getFileID());
         identifyPillarsForGetFileResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
-        identifyPillarsForGetFileResponse.setVersion(VERSION_DEFAULT);
-        identifyPillarsForGetFileResponse.setMinVersion(VERSION_DEFAULT);
         identifyPillarsForGetFileResponse.setFrom(pillarId);
         ResponseInfo identifyResponseInfo = new ResponseInfo();
         identifyResponseInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE); 
@@ -114,12 +111,10 @@ public class TestGetFileMessageFactory extends ClientTestMessageFactory {
   
     public GetFileRequest createGetFileRequest(String pillarId, String toTopic, String from) {
         GetFileRequest getFileRequest = new GetFileRequest();
+        initializeMessageDetails(getFileRequest);
         getFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         getFileRequest.setFileID(FILE_ID_DEFAULT);
-        getFileRequest.setMinVersion(VERSION_DEFAULT);
-        getFileRequest.setVersion(VERSION_DEFAULT);
         getFileRequest.setPillarID(pillarId);
-        getFileRequest.setCollectionID(collectionID);
         getFileRequest.setTo(toTopic);
         getFileRequest.setFrom(from);
         return getFileRequest;
@@ -137,6 +132,7 @@ public class TestGetFileMessageFactory extends ClientTestMessageFactory {
     public GetFileProgressResponse createGetFileProgressResponse(
             GetFileRequest receivedGetFileRequest, String pillarId, String pillarDestinationId) {
         GetFileProgressResponse getFileProgressResponse = new GetFileProgressResponse();
+        initializeMessageDetails(getFileProgressResponse);
         getFileProgressResponse.setTo(receivedGetFileRequest.getReplyTo());
         getFileProgressResponse.setCorrelationID(receivedGetFileRequest.getCorrelationID());
         getFileProgressResponse.setCollectionID(receivedGetFileRequest.getCollectionID());
@@ -144,8 +140,6 @@ public class TestGetFileMessageFactory extends ClientTestMessageFactory {
         getFileProgressResponse.setPillarID(pillarId);
         getFileProgressResponse.setFileID(receivedGetFileRequest.getFileID());
         getFileProgressResponse.setResponseInfo(PROGRESS_INFO_DEFAULT);
-        getFileProgressResponse.setVersion(VERSION_DEFAULT);
-        getFileProgressResponse.setMinVersion(VERSION_DEFAULT);
         getFileProgressResponse.setFrom(pillarId);
         getFileProgressResponse.setFileAddress(receivedGetFileRequest.getFileAddress());
         return getFileProgressResponse;
@@ -154,6 +148,7 @@ public class TestGetFileMessageFactory extends ClientTestMessageFactory {
     public GetFileFinalResponse createGetFileFinalResponse(
             GetFileRequest receivedGetFileRequest, String pillarId, String pillarDestinationId) {
         GetFileFinalResponse getFileFinalResponse = new GetFileFinalResponse();
+        initializeMessageDetails(getFileFinalResponse);
         getFileFinalResponse.setTo(receivedGetFileRequest.getReplyTo());
         getFileFinalResponse.setCorrelationID(receivedGetFileRequest.getCorrelationID());
         getFileFinalResponse.setCollectionID(receivedGetFileRequest.getCollectionID());
@@ -161,8 +156,6 @@ public class TestGetFileMessageFactory extends ClientTestMessageFactory {
         getFileFinalResponse.setPillarID(pillarId);
         getFileFinalResponse.setFileID(receivedGetFileRequest.getFileID());
         getFileFinalResponse.setResponseInfo(FINAL_INFO_DEFAULT);
-        getFileFinalResponse.setVersion(VERSION_DEFAULT);
-        getFileFinalResponse.setMinVersion(VERSION_DEFAULT);
         getFileFinalResponse.setFrom(pillarId);
         getFileFinalResponse.setFileAddress(receivedGetFileRequest.getFileAddress());
         return getFileFinalResponse;

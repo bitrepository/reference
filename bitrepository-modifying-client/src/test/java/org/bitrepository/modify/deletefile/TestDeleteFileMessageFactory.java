@@ -70,10 +70,8 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
      */
     public IdentifyPillarsForDeleteFileRequest createIdentifyPillarsForDeleteFileRequest(String from) {
         IdentifyPillarsForDeleteFileRequest identifyPillarsForDeleteFileRequest = new IdentifyPillarsForDeleteFileRequest();
+        initializeMessageDetails(identifyPillarsForDeleteFileRequest);
         identifyPillarsForDeleteFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
-        identifyPillarsForDeleteFileRequest.setMinVersion(VERSION_DEFAULT);
-        identifyPillarsForDeleteFileRequest.setCollectionID(collectionId);
-        identifyPillarsForDeleteFileRequest.setVersion(VERSION_DEFAULT);
         identifyPillarsForDeleteFileRequest.setAuditTrailInformation(null);
         identifyPillarsForDeleteFileRequest.setFrom(from);
         return identifyPillarsForDeleteFileRequest;
@@ -108,14 +106,12 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
             IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage,
             String pillarId, String pillarDestinationId, String fileId) {
         IdentifyPillarsForDeleteFileResponse identifyResponse = new IdentifyPillarsForDeleteFileResponse();
+        initializeMessageDetails(identifyResponse);
         identifyResponse.setTo(receivedIdentifyRequestMessage.getReplyTo());
         identifyResponse.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
-        identifyResponse.setCollectionID(collectionId);
         identifyResponse.setPillarID(pillarId);
         identifyResponse.setReplyTo(pillarDestinationId);
         identifyResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
-        identifyResponse.setMinVersion(VERSION_DEFAULT);
-        identifyResponse.setVersion(VERSION_DEFAULT);
         identifyResponse.setFrom(pillarId);
         identifyResponse.setPillarChecksumSpec(null);
         identifyResponse.setFileID(fileId);
@@ -138,9 +134,7 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
             String correlationId, String fileId, ChecksumDataForFileTYPE checksumData, 
             ChecksumSpecTYPE checksumType, String from) {
         DeleteFileRequest deleteFileRequest = new DeleteFileRequest();
-        deleteFileRequest.setMinVersion(VERSION_DEFAULT);
-        deleteFileRequest.setVersion(VERSION_DEFAULT);
-        deleteFileRequest.setCollectionID(collectionId);
+        initializeMessageDetails(deleteFileRequest);
         deleteFileRequest.setFrom(from);
         deleteFileRequest.setPillarID(pillarId);
         deleteFileRequest.setTo(toTopic);
@@ -165,15 +159,13 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
     public DeleteFileProgressResponse createDeleteFileProgressResponse(DeleteFileRequest request, 
             String pillarId, String pillarDestinationId) {
         DeleteFileProgressResponse progressResponse = new DeleteFileProgressResponse();
+        initializeMessageDetails(progressResponse);
         progressResponse.setTo(request.getReplyTo());
         progressResponse.setCorrelationID(request.getCorrelationID());
-        progressResponse.setCollectionID(collectionId);
         progressResponse.setReplyTo(pillarDestinationId);
         progressResponse.setPillarID(pillarId);
         progressResponse.setFileID(request.getFileID());
         progressResponse.setResponseInfo(PROGRESS_INFO_DEFAULT);
-        progressResponse.setVersion(VERSION_DEFAULT);
-        progressResponse.setMinVersion(VERSION_DEFAULT);
         progressResponse.setFrom(pillarId);
         
         return progressResponse;
@@ -190,15 +182,13 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
     public DeleteFileFinalResponse createDeleteFileFinalResponse(DeleteFileRequest request,
             String pillarId, String pillarDestinationId, String fileId) {
         DeleteFileFinalResponse finalResponse = new DeleteFileFinalResponse();
+        initializeMessageDetails(finalResponse);
         finalResponse.setTo(request.getReplyTo());
         finalResponse.setCorrelationID(request.getCorrelationID());
-        finalResponse.setCollectionID(collectionId);
         finalResponse.setReplyTo(pillarDestinationId);
         finalResponse.setPillarID(pillarId);
         finalResponse.setFileID(fileId);
         finalResponse.setResponseInfo(FINAL_INFO_DEFAULT);
-        finalResponse.setVersion(VERSION_DEFAULT);
-        finalResponse.setMinVersion(VERSION_DEFAULT);
         finalResponse.setFrom(pillarId);
         
         return finalResponse;

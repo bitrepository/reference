@@ -26,8 +26,6 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 
-import java.math.BigInteger;
-
 public class ResponsePopulator {
     protected final String collectionID;
     protected final String from;
@@ -42,8 +40,8 @@ public class ResponsePopulator {
 
     protected void initializeMessageDetails(Message msg) {
         msg.setCollectionID(collectionID);
-        msg.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
-        msg.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
+        msg.setVersion(ProtocolVersionLoader.loadProtocolVersion().getVersion());
+        msg.setMinVersion(ProtocolVersionLoader.loadProtocolVersion().getMinVersion());
     }
 
     protected void initialiseResponseDetails(
