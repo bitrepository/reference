@@ -35,6 +35,7 @@ import org.bitrepository.client.conversation.IdentifyingState;
 import org.bitrepository.client.conversation.selector.ComponentSelector;
 import org.bitrepository.client.conversation.selector.MultipleComponentSelector;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.utils.Base16Utils;
 
 /**
  * The first state of the PutFile communication. The identification of the pillars involved.
@@ -64,8 +65,8 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
                 break;
             case DUPLICATE_FILE_FAILURE:
                 if(response.isSetChecksumDataForExistingFile()) {
-                    if(response.getChecksumDataForExistingFile().getChecksumValue().equals(
-                            context.getChecksumForValidationAtPillar().getChecksumValue())) {
+                    if(Base16Utils.decodeBase16(response.getChecksumDataForExistingFile().getChecksumValue()).equals(
+                            Base16Utils.decodeBase16(context.getChecksumForValidationAtPillar().getChecksumValue()))) {
                         getContext().getMonitor().complete(
                                 new PutFileCompletePillarEvent(response.getChecksumDataForExistingFile(),
                                         response.getPillarID(),
@@ -74,7 +75,7 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
                     } else {
                         getContext().getMonitor().contributorFailed(
                                 "Received negative response from component " + response.getFrom() +
-                                ":  " + response.getResponseInfo() + "(existing file checksum does not match)", 
+                                ":  " + response.getResponseInfo() + " (existing file checksum does not match)", 
                                 response.getFrom(), response.getResponseInfo().getResponseCode());
                     }
                 } else {
