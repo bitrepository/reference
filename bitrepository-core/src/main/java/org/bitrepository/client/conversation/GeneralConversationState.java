@@ -24,16 +24,15 @@
  */
 package org.bitrepository.client.conversation;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.ProtocolVersionLoader;
-
-import java.math.BigInteger;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Implements the generic conversation state functionality, 
@@ -50,7 +49,14 @@ public abstract class GeneralConversationState {
     private static final Timer timer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
     /** The timer task for timeout of identify in this conversation. */
     private final TimerTask stateTimeoutTask = new StateTimerTask();
-
+    /**
+     * Boolean to indicate whether a operation as a whole was a success. 
+     * The concrete implementation of PerformingOperationState (e.g. PuttingFile, GettingChecksums etc)
+     * should set operationSucceded to false if an operation is judged failed. Which policy to do decide this
+     * is up to the concrete class. 
+     */
+    protected boolean operationSucceded = true;
+    
     /**
      * Startes the state by: <ol>
      *     <li>Starting the timeout timer.</li>
@@ -60,6 +66,11 @@ public abstract class GeneralConversationState {
     public synchronized final void start() {
         timer.schedule(stateTimeoutTask, getTimeout());
         sendRequest();
+        try {
+            setNewState(getNextState());
+        } catch (UnableToFinishException e) {
+            // TODO How should this be handled?
+        }
     }
 
     /**
@@ -148,7 +159,7 @@ public abstract class GeneralConversationState {
      *     <li>The operation state if this is a identification state.</li>
      *     <li>The finished state if this is the operation state</li>
      * </ul>
-     * Note that if the implementing class must also handle the sending of events in cae of a state change.
+     * Note that if the implementing class must also handle the sending of events in case of a state change.
      * @return The next state after this one.
      */
     protected abstract GeneralConversationState getNextState() throws UnableToFinishException;

@@ -24,11 +24,14 @@
  */
 package org.bitrepository.modify.deletefile.conversation;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.GeneralConversationState;
 import org.bitrepository.client.conversation.IdentifyingState;
 import org.bitrepository.client.conversation.selector.ComponentSelector;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 /**
  * The first state of the DeleteFile communication. The identification of the pillars involved.
@@ -54,6 +57,19 @@ public class IdentifyPillarsForDeleteFile extends IdentifyingState {
         return new DeletingFile(context, context.getSelector().getSelectedComponents());
     }
 
+    @Override
+    protected void processMessage(MessageResponse msg) throws UnexpectedResponseException {
+        if(msg.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
+            getContext().getMonitor().pillarIdentified(msg);
+        } else if(!msg.getResponseInfo().getResponseCode().equals(ResponseCode.FILE_NOT_FOUND_FAILURE)) {
+            getContext().getMonitor().contributorFailed(
+                    "Received negative response from component " + msg.getFrom() +
+                    ":  " + msg.getResponseInfo(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+            operationSucceded = false;
+        }
+        getSelector().processResponse(msg);
+    }
+    
     @Override
     protected void sendRequest() {
         IdentifyPillarsForDeleteFileRequest msg = new IdentifyPillarsForDeleteFileRequest();
