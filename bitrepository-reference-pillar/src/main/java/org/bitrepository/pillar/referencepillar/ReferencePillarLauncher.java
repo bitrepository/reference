@@ -34,6 +34,7 @@ import org.bitrepository.pillar.PillarRunner;
  * It just loads the configurations and uses them to create the PillarSettings needed for starting the ReferencePillar.
  */
 public final class ReferencePillarLauncher {
+
     /**
      * Private constructor. To prevent instantiation of this utility class.
      */

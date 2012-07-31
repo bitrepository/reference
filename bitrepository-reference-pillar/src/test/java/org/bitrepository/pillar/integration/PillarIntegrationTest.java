@@ -1,12 +1,27 @@
 package org.bitrepository.pillar.integration;
 
 import java.io.IOException;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.referencepillar.ReferencePillarLauncher;
+import org.bitrepository.pillar.PillarSettingsProvider;
+import org.bitrepository.pillar.referencepillar.ReferencePillar;
+import org.bitrepository.pillar.referencepillar.ReferencePilllarDerbyDBUtils;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
 import org.bitrepository.protocol.fileexchange.HttpServerConnector;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.security.BasicMessageAuthenticator;
+import org.bitrepository.protocol.security.BasicMessageSigner;
+import org.bitrepository.protocol.security.BasicOperationAuthorizor;
+import org.bitrepository.protocol.security.BasicSecurityManager;
+import org.bitrepository.protocol.security.MessageAuthenticator;
+import org.bitrepository.protocol.security.MessageSigner;
+import org.bitrepository.protocol.security.OperationAuthorizor;
+import org.bitrepository.protocol.security.PermissionStore;
 import org.jaccept.TestEventManager;
-import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 
 /**
  * Super class for all tests which should test functionality on a single pillar.
@@ -28,6 +43,8 @@ public abstract class PillarIntegrationTest extends DefaultFixturePillarTest {
 
     public static final String PROPERTY_FILE_NAME = "pillar-integration-test.properties";
 
+    protected String EXISTING_PILLAR_FILE;
+
     private PillarIntegrationTestSettings testSettings;
 
     protected TestFileHelper fileHelper;
@@ -37,16 +54,39 @@ public abstract class PillarIntegrationTest extends DefaultFixturePillarTest {
     public boolean useEmbeddedPillar() {
         return System.getProperty("useEmbeddedPillar", "false").equals("true");
     }
-    @BeforeSuite  (alwaysRun = true)
-    protected void prepareIntegrationTest() throws IOException {
+    @BeforeClass(alwaysRun = true)
+    protected void prepareIntegrationTest() throws Exception {
         loadTestSettings();
         startEmbeddedReferencePillar();
         configureFileHelper();
+        ingestDefaultFile();
     }
 
-    protected void startEmbeddedReferencePillar() {
+    @AfterClass(alwaysRun = true)
+    protected void shutdownIntegrationTest() throws Exception {
+        removeDefaultFile();
+        stopEmbeddedReferencePillar();
+    }
+
+    protected void startEmbeddedReferencePillar() throws Exception {
         if (testSettings.useEmbeddedPillar()) {
-            ReferencePillarLauncher.main( new String[] {getPathToSettings(), null, "embeddedReferencePillar"});
+            String pathToReferencePillarSettings = getPathToReferencePillarSettings();
+            String pillarID = "embeddedReferencePillar";
+            PillarSettingsProvider settingsLoader =
+                    new PillarSettingsProvider(new XMLFileSettingsLoader(pathToReferencePillarSettings), pillarID);
+
+            ReferencePilllarDerbyDBUtils.createDatabases(componentSettings);
+
+            org.bitrepository.protocol.security.SecurityManager securityManager = loadSecurityManager(componentSettings);
+
+            MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(componentSettings, securityManager);
+
+            new ReferencePillar(messageBus, componentSettings);
+        }
+    }
+
+    protected void stopEmbeddedReferencePillar() throws Exception {
+        if (testSettings.useEmbeddedPillar()) {
         }
     }
 
@@ -62,11 +102,44 @@ public abstract class PillarIntegrationTest extends DefaultFixturePillarTest {
         return "PillarUnderIntegrationTest";
     }
 
-    private String getPathToSettings() {
+    private String getPathToReferencePillarSettings() {
         return System.getProperty(PILLAR_INTEGRATIONTEST_SETTINGS_PATH, PATH_TO_DEFAULT_SETTINGS);
     }
 
     private void loadTestSettings() throws IOException {
         testSettings = new PillarIntegrationTestSettings(PATH_TO_DEFAULT_SETTINGS + PROPERTY_FILE_NAME);
+    }
+
+    /**
+     * Instantiates the security manager based on the settings and the path to the key file.
+     * @param settings The settings.
+     * @return The security manager.
+     */
+    private static BasicSecurityManager loadSecurityManager(Settings settings) {
+        String privateKeyFile = "conf/client.pem";
+
+        PermissionStore permissionStore = new PermissionStore();
+        MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
+        MessageSigner signer = new BasicMessageSigner();
+        OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
+        return new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile,
+                authenticator, signer, authorizer, permissionStore,
+                settings.getComponentID());
+    }
+
+    private String getPutFilePillarTopic() {
+        return null;
+    }
+
+    private void ingestDefaultFile() {
+        EXISTING_PILLAR_FILE =
+                "existing-pillar-file-" +
+                        System.getProperty("user.name") + "-" +
+                        System.currentTimeMillis() +
+                        ".txt";
+    }
+
+
+    private void removeDefaultFile() {
     }
 }

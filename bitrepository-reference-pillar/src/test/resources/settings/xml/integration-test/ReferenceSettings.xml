@@ -34,7 +34,14 @@
     <FileDir>test-archive</FileDir>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
-    <AuditContributerDatabaseUrl>jdbc:derby:auditcontributerdb</AuditContributerDatabaseUrl>
-    <AuditContributerDatabaseSpecifics>org.bitrepository.common.database.DerbyDBEmbeddedSpecifics</AuditContributerDatabaseSpecifics>
-  </PillarSettings>
+    <MaxAgeForChecksums>3600000</MaxAgeForChecksums>
+    <AuditTrailContributerDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:target/reference1pillar/auditcontributerdb</DatabaseURL>
+    </AuditTrailContributerDatabase>
+    <ChecksumDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:target/reference1pillar/checksumdb</DatabaseURL>
+    </ChecksumDatabase>
+    <AlarmLevel>ERROR</AlarmLevel></PillarSettings>
 </ReferenceSettings>
