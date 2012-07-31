@@ -73,18 +73,21 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
                                         "File already existed on " + response.getPillarID(),
                                         response.getCorrelationID()));
                     } else {
+                        operationSucceded = false;
                         getContext().getMonitor().contributorFailed(
                                 "Received negative response from component " + response.getFrom() +
                                 ":  " + response.getResponseInfo() + " (existing file checksum does not match)", 
                                 response.getFrom(), response.getResponseInfo().getResponseCode());
                     }
                 } else {
+                    operationSucceded = false;
                     getContext().getMonitor().contributorFailed(
                             "Received negative response from component " + response.getFrom() + ":  " +
                             response.getResponseInfo(), response.getFrom(), response.getResponseInfo().getResponseCode());
                 }
                 break;
             default:
+                operationSucceded = false;
                 getContext().getMonitor().contributorFailed(
                         "Received negative response from component " + response.getFrom() + ":  " + 
                         response.getResponseInfo(), response.getFrom(), response.getResponseInfo().getResponseCode());
@@ -102,7 +105,7 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
 
     @Override
     public GeneralConversationState getOperationState() {
-        if(selector.getOutstandingComponents().isEmpty()) {
+        if(selector.getOutstandingComponents().isEmpty() && operationSucceded) {
             return new PuttingFile(context, selector.getSelectedComponents());
         } else {
             context.getMonitor().operationFailed("Failed to put file, the following pillars didn't respond: " + 
