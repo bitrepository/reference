@@ -74,17 +74,6 @@ public interface FileStore {
     public File downloadFileForValidation(String fileID, InputStream inputStream) throws Exception;
     
     /**
-     * Stores a file given through an InputStream. The file is intended to replace another file, but should be placed 
-     * in a temporary zone for validation before the replacement occurs. 
-     * @param fileID The id of the file to store.
-     * @param inputStream The InputStream with the content of the file.
-     * @return The downloaded file, which should be validated before it is moved to the archive.
-     * @throws Exception If anything unexpected occurs (e.g. file already exists, not enough space, etc.)
-     * @see #moveToArchive(String)
-     */
-    public File downloadReplaceFileForValidation(String fileID, InputStream inputStream) throws Exception;
-    
-    /**
      * Moves a file from the temporary file zone to the archive.
      * @param fileID The id of the file to move to archive.
      * @throws Exception If anything unexpected occurs (e.g. file already exists, not enough space, etc.)

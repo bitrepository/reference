@@ -137,39 +137,6 @@ public class ReferenceArchive implements FileStore {
     }
     
     @Override
-    public File downloadReplaceFileForValidation(String fileID, InputStream inputStream) {
-        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
-        ArgumentValidator.checkNotNull(inputStream, "inputStream");
-
-        ArchiveDirectory dir = getDirWithFile(fileID);
-        File downloadedFile = null;
-        synchronized(dir) {
-            downloadedFile = dir.getFileInTempDir(fileID);
-            log.debug("Downloading the file '" + fileID + "' for validation.");
-            
-            // Save InputStream to the file.
-            BufferedOutputStream bufferedOutputstream = null;
-            try {
-                try {
-                    bufferedOutputstream = new BufferedOutputStream(new FileOutputStream(downloadedFile));
-                    byte[] buffer = new byte[MAX_BUFFER_SIZE];
-                    int bytesRead = 0;
-                    while ((bytesRead = inputStream.read(buffer)) != -1) {
-                        bufferedOutputstream.write(buffer, 0, bytesRead);
-                    }
-                } finally {
-                    if(bufferedOutputstream != null) {
-                        bufferedOutputstream.close();
-                    }
-                }
-            } catch (IOException e) {
-                throw new CoordinationLayerException("Could not retrieve file '" + fileID + "'", e);
-            }
-        }
-        return downloadedFile;
-    }
-    
-    @Override
     public void moveToArchive(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         log.info("Moving the file '" + fileID + "' to archive.");
@@ -186,29 +153,25 @@ public class ReferenceArchive implements FileStore {
 
         ArchiveDirectory dir = getDirWithFile(fileID);
         synchronized(dir) {
-            dir.deprecateFile(fileID);
+            dir.removeFileFromArchive(fileID);
         }
     }
     
     /**
      * The replace operation atomically.
-     * Validates that the old file and the new file exists, then deletes the old file (moves it to retain dir) and 
-     * moves the new file to the fileDir (from the tmpDir).
+     * Removes the archived file from its directory, and moves the tmpFile into the archive dir.
      * 
      * @param fileID The id of the file to perform the replace function upon.
      */
     public synchronized void replaceFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         
-        ArchiveDirectory dir = getDirWithTmpFile(fileID);
-        if(dir != getDirWithFile(fileID)) {
-            throw new IllegalStateException("The file '" + fileID + "' cannot be replaced, since the archive "
-                    + "directory does not contain the given file to be replaced.");
-        }
+        ArchiveDirectory tmpDir = getDirWithTmpFile(fileID);
         
-        synchronized(dir) {
-            dir.deprecateFile(fileID);
-            dir.moveFromTmpToArchive(fileID);
+        synchronized(tmpDir) {
+            ArchiveDirectory fileDir = getDirWithFile(fileID);
+            fileDir.removeFileFromArchive(fileID);
+            tmpDir.moveFromTmpToArchive(fileID);
         }
     }
     

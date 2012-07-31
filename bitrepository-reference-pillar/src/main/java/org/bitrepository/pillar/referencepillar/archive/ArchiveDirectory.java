@@ -154,10 +154,10 @@ public class ArchiveDirectory {
     }
     
     /**
-     * The file to deprecate/delete. The file is just moved from the fileDir to the retainDir. 
-     * @param fileId The id of the file to deprecate.
+     * The file to remove from the archive. The file is just moved from the fileDir to the retainDir. 
+     * @param fileId The id of the file to remove from archive.
      */
-    public void deprecateFile(String fileId) {
+    public void removeFileFromArchive(String fileId) {
         File oldFile = new File(fileDir, fileId);
         if(!oldFile.isFile()) {
             throw new IllegalStateException("Cannot locate the file to delete '" + oldFile.getAbsolutePath() + "'!");
