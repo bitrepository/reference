@@ -47,7 +47,7 @@ public class IdentifyPillarsForGetChecksums  extends IdentifyingState {
     
     /**
      * Constructor.
-     * @param conversation The conversation for this state.
+     * @param context The shared context for this state.
      */
     public IdentifyPillarsForGetChecksums(GetChecksumsConversationContext context) {
         this.context = context;

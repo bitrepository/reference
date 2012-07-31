@@ -26,6 +26,7 @@ package org.bitrepository.protocol;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
+import javax.swing.*;
 import org.bitrepository.client.MessageReceiver;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -46,18 +47,16 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 
-import javax.swing.JFrame;
-
 /**
  * Contains the generic parts for integration testing.
  */
 public abstract class IntegrationTest extends ExtendedTestCase {
-    protected TestEventManager testEventManager = TestEventManager.getInstance();
-    public LocalActiveMQBroker broker;
-    public EmbeddedHttpServer server;
-    public HttpServerConnector httpServer;
-    public HttpServerConfiguration httpServerConfiguration;
-    public MessageBus messageBus;
+    protected static TestEventManager testEventManager = TestEventManager.getInstance();
+    public static LocalActiveMQBroker broker;
+    public static EmbeddedHttpServer server;
+    public static HttpServerConnector httpServer;
+    public static HttpServerConfiguration httpServerConfiguration;
+    public static MessageBus messageBus;
 
     protected static String collectionDestinationID;
     protected MessageReceiver collectionDestination; 
@@ -69,7 +68,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     protected Settings componentSettings;
 
-    @BeforeClass (alwaysRun = true)
+    @BeforeClass(alwaysRun = true)
     public void setupTest() throws Exception {
         setupSettings();
         securityManager = new DummySecurityManager();
@@ -185,6 +184,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * @throws Exception
      */
     protected void setupHttpServer() throws Exception {
+
         httpServerConfiguration = new HttpServerConfiguration();
         if (useEmbeddedHttpServer()) { // Note that the embedded server isn't fully functional yet
             server = new EmbeddedHttpServer();
