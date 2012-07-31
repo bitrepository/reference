@@ -29,6 +29,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.selector.MultipleComponentSelector;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.exceptions.UnableToFinishException;
 
 /**
  * Extends the <code>MultipleComponentSelector</code> with test of correct message type.
@@ -52,5 +53,10 @@ public class PutFilePillarSelector extends MultipleComponentSelector {
         } else {
             throw new UnexpectedResponseException("Are currently only expecting IdentifyPillarsForPutFileResponse's");
         }
+    }
+    
+    @Override
+    public boolean isFinished() throws UnableToFinishException {
+        return responseStatus.haveAllComponentsResponded();
     }
 }

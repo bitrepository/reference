@@ -25,6 +25,7 @@
 #!/bin/sh
 
 # Asserting the script has been called from the bin directory
+cd $(dirname $(readlink -f $0))
 cd ..
 
 # Export the variables, classpaths and dependencies.

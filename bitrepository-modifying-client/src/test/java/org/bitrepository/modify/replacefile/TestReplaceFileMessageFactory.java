@@ -54,10 +54,8 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
      */
     public IdentifyPillarsForReplaceFileRequest createIdentifyPillarsForReplaceFileRequest(String from) {
         IdentifyPillarsForReplaceFileRequest identifyPillarsForReplaceFileRequest = new IdentifyPillarsForReplaceFileRequest();
+        initializeMessageDetails(identifyPillarsForReplaceFileRequest);
         identifyPillarsForReplaceFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
-        identifyPillarsForReplaceFileRequest.setMinVersion(VERSION_DEFAULT);
-        identifyPillarsForReplaceFileRequest.setCollectionID(collectionID);
-        identifyPillarsForReplaceFileRequest.setVersion(VERSION_DEFAULT);
         identifyPillarsForReplaceFileRequest.setAuditTrailInformation(null);
         identifyPillarsForReplaceFileRequest.setFrom(from);
         return identifyPillarsForReplaceFileRequest;
@@ -93,14 +91,12 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
             IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage,
             String pillarId, String pillarDestinationId) {
         IdentifyPillarsForReplaceFileResponse ipfrfResponse = new IdentifyPillarsForReplaceFileResponse();
+        initializeMessageDetails(ipfrfResponse);
         ipfrfResponse.setTo(receivedIdentifyRequestMessage.getReplyTo());
         ipfrfResponse.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
-        ipfrfResponse.setCollectionID(collectionID);
         ipfrfResponse.setPillarID(pillarId);
         ipfrfResponse.setReplyTo(pillarDestinationId);
         ipfrfResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
-        ipfrfResponse.setMinVersion(VERSION_DEFAULT);
-        ipfrfResponse.setVersion(VERSION_DEFAULT);
         ipfrfResponse.setResponseInfo(IDENTIFY_INFO_DEFAULT);
         ipfrfResponse.setFileID(receivedIdentifyRequestMessage.getFileID());
         ipfrfResponse.setFrom(pillarId);
@@ -116,11 +112,9 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
      */
     public ReplaceFileRequest createReplaceFileRequest(String from) {
         ReplaceFileRequest replaceFileRequest = new ReplaceFileRequest();
+        initializeMessageDetails(replaceFileRequest);
         replaceFileRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         replaceFileRequest.setFileID(FILE_ID_DEFAULT);
-        replaceFileRequest.setMinVersion(VERSION_DEFAULT);
-        replaceFileRequest.setVersion(VERSION_DEFAULT);
-        replaceFileRequest.setCollectionID(collectionID);
         replaceFileRequest.setFrom(from);
         return replaceFileRequest;
     }
@@ -165,17 +159,15 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
     public ReplaceFileProgressResponse createReplaceFileProgressResponse(ReplaceFileRequest request, 
             String pillarId, String pillarDestinationId) {
         ReplaceFileProgressResponse progressResponse = new ReplaceFileProgressResponse();
+        initializeMessageDetails(progressResponse);
         progressResponse.setTo(request.getReplyTo());
         progressResponse.setCorrelationID(request.getCorrelationID());
-        progressResponse.setCollectionID(collectionID);
         progressResponse.setReplyTo(pillarDestinationId);
         progressResponse.setPillarID(pillarId);
         progressResponse.setFileAddress(request.getFileAddress());
         progressResponse.setFileID(request.getFileID());
         progressResponse.setPillarChecksumSpec(null);
         progressResponse.setResponseInfo(PROGRESS_INFO_DEFAULT);
-        progressResponse.setVersion(VERSION_DEFAULT);
-        progressResponse.setMinVersion(VERSION_DEFAULT);
         progressResponse.setFrom(pillarId);
         
         return progressResponse;
@@ -192,18 +184,16 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
     public ReplaceFileFinalResponse createReplaceFileFinalResponse(ReplaceFileRequest request,
             String pillarId, String pillarDestinationId, ChecksumDataForFileTYPE checksumData) {
         ReplaceFileFinalResponse finalResponse = new ReplaceFileFinalResponse();
+        initializeMessageDetails(finalResponse);
         finalResponse.setChecksumDataForNewFile(checksumData);
-        finalResponse.setCollectionID(collectionID);
         finalResponse.setCorrelationID(request.getCorrelationID());
         finalResponse.setFileAddress(request.getFileAddress());
         finalResponse.setFileID(request.getFileID());
-        finalResponse.setMinVersion(VERSION_DEFAULT);
         finalResponse.setPillarChecksumSpec(null);
         finalResponse.setPillarID(pillarId);
         finalResponse.setReplyTo(pillarDestinationId);
         finalResponse.setResponseInfo(FINAL_INFO_DEFAULT);
         finalResponse.setTo(request.getReplyTo());
-        finalResponse.setVersion(VERSION_DEFAULT);
         finalResponse.setFrom(pillarId);
 
         return finalResponse;

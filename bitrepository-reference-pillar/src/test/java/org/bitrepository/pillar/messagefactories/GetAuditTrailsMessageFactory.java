@@ -50,30 +50,28 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
     public IdentifyContributorsForGetAuditTrailsRequest createIdentifyContributorsForGetAuditTrailsRequest( 
             String auditTrail, String from, String replyTo) {
         IdentifyContributorsForGetAuditTrailsRequest res = new IdentifyContributorsForGetAuditTrailsRequest();
+        initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFrom(from);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setTo(settings.getCollectionDestination());
-        res.setVersion(VERSION_DEFAULT);
-        
+               
         return res;
     }
 
     public IdentifyContributorsForGetAuditTrailsResponse createIdentifyContributorsForGetAuditTrailsResponse(
             String correlationId, String contributorId, String replyTo, ResponseInfo responseInfo, String toTopic) {
         IdentifyContributorsForGetAuditTrailsResponse res = new IdentifyContributorsForGetAuditTrailsResponse();
+        initializeMessageDetails(res);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFrom(contributorId);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-
+        
         return res;
     }
     
@@ -81,6 +79,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
             String correlationId, String fileId, String from, BigInteger maxSequence, XMLGregorianCalendar maxTime, 
             BigInteger minSequence, XMLGregorianCalendar minTime, String replyTo, String url, String toTopic) {
         GetAuditTrailsRequest res = new GetAuditTrailsRequest();
+        initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setContributor(contributorId);
@@ -91,11 +90,9 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
         res.setMaxTimestamp(maxTime);
         res.setMinSequenceNumber(minSequence);
         res.setMinTimestamp(minTime);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setResultAddress(url);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
 
         return res;
     }
@@ -103,33 +100,31 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
     public GetAuditTrailsProgressResponse createGetAuditTrailsProgressResponse(String contributorId, String correlationId, 
             String replyTo, ResponseInfo responseInfo, String url, String toTopic) {
         GetAuditTrailsProgressResponse res = new GetAuditTrailsProgressResponse();
+        initializeMessageDetails(res);
         res.setCollectionID(settings.getCollectionID());
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
         res.setFrom(contributorId);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setResultAddress(url);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-
+        
         return res;
     }
 
     public GetAuditTrailsFinalResponse createGetAuditTrailsFinalResponse(String contributorId, String correlationId, 
             String replyTo, ResponseInfo responseInfo, ResultingAuditTrails auditTrails, String toTopic) {
         GetAuditTrailsFinalResponse res = new GetAuditTrailsFinalResponse();
+        initializeMessageDetails(res);
         res.setCollectionID(settings.getCollectionID());
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
         res.setFrom(contributorId);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setResultingAuditTrails(auditTrails);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
         
         return res;
     }

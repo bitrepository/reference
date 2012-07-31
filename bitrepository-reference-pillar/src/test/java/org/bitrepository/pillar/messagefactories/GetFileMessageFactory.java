@@ -51,15 +51,14 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
     public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileRequest(String auditTrail, 
             String fileId, String from, String replyTo) {
         IdentifyPillarsForGetFileRequest res = new IdentifyPillarsForGetFileRequest();
+        initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFileID(fileId);
         res.setFrom(from);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setTo(settings.getCollectionDestination());
-        res.setVersion(VERSION_DEFAULT);
         
         return res;
     }
@@ -68,17 +67,16 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
             String correlationId, String fileId, String pillarId, String replyTo, 
             ResponseInfo responseInfo, TimeMeasureTYPE timeToDeliver, String toTopic) {
         IdentifyPillarsForGetFileResponse res = new IdentifyPillarsForGetFileResponse();
+        initializeMessageDetails(res);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileID(fileId);
         res.setFrom(pillarId);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setTimeToDeliver(timeToDeliver);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
         
         return res;
     }
@@ -86,6 +84,7 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
     public GetFileRequest createGetFileRequest(String auditTrail, String correlationId, String url, String fileId, 
             FilePart filePart, String from, String pillarId, String replyTo, String toTopic) {
         GetFileRequest res = new GetFileRequest();
+        initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
@@ -93,11 +92,9 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
         res.setFileID(fileId);
         res.setFilePart(filePart);
         res.setFrom(from);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
         
         return res;
     }
@@ -106,6 +103,7 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
             String url, String fileId, FilePart filePart, String pillarId, long fileSize, ResponseInfo prInfo, 
             String replyTo, String toTopic) {
         GetFileProgressResponse res = new GetFileProgressResponse();
+        initializeMessageDetails(res);
         res.setChecksumDataForExistingFile(csData);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
@@ -114,12 +112,10 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
         res.setFilePart(filePart);
         res.setFileSize(BigInteger.valueOf(fileSize));
         res.setFrom(pillarId);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(prInfo);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
         
         return res;
     }
@@ -127,18 +123,17 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
     public GetFileFinalResponse createGetFileFinalResponse(String correlationId, String url, String fileId, 
             FilePart filePart, String pillarId, String replyTo, ResponseInfo rInfo, String toTopic) {
         GetFileFinalResponse res = new GetFileFinalResponse();
+        initializeMessageDetails(res);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);
         res.setFilePart(filePart);
         res.setFrom(pillarId);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(rInfo);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
         
         return res;
     }

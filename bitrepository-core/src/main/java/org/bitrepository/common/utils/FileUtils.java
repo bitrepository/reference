@@ -125,13 +125,24 @@ public final class FileUtils {
         if(!f.exists()) {
             throw new IllegalArgumentException("The file '" + f + "' does not exist.");
         }
-        if(f.isDirectory()) {
-            for(File sub : f.listFiles()) {
+
+        deleteDirIfExists(f);
+    }
+
+    /**
+     * Method for recursingly removing a file or a directory (with everything within the directory).
+     * @param dir The dir to remove.
+     */
+    public static void deleteDirIfExists(File dir) {
+        ArgumentValidator.checkNotNull(dir, "File dir");
+
+        if(dir.isDirectory()) {
+            for(File sub : dir.listFiles()) {
                 delete(sub);
             }
         }
-        if(!f.delete()) {
-            log.warn("Could not delete '" + f.getAbsolutePath() + "'");
+        if(!dir.delete()) {
+            log.warn("Could not delete '" + dir.getAbsolutePath() + "'");
         }
     }
     
