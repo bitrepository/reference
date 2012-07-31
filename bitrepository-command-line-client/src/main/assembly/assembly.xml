@@ -23,7 +23,6 @@
   #L%
   -->
 <assembly>
-    <!--id>sbpillar</id-->
     <formats>
         <format>zip</format>
     </formats>

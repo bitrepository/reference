@@ -140,6 +140,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertNotNull(receivedIdentifyResponse);
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.DUPLICATE_FILE_FAILURE);
+        Assert.assertNotNull(receivedIdentifyResponse.getChecksumDataForExistingFile());
         
         addStep("Validate the content of the cache", "Should contain the checksum of the file");
         Assert.assertTrue(archive.hasFile(DEFAULT_FILE_ID));
