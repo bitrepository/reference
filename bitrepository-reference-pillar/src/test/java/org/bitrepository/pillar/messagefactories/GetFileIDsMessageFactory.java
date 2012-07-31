@@ -50,15 +50,14 @@ public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
     public IdentifyPillarsForGetFileIDsRequest createIdentifyPillarsForGetFileIDsRequest(String auditTrail,
             FileIDs fileId, String from, String replyTo) {
         IdentifyPillarsForGetFileIDsRequest res = new IdentifyPillarsForGetFileIDsRequest();
+        initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFileIDs(fileId);
         res.setFrom(from);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setTo(settings.getCollectionDestination());
-        res.setVersion(VERSION_DEFAULT);
         
         return res;
     }
@@ -67,17 +66,16 @@ public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
             String correlationId, FileIDs fileId, String pillarId, String replyTo, 
             ResponseInfo responseInfo, TimeMeasureTYPE timeToDeliver, String toTopic) {
         IdentifyPillarsForGetFileIDsResponse res = new IdentifyPillarsForGetFileIDsResponse();
+        initializeMessageDetails(res);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
         res.setFrom(pillarId);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setTimeToDeliver(timeToDeliver);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
         
         return res;
     }
@@ -85,17 +83,16 @@ public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
     public GetFileIDsRequest createGetFileIDsRequest(String auditTrail, String correlationId, FileIDs fileId, 
             String from, String pillarId, String replyTo, String url, String toTopic) {
         GetFileIDsRequest res = new GetFileIDsRequest();
+        initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
         res.setFrom(from);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResultAddress(url);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
         
         return res;
     }
@@ -103,17 +100,16 @@ public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
     public GetFileIDsProgressResponse createGetFileIDsProgressResponse(String correlationId, FileIDs fileId, 
             String pillarId, String replyTo, ResponseInfo prInfo, String url, String toTopic) {
         GetFileIDsProgressResponse res = new GetFileIDsProgressResponse();
+        initializeMessageDetails(res);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
         res.setFrom(pillarId);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(prInfo);
         res.setResultAddress(url);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
         
         return res;
     }
@@ -121,17 +117,16 @@ public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
     public GetFileIDsFinalResponse createGetFileIDsFinalResponse(String correlationId, FileIDs fileId, 
             String pillarId, String replyTo, ResponseInfo frInfo, ResultingFileIDs results, String toTopic) {
         GetFileIDsFinalResponse res = new GetFileIDsFinalResponse();
+        initializeMessageDetails(res);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
         res.setFrom(pillarId);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(frInfo);
         res.setResultingFileIDs(results);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
         
         return res;
     }

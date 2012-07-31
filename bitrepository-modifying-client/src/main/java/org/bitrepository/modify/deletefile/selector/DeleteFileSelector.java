@@ -70,7 +70,7 @@ public abstract class DeleteFileSelector implements ComponentSelector {
 
     @Override
     public boolean isFinished() throws UnableToFinishException {
-        if (responseStatus.haveAllComponentsResponded()) {
+        /*if (responseStatus.haveAllComponentsResponded()) {
             if (!selectedComponents.isEmpty()) {
                 return true;
             } else {
@@ -79,7 +79,8 @@ public abstract class DeleteFileSelector implements ComponentSelector {
             }
         } else {
             return false;
-        }
+        }*/
+        return responseStatus.haveAllComponentsResponded();
     }
 
     @Override

@@ -23,10 +23,8 @@ package org.bitrepository.service.contributor.handler;
 
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.protocol.ProtocolConstants;
+import org.bitrepository.protocol.ProtocolVersionLoader;
 import org.bitrepository.service.contributor.ContributorContext;
-
-import java.math.BigInteger;
 
 /**
  * The interface for the request handlers.
@@ -63,10 +61,10 @@ public abstract class AbstractRequestHandler<T> implements RequestHandler<T> {
         response.setCollectionID(getContext().getSettings().getCollectionID());
         response.setCorrelationID(originalRequest.getCorrelationID());
         response.setFrom(getContext().getSettings().getComponentID());
-        response.setMinVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_MIN_VERSION));
+        response.setMinVersion(ProtocolVersionLoader.loadProtocolVersion().getMinVersion());
         response.setReplyTo(getContext().getSettings().getReceiverDestinationID());
         response.setTo(originalRequest.getReplyTo());
-        response.setVersion(BigInteger.valueOf(ProtocolConstants.PROTOCOL_VERSION));
+        response.setVersion(ProtocolVersionLoader.loadProtocolVersion().getVersion());
     }
 
     /**

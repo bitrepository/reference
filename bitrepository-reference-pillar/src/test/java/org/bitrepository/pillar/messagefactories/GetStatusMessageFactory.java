@@ -49,14 +49,13 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
     public IdentifyContributorsForGetStatusRequest createIdentifyContributorsForGetStatusRequest( 
             String auditTrail, String from, String replyTo) {
         IdentifyContributorsForGetStatusRequest res = new IdentifyContributorsForGetStatusRequest();
+        initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFrom(from);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setTo(settings.getCollectionDestination());
-        res.setVersion(VERSION_DEFAULT);
         
         return res;
     }
@@ -65,65 +64,61 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
             String contributorId, String correlationId, String replyTo, ResponseInfo responseInfo, 
             TimeMeasureTYPE timeToDeliver, String toTopic) {
         IdentifyContributorsForGetStatusResponse res = new IdentifyContributorsForGetStatusResponse();
+        initializeMessageDetails(res);
         res.setCollectionID(settings.getCollectionID());
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
         res.setFrom(contributorId);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setTimeToDeliver(timeToDeliver);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-
+        
         return res;
     }
     
     public GetStatusRequest createGetStatusRequest(String auditTrail, String contributorId, String correlationId, 
             String from, String replyTo, String toTopic) {
         GetStatusRequest res = new GetStatusRequest();
+        initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
         res.setCollectionID(settings.getCollectionID());
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
         res.setFrom(from);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-
+        
         return res;
     }
 
     public GetStatusProgressResponse createGetStatusProgressResponse(String contributorId, String correlationId, 
             String replyTo, ResponseInfo responseInfo, String toTopic) {
         GetStatusProgressResponse res = new GetStatusProgressResponse();
+        initializeMessageDetails(res);
         res.setCollectionID(settings.getCollectionID());
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
         res.setFrom(contributorId);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
-
+        
         return res;
     }
 
     public GetStatusFinalResponse createGetStatusFinalResponse(String contributorId, String correlationId, 
             String replyTo, ResponseInfo responseInfo, ResultingStatus status, String toTopic) {
         GetStatusFinalResponse res = new GetStatusFinalResponse();
+        initializeMessageDetails(res);
         res.setCollectionID(settings.getCollectionID());
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
         res.setFrom(contributorId);
-        res.setMinVersion(VERSION_DEFAULT);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setResultingStatus(status);
         res.setTo(toTopic);
-        res.setVersion(VERSION_DEFAULT);
         
         return res;
     }

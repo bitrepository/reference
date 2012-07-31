@@ -28,7 +28,6 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
-import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.common.utils.ResponseInfoUtils;
 import org.bitrepository.modify.deletefile.selector.AllPillarsSelectorForDeleteFile;
 import org.bitrepository.modify.deletefile.selector.SpecificPillarSelectorForDeleteFile;
@@ -65,20 +64,14 @@ public class DeleteFileSelectorTest extends ExtendedTestCase {
             // expected.
         }
         
-        addStep("Test against a valid but negative response.", 
-                "Should be accepted, but the selector should not be able to finish.");
+        addStep("Test against a valid but negative response.", "Should be accepted");
         IdentifyPillarsForDeleteFileResponse response2 = new IdentifyPillarsForDeleteFileResponse();
         response2.setFrom(PILLAR_ID_1);
         response2.setResponseInfo(createNegativeIdentificationResponseInfo());
         selector.processResponse(response2);
         
         Assert.assertEquals(selector.getOutstandingComponents(), Arrays.asList(new String[0]));
-        try {
-            selector.isFinished();
-            Assert.fail("Should throw an " + UnableToFinishException.class.getName());
-        } catch (UnableToFinishException e) {
-            // expected
-        }
+        selector.isFinished();
         
         addStep("Process the same response twice.", "Should throw an exception");
         try {
@@ -124,20 +117,14 @@ public class DeleteFileSelectorTest extends ExtendedTestCase {
             // expected.
         }
         
-        addStep("Test against a valid but negative response.", 
-                "Should be accepted, but the selector should not be able to finish.");
+        addStep("Test against a valid but negative response.", "Should be accepted");
         IdentifyPillarsForDeleteFileResponse response2 = new IdentifyPillarsForDeleteFileResponse();
         response2.setFrom(PILLAR_ID_1);
         response2.setResponseInfo(createNegativeIdentificationResponseInfo());
         selector.processResponse(response2);
         
         Assert.assertEquals(selector.getOutstandingComponents(), Arrays.asList(new String[0]));
-        try {
-            selector.isFinished();
-            Assert.fail("Should throw an " + UnableToFinishException.class.getName());
-        } catch (UnableToFinishException e) {
-            // expected
-        }
+        selector.isFinished();
         
         addStep("Process the same response twice.", "Should throw an exception");
         try {

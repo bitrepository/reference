@@ -22,6 +22,7 @@
 package org.bitrepository.protocol.message;
 
 import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.protocol.ProtocolVersionLoader;
 
 import java.math.BigInteger;
 
@@ -30,7 +31,8 @@ import java.math.BigInteger;
  */
 public abstract class TestMessageFactory {
     protected static final String CORRELATION_ID_DEFAULT = "CorrelationID";
-    protected static final BigInteger VERSION_DEFAULT = BigInteger.valueOf(1L);
+    protected static final BigInteger VERSION_DEFAULT = ProtocolVersionLoader.loadProtocolVersion().getVersion();
+    protected static final BigInteger MIN_VERSION_DEFAULT = ProtocolVersionLoader.loadProtocolVersion().getMinVersion();
     protected final String collectionID;
 
     public TestMessageFactory(String collectionID) {
@@ -40,6 +42,6 @@ public abstract class TestMessageFactory {
     protected void initializeMessageDetails(Message msg) {
         msg.setCollectionID(collectionID);
         msg.setVersion(VERSION_DEFAULT);
-        msg.setMinVersion(VERSION_DEFAULT);
+        msg.setMinVersion(MIN_VERSION_DEFAULT);
     }
 }
