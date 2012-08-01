@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.referencepillar;
+package org.bitrepository.pillar.integration;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,17 +37,20 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
  * Contains functionality for maintenance of the reference pillar databases. This includes functionality for
  * creating and upgrading the databases.
  */
-public class ReferencePilllarDerbyDBUtils {
+public class ReferencePilllarDerbyDBTestUtils {
     public static String AUDIT_TRAIL_DB_SCRIPT = "auditContributerDB.sql";
     public static String CHECKSUM_DB_SCRIPT = "checksumDB.sql";
 
     /** Prevent instantiation this util class */
-    private ReferencePilllarDerbyDBUtils() {}
+    private ReferencePilllarDerbyDBTestUtils() {}
 
     /**
-     * Creates the Derby databses needed by the reference pillar, as specified in the settings.
+     * Creates the Derby databses needed by the reference pillar,
+     * as specified in the settings.
+     *
+     * Will also remove existing databases.
      */
-    public static void createDatabases(Settings settings) throws Exception {
+    public static void createEmptyDatabases(Settings settings) throws Exception {
         DatabaseSpecifics auditTrailDB =
                 settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase();
         deleteDatabase(auditTrailDB);
@@ -74,7 +77,7 @@ public class ReferencePilllarDerbyDBUtils {
      */
     private static Reader getReaderForFile(String filePath) throws java.io.IOException {
         return new BufferedReader(
-                new InputStreamReader(ReferencePilllarDerbyDBUtils.class.getClassLoader().getResourceAsStream(filePath)));
+                new InputStreamReader(ReferencePilllarDerbyDBTestUtils.class.getClassLoader().getResourceAsStream(filePath)));
     }
 
     /**
@@ -112,7 +115,7 @@ public class ReferencePilllarDerbyDBUtils {
     /** Will delete the database by directly removing the files on disk based on the DB url */
     private static void deleteDatabase(DatabaseSpecifics databaseSpecifics) {
         String dbUrl = databaseSpecifics.getDatabaseURL();
-        String pathToDatabase = dbUrl.substring(dbUrl.indexOf("derby:") + 6, dbUrl.length());
-        FileUtils.deleteDirIfExists(new File(pathToDatabase));
+        String[] dbUrlParts = dbUrl.split(":");
+        FileUtils.deleteDirIfExists(new File(dbUrlParts[2]));
     }
 }

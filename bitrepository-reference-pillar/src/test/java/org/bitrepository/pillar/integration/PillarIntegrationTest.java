@@ -27,7 +27,6 @@ import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.PillarSettingsProvider;
 import org.bitrepository.pillar.referencepillar.ReferencePillar;
-import org.bitrepository.pillar.referencepillar.ReferencePilllarDerbyDBUtils;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
 import org.bitrepository.protocol.fileexchange.HttpServerConnector;
@@ -96,7 +95,7 @@ public abstract class PillarIntegrationTest extends DefaultFixturePillarTest {
             PillarSettingsProvider settingsLoader =
                     new PillarSettingsProvider(new XMLFileSettingsLoader(pathToReferencePillarSettings), pillarID);
 
-            ReferencePilllarDerbyDBUtils.createDatabases(componentSettings);
+            ReferencePilllarDerbyDBTestUtils.createEmptyDatabases(componentSettings);
 
             org.bitrepository.protocol.security.SecurityManager securityManager = loadSecurityManager(componentSettings);
 
