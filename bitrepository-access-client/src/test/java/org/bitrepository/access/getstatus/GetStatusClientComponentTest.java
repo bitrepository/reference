@@ -79,10 +79,10 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         public void incompleteSetOfIdendifyResponses() throws Exception {
             addDescription("Verify that the GetStatus client works correct without receiving responses from all " +
                     "contributers.");
-            addStep("Configure 3 second timeout for identifying contributers. " +
+            addStep("Configure 5 second timeout for identifying contributers. " +
                     "The default 2 contributers collection is used", "");
 
-            componentSettings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
+            componentSettings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(5000));
             TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
             GetStatusClient client = createGetStatusClient();
 
@@ -102,9 +102,9 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
             Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                     OperationEventType.COMPONENT_IDENTIFIED);
 
-            addStep("Wait for 5 seconds", "An IDENTIFY_TIMEOUT and IDENTIFICATION_COMPLETE event should be received" +
+            addStep("Wait for timeout event", "An IDENTIFY_TIMEOUT and IDENTIFICATION_COMPLETE event should be received" +
                     "Right after this a GetStatusRequest should be sent to pillar1");
-            Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getType(),
+            Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                     OperationEventType.IDENTIFY_TIMEOUT);
             Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                     OperationEventType.IDENTIFICATION_COMPLETE);

@@ -155,9 +155,4 @@ public class TestFileStore implements FileStore {
         downloadFileForValidation(fileID, in);
         moveToArchive(fileID);
     }
-
-    @Override
-    public File downloadReplaceFileForValidation(String fileID, InputStream inputStream) throws Exception {
-        return downloadFileForValidation(fileID, inputStream);
-    }
 }

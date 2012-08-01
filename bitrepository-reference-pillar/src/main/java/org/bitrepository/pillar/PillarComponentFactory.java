@@ -26,7 +26,7 @@ package org.bitrepository.pillar;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
-import org.bitrepository.pillar.cache.FilebasedChecksumStore;
+import org.bitrepository.pillar.cache.ChecksumDAO;
 import org.bitrepository.pillar.checksumpillar.ChecksumPillar;
 import org.bitrepository.pillar.referencepillar.ReferencePillar;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -97,7 +97,7 @@ public final class PillarComponentFactory {
 
         MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
         
-        return new ChecksumPillar(messageBus, settings, new FilebasedChecksumStore(settings));
+        return new ChecksumPillar(messageBus, settings, new ChecksumDAO(settings));
     }
 
     /** The default path for the settings in the development.*/

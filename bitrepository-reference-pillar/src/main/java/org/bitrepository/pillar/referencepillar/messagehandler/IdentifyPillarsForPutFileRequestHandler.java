@@ -29,6 +29,7 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
@@ -66,9 +67,12 @@ public class IdentifyPillarsForPutFileRequestHandler
     @Override
     public void processRequest(IdentifyPillarsForPutFileRequest message) throws RequestHandlerException {
         validateFileID(message.getFileID());
-        checkThatTheFileDoesNotAlreadyExist(message);
-        checkSpaceForStoringNewFile(message);
-        respondSuccesfullIdentification(message);
+        if(checkThatTheFileDoesNotAlreadyExist(message)) {
+            respondDuplicateFile(message);
+        } else {
+            checkSpaceForStoringNewFile(message);
+            respondSuccesfullIdentification(message);
+        }
     }
     
     @Override
@@ -80,22 +84,16 @@ public class IdentifyPillarsForPutFileRequestHandler
      * Validates that the file is not already within the archive. 
      * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
      * @param message The request with the filename to validate.
+     * @return Whether the file already exists.
      */
-    private void checkThatTheFileDoesNotAlreadyExist(IdentifyPillarsForPutFileRequest message) 
+    private boolean checkThatTheFileDoesNotAlreadyExist(IdentifyPillarsForPutFileRequest message) 
             throws RequestHandlerException {
         if(message.getFileID() == null) {
             log.debug("No fileid given in the identification request.");
-            return;
+            return false;
         }
         
-        if(getArchive().hasFile(message.getFileID())) {
-            ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
-            irInfo.setResponseText("The file '" + message.getFileID() 
-                    + "' already exists within the archive.");
-            
-            throw new IdentifyContributorException(irInfo);
-        }
+        return getArchive().hasFile(message.getFileID());
     }
     
     /**
@@ -122,6 +120,32 @@ public class IdentifyPillarsForPutFileRequestHandler
             
             throw new IdentifyContributorException(irInfo);
         }
+    }
+    
+    /**
+     * Method for sending a response for 'DUPLICATE_FILE_FAILURE'.
+     * @param message The message to base the response upon.
+     */
+    protected void respondDuplicateFile(IdentifyPillarsForPutFileRequest message) {
+        log.info("Creating DuplicateFile reply for '" + message + "'");
+        IdentifyPillarsForPutFileResponse reply = createFinalResponse(message);
+
+        // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
+        reply.setReplyTo(getSettings().getReceiverDestinationID());
+        reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+        reply.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
+        reply.setChecksumDataForExistingFile(getCsManager().getChecksumDataForFile(message.getFileID(), 
+                ChecksumUtils.getDefault(getSettings())));
+        
+        ResponseInfo irInfo = new ResponseInfo();
+        irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
+        irInfo.setResponseText("The file '" + message.getFileID() 
+                + "' already exists within the archive.");
+        reply.setResponseInfo(irInfo);
+
+        log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
+        getMessageBus().sendMessage(reply);
     }
     
     /**

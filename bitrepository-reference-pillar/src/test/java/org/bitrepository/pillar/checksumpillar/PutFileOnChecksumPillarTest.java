@@ -152,6 +152,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         Assert.assertNotNull(receivedIdentifyResponse);
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.DUPLICATE_FILE_FAILURE);
+        Assert.assertNotNull(receivedIdentifyResponse.getChecksumDataForExistingFile());
         
         addStep("Validate the content of the cache", "Should contain the checksum of the file");
         Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);

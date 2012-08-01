@@ -24,12 +24,16 @@
  */
 package org.bitrepository.pillar.checksumpillar.messagehandler;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
+import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.service.exception.IdentifyContributorException;
@@ -91,6 +95,36 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
             
             throw new IdentifyContributorException(irInfo);
         }
+    }
+    
+    /**
+     * Method for sending a response for 'DUPLICATE_FILE_FAILURE'.
+     * @param message The message to base the response upon.
+     */
+    protected void respondDuplicateFile(IdentifyPillarsForPutFileRequest message) {
+        log.info("Creating DuplicateFile reply for '" + message + "'");
+        IdentifyPillarsForPutFileResponse reply = createFinalResponse(message);
+
+        // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
+        reply.setReplyTo(getSettings().getReceiverDestinationID());
+        reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
+        reply.setPillarChecksumSpec(getChecksumType()); 
+        
+        ChecksumEntry entry = getCache().getEntry(message.getFileID());
+        ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
+        checksumData.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
+        checksumData.setChecksumSpec(getChecksumType());
+        checksumData.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
+        reply.setChecksumDataForExistingFile(checksumData);
+        
+        ResponseInfo irInfo = new ResponseInfo();
+        irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
+        irInfo.setResponseText("The file '" + message.getFileID() 
+                + "' already exists within the archive.");
+        reply.setResponseInfo(irInfo);
+
+        log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
+        getMessageBus().sendMessage(reply);
     }
     
     /**
