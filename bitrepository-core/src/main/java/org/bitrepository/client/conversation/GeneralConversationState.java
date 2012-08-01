@@ -67,6 +67,11 @@ public abstract class GeneralConversationState {
         timer.schedule(stateTimeoutTask, getTimeout());
         sendRequest();
         try {
+            /* As some operations can have an identification phase succeeding without having any active
+             * contributors, we need to check if the state is already done just after we started it. 
+             * This could be if trying to delete a file in the collection that is not present and all
+             * pillars thus answer FILE_NOT_FOUND. In that case no pillars will be asked to delete a file
+             * and we should just proceed finishing the conversation. */
             setNewState(getNextState());
         } catch (UnableToFinishException e) {
             // TODO How should this be handled?
