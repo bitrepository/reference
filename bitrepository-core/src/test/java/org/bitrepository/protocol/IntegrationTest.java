@@ -26,7 +26,7 @@ package org.bitrepository.protocol;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
-import javax.swing.*;
+import javax.swing.JFrame;
 import org.bitrepository.client.MessageReceiver;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;

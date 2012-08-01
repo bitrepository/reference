@@ -28,7 +28,7 @@ import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import org.bitrepository.common.database.DBConnector;
-import org.bitrepository.common.database.ScriptRunner;
+import org.bitrepository.common.database.SqlScriptRunner;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
@@ -36,9 +36,6 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 /**
  * Contains functionality for maintenance of the reference pillar databases. This includes functionality for
  * creating and upgrading the databases.
- *
- * Note, that all the operations found here is delegated to sql scripts, this means the sql operations
- * can be run by hand.
  */
 public class ReferencePilllarDerbyDBUtils {
     public static String AUDIT_TRAIL_DB_SCRIPT = "auditContributerDB.sql";
@@ -47,6 +44,9 @@ public class ReferencePilllarDerbyDBUtils {
     /** Prevent instantiation this util class */
     private ReferencePilllarDerbyDBUtils() {}
 
+    /**
+     * Creates the Derby databses needed by the reference pillar, as specified in the settings.
+     */
     public static void createDatabases(Settings settings) throws Exception {
         DatabaseSpecifics auditTrailDB =
                 settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase();
@@ -65,15 +65,21 @@ public class ReferencePilllarDerbyDBUtils {
      */
     private static void runScript(DatabaseSpecifics databaseSpecifics, String scriptName) throws Exception {
         Connection connection = getEmbeddedDBConnection(databaseSpecifics);
-        ScriptRunner scriptRunner = new ScriptRunner(connection, true, true);
+        SqlScriptRunner scriptRunner = new SqlScriptRunner(connection, true, true);
         scriptRunner.runScript(getReaderForFile(scriptName));
     }
 
+    /**
+     * Creates a reader for the file found at indicated location.
+     */
     private static Reader getReaderForFile(String filePath) throws java.io.IOException {
         return new BufferedReader(
                 new InputStreamReader(ReferencePilllarDerbyDBUtils.class.getClassLoader().getResourceAsStream(filePath)));
     }
 
+    /**
+     * Appends the specified database url with <code>;create=true</code> to allow creation of the database.
+     */
     public static DatabaseSpecifics updateDatabaseSpecificsForDBCreation(DatabaseSpecifics databaseSpecifics) {
         DatabaseSpecifics newDatabaseSpecifics = new DatabaseSpecifics();
         newDatabaseSpecifics.setDriverClass(databaseSpecifics.getDriverClass());
@@ -83,17 +89,23 @@ public class ReferencePilllarDerbyDBUtils {
         return newDatabaseSpecifics;
     }
 
+    /**
+     * Creates a connection based on the supplied <code>databaseSpecifics</code>.
+     */
     private static Connection getEmbeddedDBConnection(DatabaseSpecifics databaseSpecifics) throws Exception {
         Class.forName(databaseSpecifics.getDriverClass());
         Connection connection = DriverManager.getConnection(databaseSpecifics.getDatabaseURL());
         return connection;
     }
 
+    /**
+     * Creates a database by running the supplied script.
+     * @param databaseSpecifics Specifies where to create the database.
+     */
     private static void createDatabase(DatabaseSpecifics databaseSpecifics, String scriptName) throws Exception {
     DBConnector dbConnector = new DBConnector(databaseSpecifics);
 
-        DatabaseSpecifics databaseCreationSpecifics =
-                updateDatabaseSpecificsForDBCreation(databaseSpecifics);
+        DatabaseSpecifics databaseCreationSpecifics = updateDatabaseSpecificsForDBCreation(databaseSpecifics);
         runScript(databaseCreationSpecifics, scriptName);
     }
 

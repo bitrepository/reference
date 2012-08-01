@@ -34,7 +34,7 @@ public class PerformingPutFileIT extends PillarIntegrationTest {
         msgFactory = new PutFileMessageFactory(componentSettings, getComponentID(), pillarDestinationId);
     }
 
-    protected String identifyPillarDestinationForPut(String pillarID) {s
+    protected String identifyPillarDestinationForPut(String pillarID) {
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
             DEFAULT_FILE_ID, 0L);
         messageBus.sendMessage(identifyRequest);

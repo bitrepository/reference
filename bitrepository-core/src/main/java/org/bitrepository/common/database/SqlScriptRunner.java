@@ -30,14 +30,16 @@ import java.sql.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
-* Slightly modified version of the com.ibatis.common.jdbc.ScriptRunner class
+/**
+* Runs a sql script as a sequence of JDBC statements.
+ *
+* Slightly modified version of the com.ibatis.common.jdbc.SqlScriptRunner class
 * from the iBATIS Apache project. Only removed dependency on Resource class
 * and a constructor
 */
-public class ScriptRunner {
+public class SqlScriptRunner {
     private static final String DEFAULT_DELIMITER = ";";
-    private static Logger log = LoggerFactory.getLogger(ScriptRunner.class);
+    private static Logger log = LoggerFactory.getLogger(SqlScriptRunner.class);
 
     private Connection connection;
 
@@ -50,14 +52,24 @@ public class ScriptRunner {
     private String delimiter = DEFAULT_DELIMITER;
     private boolean fullLineDelimiter = false;
 
-    public ScriptRunner(Connection connection,
-                        boolean autoCommit,
-                        boolean stopOnError) {
+    /**
+     *
+     * @param connection The connection to use
+     * @param autoCommit Enable autocommit
+     * @param stopOnError Stop running the script, if a statement fails.
+     */
+    public SqlScriptRunner(Connection connection,
+                           boolean autoCommit,
+                           boolean stopOnError) {
         this.connection = connection;
         this.autoCommit = autoCommit;
         this.stopOnError = stopOnError;
     }
 
+    /**
+     * @param delimiter The statement delimiter, eg. ';' for mysql.
+     * @param fullLineDelimiter <code>true</code> if the delimiter used to distinguise between lines.
+     */
     public void setDelimiter(String delimiter, boolean fullLineDelimiter) {
         this.delimiter = delimiter;
         this.fullLineDelimiter = fullLineDelimiter;
@@ -109,16 +121,13 @@ public class ScriptRunner {
                     command = new StringBuffer();
                 }
                 String trimmedLine = line.trim();
-                if (trimmedLine.startsWith("--")) {
-                    log.debug(trimmedLine);
-                } else if (trimmedLine.length() < 1
-                        || trimmedLine.startsWith("//")) {
-                    // Do nothing
-                } else if (trimmedLine.length() < 1
-                        || trimmedLine.startsWith("--")) {
-                    // Do nothing
+                if (trimmedLine.startsWith("--") ||
+                    trimmedLine.startsWith("//")) {
+                    // Ignore comment line
+                } else if (trimmedLine.length() == 0) {
+                    // Ignore empty line.
                 } else if (trimmedLine.contains("connect")) {
-                    // Ignore statement as this is supplied in the connection.
+                    // Ignore connect statement as this is handled in the supplied connection.
                 } else if (!fullLineDelimiter
                         && trimmedLine.endsWith(getDelimiter())
                         || fullLineDelimiter

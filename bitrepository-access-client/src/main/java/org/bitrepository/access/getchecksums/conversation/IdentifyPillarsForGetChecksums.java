@@ -46,8 +46,7 @@ public class IdentifyPillarsForGetChecksums  extends IdentifyingState {
     private final MultipleComponentSelector selector;
     
     /**
-     * Constructor.
-     * @param context The shared context for this state.
+     * @param context The context shared between the getChecksum operation states.
      */
     public IdentifyPillarsForGetChecksums(GetChecksumsConversationContext context) {
         this.context = context;
