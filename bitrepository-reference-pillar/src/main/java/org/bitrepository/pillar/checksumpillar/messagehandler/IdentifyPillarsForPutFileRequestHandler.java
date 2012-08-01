@@ -36,7 +36,6 @@ import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
-import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,36 +64,33 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
 
     @Override
     public void processRequest(IdentifyPillarsForPutFileRequest message) throws RequestHandlerException {
-        checkThatTheFileDoesNotAlreadyExist(message);
-        respondSuccesfullIdentification(message);
+        if(checkThatTheFileDoesNotAlreadyExist(message)) {
+            respondDuplicateFile(message);
+        } else {
+            respondSuccesfullIdentification(message);
+        }
+        
     }
 
     @Override
     public MessageResponse generateFailedResponse(IdentifyPillarsForPutFileRequest message) {
         return createFinalResponse(message);
     }
+
     
     /**
      * Validates that the file is not already within the archive. 
-     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
      * @param message The request with the filename to validate.
+     * @return Whether the file already exists.
      */
-    private void checkThatTheFileDoesNotAlreadyExist(IdentifyPillarsForPutFileRequest message) 
+    private boolean checkThatTheFileDoesNotAlreadyExist(IdentifyPillarsForPutFileRequest message) 
             throws RequestHandlerException {
         if(message.getFileID() == null) {
             log.debug("No fileid given in the identification request.");
-            return;
+            return false;
         }
-        validateFileID(message.getFileID());
         
-        if(getCache().hasFile(message.getFileID())) {
-            ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
-            irInfo.setResponseText("The file '" + message.getFileID() 
-                    + "' already exists within the archive.");
-            
-            throw new IdentifyContributorException(irInfo);
-        }
+        return getCache().hasFile(message.getFileID());
     }
     
     /**
