@@ -54,7 +54,7 @@ create table alarm (
                                      -- The guid for the alarm.
     component_guid bigint not null,  -- The guid for the component behind the alarm.
     alarm_code varchar(50) not null, -- The code for the alarm.
-    alarm_text varchar(255) not null,-- The text for the alarm.
+    alarm_text CLOB not null,        -- The text for the alarm.
     alarm_date timestamp not null,   -- The date for the alarm.
     file_id varchar(255)             -- The id for the file (allowed to be null).
 );

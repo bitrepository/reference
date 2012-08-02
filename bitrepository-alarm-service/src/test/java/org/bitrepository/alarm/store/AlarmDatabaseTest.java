@@ -21,8 +21,13 @@
  */
 package org.bitrepository.alarm.store;
 
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TABLE;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_TABLE;
+
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
+import org.bitrepository.common.database.DBConnector;
+import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -31,8 +36,11 @@ import org.bitrepository.common.utils.FileUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import ch.qos.logback.core.db.dialect.DBUtil;
 
 import java.io.File;
 import java.sql.Connection;
@@ -65,6 +73,14 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         
         Connection dbCon = DatabaseTestUtils.takeDatabase(dbFile, DATABASE_NAME, dbDir);
         dbCon.close();
+    }
+    
+    @AfterMethod (alwaysRun = true)
+    public void cleanupDatabase() throws Exception {
+        // TODO
+        DBConnector connector = new DBConnector(settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
+        DatabaseUtils.executeStatement(connector, "DELETE FROM " + ALARM_TABLE, new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM " + COMPONENT_TABLE, new Object[0]);
     }
 
     @AfterClass (alwaysRun = true)
@@ -157,7 +173,36 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(extractedAlarms.get(0).getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
         Assert.assertEquals(extractedAlarms.get(0).getFileID(), fileId);
     }
-    
+
+    @Test(groups = {"regressiontest", "databasetest"})
+    public void AlarmDatabaseLargeIngestionTest() throws Exception {
+        addDescription("Testing the ingestion of a large texts into the database");
+        addStep("Setup and create alarm", "");
+        AlarmServiceDAO database = new AlarmServiceDAO(settings);
+        
+        Alarm alarm = new Alarm();
+        alarm.setAlarmCode(AlarmCode.CHECKSUM_ALARM);
+        alarm.setAlarmRaiser("TEST");
+        alarm.setFileID(fileId);
+        alarm.setOrigDateTime(CalendarUtils.getEpoch());
+        
+        StringBuilder text = new StringBuilder();
+        for(int i = 0; i < 10; i++) {
+            text.append(settings.getCollectionSettings().toString());
+            text.append("\n");
+            text.append(settings.getReferenceSettings().toString());
+            text.append("\n");
+        }
+        alarm.setAlarmText(text.toString());
+        
+        addStep("Insert the data into the database", "Should be extractable again.");
+        database.addAlarm(alarm);
+        
+        List<Alarm> extractedAlarms = database.extractAlarms(null, null, null, null, null, null, true);
+        Assert.assertEquals(extractedAlarms.size(), 1);
+        Assert.assertEquals(extractedAlarms.get(0), alarm);
+    }
+
     private List<Alarm> makeAlarms() {
         List<Alarm> res = new ArrayList<Alarm>();
         
