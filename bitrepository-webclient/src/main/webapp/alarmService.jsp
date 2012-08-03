@@ -32,14 +32,46 @@
 <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
     <script>
         $(function() {
+            $("#fromDate").datepicker();
+            $("#toDate").datepicker();
             $().updateAlarms();
-            //$('#alarmsContent').load('<%= su.getAlarmServiceUrl() %>/alarm/AlarmService/getShortAlarmList/').fadeIn("slow");
         });
     </script>
 
     <div id="alarm-container" class="ui-widget">
+            <div id=alarmQuery>
+            <h1>Filters for displayed alarms:</h1>
+            <table>
+                <tr>
+                    <td>From date: <br> <input id="fromDate" type="text" class="dateInput"></td>
+                    <td>To date: <br> <input id="toDate" type="text" class="dateInput"></td>
+                    <td>FileID: <br> <input id="fileIDFilter" type="text"/></td>
+                    <td>Reporting component: <br> <input id="componentFilter" type="text"/></td>
+                    <td>Alarmcode: <br>
+                        <select id=alarmCodeFilter>
+                            <option>ALL</option>
+                            <option>INCONSISTENT_REQUEST</option>
+                            <option>CHECKSUM_ALARM</option>
+                            <option>FAILED_TRANSFER</option>
+                            <option>FAILED_OPERATION</option>
+                            <option>INVALID_MESSAGE</option>
+                            <option>INVALID_MESSAGE_VERSION</option>
+                            <option>TIMEOUT</option>                              
+                        </select>
+                    </td>
+                    <td>Max alarms: <br>
+                        <select id=actionFilter>
+                            <option>10</option>
+                            <option>20</option>
+                            <option>50</option>
+                            <option>100</option>
+                        </select>
+                    </td> 
+                </tr>
+            </table>
+        </div>
         <h1>Alarms:</h1>
-        <div id=alarmsContent> </div>
+        <div id="alarmsContent"> </div>
     </div>
 
     <script>
@@ -67,7 +99,6 @@
         var auto_getalarms = setInterval(
         function() {
             $().updateAlarms();
-        //    $('#alarmsContent').load('<%= su.getAlarmServiceUrl() %>/alarm/AlarmService/getShortAlarmList/').fadeIn("slow");
             }, 2500);
     </script> 
 </html>
