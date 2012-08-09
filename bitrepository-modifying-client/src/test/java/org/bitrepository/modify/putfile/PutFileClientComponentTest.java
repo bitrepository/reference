@@ -50,8 +50,7 @@ import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Tests for the components of the PutFileClient.
- * TODO need more test-cases, e.g. the User-Stories...
+ * Tests the PutFileClient.
  */
 public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     private TestPutFileMessageFactory messageFactory;
@@ -98,7 +97,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForPutFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     messageFactory.createIdentifyPillarsForPutFileRequest(
@@ -186,7 +185,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForPutFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     messageFactory.createIdentifyPillarsForPutFileRequest(
@@ -225,7 +224,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForPutFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     messageFactory.createIdentifyPillarsForPutFileRequest(
@@ -293,7 +292,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForPutFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     messageFactory.createIdentifyPillarsForPutFileRequest(
@@ -372,7 +371,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForPutFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     messageFactory.createIdentifyPillarsForPutFileRequest(

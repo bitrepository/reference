@@ -21,16 +21,15 @@
  */
 package org.bitrepository.common.database;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.mchange.v2.c3p0.DataSources;
 import java.sql.Connection;
 import java.sql.SQLException;
-
+import java.util.Properties;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.mchange.v2.c3p0.DataSources;
 
 /**
  * The connector to a database.
@@ -49,10 +48,10 @@ public class DBConnector {
      */
     public DBConnector(DatabaseSpecifics databaseSpecifics) {
         ArgumentValidator.checkNotNull(databaseSpecifics, "DatabaseSpecifics specifics");
-        
+
+        silenceC3P0Logger();
         this.databaseSpecifics = databaseSpecifics;
         this.connectionPool = new ComboPooledDataSource();
-        
         initialiseConnectionPool();
     }
     
@@ -73,6 +72,16 @@ public class DBConnector {
         } catch (Exception e) {
             throw new IllegalStateException("Could not connect to the database '" + databaseSpecifics + "'", e);
         }
+    }
+
+    /**
+     * Hack to kill com.mchange.v2 log spamming.
+     */
+    private void silenceC3P0Logger() {
+        Properties p = new Properties(System.getProperties());
+        p.put("com.mchange.v2.log.MLog", "com.mchange.v2.log.FallbackMLog");
+        p.put("com.mchange.v2.log.FallbackMLog.DEFAULT_CUTOFF_LEVEL", "OFF"); // or any other
+        System.setProperties(p);
     }
     
     /**

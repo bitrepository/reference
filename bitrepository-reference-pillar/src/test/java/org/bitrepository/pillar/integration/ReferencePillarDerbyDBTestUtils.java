@@ -37,12 +37,12 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
  * Contains functionality for maintenance of the reference pillar databases. This includes functionality for
  * creating and upgrading the databases.
  */
-public class ReferencePilllarDerbyDBTestUtils {
+public class ReferencePillarDerbyDBTestUtils {
     public static String AUDIT_TRAIL_DB_SCRIPT = "auditContributerDB.sql";
     public static String CHECKSUM_DB_SCRIPT = "checksumDB.sql";
 
     /** Prevent instantiation this util class */
-    private ReferencePilllarDerbyDBTestUtils() {}
+    private ReferencePillarDerbyDBTestUtils() {}
 
     /**
      * Creates the Derby databses needed by the reference pillar,
@@ -50,7 +50,7 @@ public class ReferencePilllarDerbyDBTestUtils {
      *
      * Will also remove existing databases.
      */
-    public static void createEmptyDatabases(Settings settings) throws Exception {
+    public static void createEmptyDatabases(Settings settings) {
         DatabaseSpecifics auditTrailDB =
                 settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase();
         deleteDatabase(auditTrailDB);
@@ -77,7 +77,7 @@ public class ReferencePilllarDerbyDBTestUtils {
      */
     private static Reader getReaderForFile(String filePath) throws java.io.IOException {
         return new BufferedReader(
-                new InputStreamReader(ReferencePilllarDerbyDBTestUtils.class.getClassLoader().getResourceAsStream(filePath)));
+                new InputStreamReader(ReferencePillarDerbyDBTestUtils.class.getClassLoader().getResourceAsStream(filePath)));
     }
 
     /**
@@ -105,11 +105,15 @@ public class ReferencePilllarDerbyDBTestUtils {
      * Creates a database by running the supplied script.
      * @param databaseSpecifics Specifies where to create the database.
      */
-    private static void createDatabase(DatabaseSpecifics databaseSpecifics, String scriptName) throws Exception {
+    private static void createDatabase(DatabaseSpecifics databaseSpecifics, String scriptName) {
     DBConnector dbConnector = new DBConnector(databaseSpecifics);
 
         DatabaseSpecifics databaseCreationSpecifics = updateDatabaseSpecificsForDBCreation(databaseSpecifics);
-        runScript(databaseCreationSpecifics, scriptName);
+        try {
+            runScript(databaseCreationSpecifics, scriptName);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /** Will delete the database by directly removing the files on disk based on the DB url */

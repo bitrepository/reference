@@ -40,11 +40,12 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
 import org.jaccept.gui.ComponentTestFrame;
 import org.jaccept.structure.ExtendedTestCase;
+import org.jaccept.testreport.ReportGenerator;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
 
 /**
@@ -52,6 +53,7 @@ import org.testng.annotations.BeforeTest;
  */
 public abstract class IntegrationTest extends ExtendedTestCase {
     protected static TestEventManager testEventManager = TestEventManager.getInstance();
+    private static ReportGenerator reportGenerator;
     public static LocalActiveMQBroker broker;
     public static EmbeddedHttpServer server;
     public static HttpServerConnector httpServer;
@@ -59,25 +61,26 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     public static MessageBus messageBus;
 
     protected static String collectionDestinationID;
-    protected MessageReceiver collectionDestination; 
-    
+    protected static MessageReceiver collectionReceiver;
+
     protected static String alarmDestinationID;
-    protected MessageReceiver alarmDestination; 
+    protected static MessageReceiver alarmReceiver;
 
-    public SecurityManager securityManager;
+    protected static SecurityManager securityManager;
 
-    protected Settings componentSettings;
+    protected static Settings componentSettings;
 
-    @BeforeClass(alwaysRun = true)
-    public void setupTest() throws Exception {
+    @BeforeSuite(alwaysRun = true)
+    public void initializeSuite() {
         setupSettings();
         securityManager = new DummySecurityManager();
         setupMessageBus();
         setupHttpServer();
+        startReportGenerator();
     }
-    @AfterClass(alwaysRun = true)
-    public void teardownTest() throws Exception {
-        teardownMessageBus(); 
+    @AfterSuite(alwaysRun = true)
+    public void shutdownSuite() {
+        teardownMessageBus();
         teardownHttpServer();
     }
 
@@ -90,7 +93,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     public void setupTest(java.lang.reflect.Method testMethod) {
         setupSettings();
         initializeMessageBusListeners();
-    }    
+    }
 
     @AfterMethod(alwaysRun = true)
     public void teardownTestMethod() {
@@ -98,10 +101,10 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     }
 
     /**
-     * Initializes the settings.
+     * Initializes the settings. Will postfix the alarm and collection topics with '-${user.name}
      */
     protected void setupSettings() {
-        componentSettings = TestSettingsProvider.reloadSettings(getComponentID());
+        componentSettings = loadSettings();
 
         collectionDestinationID = componentSettings.getCollectionDestination() + getTopicPostfix();
         componentSettings.getCollectionSettings().getProtocolSettings().setCollectionDestination(collectionDestinationID);
@@ -110,17 +113,31 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         componentSettings.getCollectionSettings().getProtocolSettings().setAlarmDestination(alarmDestinationID);
     }
 
+    /** Can be overloaded by tests needing to load custom settings */
+    protected Settings loadSettings() {
+        return TestSettingsProvider.reloadSettings(getComponentID());
+    }
+
     // Experimental, use at own risk.
     @BeforeTest (alwaysRun = true)
-    public void startTestGUI() {  
+    public void startTestGUI() {
         if (System.getProperty("enableTestGUI", "false").equals("true") ) {
             JFrame hmi = new ComponentTestFrame();
             hmi.pack();
             hmi.setVisible(true);
         }
     }
+    // Experimental, use at own risk.
     @BeforeTest (alwaysRun = true)
-    public void writeLogStatus() {  
+    public void startReportGenerator() {
+        if (System.getProperty("enableTestReport", "false").equals("true") ) {
+            reportGenerator = new ReportGenerator();
+            reportGenerator.projectStarted("Bitrepository test");
+            //ToBeFinished
+        }
+    }
+    @BeforeTest (alwaysRun = true)
+    public void writeLogStatus() {
         if (System.getProperty("enableLogStatus", "false").equals("true")) {
             LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
             StatusPrinter.print(lc);
@@ -129,7 +146,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     /** Indicated whether an embedded active MQ should be started and used */
     public boolean useEmbeddedMessageBus() {
-        return System.getProperty("useEmbeddedMessageBus", "false").equals("true");
+        return System.getProperty("useEmbeddedMessageBus", "true").equals("true");
     }
 
     /** Indicated whether an embedded http server should be started and used */
@@ -140,10 +157,10 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     /**
      * Hooks up the message bus.
      */
-    protected void setupMessageBus() throws Exception {
-        if (useEmbeddedMessageBus()) { 
+    private void setupMessageBus() {
+        if (useEmbeddedMessageBus() && broker == null) {
             broker = new LocalActiveMQBroker(componentSettings.getMessageBusConfiguration());
-            broker.start(); 
+            broker.start();
         }
         messageBus = new MessageBusWrapper(
                 ProtocolComponentFactory.getInstance().getMessageBus(componentSettings, securityManager), testEventManager);
@@ -153,27 +170,30 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * Defines the general destinations used in the tests and adds listeners to the message bus.
      */
     protected void initializeMessageBusListeners() {
-        collectionDestination = new MessageReceiver("Collection topic receiver", testEventManager);
-        messageBus.addListener(collectionDestinationID, collectionDestination.getMessageListener());
+        collectionReceiver = new MessageReceiver("Collection topic receiver", testEventManager);
+        messageBus.addListener(componentSettings.getCollectionDestination(), collectionReceiver.getMessageListener());
 
-        alarmDestination = new MessageReceiver("Alarm receiver", testEventManager);
-        messageBus.addListener(alarmDestinationID, alarmDestination.getMessageListener());
+        alarmReceiver = new MessageReceiver("Alarm receiver", testEventManager);
+        messageBus.addListener(componentSettings.getAlarmDestination(), alarmReceiver.getMessageListener());
     }
-    
+
     protected void teardownMessageBusListeners() {
-        messageBus.removeListener(collectionDestinationID, collectionDestination.getMessageListener());
-        messageBus.removeListener(alarmDestinationID, alarmDestination.getMessageListener());
+        messageBus.removeListener(componentSettings.getCollectionDestination(), collectionReceiver.getMessageListener());
+        messageBus.removeListener(componentSettings.getAlarmDestination(), alarmReceiver.getMessageListener());
     }
 
     /**
      * Shutdown the embedded message bus if any
      */
-    protected void teardownMessageBus() {
-        if (useEmbeddedMessageBus()) { 
-            try {
-                broker.stop();
-            } catch (Exception e) {
-                // No reason to pollute the test output with this
+    private void teardownMessageBus() {
+        if (useEmbeddedMessageBus()) {
+
+            if(broker != null) {
+                try {
+                    broker.stop();
+                } catch (Exception e) {
+                    // No reason to pollute the test output with this
+                }
             }
         }
     }
@@ -183,10 +203,10 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * if this is going to be used, eg. if useEmbeddedHttpServer is true. 
      * @throws Exception
      */
-    protected void setupHttpServer() throws Exception {
+    protected void setupHttpServer() {
 
         httpServerConfiguration = new HttpServerConfiguration();
-        if (useEmbeddedHttpServer()) { // Note that the embedded server isn't fully functional yet
+        if (useEmbeddedHttpServer() && server == null) { // Note that the embedded server isn't fully functional yet
             server = new EmbeddedHttpServer();
             server.start();
         }
@@ -203,13 +223,13 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * Shutdown the embedded http server if any. 
      * @throws Exception
      */
-    protected void teardownHttpServer() throws Exception {
+    protected void teardownHttpServer() {
         if (useEmbeddedHttpServer()) {
             server.stop();
         }
     }
 
-    /** 
+    /**
      * Returns the postfix string to use when accessing user specific topics, which is the mechanism we use in the 
      * bit repository tests.
      * @return The string to postfix all topix names with.
@@ -221,7 +241,9 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     /**
      * Should return a component independent settings by the implementing subclass.
      */
-    protected abstract String getComponentID();
+    protected String getComponentID() {
+        return getClass().getSimpleName();
+    }
 
     protected void addFixtureSetup(String setupDescription) {
         addStep(setupDescription, "");

@@ -44,14 +44,10 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
     private final PutFileConversationContext context;
     private final MultipleComponentSelector selector;
 
-    /**
-     * Constructor.
-     * @param conversation The conversation in this given state.
-     */
     public IdentifyPillarsForPutFile(PutFileConversationContext context) {
         this.context = context;
-        selector = new PutFilePillarSelector(context.getSettings().getCollectionSettings().getClientSettings().getPillarIDs());
-
+        selector = new PutFilePillarSelector(
+                context.getSettings().getCollectionSettings().getClientSettings().getPillarIDs());
     }
 
     @Override

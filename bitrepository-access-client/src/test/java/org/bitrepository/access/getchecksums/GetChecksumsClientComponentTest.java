@@ -123,7 +123,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForGetChecksumsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
@@ -209,7 +209,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                 DEFAULT_CHECKSUM_SPECS, deliveryUrl, testEventHandler, "TEST-AUDIT");
 
         if (useMockupPillar()) {
-            collectionDestination.waitForMessage(IdentifyPillarsForGetChecksumsRequest.class);
+            collectionReceiver.waitForMessage(IdentifyPillarsForGetChecksumsRequest.class);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -248,7 +248,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForGetChecksumsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 
@@ -307,7 +307,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForGetChecksumsRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetChecksumsRequest(receivedIdentifyRequestMessage, 

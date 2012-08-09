@@ -21,21 +21,6 @@
  */
 package org.bitrepository.service.audit;
 
-import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_GUID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_NAME;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_TABLE;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_ACTOR_GUID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_AUDIT;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_FILE_GUID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_INFORMATION;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_OPERATION;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_OPERATION_DATE;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_SEQUENCE_NUMBER;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_TABLE;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILEID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_GUID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
-
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -43,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
@@ -53,6 +37,8 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.bitrepository.service.audit.AuditDatabaseConstants.*;
 
 /**
  * Access interface for communication with the audit trail database.
@@ -169,8 +155,6 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     
     /**
      * Extracts the the audit trail information based on the given sql query and arguments.
-     * @param restriction The restriction to the query.
-     * @param args The arguments.
      * @return The extracted 
      */
     private Collection<AuditTrailEvent> extractEvents(AuditTrailExtractor extractor) {
@@ -243,8 +227,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     }
     
     /**
-     * Retrieves a id of an file based on the guid. 
-     * @param actorGuid The id of the file.
+     * Retrieves a id of an file based on the guid.
      * @return The id of the file corresponding to the guid.
      */
     private String retrieveFileId(long fileGuid) {
@@ -256,7 +239,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     /**
      * Retrieve the guid for a given actor. If the actor does not exist within the actor, then it is created.
      * 
-     * @param actor The name of the actor.
+     * @param actorName The name of the actor.
      * @return The guid of the actor with the given name.
      */
     private long retrieveActorGuid(String actorName) {

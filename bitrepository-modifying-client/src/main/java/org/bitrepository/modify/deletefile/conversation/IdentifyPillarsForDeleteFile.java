@@ -38,11 +38,7 @@ import org.bitrepository.client.exceptions.UnexpectedResponseException;
  */
 public class IdentifyPillarsForDeleteFile extends IdentifyingState {
     private final DeleteFileConversationContext context;
-       
-    /**
-     * Constructor.
-     * @param conversation The conversation in this given state.
-     */
+
     public IdentifyPillarsForDeleteFile(DeleteFileConversationContext context) {
         this.context = context;
     }
@@ -59,13 +55,17 @@ public class IdentifyPillarsForDeleteFile extends IdentifyingState {
 
     @Override
     protected void processMessage(MessageResponse msg) throws UnexpectedResponseException {
-        if(msg.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
+        ResponseCode responseCode = msg.getResponseInfo().getResponseCode();
+        if(responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
             getContext().getMonitor().pillarIdentified(msg);
-        } else if(!msg.getResponseInfo().getResponseCode().equals(ResponseCode.FILE_NOT_FOUND_FAILURE)) {
+        } else if(!responseCode.equals(ResponseCode.FILE_NOT_FOUND_FAILURE)) {
             getContext().getMonitor().contributorFailed(
                     "Received negative response from component " + msg.getFrom() +
                     ":  " + msg.getResponseInfo(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
             operationSucceded = false;
+        } else {
+            getContext().getMonitor().warning("Received unexpected response code " +
+                    msg.getResponseInfo().getResponseCode() + " from " + msg.getFrom());
         }
         getSelector().processResponse(msg);
     }

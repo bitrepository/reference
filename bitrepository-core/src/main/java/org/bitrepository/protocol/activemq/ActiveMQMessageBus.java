@@ -369,9 +369,6 @@ public class ActiveMQMessageBus implements MessageBus {
                                 destination + "'. Unknown type.");
                     }
                 }
-
-                // TODO: According to javadoc, topics should be looked up in another fashion.
-                // See http://download.oracle.com/javaee/6/api/javax/jms/Session.html#createTopic(java.lang.String)
             } catch (JMSException e) {
                 throw new CoordinationLayerException("Could not create destination '" + destinationID + "'", e);
             }

@@ -34,14 +34,22 @@ public class LocalActiveMQBroker {
     
     private BrokerService broker;
     
-    public LocalActiveMQBroker(MessageBusConfiguration configuration) throws Exception {
+    public LocalActiveMQBroker(MessageBusConfiguration configuration) {
         broker = new BrokerService();
-        broker.addConnector(configuration.getURL());
+        try {
+            broker.addConnector(configuration.getURL());
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
         log.info("Created embedded broker " + LoggerFactory.getLogger(getClass()));
     }
     
-    public void start() throws Exception {
-        broker.start();
+    public void start() {
+        try {
+            broker.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
     
     public void stop() throws Exception {

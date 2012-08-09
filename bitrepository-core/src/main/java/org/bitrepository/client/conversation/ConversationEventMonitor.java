@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.*;
 
-/** 
+/**
  * Encapsulates the concrete handling of conversation events. Should be called every time a conversation event happens.
  */
 public class ConversationEventMonitor {
@@ -56,6 +56,14 @@ public class ConversationEventMonitor {
         log = new ConversationLogger(conversationID);
         this.conversationID = conversationID;
         this.eventHandler = eventHandler;
+    }
+
+    /**
+     * Indicates a identify request has been sent to the contributors.
+     * @param info Description
+     */
+    public void startingConversation(String info) {
+        log.info(info);
     }
 
     /**
@@ -94,7 +102,7 @@ public class ConversationEventMonitor {
                     new ContributorEvent(COMPONENT_IDENTIFIED, info, response.getFrom(), conversationID));
         }
     }
-    
+
     /**
      * Indicates a identify request has timeout without all pillars responding.
      * @param info Description
@@ -155,8 +163,8 @@ public class ConversationEventMonitor {
                     new ContributorEvent(PROGRESS, progressInfo, contributorID, conversationID));
         }
     }
-    
-    /** 
+
+    /**
      * A pillar has completed the operation.
      * @param completeEvent Event containing any additional information regarding the completion. Might contain the
      * return value from the operation, in which case the event will be a <code>DefafaultEvent</code> subclass.
@@ -210,9 +218,13 @@ public class ConversationEventMonitor {
      * @param e Description of the context
      */
     public void invalidMessage(Message message, Exception e) {
-        log.warn("Received invalid " + message.getClass().getSimpleName() + " from " + message.getFrom(), e);
-        eventHandler.handleEvent(
-                new ContributorEvent(WARNING, e.getMessage(), message.getFrom(), conversationID));
+        log.warn("Received invalid " + message.getClass().getSimpleName() + " from " + message.getFrom() +
+                "\nMessage: " + message, e);
+
+        if (eventHandler != null) {
+            eventHandler.handleEvent(
+                    new ContributorEvent(WARNING, e.getMessage(), message.getFrom(), conversationID));
+        }
     }
 
     /**
@@ -222,7 +234,7 @@ public class ConversationEventMonitor {
     public void outOfSequenceMessage(String info) {
         log.warn(info);
     }
-    
+
     /**
      * Signifies a non-fatal event
      * @param info Problem description
@@ -249,7 +261,7 @@ public class ConversationEventMonitor {
                     conversationID));
         }
     }
-    
+
     /**
      * Logs debug information.
      * @param info The debug info to log.
@@ -257,16 +269,16 @@ public class ConversationEventMonitor {
     public void debug(String info) {
         log.debug(info);
     }
-    
+
     /**
      * Logs debug information.
      * @param info The debug info to log.
-     * 
+     *
      */
     public void debug(String info, Exception e) {
         log.debug(info, e);
     }
-    
+
     /**
      * A pillar has failed to handle a request successfully.
      * @param info Cause information
@@ -276,7 +288,7 @@ public class ConversationEventMonitor {
         if (eventHandler != null) {
             eventHandler.handleEvent(new ContributorFailedEvent(info, contributor, responseCode,
                     conversationID));
-        }    
+        }
     }
 
     /**

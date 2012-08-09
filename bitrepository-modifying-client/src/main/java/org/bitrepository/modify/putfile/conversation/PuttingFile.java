@@ -46,10 +46,6 @@ public class PuttingFile extends PerformingOperationState {
     private Map<String,String> activeContributors;
     private ContributorResponseStatus responseStatus;
 
-    /**
-     * Constructor.
-     * @param conversation The conversation in this state.
-     */
     public PuttingFile(PutFileConversationContext context, List<SelectedComponentInfo> contributors) {
         this.context = context;
         this.activeContributors = new HashMap<String,String>();

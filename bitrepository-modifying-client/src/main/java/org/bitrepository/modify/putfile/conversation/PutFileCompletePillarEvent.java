@@ -31,7 +31,7 @@ import org.bitrepository.client.eventhandler.ContributorEvent;
 * Contains the result of a put file request sent to a single pillar.
 */
 public class PutFileCompletePillarEvent extends ContributorEvent {
-    /** @see #getPutResults(). */
+    /** @see #getChecksums(). */
     private final ChecksumDataForFileTYPE result;
     
     /**

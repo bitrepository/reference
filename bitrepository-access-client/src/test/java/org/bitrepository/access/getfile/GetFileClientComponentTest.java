@@ -100,7 +100,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 chosenPillar, testEventHandler);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     testMessageFactory.createIdentifyPillarsForGetFileRequest(receivedIdentifyRequestMessage, 
                             collectionDestinationID, TEST_CLIENT_ID));
@@ -188,7 +188,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage = 
-                    collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+                    collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -261,7 +261,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage = 
-                    collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+                    collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -316,7 +316,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         client.getFileFromFastestPillar(DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID), 
                 testEventHandler);
         if (useMockupPillar()) {
-            collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+            collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -343,7 +343,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage = 
-                    collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+                    collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
             IdentifyPillarsForGetFileRequest expectedMessage = 
                     testMessageFactory.createIdentifyPillarsForGetFileRequest(receivedIdentifyRequestMessage, 
                             collectionDestinationID, TEST_CLIENT_ID);
@@ -387,7 +387,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
         client.getFileFromSpecificPillar(fileName, NO_FILE_PART, url, PILLAR1_ID, testEventHandler);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = 
-                collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+                collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The specified pillars sends a FILE_NOT_FOUND response", 
@@ -418,7 +418,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 "An identify request should be sent and a IdentifyPillarsRequestSent event should be generate");
         client.getFileFromFastestPillar(fileName, NO_FILE_PART, url, testEventHandler);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = 
-                collectionDestination.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+                collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Both pillars sends a FILE_NOT_FOUND response", 

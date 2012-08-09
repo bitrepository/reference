@@ -25,7 +25,7 @@
   -->
   
 <CollectionSettings xmlns="http://bitrepository.org/settings/CollectionSettings.xsd">
-  <CollectionID>TEST</CollectionID>
+  <CollectionID>PILLAR-TEST</CollectionID>
   <ProtocolSettings>
     <DefaultChecksumType>MD5</DefaultChecksumType>
     <AllowedFileIDPattern>[a-zA-z0-9\-_.]{5,250}</AllowedFileIDPattern>
@@ -33,11 +33,24 @@
     <RequireOperationAuthorization>false</RequireOperationAuthorization>
     <RequireChecksumForDestructiveRequests>true</RequireChecksumForDestructiveRequests>
     <RequireChecksumForNewFileRequests>false</RequireChecksumForNewFileRequests>
-    <CollectionDestination>TEST-TOPIC</CollectionDestination>
-    <AlarmDestination>TEST-ALARM-TOPIC</AlarmDestination>
+    <CollectionDestination>PILLAR-TEST-TOPIC</CollectionDestination>
+    <AlarmDestination>PILLAR-TEST-ALARM-TOPIC</AlarmDestination>
     <MessageBusConfiguration>
       <Name>PillarIntegrationTestMessageBus</Name>
+      <!--
       <URL>failover://(tcp://sandkasse-01.kb.dk:61616?keepAlive=true)?timeout=10000</URL>
+      -->
+      <URL>tcp://localhost:9999</URL>
     </MessageBusConfiguration>
   </ProtocolSettings>
+
+  <ClientSettings>
+    <IdentificationTimeout>1000000</IdentificationTimeout>
+    <OperationTimeout>10000000</OperationTimeout>
+    <PillarIDs>EmbeddedPillar</PillarIDs>
+  </ClientSettings>
+
+  <GetAuditTrailSettings>
+    <ContributorIDs>EmbeddedPillar</ContributorIDs>
+  </GetAuditTrailSettings>
 </CollectionSettings>

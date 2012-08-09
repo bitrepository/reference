@@ -21,26 +21,25 @@
  */
 package org.bitrepository.integrityservice;
 
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_TABLE;
-
 import java.io.File;
 import java.sql.Connection;
-
 import org.bitrepository.common.database.DBConnector;
 import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.DatabaseTestUtils;
 import org.bitrepository.common.utils.FileUtils;
-import org.jaccept.structure.ExtendedTestCase;
+import org.bitrepository.protocol.IntegrationTest;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
-public class IntegrityDatabaseTestCase extends ExtendedTestCase {
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_TABLE;
+
+public class IntegrityDatabaseTestCase extends IntegrationTest {
     protected Settings settings;
 
     protected final String DATABASE_NAME = "integritydb";

@@ -101,7 +101,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForDeleteFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     messageFactory.createIdentifyPillarsForDeleteFileRequest(
@@ -196,7 +196,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         
         IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForDeleteFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     messageFactory.createIdentifyPillarsForDeleteFileRequest(
@@ -244,7 +244,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForDeleteFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     messageFactory.createIdentifyPillarsForDeleteFileRequest(
@@ -318,7 +318,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForDeleteFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     messageFactory.createIdentifyPillarsForDeleteFileRequest(

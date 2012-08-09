@@ -36,8 +36,8 @@ public class NegativeResponseException extends Exception {
 
     /**
      * Constructor with both message and cause exception
-     * @param Description of this exception
-     * @param The errorcode causing the exception.
+     * @param message Human readable description of this exception
+     * @param errorcode The errorcode causing the exception.
      */
     public NegativeResponseException(String message, ResponseCode errorcode) {
         super(message);

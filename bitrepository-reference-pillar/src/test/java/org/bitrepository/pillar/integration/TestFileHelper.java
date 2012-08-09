@@ -23,24 +23,36 @@ package org.bitrepository.pillar.integration;
 
 import java.io.File;
 import java.util.Date;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.fileexchange.HttpServerConnector;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 public class TestFileHelper {
     public static final String DEFAULT_FILE_ID = ClientTestMessageFactory.FILE_ID_DEFAULT;
+    public static final String TEST_RESOURCES_PATH = "src/test/resources/";
+    private static ChecksumDataForFileTYPE DEFAULT_FILE_CHECKSUM;
 
-    private final Settings settings;
-    private final HttpServerConnector httpConnector;
+    private TestFileHelper() {}
 
-    public TestFileHelper(
-            Settings settings, HttpServerConnector httpConnector) {
-        this.settings = settings;
-        this.httpConnector = httpConnector;
+    public static File getDefaultFile() {
+        return getFile(DEFAULT_FILE_ID);
     }
 
-    public static File getFile() {
-        return getFile(DEFAULT_FILE_ID);
+    public static ChecksumDataForFileTYPE getDefaultFileChecksum() {
+        if(DEFAULT_FILE_CHECKSUM == null) {
+            DEFAULT_FILE_CHECKSUM = new ChecksumDataForFileTYPE();
+            DEFAULT_FILE_CHECKSUM.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+            ChecksumSpecTYPE checksumSpecTYPE = new ChecksumSpecTYPE();
+            checksumSpecTYPE.setChecksumType(ChecksumType.MD5);
+            DEFAULT_FILE_CHECKSUM.setChecksumSpec(checksumSpecTYPE);
+            DEFAULT_FILE_CHECKSUM.setChecksumValue(Base16Utils.encodeBase16(
+                    ChecksumUtils.generateChecksum(getDefaultFile(), ChecksumType.MD5)));
+        }
+        return DEFAULT_FILE_CHECKSUM;
     }
 
     public static String getFileName(File file) {
@@ -52,11 +64,20 @@ public class TestFileHelper {
     }
 
     public static File getFile(String name) {
-        File file = new File("src/test/resources/" + name);
+        File file = new File(TEST_RESOURCES_PATH, name);
         assert(file.isFile());
         return file;
     }
 
-    public void putFileOnWebdavServer() {
+
+    public static String[] createFileIDs(int numberToCreate, String prefix) {
+        String uniquePrefix = prefix + "-" + System.getProperty("user.name") + "-" +
+                System.currentTimeMillis();
+        String[] fileIDs = new String[numberToCreate];
+        for (int i = 0 ; i<numberToCreate ; i++) {
+            fileIDs[i] = uniquePrefix + "-" + (i+1) +".txt";
+        }
+        return fileIDs;
     }
+
 }

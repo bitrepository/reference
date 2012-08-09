@@ -116,7 +116,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         
         IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForReplaceFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     messageFactory.createIdentifyPillarsForReplaceFileRequest(
@@ -212,7 +212,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         
         IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForReplaceFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     messageFactory.createIdentifyPillarsForReplaceFileRequest(
@@ -266,7 +266,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         
         IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForReplaceFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     messageFactory.createIdentifyPillarsForReplaceFileRequest(
@@ -342,7 +342,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         
         IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = null;
         if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionDestination.waitForMessage(
+            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                     IdentifyPillarsForReplaceFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage, 
                     messageFactory.createIdentifyPillarsForReplaceFileRequest(

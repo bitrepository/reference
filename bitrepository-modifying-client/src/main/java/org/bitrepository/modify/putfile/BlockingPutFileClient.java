@@ -25,19 +25,27 @@
 package org.bitrepository.modify.putfile;
 
 import java.net.URL;
-
+import java.util.List;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.client.BitrepositoryClient;
+import org.bitrepository.client.eventhandler.BlockingEventHandler;
+import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.OperationEvent;
 
 /**
- * Interface for the put client.
+ * Wrappes a <code>PutFileClient</code> to provide a blocking client. The client will block until the PutFileOperation
+ * has finished.
  */
-public interface PutFileClient extends BitrepositoryClient {
+public class BlockingPutFileClient {
+    private final PutFileClient client;
+
+    public BlockingPutFileClient(PutFileClient client) {
+        this.client = client;
+    }
     /**
-     * Method for performing the put operation.
-     * 
+     * Method for performing a blocking puFIle operation.
+     *
      * @param url The URL where the file to be put is located.
      * @param fileId The id of the file.
      * @param sizeOfFile The number of bytes the file requires.
@@ -46,7 +54,23 @@ public interface PutFileClient extends BitrepositoryClient {
      * @param eventHandler The EventHandler for the operation.
      * @param auditTrailInformation The audit trail information.
      */
-    void putFile(URL url, String fileId, long sizeOfFile, ChecksumDataForFileTYPE checksumForValidationAtPillar, 
-            ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation);
-    
+    public List<ContributorEvent> putFile(
+            URL url,
+            String fileId,
+            long sizeOfFile,
+            ChecksumDataForFileTYPE checksumForValidationAtPillar,
+            ChecksumSpecTYPE checksumRequestsForValidation,
+            EventHandler eventHandler,
+            String auditTrailInformation)
+            throws Exception {
+        BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
+        client.putFile(url, fileId, sizeOfFile, checksumForValidationAtPillar, checksumRequestsForValidation,
+                blocker, auditTrailInformation);
+        OperationEvent finishEvent = blocker.awaitFinished();
+        if(finishEvent.getType() == OperationEvent.OperationEventType.COMPLETE) {
+            return blocker.getResults();
+        } else if (finishEvent.getType() == OperationEvent.OperationEventType.FAILED) {
+            throw new NegativeArraySizeException(finishEvent.getInfo());
+        } else throw new RuntimeException("Received unexpected event type" + finishEvent);
+    }
 }

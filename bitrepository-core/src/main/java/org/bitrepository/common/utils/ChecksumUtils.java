@@ -73,13 +73,26 @@ public final class ChecksumUtils {
                     + file.getAbsolutePath() + "'.", e);
         }
     }
-    
+
+    /**
+     * Wrapper method for the #generateChecksum(File,ChecksumSpecTYPE) method non-salted checksums.
+     * @param checksumType Defines checksum algorithme.
+     */
+    public static String generateChecksum(File file, ChecksumType checksumType) {
+        return generateChecksum(file, checksumType, null);
+    }
+    public static String generateChecksum(File file, ChecksumType checksumType, byte[] salt) {
+        ChecksumSpecTYPE checksumSpecTYPE = new ChecksumSpecTYPE();
+        checksumSpecTYPE.setChecksumSalt(salt);
+        checksumSpecTYPE.setChecksumType(checksumType);
+        return generateChecksum(file, checksumSpecTYPE);
+    }
+
     /**
      * Calculates a checksum based on 
      * 
      * @param content The inputstream for the data to calculate the checksum of.
-     * @param algorithm The algorithm to use for calculation. If it is not prefixed with 'Hmac', then it is added.
-     * @param salt The salt for the calculation. 
+     * @param csSpec The algorithm to use for calculation together wih a optional salt. If it is not prefixed with 'Hmac', then it is added.
      * @return The HMAC calculated checksum in hexadecimal.
      */
     public static String generateChecksum(InputStream content, ChecksumSpecTYPE csSpec) {

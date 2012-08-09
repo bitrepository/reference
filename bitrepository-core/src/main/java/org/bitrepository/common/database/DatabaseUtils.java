@@ -399,13 +399,13 @@ public class DatabaseUtils {
         ArgumentValidator.checkNotNull(dbConnection, "Connection dbConnection");
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
-        
+
         try {
             PreparedStatement ps = createPreparedStatement(dbConnection, query, args);
             return ps.executeQuery();
         } catch (SQLException e) {
             throw failedExecutionOfStatement(e, dbConnection, query, args);
-        }        
+        }
     }
 
     /**
@@ -457,7 +457,7 @@ public class DatabaseUtils {
      * @return a prepared statement
      * @throws SQLException If unable to prepare a statement
      */
-    private static PreparedStatement createPreparedStatement(Connection dbConnection, String query, Object... args) 
+    public static PreparedStatement createPreparedStatement(Connection dbConnection, String query, Object... args)
             throws SQLException {
         log.trace("Preparing the statement: '" + query + "' with arguments '" + Arrays.asList(args) + "'");
         PreparedStatement s = dbConnection.prepareStatement(query);

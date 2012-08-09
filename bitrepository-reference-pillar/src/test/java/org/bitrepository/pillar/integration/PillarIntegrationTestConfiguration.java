@@ -25,11 +25,10 @@ import java.io.IOException;
 import java.util.Properties;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
 
-public class PillarIntegrationTestSettings {
-
+public class PillarIntegrationTestConfiguration {
     private final Properties properties = new Properties();
 
-    public PillarIntegrationTestSettings(String propertiesFilePath) throws IOException {
+    public PillarIntegrationTestConfiguration(String propertiesFilePath) {
         loadProperties(propertiesFilePath);
     }
 
@@ -43,12 +42,23 @@ public class PillarIntegrationTestSettings {
         return config;
     }
 
-    private void loadProperties(String propertiesFilePath) throws IOException {
-        properties.load(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream(propertiesFilePath));
+    private void loadProperties(String propertiesFilePath) {
+        try {
+            properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(propertiesFilePath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean useEmbeddedPillar() {
         return properties.getProperty("pillar.integrationtest.useembeddedpillar", "false").equals("true");
+    }
+
+    public String getPillarUnderTestID() {
+            return properties.getProperty("pillar.integrationtest.pillarid");
+    }
+
+    public boolean useEmbeddedMessagebus() {
+        return properties.getProperty("pillar.integrationtest.useembeddedmessagebus", "false").equals("true");
     }
 }

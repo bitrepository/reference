@@ -63,7 +63,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
     }
 
     //ToDo needs a general refactoring to stabilize and split into focused tests.
-    private static final String TEST_CLIENT_ID = "test-client";
+    private static final String TEST_CLIENT_ID = "test-putClient";
 //    @Test(groups = {"regressiontest"})
     @Test(groups = {"integrationtest"})
     public void testPillarVsClients() throws Exception {
@@ -87,7 +87,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         
         XMLFileSettingsLoader settingsLoader = new XMLFileSettingsLoader("settings/xml/bitrepository-devel");
-        SettingsProvider provider = new SettingsProvider(settingsLoader, "TEST-client");
+        SettingsProvider provider = new SettingsProvider(settingsLoader, "TEST-putClient");
         Settings clientSettings = provider.getSettings();
         clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(componentSettings.getComponentID());

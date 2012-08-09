@@ -91,7 +91,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         "defined contributers.");
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
-            collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -165,7 +165,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         AuditTrailQuery query1 = new AuditTrailQuery(PILLAR1_ID, 1, 3);
         client.getAuditTrails(new AuditTrailQuery[] { query1 }, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
-            collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -227,7 +227,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         "");
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
-            collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -274,7 +274,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         "defined contributers.");
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
-            collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -350,7 +350,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         "defined contributers.");
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
-            collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -423,7 +423,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
-            collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -461,7 +461,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
-            collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -504,7 +504,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
-            collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertNotNull(identifyRequest);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -528,7 +528,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
-            collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -574,7 +574,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
-            collectionDestination.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertNotNull(identifyRequest);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);

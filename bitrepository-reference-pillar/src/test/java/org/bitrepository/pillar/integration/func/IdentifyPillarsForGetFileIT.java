@@ -19,19 +19,19 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.integration;
+package org.bitrepository.pillar.integration.func;
 
+import junit.framework.Assert;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.pillar.integration.TestFileHelper;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class IdentifyPillarsForGetFileIT extends PillarIntegrationTest {
+public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
     protected GetFileMessageFactory msgFactory;
-
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
@@ -47,12 +47,12 @@ public class IdentifyPillarsForGetFileIT extends PillarIntegrationTest {
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
-                "", TestFileHelper.DEFAULT_FILE_ID, getPillarID(), clientDestinationId);
+                "", TestFileHelper.DEFAULT_FILE_ID, getPillarID(), componentSettings.getReceiverDestinationID());
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
                 "The pillar should make a response.");
-        IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+        IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
         Assert.assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID());
         Assert.assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
@@ -73,12 +73,12 @@ public class IdentifyPillarsForGetFileIT extends PillarIntegrationTest {
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
-                "", TestFileHelper.DEFAULT_FILE_ID, getPillarID(), clientDestinationId);
+                "", TestFileHelper.DEFAULT_FILE_ID, getPillarID(), componentSettings.getReceiverDestinationID());
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
                 "The pillar should make a response.");
-        IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+        IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.FILE_NOT_FOUND_FAILURE);

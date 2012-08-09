@@ -103,7 +103,7 @@ public final class PillarComponentFactory {
     /** The default path for the settings in the development.*/
     private static final String DEFAULT_PATH_TO_SETTINGS = "conf";
     /** The default path for the settings in the development.*/
-    private static final String DEFAULT_PATH_TO_KEY_FILE = "conf/client.pem";
+    private static final String DEFAULT_PATH_TO_KEY_FILE = "conf/putClient.pem";
 
     /**
      * Method for retrieving the settings for the launcher.

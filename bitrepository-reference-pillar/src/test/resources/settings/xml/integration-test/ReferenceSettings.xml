@@ -29,8 +29,12 @@
   <GeneralSettings>
     <ReceiverDestinationIDFactoryClass>org.bitrepository.protocol.messagebus.destination.UserSpecificReceiverDestinationIDFactory</ReceiverDestinationIDFactoryClass>
   </GeneralSettings>
+  <ClientSettings>
+    <MediatorCleanupInterval>10000</MediatorCleanupInterval>
+    <ConversationTimeout>3600000</ConversationTimeout>
+  </ClientSettings>
   <PillarSettings>
-    <PillarID>test-pillar</PillarID>
+    <PillarID>EmbeddedPillar</PillarID>
     <FileDir>test-archive</FileDir>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>

@@ -68,12 +68,20 @@ public class EmbeddedHttpServer {
         server.setHandler(handlers);
     }
 
-    public void start() throws Exception {
-        server.start();
+    public void start() {
+        try {
+            server.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         //server.join();
     }
 
-    public void stop() throws Exception {
-        server.stop();
+    public void stop() {
+        try {
+            server.stop();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

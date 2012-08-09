@@ -46,7 +46,6 @@ import org.testng.annotations.Test;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
 
@@ -88,7 +87,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
 
             client.getStatus(testEventHandler);
             IdentifyContributorsForGetStatusRequest identifyRequest =
-                    collectionDestination.waitForMessage(IdentifyContributorsForGetStatusRequest.class);
+                    collectionReceiver.waitForMessage(IdentifyContributorsForGetStatusRequest.class);
             Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                     OperationEventType.IDENTIFY_REQUEST_SENT);
 
@@ -126,7 +125,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
                     "in the collection settings.");
             client.getStatus(testEventHandler);
             IdentifyContributorsForGetStatusRequest identifyRequest =
-                    collectionDestination.waitForMessage(IdentifyContributorsForGetStatusRequest.class);
+                    collectionReceiver.waitForMessage(IdentifyContributorsForGetStatusRequest.class);
             Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                     OperationEventType.IDENTIFY_REQUEST_SENT);
 

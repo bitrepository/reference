@@ -29,6 +29,8 @@ import org.bitrepository.client.conversation.AbstractConversation;
 import org.bitrepository.client.conversation.ConversationEventMonitor;
 import org.bitrepository.client.conversation.ConversationState;
 import org.bitrepository.client.conversation.FinishedState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A conversation for PutFile.

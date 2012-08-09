@@ -37,7 +37,10 @@
     <AlarmDestination>TEST-ALARM-TOPIC</AlarmDestination>
     <MessageBusConfiguration>
       <Name>MyMessageBus</Name>
+      <!--
       <URL>failover://(tcp://sandkasse-01.kb.dk:61616?keepAlive=true)?timeout=10000</URL>
+      -->
+      <URL>tcp://localhost:9999</URL>
     </MessageBusConfiguration>
   </ProtocolSettings>
   

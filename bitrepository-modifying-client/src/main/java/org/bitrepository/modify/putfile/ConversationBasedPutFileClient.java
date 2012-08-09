@@ -36,11 +36,14 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.putfile.conversation.PutFileConversationContext;
 import org.bitrepository.modify.putfile.conversation.SimplePutFileConversation;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A simple implementation of the PutClient.
  */
 public class ConversationBasedPutFileClient extends AbstractClient implements PutFileClient {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     /**
      * Constructor.
      * @param messageBus The messagebus for communication.
@@ -57,6 +60,9 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
         ArgumentValidator.checkNotNull(url, "URL url");
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNegative(sizeOfFile, "long sizeOfFile");
+
+        //ToDo The start logging should be generalized.
+        log.info("Starting putFile for " + fileId + " for client " + clientID + ". " + auditTrailInformation);
         if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             ArgumentValidator.checkNotNull(checksumForValidationAtPillar, "ChecksumDataForFileTYPE checksumForValidationAtPillar");
         }
