@@ -381,32 +381,6 @@ public class DatabaseUtils {
             throw failedExecutionOfStatement(e, conn, query, args);
         }
     }
-    
-    /**
-     * Retrieves the result-set corresponding to an unspecified object through the use of a SQL query, which requests 
-     * the wanted data-set, and the arguments for the query to become a proper SQL statement. 
-     * This should only be used for advanced extractions of the database, e.g. several columns in a table.
-     * 
-     * NOTE: Remember to close the ResultSet and the connection after use.
-     * TODO: find a way to close the PreparedStatement. If it is closed too soon it will also close the ResultSet.
-     * 
-     * @param dbConnection The connection to the database.
-     * @param query The SQL query to be executed on the database.
-     * @param args The arguments for the SQL statement.
-     * @return The requested result set.
-     */
-    public static ResultSet selectObject(Connection dbConnection, String query, Object... args) {
-        ArgumentValidator.checkNotNull(dbConnection, "Connection dbConnection");
-        ArgumentValidator.checkNotNullOrEmpty(query, "String query");
-        ArgumentValidator.checkNotNull(args, "Object... args");
-
-        try {
-            PreparedStatement ps = createPreparedStatement(dbConnection, query, args);
-            return ps.executeQuery();
-        } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, dbConnection, query, args);
-        }
-    }
 
     /**
      * Executing a given statement, which should not return any results.

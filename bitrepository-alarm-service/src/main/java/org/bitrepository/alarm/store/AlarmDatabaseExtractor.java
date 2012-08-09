@@ -21,23 +21,13 @@
  */
 package org.bitrepository.alarm.store;
 
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_CODE;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_COMPONENT_GUID;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_DATE;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_FILE_ID;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TABLE;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TEXT;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_GUID;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_ID;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_TABLE;
-
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.common.ArgumentValidator;
@@ -46,6 +36,8 @@ import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.*;
 
 /**
  * Extractor for the alarms from the AlarmServiceDatabase.
@@ -98,13 +90,15 @@ public class AlarmDatabaseExtractor {
         String sql = createSelectString() + " FROM " + ALARM_TABLE + createRestriction() + createOrder();
         
         try {
+            Connection conn = null;
+            PreparedStatement ps = null;
             ResultSet result = null;
             List<Alarm> res = new ArrayList<Alarm>();
-            Connection conn = null;
             try {
                 conn = dbConnector.getConnection();
                 log.debug("Extracting sql '" + sql + "' with arguments '" + Arrays.asList(extractArgumentsFromModel()));
-                result = DatabaseUtils.selectObject(conn, sql, extractArgumentsFromModel());
+                ps = DatabaseUtils.createPreparedStatement(conn, sql, extractArgumentsFromModel());
+                result = ps.executeQuery();
                 
                 int i = 0;
                 while(result.next() && i < model.getMaxCount()) {
@@ -114,6 +108,9 @@ public class AlarmDatabaseExtractor {
             } finally {
                 if(result != null) {
                     result.close();
+                }
+                if(ps != null) {
+                    ps.close();
                 }
                 if(conn != null) {
                     conn.close();

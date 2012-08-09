@@ -23,6 +23,7 @@ package org.bitrepository.service.audit;
 
 import java.math.BigInteger;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +43,7 @@ import static org.bitrepository.service.audit.AuditDatabaseConstants.*;
 
 /**
  * Access interface for communication with the audit trail database.
- * 
+ *
  * In the case of 'All-FileIDs', then the 'fileId' is given the string-value 'null'. 
  */
 public class AuditTrailContributerDAO implements AuditTrailManager {
@@ -52,40 +53,40 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     private DBConnector dbConnector;
     /** The componentID.*/
     private final String componentID;
-    
-    /** 
+
+    /**
      * Constructor.
      * @param settings The settings.
      */
     public AuditTrailContributerDAO(Settings settings, DBConnector dbConnector) {
         ArgumentValidator.checkNotNull(settings, "settings");
-        
+
         this.componentID = settings.getComponentID();
         this.dbConnector = dbConnector;
-        
+
         getConnection();
     }
-    
+
     /**
      * Retrieve the connection to the database.
      * TODO improve performance (only reconnect every-so-often)... 
      * @return The connection to the database.
      */
     protected Connection getConnection() {
-        try { 
+        try {
             Connection dbConnection = dbConnector.getConnection();
             return dbConnection;
         } catch (Exception e) {
             throw new IllegalStateException("Could not instantiate the database", e);
         }
     }
-    
+
     @Override
     public void addAuditEvent(String fileId, String actor, String info, String auditTrail, FileAction operation) {
         ArgumentValidator.checkNotNull(operation, "FileAction operation");
-        log.info("Inserting an audit event  for file '" + fileId + "', from actor '" + actor 
+        log.info("Inserting an audit event  for file '" + fileId + "', from actor '" + actor
                 + "' performing operation '" + operation + "', with the audit trail information '" + auditTrail + "'");
-        
+
         long fileGuid;
         if(fileId == null || fileId.isEmpty()) {
             fileGuid = retrieveFileGuid("null");
@@ -98,7 +99,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         } else {
             actorGuid = retrieveActorGuid(actor);
         }
-        
+
         // TODO BITMAG-646
         if(auditTrail == null) {
             auditTrail = "";
@@ -114,51 +115,64 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                     + "characters:\n" + info);
             info = info.substring(0, 255);
         }
-        
-        String insertSql = "INSERT INTO " + AUDITTRAIL_TABLE + " ( " + AUDITTRAIL_FILE_GUID + " , " 
+
+        String insertSql = "INSERT INTO " + AUDITTRAIL_TABLE + " ( " + AUDITTRAIL_FILE_GUID + " , "
                 + AUDITTRAIL_ACTOR_GUID + " , " + AUDITTRAIL_OPERATION + " , " + AUDITTRAIL_OPERATION_DATE + " , "
                 + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " ) VALUES ( ? , ? , ? , ? , ? , ? )";
-        DatabaseUtils.executeStatement(dbConnector, insertSql, fileGuid, actorGuid, operation.toString(), 
+        DatabaseUtils.executeStatement(dbConnector, insertSql, fileGuid, actorGuid, operation.toString(),
                 new Date(), auditTrail, info);
     }
-    
+
     @Override
-    public Collection<AuditTrailEvent> getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate, 
-            Date maxDate) {
+    public Collection<AuditTrailEvent> getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate,
+                                                 Date maxDate) {
         return extractEvents(new AuditTrailExtractor(fileId, minSeqNumber, maxSeqNumber, minDate, maxDate));
     }
-    
+
     /**
      * Extracts the largest sequence number from the database. 
      * @return The largest sequence number. If no entry exists, then zero is returned.
      */
     public Long extractLargestSequenceNumber() {
-        String sql = "SELECT " + AUDITTRAIL_SEQUENCE_NUMBER + " FROM " + AUDITTRAIL_TABLE + " ORDER BY " 
+        String sql = "SELECT " + AUDITTRAIL_SEQUENCE_NUMBER + " FROM " + AUDITTRAIL_TABLE + " ORDER BY "
                 + AUDITTRAIL_SEQUENCE_NUMBER + " DESC";
-        
+
         try {
-            ResultSet res = DatabaseUtils.selectObject(getConnection(), sql, new Object[0]);
-            
+            PreparedStatement ps = null;
+            ResultSet res = null;
+            Connection conn = null;
             try {
+                conn = getConnection();
+                ps = DatabaseUtils.createPreparedStatement(conn, sql, new Object[0]);
+                res = ps.executeQuery();
                 if(!res.next()) {
                     return 0L;
                 }
                 return res.getLong(1);
             } finally {
-                res.close();
+                if(res != null) {
+                    res.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
+                if(conn != null) {
+                    conn.close();
+                }
             }
         } catch (Exception e) {
-            throw new IllegalStateException("Could not use SQL query '" + sql 
+            throw new IllegalStateException("Could not use SQL query '" + sql
                     + "' for retrieving the largest sequence number", e);
+
         }
     }
-    
+
     /**
      * Extracts the the audit trail information based on the given sql query and arguments.
      * @return The extracted 
      */
     private Collection<AuditTrailEvent> extractEvents(AuditTrailExtractor extractor) {
-        
+
         final int sequencePosition = 1;
         final int fileGuidPosition = 2;
         final int actorPosition = 3;
@@ -166,23 +180,27 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         final int operationPosition = 5;
         final int auditTrailInformationPosition = 6;
         final int infoPosition = 7;
-        
-        String sql = "SELECT " + AUDITTRAIL_SEQUENCE_NUMBER + ", " + AUDITTRAIL_FILE_GUID + " , " 
-                + AUDITTRAIL_ACTOR_GUID + " , " + AUDITTRAIL_OPERATION_DATE + " , " + AUDITTRAIL_OPERATION + " , " 
-                + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " FROM " + AUDITTRAIL_TABLE + " " 
+
+        String sql = "SELECT " + AUDITTRAIL_SEQUENCE_NUMBER + ", " + AUDITTRAIL_FILE_GUID + " , "
+                + AUDITTRAIL_ACTOR_GUID + " , " + AUDITTRAIL_OPERATION_DATE + " , " + AUDITTRAIL_OPERATION + " , "
+                + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " FROM " + AUDITTRAIL_TABLE + " "
                 + extractor.createRestriction();
-        
+
         List<AuditTrailEvent> res = new ArrayList<AuditTrailEvent>();
         try {
+            PreparedStatement ps = null;
             ResultSet results = null;
+            Connection conn = null;
             try {
-                results = DatabaseUtils.selectObject(getConnection(), sql, extractor.getArguments());
-                
+                conn = getConnection();
+                ps = DatabaseUtils.createPreparedStatement(conn, sql, extractor.getArguments());
+                results = ps.executeQuery();
+
                 while(results.next()) {
                     AuditTrailEvent event = new AuditTrailEvent();
-                    
+
                     event.setSequenceNumber(BigInteger.valueOf(results.getLong(sequencePosition)));
-                    event.setFileID(retrieveFileId(results.getLong(fileGuidPosition))); 
+                    event.setFileID(retrieveFileId(results.getLong(fileGuidPosition)));
                     event.setActorOnFile(retrieveActorName(results.getLong(actorPosition)));
                     event.setActionDateTime(CalendarUtils.getFromMillis(results.getTimestamp(actionDatePosition).getTime()));
                     event.setActionOnFile(FileAction.fromValue(results.getString(operationPosition)));
@@ -192,72 +210,78 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                     res.add(event);
                 }
             } finally {
-                if(results != null) {
+                if(res != null) {
                     results.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
+                if(conn != null) {
+                    conn.close();
                 }
             }
         } catch (Exception e) {
             throw new IllegalStateException("Issue regarding", e);
         }
-        
+
         log.debug("Extracted audit trail events: {}", res);
         return res;
     }
-    
+
     /**
      * Retrieve the guid for a given file id. If the file id does not exist within the table, then it is created.
-     * 
+     *
      * @param fileId The id of the file to retrieve. 
      * @return The guid for the given file id.
      */
     private long retrieveFileGuid(String fileId) {
         String sqlRetrieve = "SELECT " + FILE_GUID + " FROM " + FILE_TABLE + " WHERE " + FILE_FILEID + " = ?";
-        
+
         Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId);
-        
+
         if(guid == null) {
             log.debug("Inserting fileid '" + fileId + "' into the file table.");
             String sqlInsert = "INSERT INTO " + FILE_TABLE + " ( " + FILE_FILEID + " ) VALUES ( ? )";
             DatabaseUtils.executeStatement(dbConnector, sqlInsert, fileId);
-            
+
             guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId);
         }
-        
+
         return guid;
     }
-    
+
     /**
      * Retrieves a id of an file based on the guid.
      * @return The id of the file corresponding to the guid.
      */
     private String retrieveFileId(long fileGuid) {
         String sqlRetrieve = "SELECT " + FILE_FILEID + " FROM " + FILE_TABLE + " WHERE " + FILE_GUID + " = ?";
-        
-        return DatabaseUtils.selectStringValue(dbConnector, sqlRetrieve, fileGuid);        
+
+        return DatabaseUtils.selectStringValue(dbConnector, sqlRetrieve, fileGuid);
     }
-    
+
     /**
      * Retrieve the guid for a given actor. If the actor does not exist within the actor, then it is created.
-     * 
+     *
      * @param actorName The name of the actor.
      * @return The guid of the actor with the given name.
      */
     private long retrieveActorGuid(String actorName) {
         String sqlRetrieve = "SELECT " + ACTOR_GUID + " FROM " + ACTOR_TABLE + " WHERE " + ACTOR_NAME + " = ?";
-        
+
         Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, actorName);
-        
+
         if(guid == null) {
             log.debug("Inserting actor '" + actorName + "' into the actor table.");
             String sqlInsert = "INSERT INTO " + ACTOR_TABLE + " ( " + ACTOR_NAME + " ) VALUES ( ? )";
             DatabaseUtils.executeStatement(dbConnector, sqlInsert, actorName);
-            
+
             guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, actorName);
         }
-        
+
         return guid;
     }
-    
+
     /**
      * Retrieves a name of an actor based on the guid. 
      * @param actorGuid The guid of the actor.
@@ -265,12 +289,12 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
      */
     private String retrieveActorName(long actorGuid) {
         String sqlRetrieve = "SELECT " + ACTOR_NAME + " FROM " + ACTOR_TABLE + " WHERE " + ACTOR_GUID + " = ?";
-        
-        return DatabaseUtils.selectStringValue(dbConnector, sqlRetrieve, actorGuid);        
+
+        return DatabaseUtils.selectStringValue(dbConnector, sqlRetrieve, actorGuid);
     }
-    
+
     /**
-     * Class for encapsulating the request for extracting 
+     * Class for encapsulating the request for extracting
      */
     private class AuditTrailExtractor {
         /** The file id limitation for the request. */
@@ -283,7 +307,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         private Date minDate;
         /** The maxmimum date limitation for the request.*/
         private Date maxDate;
-        
+
         /**
          * Contructor.
          * @param fileId The file id limitation for the request.
@@ -292,8 +316,8 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
          * @param minDate The minimum date limitation for the request.
          * @param maxDate The maximum date limitation for the request.
          */
-        public AuditTrailExtractor(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate, 
-                Date maxDate) {
+        public AuditTrailExtractor(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate,
+                                   Date maxDate) {
             if(fileId == null) {
                 this.fileGuid = null;
             } else {
@@ -301,10 +325,10 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
             }
             this.minSeqNumber = minSeqNumber;
             this.maxSeqNumber = maxSeqNumber;
-            this.minDate = minDate; 
+            this.minDate = minDate;
             this.maxDate = maxDate;
         }
-        
+
         /**
          * @return The restriction for the request.
          */
@@ -313,37 +337,37 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
             if(fileGuid == null && minSeqNumber == null && maxSeqNumber == null && minDate == null && maxDate == null) {
                 return "";
             }
-            
+
             StringBuilder res = new StringBuilder();
-            
+
             if(fileGuid != null) {
                 nextArgument(res);
                 res.append(AUDITTRAIL_FILE_GUID + " = ?");
             }
-            
+
             if(minSeqNumber != null) {
                 nextArgument(res);
                 res.append(AUDITTRAIL_SEQUENCE_NUMBER + " >= ?");
             }
-            
+
             if(maxSeqNumber != null) {
                 nextArgument(res);
                 res.append(AUDITTRAIL_SEQUENCE_NUMBER + " <= ?");
             }
-            
+
             if(minDate != null) {
                 nextArgument(res);
                 res.append(AUDITTRAIL_OPERATION_DATE + " >= ?");
             }
-            
+
             if(maxDate != null) {
                 nextArgument(res);
                 res.append(AUDITTRAIL_OPERATION_DATE + " <= ?");
             }
-            
+
             return res.toString();
         }
-        
+
         /**
          * Adds either ' AND ' or 'WHERE ' depending on whether it is the first restriction.
          * @param res The StringBuilder where the restrictions are combined.
@@ -353,9 +377,9 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                 res.append(" AND ");
             } else {
                 res.append("WHERE ");
-            }            
+            }
         }
-        
+
         /**
          * @return The arguments for the SQL statement.
          */
@@ -376,7 +400,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
             if(maxDate != null) {
                 res.add(maxDate);
             }
-            
+
             return res.toArray();
         }
     }

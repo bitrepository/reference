@@ -21,21 +21,21 @@
  */
 package org.bitrepository.pillar.cache.database;
 
-import static org.bitrepository.pillar.cache.database.DatabaseConstants.CHECKSUM_TABLE;
-import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_FILE_ID;
-import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_CHECKSUM;
-import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_DATE;
-
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.bitrepository.common.database.DBConnector;
 import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
+
+import static org.bitrepository.pillar.cache.database.DatabaseConstants.CHECKSUM_TABLE;
+import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_CHECKSUM;
+import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_DATE;
+import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_FILE_ID;
 
 /**
  * Extracts data from the checksum database.
@@ -100,17 +100,26 @@ public class ChecksumExtractor {
         String sql = "SELECT " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE 
                 + " WHERE " + CS_FILE_ID + " = ?";
         try {
-            Connection con = null;
+            PreparedStatement ps = null;
+            ResultSet res = null;
+            Connection conn = null;
             try {
-                con = connector.getConnection();
-                ResultSet res = DatabaseUtils.selectObject(con, sql, fileId);
+                conn = connector.getConnection();
+                ps = DatabaseUtils.createPreparedStatement(conn, sql, fileId);
+                res = ps.executeQuery();
                 if(!res.next()) {
                     throw new IllegalStateException("No entry for the file '" + fileId + "'.");
                 }
                 return extractChecksumEntry(res);
             } finally {
-                if(con != null) {
-                    con.close();
+                if(res != null) {
+                    res.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
+                if(conn != null) {
+                    conn.close();
                 }
             }
         } catch (SQLException e) {
@@ -125,18 +134,28 @@ public class ChecksumExtractor {
     public List<ChecksumEntry> extractAllEntries() {
         String sql = "SELECT " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE;
         try {
-            Connection con = null;
+            PreparedStatement ps = null;
+            ResultSet resultSet = null;
+            Connection conn = null;
             List<ChecksumEntry> res = new ArrayList<ChecksumEntry>();
             try {
-                con = connector.getConnection();
-                ResultSet resSet = DatabaseUtils.selectObject(con, sql, new Object[0]);
-                while(resSet.next()) {
-                    res.add(extractChecksumEntry(resSet));
+                conn = connector.getConnection();
+                ps = DatabaseUtils.createPreparedStatement(conn, sql, new Object[0]);
+                resultSet = ps.executeQuery();
+                while(resultSet.next()) {
+                    res.add(extractChecksumEntry(resultSet));
                 }
                 return res;
             } finally {
-                if(con != null) {
-                    con.close();
+
+                if(res != null) {
+                    resultSet.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
+                if(conn != null) {
+                    conn.close();
                 }
             }
         } catch (SQLException e) {

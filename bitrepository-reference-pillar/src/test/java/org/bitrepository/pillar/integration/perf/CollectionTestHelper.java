@@ -111,7 +111,8 @@ public class CollectionTestHelper {
     }
 
     public void shutdown() {
-//        getFileIDsClient.shutdown();
-//        deleteFileClient.shutdown();
+        putClient.shutdown();
+        getFileIDsClient.shutdown();
+        deleteFileClient.shutdown();
     }
 }

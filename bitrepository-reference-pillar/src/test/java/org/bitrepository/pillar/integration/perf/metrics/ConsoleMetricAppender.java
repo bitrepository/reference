@@ -10,7 +10,7 @@ public class ConsoleMetricAppender implements MetricAppender {
 
     @Override
     public void appendEndStatistic(String operationName, long time, int numberOfFiles) {
-        System.out.println("\tTook " + time + "ms for the last " + numberOfFiles + " " + operationName + "s." +
+        System.out.println("\tTook " + time + "ms for all " + numberOfFiles + " " + operationName + "s." +
                 "\tAverage time was " + time / numberOfFiles + "ms.\n");
     }
 

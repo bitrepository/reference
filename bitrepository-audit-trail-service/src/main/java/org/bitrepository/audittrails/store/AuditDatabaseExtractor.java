@@ -21,33 +21,14 @@
  */
 package org.bitrepository.audittrails.store;
 
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_NAME;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_ACTOR_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_AUDIT;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_CONTRIBUTOR_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_FILE_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_INFORMATION;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION_DATE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_SEQUENCE_NUMBER;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_ID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_FILEID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TABLE;
-
 import java.math.BigInteger;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
@@ -56,6 +37,8 @@ import org.bitrepository.common.database.DatabaseUtils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.*;
 
 /**
  * Extractor for the audit trail events from the AuditTrailServiceDatabase.
@@ -110,13 +93,15 @@ public class AuditDatabaseExtractor {
         String sql = createSelectString() + " FROM " + AUDITTRAIL_TABLE + createRestriction();
         
         try {
+            Connection conn = null;
+            PreparedStatement ps = null;
             ResultSet result = null;
             List<AuditTrailEvent> res = new ArrayList<AuditTrailEvent>();
-            Connection conn = null;
             try {
                 conn = dbConnector.getConnection();
                 log.debug("Extracting sql '" + sql + "' with arguments '" + Arrays.asList(extractArgumentsFromModel()));
-                result = DatabaseUtils.selectObject(conn, sql, extractArgumentsFromModel());
+                ps = DatabaseUtils.createPreparedStatement(conn, sql, extractArgumentsFromModel());
+                result = ps.executeQuery();
                 
                 while(result.next()) {
                     res.add(extractEvent(result));
@@ -124,6 +109,9 @@ public class AuditDatabaseExtractor {
             } finally {
                 if(result != null) {
                     result.close();
+                }
+                if(ps != null) {
+                    ps.close();
                 }
                 if(conn != null) {
                     conn.close();

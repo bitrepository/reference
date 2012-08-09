@@ -21,7 +21,7 @@ public class PutFileStressIT extends PillarPerformanceTest {
         );
     }
 
-    @Test( groups = {"pillar-integration-test", "stress-test-pillar-population"})
+    @Test( groups = {"pillar-stress-test", "stress-test-pillar-population"})
     public void singleTreadedPut() throws Exception {
         final int NUMBER_OF_FILES = 10;
         final int PART_STATISTIC_INTERVAL = 2;
@@ -42,7 +42,7 @@ public class PutFileStressIT extends PillarPerformanceTest {
         //ToDo assert that the files are present
     }
 
-    @Test( groups = {"pillar-integration-test"})
+    @Test( groups = {"pillar-stress-test"})
     public void parallelPut() throws Exception {
         final int  NUMBER_OF_FILES = 10;
         final int  PART_STATISTIC_INTERVAL = 10;

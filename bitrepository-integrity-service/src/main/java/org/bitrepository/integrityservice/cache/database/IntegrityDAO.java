@@ -24,29 +24,13 @@
  */
 package org.bitrepository.integrityservice.cache.database;
 
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_CREATION_DATE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_GUID;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_ID;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_CHECKSUM;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_CHECKSUM_STATE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_GUID;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_STATE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_CHECKSUM_UPDATE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_FILE_UPDATE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_PILLAR_GUID;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_GUID;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_ID;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_TABLE;
-
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
@@ -58,6 +42,8 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.*;
 
 /**
  * Handles the communication with the integrity database.
@@ -164,10 +150,12 @@ public class IntegrityDAO {
         
         try {
             ResultSet dbResult = null;
+            PreparedStatement ps = null;
             Connection conn = null;
             try {
                 conn = dbConnector.getConnection();
-                dbResult = DatabaseUtils.selectObject(conn, sql, fileGuid);
+                ps = DatabaseUtils.createPreparedStatement(conn, sql, fileGuid);
+                dbResult = ps.executeQuery();
                 
                 while(dbResult.next()) {
                     Date lastFileCheck = dbResult.getTimestamp(indexLastFileCheck);
@@ -188,6 +176,9 @@ public class IntegrityDAO {
             } finally {
                 if(dbResult != null) {
                     dbResult.close();
+                }
+                if(ps != null) {
+                    ps.close();
                 }
                 if(conn != null) {
                     conn.close();

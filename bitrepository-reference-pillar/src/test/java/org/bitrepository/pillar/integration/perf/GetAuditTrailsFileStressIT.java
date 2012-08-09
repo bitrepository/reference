@@ -19,7 +19,7 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         );
     }
 
-    @Test( groups = {"pillar-integration-test"}, dependsOnGroups={"stress-test-pillar-population"})
+    @Test( groups = {"pillar-stress-test"}, dependsOnGroups={"stress-test-pillar-population"})
     public void singleTreadedGetAuditTrails() throws Exception {
         final int NUMBER_OF_AUDITS = 100;
         final int PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS/5;
@@ -37,7 +37,7 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         }
     }
 
-    @Test( groups = {"pillar-integration-test"})
+    @Test( groups = {"pillar-stress-test"})
     public void parallelGetAuditTrails() throws Exception {
         final int  NUMBER_OF_AUDITS = 10;
         final int  PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS/5;
