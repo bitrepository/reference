@@ -126,5 +126,4 @@ public final class AccessComponentFactory {
                 ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager),
                 clientID);
     }
-
 }

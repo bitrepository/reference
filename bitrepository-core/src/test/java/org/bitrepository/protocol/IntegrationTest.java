@@ -26,11 +26,12 @@ package org.bitrepository.protocol;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
+import javax.jms.JMSException;
 import javax.swing.JFrame;
-import org.bitrepository.client.MessageReceiver;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.bus.MessageBusWrapper;
+import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
 import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.bitrepository.protocol.http.EmbeddedHttpServer;
@@ -87,16 +88,15 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     /**
      * Defines the standard BitRepositoryCollection configuration
-     * @param testMethod Used to grap the name of the test method used for naming.
      */
     @BeforeMethod(alwaysRun = true)
-    public void setupTest(java.lang.reflect.Method testMethod) {
+    public void beforeMethod() {
         setupSettings();
         initializeMessageBusListeners();
     }
 
     @AfterMethod(alwaysRun = true)
-    public void teardownTestMethod() {
+    public void afterMethod() {
         teardownMessageBusListeners();
     }
 
@@ -183,11 +183,15 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     }
 
     /**
-     * Shutdown the embedded message bus if any
+     * Shutdown the message bus.
      */
     private void teardownMessageBus() {
+        try {
+            messageBus.close();
+        } catch (JMSException e) {
+            throw new RuntimeException(e);
+        }
         if (useEmbeddedMessageBus()) {
-
             if(broker != null) {
                 try {
                     broker.stop();

@@ -141,7 +141,7 @@ public class ComponentFactoryTest extends IntegrityDatabaseTestCase {
         settings.getReferenceSettings().getIntegrityServiceSettings().getAuditTrailContributerDatabase().setDatabaseURL(DATABASE_URL);
         
         addStep("Initialise the database", "Should be unpacked from a jar-file.");
-        File dbFile = new File("../bitrepository-core/src/test/resources/auditcontributerdb.jar");
+        File dbFile = new File("../bitrepository-service/src/test/resources/auditcontributerdb.jar");
         Assert.assertTrue(dbFile.isFile(), "The database file should exist");
         
         auditDir = FileUtils.retrieveDirectory(DATABASE_DIRECTORY);

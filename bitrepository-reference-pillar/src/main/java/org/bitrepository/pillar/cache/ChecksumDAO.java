@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.database.DBConnector;
+import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.cache.database.ChecksumExtractor;
 import org.bitrepository.pillar.cache.database.ChecksumIngestor;

@@ -28,8 +28,8 @@ import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_DATE;
 
 import java.util.Date;
 
-import org.bitrepository.common.database.DBConnector;
-import org.bitrepository.common.database.DatabaseUtils;
+import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseUtils;
 
 /**
  * Ingests data to the checksum database. And also deals with the deletion of entries.

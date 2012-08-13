@@ -24,10 +24,10 @@
  */
 package org.bitrepository.pillar;
 
-import org.bitrepository.client.MessageReceiver;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.IntegrationTest;
+import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /**

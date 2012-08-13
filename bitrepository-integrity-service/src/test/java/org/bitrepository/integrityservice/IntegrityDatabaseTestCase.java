@@ -23,8 +23,8 @@ package org.bitrepository.integrityservice;
 
 import java.io.File;
 import java.sql.Connection;
-import org.bitrepository.common.database.DBConnector;
-import org.bitrepository.common.database.DatabaseUtils;
+import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.DatabaseTestUtils;

@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.bitrepository.reference</groupId>
     <artifactId>bitrepository-parent</artifactId>
-    <version>0.19</version>
+    <version>0.19-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>bitrepository-integration</artifactId>
@@ -39,47 +39,54 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    
-    
-  <dependency>
-    <groupId>org.bitrepository.reference</groupId>
-    <artifactId>bitrepository-alarm-service</artifactId>
-    <version>${project.version}</version>
-    <type>war</type>
-  </dependency>
-  <dependency>
-    <groupId>org.bitrepository.reference</groupId>
-    <artifactId>bitrepository-webclient</artifactId>
-    <version>${project.version}</version>
-    <type>war</type>
-  </dependency>
-  <dependency>
-    <groupId>org.bitrepository.reference</groupId>
-    <artifactId>bitrepository-integrity-service</artifactId>
-    <version>${project.version}</version>
-    <type>war</type>
-  </dependency>
-  <dependency>
-    <groupId>org.bitrepository.reference</groupId>
-    <artifactId>bitrepository-audit-trail-service</artifactId>
-    <version>${project.version}</version>
-    <type>war</type>
-  </dependency>
-  <dependency>
-    <groupId>org.bitrepository.reference</groupId>
-    <artifactId>bitrepository-monitoring-service</artifactId>
-    <version>${project.version}</version>
-    <type>war</type>
-  </dependency>
-  
-  
+    <dependency>
+      <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-client</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- THE Quickstart content -->
+    <dependency>
+      <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-alarm-service</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-webclient</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-integrity-service</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-audit-trail-service</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-monitoring-service</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+
+
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-reference-pillar</artifactId>
       <version>${project.version}</version>
-        <type>zip</type>
+      <type>zip</type>
     </dependency>
-    
+
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-core</artifactId>
@@ -87,7 +94,7 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-reference-pillar</artifactId>
@@ -96,8 +103,8 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <description>Here you can find the functionality for working with crosscutting module concerns. 
-  This is mainly integration tests.</description>
+  <description>Here you can find the functionality for working with crosscutting module concerns.
+    This is mainly integration tests.</description>
   <build>
     <plugins>
       <plugin>
