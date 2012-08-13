@@ -60,7 +60,7 @@
                         </select>
                     </td>
                     <td>Max alarms: <br>
-                        <select id=actionFilter>
+                        <select id=maxAlarms>
                             <option>10</option>
                             <option>20</option>
                             <option>50</option>
@@ -76,21 +76,37 @@
 
     <script>
         jQuery.fn.updateAlarms = function() {
-            $.getJSON('<%= su.getAlarmServiceUrl() %>/alarm/AlarmService/getShortAlarmList/',{}, function(j){
-                var htmlTable;
-                htmlTable = "<table id=\"users\" class=\"ui-widget ui-widget-content\">";
-                htmlTable += "<thead> <tr class=\"ui-widget-header\">";
-                htmlTable += "<th width=\"70\">Date</th>";
-                htmlTable += "<th width=\"80\">Raiser</th>";
-                htmlTable += "<th width=\"80\">Alarm code</th>";
-                htmlTable += "<th>Description</th>";
-                htmlTable += "</tr></thead><tbody>";
-                for (var i = 0; i < j.Alarm.length; i++) {
-                    htmlTable += "<tr><td>" + j.Alarm[i].OrigDateTime + "</td><td>" + j.Alarm[i].AlarmRaiser +
-                        "</td> <td>" + j.Alarm[i].AlarmCode + "</td> <td>" + j.Alarm[i].AlarmText + "</td></tr>";
-               }
-                htmlTable += "</tbody></table>"; 
-                $("#alarmsContent").html(htmlTable);
+            //$.getJSON('<%= su.getAlarmServiceUrl() %>/alarm/AlarmService/getShortAlarmList/',{}, function(j){
+            
+            var fromDateStr = $("#fromDate").val();
+            var toDateStr = $("#toDate").val();
+            var fileIDStr = $("#fileIDFilter").val();
+            var component = $("#componentFilter").val();
+            var alarmCodeStr = $("#alarmCodeFilter").val();
+            var maxAlarmStr = $("#maxAlarms").val();
+            
+            $.post('<%= su.getAlarmServiceUrl() %>/alarm/AlarmService/queryAlarms/',
+                {fromDate: fromDateStr,
+                 toDate: toDateStr,
+                 fileID: fileIDStr,
+                 reportingComponent: component,
+                 alarmCode: alarmCodeStr,
+                 maxAlarms: maxAlarmStr,
+                 newestAlarmFirst: true}, function(j){
+                    var htmlTable;
+                    htmlTable = "<table id=\"users\" class=\"ui-widget ui-widget-content\">";
+                    htmlTable += "<thead> <tr class=\"ui-widget-header\">";
+                    htmlTable += "<th width=\"70\">Date</th>";
+                    htmlTable += "<th width=\"80\">Raiser</th>";
+                    htmlTable += "<th width=\"80\">Alarm code</th>";
+                    htmlTable += "<th>Description</th>";
+                    htmlTable += "</tr></thead><tbody>";
+                    for (var i = 0; i < j.Alarm.length; i++) {
+                        htmlTable += "<tr><td>" + j.Alarm[i].OrigDateTime + "</td><td>" + j.Alarm[i].AlarmRaiser +
+                            "</td> <td>" + j.Alarm[i].AlarmCode + "</td> <td>" + j.Alarm[i].AlarmText + "</td></tr>";
+                    }
+                    htmlTable += "</tbody></table>"; 
+                    $("#alarmsContent").html(htmlTable);
             })
         }
     </script>
