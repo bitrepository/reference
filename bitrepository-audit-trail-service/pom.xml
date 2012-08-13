@@ -54,6 +54,11 @@
       <version>2.5</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-service</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Hook up the other loggers to use SLF4J -->
     <dependency>
         <groupId>org.slf4j</groupId>
@@ -74,6 +79,13 @@
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-core</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-service</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>

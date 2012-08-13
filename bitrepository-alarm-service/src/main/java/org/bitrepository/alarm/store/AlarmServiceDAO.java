@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.bitrepository.common.database.DBConnector;
+import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.common.settings.Settings;
 
 /**

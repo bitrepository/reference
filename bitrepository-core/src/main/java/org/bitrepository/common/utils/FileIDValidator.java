@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.service.exception.InvalidMessageException;
 
 /**
  * Component for validating the id of a file.
@@ -39,7 +38,7 @@ public class FileIDValidator {
     protected String regex;
     /** The system limitation for a file id (length 1-254, and no control letters).*/
     private static final String SYSTEM_LIMIT = "[^\\p{Cntrl}]{1,254}";
-    
+
     /**
      * @param settings The context for the pillar.
      */
@@ -49,13 +48,13 @@ public class FileIDValidator {
             regex = null;
         }
     }
-    
+
     /**
      * Validates the given fileID. Both against the setting and against the system limit.
      * @param fileID The file id to validate.
-     * @throws InvalidMessageException If the id is invalid.
+     * @return invalid description if the id is invalid, else null.
      */
-    public void validateFileID(String fileID) throws InvalidMessageException {
+    public ResponseInfo validateFileID(String fileID)  {
         if(fileID != null) {
             if(regex != null) {
                 if(!Pattern.matches(regex, fileID)) {
@@ -63,17 +62,18 @@ public class FileIDValidator {
                     ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
                     ri.setResponseText("The fileID '" + fileID + "' is invalid against the fileID regex '"
                             + regex + "'.");
-                    throw new InvalidMessageException(ri);
+                    return ri;
                 }
             }
-            
+
             if(!Pattern.matches(SYSTEM_LIMIT, fileID)) {
                 ResponseInfo ri = new ResponseInfo();
                 ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
                 ri.setResponseText("The fileID '" + fileID + "' is invalid against the system limit regex '"
                         + SYSTEM_LIMIT + "'.");
-                throw new InvalidMessageException(ri);
+                return ri;
             }
-        }        
+        }
+        return null;
     }
 }

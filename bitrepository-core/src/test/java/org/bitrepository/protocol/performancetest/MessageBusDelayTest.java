@@ -21,10 +21,17 @@
  */
 package org.bitrepository.protocol.performancetest;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.client.MessageReceiver;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
@@ -34,14 +41,6 @@ import org.jaccept.TestEventManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class MessageBusDelayTest extends ExtendedTestCase {
     private Settings settings;

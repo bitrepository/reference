@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.common.database;
+package org.bitrepository.service.database;
 
 
 import java.io.IOException;

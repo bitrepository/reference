@@ -28,14 +28,21 @@ import org.bitrepository.client.conversation.Conversation;
 import org.bitrepository.protocol.messagebus.SpecificMessageListener;
 
 /**
- * The interface for keeping track of conversations.
+ * Keeps track of conversations.
  *
- * Implementations must listen for messages and delegate them to the correct started conversation, until conversations
- * are ended.
- *
- * @param <T> The type of conversation to have.
+ * Must listen delegate messages to the correct conversations.
  */
 public interface ConversationMediator extends SpecificMessageListener {
+    /**
+     * Will begin listning for messages on the message bus.
+     */
+    void start();
+
+    /**
+     * Will stop this <code>ConversationMediator</code> from listening to the message bus.
+     */
+    void shutdown();
+
     /**
      * Start a conversation of type T and begin delegating messages to this conversation when received.
      *

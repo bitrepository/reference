@@ -27,7 +27,7 @@ package org.bitrepository.pillar.referencepillar;
 import javax.jms.JMSException;
 
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.database.DBConnector;
+import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.Pillar;

@@ -24,7 +24,7 @@ package org.bitrepository.pillar.checksumpillar;
 import javax.jms.JMSException;
 
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.database.DBConnector;
+import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.cache.ChecksumStore;

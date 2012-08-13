@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.client;
+package org.bitrepository.protocol.bus;
 
 import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.protocol.messagebus.MessageListener;

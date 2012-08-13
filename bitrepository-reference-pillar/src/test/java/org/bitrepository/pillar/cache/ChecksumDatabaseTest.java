@@ -28,8 +28,8 @@ import java.sql.Connection;
 import java.util.Date;
 import java.util.List;
 
-import org.bitrepository.common.database.DBConnector;
-import org.bitrepository.common.database.DatabaseUtils;
+import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.DatabaseTestUtils;

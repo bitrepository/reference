@@ -1,8 +1,8 @@
 package org.bitrepository.pillar.integration.func;
 
 
-import org.bitrepository.client.MessageReceiver;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
+import org.bitrepository.protocol.bus.MessageReceiver;
 
 public class PillarFunctionTest extends PillarIntegrationTest {
     protected MessageReceiver clientReceiver;

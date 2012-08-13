@@ -5,3 +5,5 @@ bitrepository-audit-trail-service/derby.log
 bitrepository-core/derby.log
 bitrepository-integrity-service/derby.log
 
+checksumdb
+auditcontributerdb

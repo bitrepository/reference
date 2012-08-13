@@ -26,8 +26,8 @@ import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_TAB
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.bitrepository.common.database.DBConnector;
-import org.bitrepository.common.database.DatabaseUtils;
+import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -39,8 +39,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import ch.qos.logback.core.db.dialect.DBUtil;
 
 import java.io.File;
 import java.sql.Connection;

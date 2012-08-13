@@ -21,11 +21,10 @@
  */
 package org.bitrepository.service;
 
-import org.bitrepository.client.MessageReceiver;
-import org.bitrepository.protocol.IntegrationTest;
-import org.bitrepository.protocol.message.ClientTestMessageFactory;
-
 import java.math.BigInteger;
+import org.bitrepository.protocol.IntegrationTest;
+import org.bitrepository.protocol.bus.MessageReceiver;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /**
  */

@@ -17,6 +17,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-service</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
       <version>1.6.1</version>
@@ -26,28 +31,19 @@
       <artifactId>jaccept-core</artifactId>
       <version>0.2</version>
     </dependency>
-    <!-- Hook up the other loggers to use SLF4J -->
-    <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jul-to-slf4j</artifactId>
-        <version>${slf4j.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>log4j-over-slf4j</artifactId>
-        <version>${slf4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
     <!-- THE TEST SCOPE -->
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-core</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-service</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.bitrepository.reference</groupId>

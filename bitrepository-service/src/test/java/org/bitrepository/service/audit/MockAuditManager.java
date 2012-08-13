@@ -26,11 +26,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.service.audit.AuditTrailManager;
 
 public class MockAuditManager implements AuditTrailManager {
 

@@ -17,6 +17,8 @@
 
   <modules>
     <module>bitrepository-core</module>
+    <module>bitrepository-client</module>
+    <module>bitrepository-service</module>
     <module>bitrepository-access-client</module>
     <module>bitrepository-modifying-client</module>
     <module>bitrepository-integrity-service</module>
@@ -150,6 +152,22 @@
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
       <version>1.8.5</version>
+    </dependency>
+    <!-- Hook up the other loggers to use SLF4J -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
     </dependency>
   </dependencies>
 

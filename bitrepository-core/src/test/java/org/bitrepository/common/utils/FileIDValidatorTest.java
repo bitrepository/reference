@@ -23,7 +23,6 @@ package org.bitrepository.common.utils;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.service.exception.InvalidMessageException;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -51,34 +50,20 @@ public class FileIDValidatorTest extends ExtendedTestCase {
         String tooShort = "";
         
         addStep("Test a null as argument", "The null should be ignored.");
-        validator.validateFileID(null);
+        Assert.assertNull(validator.validateFileID(null));
         
         addStep("Test a valid fileID", "Should be valid");
-        validator.validateFileID(validFileID);
+        Assert.assertNull(validator.validateFileID(validFileID));
         
         addStep("Test invalid characters", "Should be invalid");
-        try {
-            validator.validateFileID(invalidCharacters);
-            Assert.fail("Should fail with bad characters here!");
-        } catch (InvalidMessageException e) {
-            // expected
-        }
+        Assert.assertNotNull(validator.validateFileID(invalidCharacters), "Should fail with bad characters here!");
 
         addStep("Test invalid length", "Should be invalid");
-        try {
-            validator.validateFileID(tooLong);
-            Assert.fail("Should fail with invalid length here!");
-        } catch (InvalidMessageException e) {
-            // expected
-        }
-        
+        Assert.assertNotNull(validator.validateFileID(tooLong), "Should fail with invalid length here!");
+
         addStep("Test too short", "Should be invalid");
-        try {
-            validator.validateFileID(tooShort);
-            Assert.fail("Should fail with invalid length here!");
-        } catch (InvalidMessageException e) {
-            // expected
-        }
+        Assert.assertNotNull(validator.validateFileID(tooShort),
+                "Should fail with invalid length here!");
     }
     
     @Test( groups = {"regressiontest"})
@@ -94,29 +79,21 @@ public class FileIDValidatorTest extends ExtendedTestCase {
         String tooShort = "";
         
         addStep("Test a null as argument", "The null should be ignored.");
-        validator.validateFileID(null);
+        Assert.assertNull(validator.validateFileID(null));
         
         addStep("Test a valid fileID", "Should be valid");
-        validator.validateFileID(validFileID);
+        Assert.assertNull(validator.validateFileID(validFileID));
         
         addStep("Test odd characters", "Should be valid");
-        validator.validateFileID(invalidCharacters);
+        Assert.assertNull(validator.validateFileID(invalidCharacters));
 
         addStep("Test invalid length", "Should be invalid");
-        try {
-            validator.validateFileID(tooLong);
-            Assert.fail("Should fail with invalid length here -> too long");
-        } catch (InvalidMessageException e) {
-            // expected
-        }
+        Assert.assertNotNull(validator.validateFileID(tooLong),
+                "Should fail with invalid length here -> too long");
         
         addStep("Test too short", "Should be invalid");
-        try {
-            validator.validateFileID(tooShort);
-            Assert.fail("Should fail with invalid length here -> too short");
-        } catch (InvalidMessageException e) {
-            // expected
-        }
+        Assert.assertNotNull(validator.validateFileID(tooShort),
+            "Should fail with invalid length here -> too short");
     }
     
     @Test( groups = {"regressiontest"})

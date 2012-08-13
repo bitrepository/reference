@@ -7,10 +7,16 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>bitrepository-access-client</artifactId>
   <name>Bitrepository Access</name>
+  <description>Contains functionality for reading from a Bitrepository system. This includes ﻿Get File, ﻿Get Checksums and Get File IDs.</description>
   <dependencies>
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-client</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!--  Test dependencies -->
@@ -21,6 +27,11 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-  </dependencies>
-  <description>Contains functionality for reading from a Bitrepository system. This includes ﻿Get File, ﻿Get Checksums and Get File IDs.</description>
-</project>
+    <dependency>
+      <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-client</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+  </dependencies></project>
