@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitrepository Protocol
+ * Bitrepository Reference Pillar
  * 
  * $Id$
  * $HeadURL$
@@ -22,24 +22,29 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.client.conversation.mediator;
+package org.bitrepository.service.exception;
 
-import org.bitrepository.client.conversation.Conversation;
-import org.bitrepository.protocol.messagebus.SpecificMessageListener;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 
 /**
- * The interface for keeping track of conversations.
- *
- * Implementations must listen for messages and delegate them to the correct started conversation, until conversations
- * are ended.
- *
- * @param <T> The type of conversation to have.
+ * Exception which wraps bad response information for the validation of the operation requests. 
  */
-public interface ConversationMediator extends SpecificMessageListener {
+@SuppressWarnings("serial")
+public class InvalidMessageException extends RequestHandlerException {
     /**
-     * Start a conversation of type T and begin delegating messages to this conversation when received.
-     *
-     * @param conversation The new conversation.
+     * Constructor.
+     * @param rInfo The ResponseInfo for this class to wrap.
      */
-    void addConversation(Conversation conversation);
+    public InvalidMessageException(ResponseInfo rInfo) {
+        super(rInfo);
+    }
+    
+    /**
+     * Constructor.
+     * @param rInfo The ResponseInfo for this class to wrap.
+     * @param e The exception to wrap into the StackTrace.
+     */
+    public InvalidMessageException(ResponseInfo rInfo, Exception e) {
+        super(rInfo, e);
+    }
 }

@@ -24,10 +24,13 @@
  */
 package org.bitrepository.client;
 
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.IntegrationTest;
+import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
-
-import java.math.BigInteger;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 
 /**
  * Contains the generic parts for tests integrating to the message bus. 
@@ -45,13 +48,20 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     protected static String pillar2DestinationId;
     protected MessageReceiver pillar2Destination; 
     protected static final String PILLAR2_ID = "Pillar2";
-    
-    protected static final BigInteger defaultTime = BigInteger.valueOf(3000);
 
     protected final String TEST_CLIENT_ID = "test-client" + getTopicPostfix();
 
-    protected String getComponentID() {
-        return "ClientUnderTest";
+    protected static ConversationMediator conversationMediator;
+
+    @BeforeMethod(alwaysRun = true)
+    public void beforeMethod() {
+        super.beforeMethod();
+        renewConversationMediator();
+    }
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        conversationMediator.shutdown();
+        super.afterMethod();
     }
 
     /**
@@ -72,24 +82,31 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
 
     @Override
     protected void teardownMessageBusListeners() {
-        messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
-        messageBus.removeListener(pillar1DestinationId, pillar1Destination.getMessageListener());
-        messageBus.removeListener(pillar2DestinationId, pillar2Destination.getMessageListener());
+        IntegrationTest.messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
+        IntegrationTest.messageBus.removeListener(pillar1DestinationId, pillar1Destination.getMessageListener());
+        IntegrationTest.messageBus.removeListener(pillar2DestinationId, pillar2Destination.getMessageListener());
         super.teardownMessageBusListeners();
     }
     
     @Override
     protected void initializeMessageBusListeners() {
         super.initializeMessageBusListeners();
-        clientDestinationId = componentSettings.getReceiverDestinationID();
+        clientDestinationId = IntegrationTest.componentSettings.getReceiverDestinationID();
         pillar1DestinationId = "Pillar1_topic" + getTopicPostfix();
         pillar2DestinationId = "Pillar2_topic" + getTopicPostfix();
         
-        clientTopic = new MessageReceiver("Client topic receiver", testEventManager);
-        pillar1Destination = new MessageReceiver("Pillar1 topic receiver", testEventManager);
-        pillar2Destination = new MessageReceiver("Pillar2 topic receiver", testEventManager);
-        messageBus.addListener(clientDestinationId, clientTopic.getMessageListener()); 
-        messageBus.addListener(pillar1DestinationId, pillar1Destination.getMessageListener());  
-        messageBus.addListener(pillar2DestinationId, pillar2Destination.getMessageListener());       
+        clientTopic = new MessageReceiver("Client topic receiver", IntegrationTest.testEventManager);
+        pillar1Destination = new MessageReceiver("Pillar1 topic receiver", IntegrationTest.testEventManager);
+        pillar2Destination = new MessageReceiver("Pillar2 topic receiver", IntegrationTest.testEventManager);
+        IntegrationTest.messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());
+        IntegrationTest.messageBus.addListener(pillar1DestinationId, pillar1Destination.getMessageListener());
+        IntegrationTest.messageBus.addListener(pillar2DestinationId, pillar2Destination.getMessageListener());
+    }
+
+    protected void renewConversationMediator() {
+        if (conversationMediator != null) {
+            conversationMediator.shutdown();
+        }
+        conversationMediator = new CollectionBasedConversationMediator(componentSettings, securityManager);
     }
 }

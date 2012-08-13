@@ -24,6 +24,11 @@
  */
 package org.bitrepository.client.conversation.mediator;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
@@ -67,16 +72,11 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.client.conversation.Conversation;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Conversation handler that delegates messages to registered conversations.
@@ -97,6 +97,20 @@ public class CollectionBasedConversationMediator implements ConversationMediator
      * @see ConversationCleaner 
      */
     private static final Timer cleanTimer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
+    private final MessageBus messagebus;
+
+
+    @Override
+    public void start() {
+        messagebus.addListener(settings.getReceiverDestinationID(), this);
+        cleanTimer.scheduleAtFixedRate(new ConversationCleaner(), 0,
+                settings.getReferenceSettings().getClientSettings().getMediatorCleanupInterval().longValue());
+    }
+
+    @Override
+    public void shutdown() {
+        messagebus.removeListener(settings.getReceiverDestinationID(), this);
+    }
 
     /**
      * Create a mediator that handles conversations and mediates messages sent on the
@@ -108,11 +122,10 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     public CollectionBasedConversationMediator(Settings settings, SecurityManager securityManager) {
         log.debug("Initializing the CollectionBasedConversationMediator");
         this.conversations = Collections.synchronizedMap(new HashMap<String, Conversation>());
-        MessageBusManager.getMessageBus(settings, securityManager).
-            addListener(settings.getReceiverDestinationID(), this);
         this.settings = settings;
-        cleanTimer.scheduleAtFixedRate( new ConversationCleaner(), 0, 
-                settings.getReferenceSettings().getClientSettings().getMediatorCleanupInterval().longValue());
+        messagebus = MessageBusManager.getMessageBus(settings, securityManager);
+        // Todo temporary hack which should be removed when all mediator creators calls the start method.
+        start();
     }
 
     @Override
@@ -141,7 +154,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
      * Handles
      * @param correlationID
      */
-    private void handleNoConversation(String correlationID) {
+    private void handleUnknwonConversation(String correlationID) {
         log.debug("Message with correlationID '" + correlationID + "' could not be delegated to any " +
                 "conversation.");
     }
@@ -154,7 +167,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -165,7 +178,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -176,7 +189,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
     
@@ -187,7 +200,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
     
@@ -198,7 +211,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -209,7 +222,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -220,7 +233,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -231,7 +244,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -242,7 +255,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -253,7 +266,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -264,7 +277,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -275,7 +288,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -286,7 +299,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -297,7 +310,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -308,7 +321,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -319,7 +332,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -330,7 +343,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -341,7 +354,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
     
@@ -353,7 +366,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
     
@@ -364,7 +377,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -375,7 +388,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -386,7 +399,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -397,7 +410,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
     
@@ -408,7 +421,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -419,7 +432,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -430,7 +443,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -441,7 +454,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -452,7 +465,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -463,7 +476,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -474,7 +487,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -485,7 +498,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -496,7 +509,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -507,7 +520,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
     
@@ -518,7 +531,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -529,7 +542,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -540,7 +553,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -551,7 +564,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -562,7 +575,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -573,7 +586,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
 
@@ -584,7 +597,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleNoConversation(messageCorrelationID);
+            handleUnknwonConversation(messageCorrelationID);
         }
     }
     
