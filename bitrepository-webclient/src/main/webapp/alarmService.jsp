@@ -75,9 +75,7 @@
     </div>
 
     <script>
-        jQuery.fn.updateAlarms = function() {
-            //$.getJSON('<%= su.getAlarmServiceUrl() %>/alarm/AlarmService/getShortAlarmList/',{}, function(j){
-            
+        jQuery.fn.updateAlarms = function() {          
             var fromDateStr = $("#fromDate").val();
             var toDateStr = $("#toDate").val();
             var fileIDStr = $("#fileIDFilter").val();
