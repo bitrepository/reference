@@ -1,10 +1,10 @@
 /target
 /.project
-bitrepository-alarm-service/derby.log
-bitrepository-audit-trail-service/derby.log
-bitrepository-core/derby.log
-bitrepository-integrity-service/derby.log
-bitrepository-reference-pillar/derby.log
 */activemq-data/*
 checksumdb
 auditcontributerdb
+*/.classpath
+*/.project
+*/.settings/*
+*/target/*
+*/derby.log

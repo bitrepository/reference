@@ -85,6 +85,7 @@ public class RestIntegrityService {
         Iterator<WorkflowTimerTask> it = workflows.iterator();
         while(it.hasNext()) {
             WorkflowTimerTask workflowTasl = it.next();
+            
             sb.append("{\"workflowID\": \"" + workflowTasl.getName() + "\"," +
                     "\"nextRun\": \"" + workflowTasl.getNextRun() + "\"," +
                     "\"executionInterval\": \"" + TimeUtils.millisecondsToHuman(workflowTasl.getIntervalBetweenRuns()) 

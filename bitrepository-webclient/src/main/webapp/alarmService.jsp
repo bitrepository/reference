@@ -51,6 +51,7 @@
                         <select id=alarmCodeFilter>
                             <option>ALL</option>
                             <option>INCONSISTENT_REQUEST</option>
+                            <option>COMPONENT_FAILURE</option>
                             <option>CHECKSUM_ALARM</option>
                             <option>FAILED_TRANSFER</option>
                             <option>FAILED_OPERATION</option>
