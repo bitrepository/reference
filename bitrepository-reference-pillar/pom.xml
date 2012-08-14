@@ -21,16 +21,6 @@
       <artifactId>bitrepository-service</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-      <version>1.6.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jaccept</groupId>
-      <artifactId>jaccept-core</artifactId>
-      <version>0.2</version>
-    </dependency>
     <!-- THE TEST SCOPE -->
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
@@ -62,7 +52,6 @@
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-beta-4</version>
         <configuration>
           <descriptors>
             <descriptor>src/main/assembly/assembly.xml</descriptor>

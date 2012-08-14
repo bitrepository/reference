@@ -11,21 +11,6 @@
     <prefix>bitrepository-quickstart</prefix>
   </properties>
   <dependencies>
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-all</artifactId>
-      <version>5.3.2</version>
-    </dependency>
-    <dependency>
-      <groupId>dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-      <version>1.6.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jaccept</groupId>
-      <artifactId>jaccept-core</artifactId>
-      <version>0.2</version>
-    </dependency>
     <!-- THE TEST SCOPE -->
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
@@ -109,7 +94,6 @@
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.3</version>
         <configuration>
           <descriptors>
             <descriptor>src/main/assembly/assembly.xml</descriptor>
@@ -123,7 +107,6 @@
             <goals>
               <goal>single</goal>
             </goals>
-
           </execution>
         </executions>
       </plugin>

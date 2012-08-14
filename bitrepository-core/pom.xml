@@ -18,7 +18,7 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.0.1</version>
+      <version>2.4</version>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
@@ -37,14 +37,6 @@
       <version>${message.xml.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-all</artifactId>
-      <!-- Note that we can't upgrade to 5.5, as this includes a dependency 
-        on a pre 1.6 slf4j, which is incompatible with our 1.6.1 slf4j dependency, 
-        see https://issues.apache.org/jira/browse/AMQ-3296 (fixed in ActiveMQ 5.6.0) -->
-      <version>5.4.3</version>
-    </dependency>
-    <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk16</artifactId>
       <version>1.46</version>
@@ -57,8 +49,22 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
-      <version>8.0.4.v20111024</version>
+      <version>8.1.5.v20120716</version>
       <scope>test</scope>
+    </dependency>
+    <!-- Individual ActiveMQ dependencies. We're not able to use the ActiveMQ uber jar, activemq-all, as
+    it packs dependent slf4j files which are inconsistent with our dependencies, see
+    http://stackoverflow.com/questions/11786265/multiple-slf4j-bindings-error-with-activemq-all-5-6-0-jar
+    -->
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-core</artifactId>
+      <version>5.6.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activeio-core</artifactId>
+      <version>3.1.4</version>
     </dependency>
   </dependencies>
 
@@ -144,5 +150,10 @@
       </plugin>
     </plugins>
   </build>
+
+
+  <properties>
+    <activemq.version>5.6.0</activemq.version>
+  </properties>
 
 </project>
