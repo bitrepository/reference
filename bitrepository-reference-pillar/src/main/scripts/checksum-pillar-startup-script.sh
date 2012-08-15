@@ -1,9 +1,8 @@
+#!/bin/sh
+
 ###
 # #%L
 # Bitrepository Reference Pillar
-# 
-# $Id$
-# $HeadURL$
 # %%
 # Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
 # %%
@@ -22,7 +21,6 @@
 # <http://www.gnu.org/licenses/lgpl-2.1.html>.
 # #L%
 ###
-#!/bin/sh
 
 # Asserting the script has been called from the bin directory
 cd $(dirname $(readlink -f $0))

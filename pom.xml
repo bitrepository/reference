@@ -185,8 +185,8 @@
         <artifactId>license-maven-plugin</artifactId>
         <configuration>
           <generateBundle>true</generateBundle>
-          <licenseName>lgpl_v2_1</licenseName>
           <failIfWarning>true</failIfWarning>
+          <licenseName>lgpl_v2_1</licenseName>
           <useMissingFile>true</useMissingFile>
           <extraExtensions>
             <xsd>xml</xsd>
@@ -203,7 +203,6 @@
       <!-- Copies the jaxb bindings definition to the message xsd dir,
 in preparation for the xsd -> java class file generation -->
       <artifactId>maven-resources-plugin</artifactId>
-      <version>2.5</version>
       <executions>
         <execution>
           <id>copy-resources</id>
@@ -303,11 +302,11 @@ in preparation for the xsd -> java class file generation -->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>license-maven-plugin</artifactId>
-          <version>1.0</version>
+          <version>1.2</version>
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.3.2</version>
+          <version>2.5.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-source-plugin</artifactId>
@@ -327,7 +326,7 @@ in preparation for the xsd -> java class file generation -->
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.11</version>
+          <version>2.12</version>
         </plugin>
         <plugin>
           <artifactId>maven-war-plugin</artifactId>
@@ -335,7 +334,11 @@ in preparation for the xsd -> java class file generation -->
         </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>2.2-beta-4</version>
+          <version>2.3</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>2.5</version>
         </plugin>
         <plugin>
           <groupId>org.jvnet.jaxb2.maven2</groupId>
