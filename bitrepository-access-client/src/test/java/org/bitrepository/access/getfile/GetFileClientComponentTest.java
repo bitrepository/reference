@@ -67,9 +67,9 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     @Test(groups = {"regressiontest"})
     public void verifyGetFileClientFromFactory() throws Exception {
         Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(componentSettings, securityManager, TEST_CLIENT_ID)
-                instanceof CollectionBasedGetFileClient, 
+                instanceof ConversationBasedGetFileClient,
                 "The default GetFileClient from the Access factory should be of the type '" + 
-                        CollectionBasedGetFileClient.class.getName() + "'.");
+                        ConversationBasedGetFileClient.class.getName() + "'.");
     }
 
     @Test(groups = {"regressiontest"})
@@ -453,7 +453,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     private GetFileClient createGetFileClient() {
         MessageBus messageBus = new ActiveMQMessageBus(componentSettings.getMessageBusConfiguration(), securityManager);
         ConversationMediator conversationMediator = new CollectionBasedConversationMediator(componentSettings, securityManager);
-        return new GetFileClientTestWrapper(new CollectionBasedGetFileClient(
+        return new GetFileClientTestWrapper(new ConversationBasedGetFileClient(
                 messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID), testEventManager);
     }
 }

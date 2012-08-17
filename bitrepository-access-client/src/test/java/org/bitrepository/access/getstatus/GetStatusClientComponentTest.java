@@ -68,9 +68,9 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         public void verifyGetStatusClientFromFactory() throws Exception {
             Assert.assertTrue(AccessComponentFactory.getInstance().createGetStatusClient(
                     componentSettings, securityManager, TEST_CLIENT_ID)
-                    instanceof CollectionBasedGetStatusClient,
+                    instanceof ConversationBasedGetStatusClient,
                     "The default GetStatusClient from the Access factory should be of the type '" +
-                            CollectionBasedGetStatusClient.class.getName() + "'.");
+                            ConversationBasedGetStatusClient.class.getName() + "'.");
         }
     
         
@@ -198,7 +198,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         private GetStatusClient createGetStatusClient() {
             MessageBus messageBus = new ActiveMQMessageBus(componentSettings.getMessageBusConfiguration(), securityManager);
             ConversationMediator conversationMediator = new CollectionBasedConversationMediator(componentSettings, securityManager);
-            return new GetStatusClientTestWrapper(new CollectionBasedGetStatusClient(
+            return new GetStatusClientTestWrapper(new ConversationBasedGetStatusClient(
                     messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID) , testEventManager);
         }
         

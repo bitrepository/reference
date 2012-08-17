@@ -88,9 +88,9 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
     @Test(groups = {"regressiontest"})
     public void verifyGetChecksumsClientFromFactory() throws Exception {
         Assert.assertTrue(AccessComponentFactory.getInstance().createGetChecksumsClient(componentSettings, securityManager,
-                TEST_CLIENT_ID) instanceof CollectionBasedGetChecksumsClient, 
+                TEST_CLIENT_ID) instanceof ConversationBasedGetChecksumsClient,
                 "The default GetFileClient from the Access factory should be of the type '" + 
-                CollectionBasedGetChecksumsClient.class.getName() + "'.");
+                ConversationBasedGetChecksumsClient.class.getName() + "'.");
     }
 
     @Test(groups = {"regressiontest"})
@@ -366,7 +366,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         MessageBus messageBus = new ActiveMQMessageBus(componentSettings.getMessageBusConfiguration(), securityManager);
         ConversationMediator conversationMediator =
                 new CollectionBasedConversationMediator(componentSettings, securityManager);
-        return new GetChecksumsClientTestWrapper(new CollectionBasedGetChecksumsClient(
+        return new GetChecksumsClientTestWrapper(new ConversationBasedGetChecksumsClient(
                 messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID)
         , testEventManager);
     }

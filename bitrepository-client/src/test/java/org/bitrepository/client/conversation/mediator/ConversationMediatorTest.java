@@ -25,8 +25,7 @@
 package org.bitrepository.client.conversation.mediator;
 
 import org.bitrepository.bitrepositorymessages.Message;
-import org.bitrepository.client.conversation.AbstractConversation;
-import org.bitrepository.client.conversation.ConversationState;
+import org.bitrepository.client.conversation.StateBasedConversation;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -55,20 +54,20 @@ public abstract class ConversationMediatorTest {
         MessageBus messagebus = new MessageBusMock();
         ConversationMediator mediator = createMediator(settings);
 
-        mediator.addConversation(new ConversationStub(messagebus, "testConversation"));
+        mediator.addConversation(new ConversationStub());
     }
 
     abstract ConversationMediator createMediator(Settings settings);
 
     @SuppressWarnings("unused")
-    private class ConversationStub extends AbstractConversation {
+    private class ConversationStub extends StateBasedConversation {
         private boolean hasStarted = false;
         private boolean hasFailed = false;
         private boolean hasEnded = false;
         private Object result = null;
 
-        public ConversationStub(MessageSender messageSender, String conversationID) {
-            super(messageSender, conversationID, null);
+        public ConversationStub() {
+            super(null);
         }
 
         @Override
@@ -82,14 +81,9 @@ public abstract class ConversationMediatorTest {
         }
 
         @Override
-        public void endConversation() {
-        }
-
+        public void endConversation() {}
         @Override
-        public ConversationState getConversationState() {
-            // TODO Auto-generated method stub
-            return null;
-        }
+        public void onMessage(Message message) {}
     }
 
     @SuppressWarnings("unused")

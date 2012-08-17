@@ -26,9 +26,8 @@ package org.bitrepository.access.getfileids;
 
 import java.net.URL;
 import java.util.Collection;
-
 import org.bitrepository.access.getfileids.conversation.GetFileIDsConversationContext;
-import org.bitrepository.access.getfileids.conversation.SimpleGetFileIDsConversation;
+import org.bitrepository.access.getfileids.conversation.IdentifyPillarsForGetFileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
@@ -47,14 +46,10 @@ import org.slf4j.LoggerFactory;
  * takes over the rest of the operation handling.
  */
 public class ConversationBasedGetFileIDsClient extends AbstractClient implements GetFileIDsClient {
-    /** The log for this class. */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
-     * The constructor.
-     * @param messageBus The messagebus for communication.
-     * @param conversationMediator  The mediator for the conversation.
-     * @param settings The settings for this instance.
+     * @see AbstractClient
      */
     public ConversationBasedGetFileIDsClient(MessageBus messageBus, ConversationMediator conversationMediator,
             Settings settings, String clienID) {
@@ -73,8 +68,7 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
         
         GetFileIDsConversationContext context = new GetFileIDsConversationContext(fileIDs, addressForResult, 
                 settings, messageBus, clientID, eventHandler, auditTrailInformation);
-        SimpleGetFileIDsConversation conversation = new SimpleGetFileIDsConversation(context);
-        startConversation(conversation);
+        startConversation(context, new IdentifyPillarsForGetFileIDs(context));
     }
     
 }

@@ -26,13 +26,13 @@ package org.bitrepository.access;
 
 import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
 import org.bitrepository.access.getaudittrails.client.ConversationBasedAuditTrailClient;
-import org.bitrepository.access.getchecksums.CollectionBasedGetChecksumsClient;
+import org.bitrepository.access.getchecksums.ConversationBasedGetChecksumsClient;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
-import org.bitrepository.access.getfile.CollectionBasedGetFileClient;
+import org.bitrepository.access.getfile.ConversationBasedGetFileClient;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfileids.ConversationBasedGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
-import org.bitrepository.access.getstatus.CollectionBasedGetStatusClient;
+import org.bitrepository.access.getstatus.ConversationBasedGetStatusClient;
 import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -73,7 +73,7 @@ public final class AccessComponentFactory {
      * @return A GetFileClient.
      */
     public GetFileClient createGetFileClient(Settings settings, SecurityManager securityManager, String clientID) {
-        return new CollectionBasedGetFileClient(
+        return new ConversationBasedGetFileClient(
                 ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
                 ConversationMediatorManager.getConversationMediator(settings, securityManager), 
                 settings, clientID);
@@ -85,7 +85,7 @@ public final class AccessComponentFactory {
      * @return The GetChecksumsClient
      */
     public GetChecksumsClient createGetChecksumsClient(Settings settings, SecurityManager securityManager, String clientID) {
-        return new CollectionBasedGetChecksumsClient(
+        return new ConversationBasedGetChecksumsClient(
                 ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
                 ConversationMediatorManager.getConversationMediator(settings, securityManager),
                 settings, clientID);
@@ -109,7 +109,7 @@ public final class AccessComponentFactory {
      * @return A GetStatusClient.
      */
     public GetStatusClient createGetStatusClient(Settings settings, SecurityManager securityManager, String clientID) {
-        return new CollectionBasedGetStatusClient(
+        return new ConversationBasedGetStatusClient(
                 ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
                 ConversationMediatorManager.getConversationMediator(settings, securityManager),
                 settings, clientID);

@@ -21,34 +21,31 @@
  */
 package org.bitrepository.access.getstatus;
 
-import org.bitrepository.access.getstatus.conversation.GetStatusConversation;
 import org.bitrepository.access.getstatus.conversation.GetStatusConversationContext;
+import org.bitrepository.access.getstatus.conversation.IdentifyingContributorsForGetStatus;
+import org.bitrepository.client.AbstractClient;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
+import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.client.AbstractClient;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CollectionBasedGetStatusClient extends AbstractClient implements GetStatusClient {
-    /** The log for this class. */
+public class ConversationBasedGetStatusClient extends AbstractClient implements GetStatusClient {
     private final Logger log = LoggerFactory.getLogger(getClass());
-    
+
     /**
-     * Constructor
-     * @param messageBus the message bus to use.
-     * @param conversationMediator the mediator to facilitate message tranmission
-     * @param settings the settings to use.  
+     * @see AbstractClient
      */
-    public CollectionBasedGetStatusClient(MessageBus messageBus, ConversationMediator conversationMediator, 
+    public ConversationBasedGetStatusClient(
+            MessageBus messageBus,
+            ConversationMediator conversationMediator,
             Settings settings, String clientID) {
         super(settings, conversationMediator, messageBus, clientID);
         ArgumentValidator.checkNotNullOrEmpty(settings.getCollectionSettings().getGetStatusSettings().getContributorIDs(),
                 "ContributorIDs");
     }
-    
 
     @Override
     public void getStatus(EventHandler eventHandler) {
@@ -56,8 +53,6 @@ public class CollectionBasedGetStatusClient extends AbstractClient implements Ge
         log.info("Requesting status for collection of components.");
         GetStatusConversationContext context = new GetStatusConversationContext(settings, messageBus, 
                 eventHandler, "", clientID);
-        GetStatusConversation conversation = new GetStatusConversation(context);
-        startConversation(conversation);
+        startConversation(context, new IdentifyingContributorsForGetStatus(context));
     }
-
 }

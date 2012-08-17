@@ -26,7 +26,6 @@ package org.bitrepository.access.getaudittrails.client;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
@@ -57,8 +56,7 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
         AuditTrailConversationContext context = new AuditTrailConversationContext(
                 componentQueries, fileID, urlForResult,
                 settings, messageBus, clientID, eventHandler, auditTrailInformation);
-        AuditTrailConversation conversation = new AuditTrailConversation(context);
-        startConversation(conversation);
+        startConversation(context, new IdentifyingAuditTrailContributors(context));
     }
 
     /**

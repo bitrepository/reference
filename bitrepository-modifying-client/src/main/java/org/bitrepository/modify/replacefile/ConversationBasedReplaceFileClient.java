@@ -25,7 +25,6 @@
 package org.bitrepository.modify.replacefile;
 
 import java.net.URL;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.AbstractClient;
@@ -33,8 +32,8 @@ import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.modify.replacefile.conversation.IdentifyPillarsForReplaceFile;
 import org.bitrepository.modify.replacefile.conversation.ReplaceFileConversationContext;
-import org.bitrepository.modify.replacefile.conversation.SimpleReplaceFileConversation;
 import org.bitrepository.modify.replacefile.pillarselector.AllPillarsSelectorForReplaceFile;
 import org.bitrepository.modify.replacefile.pillarselector.SpecificPillarSelectorForReplaceFile;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -45,13 +44,10 @@ import org.slf4j.LoggerFactory;
  * A conversation based implementation of the ReplaceFileClient.
  */
 public class ConversationBasedReplaceFileClient extends AbstractClient implements ReplaceFileClient {
-    /** The log for this class.*/
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     /**
-     * Constructor.
-     * @param messageBus The messagebus for communication.
-     * @param settings The configurations and settings.
+     * @see AbstractClient
      */
     public ConversationBasedReplaceFileClient(MessageBus messageBus, ConversationMediator conversationMediator, 
             Settings settings, String clientID) {
@@ -86,8 +82,7 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
                 sizeOfNewFile, url, checksumForDeleteAtPillar, checksumRequestedForDeletedFile, 
                 checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, settings, messageBus, 
                 clientID, eventHandler, auditTrailInformation);
-        SimpleReplaceFileConversation conversation = new SimpleReplaceFileConversation(context);
-        startConversation(conversation);
+        startConversation(context, new IdentifyPillarsForReplaceFile(context));
     }
     
     @Override
@@ -117,8 +112,7 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
                 sizeOfNewFile, url, checksumForDeleteAtPillar, checksumRequestedForDeletedFile, 
                 checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, settings, messageBus, 
                 clientID, eventHandler, auditTrailInformation);
-        SimpleReplaceFileConversation conversation = new SimpleReplaceFileConversation(context);
-        startConversation(conversation);
+        startConversation(context, new IdentifyPillarsForReplaceFile(context));
     }
     
 }

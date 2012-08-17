@@ -1,11 +1,11 @@
 /*
  * #%L
- * Bitrepository Access
+ * Bitrepository Protocol
  * 
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as 
@@ -22,25 +22,32 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access.getaudittrails.client;
+package org.bitrepository.client.conversation;
 
 import org.bitrepository.bitrepositorymessages.Message;
-import org.bitrepository.client.conversation.AbstractConversation;
-import org.bitrepository.client.conversation.ConversationEventMonitor;
-import org.bitrepository.client.conversation.ConversationState;
-import org.bitrepository.client.conversation.FinishedState;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Mostly just a event mediator (in the new client design).
+ * Abstract super class for conversations.
+ * This super class will handle sending all messages with the correct
+ * conversation id, and simply log messages received. Overriding implementations should override the behaviour for
+ * receiving specific messages.
  */
-public class AuditTrailConversation extends AbstractConversation {
-    private final AuditTrailConversationContext context;
-    
-    public AuditTrailConversation (AuditTrailConversationContext context) {
-        // EventHandler is access through the ConversationContext and is therefore nulled in the 'old' constructor).
-        super(context.getMessageSender(), context.getConversationID(), null);
+public class StateBasedConversation implements Conversation {
+    private Logger log = LoggerFactory.getLogger(getClass());
+    private long startTime;
+    private ConversationContext context;
+
+    /**
+     * Initialize a conversation on the given message bus.
+     *
+     * @param context The cointext to use for this conversation.
+     */
+    public StateBasedConversation(ConversationContext context) {
+        this.startTime = System.currentTimeMillis();
         this.context = context;
-        context.setState(new IdentifyingAuditTrailContributors(context));
     }
 
     @Override
@@ -49,10 +56,13 @@ public class AuditTrailConversation extends AbstractConversation {
     }
 
     @Override
-    public ConversationState getConversationState() {
-        // Only used to start conversation, which has been oveloaded. This is because the current parent state isn't of
-        // type ConversationState in the AuditTrailCLient.
-        return null;
+    public String getConversationID() {
+        return context.getConversationID();
+    }
+    
+    @Override
+    public long getStartTime() {
+        return startTime;
     }
 
     @Override
@@ -65,8 +75,13 @@ public class AuditTrailConversation extends AbstractConversation {
         context.setState(new FinishedState(context));
     }
 
+    @Override
+    public synchronized void failConversation(OperationFailedEvent failedEvent) {
+        getMonitor().operationFailed(failedEvent);
+        endConversation();
+    }
+
     /**
-     * Override to use the new context provided monitor.
      * @return The monitor for distributing update information
      */
     public ConversationEventMonitor getMonitor() {
