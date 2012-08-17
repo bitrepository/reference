@@ -39,6 +39,9 @@
  */
 package org.bitrepository.access.getchecksums;
 
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -53,18 +56,10 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReq
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
-import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
-import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Test class for the 'GetFileClient'.
@@ -362,12 +357,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
      * previous tests.
      * @return A new GetFileClient(Wrapper).
      */
-    private GetChecksumsClient createGetCheckSumsClient() {
-        MessageBus messageBus = new ActiveMQMessageBus(componentSettings.getMessageBusConfiguration(), securityManager);
-        ConversationMediator conversationMediator =
-                new CollectionBasedConversationMediator(componentSettings, securityManager);
-        return new GetChecksumsClientTestWrapper(new ConversationBasedGetChecksumsClient(
-                messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID)
-        , testEventManager);
+    private GetChecksumsClient createGetCheckSumsClient() {return new GetChecksumsClientTestWrapper(new ConversationBasedGetChecksumsClient(
+                messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID), testEventManager);
     }
 }

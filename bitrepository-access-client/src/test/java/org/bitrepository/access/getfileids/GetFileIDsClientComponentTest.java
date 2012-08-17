@@ -470,8 +470,6 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
      * @return A new GetFileIDsClient(Wrapper).
      */
     private GetFileIDsClient createGetFileIDsClient() {
-        MessageBus messageBus = new ActiveMQMessageBus(componentSettings.getMessageBusConfiguration(), securityManager);
-        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(componentSettings, securityManager);
         return new GetFileIDsClientTestWrapper(new ConversationBasedGetFileIDsClient(
                 messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID), testEventManager);
     }
