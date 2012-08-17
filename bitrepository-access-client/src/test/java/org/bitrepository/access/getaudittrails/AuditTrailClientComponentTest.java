@@ -71,9 +71,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         ALL_FILE_IDS = new FileIDs();
         ALL_FILE_IDS.setAllFileIDs("TRUE");
     }
-    /**
-     * Test class for the 'AuditTrailClient'.
-     */
+
     @Test(groups = {"regressiontest"})
     public void verifyAuditTrailClientFromFactory() throws Exception {
         Assert.assertTrue(AccessComponentFactory.getInstance().createAuditTrailClient(

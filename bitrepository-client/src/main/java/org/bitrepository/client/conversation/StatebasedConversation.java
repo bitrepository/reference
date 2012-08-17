@@ -51,7 +51,7 @@ public class StateBasedConversation implements Conversation {
     }
 
     @Override
-    public void onMessage(Message message) {
+    public synchronized void onMessage(Message message) {
         context.getState().handleMessage(message);
     }
 
@@ -66,7 +66,7 @@ public class StateBasedConversation implements Conversation {
     }
 
     @Override
-    public void startConversation() {
+    public synchronized void startConversation() {
         context.getState().start();
     }
 

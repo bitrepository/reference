@@ -43,7 +43,6 @@ import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -52,12 +51,6 @@ import org.testng.annotations.Test;
 public class GetFileClientComponentTest extends AbstractGetFileClientTest {
    
     private static FilePart NO_FILE_PART = null;
-
-    @BeforeMethod (alwaysRun=true)
-    @Override
-    public void beforeMethodSetup() throws Exception {
-        super.beforeMethodSetup();
-    }
 
     @Test(groups = {"regressiontest"})
     public void verifyGetFileClientFromFactory() throws Exception {
@@ -232,7 +225,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
     }
 
-    //@Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest"})
     public void chooseFastestPillarGetFileClientWithIdentifyTimeout() throws Exception {
         addDescription("Verify that the FastestPillarGetFile works correct without receiving responses from all " +
                 "pillars.");
@@ -320,7 +313,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getType(), OperationEventType.IDENTIFY_TIMEOUT);
     }
 
-    //@Test(groups = {"regressiontest"}) /* Disabled due to not being able to determine why the timeout don't occur */
+    @Test(groups = {"regressiontest"})
     public void conversationTimeout() throws Exception {
         addDescription("Tests the the GetFileClient handles lack of IdentifyPillarResponses gracefully  ");
         addStep("Set the number of pillars to 1 and a 3 second timeout for the conversation.", "");

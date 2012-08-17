@@ -67,7 +67,6 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
                     "The default GetStatusClient from the Access factory should be of the type '" +
                             ConversationBasedGetStatusClient.class.getName() + "'.");
         }
-    
         
         @Test(groups = {"regressiontest"})
         public void incompleteSetOfIdendifyResponses() throws Exception {
@@ -180,9 +179,6 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
                     OperationEventType.COMPLETE);
         }
 
-        
-        
-        
         /**
          * Creates a new test GetStatusClient based on the supplied settings.
          *

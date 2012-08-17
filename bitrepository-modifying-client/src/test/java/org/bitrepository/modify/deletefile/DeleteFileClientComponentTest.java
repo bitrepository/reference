@@ -44,10 +44,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-/**
- * Tests for the components of the PutFileClient.
- * TODO need more test-cases, e.g. the User-Stories...
- */
 public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     private TestDeleteFileMessageFactory messageFactory;
    

@@ -74,7 +74,7 @@ public abstract class GeneralConversationState {
              * and we should just proceed finishing the conversation. */
             setNewState(getNextState());
         } catch (UnableToFinishException e) {
-            // TODO How should this be handled?
+            getContext().getMonitor().operationFailed(e);
         }
     }
 
