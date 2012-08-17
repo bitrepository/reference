@@ -28,8 +28,7 @@ package org.bitrepository.protocol.security.exception;
 public class UnregisteredPermissionException extends Exception {
 
     /**
-     * Constructor for UnregisteredPermissionException
-     * @param message, description of why the exception was created 
+     * @param message description of why the exception was created
      */
     public UnregisteredPermissionException(String message) {
         super(message);
@@ -37,8 +36,8 @@ public class UnregisteredPermissionException extends Exception {
     
     /**
      * Constructor for UnregisteredPermissionException
-     * @param message, description of why the exception was created
-     * @param cause, the throwable that caused the exception to be created. 
+     * @param message description of why the exception was created
+     * @param cause the throwable that caused the exception to be created.
      */    
     public UnregisteredPermissionException(String message, Throwable cause) {
         super(message, cause);

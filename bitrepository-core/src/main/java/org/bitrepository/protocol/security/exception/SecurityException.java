@@ -28,17 +28,15 @@ package org.bitrepository.protocol.security.exception;
 public class SecurityException extends RuntimeException {
 
     /**
-     * Constructor. 
-     * @param message, the textual description of the cause.
-     * @param cause, the reason for throwing the exception. 
+     * @param message the textual description of the cause.
+     * @param cause the reason for throwing the exception.
      */
     public SecurityException(String message, Throwable cause) {
         super(message, cause);
     }
 
     /**
-     * Constructor. 
-     * @param message, the textual description of the cause.
+     * @param message the textual description of the cause.
      */
     public SecurityException(String message) {
         super(message);

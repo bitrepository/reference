@@ -30,8 +30,8 @@ public interface MessageAuthenticator {
 
     /**
      * Method to authenticate a message based on a signature.
-     * @param messageData, the data to authenticate
-     * @param signatureData, the signature to authenticate the message from
+     * @param messageData the data to authenticate
+     * @param signatureData the signature to authenticate the message from
      * @throws MessageAuthenticationException in case authentication fails. 
      */
     abstract void authenticateMessage(byte[] messageData, byte[] signatureData) throws MessageAuthenticationException;

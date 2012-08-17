@@ -27,9 +27,8 @@ package org.bitrepository.protocol.security.exception;
 @SuppressWarnings("serial")
 public class MessageAuthenticationException extends Exception {
     
-    /** 
-     * Constructor for MessageAuthenticationException
-     * @param message, the message describing the reason for the exception
+    /**
+     * @param message the message describing the reason for the exception
      */
     public MessageAuthenticationException(String message) {
         super(message);
@@ -37,8 +36,8 @@ public class MessageAuthenticationException extends Exception {
     
     /**
      * Constructor for MessageAuthenticationException
-     * @param message, the message describing the reason for the exception
-     * @param e, the exception that caused the creation of MessageAuthenticationException
+     * @param message the message describing the reason for the exception
+     * @param e the exception that caused the creation of MessageAuthenticationException
      */
     public MessageAuthenticationException(String message, Throwable e) {
         super(message, e);

@@ -33,8 +33,8 @@ public interface OperationAuthorizor {
 
     /**
      * Authorize an operation based on its signature
-     * @param String operationType, the type of operation that should be authorized.
-     * @param byte[] signature, the signature that belongs to the request. 
+     * @param operationType operationType, the type of operation that should be authorized.
+     * @param signer The signer of the request.
      * @throws OperationAuthorizationException if the authorization fails.  
      * @throws UnregisteredPermissionException 
      */
@@ -43,8 +43,8 @@ public interface OperationAuthorizor {
     
     /**
      * Method to determine whether a given componentID is allowed to sign an operation with the given certificate.
-     * @param certificateUser, the componentID of the component that signed the message
-     * @param signer, the signerId of the certificate that signed the message
+     * @param certificateUser the componentID of the component that signed the message
+     * @param signer the signerId of the certificate that signed the message
      * @throws CertificateUseException in case the message has been signed by the wrong user. 
      * 
      */

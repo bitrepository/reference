@@ -41,8 +41,7 @@ public class BasicOperationAuthorizor implements OperationAuthorizor {
     private final PermissionStore permissionStore;
     
     /**
-     * Public constructor
-     * @param PermissionStore permissionStore which holds the permissions to check against. 
+     * @param permissionStore permissionStore which holds the permissions to check against.
      */
     public BasicOperationAuthorizor(PermissionStore permissionStore) {
         requestToPermissionMapper = new RequestToOperationPermissionMapper();
@@ -51,8 +50,8 @@ public class BasicOperationAuthorizor implements OperationAuthorizor {
     
     /**
      * Method to determine whether a given componentID is allowed to sign a message with the given certificate.
-     * @param certificateUser, the componentID of the component that signed the message
-     * @param signer, the signerId of the certificate that signed the message
+     * @param certificateUser the componentID of the component that signed the message
+     * @param signer the signerId of the certificate that signed the message
      * @throws CertificateUseException in case the message has been signed by the wrong user. 
      * 
      */
@@ -70,7 +69,7 @@ public class BasicOperationAuthorizor implements OperationAuthorizor {
     
     /**
      * Method to determine whether an operation is allowed
-     * @param operationType, the type of operation to authorize 
+     * @param operationType the type of operation to authorize
      * @param signer the signerId of the certificate used to create the signature belonging to the request 
      * which is to be authorized.  
      * @throws OperationAuthorizationException if authorization fails

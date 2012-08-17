@@ -102,13 +102,13 @@ public class BasicSecurityManager implements SecurityManager {
     
     /**
      * Constructor for the SecurityManager.
-     * @param collectionSettings, the collection settings to retrieve settings from
-     * @param privateKeyFile, path to the file containing the components private key and certificate, may be null if not using
+     * @param collectionSettings the collection settings to retrieve settings from
+     * @param privateKeyFile path to the file containing the components private key and certificate, may be null if not using
      *        certificates and encryption.
-     * @param authenticator, MessageAuthenticator for authenticating messages
-     * @param signer, MessageSigner for signing messages.
-     * @param authorizer, OperationAuthorizer to authorize operations
-     * @param permissionStore, the PermissionStore to hold certificates and adjoining permissions  
+     * @param authenticator MessageAuthenticator for authenticating messages
+     * @param signer MessageSigner for signing messages.
+     * @param authorizer OperationAuthorizer to authorize operations
+     * @param permissionStore the PermissionStore to hold certificates and adjoining permissions
      */
     public BasicSecurityManager(CollectionSettings collectionSettings, String privateKeyFile, MessageAuthenticator authenticator,
             MessageSigner signer, OperationAuthorizor authorizer, PermissionStore permissionStore, String componentID) {
@@ -129,8 +129,8 @@ public class BasicSecurityManager implements SecurityManager {
     
     /**
      * Method to authenticate a message. 
-     * @param message, the message that needs to be authenticated. 
-     * @param signature, the signature belonging to the message. 
+     * @param message the message that needs to be authenticated.
+     * @param signature the signature belonging to the message.
      * @throws MessageAuthenticationException in case of failure.
      */
     public void authenticateMessage(String message, String signature) throws MessageAuthenticationException {
@@ -147,8 +147,8 @@ public class BasicSecurityManager implements SecurityManager {
     
     /**
      * Method to sign a message
-     * @param message, the message to sign
-     * @return String the signature for the message, or null if authentication is disabled. 
+     * @param message the message to sign
+     * @return the signature for the message, or null if authentication is disabled.
      * @throws MessageSigningException if signing of the message fails.   
      */
     public String signMessage(String message) throws MessageSigningException {
@@ -166,9 +166,9 @@ public class BasicSecurityManager implements SecurityManager {
     
     /** 
      * Method to authorize the use of a certificate
-     * @param certificateUser, the user who signed the message
-     * @param messageData, the data of the message request. 
-     * @param signature, the signature belonging to the message request. 
+     * @param certificateUser the user who signed the message
+     * @param messageData the data of the message request.
+     * @param signature the signature belonging to the message request.
      * @throws CertificateUseException in case the certificate use could not be authorized. 
      */
     public void authorizeCertificateUse(String certificateUser, String messageData, String signature) 
@@ -189,9 +189,9 @@ public class BasicSecurityManager implements SecurityManager {
     
     /**
      * Method to authorize an operation 
-     * @param operationType, the type of operation that is to be authorized. 
-     * @param messageData, the data of the message request. 
-     * @param signature, the signature belonging to the message request. 
+     * @param operationType the type of operation that is to be authorized.
+     * @param messageData the data of the message request.
+     * @param signature the signature belonging to the message request.
      * @throws OperationAuthorizationException in case of failure. 
      */
     public void authorizeOperation(String operationType, String messageData, String signature) 

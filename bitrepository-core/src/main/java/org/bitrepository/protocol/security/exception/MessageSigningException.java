@@ -29,7 +29,7 @@ public class MessageSigningException extends Exception {
 
     /** 
      * Constructor for MessageSigningException
-     * @param message, the message describing the reason for the exception
+     * @param message the message describing the reason for the exception
      */
     public MessageSigningException(String message) {
         super(message);

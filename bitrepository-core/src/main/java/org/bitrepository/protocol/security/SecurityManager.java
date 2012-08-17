@@ -29,25 +29,25 @@ import org.bitrepository.protocol.security.exception.OperationAuthorizationExcep
 public interface SecurityManager {
     /**
      * Method to authenticate a message. 
-     * @param message, the message that needs to be authenticated. 
-     * @param signature, the signature belonging to the message. 
+     * @param message the message that needs to be authenticated.
+     * @param signature the signature belonging to the message.
      * @throws MessageAuthenticationException in case of failure.
      */
     void authenticateMessage(String message, String signature) throws MessageAuthenticationException;
     
     /**
      * Method to sign a message
-     * @param message, the message to sign
-     * @return String the signature for the message, or null if authentication is disabled. 
+     * @param message the message to sign
+     * @return the signature for the message, or null if authentication is disabled.
      * @throws MessageSigningException if signing of the message fails.   
      */
     String signMessage(String message) throws MessageSigningException;
     
     /**
      * Method to authorize an operation 
-     * @param operationType, the type of operation that is to be authorized. 
-     * @param messageData, the data of the message request. 
-     * @param signature, the signature belonging to the message request. 
+     * @param operationType the type of operation that is to be authorized.
+     * @param messageData the data of the message request.
+     * @param signature the signature belonging to the message request.
      * @throws OperationAuthorizationException in case of failure. 
      */
     void authorizeOperation(String operationType, String messageData, String signature) 
@@ -55,9 +55,9 @@ public interface SecurityManager {
     
     /** 
      * Method to authorize the use of a certificate
-     * @param certificateUser, the user who signed the message
-     * @param messageData, the data of the message request. 
-     * @param signature, the signature belonging to the message request. 
+     * @param certificateUser the user who signed the message
+     * @param messageData the data of the message request.
+     * @param signature the signature belonging to the message request.
      * @throws CertificateUseException in case the certificate use could not be authorized. 
      */
     void authorizeCertificateUse(String certificateUser, String messageData, String signature) 
