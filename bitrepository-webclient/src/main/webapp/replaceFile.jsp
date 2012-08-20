@@ -168,10 +168,10 @@
             	
             var command = "repo/reposervice/replaceFile/?fileID=" + fileID + "&pillarID=" + pillarID +
                     "&oldFileChecksum=" + oldFileChecksumVal + "&oldFileChecksumType="+ oldFileChecksumType + 
-                    "&oldFileChecksumSalt=" + oldFileChecksumSalt + "&oldFileRequestChecksumType=" + oldFileRequestChecksumSalt + 
+                    "&oldFileChecksumSalt=" + oldFileChecksumSalt + "&oldFileRequestChecksumType=" + oldFileRequestChecksumType + 
                     "&oldFileRequestChecksumSalt=" + oldFileRequestChecksumSalt + "&url=" + fileAddress + "&fileSize=" + fileSize +
                     "&newFileChecksum=" + newFileChecksumVal + "&newFileChecksumType="+ newFileChecksumType + 
-                    "&newFileChecksumSalt=" + newFileChecksumSalt + "&newFileRequestChecksumType=" + newFileRequestChecksumSalt + 
+                    "&newFileChecksumSalt=" + newFileChecksumSalt + "&newFileRequestChecksumType=" + newFileRequestChecksumType + 
                     "&newFileRequestChecksumSalt=" + newFileRequestChecksumSalt;
             	
             $('#status').load(command, function(response, status, xhr) {
